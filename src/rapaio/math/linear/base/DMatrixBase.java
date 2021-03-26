@@ -22,7 +22,7 @@
 package rapaio.math.linear.base;
 
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.SOrder;
+import rapaio.math.linear.MType;
 import rapaio.util.function.Double2DoubleFunction;
 
 import java.util.Arrays;
@@ -47,35 +47,27 @@ import java.util.stream.DoubleStream;
  */
 public class DMatrixBase extends AbstractDMatrix {
 
-    public static DMatrixBase empty(int rowCount, int colCount) {
-        return new DMatrixBase(rowCount, colCount);
-    }
-
-    public static DMatrixBase wrap(double[][] values) {
-        return new DMatrixBase(values.length, (values.length == 0) ? 0 : values[0].length, values);
-    }
-
     private static final long serialVersionUID = -7586346894985345827L;
 
     protected final int rowCount;
     protected final int colCount;
     protected final double[][] values;
 
-    protected DMatrixBase(int rowCount, int colCount) {
+    public DMatrixBase(int rowCount, int colCount) {
         this.rowCount = rowCount;
         this.colCount = colCount;
         this.values = new double[rowCount][colCount];
     }
 
-    protected DMatrixBase(int rowCount, int colCount, double[][] values) {
-        this.rowCount = rowCount;
-        this.colCount = colCount;
+    public DMatrixBase(double[][] values) {
+        this.rowCount = values.length;
+        this.colCount = (values.length == 0) ? 0 : values[0].length;
         this.values = values;
     }
 
     @Override
-    public SOrder order() {
-        return SOrder.R;
+    public MType type() {
+        return MType.BASE;
     }
 
     @Override

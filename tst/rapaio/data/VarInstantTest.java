@@ -56,7 +56,7 @@ public class VarInstantTest {
         }
 
         assertEquals("VarInstant", t1.toStringClassName());
-        assertEquals(VType.INSTANT, t1.type());
+        assertEquals(VarType.INSTANT, t1.type());
 
         ZonedDateTime start = ZonedDateTime.now();
         var t2 = VarInstant.from(10, row -> Instant.from(start.plus(row, ChronoUnit.DAYS)));

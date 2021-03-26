@@ -23,9 +23,9 @@ package rapaio.data.filter;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarRange;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,7 +48,7 @@ public class FIntercept extends AbstractFFilter {
     public static final String INTERCEPT = "(Intercept)";
 
     private FIntercept() {
-        super(VRange.all());
+        super(VarRange.all());
     }
 
     @Override

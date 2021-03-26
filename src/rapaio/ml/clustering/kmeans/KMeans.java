@@ -27,13 +27,12 @@ import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Unique;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
+import rapaio.data.VarType;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.clustering.AbstractClusteringModel;
 import rapaio.ml.clustering.ClusteringModel;
 import rapaio.ml.common.Capabilities;
@@ -142,7 +141,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         return Capabilities.builder()
                 .allowMissingInputValues(true)
                 .allowMissingTargetValues(true)
-                .inputTypes(List.of(VType.DOUBLE, VType.INT, VType.BINARY))
+                .inputTypes(List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY))
                 .minInputCount(1).maxInputCount(10_000)
                 .minTargetCount(0).maxTargetCount(0)
                 .targetTypes(List.of())
@@ -152,7 +151,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
     @Override
     public ClusteringModel coreFit(Frame initialDf, Var weights) {
 
-        DMatrix m = DMatrixStripe.copy(initialDf);
+        DMatrix m = DMatrix.copy(initialDf);
         c = initializeClusters(m);
 
         int[] assignment = IntArrays.newFill(m.rowCount(), -1);
@@ -325,7 +324,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
     @Override
     public KMeansResult corePredict(Frame df, boolean withScores) {
         int[] assignment = IntArrays.newFill(df.rowCount(), -1);
-        DMatrix m = DMatrixStripe.copy(df);
+        DMatrix m = DMatrix.copy(df);
         assignToCentroids(m, assignment);
         return KMeansResult.valueOf(this, df, VarInt.wrap(assignment));
     }

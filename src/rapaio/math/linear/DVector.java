@@ -21,12 +21,17 @@
 
 package rapaio.math.linear;
 
+import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.math.linear.base.DVectorBase;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
+import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
+import rapaio.util.function.Int2DoubleFunction;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
@@ -37,10 +42,167 @@ import java.util.stream.DoubleStream;
  */
 public interface DVector extends Serializable, Printable {
 
-    enum Type {
-        BASE,
-        DENSE,
-        VIEW
+    /**
+     * Builds a new real dense vector of size {@param n} filled with 0.
+     *
+     * @param n the size of the vector
+     * @return vector instance
+     */
+    static DVector zeros(int n) {
+        return fill(VType.DENSE, n, 0);
+    }
+
+    /**
+     * Builds a new real vector of size {@param n} filled with 0.
+     *
+     * @param n the size of the vector
+     * @return vector instance
+     */
+    static DVector zeros(VType type, int n) {
+        return fill(type, n, 0);
+    }
+
+    /**
+     * Builds a new double dense vector of size {@param n} filled with 1.
+     *
+     * @param n the size of the vector
+     * @return vector instance
+     */
+    static DVector ones(int n) {
+        return fill(n, 1);
+    }
+
+    /**
+     * Builds a new double dense vector of size {@param n} filled with 1.
+     *
+     * @param n the size of the vector
+     * @return vector instance
+     */
+    static DVector ones(VType type, int n) {
+        return fill(type, n, 1);
+    }
+
+    /**
+     * Builds a new real dense vector of <i>len</i> size,
+     * filled with <i>fill</i> value given as parameter.
+     *
+     * @param n    size of the vector
+     * @param fill fill value
+     * @return new real dense vector
+     */
+    static DVector fill(int n, double fill) {
+        return fill(VType.DENSE, n, fill);
+    }
+
+    /**
+     * Builds a new real vector of <i>len</i> size, filled with <i>fill</i> value given as parameter.
+     *
+     * @param n    size of the vector
+     * @param fill fill value
+     * @return new real dense vector
+     */
+    static DVector fill(VType type, int n, double fill) {
+        switch (type) {
+            case BASE:
+                return new DVectorBase(n, DoubleArrays.newFill(n, fill));
+            case DENSE:
+                return new DVectorDense(n, DoubleArrays.newFill(n, fill));
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    static DVector from(Var v) {
+        return from(VType.DENSE, v);
+    }
+
+    /**
+     * Builds a new real dense vector of size equal with row count,
+     * filled with values from variable. The variable can have any type,
+     * the values are taken by using {@link Var#getDouble(int)} calls.
+     *
+     * @param v given variable
+     * @return new real dense vector
+     */
+    static DVector from(VType type, Var v) {
+        if (v instanceof VarDouble) {
+            VarDouble vd = (VarDouble) v;
+            double[] array = vd.elements();
+            return wrapArray(type, vd.size(), array);
+        }
+        double[] values = new double[v.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = v.getDouble(i);
+        }
+        return wrapArray(type, values.length, values);
+    }
+
+    static DVector copy(DVector source) {
+        return copy(VType.DENSE, source);
+    }
+
+    /**
+     * Builds a new real dense vector which is a solid copy
+     * of the given source vector.
+     *
+     * @param source source vector
+     * @return new real dense vector which is a copy of the source vector
+     */
+    static DVector copy(VType type, DVector source) {
+        if (type == source.type()) {
+            source.copy();
+        }
+        double[] copy = new double[source.size()];
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = source.get(i);
+        }
+        return wrapArray(type, copy.length, copy);
+    }
+
+    static DVector wrap(double... values) {
+        return wrapArray(VType.DENSE, values.length, values);
+    }
+
+    /**
+     * Builds a new random vector which wraps a double array.
+     * It uses the same reference.
+     *
+     * @param values referenced array of values
+     * @return new real dense vector
+     */
+    static DVector wrap(VType type, double... values) {
+        return wrapArray(type, values.length, values);
+    }
+
+    static DVector wrapArray(int size, double[] values) {
+        return wrapArray(VType.DENSE, size, values);
+    }
+
+    /**
+     * Builds a new random vector which wraps a double array.
+     * It uses the same reference.
+     *
+     * @param values referenced array of values
+     * @return new real dense vector
+     */
+    static DVector wrapArray(VType type, int size, double[] values) {
+        Objects.requireNonNull(values);
+        switch (type) {
+            case BASE:
+                return new DVectorBase(size, values);
+            case DENSE:
+                return new DVectorDense(size, values);
+            default:
+                throw new IllegalArgumentException("Operation not implemented for vector type: " + type.name());
+        }
+    }
+
+    static DVector from(int len, Int2DoubleFunction fun) {
+        return wrapArray(VType.DENSE, len, DoubleArrays.newFrom(0, len, fun));
+    }
+
+    static DVector from(VType type, int len, Int2DoubleFunction fun) {
+        return wrapArray(type, len, DoubleArrays.newFrom(0, len, fun));
     }
 
     default boolean isDense() {
@@ -56,7 +218,7 @@ public interface DVector extends Serializable, Printable {
      *
      * @return vector type
      */
-    Type type();
+    VType type();
 
     /**
      * @return number of elements from the vector
@@ -109,14 +271,14 @@ public interface DVector extends Serializable, Printable {
      * Vectors must be conformant for addition, which means
      * that they have to have the same size.
      *
-     * @param B vector which contains values used for increment operation
+     * @param y vector which contains values used for increment operation
      * @return same object
      */
-    DVector add(DVector B);
+    DVector add(DVector y);
 
     /**
-     * Substracts from all elements the value of x, it is
-     * similar wtth calling increment with -x for all positions
+     * Subtracts from all elements the value of x, it is
+     * similar with calling increment with -x for all positions
      * of the vector
      *
      * @param x value to be decremented with
@@ -130,10 +292,10 @@ public interface DVector extends Serializable, Printable {
      * <p>
      * Vectors must be conformant for addition, which means that they have to have the same size.
      *
-     * @param b vector which contains values used for increment operation
+     * @param y vector which contains values used for increment operation
      * @return same object
      */
-    DVector sub(DVector b);
+    DVector sub(DVector y);
 
     /**
      * Scalar multiplication. All the values from vector
@@ -147,10 +309,10 @@ public interface DVector extends Serializable, Printable {
     /**
      * Element wise multiplication between two vectors.
      *
-     * @param b factor vector
+     * @param y factor vector
      * @return element wise multiplication result vector
      */
-    DVector mult(DVector b);
+    DVector mult(DVector y);
 
     /**
      * Scalar division. All values from vector will be divided by scalar value.
@@ -163,10 +325,10 @@ public interface DVector extends Serializable, Printable {
     /**
      * Element wise division between two vectors.
      *
-     * @param b factor vector
+     * @param y factor vector
      * @return element wise division result vector
      */
-    DVector div(DVector b);
+    DVector div(DVector y);
 
     /**
      * Creates a new {@link DVector} which contains the result of {@code a*this+y},
@@ -382,10 +544,10 @@ public interface DVector extends Serializable, Printable {
         return copy(type());
     }
 
-    DVector copy(Type type);
+    DVector copy(VType type);
 
     default DMatrix asMatrix() {
-        return asMatrix(SOrder.R);
+        return asMatrix(MType.CSTRIPE);
     }
 
     /**
@@ -396,7 +558,7 @@ public interface DVector extends Serializable, Printable {
      *
      * @return a matrix corresponding with the current vector
      */
-    DMatrix asMatrix(SOrder order);
+    DMatrix asMatrix(MType type);
 
     /**
      * Creates a stream of values to visit all the elements of the vector

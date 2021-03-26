@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.StandardDVectorTest;
+import rapaio.math.linear.VType;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,8 +35,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DVectorBaseTest extends StandardDVectorTest {
 
     @Override
-    public DVector.Type type() {
-        return DVector.Type.BASE;
+    public VType type() {
+        return VType.BASE;
     }
 
     @Override

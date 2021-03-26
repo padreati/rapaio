@@ -24,11 +24,11 @@ package rapaio.ml.classifier.bayes.nb;
 import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
+import rapaio.data.VarRange;
 
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class BernoulliEstimatorTest {
                 VarNominal.empty().name("a"),
                 VarNominal.empty().name("b"),
                 VarNominal.empty().name("c")
-        ), VRange.all());
+        ), VarRange.all());
         assertEquals("Bernoulli{test=a, laplaceSmoother=1, values=[]}", estimators.get(0).fittedName());
         assertEquals("Bernoulli{test=b, laplaceSmoother=1, values=[]}", estimators.get(1).fittedName());
         assertEquals("Bernoulli{test=c, laplaceSmoother=1, values=[]}", estimators.get(2).fittedName());
@@ -73,7 +73,7 @@ public class BernoulliEstimatorTest {
                 VarNominal.empty().name("a"),
                 VarNominal.empty().name("b"),
                 VarNominal.empty().name("c")
-        ), VRange.all());
+        ), VarRange.all());
         assertEquals("Bernoulli{test=a, laplaceSmoother=1.2, values=[]}", estimators.get(0).fittedName());
         assertEquals("Bernoulli{test=b, laplaceSmoother=1.2, values=[]}", estimators.get(1).fittedName());
         assertEquals("Bernoulli{test=c, laplaceSmoother=1.2, values=[]}", estimators.get(2).fittedName());

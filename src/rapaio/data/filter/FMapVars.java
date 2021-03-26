@@ -22,7 +22,7 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 
 /**
  * Filter to map vars from a data frame.
@@ -31,19 +31,19 @@ import rapaio.data.VRange;
  */
 public class FMapVars extends AbstractFFilter {
 
-    public static FMapVars map(VRange vRange) {
-        return new FMapVars(vRange);
+    public static FMapVars map(VarRange varRange) {
+        return new FMapVars(varRange);
     }
 
     private static final long serialVersionUID = 5540246008233767364L;
 
-    private FMapVars(VRange vRange) {
-        super(vRange);
+    private FMapVars(VarRange varRange) {
+        super(varRange);
     }
 
     @Override
     public FMapVars newInstance() {
-        return new FMapVars(vRange);
+        return new FMapVars(varRange);
     }
 
     @Override

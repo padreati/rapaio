@@ -21,10 +21,24 @@
 
 package rapaio.math.linear;
 
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Normal;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.math.linear.base.DMatrixBase;
+import rapaio.math.linear.dense.DMatrixDense;
+import rapaio.math.linear.dense.DMatrixDenseC;
+import rapaio.math.linear.dense.DMatrixDenseR;
+import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DMatrixStripeC;
+import rapaio.math.linear.dense.DMatrixStripeR;
 import rapaio.printer.Printable;
+import rapaio.util.NotImplementedException;
 import rapaio.util.function.Double2DoubleFunction;
+import rapaio.util.function.IntInt2DoubleBiFunction;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
 /**
@@ -34,7 +48,257 @@ import java.util.stream.DoubleStream;
  */
 public interface DMatrix extends Serializable, Printable {
 
-    SOrder order();
+    static DMatrix empty(int rows, int cols) {
+        return empty(MType.RSTRIPE, rows, cols);
+    }
+
+    static DMatrix empty(MType type, int rows, int cols) {
+        switch (type) {
+            case BASE:
+                return new DMatrixBase(rows, cols);
+            case RDENSE:
+                return new DMatrixDenseR(rows, cols);
+            case CDENSE:
+                return new DMatrixDenseC(rows, cols);
+            case RSTRIPE:
+                return new DMatrixStripeR(rows, cols);
+            case CSTRIPE:
+                return new DMatrixStripeC(rows, cols);
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
+    static DMatrix identity(int n) {
+        return identity(MType.RSTRIPE, n);
+    }
+
+    /**
+     * Builds an identity matrix with n rows and n columns.
+     * An identity matrix is a matrix with 1 on the main diagonal
+     * and 0 otherwise.
+     *
+     * @param type matrix implementation storage type
+     * @param n    number of rows and also number of columns
+     * @return a new instance of identity matrix of order n
+     */
+    static DMatrix identity(MType type, int n) {
+        DMatrix m = empty(type, n, n);
+        for (int i = 0; i < n; i++) {
+            m.set(i, i, 1.0);
+        }
+        return m;
+    }
+
+    static DMatrix fill(int rows, int cols, double fill) {
+        return fill(MType.RSTRIPE, rows, cols, fill);
+    }
+
+    /**
+     * Builds a new matrix filled with a given value.
+     *
+     * @param type matrix implementation storage type
+     * @param rows number of rows
+     * @param cols number of columns
+     * @param fill value which fills all cells of the matrix
+     * @return new matrix filled with value
+     */
+    static DMatrix fill(MType type, int rows, int cols, double fill) {
+        DMatrix m = empty(type, rows, cols);
+        switch (type) {
+            case BASE:
+                if (fill != 0) {
+                    for (int i = 0; i < m.rowCount(); i++) {
+                        for (int j = 0; j < m.colCount(); j++) {
+                            m.set(i, j, fill);
+                        }
+                    }
+                }
+                break;
+            case RSTRIPE:
+            case CSTRIPE:
+                double[][] elements = ((DMatrixStripe) m).getElements();
+                for (double[] v : elements) {
+                    Arrays.fill(v, fill);
+                }
+                break;
+            case CDENSE:
+            case RDENSE:
+                double[] array = ((DMatrixDense) m).getElements();
+                Arrays.fill(array, fill);
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+        return m;
+    }
+
+    static DMatrix fill(int rows, int cols, IntInt2DoubleBiFunction fun) {
+        return fill(MType.RSTRIPE, rows, cols, fun);
+    }
+
+    /**
+     * Builds a new matrix filled with a given value
+     *
+     * @param type matrix implementation storage type
+     * @param rows number of rows
+     * @param cols number of columns
+     * @param fun  lambda function which computes a value given row and column positions
+     * @return new matrix filled with value
+     */
+    static DMatrix fill(MType type, int rows, int cols, IntInt2DoubleBiFunction fun) {
+        DMatrix m = empty(type, rows, cols);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                m.set(i, j, fun.applyIntIntAsDouble(i, j));
+            }
+        }
+        return m;
+    }
+
+    static DMatrix random(int rows, int cols) {
+        return random(MType.RSTRIPE, rows, cols, Normal.std());
+    }
+
+    static DMatrix random(MType type, int rows, int cols) {
+        return random(type, rows, cols, Normal.std());
+    }
+
+    static DMatrix random(MType type, int rows, int cols, Distribution distribution) {
+        return fill(type, rows, cols, (r, c) -> distribution.sampleNext());
+    }
+
+    static DMatrix wrap(double[][] values) {
+        return wrap(MType.RSTRIPE, true, values);
+    }
+
+    static DMatrix wrap(boolean byRows, double[][] values) {
+        return wrap(MType.RSTRIPE, byRows, values);
+    }
+
+    static DMatrix wrap(MType type, boolean byRows, double[][] values) {
+        if (byRows) {
+            switch (type) {
+                case BASE:
+                    return new DMatrixBase(values);
+                case RSTRIPE:
+                    return new DMatrixStripeR(values.length, values[0].length, values);
+            }
+        } else {
+            if (type == MType.CSTRIPE) {
+                return new DMatrixStripeC(values[0].length, values.length, values);
+            }
+        }
+        return copy(type, byRows, 0, byRows ? values.length : values[0].length, 0, byRows ? values[0].length : values.length, values);
+    }
+
+    static DMatrix wrap(MType type, boolean byRows, int rows, int cols, double[] values) {
+        if (byRows && type == MType.RDENSE) {
+            return new DMatrixDenseR(rows, cols, values);
+        }
+        if (!byRows && type == MType.CDENSE) {
+            return new DMatrixDenseC(rows, cols, values);
+        }
+        return copy(type, byRows, rows, cols, 0, rows, 0, cols, values);
+    }
+
+    static DMatrix copy(double[][] values) {
+        return copy(MType.RSTRIPE, true, 0, values.length, 0, values[0].length, values);
+    }
+
+    static DMatrix copy(MType type, boolean byRows, double[][] values) {
+        return copy(type, byRows, 0, byRows ? values.length : values[0].length, 0, byRows ? values[0].length : values.length, values);
+    }
+
+    static DMatrix copy(MType type, boolean byRows, int rows, int cols, double[][] values) {
+        return copy(type, byRows, 0, rows, 0, cols, values);
+    }
+
+    static DMatrix copy(MType type, boolean byRows, int rowStart, int rowEnd, int colStart, int colEnd, double[][] values) {
+        int rows = rowEnd - rowStart;
+        int cols = colEnd - colStart;
+        DMatrix m = empty(type, rows, cols);
+        if (byRows) {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    m.set(i, j, values[i + rowStart][j + colStart]);
+                }
+            }
+        } else {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    m.set(i, j, values[j + colStart][i + rowStart]);
+                }
+            }
+        }
+        return m;
+    }
+
+    static DMatrix copy(int inputRows, int inputCols, double... values) {
+        return copy(MType.RSTRIPE, true, inputRows, inputCols, 0, inputRows, 0, inputCols, values);
+    }
+
+    static DMatrix copy(MType type, boolean byRows, int inputRows, int inputCols, double[] values) {
+        return copy(type, byRows, inputRows, inputCols, 0, inputRows, 0, inputCols, values);
+    }
+
+    static DMatrix copy(MType type, boolean byRows, int inputRows, int inputCols, int rowStart, int rowEnd, int colStart, int colEnd, double[] values) {
+        int rows = rowEnd - rowStart;
+        int cols = colEnd - colStart;
+        DMatrix m = empty(type, rows, cols);
+
+        if (byRows) {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    m.set(i, j, values[inputCols * (Math.max(0, rowStart - 1) + i) + colStart + j]);
+                }
+            }
+        } else {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    m.set(i, j, values[inputRows * (Math.max(0, colStart - 1) + j) + rowStart + i]);
+                }
+            }
+        }
+        return m;
+    }
+
+    static DMatrix copy(Frame df) {
+        return copy(MType.RSTRIPE, df);
+    }
+
+    static DMatrix copy(MType type, Frame df) {
+        int rows = df.rowCount();
+        int cols = df.varCount();
+        DMatrix m = empty(type, rows, cols);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                m.set(i, j, df.getDouble(i, j));
+            }
+        }
+        return m;
+    }
+
+    static DMatrix copy(Var... vars) {
+        return copy(MType.RSTRIPE, vars);
+    }
+
+    static DMatrix copy(MType type, Var... vars) {
+        int rows = vars[0].size();
+        int cols = vars.length;
+        DMatrix m = empty(type, rows, cols);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                m.set(i, j, vars[j].getDouble(i));
+            }
+        }
+        return m;
+    }
+
+    /**
+     * @return matrix storage type
+     */
+    MType type();
 
     /**
      * @return number of rows of the matrix

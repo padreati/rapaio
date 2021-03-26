@@ -25,9 +25,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.classifier.bayes.nb.Estimator;
@@ -113,11 +113,11 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
         return Capabilities.builder()
                 .minInputCount(0)
                 .maxInputCount(1_000_000)
-                .inputTypes(Arrays.asList(VType.NOMINAL, VType.DOUBLE, VType.INT, VType.BINARY))
+                .inputTypes(Arrays.asList(VarType.NOMINAL, VarType.DOUBLE, VarType.INT, VarType.BINARY))
                 .minTargetCount(1)
                 .maxTargetCount(1)
-                .targetType(VType.NOMINAL)
-                .targetType(VType.BINARY)
+                .targetType(VarType.NOMINAL)
+                .targetType(VarType.BINARY)
                 .allowMissingTargetValues(false)
                 .allowMissingInputValues(true)
                 .build();
@@ -125,9 +125,9 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
 
     @Override
     protected FitSetup prepareFit(Frame df, Var weights, String... targetVars) {
-        List<String> targets = VRange.of(targetVars).parseVarNames(df);
+        List<String> targets = VarRange.of(targetVars).parseVarNames(df);
         this.targetNames = targets.toArray(new String[0]);
-        this.targetTypes = targets.stream().map(name -> df.rvar(name).type()).toArray(VType[]::new);
+        this.targetTypes = targets.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
         this.targetLevels = new HashMap<>();
         this.targetLevels.put(firstTargetName(), df.rvar(firstTargetName()).levels());
 
@@ -144,7 +144,7 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
             }
         }
         this.inputNames = inputs;
-        this.inputTypes = Arrays.stream(inputNames).map(name -> df.rvar(name).type()).toArray(VType[]::new);
+        this.inputTypes = Arrays.stream(inputNames).map(name -> df.rvar(name).type()).toArray(VarType[]::new);
 
         capabilities().checkAtLearnPhase(df, weights, targetVars);
         return FitSetup.valueOf(df, weights, targetVars);

@@ -26,8 +26,8 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
 import rapaio.data.VarDouble;
+import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
@@ -49,7 +49,7 @@ public class LinearRegressionResultResultModelTest {
     void testOneTarget() throws IOException {
 
         Frame df = Datasets.loadISLAdvertising()
-                .removeVars(VRange.of("ID", "Sales", "Newspaper"));
+                .removeVars(VarRange.of("ID", "Sales", "Newspaper"));
 
         LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
         assertEquals("Regression predict summary\n" +
@@ -154,7 +154,7 @@ public class LinearRegressionResultResultModelTest {
 
     @Test
     void testMultipleTargets() throws IOException {
-        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
+        Frame df = Datasets.loadISLAdvertising().removeVars(VarRange.of("ID"));
 
         LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
 

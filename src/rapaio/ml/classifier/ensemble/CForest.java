@@ -31,16 +31,15 @@ import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.data.filter.FRefSort;
 import rapaio.data.filter.VShuffle;
 import rapaio.data.sample.RowSampler;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
@@ -131,10 +130,10 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         Capabilities cc = model.get().capabilities();
         return Capabilities.builder()
                 .minInputCount(cc.getMinInputCount()).maxInputCount(cc.getMaxInputCount())
-                .inputTypes(Arrays.asList(cc.getInputTypes().toArray(VType[]::new)))
+                .inputTypes(Arrays.asList(cc.getInputTypes().toArray(VarType[]::new)))
                 .allowMissingInputValues(cc.getAllowMissingInputValues())
                 .minTargetCount(1).maxTargetCount(1)
-                .targetType(VType.NOMINAL)
+                .targetType(VarType.NOMINAL)
                 .allowMissingTargetValues(false)
                 .build();
     }
@@ -191,7 +190,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         double totalOobInstances = 0;
         double totalOobError = 0;
         if (oob.get()) {
-            oobDensities = DMatrixStripe.fill(df.rowCount(), firstTargetLevels().size() - 1, 0.0);
+            oobDensities = DMatrix.fill(df.rowCount(), firstTargetLevels().size() - 1, 0.0);
             oobTrueClass = df.rvar(firstTargetName()).copy();
             oobPredictedClasses = VarNominal.empty(df.rowCount(), firstTargetLevels());
         }
@@ -257,7 +256,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
             Var shuffled = oobFrame.rvar(varName).fapply(VShuffle.filter());
 
             // build oob frame with shuffled variable
-            Frame oobReduced = oobFrame.removeVars(VRange.of(varName)).bindVars(shuffled);
+            Frame oobReduced = oobFrame.removeVars(VarRange.of(varName)).bindVars(shuffled);
 
             // compute accuracy on oob shuffled frame
 

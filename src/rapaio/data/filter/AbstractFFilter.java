@@ -22,7 +22,7 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
@@ -30,11 +30,11 @@ import rapaio.data.VRange;
 public abstract class AbstractFFilter implements FFilter {
 
     private static final long serialVersionUID = 5619103016781092137L;
-    protected final VRange vRange;
+    protected final VarRange varRange;
     protected String[] varNames;
 
-    public AbstractFFilter(VRange vRange) {
-        this.vRange = vRange;
+    public AbstractFFilter(VarRange varRange) {
+        this.varRange = varRange;
     }
 
     @Override
@@ -44,7 +44,7 @@ public abstract class AbstractFFilter implements FFilter {
 
     @Override
     public void fit(Frame df) {
-        varNames = vRange.parseVarNames(df).toArray(new String[0]);
+        varNames = varRange.parseVarNames(df).toArray(new String[0]);
         coreFit(df);
     }
 

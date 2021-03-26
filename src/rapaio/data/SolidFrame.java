@@ -186,7 +186,7 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public VType type(String varName) {
+    public VarType type(String varName) {
         return rvar(varName).type();
     }
 
@@ -201,7 +201,7 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame mapVars(VRange range) {
+    public Frame mapVars(VarRange range) {
         List<String> varNames = range.parseVarNames(this);
         List<Var> vars = varNames.stream().map(this::rvar).collect(Collectors.toList());
         return SolidFrame.byVars(rowCount(), vars);

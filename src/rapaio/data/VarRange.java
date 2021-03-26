@@ -44,40 +44,40 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface VRange {
+public interface VarRange {
 
-    static VRange all() {
-        return new VRangeByName(VRangeByName.ALL);
+    static VarRange all() {
+        return new VarRangeByName(VarRangeByName.ALL);
     }
 
-    static VRange of(String... varNames) {
-        return new VRangeByName(varNames);
+    static VarRange of(String... varNames) {
+        return new VarRangeByName(varNames);
     }
 
-    static VRange of(Collection<String> varNames) {
+    static VarRange of(Collection<String> varNames) {
         String[] names = new String[varNames.size()];
         int i = 0;
         for (String varName : varNames) {
             names[i++] = varName;
         }
-        return new VRangeByName(names);
+        return new VarRangeByName(names);
     }
 
-    static VRange of(int... varIndexes) {
-        return new VRangeByName(varIndexes);
+    static VarRange of(int... varIndexes) {
+        return new VarRangeByName(varIndexes);
     }
 
-    static VRange byName(Predicate<String> filter) {
-        return new VRangeByPredName(filter);
+    static VarRange byName(Predicate<String> filter) {
+        return new VarRangeByPredName(filter);
     }
 
-    static VRange byFilter(Predicate<Var> filter) {
-        return new VRangeByPred(filter);
+    static VarRange byFilter(Predicate<Var> filter) {
+        return new VarRangeByPred(filter);
     }
 
-    static VRange onlyTypes(VType... types) {
-        Set<VType> keep = Arrays.stream(types).collect(Collectors.toSet());
-        return new VRangeByPred(var -> keep.contains(var.type()));
+    static VarRange onlyTypes(VarType... types) {
+        Set<VarType> keep = Arrays.stream(types).collect(Collectors.toSet());
+        return new VarRangeByPred(var -> keep.contains(var.type()));
     }
 
     List<Integer> parseVarIndexes(Frame df);
@@ -87,7 +87,7 @@ public interface VRange {
     List<String> parseInverseVarNames(Frame df);
 }
 
-class VRangeByName implements VRange {
+class VarRangeByName implements VarRange {
 
     public static final String DELIMITER = ",";
     public static final String RANGE_SEPARATOR = "~";
@@ -99,7 +99,7 @@ class VRangeByName implements VRange {
      *
      * @param indexes list of var indexes
      */
-    public VRangeByName(int... indexes) {
+    public VarRangeByName(int... indexes) {
         if (indexes == null || indexes.length == 0) {
             throw new IllegalArgumentException("No column indexes specified.");
         }
@@ -118,7 +118,7 @@ class VRangeByName implements VRange {
      *
      * @param ranges var ranges specified in string format
      */
-    public VRangeByName(String... ranges) {
+    public VarRangeByName(String... ranges) {
         StringBuilder sb = new StringBuilder();
         Arrays.stream(ranges).forEach(s -> {
             if (sb.length() > 0)
@@ -203,11 +203,11 @@ class VRangeByName implements VRange {
     }
 }
 
-class VRangeByPredName implements VRange {
+class VarRangeByPredName implements VarRange {
 
     private final Predicate<String> predicate;
 
-    VRangeByPredName(Predicate<String> predicate) {
+    VarRangeByPredName(Predicate<String> predicate) {
         this.predicate = predicate;
     }
 
@@ -234,11 +234,11 @@ class VRangeByPredName implements VRange {
     }
 }
 
-class VRangeByPred implements VRange {
+class VarRangeByPred implements VarRange {
 
     private final Predicate<Var> predicate;
 
-    VRangeByPred(Predicate<Var> predicate) {
+    VarRangeByPred(Predicate<Var> predicate) {
         this.predicate = predicate;
     }
 

@@ -23,8 +23,8 @@ package rapaio.data.filter;
 
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,21 +38,21 @@ public class FRenameVars extends AbstractFFilter {
 
     private static final long serialVersionUID = 1697029209693507138L;
 
-    public static FRenameVars of(VRange vRange, String... varNames) {
-        return new FRenameVars(vRange, varNames);
+    public static FRenameVars of(VarRange varRange, String... varNames) {
+        return new FRenameVars(varRange, varNames);
     }
 
     private final Map<String, Integer> inputVarNamesIndex = new HashMap<>();
     private final String[] outputVarNames;
 
-    public FRenameVars(VRange vRange, String... outputVarNames) {
-        super(vRange);
+    public FRenameVars(VarRange varRange, String... outputVarNames) {
+        super(varRange);
         this.outputVarNames = outputVarNames;
     }
 
     @Override
     protected void coreFit(Frame df) {
-        List<String> inputVarNames = vRange.parseVarNames(df);
+        List<String> inputVarNames = varRange.parseVarNames(df);
         inputVarNamesIndex.clear();
         for (int i = 0; i < inputVarNames.size(); i++) {
             inputVarNamesIndex.put(inputVarNames.get(i), i);
@@ -75,6 +75,6 @@ public class FRenameVars extends AbstractFFilter {
 
     @Override
     public FFilter newInstance() {
-        return new FRenameVars(vRange, outputVarNames);
+        return new FRenameVars(varRange, outputVarNames);
     }
 }

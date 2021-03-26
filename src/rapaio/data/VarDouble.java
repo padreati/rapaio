@@ -343,8 +343,8 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    public VType type() {
-        return VType.DOUBLE;
+    public VarType type() {
+        return VarType.DOUBLE;
     }
 
     private void ensureCapacity(int minCapacity) {

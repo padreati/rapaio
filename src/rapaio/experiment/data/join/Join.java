@@ -25,10 +25,10 @@ import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
+import rapaio.data.VarRange;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,15 +43,15 @@ import java.util.Set;
 @Deprecated
 public class Join {
 
-    public static Frame from(Frame dfLeft, Frame dfRight, VRange leftKeys, VRange rightKeys, Type type) {
+    public static Frame from(Frame dfLeft, Frame dfRight, VarRange leftKeys, VarRange rightKeys, Type type) {
         return new Join(dfLeft, dfRight, leftKeys, rightKeys, type).join();
     }
 
-    public static Frame leftJoin(Frame dfLeft, Frame dfRight, VRange leftKeys, VRange rightKeys) {
+    public static Frame leftJoin(Frame dfLeft, Frame dfRight, VarRange leftKeys, VarRange rightKeys) {
         return from(dfLeft, dfRight, leftKeys, rightKeys, Type.LEFT);
     }
 
-    public static Frame leftJoin(Frame dfLeft, Frame dfRight, VRange keys) {
+    public static Frame leftJoin(Frame dfLeft, Frame dfRight, VarRange keys) {
         return from(dfLeft, dfRight, keys, keys, Type.LEFT);
     }
 
@@ -63,14 +63,14 @@ public class Join {
                 keys.add(varName);
             }
         }
-        return from(dfLeft, dfRight, VRange.of(keys), VRange.of(keys), Type.LEFT);
+        return from(dfLeft, dfRight, VarRange.of(keys), VarRange.of(keys), Type.LEFT);
     }
 
-    public static Frame rightJoin(Frame dfLeft, Frame dfRight, VRange leftKeys, VRange rightKeys) {
+    public static Frame rightJoin(Frame dfLeft, Frame dfRight, VarRange leftKeys, VarRange rightKeys) {
         return from(dfLeft, dfRight, leftKeys, rightKeys, Type.RIGHT);
     }
 
-    public static Frame rightJoin(Frame dfLeft, Frame dfRight, VRange keys) {
+    public static Frame rightJoin(Frame dfLeft, Frame dfRight, VarRange keys) {
         return from(dfLeft, dfRight, keys, keys, Type.RIGHT);
     }
 
@@ -82,7 +82,7 @@ public class Join {
                 keys.add(varName);
             }
         }
-        return from(dfLeft, dfRight, VRange.of(keys), VRange.of(keys), Type.RIGHT);
+        return from(dfLeft, dfRight, VarRange.of(keys), VarRange.of(keys), Type.RIGHT);
     }
 
 
@@ -111,7 +111,7 @@ public class Join {
     private final HashMap<Integer, String> rightRowToId;
 
 
-    private Join(Frame dfLeft, Frame dfRight, VRange leftKeys, VRange rightKeys, Type type) {
+    private Join(Frame dfLeft, Frame dfRight, VarRange leftKeys, VarRange rightKeys, Type type) {
         this.dfLeft = dfLeft;
         this.dfRight = dfRight;
         this.leftVarNames = leftKeys.parseVarNames(dfLeft);

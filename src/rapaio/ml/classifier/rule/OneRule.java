@@ -23,8 +23,8 @@ package rapaio.ml.classifier.rule;
 
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.classifier.rule.onerule.HolteBinning;
@@ -100,8 +100,8 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
                 .maxInputCount(1_000_000)
                 .minTargetCount(1)
                 .maxTargetCount(1)
-                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.NOMINAL, VType.DOUBLE, VType.LONG))
-                .targetType(VType.NOMINAL)
+                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE, VarType.LONG))
+                .targetType(VarType.NOMINAL)
                 .allowMissingInputValues(true)
                 .allowMissingTargetValues(false)
                 .build();

@@ -23,9 +23,9 @@ package rapaio.ml.classifier.bayes.nb;
 
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.printer.Format;
 
 import java.util.ArrayList;
@@ -54,12 +54,12 @@ public class MultinoulliEstimator extends AbstractEstimator {
         return new MultinoulliEstimator(Arrays.asList(testNames), laplaceSmoother);
     }
 
-    public static MultinoulliEstimator forRange(Frame df, VRange vRange) {
-        return new MultinoulliEstimator(vRange.parseVarNames(df), 1);
+    public static MultinoulliEstimator forRange(Frame df, VarRange varRange) {
+        return new MultinoulliEstimator(varRange.parseVarNames(df), 1);
     }
 
-    public static MultinoulliEstimator forRange(double laplaceSmoother, Frame df, VRange vRange) {
-        return new MultinoulliEstimator(vRange.parseVarNames(df), laplaceSmoother);
+    public static MultinoulliEstimator forRange(double laplaceSmoother, Frame df, VarRange varRange) {
+        return new MultinoulliEstimator(varRange.parseVarNames(df), laplaceSmoother);
     }
 
     private static final long serialVersionUID = 4232189912660290961L;
@@ -128,14 +128,14 @@ public class MultinoulliEstimator extends AbstractEstimator {
         if (getTestNames().size() == 1) {
             // single nominal variable
             String testVarName = getTestNames().get(0);
-            if (selection.type(testVarName).equals(VType.BINARY) || selection.type(testVarName).equals(VType.NOMINAL)) {
+            if (selection.type(testVarName).equals(VarType.BINARY) || selection.type(testVarName).equals(VarType.NOMINAL)) {
                 return 1;
             }
             throw new IllegalArgumentException("Selected test variable does not have binary or nominal type.");
         }
         // all variables must be binary and obey sum to 1 rule
         for (String testVarName : selection.varNames()) {
-            if (!selection.type(testVarName).equals(VType.BINARY)) {
+            if (!selection.type(testVarName).equals(VarType.BINARY)) {
                 throw new IllegalArgumentException("Selected test variables are not binary.");
             }
         }

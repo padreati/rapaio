@@ -26,11 +26,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.eval.metric.Confusion;
 
@@ -74,7 +73,7 @@ public class PCATest {
             }
         }
 
-        Frame prediction = pca.transform(df.removeVars(VRange.of("y")), 3);
+        Frame prediction = pca.transform(df.removeVars(VarRange.of("y")), 3);
         double[] first_row = new double[]{-0.77536344, -1.00011356, 1.61721809};
         for (int i = 0; i < first_row.length; i++) {
             assertEquals(Math.abs(first_row[i]), Math.abs(prediction.getDouble(0, i)), 1e-6);
@@ -93,7 +92,7 @@ public class PCATest {
             assertNotEquals(out1.getDouble(0, i), out2.getDouble(0, i));
         }
 
-        DMatrix xx = DMatrixStripe.copy(df);
+        DMatrix xx = DMatrix.copy(df);
         assertTrue(xx.mean(0).deepEquals(pca1.getMean()));
         assertTrue(xx.sd(0).deepEquals(pca1.getSd()));
     }
@@ -102,7 +101,7 @@ public class PCATest {
     void irisPca() {
 
         Frame iris = Datasets.loadIrisDataset();
-        Frame x = iris.removeVars(VRange.of("class"));
+        Frame x = iris.removeVars(VarRange.of("class"));
 
         PCA pca = PCA.newModel();
         pca.fit(x);

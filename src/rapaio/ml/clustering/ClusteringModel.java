@@ -22,8 +22,8 @@
 package rapaio.ml.clustering;
 
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
@@ -85,7 +85,7 @@ public interface ClusteringModel extends Printable {
      *
      * @return array of input variable types
      */
-    VType[] inputTypes();
+    VarType[] inputTypes();
 
     /**
      * Shortcut method which returns the type of the input variable at the given position
@@ -93,7 +93,7 @@ public interface ClusteringModel extends Printable {
      * @param pos given position
      * @return variable type
      */
-    default VType inputType(int pos) {
+    default VarType inputType(int pos) {
         return inputTypes()[pos];
     }
 

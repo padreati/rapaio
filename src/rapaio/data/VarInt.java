@@ -239,8 +239,8 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     @Override
-    public VType type() {
-        return VType.INT;
+    public VarType type() {
+        return VarType.INT;
     }
 
     @Override

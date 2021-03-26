@@ -25,7 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
 
@@ -42,7 +42,7 @@ public final class FRefSort extends AbstractFFilter {
     private final IntComparator aggregateComparator;
 
     private FRefSort(IntComparator... comparators) {
-        super(VRange.of("all"));
+        super(VarRange.of("all"));
         this.aggregateComparator = RowComparators.from(comparators);
     }
 

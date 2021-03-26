@@ -25,9 +25,9 @@ import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.printer.Format;
 
 import java.util.Collections;
@@ -53,23 +53,23 @@ public class KernelEstimator extends AbstractEstimator {
         return new KernelEstimator(testName, kfunc, bandwidth);
     }
 
-    public static List<Estimator> forRange(Frame df, VRange vRange) {
-        List<String> varNames = vRange.parseVarNames(df);
+    public static List<Estimator> forRange(Frame df, VarRange varRange) {
+        List<String> varNames = varRange.parseVarNames(df);
         return varNames.stream()
                 .map(name -> new KernelEstimator(name, new KFuncGaussian(), 0))
                 .collect(Collectors.toList());
     }
 
-    public static List<Estimator> forType(Frame df, VType type) {
+    public static List<Estimator> forType(Frame df, VarType type) {
         return forType(df, type, new KFuncGaussian());
     }
 
-    public static List<Estimator> forType(Frame df, VType type, KFunc kfunc) {
+    public static List<Estimator> forType(Frame df, VarType type, KFunc kfunc) {
         return forType(df, type, kfunc, 0);
     }
 
-    public static List<Estimator> forType(Frame df, VType type, KFunc kfunc, double bandwidth) {
-        return VRange.onlyTypes(type).parseVarNames(df).stream()
+    public static List<Estimator> forType(Frame df, VarType type, KFunc kfunc, double bandwidth) {
+        return VarRange.onlyTypes(type).parseVarNames(df).stream()
                 .map(name -> new KernelEstimator(name, kfunc, bandwidth))
                 .collect(Collectors.toList());
     }

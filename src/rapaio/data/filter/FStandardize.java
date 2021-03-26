@@ -22,7 +22,7 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,20 +45,20 @@ import java.util.Map;
  */
 public class FStandardize extends AbstractFFilter {
 
-    public static FStandardize on(VRange vRange) {
-        return new FStandardize(vRange);
+    public static FStandardize on(VarRange varRange) {
+        return new FStandardize(varRange);
     }
 
     private static final long serialVersionUID = -2447577449010618416L;
     private final Map<String, VStandardize> filters = new HashMap<>();
 
-    private FStandardize(VRange vRange) {
-        super(vRange);
+    private FStandardize(VarRange varRange) {
+        super(varRange);
     }
 
     @Override
     public FStandardize newInstance() {
-        return new FStandardize(vRange);
+        return new FStandardize(varRange);
     }
 
     @Override

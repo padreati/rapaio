@@ -26,9 +26,9 @@ import rapaio.core.stat.Sum;
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarType;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.experiment.ml.regression.tree.GBTRtree;
 import rapaio.ml.common.Capabilities;
@@ -71,20 +71,20 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     public static RTree newDecisionStump() {
         return new RTree()
                 .maxDepth.set(2)
-                .search.add(VType.DOUBLE, Search.NumericBinary)
-                .search.add(VType.INT, Search.NumericBinary)
-                .search.add(VType.BINARY, Search.NumericBinary)
-                .search.add(VType.NOMINAL, Search.NominalBinary)
+                .search.add(VarType.DOUBLE, Search.NumericBinary)
+                .search.add(VarType.INT, Search.NumericBinary)
+                .search.add(VarType.BINARY, Search.NumericBinary)
+                .search.add(VarType.NOMINAL, Search.NominalBinary)
                 .splitter.set(Splitter.Majority);
     }
 
     public static RTree newC45() {
         return new RTree()
                 .maxDepth.set(Integer.MAX_VALUE)
-                .search.add(VType.DOUBLE, Search.NumericBinary)
-                .search.add(VType.INT, Search.NumericBinary)
-                .search.add(VType.BINARY, Search.NumericBinary)
-                .search.add(VType.NOMINAL, Search.NominalFull)
+                .search.add(VarType.DOUBLE, Search.NumericBinary)
+                .search.add(VarType.INT, Search.NumericBinary)
+                .search.add(VarType.BINARY, Search.NumericBinary)
+                .search.add(VarType.NOMINAL, Search.NominalFull)
                 .splitter.set(Splitter.Random)
                 .minCount.set(2);
     }
@@ -92,24 +92,24 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     public static RTree newCART() {
         return new RTree()
                 .maxDepth.set(Integer.MAX_VALUE)
-                .search.add(VType.DOUBLE, Search.NumericBinary)
-                .search.add(VType.INT, Search.NumericBinary)
-                .search.add(VType.BINARY, Search.NumericBinary)
-                .search.add(VType.NOMINAL, Search.NominalBinary)
+                .search.add(VarType.DOUBLE, Search.NumericBinary)
+                .search.add(VarType.INT, Search.NumericBinary)
+                .search.add(VarType.BINARY, Search.NumericBinary)
+                .search.add(VarType.NOMINAL, Search.NominalBinary)
                 .splitter.set(Splitter.Random)
                 .minCount.set(1);
     }
 
-    private static final Map<VType, Search> DEFAULT_TEST_MAP;
+    private static final Map<VarType, Search> DEFAULT_TEST_MAP;
 
     static {
         DEFAULT_TEST_MAP = new HashMap<>();
-        DEFAULT_TEST_MAP.put(VType.DOUBLE, Search.NumericBinary);
-        DEFAULT_TEST_MAP.put(VType.INT, Search.NumericBinary);
-        DEFAULT_TEST_MAP.put(VType.LONG, Search.NumericBinary);
-        DEFAULT_TEST_MAP.put(VType.BINARY, Search.NumericBinary);
-        DEFAULT_TEST_MAP.put(VType.NOMINAL, Search.NominalFull);
-        DEFAULT_TEST_MAP.put(VType.STRING, Search.Ignore);
+        DEFAULT_TEST_MAP.put(VarType.DOUBLE, Search.NumericBinary);
+        DEFAULT_TEST_MAP.put(VarType.INT, Search.NumericBinary);
+        DEFAULT_TEST_MAP.put(VarType.LONG, Search.NumericBinary);
+        DEFAULT_TEST_MAP.put(VarType.BINARY, Search.NumericBinary);
+        DEFAULT_TEST_MAP.put(VarType.NOMINAL, Search.NominalFull);
+        DEFAULT_TEST_MAP.put(VarType.STRING, Search.Ignore);
     }
 
     public final ValueParam<Integer, RTree> minCount = new ValueParam<>(this, 1,
@@ -147,7 +147,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
             "Variable selection method used when selecting test variables at each node",
             Objects::nonNull);
 
-    public final MultiParam<VType, Search, RTree> search = new MultiParam<>(this, DEFAULT_TEST_MAP,
+    public final MultiParam<VarType, Search, RTree> search = new MultiParam<>(this, DEFAULT_TEST_MAP,
             "testMap",
             "Map with test method for each variable type",
             Objects::nonNull);
@@ -174,8 +174,8 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
         return Capabilities.builder()
                 .minInputCount(1).maxInputCount(1_000_000)
                 .minTargetCount(1).maxTargetCount(1)
-                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL))
-                .targetType(VType.DOUBLE)
+                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL))
+                .targetType(VarType.DOUBLE)
                 .allowMissingInputValues(true)
                 .allowMissingTargetValues(false)
                 .build();

@@ -22,26 +22,26 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
 public class FRemoveVars extends AbstractFFilter {
 
-    public static FRemoveVars remove(VRange vRange) {
-        return new FRemoveVars(vRange);
+    public static FRemoveVars remove(VarRange varRange) {
+        return new FRemoveVars(varRange);
     }
 
     private static final long serialVersionUID = -932131127278719356L;
 
-    private FRemoveVars(VRange vRange) {
-        super(vRange);
+    private FRemoveVars(VarRange varRange) {
+        super(varRange);
     }
 
     @Override
     public FRemoveVars newInstance() {
-        return new FRemoveVars(vRange);
+        return new FRemoveVars(varRange);
     }
 
     @Override
@@ -50,6 +50,6 @@ public class FRemoveVars extends AbstractFFilter {
 
     @Override
     public Frame apply(Frame df) {
-        return df.removeVars(VRange.of(varNames));
+        return df.removeVars(VarRange.of(varNames));
     }
 }

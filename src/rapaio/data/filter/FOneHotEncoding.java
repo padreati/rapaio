@@ -23,9 +23,9 @@ package rapaio.data.filter;
 
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
+import rapaio.data.VarRange;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,19 +48,19 @@ import java.util.Map;
 public class FOneHotEncoding extends AbstractFFilter {
 
     public static FOneHotEncoding on(String... varNames) {
-        return new FOneHotEncoding(VRange.of(varNames), false, true);
+        return new FOneHotEncoding(VarRange.of(varNames), false, true);
     }
 
     public static FOneHotEncoding on(boolean lessOne, boolean useNa, String... varNames) {
-        return new FOneHotEncoding(VRange.of(varNames), lessOne, useNa);
+        return new FOneHotEncoding(VarRange.of(varNames), lessOne, useNa);
     }
 
-    public static FOneHotEncoding on(VRange vRange) {
-        return new FOneHotEncoding(vRange, false, true);
+    public static FOneHotEncoding on(VarRange varRange) {
+        return new FOneHotEncoding(varRange, false, true);
     }
 
-    public static FOneHotEncoding on(boolean lessOne, boolean useNa, VRange vRange) {
-        return new FOneHotEncoding(vRange, lessOne, useNa);
+    public static FOneHotEncoding on(boolean lessOne, boolean useNa, VarRange varRange) {
+        return new FOneHotEncoding(varRange, lessOne, useNa);
     }
 
     private static final long serialVersionUID = 4893532203594639069L;
@@ -68,15 +68,15 @@ public class FOneHotEncoding extends AbstractFFilter {
     private final boolean lessOne;
     private final boolean useNa;
 
-    private FOneHotEncoding(VRange vRange, boolean lessOne, boolean useNa) {
-        super(vRange);
+    private FOneHotEncoding(VarRange varRange, boolean lessOne, boolean useNa) {
+        super(varRange);
         this.lessOne = lessOne;
         this.useNa = useNa;
     }
 
     @Override
     public FOneHotEncoding newInstance() {
-        return new FOneHotEncoding(vRange, lessOne, useNa);
+        return new FOneHotEncoding(varRange, lessOne, useNa);
     }
 
     @Override

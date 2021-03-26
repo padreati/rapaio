@@ -111,7 +111,7 @@ public interface Frame extends Serializable, Printable {
      * @param name variable name
      * @return variable type
      */
-    VType type(String name);
+    VarType type(String name);
 
     /**
      * Adds the given variables to the variables of the current frame to build a new frame.
@@ -137,7 +137,7 @@ public interface Frame extends Serializable, Printable {
      * @param range given variable range
      * @return new frame with only given variables
      */
-    Frame mapVars(VRange range);
+    Frame mapVars(VarRange range);
 
     /**
      * Builds a new frame which has only the variables specified in the variable range string
@@ -146,7 +146,7 @@ public interface Frame extends Serializable, Printable {
      * @return new mapped frame with only the given variables
      */
     default Frame mapVars(String... varRange) {
-        return mapVars(VRange.of(varRange));
+        return mapVars(VarRange.of(varRange));
     }
 
     /**
@@ -156,7 +156,7 @@ public interface Frame extends Serializable, Printable {
      * @return new mapped frame with only the given variables
      */
     default Frame mapVars(List<String> varNameList) {
-        return mapVars(VRange.of(varNameList));
+        return mapVars(VarRange.of(varNameList));
     }
 
     /**
@@ -165,7 +165,7 @@ public interface Frame extends Serializable, Printable {
      * @param range given variable range which will be deleted
      * @return new frame with the non-deleted variables
      */
-    default Frame removeVars(VRange range) {
+    default Frame removeVars(VarRange range) {
         Set<String> remove = new HashSet<>(range.parseVarNames(this));
         if (remove.isEmpty())
             return this;
@@ -177,7 +177,7 @@ public interface Frame extends Serializable, Printable {
             if (remove.contains(varName)) continue;
             retain[pos++] = varIndex(varName);
         }
-        return mapVars(VRange.of(retain));
+        return mapVars(VarRange.of(retain));
     }
 
     /**
@@ -187,14 +187,14 @@ public interface Frame extends Serializable, Printable {
      * @return new frame with the non-deleted variables
      */
     default Frame removeVars(String... varRange) {
-        return removeVars(VRange.of(varRange));
+        return removeVars(VarRange.of(varRange));
     }
 
     /**
      * Builds a new frame with all the variables except ones in the given var indexes
      */
     default Frame removeVars(int... varIndexes) {
-        return removeVars(VRange.of(varIndexes));
+        return removeVars(VarRange.of(varIndexes));
     }
 
     /**

@@ -23,9 +23,9 @@ package rapaio.ml.regression.ensemble;
 
 import lombok.AllArgsConstructor;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.Param;
@@ -109,8 +109,8 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
         return Capabilities.builder()
                 .minInputCount(1).maxInputCount(1_000_000)
                 .minTargetCount(1).maxTargetCount(1)
-                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL))
-                .targetType(VType.DOUBLE)
+                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL))
+                .targetType(VarType.DOUBLE)
                 .allowMissingInputValues(true)
                 .allowMissingTargetValues(false)
                 .build();

@@ -27,7 +27,6 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.util.collection.DoubleArrays;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,7 +53,7 @@ public abstract class StandardDVectorTest {
         z = generateFill(100, 10);
     }
 
-    public abstract DVector.Type type();
+    public abstract VType type();
 
     public abstract DVector generateWrap(double[] values);
 
@@ -197,16 +196,16 @@ public abstract class StandardDVectorTest {
     void copyTest() {
         var v = generateFill(10, 1);
 
-        var copy1 = v.copy(DVector.Type.BASE);
-        var copy2 = v.copy(DVector.Type.DENSE);
+        var copy1 = v.copy(VType.BASE);
+        var copy2 = v.copy(VType.DENSE);
 
         assertTrue(v.deepEquals(copy1));
         assertTrue(v.deepEquals(copy2));
 
-        assertEquals(DVector.Type.BASE, copy1.type());
-        assertEquals(DVector.Type.DENSE, copy2.type());
+        assertEquals(VType.BASE, copy1.type());
+        assertEquals(VType.DENSE, copy2.type());
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> v.copy(DVector.Type.VIEW));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> v.copy(VType.VIEW));
         assertNotNull(ex);
         assertEquals("DVType.VIEW cannot be used to create a copy.", ex.getMessage());
     }
@@ -224,7 +223,7 @@ public abstract class StandardDVectorTest {
     void asMatrixTest() {
 
         var v1 = generateWrap(new double[]{1, 3, 9});
-        var m1 = DMatrixStripe.wrap(new double[][]{{1}, {3}, {9}});
+        var m1 = DMatrix.wrap(new double[][]{{1}, {3}, {9}});
 
         assertTrue(m1.deepEquals(v1.asMatrix()));
     }

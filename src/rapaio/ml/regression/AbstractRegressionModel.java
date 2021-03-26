@@ -22,10 +22,10 @@
 package rapaio.ml.regression;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
@@ -89,9 +89,9 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
 
     protected boolean hasLearned;
     protected String[] inputNames;
-    protected VType[] inputTypes;
+    protected VarType[] inputTypes;
     protected String[] targetNames;
-    protected VType[] targetTypes;
+    protected VarType[] targetTypes;
 
     @Override
     public String fullName() {
@@ -109,12 +109,12 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
     }
 
     @Override
-    public VType[] inputTypes() {
+    public VarType[] inputTypes() {
         return inputTypes;
     }
 
     @Override
-    public VType[] targetTypes() {
+    public VarType[] targetTypes() {
         return targetTypes;
     }
 
@@ -139,14 +139,14 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
     protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
         // we extract target and input names and types
 
-        List<String> targets = VRange.of(targetVarNames).parseVarNames(df);
+        List<String> targets = VarRange.of(targetVarNames).parseVarNames(df);
         this.targetNames = targets.toArray(new String[0]);
-        this.targetTypes = targets.stream().map(df::type).toArray(VType[]::new);
+        this.targetTypes = targets.stream().map(df::type).toArray(VarType[]::new);
 
         HashSet<String> targetSet = new HashSet<>(targets);
         List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
         this.inputNames = inputs.toArray(new String[0]);
-        this.inputTypes = inputs.stream().map(df::type).toArray(VType[]::new);
+        this.inputTypes = inputs.stream().map(df::type).toArray(VarType[]::new);
 
         // we then check for compatibilities
 

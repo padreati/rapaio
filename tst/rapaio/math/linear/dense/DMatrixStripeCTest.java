@@ -23,12 +23,12 @@ package rapaio.math.linear.dense;
 
 import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.SOrder;
+import rapaio.math.linear.MType;
 import rapaio.math.linear.StandardDMatrixTest;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,13 +36,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DMatrixStripeCTest extends StandardDMatrixTest {
 
     @Override
-    protected SOrder order() {
-        return SOrder.C;
-    }
-
-    @Override
     protected DMatrix generateSequential(int n, int m) {
-        DMatrixStripe matrix = DMatrixStripe.empty(SOrder.C, n, m);
+        DMatrix matrix = DMatrix.empty(MType.CSTRIPE, n, m);
         int seq = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
@@ -54,17 +49,17 @@ public class DMatrixStripeCTest extends StandardDMatrixTest {
 
     @Override
     protected DMatrix generateIdentity(int n) {
-        return DMatrixStripe.identity(SOrder.C, n);
+        return DMatrix.identity(MType.CSTRIPE, n);
     }
 
     @Override
     protected DMatrix generateFill(int n, int m, double fill) {
-        return DMatrixStripe.fill(SOrder.C, n, m, fill);
+        return DMatrix.fill(MType.CSTRIPE, n, m, fill);
     }
 
     @Override
     protected DMatrix generateCopy(double[][] values) {
-        return DMatrixStripe.copy(SOrder.C, values);
+        return DMatrix.copy(MType.CSTRIPE, true, values);
     }
 
     @Override
@@ -75,7 +70,7 @@ public class DMatrixStripeCTest extends StandardDMatrixTest {
     @Test
     void buildersTest() {
 
-        DMatrix i3 = DMatrixStripe.identity(SOrder.C, 3);
+        DMatrix i3 = DMatrix.identity(MType.CSTRIPE, 3);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (i == j) {
@@ -86,7 +81,7 @@ public class DMatrixStripeCTest extends StandardDMatrixTest {
             }
         }
 
-        DMatrix empty = DMatrixStripe.empty(SOrder.C, 3, 4);
+        DMatrix empty = DMatrix.empty(MType.CSTRIPE, 3, 4);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(0, empty.get(i, j), TOL);
@@ -94,29 +89,29 @@ public class DMatrixStripeCTest extends StandardDMatrixTest {
         }
 
 
-        DMatrix fill = DMatrixStripe.fill(SOrder.C, 3, 4, 12);
+        DMatrix fill = DMatrix.fill(MType.CSTRIPE, 3, 4, 12);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(12, fill.get(i, j), TOL);
             }
         }
 
-        DMatrix fillFun = DMatrixStripe.fill(SOrder.C, 3, 4, (i, j) -> Math.sqrt(i * j));
+        DMatrix fillFun = DMatrix.fill(MType.CSTRIPE, 3, 4, (i, j) -> Math.sqrt(i * j));
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(Math.sqrt(i * j), fillFun.get(i, j), TOL);
             }
         }
 
-        Frame iris = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VType.DOUBLE));
-        DMatrix copy1 = DMatrixStripe.copy(SOrder.C, iris);
+        Frame iris = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
+        DMatrix copy1 = DMatrix.copy(MType.CSTRIPE, iris);
         for (int i = 0; i < iris.varCount(); i++) {
             for (int j = 0; j < iris.rowCount(); j++) {
                 assertEquals(iris.getDouble(j, i), copy1.get(j, i), TOL);
             }
         }
 
-        DMatrix copy2 = DMatrixStripe.copy(SOrder.C, iris.varStream().toArray(Var[]::new));
+        DMatrix copy2 = DMatrix.copy(MType.CSTRIPE, iris.varStream().toArray(Var[]::new));
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
                 assertEquals(copy1.get(i, j), copy2.get(i, j), TOL);
@@ -128,10 +123,10 @@ public class DMatrixStripeCTest extends StandardDMatrixTest {
                 5, 6, 7, 8,
                 9, 10, 11, 12
         };
-        DMatrix copy3 = DMatrixStripe.copy(SOrder.C, 3, 4, values);
+        DMatrix copy3 = DMatrix.copy(MType.CSTRIPE, true, 3, 4, values);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
-                assertEquals(values[j * 3 + i], copy3.get(i, j), TOL);
+                assertEquals(values[i * 4 + j], copy3.get(i, j), TOL);
             }
         }
 
@@ -140,17 +135,17 @@ public class DMatrixStripeCTest extends StandardDMatrixTest {
                 {5, 6, 7, 8},
                 {9, 10, 11, 12}
         };
-        DMatrix copy4 = DMatrixStripe.copy(SOrder.C, m);
+        DMatrix copy4 = DMatrix.copy(MType.CSTRIPE, true, m);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(m[i][j], copy4.get(i, j), TOL);
             }
         }
 
-        DMatrix copy5 = DMatrixStripe.copy(SOrder.C, m, 1, 3, 1, 4);
-        assertTrue(copy5.deepEquals(DMatrixStripe.wrap(new double[][]{{6, 7, 8}, {10, 11, 12}})));
+        DMatrix copy5 = DMatrix.copy(MType.CSTRIPE, true, 1, 3, 1, 4, m);
+        assertTrue(copy5.deepEquals(DMatrix.wrap(MType.CSTRIPE, true, new double[][]{{6, 7, 8}, {10, 11, 12}})));
 
-        DMatrix copy6 = DMatrixStripe.random(SOrder.C, 2, 2);
+        DMatrix copy6 = DMatrix.random(MType.CSTRIPE, 2, 2);
         assertEquals(4, copy6.valueStream().filter(Double::isFinite).filter(v -> v != 0).count());
     }
 }

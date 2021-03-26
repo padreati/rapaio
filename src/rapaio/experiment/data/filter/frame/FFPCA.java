@@ -22,7 +22,7 @@
 package rapaio.experiment.data.filter.frame;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 import rapaio.data.filter.AbstractFFilter;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
@@ -37,14 +37,14 @@ public class FFPCA extends AbstractFFilter {
     final BiFunction<DVector, DMatrix, Integer> kFun;
     private PCA pca;
 
-    public FFPCA(BiFunction<DVector, DMatrix, Integer> kFun, VRange vRange) {
-        super(vRange);
+    public FFPCA(BiFunction<DVector, DMatrix, Integer> kFun, VarRange varRange) {
+        super(varRange);
         this.kFun = kFun;
     }
 
     @Override
     public FFPCA newInstance() {
-        return new FFPCA(kFun, vRange);
+        return new FFPCA(kFun, varRange);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class FFPCA extends AbstractFFilter {
 
     @Override
     public Frame apply(Frame df) {
-        Frame rest = df.removeVars(VRange.of(varNames));
+        Frame rest = df.removeVars(VarRange.of(varNames));
         int k = kFun.apply(pca.getEigenValues(), pca.getEigenVectors());
         Frame trans = pca.transform(df.mapVars(varNames), k);
         return rest.bindVars(trans);

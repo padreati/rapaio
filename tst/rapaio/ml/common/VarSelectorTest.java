@@ -30,7 +30,6 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,7 +78,7 @@ public class VarSelectorTest {
                 counter.put(varName, counter.get(varName) + 1);
             }
         }
-        final DVector freq = DVectorDense.fill(counter.size(), 0);
+        final DVector freq = DVector.fill(counter.size(), 0);
         int pos = 0;
         for (int value : counter.values()) {
             freq.set(pos++, value);
@@ -104,7 +103,7 @@ public class VarSelectorTest {
                 counter.put(varName, counter.get(varName) + 1);
             }
         }
-        final DVector freq = DVectorDense.fill(counter.size(), 0);
+        final DVector freq = DVector.fill(counter.size(), 0);
         int pos = 0;
         for (int value : counter.values()) {
             freq.set(pos++, value);

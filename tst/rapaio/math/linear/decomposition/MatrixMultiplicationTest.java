@@ -27,7 +27,6 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 import java.util.Map;
 
@@ -47,8 +46,8 @@ public class MatrixMultiplicationTest {
     void basicTestMM() {
 
         Normal normal = Normal.std();
-        DMatrix A = DMatrixStripe.fill(100, 100, (r, c) -> normal.sampleNext());
-        DMatrix B = DMatrixStripe.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix A = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix B = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
 
         DMatrix c1 = A.dot(B);
         DMatrix c2 = MatrixMultiplication.ikjAlgorithm(A, B);
@@ -61,8 +60,8 @@ public class MatrixMultiplicationTest {
     void testDifferentMethods() {
 
         Normal normal = Normal.std();
-        DMatrix A = DMatrixStripe.fill(100, 100, (r, c) -> normal.sampleNext());
-        DMatrix B = DMatrixStripe.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix A = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix B = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
 
         DMatrix c = A.dot(B);
 

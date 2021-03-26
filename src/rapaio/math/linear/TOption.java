@@ -26,7 +26,5 @@ package rapaio.math.linear;
  */
 public interface TOption<T> {
 
-    static TOptionSet.TOptionResult copy() {
-        return TOptionSet.TOptionResult.COPY;
-    }
+    void bind(TOptions options);
 }

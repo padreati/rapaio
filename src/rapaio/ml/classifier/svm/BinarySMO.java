@@ -24,8 +24,8 @@ package rapaio.ml.classifier.svm;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.math.MTools;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
@@ -147,10 +147,10 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
     @Override
     public Capabilities capabilities() {
         return Capabilities.builder()
-                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.NOMINAL, VType.DOUBLE))
+                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE))
                 .minInputCount(1).maxInputCount(100_000)
                 .allowMissingInputValues(false)
-                .targetType(VType.NOMINAL)
+                .targetType(VarType.NOMINAL)
                 .minTargetCount(1).maxTargetCount(1)
                 .allowMissingTargetValues(false)
                 .build();

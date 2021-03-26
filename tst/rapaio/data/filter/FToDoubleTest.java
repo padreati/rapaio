@@ -24,9 +24,9 @@ package rapaio.data.filter;
 import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
+import rapaio.data.VarRange;
 import rapaio.util.IntComparator;
 
 import java.util.ArrayList;
@@ -52,12 +52,12 @@ public class FToDoubleTest {
         }
         Frame df = SolidFrame.byVars(v);
 
-        Frame f1 = df.fapply(FToDouble.on(VRange.all()));
+        Frame f1 = df.fapply(FToDouble.on(VarRange.all()));
         for (int i = 0; i < v.size(); i++) {
             double value = Math.pow(i, 1.5);
             assertEquals(value, f1.getDouble(i, 0), 1e-10);
         }
-        Frame f2 = df.fapply(FToDouble.on(VRange.byName(name -> false)).newInstance());
+        Frame f2 = df.fapply(FToDouble.on(VarRange.byName(name -> false)).newInstance());
         assertTrue(f2.deepEquals(df));
     }
 

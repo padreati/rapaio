@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,11 +26,11 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,17 +49,17 @@ public class FJitterTest {
                 VarNominal.from(100, r -> String.valueOf(r % 10)).name("nom")
         );
 
-        Frame df1 = a.copy().fapply(FJitter.on(VRange.onlyTypes(VType.DOUBLE)));
+        Frame df1 = a.copy().fapply(FJitter.on(VarRange.onlyTypes(VarType.DOUBLE)));
 
-        assertTrue(a.removeVars(VRange.of("0~1")).deepEquals(df1.removeVars(VRange.of("0~1"))));
+        assertTrue(a.removeVars(VarRange.of("0~1")).deepEquals(df1.removeVars(VarRange.of("0~1"))));
         assertFalse(a.mapVars("0~1").deepEquals(df1.mapVars("0~1")));
 
-        FFilter filter = FJitter.on(VRange.onlyTypes(VType.DOUBLE)).newInstance();
-        filter.fit(a.removeVars(VRange.of("num1")));
+        FFilter filter = FJitter.on(VarRange.onlyTypes(VarType.DOUBLE)).newInstance();
+        filter.fit(a.removeVars(VarRange.of("num1")));
 
         Frame df2 = filter.apply(a.copy());
 
-        assertTrue(a.removeVars(VRange.of("num2")).deepEquals(df2.removeVars(VRange.of("num2"))));
+        assertTrue(a.removeVars(VarRange.of("num2")).deepEquals(df2.removeVars(VarRange.of("num2"))));
         assertFalse(a.mapVars("num2").deepEquals(df2.mapVars("num2")));
     }
 
@@ -71,16 +68,16 @@ public class FJitterTest {
         Frame df = SolidFrame.byVars(VarDouble.from(100, RandomSource::nextDouble).name("x"));
 
         RandomSource.setSeed(111);
-        Frame df1 = df.copy().fapply(FJitter.on(VRange.all()));
+        Frame df1 = df.copy().fapply(FJitter.on(VarRange.all()));
         RandomSource.setSeed(111);
-        Frame df2 = df.copy().fapply(FJitter.on(0.1, VRange.all()));
+        Frame df2 = df.copy().fapply(FJitter.on(0.1, VarRange.all()));
         RandomSource.setSeed(111);
-        Frame df3 = df.copy().fapply(FJitter.on(Normal.of(0.0, 0.1), VRange.all()));
+        Frame df3 = df.copy().fapply(FJitter.on(Normal.of(0.0, 0.1), VarRange.all()));
 
         assertTrue(df1.deepEquals(df2));
         assertTrue(df2.deepEquals(df3));
 
-        FFilter ff = FJitter.on(0.1, VRange.all());
+        FFilter ff = FJitter.on(0.1, VarRange.all());
         ff.fit(df);
         assertArrayEquals(new String[]{"x"}, ff.varNames());
     }

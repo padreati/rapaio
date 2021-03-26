@@ -28,7 +28,6 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,7 +50,7 @@ public class QRDecompositionTest {
 
             int off = RandomSource.nextInt(n);
 
-            DMatrix a = DMatrixStripe.random(n + off, n);
+            DMatrix a = DMatrix.random(n + off, n);
             QRDecomposition qr = QRDecomposition.from(a);
 
             DMatrix q = qr.getQ();
@@ -59,7 +58,7 @@ public class QRDecompositionTest {
 
             // test various properties of the decomposition
 
-            DMatrix I = DMatrixStripe.identity(n);
+            DMatrix I = DMatrix.identity(n);
             assertTrue(I.deepEquals(q.t().dot(q), TOL));
 
             for (int i = 0; i < n; i++) {
@@ -89,11 +88,11 @@ public class QRDecompositionTest {
 
             // generate a random matrix
 
-            DMatrix a = DMatrixStripe.random(n, n);
+            DMatrix a = DMatrix.random(n, n);
             QRDecomposition qr = QRDecomposition.from(a);
 
             DMatrix h = qr.getH();
-            DMatrix p = DMatrixStripe.identity(10).sub(h.mult(2).dot(h.t()));
+            DMatrix p = DMatrix.identity(10).sub(h.mult(2).dot(h.t()));
 
             // p is hermitian
             assertTrue(p.deepEquals(p.t(), TOL));
@@ -116,8 +115,8 @@ public class QRDecompositionTest {
             // and take some samples
 
             int rows = 8_000;
-            DMatrix a = DMatrixStripe.empty(rows, 3);
-            DMatrix b = DMatrixStripe.empty(rows, 1);
+            DMatrix a = DMatrix.empty(rows, 3);
+            DMatrix b = DMatrix.empty(rows, 1);
 
             for (int i = 0; i < rows; i++) {
                 double x1 = unif.sampleNext();
@@ -146,11 +145,11 @@ public class QRDecompositionTest {
 
     @Test
     void testIncompatible() {
-        assertThrows(IllegalArgumentException.class, () -> QRDecomposition.from(DMatrixStripe.random(10, 10)).solve(DMatrixStripe.random(12, 1)));
+        assertThrows(IllegalArgumentException.class, () -> QRDecomposition.from(DMatrix.random(10, 10)).solve(DMatrix.random(12, 1)));
     }
 
     @Test
     void testSingular() {
-        assertThrows(RuntimeException.class, () -> QRDecomposition.from(DMatrixStripe.fill(10, 10, 2)).solve(DMatrixStripe.random(10, 1)));
+        assertThrows(RuntimeException.class, () -> QRDecomposition.from(DMatrix.fill(10, 10, 2)).solve(DMatrix.random(10, 1)));
     }
 }

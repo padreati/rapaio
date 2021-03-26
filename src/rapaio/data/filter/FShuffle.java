@@ -24,7 +24,7 @@ package rapaio.data.filter;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 import rapaio.util.collection.IntArrays;
 
 import java.util.stream.IntStream;
@@ -41,7 +41,7 @@ public class FShuffle extends AbstractFFilter {
     private static final long serialVersionUID = 3868876807602578584L;
 
     private FShuffle() {
-        super(VRange.all());
+        super(VarRange.all());
     }
 
     @Override

@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -47,12 +44,12 @@ public class FrameTest {
                 VarNominal.copy("x", "y").name("y"),
                 VarDouble.wrap(1, 2).name("z")
         );
-        Frame df1 = df.removeVars(VRange.of("x,z"));
+        Frame df1 = df.removeVars(VarRange.of("x,z"));
 
         assertEquals(1, df1.varCount());
         assertEquals("y", df1.varNames()[0]);
 
-        df1 = df.removeVars(VRange.of("y"));
+        df1 = df.removeVars(VarRange.of("y"));
         assertEquals(2, df1.varCount());
         assertEquals("x", df1.varNames()[0]);
         assertEquals("z", df1.varNames()[1]);
@@ -62,7 +59,7 @@ public class FrameTest {
         assertEquals(3, df1.varCount());
         assertEquals("b", df1.getLabel(0, "x"));
 
-        Frame copy = df.removeVars(VRange.of(new ArrayList<>()));
+        Frame copy = df.removeVars(VarRange.of(new ArrayList<>()));
         assertTrue(copy.deepEquals(df));
     }
 
@@ -127,7 +124,7 @@ public class FrameTest {
 
         Frame map3 = df.removeVars("z");
         Frame map4 = df.removeVars(2);
-        Frame map5 = df.removeVars(VRange.of(2));
+        Frame map5 = df.removeVars(VarRange.of(2));
 
         assertTrue(map1.deepEquals(map3));
         assertTrue(map1.deepEquals(map4));

@@ -22,26 +22,13 @@
 package rapaio.math.linear;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/21.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/21.
  */
-public
-enum SOrder {
-    R(true, false),
-    C(false, true);
-
-    final boolean rowMajor;
-    final boolean colMajor;
-
-    SOrder(boolean rowMajor, boolean colMajor) {
-        this.rowMajor = rowMajor;
-        this.colMajor = colMajor;
-    }
-
-    public boolean isRowMajor() {
-        return rowMajor;
-    }
-
-    public boolean isColMajor() {
-        return colMajor;
-    }
+public enum MType {
+    BASE,
+    RSTRIPE,
+    CSTRIPE,
+    RDENSE,
+    CDENSE,
+    MAP
 }

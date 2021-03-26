@@ -24,36 +24,36 @@ package rapaio.data.filter;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/10/14.
  */
 public class FJitter extends AbstractFFilter {
 
-    public static FJitter on(VRange vRange) {
-        return new FJitter(Normal.of(0, 0.1), vRange);
+    public static FJitter on(VarRange varRange) {
+        return new FJitter(Normal.of(0, 0.1), varRange);
     }
 
-    public static FJitter on(double sd, VRange vRange) {
-        return new FJitter(Normal.of(0, sd), vRange);
+    public static FJitter on(double sd, VarRange varRange) {
+        return new FJitter(Normal.of(0, sd), varRange);
     }
 
-    public static FJitter on(Distribution d, VRange vRange) {
-        return new FJitter(d, vRange);
+    public static FJitter on(Distribution d, VarRange varRange) {
+        return new FJitter(d, varRange);
     }
 
     private static final long serialVersionUID = 33367007274996702L;
     private final Distribution d;
 
-    private FJitter(Distribution d, VRange vRange) {
-        super(vRange);
+    private FJitter(Distribution d, VarRange varRange) {
+        super(varRange);
         this.d = d;
     }
 
     @Override
     public FJitter newInstance() {
-        return new FJitter(d, vRange);
+        return new FJitter(d, varRange);
     }
 
     @Override

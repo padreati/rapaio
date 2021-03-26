@@ -22,23 +22,23 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/22/16.
  */
 public class FFillMissing extends AbstractFFilter {
 
-    public static FFillMissing onDouble(double fill, VRange vRange) {
-        return new FFillMissing(vRange, Type.DOUBLE, fill, 0, null);
+    public static FFillMissing onDouble(double fill, VarRange varRange) {
+        return new FFillMissing(varRange, Type.DOUBLE, fill, 0, null);
     }
 
-    public static FFillMissing onInt(int fill, VRange vRange) {
-        return new FFillMissing(vRange, Type.INT, Double.NaN, fill, null);
+    public static FFillMissing onInt(int fill, VarRange varRange) {
+        return new FFillMissing(varRange, Type.INT, Double.NaN, fill, null);
     }
 
-    public static FFillMissing onLabel(String fill, VRange vRange) {
-        return new FFillMissing(vRange, Type.STRING, Double.NaN, 0, fill);
+    public static FFillMissing onLabel(String fill, VarRange varRange) {
+        return new FFillMissing(varRange, Type.STRING, Double.NaN, 0, fill);
     }
 
     private static final long serialVersionUID = 281130325474491898L;
@@ -47,8 +47,8 @@ public class FFillMissing extends AbstractFFilter {
     private final int intFill;
     private final String stringFill;
 
-    private FFillMissing(VRange vRange, Type type, double doubleFill, int intFill, String stringFill) {
-        super(vRange);
+    private FFillMissing(VarRange varRange, Type type, double doubleFill, int intFill, String stringFill) {
+        super(varRange);
         this.type = type;
         this.doubleFill = doubleFill;
         this.intFill = intFill;
@@ -57,7 +57,7 @@ public class FFillMissing extends AbstractFFilter {
 
     @Override
     public FFillMissing newInstance() {
-        return new FFillMissing(vRange, type, doubleFill, intFill, stringFill);
+        return new FFillMissing(varRange, type, doubleFill, intFill, stringFill);
     }
 
     @Override

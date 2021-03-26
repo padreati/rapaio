@@ -25,7 +25,6 @@ import rapaio.data.VarDouble;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.optimization.Minimize;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
@@ -89,7 +88,7 @@ public class CoordinateDescentMinimize extends ParamSet<CoordinateDescentMinimiz
                     index = j;
                 }
             }
-            DVector deltaX = DVectorDense.fill(d1fx.size(), 0);
+            DVector deltaX = DVector.fill(d1fx.size(), 0);
             deltaX.set(index, -signum(d1fx.get(index)));
 
             if (abs(deltaX.norm(2)) < tol.get()) {

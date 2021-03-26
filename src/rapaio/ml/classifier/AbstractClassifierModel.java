@@ -22,10 +22,10 @@
 package rapaio.ml.classifier;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
@@ -115,9 +115,9 @@ public abstract class AbstractClassifierModel<M extends AbstractClassifierModel<
 
     protected boolean learned = false;
     protected String[] inputNames;
-    protected VType[] inputTypes;
+    protected VarType[] inputTypes;
     protected String[] targetNames;
-    protected VType[] targetTypes;
+    protected VarType[] targetTypes;
     protected Map<String, List<String>> targetLevels;
 
     @Override
@@ -131,7 +131,7 @@ public abstract class AbstractClassifierModel<M extends AbstractClassifierModel<
     }
 
     @Override
-    public VType[] inputTypes() {
+    public VarType[] inputTypes() {
         return inputTypes;
     }
 
@@ -141,7 +141,7 @@ public abstract class AbstractClassifierModel<M extends AbstractClassifierModel<
     }
 
     @Override
-    public VType[] targetTypes() {
+    public VarType[] targetTypes() {
         return targetTypes;
     }
 
@@ -177,9 +177,9 @@ public abstract class AbstractClassifierModel<M extends AbstractClassifierModel<
      * @param targetVars target variable names
      */
     protected FitSetup prepareFit(Frame df, final Var weights, final String... targetVars) {
-        List<String> targets = VRange.of(targetVars).parseVarNames(df);
+        List<String> targets = VarRange.of(targetVars).parseVarNames(df);
         this.targetNames = targets.toArray(new String[0]);
-        this.targetTypes = targets.stream().map(name -> df.rvar(name).type()).toArray(VType[]::new);
+        this.targetTypes = targets.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
         this.targetLevels = new HashMap<>();
         this.targetLevels.put(firstTargetName(), df.rvar(firstTargetName()).levels());
 
@@ -187,7 +187,7 @@ public abstract class AbstractClassifierModel<M extends AbstractClassifierModel<
 
         List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
         this.inputNames = inputs.toArray(new String[0]);
-        this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VType[]::new);
+        this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
 
         capabilities().checkAtLearnPhase(df, weights, targetVars);
         return FitSetup.valueOf(df, weights, targetVars);

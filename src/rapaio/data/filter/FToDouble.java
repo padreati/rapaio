@@ -23,8 +23,8 @@ package rapaio.data.filter;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -38,19 +38,19 @@ import java.util.stream.Collectors;
  */
 public class FToDouble extends AbstractFFilter {
 
-    public static FToDouble on(VRange vRange) {
-        return new FToDouble(vRange);
+    public static FToDouble on(VarRange varRange) {
+        return new FToDouble(varRange);
     }
 
     private static final long serialVersionUID = -6745637493367588453L;
 
-    private FToDouble(VRange vRange) {
-        super(vRange);
+    private FToDouble(VarRange varRange) {
+        super(varRange);
     }
 
     @Override
     public FToDouble newInstance() {
-        return new FToDouble(vRange);
+        return new FToDouble(varRange);
     }
 
     @Override

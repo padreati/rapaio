@@ -24,8 +24,8 @@ package rapaio.ml.regression.simple;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
@@ -74,8 +74,8 @@ public class RandomValueRegression extends AbstractRegressionModel<RandomValueRe
         return Capabilities.builder()
                 .minInputCount(0).maxInputCount(1_000_000)
                 .minTargetCount(1).maxTargetCount(1)
-                .inputTypes(Arrays.asList(VType.DOUBLE, VType.BINARY, VType.INT, VType.NOMINAL, VType.LONG, VType.STRING))
-                .targetType(VType.DOUBLE)
+                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.STRING))
+                .targetType(VarType.DOUBLE)
                 .allowMissingInputValues(true)
                 .allowMissingTargetValues(true)
                 .build();

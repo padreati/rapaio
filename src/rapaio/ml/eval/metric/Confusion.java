@@ -21,10 +21,9 @@
 
 package rapaio.ml.eval.metric;
 
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -48,7 +47,7 @@ public final class Confusion implements Printable {
     }
 
     private static final String TEXT_AC_PR = "Ac\\Pr";
-    private static final Set<VType> validTypes = Set.of(VType.NOMINAL, VType.BINARY);
+    private static final Set<VarType> validTypes = Set.of(VarType.NOMINAL, VarType.BINARY);
 
     private final Var actual;
     private final Var predict;
@@ -81,8 +80,8 @@ public final class Confusion implements Printable {
         this.predict = predict;
         validate();
         this.factors = actual.levels();
-        this.cmFrequency = DMatrixStripe.empty(factors.size() - 1, factors.size() - 1);
-        this.cmProbability = DMatrixStripe.empty(factors.size() - 1, factors.size() - 1);
+        this.cmFrequency = DMatrix.empty(factors.size() - 1, factors.size() - 1);
+        this.cmProbability = DMatrix.empty(factors.size() - 1, factors.size() - 1);
         this.binary = actual.levels().size() == 3;
         compute();
     }
@@ -111,8 +110,8 @@ public final class Confusion implements Printable {
     }
 
     private void compute() {
-        int offsetActual = (actual.type() == VType.NOMINAL) ? 1 : 0;
-        int offsetPredict = (actual.type() == VType.NOMINAL) ? 1 : 0;
+        int offsetActual = (actual.type() == VarType.NOMINAL) ? 1 : 0;
+        int offsetPredict = (actual.type() == VarType.NOMINAL) ? 1 : 0;
         for (int i = 0; i < actual.size(); i++) {
             if (!actual.isMissing(i) && !predict.isMissing(i)) {
                 completeCases++;

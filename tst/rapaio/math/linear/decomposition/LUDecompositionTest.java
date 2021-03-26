@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,7 +40,7 @@ public class LUDecompositionTest {
     @Test
     void testBasicGaussian() {
 
-        DMatrix a = DMatrixStripe.random(100, 100);
+        DMatrix a = DMatrix.random(100, 100);
         LUDecomposition lu = LUDecomposition.from(a, LUDecomposition.Method.GAUSSIAN_ELIMINATION);
         DMatrix a1 = a.mapRows(lu.getPivot());
         DMatrix a2 = lu.getL().dot(lu.getU());
@@ -50,7 +49,7 @@ public class LUDecompositionTest {
 
     @Test
     void testBasicCrout() {
-        DMatrix a = DMatrixStripe.random(100, 100);
+        DMatrix a = DMatrix.random(100, 100);
         LUDecomposition lu = LUDecomposition.from(a, LUDecomposition.Method.CROUT);
         DMatrix a1 = a.mapRows(lu.getPivot());
         DMatrix a2 = lu.getL().dot(lu.getU());
@@ -59,24 +58,24 @@ public class LUDecompositionTest {
 
     @Test
     void testIsSingular() {
-        assertFalse(LUDecomposition.from(DMatrixStripe.empty(10, 10)).isNonSingular());
-        assertTrue(LUDecomposition.from(DMatrixStripe.random(10, 10)).isNonSingular());
+        assertFalse(LUDecomposition.from(DMatrix.empty(10, 10)).isNonSingular());
+        assertTrue(LUDecomposition.from(DMatrix.random(10, 10)).isNonSingular());
     }
 
     @Test
     void solveTest() {
 
-        DMatrix a1 = DMatrixStripe.wrap(new double[][]{
+        DMatrix a1 = DMatrix.wrap(new double[][]{
                 {3, 2, -1},
                 {2, -2, 4},
                 {-1, 0.5, -1}
         });
-        DMatrix b1 = DMatrixStripe.wrap(new double[][]{
+        DMatrix b1 = DMatrix.wrap(new double[][]{
                 {1},
                 {-2},
                 {0}
         });
-        DMatrix x1 = DMatrixStripe.wrap(new double[][]{
+        DMatrix x1 = DMatrix.wrap(new double[][]{
                 {1},
                 {-2},
                 {-2}
@@ -84,15 +83,15 @@ public class LUDecompositionTest {
         assertTrue(x1.deepEquals(LUDecomposition.from(a1).solve(b1), TOL));
 
 
-        DMatrix a2 = DMatrixStripe.wrap(new double[][]{
+        DMatrix a2 = DMatrix.wrap(new double[][]{
                 {2, 3},
                 {4, 9},
         });
-        DMatrix b2 = DMatrixStripe.wrap(new double[][]{
+        DMatrix b2 = DMatrix.wrap(new double[][]{
                 {6},
                 {15},
         });
-        DMatrix x2 = DMatrixStripe.wrap(new double[][]{
+        DMatrix x2 = DMatrix.wrap(new double[][]{
                 {1.5},
                 {1},
         });
@@ -101,7 +100,7 @@ public class LUDecompositionTest {
 
     @Test
     void determinantTest() {
-        DMatrix a = DMatrixStripe.wrap(new double[][]{
+        DMatrix a = DMatrix.wrap(new double[][]{
                 {1, 2},
                 {3, 4}
         });
@@ -110,16 +109,16 @@ public class LUDecompositionTest {
 
     @Test
     void determinantTestEx() {
-        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(DMatrixStripe.random(4, 3)).det());
+        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(DMatrix.random(4, 3)).det());
     }
 
     @Test
     void builderTestEx() {
-        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(DMatrixStripe.random(2, 3)).det());
+        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(DMatrix.random(2, 3)).det());
     }
 
     @Test
     void builderTestMethodEx() {
-        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(DMatrixStripe.random(2, 3), LUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
+        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(DMatrix.random(2, 3), LUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
     }
 }

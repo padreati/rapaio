@@ -23,7 +23,7 @@ package rapaio.math.linear.dense;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.SOrder;
+import rapaio.math.linear.MType;
 import rapaio.math.linear.base.AbstractDMatrix;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -60,8 +60,8 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public SOrder order() {
-        return ref.order();
+    public MType type() {
+        return MType.MAP;
     }
 
     @Override
@@ -90,8 +90,8 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DVectorDense mapCol(int i) {
-        DVectorDense v = DVectorDense.zeros(rowIndexes.length);
+    public DVector mapCol(int i) {
+        DVector v = DVector.zeros(rowIndexes.length);
         for (int j = 0; j < rowIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[j], colIndexes[i]));
         }
@@ -100,7 +100,7 @@ public class DMatrixMap extends AbstractDMatrix {
 
     @Override
     public DVector mapRow(int i) {
-        DVectorDense v = DVectorDense.zeros(colIndexes.length);
+        DVector v = DVector.zeros(colIndexes.length);
         for (int j = 0; j < colIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[i], colIndexes[j]));
         }
@@ -118,8 +118,8 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrixStripe t() {
-        DMatrixStripe copy = DMatrixStripe.empty(colIndexes.length, rowIndexes.length);
+    public DMatrix t() {
+        DMatrix copy = DMatrix.empty(colIndexes.length, rowIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 copy.set(j, i, ref.get(rowIndexes[i], colIndexes[j]));
@@ -137,8 +137,8 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrixStripe copy() {
-        DMatrixStripe copy = DMatrixStripe.empty(rowIndexes.length, colIndexes.length);
+    public DMatrix copy() {
+        DMatrix copy = DMatrix.empty(rowIndexes.length, colIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 copy.set(i, j, ref.get(rowIndexes[i], colIndexes[j]));

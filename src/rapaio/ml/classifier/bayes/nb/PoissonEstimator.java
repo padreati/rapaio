@@ -24,8 +24,8 @@ package rapaio.ml.classifier.bayes.nb;
 import rapaio.core.distributions.Poisson;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
 import rapaio.printer.Format;
 
 import java.util.Arrays;
@@ -57,8 +57,8 @@ public class PoissonEstimator extends AbstractEstimator {
         return Arrays.stream(testNames).map(PoissonEstimator::new).collect(Collectors.toList());
     }
 
-    public static List<PoissonEstimator> forRange(Frame df, VRange vRange) {
-        return vRange.parseVarNames(df).stream().map(PoissonEstimator::new).collect(Collectors.toList());
+    public static List<PoissonEstimator> forRange(Frame df, VarRange varRange) {
+        return varRange.parseVarNames(df).stream().map(PoissonEstimator::new).collect(Collectors.toList());
     }
 
     private static final long serialVersionUID = -75942136113239906L;

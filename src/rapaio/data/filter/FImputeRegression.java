@@ -22,8 +22,8 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 
@@ -32,7 +32,7 @@ import rapaio.ml.regression.RegressionResult;
  */
 public class FImputeRegression extends AbstractFFilter {
 
-    public static FImputeRegression of(RegressionModel model, VRange inputVars, String targetName) {
+    public static FImputeRegression of(RegressionModel model, VarRange inputVars, String targetName) {
         return new FImputeRegression(model, inputVars, targetName);
     }
 
@@ -41,7 +41,7 @@ public class FImputeRegression extends AbstractFFilter {
     private final RegressionModel model;
     private final String targetName;
 
-    private FImputeRegression(RegressionModel model, VRange inputVars, String targetName) {
+    private FImputeRegression(RegressionModel model, VarRange inputVars, String targetName) {
         super(inputVars);
         this.model = model;
         this.targetName = targetName;
@@ -66,6 +66,6 @@ public class FImputeRegression extends AbstractFFilter {
 
     @Override
     public FImputeRegression newInstance() {
-        return new FImputeRegression(model.newInstance(), vRange, targetName);
+        return new FImputeRegression(model.newInstance(), varRange, targetName);
     }
 }

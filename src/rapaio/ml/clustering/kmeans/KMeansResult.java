@@ -30,7 +30,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.clustering.ClusteringResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
@@ -58,7 +57,7 @@ public class KMeansResult extends ClusteringResult {
         this.kmeans = model;
 
         DMatrix c = kmeans.getCentroidsMatrix();
-        DMatrix m = DMatrixStripe.copy(df);
+        DMatrix m = DMatrix.copy(df);
         int ccount = c.rowCount();
 
         Var id = VarInt.seq(1, ccount).name("ID");

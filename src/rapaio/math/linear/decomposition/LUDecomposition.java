@@ -22,7 +22,6 @@
 package rapaio.math.linear.decomposition;
 
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -96,7 +95,7 @@ public class LUDecomposition implements Serializable, Printable {
      * @return L lower triangular factor
      */
     public DMatrix getL() {
-        DMatrix X = DMatrixStripe.empty(rowCount, colCount);
+        DMatrix X = DMatrix.empty(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j <= i; j++) {
                 if (i > j) {
@@ -115,7 +114,7 @@ public class LUDecomposition implements Serializable, Printable {
      * @return U upper triangular factor
      */
     public DMatrix getU() {
-        DMatrix U = DMatrixStripe.empty(colCount, colCount);
+        DMatrix U = DMatrix.empty(colCount, colCount);
         for (int i = 0; i < colCount; i++) {
             for (int j = i; j < colCount; j++) {
                 U.set(i, j, LU.get(i, j));

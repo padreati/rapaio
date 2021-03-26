@@ -24,8 +24,6 @@ package rapaio.experiment.mc;
 import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DMatrixStripe;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -96,8 +94,8 @@ public class MarkovChain implements Printable {
 
         // clean
 
-        this.p = DVectorDense.fill(states.size(), smoothEps);
-        this.m = DMatrixStripe.fill(states.size(), states.size(), smoothEps);
+        this.p = DVector.fill(states.size(), smoothEps);
+        this.m = DMatrix.fill(states.size(), states.size(), smoothEps);
 
         List<List<String>> chains = rowChains.stream()
                 .map(chain -> adapter.tokenize(chain))

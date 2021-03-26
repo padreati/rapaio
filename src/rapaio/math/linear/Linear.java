@@ -24,7 +24,6 @@ package rapaio.math.linear;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.EigenDecompStatistics;
 import rapaio.math.linear.decomposition.EigenDecompStrategy;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 /**
  * Linear algebra tool bag class.
@@ -38,7 +37,7 @@ public final class Linear {
     }
 
     public static DMatrix chol2inv(DMatrix R) {
-        return chol2inv(R, DMatrixStripe.identity(R.rowCount()));
+        return chol2inv(R, DMatrix.identity(R.rowCount()));
     }
 
     public static DMatrix chol2inv(DMatrix R, DMatrix B) {
@@ -74,7 +73,7 @@ public final class Linear {
 
     public static DMatrix pdPower(DMatrix s, double power, int maxRuns, double tol) {
         EigenPair eigenPair = eigenDecomp(s, maxRuns, tol);
-        DMatrix U = eigenPair.getDMatrix();
+        DMatrix U = eigenPair.getMatrix();
         DMatrix lambda = eigenPair.expandedValues();
         for (int i = 0; i < lambda.rowCount(); i++) {
             //TODO quick fix

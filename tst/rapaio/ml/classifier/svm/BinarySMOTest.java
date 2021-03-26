@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 import rapaio.data.filter.FStandardize;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.svm.kernel.CauchyKernel;
@@ -75,7 +75,7 @@ public class BinarySMOTest {
     @Test
     void testLinear() throws IOException {
         Frame df = Datasets.loadSonar();
-        df.copy().fapply(FStandardize.on(VRange.all()));
+        df.copy().fapply(FStandardize.on(VarRange.all()));
 
         BinarySMO smo1 = BinarySMO.newModel()
                 .kernel.set(new PolyKernel(1))
@@ -83,7 +83,7 @@ public class BinarySMOTest {
         RandomSource.setSeed(1);
 
         var result = ClassifierEvaluation
-                .eval(df.fapply(FStandardize.on(VRange.all())), "Class", smo1, Accuracy.newMetric(true))
+                .eval(df.fapply(FStandardize.on(VarRange.all())), "Class", smo1, Accuracy.newMetric(true))
                 .withSplit(new StratifiedKFold(10, "Class"))
                 .run();
         assertEquals(0.8953094777562862, result.getMeanTrainScore(Accuracy.newMetric(true).getName()), 1e-7);
@@ -119,7 +119,7 @@ public class BinarySMOTest {
         for (Kernel k : kernels) {
             RandomSource.setSeed(1);
             BinarySMO smo = BinarySMO.newModel().maxRuns.set(30);
-            df = df.fapply(FStandardize.on(VRange.all()));
+            df = df.fapply(FStandardize.on(VarRange.all()));
             double s = ClassifierEvaluation.cv(df, "Class", smo, 3, Accuracy.newMetric())
                     .run()
                     .getMeanTestScore(Accuracy.newMetric().getName());

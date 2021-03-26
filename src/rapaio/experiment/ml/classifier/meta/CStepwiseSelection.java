@@ -22,8 +22,8 @@
 package rapaio.experiment.ml.classifier.meta;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
@@ -125,7 +125,7 @@ public class CStepwiseSelection
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
-        selection = VRange.of(startSelection).parseVarNames(df);
+        selection = VarRange.of(startSelection).parseVarNames(df);
         Frame testFrame = test != null ? test : df;
 
         List<String> bestSelection = new ArrayList<>(selection);

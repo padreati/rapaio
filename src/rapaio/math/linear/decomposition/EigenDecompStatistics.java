@@ -24,8 +24,6 @@ package rapaio.math.linear.decomposition;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.EigenPair;
-import rapaio.math.linear.dense.DMatrixStripe;
-import rapaio.math.linear.dense.DVectorDense;
 
 public class EigenDecompStatistics extends EigenDecompStrategy {
 
@@ -37,8 +35,8 @@ public class EigenDecompStatistics extends EigenDecompStrategy {
         double[] _values = evd.getRealEigenvalues();
         DMatrix _vectors = evd.getV();
 
-        DVector values = DVectorDense.zeros(n);
-        DMatrix vectors = DMatrixStripe.empty(n, n);
+        DVector values = DVector.zeros(n);
+        DMatrix vectors = DMatrix.empty(n, n);
 
         for (int i = 0; i < values.size(); i++) {
             values.set(values.size() - i - 1, _values[i]);

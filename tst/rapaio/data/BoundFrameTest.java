@@ -144,7 +144,7 @@ public class BoundFrameTest {
         Frame bound = BoundFrame.byRows(df1, df2);
         assertTrue(bound.deepEquals(source));
 
-        VType[] types = new VType[]{VType.BINARY, VType.DOUBLE, VType.INT, VType.LONG, VType.NOMINAL};
+        VarType[] types = new VarType[]{VarType.BINARY, VarType.DOUBLE, VarType.INT, VarType.LONG, VarType.NOMINAL};
         String[] names = new String[]{"boolean", "double", "int", "long", "nominal"};
         var verifyIndex = new BiConsumer[]{
                 (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, (int) j)),

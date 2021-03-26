@@ -1,11 +1,32 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.data.filter;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 
 import java.util.List;
 
@@ -27,7 +48,7 @@ public class FOneHotEncodingTest {
     void testDouble() {
         Frame df = FFilterTestUtil.allDoubleNominal(100, 2, 2);
 
-        Frame f1 = df.fapply(FOneHotEncoding.on(VRange.onlyTypes(VType.DOUBLE)));
+        Frame f1 = df.fapply(FOneHotEncoding.on(VarRange.onlyTypes(VarType.DOUBLE)));
         assertTrue(f1.deepEquals(df));
 
         Frame f2 = df.apply(FOneHotEncoding.on("v1,v2"));
@@ -36,7 +57,7 @@ public class FOneHotEncodingTest {
 
     @Test
     void testNominal() {
-        Frame df = FFilterTestUtil.allDoubleNominal(100, 2, 2).mapVars(VRange.of(2));
+        Frame df = FFilterTestUtil.allDoubleNominal(100, 2, 2).mapVars(VarRange.of(2));
 
         List<String> levels = df.rvar(0).levels();
 
@@ -55,7 +76,7 @@ public class FOneHotEncodingTest {
             assertEquals(1.0, sum, TOL);
         }
 
-        Frame f2 = df.fapply(FOneHotEncoding.on(true, false, VRange.all()).newInstance());
+        Frame f2 = df.fapply(FOneHotEncoding.on(true, false, VarRange.all()).newInstance());
         assertEquals(levels.size() - 2, f2.varCount());
 
         for (int i = 2; i < levels.size(); i++) {

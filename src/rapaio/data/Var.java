@@ -60,7 +60,7 @@ public interface Var extends Serializable, Printable {
     /**
      * @return variable type
      */
-    VType type();
+    VarType type();
 
     /**
      * Number of observations contained by the variable.

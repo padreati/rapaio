@@ -22,7 +22,7 @@
 package rapaio.experiment.data.filter.frame;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 import rapaio.data.filter.AbstractFFilter;
 import rapaio.experiment.ml.analysis.LDA;
 import rapaio.math.linear.DMatrix;
@@ -37,14 +37,14 @@ public class FFLDA extends AbstractFFilter {
     final BiFunction<DVector, DMatrix, Integer> kFun;
     private LDA lda;
 
-    public FFLDA(BiFunction<DVector, DMatrix, Integer> kFun, VRange vRange) {
-        super(vRange);
+    public FFLDA(BiFunction<DVector, DMatrix, Integer> kFun, VarRange varRange) {
+        super(varRange);
         this.kFun = kFun;
     }
 
     @Override
     public FFLDA newInstance() {
-        return new FFLDA(kFun, vRange);
+        return new FFLDA(kFun, varRange);
     }
 
     @Override

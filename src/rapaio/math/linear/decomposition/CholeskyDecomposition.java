@@ -23,7 +23,7 @@ package rapaio.math.linear.decomposition;
 
 
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.MType;
 
 import java.io.Serializable;
 
@@ -161,7 +161,7 @@ public class CholeskyDecomposition implements Serializable {
      * @return L triangular factor
      */
     public DMatrix getL() {
-        return DMatrixStripe.wrap(l);
+        return DMatrix.wrap(MType.RSTRIPE, true, l);
     }
 
     /**

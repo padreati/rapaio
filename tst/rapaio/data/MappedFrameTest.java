@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -129,7 +126,7 @@ public class MappedFrameTest {
                 .mapVars("z");
 
         assertEquals(1, df3.varCount());
-        assertSame(df3.rvar(0).type(), VType.DOUBLE);
+        assertSame(df3.rvar(0).type(), VarType.DOUBLE);
         assertEquals(1.0 / 3, df3.getDouble(0, 0), TOL);
         assertEquals(1.0 / 7, df3.getDouble(1, 0), TOL);
 
@@ -149,9 +146,9 @@ public class MappedFrameTest {
             assertEquals(varNames[i], df1.varName(i));
         }
 
-        assertSame(VType.DOUBLE, df1.type("x"));
-        assertSame(VType.INT, df1.type("y"));
-        assertSame(VType.DOUBLE, df1.type("z"));
+        assertSame(VarType.DOUBLE, df1.type("x"));
+        assertSame(VarType.INT, df1.type("y"));
+        assertSame(VarType.DOUBLE, df1.type("z"));
     }
 
     @Test

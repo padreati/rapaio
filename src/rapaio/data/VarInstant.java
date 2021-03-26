@@ -109,8 +109,8 @@ public class VarInstant extends AbstractVar {
     }
 
     @Override
-    public VType type() {
-        return VType.INSTANT;
+    public VarType type() {
+        return VarType.INSTANT;
     }
 
     @Override

@@ -60,8 +60,8 @@ public class Group implements Printable {
         return new Group(df, Arrays.asList(varNames));
     }
 
-    public static Group from(Frame df, VRange vRange) {
-        List<String> varNames = vRange.parseVarNames(df);
+    public static Group from(Frame df, VarRange varRange) {
+        List<String> varNames = varRange.parseVarNames(df);
         return new Group(df, varNames);
     }
 
@@ -614,7 +614,7 @@ public class Group implements Printable {
                 Frame unstacked = SolidFrame.byVars(unstackedVars);
 
                 // new we fill them with values
-                VType aggregateType = result.rvar(aggregateVarName).type();
+                VarType aggregateType = result.rvar(aggregateVarName).type();
                 int aggregateVarIndex = result.varIndex(aggregateVarName);
                 for (int i = 0; i < result.rowCount(); i++) {
                     int varIndex = unstackIdPos.get(rowToUnstackId.get(i));
@@ -640,7 +640,7 @@ public class Group implements Printable {
             }
 
             if (groupNames.isEmpty()) {
-                unstackedDf = unstackedDf.removeVars(VRange.of(result.varNames()));
+                unstackedDf = unstackedDf.removeVars(VarRange.of(result.varNames()));
             }
 
             return unstackedDf.copy();

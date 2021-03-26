@@ -23,10 +23,9 @@ package rapaio.ml.classifier.bayes.nb;
 
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Format;
 
 import java.util.Arrays;
@@ -66,8 +65,8 @@ public class MultinomialEstimator extends AbstractEstimator {
         return new MultinomialEstimator(DEFAULT_LAPLACE, testNames);
     }
 
-    public static MultinomialEstimator fromRange(Frame df, VRange vRange) {
-        return new MultinomialEstimator(DEFAULT_LAPLACE, vRange.parseVarNames(df));
+    public static MultinomialEstimator fromRange(Frame df, VarRange varRange) {
+        return new MultinomialEstimator(DEFAULT_LAPLACE, varRange.parseVarNames(df));
     }
 
     public static MultinomialEstimator fromNames(double laplaceSmoother, String... testNames) {
@@ -78,8 +77,8 @@ public class MultinomialEstimator extends AbstractEstimator {
         return new MultinomialEstimator(laplaceSmoother, testNames);
     }
 
-    public static MultinomialEstimator fromRange(double laplaceSmoother, Frame df, VRange vRange) {
-        return new MultinomialEstimator(laplaceSmoother, vRange.parseVarNames(df));
+    public static MultinomialEstimator fromRange(double laplaceSmoother, Frame df, VarRange varRange) {
+        return new MultinomialEstimator(laplaceSmoother, varRange.parseVarNames(df));
     }
 
     private static final long serialVersionUID = -3469344351162271991L;
@@ -159,7 +158,7 @@ public class MultinomialEstimator extends AbstractEstimator {
         densityMap = new HashMap<>();
         countDensities.forEach((level, density) -> {
             // add normalized densities to prediction map
-            densityMap.put(level, DVectorDense.wrapArray(density.index().size(), density.normalize().streamValues().toArray()));
+            densityMap.put(level, DVector.wrapArray(density.index().size(), density.normalize().streamValues().toArray()));
         });
 
         return false;
@@ -189,7 +188,7 @@ public class MultinomialEstimator extends AbstractEstimator {
 
         // build count vector
         List<String> testNames = getTestNames();
-        DVector x = DVectorDense.zeros(testNames.size());
+        DVector x = DVector.zeros(testNames.size());
         for (int i = 0; i < testNames.size(); i++) {
             x.set(i, df.getDouble(row, testNames.get(i)));
         }

@@ -48,7 +48,7 @@ import rapaio.util.function.SFunction;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public enum VType {
+public enum VarType {
 
     /**
      * Numeric values stored on 1 bit, encodes also
@@ -84,7 +84,7 @@ public enum VType {
     private final String code;
     private final SFunction<Integer, ? extends Var> newInstanceFunction;
 
-    VType(String code, SFunction<Integer, ? extends Var> newInstanceFunction) {
+    VarType(String code, SFunction<Integer, ? extends Var> newInstanceFunction) {
         this.code = code;
         this.newInstanceFunction = newInstanceFunction;
     }
@@ -120,11 +120,11 @@ public enum VType {
         return newInstanceFunction.apply(rows);
     }
 
-    public static boolean isNumeric(VType type) {
+    public static boolean isNumeric(VarType type) {
         return type == DOUBLE || type == INT || type == BINARY;
     }
 
-    public static boolean isNominal(VType type) {
+    public static boolean isNominal(VarType type) {
         return type == NOMINAL;
     }
 }

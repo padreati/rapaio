@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,10 +24,10 @@ package rapaio.ml.classifier;
 import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
 import rapaio.io.JavaIO;
 import rapaio.ml.classifier.bayes.NaiveBayes;
@@ -55,7 +52,7 @@ public class ClassifierModelSerializationTest {
 
         Frame iris = Datasets.loadIrisDataset();
         testModel(OneRule.newModel(), iris, "class", "iris", varModel, varData, varAcc);
-        testModel(NaiveBayes.newModel().estimators.set(KernelEstimator.forType(iris, VType.DOUBLE)), iris, "class", "iris", varModel, varData, varAcc);
+        testModel(NaiveBayes.newModel().estimators.set(KernelEstimator.forType(iris, VarType.DOUBLE)), iris, "class", "iris", varModel, varData, varAcc);
         testModel(CTree.newC45(), iris, "class", "iris", varModel, varData, varAcc);
         testModel(CTree.newCART(), iris, "class", "iris", varModel, varData, varAcc);
 

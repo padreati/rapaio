@@ -24,8 +24,6 @@ package rapaio.math.linear.decomposition;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DMatrixStripe;
-import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.stream.IntStream;
 
@@ -39,7 +37,7 @@ public class MatrixMultiplication {
         if (B.rowCount() != A.colCount()) {
             throw new IllegalArgumentException("Matrix inner dimensions must agree.");
         }
-        DMatrix X = DMatrixStripe.empty(A.rowCount(), B.colCount());
+        DMatrix X = DMatrix.empty(A.rowCount(), B.colCount());
         double[] Bcolj = new double[A.colCount()];
         for (int j = 0; j < B.colCount(); j++) {
             for (int k = 0; k < A.colCount(); k++) {
@@ -58,7 +56,7 @@ public class MatrixMultiplication {
 
     public static DMatrix ijkAlgorithm(DMatrix A, DMatrix B) {
         // Initialize C
-        DMatrix C = DMatrixStripe.empty(A.rowCount(), B.colCount());
+        DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int j = 0; j < B.colCount(); j++) {
                 for (int k = 0; k < A.colCount(); k++) {
@@ -71,7 +69,7 @@ public class MatrixMultiplication {
 
     public static DMatrix ijkParallel(DMatrix A, DMatrix B) {
         // initialize C
-        DMatrix C = DMatrixStripe.empty(A.rowCount(), B.colCount());
+        DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int j = 0; j < B.colCount(); j++) {
                 for (int k = 0; k < A.colCount(); k++) {
@@ -84,7 +82,7 @@ public class MatrixMultiplication {
 
     public static DMatrix ikjAlgorithm(DMatrix A, DMatrix B) {
         // initialize C
-        DMatrix C = DMatrixStripe.empty(A.rowCount(), B.colCount());
+        DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int k = 0; k < A.colCount(); k++) {
                 if (A.get(i, k) == 0)
@@ -98,7 +96,7 @@ public class MatrixMultiplication {
     }
 
     public static DMatrix ikjParallel(DMatrix A, DMatrix B) {
-        DMatrix C = DMatrixStripe.empty(A.rowCount(), B.colCount());
+        DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int k = 0; k < A.colCount(); k++) {
                 if (A.get(i, k) == 0)
@@ -120,7 +118,7 @@ public class MatrixMultiplication {
                     ));
         }
 
-        DVector C = DVectorDense.zeros(A.rowCount());
+        DVector C = DVector.zeros(A.rowCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int j = 0; j < A.colCount(); j++) {
                 C.set(i, C.get(i) + A.get(i, j) * b.get(j));
@@ -130,7 +128,7 @@ public class MatrixMultiplication {
     }
 
     public static DMatrix tiledAlgorithm(DMatrix A, DMatrix B) {
-        DMatrix C = DMatrixStripe.empty(A.rowCount(), B.colCount());
+        DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
 
 //        Pick a tile size T = theta(sqrt(M))
         int T = 1;
@@ -167,7 +165,7 @@ public class MatrixMultiplication {
     }
 
     private static DMatrix add(DMatrix A, DMatrix B) {
-        DMatrix C = DMatrixStripe.empty(A.rowCount(), A.colCount());
+        DMatrix C = DMatrix.empty(A.rowCount(), A.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int j = 0; j < A.colCount(); j++) {
                 C.set(i, j, A.get(i, j) + B.get(i, j));
@@ -178,7 +176,7 @@ public class MatrixMultiplication {
 
     private static DMatrix subtract(DMatrix A, DMatrix B) {
         int n = A.rowCount();
-        DMatrix C = DMatrixStripe.empty(n, n);
+        DMatrix C = DMatrix.empty(n, n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 C.set(i, j, A.get(i, j) - B.get(i, j));
@@ -198,8 +196,8 @@ public class MatrixMultiplication {
         // matrix sizes
         int n = A.colCount();
         int m = nextPowerOfTwo(n);
-        DMatrix APrep = DMatrixStripe.empty(m, m);
-        DMatrix BPrep = DMatrixStripe.empty(m, m);
+        DMatrix APrep = DMatrix.empty(m, m);
+        DMatrix BPrep = DMatrix.empty(m, m);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 APrep.set(i, j, A.get(i, j));
@@ -208,7 +206,7 @@ public class MatrixMultiplication {
         }
 
         DMatrix CPrep = strassenR(APrep, BPrep, leafSize);
-        DMatrix C = DMatrixStripe.empty(n, n);
+        DMatrix C = DMatrix.empty(n, n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 C.set(i, j, CPrep.get(i, j));
@@ -225,15 +223,15 @@ public class MatrixMultiplication {
         } else {
             // initializing the new sub-matrices
             int newSize = n / 2;
-            DMatrix a11 = DMatrixStripe.empty(newSize, newSize);
-            DMatrix a12 = DMatrixStripe.empty(newSize, newSize);
-            DMatrix a21 = DMatrixStripe.empty(newSize, newSize);
-            DMatrix a22 = DMatrixStripe.empty(newSize, newSize);
+            DMatrix a11 = DMatrix.empty(newSize, newSize);
+            DMatrix a12 = DMatrix.empty(newSize, newSize);
+            DMatrix a21 = DMatrix.empty(newSize, newSize);
+            DMatrix a22 = DMatrix.empty(newSize, newSize);
 
-            DMatrix b11 = DMatrixStripe.empty(newSize, newSize);
-            DMatrix b12 = DMatrixStripe.empty(newSize, newSize);
-            DMatrix b21 = DMatrixStripe.empty(newSize, newSize);
-            DMatrix b22 = DMatrixStripe.empty(newSize, newSize);
+            DMatrix b11 = DMatrix.empty(newSize, newSize);
+            DMatrix b12 = DMatrix.empty(newSize, newSize);
+            DMatrix b21 = DMatrix.empty(newSize, newSize);
+            DMatrix b22 = DMatrix.empty(newSize, newSize);
 
             // dividing the matrices in 4 sub-matrices:
             for (int i = 0; i < newSize; i++) {
@@ -296,7 +294,7 @@ public class MatrixMultiplication {
             // c22 = p1 + p3 - p2 + p6
 
             // Grouping the results obtained in a single matrix:
-            DMatrix C = DMatrixStripe.empty(n, n);
+            DMatrix C = DMatrix.empty(n, n);
             for (int i = 0; i < newSize; i++) {
                 for (int j = 0; j < newSize; j++) {
                     C.set(i, j, c11.get(i, j));
@@ -310,7 +308,7 @@ public class MatrixMultiplication {
     }
 
     public static DMatrix mul(DMatrix A, double scalar) {
-        DMatrix X = DMatrixStripe.empty(A.rowCount(), A.colCount());
+        DMatrix X = DMatrix.empty(A.rowCount(), A.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int j = 0; j < A.colCount(); j++) {
                 X.set(i, j, A.get(i, j) * scalar);

@@ -1,8 +1,29 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.util;
 
 import org.junit.jupiter.api.Test;
 import rapaio.data.Mapping;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 
 import java.util.ArrayList;
@@ -26,12 +47,12 @@ public class StringBagTest {
         var df = Datasets.loadRandom();
 
         Mapping mapping = Mapping.range(0, 30);
-        VRange vRange = VRange.of("boolean,nominal");
+        VarRange varRange = VarRange.of("boolean,nominal");
 
         Set<StringBag> set1 = new HashSet<>();
         Set<StringBag> set2 = new HashSet<>();
         for (int row : mapping) {
-            set1.add(StringBag.of(df, row, vRange));
+            set1.add(StringBag.of(df, row, varRange));
 
             Map<String, String> bagMap = new HashMap<>();
             bagMap.put("boolean", df.getLabel(row, "boolean"));
@@ -40,7 +61,7 @@ public class StringBagTest {
             set2.add(StringBag.of(bagMap));
         }
 
-        Set<StringBag> set3 = df.mapRows(mapping).stream().map(s -> StringBag.of(s, vRange)).collect(Collectors.toSet());
+        Set<StringBag> set3 = df.mapRows(mapping).stream().map(s -> StringBag.of(s, varRange)).collect(Collectors.toSet());
 
         assertEquals(set1, set2);
         assertEquals(set1, set3);

@@ -22,7 +22,7 @@
 package rapaio.ml.regression.linear.impl;
 
 import rapaio.data.Frame;
-import rapaio.data.VType;
+import rapaio.data.VarType;
 import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
@@ -68,8 +68,8 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
     @Override
     public Capabilities capabilities() {
         return Capabilities.builder()
-                .inputTypes(Arrays.asList(VType.DOUBLE, VType.INT, VType.BINARY))
-                .targetType(VType.DOUBLE)
+                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY))
+                .targetType(VarType.DOUBLE)
                 .minInputCount(1).maxInputCount(1_000_000)
                 .minTargetCount(1).maxTargetCount(1_000_000)
                 .allowMissingInputValues(false)

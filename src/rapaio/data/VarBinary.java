@@ -158,8 +158,8 @@ public final class VarBinary extends AbstractVar {
     }
 
     @Override
-    public VType type() {
-        return VType.BINARY;
+    public VarType type() {
+        return VarType.BINARY;
     }
 
     @Override

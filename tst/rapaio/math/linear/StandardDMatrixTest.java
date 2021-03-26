@@ -24,8 +24,6 @@ package rapaio.math.linear;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.math.linear.base.DMatrixBase;
-import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.math.linear.dense.DVectorDense;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,8 +40,6 @@ public abstract class StandardDMatrixTest {
         RandomSource.setSeed(123);
     }
 
-    protected abstract SOrder order();
-
     protected abstract DMatrix generateSequential(int n, int m);
 
     protected abstract DMatrix generateIdentity(int n);
@@ -53,11 +49,6 @@ public abstract class StandardDMatrixTest {
     protected abstract DMatrix generateCopy(double[][] values);
 
     protected abstract String className();
-
-    @Test
-    void typeTest() {
-        assertEquals(order(), generateSequential(10, 3).order());
-    }
 
     @Test
     void testMapRow() {
@@ -240,8 +231,8 @@ public abstract class StandardDMatrixTest {
     void testAddAxis() {
         DMatrix m1 = generateFill(20, 10, 1);
 
-        DVector v1 = DVectorDense.fill(10, 1);
-        DVector v2 = DVectorDense.fill(20, 1);
+        DVector v1 = DVector.fill(10, 1);
+        DVector v2 = DVector.fill(20, 1);
 
         assertTrue(generateFill(20, 10, 2).deepEquals(m1.copy().add(v1, 0)));
         assertTrue(generateFill(20, 10, 2).deepEquals(m1.copy().add(v2, 1)));
@@ -280,8 +271,8 @@ public abstract class StandardDMatrixTest {
     void testSubtractAxis() {
         DMatrix m1 = generateFill(20, 10, 1);
 
-        DVector v1 = DVectorDense.fill(10, 1);
-        DVector v2 = DVectorDense.fill(20, 1);
+        DVector v1 = DVector.fill(10, 1);
+        DVector v2 = DVector.fill(20, 1);
 
         assertTrue(generateFill(20, 10, 0).deepEquals(m1.copy().sub(v1, 0)));
         assertTrue(generateFill(20, 10, 0).deepEquals(m1.copy().sub(v2, 1)));
@@ -370,7 +361,7 @@ public abstract class StandardDMatrixTest {
     @Test
     void testDot() {
 
-        DVector v = DVectorDense.ones(10);
+        DVector v = DVector.ones(10);
         DMatrix m = generateSequential(10, 10);
 
         var m1 = m.dot(v);
@@ -397,7 +388,7 @@ public abstract class StandardDMatrixTest {
         var m = generateFill(10, 3, 1);
         var v1 = DVectorDense.wrap(1, 2, 3);
 
-        var d = DMatrixStripe.wrap(new double[][]{
+        var d = DMatrix.wrap(new double[][]{
                 {1, 0, 0},
                 {0, 2, 0},
                 {0, 0, 3}
@@ -489,8 +480,8 @@ public abstract class StandardDMatrixTest {
     void deepEqualsTest() {
         DMatrix m1 = generateIdentity(2);
 
-        DMatrix m2 = DMatrixBase.wrap(new double[][]{{1, 0}, {0, 1}});
-        DMatrix m3 = DMatrixStripe.identity(2);
+        DMatrix m2 = DMatrix.wrap(MType.BASE, true, new double[][]{{1, 0}, {0, 1}});
+        DMatrix m3 = DMatrix.identity(2);
 
         assertTrue(m1.deepEquals(m2));
         assertTrue(m2.deepEquals(m3));
@@ -501,8 +492,8 @@ public abstract class StandardDMatrixTest {
         assertFalse(m1.deepEquals(m2));
         assertFalse(m1.deepEquals(m3));
 
-        var m4 = DMatrixStripe.fill(2, 3, 0);
-        var m5 = DMatrixStripe.fill(3, 2, 0);
+        var m4 = DMatrix.fill(2, 3, 0);
+        var m5 = DMatrix.fill(3, 2, 0);
 
         assertFalse(m4.deepEquals(m1));
         assertFalse(m5.deepEquals(m1));

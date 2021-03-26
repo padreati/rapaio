@@ -26,13 +26,13 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
+import rapaio.data.VarRange;
 import rapaio.data.filter.FRefSort;
-import rapaio.math.linear.dense.DMatrixStripe;
-import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.ml.clustering.kmeans.KMeansInit;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
@@ -120,7 +120,7 @@ public class MinkowskiWeightedKMeans implements Printable {
     public void cluster(Frame df, String... varNames) {
         validate(df, varNames);
 
-        inputs = VRange.of(varNames).parseVarNames(df).toArray(new String[0]);
+        inputs = VarRange.of(varNames).parseVarNames(df).toArray(new String[0]);
 
         // initialize weights
         weights = SolidFrame.emptyFrom(df.mapVars(inputs), k);
@@ -193,7 +193,7 @@ public class MinkowskiWeightedKMeans implements Printable {
     }
 
     private void validate(Frame df, String... varNames) {
-        List<String> nameList = VRange.of(varNames).parseVarNames(df);
+        List<String> nameList = VarRange.of(varNames).parseVarNames(df);
         for (String varName : nameList) {
             if (!df.rvar(varName).type().isNumeric())
                 throw new IllegalArgumentException("all matched vars must be numeric: check var " + varName);
@@ -255,7 +255,7 @@ public class MinkowskiWeightedKMeans implements Printable {
     }
 
     private void weightsUpdate(Frame df) {
-        DMatrixStripe d = DMatrixStripe.fill(k, inputs.length, 0.0);
+        DMatrix d = DMatrix.fill(k, inputs.length, 0.0);
         for (int i = 0; i < df.rowCount(); i++) {
             for (int j = 0; j < inputs.length; j++) {
                 int c = arrows.getInt(i);
@@ -275,7 +275,7 @@ public class MinkowskiWeightedKMeans implements Printable {
 
         // compute normalizing sums
 
-        DVectorDense rv = DVectorDense.fill(k, 0.0);
+        DVector rv = DVector.fill(k, 0.0);
         for (int i = 0; i < d.rowCount(); i++) {
             double sum = 0.0;
             for (int j = 0; j < d.colCount(); j++) {

@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,8 +24,8 @@ package rapaio.io;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
 import rapaio.util.IntRule;
 
@@ -115,14 +112,14 @@ public class CsvTest {
         Frame df = Csv.instance()
                 .quotes.set(true)
                 .header.set(true)
-                .defaultTypes.set(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL)
+                .defaultTypes.set(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL)
                 .read(this.getClass().getResourceAsStream("defaults-test.csv"));
 
         assertEquals(7, df.rowCount());
 
         // x1 is binary
 
-        assertEquals(VType.BINARY, df.rvar("x1").type());
+        assertEquals(VarType.BINARY, df.rvar("x1").type());
         assertEquals(0, df.getInt(0, "x1"));
         assertEquals(1, df.getInt(1, "x1"));
         assertEquals(0, df.getInt(2, "x1"));
@@ -133,7 +130,7 @@ public class CsvTest {
 
         // x2 is index
 
-        assertEquals(VType.INT, df.rvar("x2").type());
+        assertEquals(VarType.INT, df.rvar("x2").type());
         assertEquals(0, df.getInt(0, "x2"));
         assertEquals(1, df.getInt(1, "x2"));
         assertEquals(0, df.getInt(2, "x2"));
@@ -144,7 +141,7 @@ public class CsvTest {
 
         // x3 is numeric
 
-        assertEquals(VType.DOUBLE, df.rvar("x3").type());
+        assertEquals(VarType.DOUBLE, df.rvar("x3").type());
         assertEquals(0.0, df.getDouble(0, "x3"), 10e-12);
         assertEquals(1.0, df.getDouble(1, "x3"), 10e-12);
         assertEquals(0.0, df.getDouble(2, "x3"), 10e-12);
@@ -155,7 +152,7 @@ public class CsvTest {
 
         // x4 nominal
 
-        assertEquals(VType.NOMINAL, df.rvar("x4").type());
+        assertEquals(VarType.NOMINAL, df.rvar("x4").type());
         assertEquals("0", df.getLabel(0, "x4"));
         assertEquals("1", df.getLabel(1, "x4"));
         assertEquals("false", df.getLabel(2, "x4"));
@@ -219,12 +216,12 @@ public class CsvTest {
     @Test
     void testTypes() throws IOException {
         Frame t1 = Csv.instance()
-                .types.add(VType.DOUBLE, "sepal-length")
-                .types.add(VType.NOMINAL, "petal-width", "sepal-length")
+                .types.add(VarType.DOUBLE, "sepal-length")
+                .types.add(VarType.NOMINAL, "petal-width", "sepal-length")
                 .read(Datasets.class, "iris-r.csv");
         t1.printSummary();
 
-        VType[] types = new VType[]{VType.NOMINAL, VType.DOUBLE, VType.DOUBLE, VType.NOMINAL, VType.NOMINAL};
+        VarType[] types = new VarType[]{VarType.NOMINAL, VarType.DOUBLE, VarType.DOUBLE, VarType.NOMINAL, VarType.NOMINAL};
         assertArrayEquals(types, t1.varStream().map(Var::type).toArray());
 
         Frame t2 = Csv.instance().template.set(t1).read(Datasets.class, "iris-r.csv");
@@ -241,10 +238,10 @@ public class CsvTest {
         Frame na2 = Csv.instance().naValues.set("", "xxxx").read(Datasets.class, "iris-r.csv");
         assertEquals(150, na2.stream().complete().count());
 
-        Frame na3 = Csv.instance().naValues.set("virginica").types.add(VType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
+        Frame na3 = Csv.instance().naValues.set("virginica").types.add(VarType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
         assertEquals(100, na3.stream().complete().count());
 
-        Frame na4 = Csv.instance().naValues.set("virginica", "5").types.add(VType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
+        Frame na4 = Csv.instance().naValues.set("virginica", "5").types.add(VarType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
         assertEquals(89, na4.stream().complete().count());
     }
 }

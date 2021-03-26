@@ -25,9 +25,9 @@ import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.OnlineStat;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,12 +51,12 @@ public class GaussianEstimator extends AbstractEstimator {
         return new GaussianEstimator(testName);
     }
 
-    public static List<GaussianEstimator> forRange(Frame df, VRange varRange) {
+    public static List<GaussianEstimator> forRange(Frame df, VarRange varRange) {
         return varRange.parseVarNames(df).stream().map(GaussianEstimator::new).collect(Collectors.toList());
     }
 
-    public static List<GaussianEstimator> forType(Frame df, VType type) {
-        return forRange(df, VRange.onlyTypes(type));
+    public static List<GaussianEstimator> forType(Frame df, VarType type) {
+        return forRange(df, VarRange.onlyTypes(type));
     }
 
     public static List<GaussianEstimator> forNames(String... names) {

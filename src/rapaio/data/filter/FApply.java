@@ -22,7 +22,7 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 import rapaio.data.stream.FSpot;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2IntFunction;
@@ -37,20 +37,20 @@ import java.util.function.Function;
  */
 public class FApply extends AbstractFFilter {
 
-    public static FApply onSpot(Consumer<FSpot> consumer, VRange vRange) {
-        return new FApply(Type.SPOT, consumer, F_DOUBLE, F_INT, F_STRING, vRange);
+    public static FApply onSpot(Consumer<FSpot> consumer, VarRange varRange) {
+        return new FApply(Type.SPOT, consumer, F_DOUBLE, F_INT, F_STRING, varRange);
     }
 
-    public static FApply onDouble(Double2DoubleFunction fun, VRange vRange) {
-        return new FApply(Type.DOUBLE, F_SPOT, fun, F_INT, F_STRING, vRange);
+    public static FApply onDouble(Double2DoubleFunction fun, VarRange varRange) {
+        return new FApply(Type.DOUBLE, F_SPOT, fun, F_INT, F_STRING, varRange);
     }
 
-    public static FApply onInt(Int2IntFunction fun, VRange vRange) {
-        return new FApply(Type.INT, F_SPOT, F_DOUBLE, fun, F_STRING, vRange);
+    public static FApply onInt(Int2IntFunction fun, VarRange varRange) {
+        return new FApply(Type.INT, F_SPOT, F_DOUBLE, fun, F_STRING, varRange);
     }
 
-    public static FApply onLabel(Function<String, String> fun, VRange vRange) {
-        return new FApply(Type.LABEL, F_SPOT, F_DOUBLE, F_INT, fun, vRange);
+    public static FApply onLabel(Function<String, String> fun, VarRange varRange) {
+        return new FApply(Type.LABEL, F_SPOT, F_DOUBLE, F_INT, fun, varRange);
     }
 
     private static final long serialVersionUID = 3982915877968295381L;
@@ -72,8 +72,8 @@ public class FApply extends AbstractFFilter {
                    Double2DoubleFunction doubleFunction,
                    Int2IntFunction intFunction,
                    Function<String, String> stringFunction,
-                   VRange vRange) {
-        super(vRange);
+                   VarRange varRange) {
+        super(varRange);
         this.type = type;
         this.spotConsumer = spotCOnsumer;
         this.doubleFunction = doubleFunction;
@@ -83,7 +83,7 @@ public class FApply extends AbstractFFilter {
 
     @Override
     public FFilter newInstance() {
-        return new FApply(type, spotConsumer, doubleFunction, intFunction, stringFunction, vRange);
+        return new FApply(type, spotConsumer, doubleFunction, intFunction, stringFunction, varRange);
     }
 
     @Override

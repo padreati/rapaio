@@ -23,9 +23,9 @@ package rapaio.experiment.ml.classifier.meta;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
@@ -91,8 +91,8 @@ public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResu
         return Capabilities.builder()
                 .allowMissingTargetValues(false)
                 .allowMissingInputValues(false)
-                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE))
-                .targetType(VType.NOMINAL)
+                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE))
+                .targetType(VarType.NOMINAL)
                 .minInputCount(1).maxInputCount(100_000)
                 .minTargetCount(1).maxTargetCount(1)
                 .build();
@@ -116,7 +116,7 @@ public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResu
                         })
                         .collect(toList());
 
-        List<String> targets = VRange.of(targetVars).parseVarNames(df);
+        List<String> targets = VarRange.of(targetVars).parseVarNames(df);
         vars.add(df.rvar(targets.get(0)).copy());
 
         return FitSetup.valueOf(SolidFrame.byVars(vars), w, targetVars);

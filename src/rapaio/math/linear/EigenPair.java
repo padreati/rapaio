@@ -24,7 +24,6 @@ package rapaio.math.linear;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/7/15.
@@ -33,22 +32,22 @@ import rapaio.math.linear.dense.DMatrixStripe;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class EigenPair {
 
-    private final DVector DVector;
-    private final DMatrix DMatrix;
+    private final DVector vector;
+    private final DMatrix matrix;
 
     public static EigenPair from(DVector values, DMatrix vectors) {
         return new EigenPair(values, vectors);
     }
 
     public DMatrix expandedValues() {
-        DMatrix expandedRV = DMatrixStripe.empty(DVector.size(), DVector.size());
-        for (int i = 0; i < DVector.size(); i++) {
-            expandedRV.set(i, i, DVector.get(i));
+        DMatrix expandedRV = DMatrix.empty(vector.size(), vector.size());
+        for (int i = 0; i < vector.size(); i++) {
+            expandedRV.set(i, i, vector.get(i));
         }
         return expandedRV;
     }
 
     public DVector vector(int colNum) {
-        return DMatrix.mapCol(colNum);
+        return matrix.mapCol(colNum);
     }
 }

@@ -325,8 +325,8 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    public VType type() {
-        return VType.LONG;
+    public VarType type() {
+        return VarType.LONG;
     }
 
     @Override

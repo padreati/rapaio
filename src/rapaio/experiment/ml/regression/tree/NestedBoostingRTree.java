@@ -22,8 +22,8 @@
 package rapaio.experiment.ml.regression.tree;
 
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.experiment.ml.regression.tree.nbrtree.NBRFunction;
 import rapaio.experiment.ml.regression.tree.nbrtree.NBRTreeNode;
 import rapaio.ml.common.Capabilities;
@@ -71,9 +71,9 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
                 .allowMissingInputValues(false)
                 .allowMissingTargetValues(false)
                 .minInputCount(1).maxInputCount(Integer.MAX_VALUE)
-                .inputTypes(Arrays.asList(VType.DOUBLE, VType.INT, VType.BINARY, VType.LONG))
+                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY, VarType.LONG))
                 .minTargetCount(1).maxTargetCount(1)
-                .targetType(VType.DOUBLE)
+                .targetType(VarType.DOUBLE)
                 .build();
     }
 

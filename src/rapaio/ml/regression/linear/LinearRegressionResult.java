@@ -31,7 +31,6 @@ import rapaio.math.MTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.QRDecomposition;
-import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 import rapaio.printer.Format;
@@ -90,9 +89,9 @@ public class LinearRegressionResult extends RegressionResult {
         String[] targets = lm.targetNames();
 
         beta_hat = lm.getAllCoefficients().copy();
-        beta_std_error = DMatrixStripe.empty(inputs.length, targets.length);
-        beta_t_value = DMatrixStripe.empty(inputs.length, targets.length);
-        beta_p_value = DMatrixStripe.empty(inputs.length, targets.length);
+        beta_std_error = DMatrix.empty(inputs.length, targets.length);
+        beta_t_value = DMatrix.empty(inputs.length, targets.length);
+        beta_p_value = DMatrix.empty(inputs.length, targets.length);
         beta_significance = new String[inputs.length][targets.length];
 
         if (withResiduals) {
@@ -120,8 +119,8 @@ public class LinearRegressionResult extends RegressionResult {
                         features = df.bindVars(VarDouble.fill(df.rowCount(), 1).name(FIntercept.INTERCEPT)).copy();
                     }
                 }
-                DMatrix X = DMatrixStripe.copy(features.mapVars(model.inputNames()));
-                DMatrix m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(DMatrixStripe.identity(X.colCount()));
+                DMatrix X = DMatrix.copy(features.mapVars(model.inputNames()));
+                DMatrix m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(DMatrix.identity(X.colCount()));
 
                 for (int j = 0; j < model.inputNames().length; j++) {
                     beta_std_error.set(j, i, Math.sqrt(m_beta_hat.get(j, j) * var));

@@ -26,7 +26,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -43,7 +42,7 @@ public class EigenDecompositionTest {
     @Test
     void testSymmetric() {
         for (int i = 0; i < TIMES; i++) {
-            DMatrix a = DMatrixStripe.random(10, 10).scatter();
+            DMatrix a = DMatrix.random(10, 10).scatter();
             EigenDecomposition evd = EigenDecomposition.from(a);
 
             DMatrix v = evd.getV();
@@ -57,7 +56,7 @@ public class EigenDecompositionTest {
     @Test
     void testNonSymmetric() {
         for (int i = 0; i < TIMES; i++) {
-            DMatrix a = DMatrixStripe.random(10, 10);
+            DMatrix a = DMatrix.random(10, 10);
 
             EigenDecomposition evd = EigenDecomposition.from(a);
 

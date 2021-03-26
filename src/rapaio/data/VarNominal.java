@@ -180,8 +180,8 @@ public final class VarNominal extends AbstractVar {
     }
 
     @Override
-    public VType type() {
-        return VType.NOMINAL;
+    public VarType type() {
+        return VarType.NOMINAL;
     }
 
     @Override

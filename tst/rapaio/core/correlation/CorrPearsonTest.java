@@ -29,7 +29,6 @@ import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixDense;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -99,10 +98,10 @@ public class CorrPearsonTest {
         VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).name("z");
 
 
-        DMatrix exp = DMatrixDense.copy(true, 3, 3,
-                1, 0.8356446312071465, 0.7997143292750087,
-                0.8356446312071465, 1, 0.9938073109055182,
-                0.7997143292750087, 0.9938073109055182, 1);
+        DMatrix exp = DMatrix.copy(3, 3,
+                1.0, 0.8356446312071465, 0.7997143292750087,
+                0.8356446312071465, 1.0, 0.9938073109055182,
+                0.7997143292750087, 0.9938073109055182, 1.0);
 
         CorrPearson cp = CorrPearson.of(x, y, z);
         DistanceMatrix m = cp.matrix();

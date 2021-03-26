@@ -26,13 +26,13 @@ import lombok.NoArgsConstructor;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarLong;
 import rapaio.data.VarNominal;
+import rapaio.data.VarType;
 import rapaio.io.ArffPersistence;
 import rapaio.io.Csv;
 import rapaio.ml.classifier.ClassifierModel;
@@ -52,8 +52,8 @@ public class Datasets {
     public static Frame loadIrisDataset() {
         try {
             return Csv.instance()
-                    .defaultTypes.set(VType.DOUBLE)
-                    .types.add(VType.NOMINAL, "class")
+                    .defaultTypes.set(VarType.DOUBLE)
+                    .types.add(VarType.NOMINAL, "class")
                     .read(Datasets.class, "iris-r.csv");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -62,7 +62,7 @@ public class Datasets {
 
     public static Frame loadPearsonHeightDataset() throws IOException {
         return Csv.instance()
-                .defaultTypes.set(VType.DOUBLE)
+                .defaultTypes.set(VarType.DOUBLE)
                 .read(Datasets.class, "pearsonheight.csv");
     }
 
@@ -90,7 +90,7 @@ public class Datasets {
         return Csv.instance()
                 .separatorChar.set(',')
                 .quotes.set(true)
-                .defaultTypes.set(VType.DOUBLE)
+                .defaultTypes.set(VarType.DOUBLE)
                 .read(Datasets.class, "chest.csv");
     }
 
@@ -99,14 +99,14 @@ public class Datasets {
                 .separatorChar.set(',')
                 .header.set(true)
                 .quotes.set(true)
-                .defaultTypes.set(VType.DOUBLE)
-                .types.add(VType.NOMINAL, "carname", "origin")
+                .defaultTypes.set(VarType.DOUBLE)
+                .types.add(VarType.NOMINAL, "carname", "origin")
                 .read(Datasets.class, "carmpg.csv");
     }
 
     public static Frame loadSpamBase() throws IOException {
-        return Csv.instance().defaultTypes.set(VType.DOUBLE)
-                .types.add(VType.NOMINAL, "spam")
+        return Csv.instance().defaultTypes.set(VarType.DOUBLE)
+                .types.add(VarType.NOMINAL, "spam")
                 .read(Datasets.class, "spam-base.csv");
     }
 
@@ -128,8 +128,8 @@ public class Datasets {
                     .separatorChar.set(',')
                     .header.set(true)
                     .quotes.set(false)
-                    .types.add(VType.DOUBLE, "temp", "humidity")
-                    .types.add(VType.NOMINAL, "windy")
+                    .types.add(VarType.DOUBLE, "temp", "humidity")
+                    .types.add(VarType.NOMINAL, "windy")
                     .read(Datasets.class, "play.csv");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -139,21 +139,21 @@ public class Datasets {
     public static Frame loadOlympic() throws IOException {
         return Csv.instance()
                 .quotes.set(false)
-                .types.add(VType.DOUBLE, "Edition")
+                .types.add(VarType.DOUBLE, "Edition")
                 .read(Datasets.class, "olympic.csv");
     }
 
     public static Frame loadProstateCancer() throws IOException {
         return Csv.instance()
                 .separatorChar.set('\t')
-                .defaultTypes.set(VType.DOUBLE, VType.NOMINAL)
+                .defaultTypes.set(VarType.DOUBLE, VarType.NOMINAL)
                 .read(Datasets.class, "prostate.csv");
     }
 
     public static Frame loadHousing() throws IOException {
         return Csv.instance()
                 .separatorChar.set(',')
-                .defaultTypes.set(VType.DOUBLE)
+                .defaultTypes.set(VarType.DOUBLE)
 //                .withTypes(VarType.BINARY, "CHAS")
                 .read(Datasets.class, "housing.csv");
     }
@@ -161,8 +161,8 @@ public class Datasets {
     public static Frame loadLifeScience() throws IOException {
         return Csv.instance()
                 .separatorChar.set(',')
-                .defaultTypes.set(VType.DOUBLE)
-                .types.add(VType.NOMINAL, "class")
+                .defaultTypes.set(VarType.DOUBLE)
+                .types.add(VarType.NOMINAL, "class")
                 .read(Datasets.class.getResourceAsStream("life_science.csv"));
     }
 
@@ -170,8 +170,8 @@ public class Datasets {
         try {
             return Csv.instance()
                     .quotes.set(true)
-                    .defaultTypes.set(VType.DOUBLE)
-                    .types.add(VType.NOMINAL, "ID")
+                    .defaultTypes.set(VarType.DOUBLE)
+                    .types.add(VarType.NOMINAL, "ID")
                     .read(Datasets.class.getResourceAsStream("ISL/advertising.csv"))
                     .removeVars("ID")
                     .copy();
@@ -216,7 +216,7 @@ public class Datasets {
     public static Frame loasSAheart() {
         try {
             return Csv.instance()
-                    .types.add(VType.NOMINAL, "famhist", "chd")
+                    .types.add(VarType.NOMINAL, "famhist", "chd")
                     .read(Datasets.class.getResourceAsStream("SAheart.csv"));
         } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage());
@@ -226,14 +226,14 @@ public class Datasets {
     public static Frame loadVowelTrain() {
         return Csv.instance()
                 .skipCols.set(t -> t == 0)
-                .types.add(VType.NOMINAL, "y")
+                .types.add(VarType.NOMINAL, "y")
                 .readUrl("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/vowel.train");
     }
 
     public static Frame loadVowelTest() {
         return Csv.instance()
                 .skipCols.set(t -> t == 0)
-                .types.add(VType.NOMINAL, "y")
+                .types.add(VarType.NOMINAL, "y")
                 .readUrl("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/vowel.test");
     }
 

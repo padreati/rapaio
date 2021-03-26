@@ -46,11 +46,11 @@ public class MappedFrame extends AbstractFrame {
     }
 
     public static MappedFrame byRow(Frame df, Mapping mapping, String varRange) {
-        return MappedFrame.byRow(df, mapping, VRange.of(varRange));
+        return MappedFrame.byRow(df, mapping, VarRange.of(varRange));
     }
 
-    public static MappedFrame byRow(Frame df, Mapping mapping, VRange vRange) {
-        return new MappedFrame(df, mapping, vRange.parseVarNames(df));
+    public static MappedFrame byRow(Frame df, Mapping mapping, VarRange varRange) {
+        return new MappedFrame(df, mapping, varRange.parseVarNames(df));
     }
 
     private static final long serialVersionUID = 1368765233851124235L;
@@ -127,7 +127,7 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public VType type(String varName) {
+    public VarType type(String varName) {
         return source.type(varName);
     }
 
@@ -142,7 +142,7 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame mapVars(VRange range) {
+    public Frame mapVars(VarRange range) {
         return MappedFrame.byRow(this, Mapping.range(0, this.rowCount()), range);
     }
 

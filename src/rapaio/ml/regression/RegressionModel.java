@@ -22,8 +22,8 @@
 package rapaio.ml.regression;
 
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
@@ -81,7 +81,7 @@ public interface RegressionModel extends Printable, Serializable {
     /**
      * @return array with types of the variables used for training
      */
-    VType[] inputTypes();
+    VarType[] inputTypes();
 
     /**
      * Shortcut method which returns the type of the input variable at the given position
@@ -89,7 +89,7 @@ public interface RegressionModel extends Printable, Serializable {
      * @param pos given position
      * @return variable type
      */
-    default VType inputType(int pos) {
+    default VarType inputType(int pos) {
         return inputTypes()[pos];
     }
 
@@ -124,7 +124,7 @@ public interface RegressionModel extends Printable, Serializable {
      *
      * @return array of target types
      */
-    VType[] targetTypes();
+    VarType[] targetTypes();
 
     /**
      * Shortcut method which returns target variable type
@@ -133,7 +133,7 @@ public interface RegressionModel extends Printable, Serializable {
      * @param pos given position
      * @return target variable type
      */
-    default VType targetType(int pos) {
+    default VarType targetType(int pos) {
         return targetTypes()[pos];
     }
 
@@ -143,7 +143,7 @@ public interface RegressionModel extends Printable, Serializable {
      *
      * @return first target variable type
      */
-    default VType firstTargetType() {
+    default VarType firstTargetType() {
         return targetTypes()[0];
     }
 

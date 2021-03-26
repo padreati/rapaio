@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.data.filter;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -7,8 +28,8 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
 import rapaio.data.VarDouble;
+import rapaio.data.VarRange;
 import rapaio.ml.regression.simple.L2Regression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,8 +60,8 @@ public class FImputeRegressionResultTest {
 
         var model = L2Regression.newModel();
 
-        FImputeRegression xfilter = FImputeRegression.of(model, VRange.of("x"), "x").newInstance();
-        FImputeRegression yfilter = FImputeRegression.of(model, VRange.of("y"), "y");
+        FImputeRegression xfilter = FImputeRegression.of(model, VarRange.of("x"), "x").newInstance();
+        FImputeRegression yfilter = FImputeRegression.of(model, VarRange.of("y"), "y");
 
         Frame df = SolidFrame.byVars(x, y);
 

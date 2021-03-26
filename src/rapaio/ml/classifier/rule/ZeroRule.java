@@ -23,8 +23,8 @@ package rapaio.ml.classifier.rule;
 
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
@@ -74,9 +74,9 @@ public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult
                 .maxInputCount(Integer.MAX_VALUE)
                 .minTargetCount(1)
                 .maxTargetCount(1)
-                .inputTypes(Arrays.asList(VType.DOUBLE, VType.INT, VType.NOMINAL, VType.BINARY, VType.LONG, VType.INSTANT, VType.STRING))
-                .targetType(VType.NOMINAL)
-                .targetType(VType.BINARY)
+                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.NOMINAL, VarType.BINARY, VarType.LONG, VarType.INSTANT, VarType.STRING))
+                .targetType(VarType.NOMINAL)
+                .targetType(VarType.BINARY)
                 .build();
     }
 

@@ -23,9 +23,9 @@ package rapaio.ml.clustering;
 
 import lombok.AllArgsConstructor;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarType;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.util.function.SBiConsumer;
@@ -65,7 +65,7 @@ public abstract class AbstractClusteringModel<M extends AbstractClusteringModel<
             "runningHook", "Running hook");
 
     protected String[] inputNames;
-    protected VType[] inputTypes;
+    protected VarType[] inputTypes;
     protected boolean learned = false;
 
     @Override
@@ -79,7 +79,7 @@ public abstract class AbstractClusteringModel<M extends AbstractClusteringModel<
     }
 
     @Override
-    public VType[] inputTypes() {
+    public VarType[] inputTypes() {
         return inputTypes;
     }
 
@@ -103,7 +103,7 @@ public abstract class AbstractClusteringModel<M extends AbstractClusteringModel<
     public FitSetup prepareFit(Frame df, Var weights) {
         List<String> inputs = Arrays.asList(df.varNames());
         this.inputNames = inputs.toArray(new String[0]);
-        this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VType[]::new);
+        this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
 
         capabilities().checkAtLearnPhase(df, weights);
         return FitSetup.valueOf(df, weights);

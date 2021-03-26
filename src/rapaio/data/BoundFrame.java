@@ -236,7 +236,7 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
-    public VType type(String varName) {
+    public VarType type(String varName) {
         return vars.get(indexes.get(varName)).type();
     }
 
@@ -251,7 +251,7 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame mapVars(VRange range) {
+    public Frame mapVars(VarRange range) {
         List<String> parseVarNames = range.parseVarNames(this);
         String[] selectedNamed = new String[parseVarNames.size()];
         List<Var> selectedVars = new ArrayList<>();

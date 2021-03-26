@@ -27,13 +27,13 @@ import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarLong;
 import rapaio.data.VarNominal;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -126,7 +126,7 @@ public class JoinFrame extends AbstractFrame {
     }
 
     @Override
-    public VType type(String name) {
+    public VarType type(String name) {
         return side[varIndexTree.get(name)] ? leftDf.type(name) : rightDf.type(name);
     }
 
@@ -141,7 +141,7 @@ public class JoinFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame mapVars(VRange range) {
+    public Frame mapVars(VarRange range) {
         return BoundFrame.byVars(this).mapVars(range);
     }
 

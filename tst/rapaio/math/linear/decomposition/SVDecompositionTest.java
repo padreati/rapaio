@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,7 +47,7 @@ public class SVDecompositionTest {
             int n = RandomSource.nextInt(20) + 1;
             int m = RandomSource.nextInt(20) + n;
 
-            DMatrix a = DMatrixStripe.random(m, n);
+            DMatrix a = DMatrix.random(m, n);
 
             SVDecomposition svd = SVDecomposition.from(a);
 
@@ -71,7 +70,7 @@ public class SVDecompositionTest {
 
     @Test
     void testDimension() {
-        assertThrows(IllegalArgumentException.class, () -> SVDecomposition.from(DMatrixStripe.random(10, 50)));
+        assertThrows(IllegalArgumentException.class, () -> SVDecomposition.from(DMatrix.random(10, 50)));
     }
 
     @Test
@@ -80,7 +79,7 @@ public class SVDecompositionTest {
         // for random matrices we expect a low condition number
 
         for (int i = 0; i < ROUNDS; i++) {
-            double c = SVDecomposition.from(DMatrixStripe.random(10, 10)).cond();
+            double c = SVDecomposition.from(DMatrix.random(10, 10)).cond();
             assertTrue(Math.log10(c) < 4);
         }
 
@@ -89,7 +88,7 @@ public class SVDecompositionTest {
         Normal norm = Normal.of(0, 0.000001);
 
         for (int i = 0; i < 100; i++) {
-            DMatrix a = DMatrixStripe.random(10, 10);
+            DMatrix a = DMatrix.random(10, 10);
 
             // we create the first column as a slightly modified
             // version of the second column, thus we have linearity

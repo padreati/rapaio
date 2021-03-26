@@ -25,8 +25,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
@@ -102,10 +102,10 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
     @Override
     public Capabilities capabilities() {
         return Capabilities.builder()
-                .inputTypes(Arrays.asList(VType.DOUBLE, VType.NOMINAL, VType.INT, VType.BINARY))
+                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.NOMINAL, VarType.INT, VarType.BINARY))
                 .minInputCount(1).maxInputCount(10_000)
                 .allowMissingInputValues(true)
-                .targetType(VType.NOMINAL)
+                .targetType(VarType.NOMINAL)
                 .minTargetCount(1).maxTargetCount(1)
                 .allowMissingTargetValues(false)
                 .build();

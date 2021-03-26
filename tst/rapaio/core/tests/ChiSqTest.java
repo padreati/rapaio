@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.math.linear.dense.DMatrixDense;
+import rapaio.math.linear.DMatrix;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -81,7 +81,7 @@ public class ChiSqTest {
     @Test
     void testIndependence() {
 
-        ChiSqIndependence test1 = ChiSqIndependence.from(DMatrixDense.copy(true, 2, 2, 38, 11, 14, 51), true);
+        ChiSqIndependence test1 = ChiSqIndependence.from(DMatrix.copy(2, 2, 38, 11, 14, 51), true);
         assertEquals("> ChiSqIndependence\n" +
                 "\n" +
                 "Pearson's Chi-squared test with Yates' continuity correction\n" +
@@ -101,7 +101,7 @@ public class ChiSqTest {
                 "total 52         62          114  \n" +
                 "\n", test1.toSummary());
 
-        ChiSqIndependence test2 = ChiSqIndependence.from(DMatrixDense.copy(true, 2, 2, 38, 11, 14, 51), false);
+        ChiSqIndependence test2 = ChiSqIndependence.from(DMatrix.copy(2, 2, 38, 11, 14, 51), false);
         assertEquals("> ChiSqIndependence\n" +
                 "\n" +
                 "Pearson's Chi-squared test\n" +

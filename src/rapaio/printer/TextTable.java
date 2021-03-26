@@ -22,9 +22,9 @@
 package rapaio.printer;
 
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
+import rapaio.data.VarType;
 import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
@@ -192,7 +192,7 @@ public class TextTable {
     }
 
     public void textType(int row, int col, Var var, int pos) {
-        if (var.type() == VType.DOUBLE) {
+        if (var.type() == VarType.DOUBLE) {
             floatFlex(row, col, var.getDouble(pos));
         } else {
             textRight(row, col, var.getLabel(pos));
@@ -200,7 +200,7 @@ public class TextTable {
     }
 
     public void textType(int row, int col, Frame df, int pos, String varName) {
-        if (df.type(varName) == VType.DOUBLE) {
+        if (df.type(varName) == VarType.DOUBLE) {
             floatFlex(row, col, df.getDouble(pos, varName));
         } else {
             textRight(row, col, df.getLabel(pos, varName));

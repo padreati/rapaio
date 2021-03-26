@@ -23,10 +23,10 @@ package rapaio.io;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.data.VarType;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -154,10 +154,10 @@ public class ArffPersistence {
                     if ("?".equals(tmp[j])) {
                         continue;
                     }
-                    if (VType.isNumeric(df.rvar(j).type())) {
+                    if (VarType.isNumeric(df.rvar(j).type())) {
                         df.rvar(j).setDouble(i, Double.parseDouble(tmp[j]));
                     }
-                    if (df.rvar(j).type().equals(VType.NOMINAL)) {
+                    if (df.rvar(j).type().equals(VarType.NOMINAL)) {
                         df.rvar(j).setLabel(i, fullTrim(tmp[j]));
                     }
                 }

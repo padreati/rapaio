@@ -23,7 +23,7 @@ package rapaio.math.linear.base;
 
 import org.junit.jupiter.api.Test;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.SOrder;
+import rapaio.math.linear.MType;
 import rapaio.math.linear.StandardDMatrixTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,13 +34,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DMatrixBaseTest extends StandardDMatrixTest {
 
     @Override
-    protected SOrder order() {
-        return SOrder.R;
-    }
-
-    @Override
     protected DMatrix generateSequential(int n, int m) {
-        DMatrixBase matrix = DMatrixBase.empty(n, m);
+        DMatrix matrix = DMatrix.empty(MType.BASE, n, m);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 matrix.set(i, j, i * m + j);
@@ -51,7 +46,7 @@ public class DMatrixBaseTest extends StandardDMatrixTest {
 
     @Override
     protected DMatrix generateFill(int n, int m, double fill) {
-        DMatrixBase matrix = DMatrixBase.empty(n, m);
+        DMatrix matrix = DMatrix.empty(MType.BASE, n, m);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 matrix.set(i, j, fill);
@@ -62,7 +57,7 @@ public class DMatrixBaseTest extends StandardDMatrixTest {
 
     @Override
     protected DMatrix generateIdentity(int n) {
-        DMatrixBase matrix = DMatrixBase.empty(n, n);
+        DMatrix matrix = DMatrix.empty(MType.BASE, n, n);
         for (int i = 0; i < n; i++) {
             matrix.set(i, i, 1);
         }
@@ -71,7 +66,7 @@ public class DMatrixBaseTest extends StandardDMatrixTest {
 
     @Override
     protected DMatrix generateCopy(double[][] values) {
-        return DMatrixBase.wrap(values);
+        return DMatrix.wrap(MType.BASE, true, values);
     }
 
     @Override
@@ -81,7 +76,7 @@ public class DMatrixBaseTest extends StandardDMatrixTest {
 
     @Test
     void testBuilders() {
-        DMatrix m = DMatrixBase.empty(10, 11);
+        DMatrix m = DMatrix.empty(MType.BASE, 10, 11);
         assertEquals(10, m.rowCount());
         assertEquals(11, m.colCount());
 

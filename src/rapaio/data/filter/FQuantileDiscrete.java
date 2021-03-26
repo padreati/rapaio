@@ -23,8 +23,8 @@ package rapaio.data.filter;
 
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public class FQuantileDiscrete extends AbstractFFilter {
 
-    public static FQuantileDiscrete split(VRange vRange, int k) {
+    public static FQuantileDiscrete split(VarRange varRange, int k) {
         if (k <= 1) {
             throw new IllegalArgumentException("Frame quantile discrete filter allows only splits greater than 1.");
         }
@@ -44,14 +44,14 @@ public class FQuantileDiscrete extends AbstractFFilter {
         for (int i = 0; i < p.length; i++) {
             p[i] = step * (i + 1);
         }
-        return new FQuantileDiscrete(p, vRange);
+        return new FQuantileDiscrete(p, varRange);
     }
 
-    public static FQuantileDiscrete on(VRange vRange, double... p) {
+    public static FQuantileDiscrete on(VarRange varRange, double... p) {
         if (p.length < 1) {
             throw new IllegalArgumentException("Frame quantile discrete filter requires at least one probability.");
         }
-        return new FQuantileDiscrete(p, vRange);
+        return new FQuantileDiscrete(p, varRange);
     }
 
     private static final long serialVersionUID = -2447577449010618416L;
@@ -59,14 +59,14 @@ public class FQuantileDiscrete extends AbstractFFilter {
     private final Map<String, VQuantileDiscrete> filters = new HashMap<>();
     private final double[] p;
 
-    private FQuantileDiscrete(double[] p, VRange vRange) {
-        super(vRange);
+    private FQuantileDiscrete(double[] p, VarRange varRange) {
+        super(varRange);
         this.p = Arrays.copyOf(p, p.length);
     }
 
     @Override
     public FQuantileDiscrete newInstance() {
-        return new FQuantileDiscrete(p, vRange);
+        return new FQuantileDiscrete(p, varRange);
     }
 
     @Override

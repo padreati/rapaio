@@ -27,11 +27,11 @@ import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.data.filter.FRefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
@@ -75,12 +75,12 @@ public class RTreeTest {
         RTree rt1 = RTree.newCART()
                 .maxDepth.set(2)
                 .maxSize.set(10)
-                .search.add(VType.BINARY, Search.Ignore)
-                .search.add(VType.INT, Search.Ignore)
-                .search.add(VType.LONG, Search.Ignore)
-                .search.add(VType.DOUBLE, Search.Ignore)
-                .search.add(VType.NOMINAL, Search.Ignore)
-                .search.add(VType.STRING, Search.Ignore)
+                .search.add(VarType.BINARY, Search.Ignore)
+                .search.add(VarType.INT, Search.Ignore)
+                .search.add(VarType.LONG, Search.Ignore)
+                .search.add(VarType.DOUBLE, Search.Ignore)
+                .search.add(VarType.NOMINAL, Search.Ignore)
+                .search.add(VarType.STRING, Search.Ignore)
                 .loss.set(new L2Loss())
                 .splitter.set(Splitter.Ignore)
                 .varSelector.set(VarSelector.auto())
@@ -112,7 +112,7 @@ public class RTreeTest {
                 "testMap={BINARY=Ignore,INT=Ignore,NOMINAL=Ignore,DOUBLE=Ignore,LONG=Ignore,STRING=Ignore}," +
                 "varSelector=VarSelector[AUTO]}", rt2.fullName());
 
-        Map<VType, Search> emptyMap = new HashMap<>();
+        Map<VarType, Search> emptyMap = new HashMap<>();
         assertEquals(emptyMap, RTree.newDecisionStump().search.set(emptyMap).search.get());
     }
 
@@ -129,7 +129,7 @@ public class RTreeTest {
 
     @Test
     void testSimple() throws IOException {
-        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID", "Radio", "Newspaper"));
+        Frame df = Datasets.loadISLAdvertising().removeVars(VarRange.of("ID", "Radio", "Newspaper"));
 
         String v = "TV";
         Frame t = FRefSort.by(df.rvar(v).refComparator()).fapply(df);
@@ -245,7 +245,7 @@ public class RTreeTest {
 
     @Test
     void testISLR() {
-        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
+        Frame df = Datasets.loadISLAdvertising().removeVars(VarRange.of("ID"));
 
         Frame[] frames = SamplingTools.randomSampleSlices(df, 0.7, 0.3);
 

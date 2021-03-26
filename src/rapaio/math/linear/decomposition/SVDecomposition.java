@@ -22,7 +22,7 @@
 package rapaio.math.linear.decomposition;
 
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.MType;
 
 import static java.lang.StrictMath.hypot;
 
@@ -494,7 +494,7 @@ public class SVDecomposition implements java.io.Serializable {
     }
 
     public DMatrix getU() {
-        return DMatrixStripe.copy(u, 0, rowCount, 0, Math.min(rowCount + 1, colCount));
+        return DMatrix.copy(MType.RSTRIPE, true, 0, rowCount, 0, Math.min(rowCount + 1, colCount), u);
     }
 
     /**
@@ -503,7 +503,7 @@ public class SVDecomposition implements java.io.Serializable {
      * @return RV
      */
     public DMatrix getV() {
-        return DMatrixStripe.copy(v);
+        return DMatrix.copy(MType.RSTRIPE, true, v);
     }
 
     /**
@@ -521,7 +521,7 @@ public class SVDecomposition implements java.io.Serializable {
      * @return S
      */
     public DMatrix getS() {
-        DMatrix S = DMatrixStripe.empty(colCount, colCount);
+        DMatrix S = DMatrix.empty(colCount, colCount);
         for (int i = 0; i < colCount; i++) {
             S.set(i, i, this.s[i]);
         }

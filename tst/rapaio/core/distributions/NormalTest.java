@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,7 +24,7 @@ package rapaio.core.distributions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
-import rapaio.data.VType;
+import rapaio.data.VarType;
 import rapaio.io.Csv;
 
 import java.io.IOException;
@@ -49,13 +46,13 @@ public class NormalTest {
         otherDf = Csv.instance()
                 .header.set(true)
                 .separatorChar.set(',')
-                .defaultTypes.set(VType.DOUBLE)
+                .defaultTypes.set(VarType.DOUBLE)
                 .naValues.set("?", "-Inf", "Inf", "NA")
                 .read(this.getClass(), "other_normal.csv");
         stdDf = Csv.instance()
                 .header.set(true)
                 .separatorChar.set(',')
-                .defaultTypes.set(VType.DOUBLE)
+                .defaultTypes.set(VarType.DOUBLE)
                 .naValues.set("?", "-Inf", "Inf", "NA")
                 .read(this.getClass(), "standard_normal.csv");
     }

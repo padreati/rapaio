@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.correlation.CorrPearson;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,7 +44,7 @@ public class FRandomProjectionTest {
     @Test
     void gausianSDTest() {
 
-        FRandomProjection rp = FRandomProjection.newGaussianSd(3, VRange.all()).newInstance();
+        FRandomProjection rp = FRandomProjection.newGaussianSd(3, VarRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
         df.printSummary();
 
@@ -64,7 +61,7 @@ public class FRandomProjectionTest {
     @Test
     void achioptasTest() {
 
-        FRandomProjection rp = FRandomProjection.newAchlioptas(3, VRange.all()).newInstance();
+        FRandomProjection rp = FRandomProjection.newAchlioptas(3, VarRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
         df.printSummary();
 
@@ -82,7 +79,7 @@ public class FRandomProjectionTest {
     void achioptas5Test() {
 
         RandomSource.setSeed(1);
-        FRandomProjection rp = FRandomProjection.newAchlioptas(3, 5, VRange.all()).newInstance();
+        FRandomProjection rp = FRandomProjection.newAchlioptas(3, 5, VarRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
 
         assertEquals(3, df.varCount());

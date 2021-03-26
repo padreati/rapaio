@@ -23,8 +23,6 @@ package rapaio.math.linear.decomposition;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DMatrixStripe;
-import rapaio.math.linear.dense.DVectorDense;
 
 import java.io.Serializable;
 
@@ -52,7 +50,7 @@ public class QRDecomposition implements Serializable {
     private QRDecomposition(DMatrix A) {
         // Initialize.
         QR = A.copy();
-        Rdiag = DVectorDense.zeros(QR.colCount());
+        Rdiag = DVector.zeros(QR.colCount());
 
         // Main loop.
         for (int k = 0; k < QR.colCount(); k++) {
@@ -107,7 +105,7 @@ public class QRDecomposition implements Serializable {
      * @return Lower trapezoidal matrix whose columns define the reflections
      */
     public DMatrix getH() {
-        DMatrix H = DMatrixStripe.empty(QR.rowCount(), QR.colCount());
+        DMatrix H = DMatrix.empty(QR.rowCount(), QR.colCount());
         for (int i = 0; i < QR.rowCount(); i++) {
             for (int j = 0; j < QR.colCount(); j++) {
                 if (i >= j) {
@@ -126,7 +124,7 @@ public class QRDecomposition implements Serializable {
      * @return R
      */
     public DMatrix getR() {
-        DMatrix R = DMatrixStripe.empty(QR.colCount(), QR.colCount());
+        DMatrix R = DMatrix.empty(QR.colCount(), QR.colCount());
         for (int i = 0; i < QR.colCount(); i++) {
             for (int j = 0; j < QR.colCount(); j++) {
                 if (i < j) {
@@ -148,7 +146,7 @@ public class QRDecomposition implements Serializable {
      */
 
     public DMatrix getQ() {
-        DMatrix Q = DMatrixStripe.empty(QR.rowCount(), QR.colCount());
+        DMatrix Q = DMatrix.empty(QR.rowCount(), QR.colCount());
         for (int k = QR.colCount() - 1; k >= 0; k--) {
             for (int i = 0; i < QR.rowCount(); i++) {
                 Q.set(i, k, 0.0);

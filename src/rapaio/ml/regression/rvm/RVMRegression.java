@@ -26,15 +26,13 @@ import lombok.RequiredArgsConstructor;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.SOrder;
+import rapaio.math.linear.MType;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.LUDecomposition;
-import rapaio.math.linear.dense.DMatrixStripe;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.ml.classifier.svm.kernel.Kernel;
 import rapaio.ml.classifier.svm.kernel.RBFKernel;
 import rapaio.ml.common.Capabilities;
@@ -132,8 +130,8 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         return Capabilities.builder()
                 .allowMissingInputValues(false)
                 .allowMissingTargetValues(false)
-                .inputTypes(List.of(VType.DOUBLE, VType.INT, VType.BINARY))
-                .targetType(VType.DOUBLE)
+                .inputTypes(List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY))
+                .targetType(VarType.DOUBLE)
                 .maxInputCount(Integer.MAX_VALUE)
                 .minInputCount(1)
                 .maxTargetCount(1)
@@ -163,7 +161,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
     private DMatrix buildFeatures(Frame df) {
         int inputLen = inputNames.length;
         int offset = (intercept.get() ? 1 : 0);
-        DMatrix m = DMatrixStripe.empty(SOrder.R, df.rowCount(), inputLen + offset);
+        DMatrix m = DMatrix.empty(MType.RSTRIPE, df.rowCount(), inputLen + offset);
         for (int i = 0; i < df.rowCount(); i++) {
             if (intercept.get()) {
                 m.set(i, 0, 1.0);
@@ -186,7 +184,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             }
             prediction.prediction(firstTargetName()).setDouble(i, pred);
             if (quantiles != null && quantiles.length > 0) {
-                DVector phi_m = DVectorDense.zeros(m.size());
+                DVector phi_m = DVector.zeros(m.size());
                 for (int j = 0; j < m.size(); j++) {
                     phi_m.set(j, kernel.get().compute(feat.mapRow(i), x.mapRow(j)));
                 }
@@ -273,7 +271,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         protected DMatrix buildX(Frame df) {
             int inputLen = parent.inputNames.length;
             int offset = (parent.intercept.get() ? 1 : 0);
-            DMatrix m = DMatrixStripe.empty(SOrder.R, df.rowCount(), inputLen + offset);
+            DMatrix m = DMatrix.empty(MType.RSTRIPE, df.rowCount(), inputLen + offset);
             for (int i = 0; i < df.rowCount(); i++) {
                 if (parent.intercept.get()) {
                     m.set(i, 0, 1.0);
@@ -287,7 +285,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         protected DMatrix buildPhi() {
             int n = x.rowCount();
-            DMatrix m = DMatrixStripe.empty(SOrder.R, n, n);
+            DMatrix m = DMatrix.empty(MType.RSTRIPE, n, n);
             Kernel k = parent.kernel.get();
             for (int i = 0; i < n; i++) {
                 m.set(i, i, k.compute(x.mapRow(i), x.mapRow(i)));
@@ -301,7 +299,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         }
 
         protected DVector buildTarget(Frame df) {
-            DVector t = DVectorDense.zeros(df.rowCount());
+            DVector t = DVector.zeros(df.rowCount());
             int index = df.varIndex(parent.targetNames[0]);
             for (int i = 0; i < df.rowCount(); i++) {
                 t.set(i, df.getDouble(i, index));
@@ -337,12 +335,12 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
                     t.inc(i, i, alpha.get(i));
                 }
 
-                sigma = LUDecomposition.from(t).solve(DMatrixStripe.identity(t.rowCount()));
+                sigma = LUDecomposition.from(t).solve(DMatrix.identity(t.rowCount()));
                 m = sigma.dot(phi_t_y).mult(beta);
 
                 // compute alpha and beta
 
-                DVector gamma = DVectorDense.from(m.size(), i -> 1 - alpha.get(i) * sigma.get(i, i));
+                DVector gamma = DVector.from(m.size(), i -> 1 - alpha.get(i) * sigma.get(i, i));
 
                 DVector oldAlpha = alpha.copy();
 
@@ -421,7 +419,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         private void initializeAlphaBeta() {
             beta = 1.0 / (y.variance() * 0.1);
-            alpha = DVectorDense.from(phi.colCount(), row -> RandomSource.nextDouble() / 10);
+            alpha = DVector.from(phi.colCount(), row -> RandomSource.nextDouble() / 10);
         }
 
         protected void updateResults(RVMRegression parent, boolean convergent, int iterations) {
@@ -575,7 +573,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         private void initialize() {
             beta = 1.0 / (y.variance() * 0.1);
-            alpha = DVectorDense.fill(phi.rowCount(), Double.POSITIVE_INFINITY);
+            alpha = DVector.fill(phi.rowCount(), Double.POSITIVE_INFINITY);
 
             // select one alpha
 
@@ -604,7 +602,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             for (int i = 0; i < indexes.length; i++) {
                 m_sigma_inv.inc(i, i, alpha.get(indexes[i]));
             }
-            sigma = CholeskyDecomposition.from(m_sigma_inv).solve(DMatrixStripe.identity(indexes.length));
+            sigma = CholeskyDecomposition.from(m_sigma_inv).solve(DMatrix.identity(indexes.length));
             m = sigma.dot(phi.mapRows(indexes).dot(y)).mult(beta);
         }
 
@@ -632,7 +630,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         private void computeBeta() {
             DMatrix pruned_phi_t = phi.mapRows(indexes);
-            DVector gamma = DVectorDense.from(m.size(), i -> 1 - alpha.get(indexes[i]) * sigma.get(i, i));
+            DVector gamma = DVector.from(m.size(), i -> 1 - alpha.get(indexes[i]) * sigma.get(i, i));
             DVector delta = pruned_phi_t.t().dot(m).sub(y);
             beta = (n - gamma.sum()) / delta.dot(delta);
         }

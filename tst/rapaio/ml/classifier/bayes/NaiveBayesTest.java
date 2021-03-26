@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,10 +24,10 @@ package rapaio.ml.classifier.bayes;
 import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.classifier.bayes.nb.Estimator;
@@ -65,7 +62,7 @@ public class NaiveBayesTest {
 
         // change default parameters
 
-        nb.estimators.set(GaussianEstimator.forType(iris, VType.DOUBLE).toArray(new Estimator[0]));
+        nb.estimators.set(GaussianEstimator.forType(iris, VarType.DOUBLE).toArray(new Estimator[0]));
         nb.prior.set(new PriorUniform());
 
         assertEquals("NaiveBayes", nb.name());
@@ -189,7 +186,7 @@ public class NaiveBayesTest {
     @Test
     void testPrinter() {
         Frame iris = Datasets.loadIrisDataset();
-        NaiveBayes model = NaiveBayes.newModel().estimators.add(GaussianEstimator.forType(iris, VType.DOUBLE).toArray(new Estimator[0]));
+        NaiveBayes model = NaiveBayes.newModel().estimators.add(GaussianEstimator.forType(iris, VarType.DOUBLE).toArray(new Estimator[0]));
 
         assertEquals("NaiveBayes{prior=MLE{},estimators=[" +
                 "Gaussian{test=sepal-length, values=[]}," +

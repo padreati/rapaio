@@ -23,18 +23,16 @@ package rapaio.experiment.ml.analysis;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.decomposition.QRDecomposition;
-import rapaio.math.linear.dense.DMatrixStripe;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -93,12 +91,12 @@ public class LDA implements Printable {
         validate(df, targetVars);
 
         logger.fine("start lda predict");
-        DMatrix xx = DMatrixStripe.copy(df.removeVars(VRange.of(targetName)));
+        DMatrix xx = DMatrix.copy(df.removeVars(VarRange.of(targetName)));
 
         // compute mean and sd
 
-        mean = DVectorDense.zeros(xx.colCount());
-        sd = DVectorDense.zeros(xx.colCount());
+        mean = DVector.zeros(xx.colCount());
+        sd = DVector.zeros(xx.colCount());
         for (int i = 0; i < xx.colCount(); i++) {
             mean.set(i, xx.mapCol(i).mean());
             sd.set(i, Math.sqrt(xx.mapCol(i).variance()));
@@ -130,7 +128,7 @@ public class LDA implements Printable {
 
         classMean = new DVector[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
-            classMean[i] = DVectorDense.zeros(x[i].colCount());
+            classMean[i] = DVector.zeros(x[i].colCount());
             for (int j = 0; j < x[i].colCount(); j++) {
                 classMean[i].set(j, x[i].mapCol(j).mean());
             }
@@ -138,21 +136,21 @@ public class LDA implements Printable {
 
         // build within scatter matrix
 
-        DMatrix sw = DMatrixStripe.empty(inputNames.length, inputNames.length);
+        DMatrix sw = DMatrix.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.size(); i++) {
             sw.add(x[i].scatter());
         }
 
         // build between-class scatter matrix
 
-        DMatrix sb = DMatrixStripe.empty(inputNames.length, inputNames.length);
+        DMatrix sb = DMatrix.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.size(); i++) {
             DMatrix cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().sub(mean.asMatrix());
             sb.add(cm.dot(cm.t()).mult(x[i].rowCount()));
         }
 
         // inverse sw
-        DMatrix swi = QRDecomposition.from(sw).solve(DMatrixStripe.identity(inputNames.length));
+        DMatrix swi = QRDecomposition.from(sw).solve(DMatrix.identity(inputNames.length));
 //        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
 
         // use decomp of sbe
@@ -162,8 +160,8 @@ public class LDA implements Printable {
         EigenPair p = Linear.eigenDecomp(sbplus.dot(swi).dot(sbplus), maxRuns, tol);
 
         logger.fine("compute eigenvalues");
-        eigenValues = p.getDVector();
-        eigenVectors = sbminus.dot(p.getDMatrix());
+        eigenValues = p.getVector();
+        eigenVectors = sbminus.dot(p.getMatrix());
 //        eigenVectors = p.vectors();
 
         logger.fine("sort eigen values and vectors");
@@ -181,7 +179,7 @@ public class LDA implements Printable {
     }
 
     public Frame predict(Frame df, BiFunction<DVector, DMatrix, Integer> kFunction) {
-        DMatrix x = DMatrixStripe.copy(df.mapVars(inputNames));
+        DMatrix x = DMatrix.copy(df.mapVars(inputNames));
 
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {
@@ -200,23 +198,23 @@ public class LDA implements Printable {
             names[i] = "lda_" + (i + 1);
         }
         DMatrix result = x.dot(eigenVectors.mapCols(dim));
-        Frame rest = df.removeVars(VRange.of(inputNames));
+        Frame rest = df.removeVars(VarRange.of(inputNames));
         return rest.varCount() == 0 ?
                 SolidFrame.matrix(result, names) :
-                SolidFrame.matrix(result, names).bindVars(df.removeVars(VRange.of(inputNames)));
+                SolidFrame.matrix(result, names).bindVars(df.removeVars(VarRange.of(inputNames)));
     }
 
     private void validate(Frame df, String... targetVars) {
 
-        List<String> targetNames = VRange.of(targetVars).parseVarNames(df);
+        List<String> targetNames = VarRange.of(targetVars).parseVarNames(df);
         if (targetNames.size() > 1)
             throw new IllegalArgumentException("LDA needs one target var");
         targetName = targetNames.get(0);
 
-        Set<VType> allowedTypes = new HashSet<>(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE));
+        Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE));
         df.varStream().forEach(var -> {
             if (targetName.equals(var.name())) {
-                if (!var.type().equals(VType.NOMINAL)) {
+                if (!var.type().equals(VarType.NOMINAL)) {
                     throw new IllegalArgumentException("target var must be nominal");
                 }
                 List<String> varLevels = var.levels();
@@ -227,7 +225,7 @@ public class LDA implements Printable {
                 throw new IllegalArgumentException("column type not allowed");
             }
         });
-        inputNames = df.varStream().filter(v -> !v.name().equals(targetName)).map(Var::name).toArray(String[]::new);
+        inputNames = df.varStream().map(Var::name).filter(name -> !name.equals(targetName)).toArray(String[]::new);
     }
 
     @Override

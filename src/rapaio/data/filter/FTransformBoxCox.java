@@ -22,7 +22,7 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
@@ -30,24 +30,24 @@ import rapaio.data.VRange;
 public class FTransformBoxCox extends AbstractFFilter {
 
     public static FTransformBoxCox on(double lambda, double shift, String... varNames) {
-        return new FTransformBoxCox(lambda, shift, VRange.of(varNames));
+        return new FTransformBoxCox(lambda, shift, VarRange.of(varNames));
     }
 
-    public static FTransformBoxCox on(double lambda, double shift, VRange vRange) {
-        return new FTransformBoxCox(lambda, shift, vRange);
+    public static FTransformBoxCox on(double lambda, double shift, VarRange varRange) {
+        return new FTransformBoxCox(lambda, shift, varRange);
     }
 
     private static final long serialVersionUID = 1804199711139024129L;
     private final VTransformBoxCox bct;
 
-    private FTransformBoxCox(double lambda, double shift, VRange vRange) {
-        super(vRange);
+    private FTransformBoxCox(double lambda, double shift, VarRange varRange) {
+        super(varRange);
         this.bct = VTransformBoxCox.with(lambda, shift);
     }
 
     @Override
     public FTransformBoxCox newInstance() {
-        return new FTransformBoxCox(bct.lambda(), bct.shift(), vRange);
+        return new FTransformBoxCox(bct.lambda(), bct.shift(), varRange);
     }
 
     @Override

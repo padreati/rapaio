@@ -25,12 +25,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
@@ -98,10 +97,10 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
     public Capabilities capabilities() {
         return Capabilities.builder()
                 .minInputCount(1).maxInputCount(1_000_000)
-                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.NOMINAL, VType.DOUBLE))
+                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE))
                 .allowMissingInputValues(true)
                 .minTargetCount(1).maxTargetCount(1)
-                .targetType(VType.NOMINAL)
+                .targetType(VarType.NOMINAL)
                 .allowMissingTargetValues(false)
                 .build();
     }
@@ -112,15 +111,15 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
         // algorithm described by ESTL pag. 387
 
         K = firstTargetLevels().size() - 1;
-        f = DMatrixStripe.empty(K, df.rowCount());
-        p = DMatrixStripe.empty(K, df.rowCount());
-        residual = DMatrixStripe.empty(K, df.rowCount());
+        f = DMatrix.empty(K, df.rowCount());
+        p = DMatrix.empty(K, df.rowCount());
+        residual = DMatrix.empty(K, df.rowCount());
 
         trees = IntStream.range(0, K).mapToObj(i -> new ArrayList<RTree>()).collect(Collectors.toList());
 
         // build individual regression targets for each class
 
-        final DMatrixStripe yk = DMatrixStripe.fill(K, df.rowCount(), 0.0);
+        final DMatrix yk = DMatrix.fill(K, df.rowCount(), 0.0);
         for (int i = 0; i < df.rowCount(); i++) {
             yk.set(df.getInt(i, firstTargetName()) - 1, i, 1);
         }
@@ -177,7 +176,7 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
     public ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
 
-        DMatrix p_f = DMatrixStripe.empty(K, df.rowCount());
+        DMatrix p_f = DMatrix.empty(K, df.rowCount());
 
         for (int k = 0; k < K; k++) {
             for (RegressionModel tree : trees.get(k)) {

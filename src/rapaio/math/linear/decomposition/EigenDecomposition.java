@@ -22,7 +22,6 @@
 package rapaio.math.linear.decomposition;
 
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 import java.io.Serializable;
 
@@ -71,7 +70,7 @@ public class EigenDecomposition implements Serializable {
      */
     private EigenDecomposition(DMatrix a) {
         dimension = a.colCount();
-        eigenVectors = DMatrixStripe.empty(dimension, dimension);
+        eigenVectors = DMatrix.empty(dimension, dimension);
         eigenValues1 = new double[dimension];
         eigenValues2 = new double[dimension];
 
@@ -940,7 +939,7 @@ public class EigenDecomposition implements Serializable {
      * @return D the block diagonal eigenvalue matrix
      */
     public DMatrix getD() {
-        DMatrix d = DMatrixStripe.empty(dimension, dimension);
+        DMatrix d = DMatrix.empty(dimension, dimension);
         for (int i = 0; i < dimension; i++) {
             d.set(i, i, eigenValues1[i]);
             if (eigenValues2[i] > 0) {

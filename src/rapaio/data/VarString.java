@@ -98,8 +98,8 @@ public class VarString extends AbstractVar {
     }
 
     @Override
-    public VType type() {
-        return VType.STRING;
+    public VarType type() {
+        return VarType.STRING;
     }
 
     @Override
@@ -238,7 +238,7 @@ public class VarString extends AbstractVar {
 
     @Override
     public boolean deepEquals(Var var) {
-        if (var.type() != VType.STRING) {
+        if (var.type() != VarType.STRING) {
             return false;
         }
         if (var.size() != values.size()) {

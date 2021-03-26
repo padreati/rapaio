@@ -23,8 +23,7 @@ package rapaio.math.linear.base;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.SOrder;
-import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.MType;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -399,8 +398,8 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DMatrix asMatrix(SOrder order) {
-        DMatrixStripe res = DMatrixStripe.empty(order, size(), 1);
+    public DMatrix asMatrix(MType type) {
+        DMatrix res = DMatrix.empty(type, size(), 1);
         for (int i = 0; i < size(); i++) {
             res.set(i, 0, get(i));
         }

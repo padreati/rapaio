@@ -27,7 +27,6 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -49,7 +48,7 @@ public class VectorDistanceMatrixTest {
         Normal normal = Normal.of(0, 10);
 
         // generate symmetric matrix
-        DMatrix sym = DMatrixStripe.empty(4, 4);
+        DMatrix sym = DMatrix.empty(4, 4);
         for (int i = 0; i < 4; i++) {
             for (int j = i; j < 4; j++) {
                 double next = normal.sampleNext();

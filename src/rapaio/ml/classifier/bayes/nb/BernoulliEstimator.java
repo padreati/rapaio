@@ -23,9 +23,9 @@ package rapaio.ml.classifier.bayes.nb;
 
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.printer.Format;
 
 import java.util.Arrays;
@@ -56,12 +56,12 @@ public class BernoulliEstimator extends AbstractEstimator {
         return Arrays.stream(testVarNames).map(name -> new BernoulliEstimator(name, laplaceSmoother)).collect(Collectors.toList());
     }
 
-    public static List<BernoulliEstimator> forRange(Frame df, VRange vRange) {
-        return forRange(1, df, vRange);
+    public static List<BernoulliEstimator> forRange(Frame df, VarRange varRange) {
+        return forRange(1, df, varRange);
     }
 
-    public static List<BernoulliEstimator> forRange(double laplaceSmoother, Frame df, VRange vRange) {
-        List<String> varNames = vRange.parseVarNames(df);
+    public static List<BernoulliEstimator> forRange(double laplaceSmoother, Frame df, VarRange varRange) {
+        List<String> varNames = varRange.parseVarNames(df);
         return forNames(laplaceSmoother, varNames.toArray(String[]::new));
     }
 
@@ -109,7 +109,7 @@ public class BernoulliEstimator extends AbstractEstimator {
 
     @Override
     public boolean fit(Frame df, Var weights, String targetName) {
-        if (!df.type(testName).equals(VType.BINARY)) {
+        if (!df.type(testName).equals(VarType.BINARY)) {
             return false;
         }
         var density = DensityTable.fromLevelCounts(true, df, testName, targetName);

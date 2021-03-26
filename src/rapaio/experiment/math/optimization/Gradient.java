@@ -23,7 +23,6 @@ package rapaio.experiment.math.optimization;
 
 import rapaio.math.MTools;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.util.Pair;
 
 /**
@@ -41,7 +40,7 @@ public interface Gradient {
      * @return Pair(Vector gradient, Double loss)
      */
     default Pair<DVector, Double> compute(DVector data, double label, DVector weights) {
-        DVector gradient = DVectorDense.zeros(weights.size());
+        DVector gradient = DVector.zeros(weights.size());
         Double loss = compute(data, label, weights, gradient);
         return Pair.from(gradient, loss);
     }
@@ -187,7 +186,7 @@ class LogisticGradient implements Gradient {
 
     @Override
     public Pair<DVector, Double> compute(DVector data, double label, DVector weights) {
-        DVector gradient = DVectorDense.zeros(weights.size());
+        DVector gradient = DVector.zeros(weights.size());
         double loss = compute(data, label, weights, gradient);
         return Pair.from(gradient, loss);
     }
@@ -226,7 +225,7 @@ class LogisticGradient implements Gradient {
         double maxMargin = Double.NEGATIVE_INFINITY;
         double maxMarginIndex = 0;
 
-        DVector margins = DVectorDense.zeros(numClasses - 1);
+        DVector margins = DVector.zeros(numClasses - 1);
         for (int i = 0; i < margins.size(); i++) {
             double margin = 0.0;
             for (int j = 0; j < data.size(); j++) {
@@ -306,7 +305,7 @@ class HingeGradient implements Gradient {
             gradient.mult(-labelScaled);
             return Pair.from(gradient, 1.0 - labelScaled * dotProduct);
         } else {
-            return Pair.from(DVectorDense.zeros(weights.size()), 0.0);
+            return Pair.from(DVector.zeros(weights.size()), 0.0);
         }
     }
 

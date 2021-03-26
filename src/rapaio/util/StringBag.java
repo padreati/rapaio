@@ -22,7 +22,7 @@
 package rapaio.util;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 import rapaio.data.stream.FSpot;
 
 import java.util.HashMap;
@@ -46,17 +46,17 @@ import java.util.stream.Collectors;
  */
 public class StringBag implements Comparable<StringBag> {
 
-    public static StringBag of(Frame df, int row, VRange vRange) {
+    public static StringBag of(Frame df, int row, VarRange varRange) {
         Map<String, String> map = new HashMap<>();
-        for (String varName : vRange.parseVarNames(df)) {
+        for (String varName : varRange.parseVarNames(df)) {
             map.put(varName, df.getLabel(row, varName));
         }
         return new StringBag(map);
     }
 
-    public static StringBag of(FSpot s, VRange vRange) {
+    public static StringBag of(FSpot s, VarRange varRange) {
         Map<String, String> map = new HashMap<>();
-        for (String varName : vRange.parseVarNames(s.frame())) {
+        for (String varName : varRange.parseVarNames(s.frame())) {
             map.put(varName, s.getLabel(varName));
         }
         return new StringBag(map);

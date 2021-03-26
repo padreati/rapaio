@@ -26,10 +26,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.experiment.ml.regression.tree.GBTRtree;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
@@ -108,9 +108,9 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
     public Capabilities capabilities() {
         return Capabilities.builder()
                 .minInputCount(1).maxInputCount(1_000_000)
-                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL))
+                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL))
                 .minTargetCount(1).maxTargetCount(1)
-                .targetType(VType.DOUBLE)
+                .targetType(VarType.DOUBLE)
                 .allowMissingInputValues(true)
                 .allowMissingTargetValues(false)
                 .build();
@@ -122,7 +122,7 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
         trees = new ArrayList<>();
 
         Var y = df.rvar(firstTargetName());
-        Frame x = df.removeVars(VRange.of(firstTargetName()));
+        Frame x = df.removeVars(VarRange.of(firstTargetName()));
 
         initModel.get().fit(df, weights, firstTargetName());
         fitValues = initModel.get().predict(df, false).firstPrediction().copy();

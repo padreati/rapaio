@@ -23,6 +23,7 @@ package rapaio.math.linear.base;
 
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.VType;
 import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.Arrays;
@@ -42,14 +43,19 @@ public class DVectorBase extends AbstractDVector {
     protected final int size;
     protected final double[] values;
 
-    protected DVectorBase(int size, double[] values) {
+    public DVectorBase(int size) {
+        this.size = size;
+        this.values = new double[size];
+    }
+
+    public DVectorBase(int size, double[] values) {
         this.size = size;
         this.values = values;
     }
 
     @Override
-    public Type type() {
-        return Type.BASE;
+    public VType type() {
+        return VType.BASE;
     }
 
     @Override
@@ -82,14 +88,14 @@ public class DVectorBase extends AbstractDVector {
     }
 
     @Override
-    public DVector copy(Type type) {
+    public DVector copy(VType type) {
         double[] copy = new double[size];
         System.arraycopy(values, 0, copy, 0, size);
         switch (type) {
             case BASE:
-                return DVectorBase.wrap(copy);
+                return new DVectorBase(size, copy);
             case DENSE:
-                return DVectorDense.wrap(copy);
+                return new DVectorDense(size, copy);
             default:
                 throw new IllegalArgumentException("DVType." + type.name() + " cannot be used to create a copy.");
         }

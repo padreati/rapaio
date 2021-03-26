@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -47,8 +44,8 @@ public class SortedFrameTest {
     void init() throws IOException {
         df = Csv.instance()
                 .quotes.set(false)
-                .types.add(VType.DOUBLE, "z")
-                .types.add(VType.INT, "y")
+                .types.add(VarType.DOUBLE, "z")
+                .types.add(VarType.INT, "y")
                 .read(SortedFrameTest.class, "sorted-frame.csv");
     }
 

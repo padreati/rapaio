@@ -24,10 +24,10 @@ package rapaio.math.linear.base;
 import rapaio.math.MTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.MType;
 import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.math.linear.decomposition.SVDecomposition;
 import rapaio.math.linear.dense.DMatrixMap;
-import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -57,7 +57,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DVector mapRowCopy(final int row) {
-        DVectorDense v = DVectorDense.zeros(colCount());
+        DVector v = DVector.zeros(colCount());
         for (int j = 0; j < colCount(); j++) {
             v.set(j, get(row, j));
         }
@@ -71,7 +71,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix mapRowsCopy(final int... rows) {
-        DMatrixStripe copy = DMatrixStripe.empty(rows.length, colCount());
+        DMatrix copy = DMatrix.empty(rows.length, colCount());
         for (int i = 0; i < rows.length; i++) {
             for (int j = 0; j < colCount(); j++) {
                 copy.set(i, j, get(rows[i], j));
@@ -91,7 +91,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix rangeRowsCopy(int start, int end) {
-        DMatrixStripe copy = DMatrixStripe.empty(end - start, colCount());
+        DMatrix copy = DMatrix.empty(MType.RSTRIPE, end - start, colCount());
         for (int i = start; i < end; i++) {
             for (int j = 0; j < colCount(); j++) {
                 copy.set(i - start, j, get(i, j));
@@ -141,7 +141,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DVector mapColCopy(int col) {
-        DVectorDense v = DVectorDense.zeros(rowCount());
+        DVector v = DVector.zeros(rowCount());
         for (int j = 0; j < rowCount(); j++) {
             v.set(j, get(j, col));
         }
@@ -155,7 +155,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix mapColsCopy(int... cols) {
-        DMatrixStripe copy = DMatrixStripe.empty(rowCount(), cols.length);
+        DMatrix copy = DMatrix.empty(MType.RSTRIPE, rowCount(), cols.length);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < cols.length; j++) {
                 copy.set(i, j, get(i, cols[j]));
@@ -409,7 +409,7 @@ public abstract class AbstractDMatrix implements DMatrix {
             throw new IllegalArgumentException("Matrix and diagonal vector are " +
                     "not compatible for multiplication.");
         }
-        DMatrix result = DMatrixBase.empty(rowCount(), colCount());
+        DMatrix result = DMatrix.empty(MType.BASE, rowCount(), colCount());
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 result.set(i, j, get(i, j) * v.get(j));
@@ -424,7 +424,7 @@ public abstract class AbstractDMatrix implements DMatrix {
             throw new IllegalArgumentException("Matrix and diagonal vector are " +
                     "not compatible for multiplication.");
         }
-        DMatrix result = DMatrixBase.empty(rowCount(), colCount());
+        DMatrix result = DMatrix.empty(MType.BASE, rowCount(), colCount());
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 result.set(i, j, get(i, j) * v.get(i));
@@ -467,16 +467,16 @@ public abstract class AbstractDMatrix implements DMatrix {
      */
     @Override
     public DVector diag() {
-        DVector DVector = DVectorDense.zeros(rowCount());
+        DVector v = DVector.zeros(rowCount());
         for (int i = 0; i < rowCount(); i++) {
-            DVector.set(i, get(i, i));
+            v.set(i, get(i, i));
         }
-        return DVector;
+        return v;
     }
 
     @Override
     public DMatrix scatter() {
-        DMatrix scatter = DMatrixStripe.empty(colCount(), colCount());
+        DMatrix scatter = DMatrix.empty(MType.RSTRIPE, colCount(), colCount());
         double[] mean = new double[colCount()];
         for (int i = 0; i < colCount(); i++) {
             mean[i] = mapCol(i).mean();
@@ -546,16 +546,16 @@ public abstract class AbstractDMatrix implements DMatrix {
     @Override
     public DVector variance(int axis) {
         if (rowCount() == 0 || colCount() == 0) {
-            return DVectorDense.fill(axis == 0 ? colCount() : rowCount(), Double.NaN);
+            return DVector.fill(axis == 0 ? colCount() : rowCount(), Double.NaN);
         }
         if (axis == 0) {
-            DVectorDense variance = DVectorDense.fill(colCount(), 0);
+            DVector variance = DVector.fill(colCount(), 0);
             for (int i = 0; i < colCount(); i++) {
                 variance.inc(i, mapCol(i).variance());
             }
             return variance;
         }
-        DVectorDense variance = DVectorDense.fill(rowCount(), 0);
+        DVector variance = DVector.fill(rowCount(), 0);
         for (int i = 0; i < rowCount(); i++) {
             variance.inc(i, mapRow(i).variance());
         }
@@ -565,7 +565,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     @Override
     public DVector amax(int axis) {
         if (axis == 0) {
-            DVectorDense max = DVectorDense.copy(mapRow(0));
+            DVector max = DVector.copy(mapRow(0));
             for (int i = 1; i < rowCount(); i++) {
                 for (int j = 0; j < colCount(); j++) {
                     if (max.get(j) < get(i, j)) {
@@ -575,7 +575,7 @@ public abstract class AbstractDMatrix implements DMatrix {
             }
             return max;
         }
-        DVectorDense max = DVectorDense.copy(mapCol(0));
+        DVector max = DVector.copy(mapCol(0));
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 1; j < colCount(); j++) {
                 if (max.get(i) < get(i, j)) {
@@ -613,7 +613,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     @Override
     public DVector amin(int axis) {
         if (axis == 0) {
-            DVectorDense max = DVectorDense.copy(mapRow(0));
+            DVector max = DVector.copy(mapRow(0));
             for (int i = 1; i < rowCount(); i++) {
                 for (int j = 0; j < colCount(); j++) {
                     if (max.get(j) > get(i, j)) {
@@ -623,7 +623,7 @@ public abstract class AbstractDMatrix implements DMatrix {
             }
             return max;
         }
-        DVectorDense max = DVectorDense.copy(mapCol(0));
+        DVector max = DVector.copy(mapCol(0));
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 1; j < colCount(); j++) {
                 if (max.get(i) > get(i, j)) {

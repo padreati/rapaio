@@ -21,11 +21,11 @@
 
 package rapaio.graphics.plot.artist;
 
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
+import rapaio.data.VarType;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
@@ -49,7 +49,7 @@ public class BarPlot extends Artist {
 
     private static final long serialVersionUID = -3953248625109450364L;
 
-    private static final Set<VType> categoryTypes = Set.of(VType.BINARY, VType.NOMINAL);
+    private static final Set<VarType> categoryTypes = Set.of(VarType.BINARY, VarType.NOMINAL);
     private final GOptions options = new GOptions();
     private final List<String> categories;
     private final List<String> conditions;

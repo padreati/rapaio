@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,7 +41,7 @@ public class CholeskyDecompositionTest {
     @Test
     void testBasic() {
         for (int i = 0; i < TIMES; i++) {
-            DMatrix a = DMatrixStripe.random(30, 30);
+            DMatrix a = DMatrix.random(30, 30);
             DMatrix b = a.t().dot(a);
 
             CholeskyDecomposition cholesky = CholeskyDecomposition.from(b);
@@ -56,7 +55,7 @@ public class CholeskyDecompositionTest {
     @Test
     void testNonSPD() {
         for (int i = 0; i < TIMES; i++) {
-            DMatrix a = DMatrixStripe.random(30, 30);
+            DMatrix a = DMatrix.random(30, 30);
             CholeskyDecomposition cholesky = CholeskyDecomposition.from(a);
             assertFalse(cholesky.isSPD());
         }
@@ -64,17 +63,17 @@ public class CholeskyDecompositionTest {
 
     @Test
     void testSystem() {
-        DMatrix a1 = DMatrixStripe.wrap(new double[][]{
+        DMatrix a1 = DMatrix.wrap(new double[][]{
                 {2, -1, 0},
                 {-1, 2, -1},
                 {0, -1, 2}
         });
-        DMatrix b1 = DMatrixStripe.wrap(new double[][]{
+        DMatrix b1 = DMatrix.wrap(new double[][]{
                 {1},
                 {-2},
                 {0}
         });
-        DMatrix x1 = DMatrixStripe.wrap(new double[][]{
+        DMatrix x1 = DMatrix.wrap(new double[][]{
                 {-0.25},
                 {-1.5},
                 {-0.75}
@@ -84,15 +83,15 @@ public class CholeskyDecompositionTest {
         assertTrue(x1.deepEquals(s1, TOL));
 
 
-        DMatrix a2 = DMatrixStripe.wrap(new double[][]{
+        DMatrix a2 = DMatrix.wrap(new double[][]{
                 {2, 3},
                 {3, 9},
         });
-        DMatrix b2 = DMatrixStripe.wrap(new double[][]{
+        DMatrix b2 = DMatrix.wrap(new double[][]{
                 {6},
                 {15},
         });
-        DMatrix x2 = DMatrixStripe.wrap(new double[][]{
+        DMatrix x2 = DMatrix.wrap(new double[][]{
                 {1},
                 {1.33333333333333333333333333333333},
         });
@@ -103,11 +102,11 @@ public class CholeskyDecompositionTest {
 
     @Test
     void testSystemNonSymmetric() {
-        assertThrows(IllegalArgumentException.class, () -> CholeskyDecomposition.from(DMatrixStripe.random(2, 2)).solve(DMatrixStripe.random(2, 1)));
+        assertThrows(IllegalArgumentException.class, () -> CholeskyDecomposition.from(DMatrix.random(2, 2)).solve(DMatrix.random(2, 1)));
     }
 
     @Test
     void testSystemNonCompatible() {
-        assertThrows(IllegalArgumentException.class, () -> CholeskyDecomposition.from(DMatrixStripe.random(2, 2)).solve(DMatrixStripe.random(3, 1)));
+        assertThrows(IllegalArgumentException.class, () -> CholeskyDecomposition.from(DMatrix.random(2, 2)).solve(DMatrix.random(3, 1)));
     }
 }

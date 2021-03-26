@@ -27,7 +27,6 @@ import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 import java.util.Arrays;
 
@@ -50,7 +49,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrixStripe.wrap(new double[][]{
+        DMatrix frequency = DMatrix.wrap(true, new double[][]{
                 {2, 1, 1},
                 {0, 1, 1},
                 {0, 1, 4}});
@@ -85,7 +84,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrixStripe.wrap(new double[][]{{2, 2}, {1, 2}});
+        DMatrix frequency = DMatrix.wrap(new double[][]{{2, 2}, {1, 2}});
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mult(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
@@ -115,7 +114,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrixStripe.wrap(new double[][]{{2, 2}, {1, 2}});
+        DMatrix frequency = DMatrix.wrap(new double[][]{{2, 2}, {1, 2}});
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mult(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 

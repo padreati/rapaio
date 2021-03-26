@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -35,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
-public class VRangeTest {
+public class VarRangeTest {
 
     @Test
     void testSmoke() {
@@ -48,52 +45,52 @@ public class VRangeTest {
                 VarNominal.empty(0, "C", "D").name("y")
         );
 
-        test(VRange.of(0, 2), df,
+        test(VarRange.of(0, 2), df,
                 new int[]{0, 2},
                 new String[]{"a", "c"},
                 new String[]{"b", "d", "x", "y"});
 
-        test(VRange.of("a", "c"), df,
+        test(VarRange.of("a", "c"), df,
                 new int[]{0, 2},
                 new String[]{"a", "c"},
                 new String[]{"b", "d", "x", "y"});
 
-        test(VRange.of(Arrays.asList("a", "c")), df,
+        test(VarRange.of(Arrays.asList("a", "c")), df,
                 new int[]{0, 2},
                 new String[]{"a", "c"},
                 new String[]{"b", "d", "x", "y"});
 
-        test(VRange.byName(name -> name.compareTo("x") >= 0), df,
+        test(VarRange.byName(name -> name.compareTo("x") >= 0), df,
                 new int[]{4, 5},
                 new String[]{"x", "y"},
                 new String[]{"a", "b", "c", "d"});
 
-        test(VRange.byFilter(rvar -> rvar.name().compareTo("x") >= 0), df,
+        test(VarRange.byFilter(rvar -> rvar.name().compareTo("x") >= 0), df,
                 new int[]{4, 5},
                 new String[]{"x", "y"},
                 new String[]{"a", "b", "c", "d"});
 
-        test(VRange.onlyTypes(VType.DOUBLE), df,
+        test(VarRange.onlyTypes(VarType.DOUBLE), df,
                 new int[]{4, 5},
                 new String[]{"x", "y"},
                 new String[]{"a", "b", "c", "d"});
 
-        test(VRange.all(), df,
+        test(VarRange.all(), df,
                 new int[]{0, 1, 2, 3, 4, 5},
                 new String[]{"a", "b", "c", "d", "x", "y"},
                 new String[]{});
 
-        test(VRange.of("all"), df,
+        test(VarRange.of("all"), df,
                 new int[]{0, 1, 2, 3, 4, 5},
                 new String[]{"a", "b", "c", "d", "x", "y"},
                 new String[]{});
 
-        test(VRange.of("a~d"), df,
+        test(VarRange.of("a~d"), df,
                 new int[]{0, 1, 2, 3},
                 new String[]{"a", "b", "c", "d"},
                 new String[]{"x", "y"});
 
-        test(VRange.of("0~3"), df,
+        test(VarRange.of("0~3"), df,
                 new int[]{0, 1, 2, 3},
                 new String[]{"a", "b", "c", "d"},
                 new String[]{"x", "y"});
@@ -110,15 +107,15 @@ public class VRangeTest {
                 VarNominal.empty(0, "C", "D").name("y")
         );
 
-        test(VRange.of("0~af,a~q,q,q~a"), df, new int[0], new String[0], new String[0]);
+        test(VarRange.of("0~af,a~q,q,q~a"), df, new int[0], new String[0], new String[0]);
     }
 
     @Test
     public void testNoIndexes() {
-        assertThrows(IllegalArgumentException.class, () -> VRange.of(new int[]{}));
+        assertThrows(IllegalArgumentException.class, () -> VarRange.of(new int[]{}));
     }
 
-    private void test(VRange range, Frame df, int[] indexes, String[] names, String[] reverse) {
+    private void test(VarRange range, Frame df, int[] indexes, String[] names, String[] reverse) {
         int[] indexesReal = range.parseVarIndexes(df).stream().mapToInt(x -> x).toArray();
         String[] namesReal = range.parseVarNames(df).toArray(new String[0]);
         String[] reverseReal = range.parseInverseVarNames(df).toArray(new String[0]);

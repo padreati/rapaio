@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -28,10 +25,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,43 +51,43 @@ public class FMapRemoveVarsTest {
 
     @Test
     void testMapVars() {
-        assertMapEquals(VRange.all());
-        assertMapEquals(VRange.onlyTypes(VType.DOUBLE));
-        assertMapEquals(VRange.onlyTypes(VType.NOMINAL));
+        assertMapEquals(VarRange.all());
+        assertMapEquals(VarRange.onlyTypes(VarType.DOUBLE));
+        assertMapEquals(VarRange.onlyTypes(VarType.NOMINAL));
     }
 
-    private boolean assertMapEquals(VRange vRange) {
-        return df.mapVars(vRange).deepEquals(FMapVars.map(vRange).fapply(df));
+    private boolean assertMapEquals(VarRange varRange) {
+        return df.mapVars(varRange).deepEquals(FMapVars.map(varRange).fapply(df));
     }
 
     @Test
     void testRemoveVars() {
-        assertRemoveVars(VRange.all());
-        assertRemoveVars(VRange.onlyTypes(VType.DOUBLE));
-        assertRemoveVars(VRange.onlyTypes(VType.NOMINAL));
+        assertRemoveVars(VarRange.all());
+        assertRemoveVars(VarRange.onlyTypes(VarType.DOUBLE));
+        assertRemoveVars(VarRange.onlyTypes(VarType.NOMINAL));
     }
 
-    private boolean assertRemoveVars(VRange vRange) {
-        return df.removeVars(vRange).deepEquals(FRemoveVars.remove(vRange).fapply(df));
+    private boolean assertRemoveVars(VarRange varRange) {
+        return df.removeVars(varRange).deepEquals(FRemoveVars.remove(varRange).fapply(df));
     }
 
     @Test
     void testBoth() {
 
-        Frame df1 = df.mapVars(VRange.onlyTypes(VType.DOUBLE)).removeVars(VRange.of(1));
-        Frame df2 = FRemoveVars.remove(VRange.of(1)).fapply(FMapVars.map(VRange.onlyTypes(VType.DOUBLE)).fapply(df));
+        Frame df1 = df.mapVars(VarRange.onlyTypes(VarType.DOUBLE)).removeVars(VarRange.of(1));
+        Frame df2 = FRemoveVars.remove(VarRange.of(1)).fapply(FMapVars.map(VarRange.onlyTypes(VarType.DOUBLE)).fapply(df));
 
         assertTrue(df1.deepEquals(df2));
     }
 
     @Test
     void testInstance() {
-        FFilter map = FMapVars.map(VRange.onlyTypes(VType.DOUBLE)).newInstance();
+        FFilter map = FMapVars.map(VarRange.onlyTypes(VarType.DOUBLE)).newInstance();
         map.fit(df.mapVars("0,1"));
 
         assertEquals(2, df.apply(map).varCount());
 
-        FFilter remove = FRemoveVars.remove(VRange.onlyTypes(VType.DOUBLE)).newInstance();
+        FFilter remove = FRemoveVars.remove(VarRange.onlyTypes(VarType.DOUBLE)).newInstance();
         remove.fit(df.mapVars("0,1"));
 
         assertEquals(2, remove.apply(df).varCount());

@@ -24,10 +24,10 @@ package rapaio.ml.regression.simple;
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ParametricEquals;
 import rapaio.ml.regression.AbstractRegressionModel;
@@ -70,8 +70,8 @@ public class L2Regression extends AbstractRegressionModel<L2Regression, Regressi
         return Capabilities.builder()
                 .minInputCount(0).maxInputCount(1_000_000)
                 .minTargetCount(1).maxTargetCount(1_000_000)
-                .inputTypes(Arrays.asList(VType.DOUBLE, VType.BINARY, VType.INT, VType.NOMINAL, VType.LONG, VType.STRING))
-                .targetType(VType.DOUBLE)
+                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.STRING))
+                .targetType(VarType.DOUBLE)
                 .allowMissingInputValues(true)
                 .allowMissingTargetValues(true)
                 .build();

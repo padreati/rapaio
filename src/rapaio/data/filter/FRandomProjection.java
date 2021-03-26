@@ -25,11 +25,9 @@ import rapaio.core.SamplingTools;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
+import rapaio.data.VarRange;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DMatrixDense;
-import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.stream.IntStream;
 
@@ -40,16 +38,16 @@ import java.util.stream.IntStream;
  */
 public class FRandomProjection extends AbstractFFilter {
 
-    public static FRandomProjection newGaussianSd(int k, VRange vRange) {
-        return new FRandomProjection(k, gaussian(k), vRange);
+    public static FRandomProjection newGaussianSd(int k, VarRange varRange) {
+        return new FRandomProjection(k, gaussian(k), varRange);
     }
 
-    public static FRandomProjection newAchlioptas(int k, VRange vRange) {
-        return new FRandomProjection(k, achlioptas(3), vRange);
+    public static FRandomProjection newAchlioptas(int k, VarRange varRange) {
+        return new FRandomProjection(k, achlioptas(3), varRange);
     }
 
-    public static FRandomProjection newAchlioptas(int k, double s, VRange vRange) {
-        return new FRandomProjection(k, achlioptas(s), vRange);
+    public static FRandomProjection newAchlioptas(int k, double s, VarRange varRange) {
+        return new FRandomProjection(k, achlioptas(s), varRange);
     }
 
     private static final long serialVersionUID = -2790372378136065870L;
@@ -58,22 +56,22 @@ public class FRandomProjection extends AbstractFFilter {
     private final Method method;
     private DMatrix rp;
 
-    private FRandomProjection(int k, Method method, VRange vRange) {
-        super(vRange);
+    private FRandomProjection(int k, Method method, VarRange varRange) {
+        super(varRange);
         this.k = k;
         this.method = method;
     }
 
     @Override
     public FRandomProjection newInstance() {
-        return new FRandomProjection(k, method, vRange);
+        return new FRandomProjection(k, method, varRange);
     }
 
     @Override
     public void coreFit(Frame df) {
         // build k random projections
 
-        rp = DMatrixDense.empty(varNames.length, k);
+        rp = DMatrix.empty(varNames.length, k);
         for (int i = 0; i < k; i++) {
             DVector v = method.projection(varNames.length);
             for (int j = 0; j < varNames.length; j++) {
@@ -85,10 +83,10 @@ public class FRandomProjection extends AbstractFFilter {
     @Override
     public Frame apply(Frame df) {
 
-        DMatrix X = DMatrixDense.copy(df.mapVars(varNames));
+        DMatrix X = DMatrix.copy(df.mapVars(varNames));
         DMatrix p = X.dot(rp);
 
-        Frame non = df.removeVars(VRange.of(varNames));
+        Frame non = df.removeVars(VarRange.of(varNames));
         Frame trans = SolidFrame.matrix(p, IntStream.range(1, k + 1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
         return non.bindVars(trans);
     }
@@ -100,7 +98,7 @@ public class FRandomProjection extends AbstractFFilter {
     private static Method gaussian(int k) {
         return rowCount -> {
             Normal norm = Normal.std();
-            DVector v = DVectorDense.zeros(rowCount);
+            DVector v = DVector.zeros(rowCount);
             for (int i = 0; i < v.size(); i++) {
                 v.set(i, norm.sampleNext() / Math.sqrt(k));
             }
@@ -119,7 +117,7 @@ public class FRandomProjection extends AbstractFFilter {
 
         return rowCount -> {
             int[] sample = SamplingTools.sampleWeightedWR(rowCount, p);
-            DVector v = DVectorDense.zeros(rowCount);
+            DVector v = DVector.zeros(rowCount);
             for (int i = 0; i < sample.length; i++) {
                 if (sample[i] == 0) {
                     v.set(i, -sqrt);

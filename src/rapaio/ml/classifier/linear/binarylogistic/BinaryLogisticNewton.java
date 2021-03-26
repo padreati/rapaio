@@ -29,7 +29,6 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.QRDecomposition;
-import rapaio.math.linear.dense.DMatrixStripe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,10 +146,10 @@ public class BinaryLogisticNewton {
         DMatrix invA;
         CholeskyDecomposition chol = CholeskyDecomposition.from(mA);
         if (chol.isSPD()) {
-            invA = chol.solve(DMatrixStripe.identity(w.size()));
+            invA = chol.solve(DMatrix.identity(w.size()));
         } else {
             QRDecomposition qr = QRDecomposition.from(mA);
-            invA = qr.solve(DMatrixStripe.identity(w.size()));
+            invA = qr.solve(DMatrix.identity(w.size()));
         }
 
         // z = Wx - I(p(1-p))^{-1}(y-p)

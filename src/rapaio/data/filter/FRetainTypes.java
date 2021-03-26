@@ -22,8 +22,8 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,16 +39,16 @@ import java.util.Set;
  */
 public class FRetainTypes extends AbstractFFilter {
 
-    public static FRetainTypes on(VType... types) {
+    public static FRetainTypes on(VarType... types) {
         return new FRetainTypes(new HashSet<>(Arrays.asList(types)));
     }
 
     private static final long serialVersionUID = -5152761273156719785L;
 
-    private final Set<VType> types;
+    private final Set<VarType> types;
 
-    private FRetainTypes(Set<VType> types) {
-        super(VRange.all());
+    private FRetainTypes(Set<VarType> types) {
+        super(VarRange.all());
         this.types = types;
     }
 

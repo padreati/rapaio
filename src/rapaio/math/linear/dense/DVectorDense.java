@@ -21,128 +21,31 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.VType;
 import rapaio.math.linear.base.DVectorBase;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
-import rapaio.util.function.Int2DoubleFunction;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.DoubleStream;
 
 public class DVectorDense extends DVectorBase {
 
     private static final long serialVersionUID = 5763094452899116225L;
 
-    /**
-     * Builds a new real dense vector of size {@param n} filled with 0.
-     *
-     * @param n the size of the vector
-     * @return vector instance
-     */
-    public static DVectorDense zeros(int n) {
-        return new DVectorDense(n, DoubleArrays.newFill(n, 0));
+    public DVectorDense(int len) {
+        super(len, new double[len]);
     }
 
-    /**
-     * Builds a new double dense vector of size {@param n} filled with 1.
-     *
-     * @param n the size of the vector
-     * @return vector instance
-     */
-    public static DVectorDense ones(int n) {
-        return new DVectorDense(n, DoubleArrays.newFill(n, 1));
-    }
-
-    /**
-     * Builds a new real dense vector of <i>len</i> size,
-     * filled with <i>fill</i> value given as parameter.
-     *
-     * @param n    size of the vector
-     * @param fill fill value
-     * @return new real dense vector
-     */
-    public static DVectorDense fill(int n, double fill) {
-        return new DVectorDense(n, DoubleArrays.newFill(n, fill));
-    }
-
-    /**
-     * Builds a new real dense vector of size equal with row count,
-     * filled with values from variable. The variable can have any type,
-     * the values are taken by using {@link Var#getDouble(int)} calls.
-     *
-     * @param v given variable
-     * @return new real dense vector
-     */
-    public static DVectorDense from(Var v) {
-        if (v instanceof VarDouble) {
-            VarDouble vd = (VarDouble) v;
-            double[] array = vd.elements();
-            return new DVectorDense(vd.size(), array);
-        }
-        double[] values = new double[v.size()];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = v.getDouble(i);
-        }
-        return new DVectorDense(values.length, values);
-    }
-
-    /**
-     * Builds a new real dense vector which is a solid copy
-     * of the given source vector.
-     *
-     * @param source source vector
-     * @return new real dense vector which is a copy of the source vector
-     */
-    public static DVectorDense copy(DVector source) {
-        DVectorDense v = zeros(source.size());
-        if (source.isDense()) {
-            System.arraycopy(source.asDense().values, 0, v.values, 0, source.size());
-            return v;
-        }
-        for (int i = 0; i < v.values.length; i++) {
-            v.values[i] = source.get(i);
-        }
-        return v;
-    }
-
-    /**
-     * Builds a new random vector which wraps a double array.
-     * It uses the same reference.
-     *
-     * @param values referenced array of values
-     * @return new real dense vector
-     */
-    public static DVectorDense wrap(double... values) {
-        return wrapArray(values.length, values);
-    }
-
-    /**
-     * Builds a new random vector which wraps a double array.
-     * It uses the same reference.
-     *
-     * @param values referenced array of values
-     * @return new real dense vector
-     */
-    public static DVectorDense wrapArray(int size, double[] values) {
-        Objects.requireNonNull(values);
-        return new DVectorDense(size, values);
-    }
-
-    public static DVectorDense from(int len, Int2DoubleFunction fun) {
-        return new DVectorDense(len, DoubleArrays.newFrom(0, len, fun));
-    }
-
-    protected DVectorDense(int len, double[] values) {
+    public DVectorDense(int len, double[] values) {
         super(len, values);
     }
 
     @Override
-    public Type type() {
-        return Type.DENSE;
+    public VType type() {
+        return VType.DENSE;
     }
 
     @Override
@@ -325,9 +228,21 @@ public class DVectorDense extends DVectorBase {
     }
 
     public DVectorDense copy() {
-        DVectorDense copy = DVectorDense.zeros(size);
-        System.arraycopy(values, 0, copy.values, 0, size);
-        return copy;
+        return new DVectorDense(size, Arrays.copyOf(values, size));
+    }
+
+    @Override
+    public DVector copy(VType type) {
+        double[] copy = new double[size];
+        System.arraycopy(values, 0, copy, 0, size);
+        switch (type) {
+            case BASE:
+                return new DVectorBase(size, copy);
+            case DENSE:
+                return new DVectorDense(size, copy);
+            default:
+                throw new IllegalArgumentException("DVType." + type.name() + " cannot be used to create a copy.");
+        }
     }
 
     @Override

@@ -24,8 +24,8 @@ package rapaio.ml.classifier.tree;
 import lombok.Getter;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
@@ -70,8 +70,8 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                 .minCount.set(1)
                 .varSelector.set(VarSelector.all())
                 .splitter.set(Splitter.Ignore)
-                .testMap.add(VType.NOMINAL, Search.NominalFull)
-                .testMap.add(VType.DOUBLE, Search.Ignore)
+                .testMap.add(VarType.NOMINAL, Search.NominalFull)
+                .testMap.add(VarType.DOUBLE, Search.Ignore)
                 .purity.set(Purity.InfoGain)
                 .pruning.set(Pruning.None);
     }
@@ -82,8 +82,8 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                 .minCount.set(1)
                 .varSelector.set(VarSelector.all())
                 .splitter.set(Splitter.Weighted)
-                .testMap.add(VType.NOMINAL, Search.NominalFull)
-                .testMap.add(VType.DOUBLE, Search.NumericBinary)
+                .testMap.add(VarType.NOMINAL, Search.NominalFull)
+                .testMap.add(VarType.DOUBLE, Search.NumericBinary)
                 .purity.set(Purity.GainRatio);
     }
 
@@ -94,8 +94,8 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                 .varSelector.set(VarSelector.all())
                 .splitter.set(Splitter.Weighted)
                 .purity.set(Purity.GainRatio)
-                .testMap.add(VType.NOMINAL, Search.NominalBinary)
-                .testMap.add(VType.DOUBLE, Search.NumericBinary);
+                .testMap.add(VarType.NOMINAL, Search.NominalBinary)
+                .testMap.add(VarType.DOUBLE, Search.NumericBinary);
     }
 
     public static CTree newCART() {
@@ -104,9 +104,9 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                 .minCount.set(1)
                 .varSelector.set(VarSelector.all())
                 .splitter.set(Splitter.Random)
-                .testMap.add(VType.NOMINAL, Search.NominalBinary)
-                .testMap.add(VType.DOUBLE, Search.NumericBinary)
-                .testMap.add(VType.INT, Search.NumericBinary)
+                .testMap.add(VarType.NOMINAL, Search.NominalBinary)
+                .testMap.add(VarType.DOUBLE, Search.NumericBinary)
+                .testMap.add(VarType.INT, Search.NumericBinary)
                 .purity.set(Purity.GiniGain);
     }
 
@@ -131,12 +131,12 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
             "varSelector",
             "Variable selection method");
 
-    public final MultiParam<VType, Search, CTree> testMap = new MultiParam<>(this,
+    public final MultiParam<VarType, Search, CTree> testMap = new MultiParam<>(this,
             Map.of(
-                    VType.BINARY, Search.BinaryBinary,
-                    VType.INT, Search.NumericBinary,
-                    VType.DOUBLE, Search.NumericBinary,
-                    VType.NOMINAL, Search.NominalBinary),
+                    VarType.BINARY, Search.BinaryBinary,
+                    VarType.INT, Search.NumericBinary,
+                    VarType.DOUBLE, Search.NumericBinary,
+                    VarType.NOMINAL, Search.NominalBinary),
             "testMap",
             "Definitions of the test criteria used to select best splits",
             Objects::nonNull);
@@ -174,10 +174,10 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
     @Override
     public Capabilities capabilities() {
         return Capabilities.builder()
-                .inputTypes(Arrays.asList(VType.NOMINAL, VType.INT, VType.DOUBLE, VType.BINARY))
+                .inputTypes(Arrays.asList(VarType.NOMINAL, VarType.INT, VarType.DOUBLE, VarType.BINARY))
                 .minInputCount(1).maxInputCount(1_000_000)
                 .allowMissingInputValues(true)
-                .targetType(VType.NOMINAL)
+                .targetType(VarType.NOMINAL)
                 .minTargetCount(1).maxTargetCount(1)
                 .allowMissingTargetValues(false)
                 .build();

@@ -23,15 +23,13 @@ package rapaio.experiment.math.optimization;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
 import rapaio.data.VarDouble;
+import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.QRDecomposition;
-import rapaio.math.linear.dense.DMatrixStripe;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Format;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
@@ -76,10 +74,10 @@ public class ISLRGeneric {
             DVector e = A.dot(x).sub(b);
 
             // error weights for IRLS
-            DVector w = DVectorDense.from(e.size(), pos -> pow(abs(e.get(pos)), (p - 2) / 2));
+            DVector w = DVector.from(e.size(), pos -> pow(abs(e.get(pos)), (p - 2) / 2));
 
             // normalize weight matrix
-            DMatrix W = DMatrixStripe.empty(w.size(), w.size());
+            DMatrix W = DMatrix.empty(w.size(), w.size());
             double wsum = w.sum();
             for (int i = 0; i < w.size(); i++) {
                 W.set(i, i, w.get(i) / wsum);
@@ -161,10 +159,10 @@ public class ISLRGeneric {
 
             // error weights for IRLS
             double pkk = pk;
-            DVector w = DVectorDense.from(e.size(), pos -> pow(abs(e.get(pos)), (pkk - 2) / 2));
+            DVector w = DVector.from(e.size(), pos -> pow(abs(e.get(pos)), (pkk - 2) / 2));
 
             // normalize weight matrix
-            DMatrix W = DMatrixStripe.empty(w.size(), w.size());
+            DMatrix W = DMatrix.empty(w.size(), w.size());
             double wsum = w.valueStream().sum();
             for (int i = 0; i < w.size(); i++) {
                 W.set(i, i, w.get(i) / wsum);
@@ -206,14 +204,14 @@ public class ISLRGeneric {
 
     public static void main(String[] args) {
 
-        Frame df = Datasets.loasSAheart().removeVars(VRange.of(0)).removeVars("typea,adiposity");
+        Frame df = Datasets.loasSAheart().removeVars(VarRange.of(0)).removeVars("typea,adiposity");
         VarDouble intercept = VarDouble.fill(df.rowCount(), 1).name("(Intercept)");
         Frame dfa = SolidFrame.byVars(intercept).bindVars(df.removeVars("chd"));
 
         dfa.printSummary();
 
-        DMatrix A = DMatrixStripe.copy(dfa);
-        DVector b = DMatrixStripe.copy(df.mapVars(VRange.of("chd"))).mapCol(0);
+        DMatrix A = DMatrix.copy(dfa);
+        DVector b = DMatrix.copy(df.mapVars(VarRange.of("chd"))).mapCol(0);
 
 
         double[] pp = new double[]{1, 1.5, 2, 2.5, 5, 10, 100};

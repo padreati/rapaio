@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.StandardDVectorTest;
+import rapaio.math.linear.VType;
 
 import java.util.Arrays;
 
@@ -35,13 +36,13 @@ public class DVectorDenseTest extends StandardDVectorTest {
     private static final double TOL = 1e-15;
 
     @Override
-    public DVector.Type type() {
-        return DVector.Type.DENSE;
+    public VType type() {
+        return VType.DENSE;
     }
 
     @Override
     public DVector generateFill(int size, double fill) {
-        return DVectorDense.fill(size, fill);
+        return DVector.fill(size, fill);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class DVectorDenseTest extends StandardDVectorTest {
 
     @Test
     void testBuilderZeros() {
-        var zeros = DVectorDense.zeros(N);
+        var zeros = DVector.zeros(N);
         assertNotNull(zeros);
         for (int i = 0; i < N; i++) {
             assertEquals(0, zeros.get(i), TOL);
@@ -66,7 +67,7 @@ public class DVectorDenseTest extends StandardDVectorTest {
 
     @Test
     void testBuildersOnes() {
-        var ones = DVectorDense.ones(N);
+        var ones = DVector.ones(N);
         assertNotNull(ones);
         assertEquals(N, ones.size());
         for (int i = 0; i < ones.size(); i++) {
@@ -76,7 +77,7 @@ public class DVectorDenseTest extends StandardDVectorTest {
 
     @Test
     void testBuildersFill() {
-        var fill = DVectorDense.fill(N, 13);
+        var fill = DVector.fill(N, 13);
         assertNotNull(fill);
         assertEquals(N, fill.size());
         for (int i = 0; i < fill.size(); i++) {
@@ -86,20 +87,20 @@ public class DVectorDenseTest extends StandardDVectorTest {
 
     @Test
     void testBuilders() {
-        x = DVectorDense.from(VarDouble.seq(N - 1));
+        x = DVector.from(VarDouble.seq(N - 1));
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        DVector y = DVectorDense.from(VarDouble.seq(N - 1));
-        x = DVectorDense.copy(y);
+        DVector y = DVector.from(VarDouble.seq(N - 1));
+        x = DVector.copy(y);
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        x = DVectorDense.from(VarDouble.fill(N, 1).bindRows(VarDouble.seq(N - 1)));
+        x = DVector.from(VarDouble.fill(N, 1).bindRows(VarDouble.seq(N - 1)));
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(1, x.get(i), TOL);
@@ -112,7 +113,7 @@ public class DVectorDenseTest extends StandardDVectorTest {
             assertEquals(i, x.get(i), TOL);
         }
 
-        x = DVectorDense.from(10, Math::sqrt);
+        x = DVector.from(10, Math::sqrt);
         assertNotNull(x);
         for (int i = 0; i < 10; i++) {
             assertEquals(Math.sqrt(i), x.get(i), TOL);

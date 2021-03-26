@@ -25,9 +25,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarString;
+import rapaio.data.VarType;
 import rapaio.ml.common.ListParam;
 import rapaio.ml.common.MultiListParam;
 import rapaio.ml.common.ParamSet;
@@ -71,7 +71,7 @@ public class Csv extends ParamSet<Csv> {
         return new Csv();
     }
 
-    private static final VType[] DEFAULT_TYPES = new VType[]{VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.STRING};
+    private static final VarType[] DEFAULT_TYPES = new VarType[]{VarType.BINARY, VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING};
 
     /**
      * Configures white space trimming for field values. If the white space trimming is enabled,
@@ -100,11 +100,11 @@ public class Csv extends ParamSet<Csv> {
      */
     public final ValueParam<Character, Csv> escapeChar = new ValueParam<>(this, '\"',
             "escapeChar", "Escape character");
-    public final MultiListParam<VType, String, Csv> types = new MultiListParam<>(this, new HashMap<>(),
+    public final MultiListParam<VarType, String, Csv> types = new MultiListParam<>(this, new HashMap<>(),
             "types", "Specific type fields which overrides the automatic detection", Objects::nonNull);
     public final ListParam<String, Csv> naValues = new ListParam<>(this, Arrays.asList("?", "", " ", "na", "N/A", "NaN"),
             "naValues", "Values identified as missing value placeholders", (in, out) -> true);
-    public final ListParam<VType, Csv> defaultTypes = new ListParam<>(this, List.of(VType.BINARY, VType.DOUBLE, VType.NOMINAL, VType.STRING),
+    public final ListParam<VarType, Csv> defaultTypes = new ListParam<>(this, List.of(VarType.BINARY, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING),
             "defaultTypes", "List of default types to be tried at automatic detection", (in, out) -> true);
     /**
      * Specifies the first row number to be collected from csv file. By default this value is 0,
@@ -226,7 +226,7 @@ public class Csv extends ParamSet<Csv> {
                                 continue;
                             }
                         }
-                        VType type = types.getReverseKey(colName);
+                        VarType type = types.getReverseKey(colName);
                         if (type != null) {
                             varSlots.add(new VarSlot(this, type, 0));
                         } else {
@@ -388,7 +388,7 @@ public class Csv extends ParamSet<Csv> {
                         writer.append("?");
                         continue;
                     }
-                    if (df.rvar(j).type().isNominal() || df.rvar(j).type().equals(VType.STRING)) {
+                    if (df.rvar(j).type().isNominal() || df.rvar(j).type().equals(VarType.STRING)) {
                         writer.append(unclean(df.getLabel(i, j)));
                     } else {
                         writer.append(format.format(df.getDouble(i, j)));
@@ -420,7 +420,7 @@ public class Csv extends ParamSet<Csv> {
 
         private final Csv parent;
 
-        private final VType type;
+        private final VarType type;
         private Var var;
         private VarString text;
 
@@ -434,10 +434,10 @@ public class Csv extends ParamSet<Csv> {
             this.text = VarString.empty();
         }
 
-        public VarSlot(Csv parent, VType vType, int rows) {
+        public VarSlot(Csv parent, VarType varType, int rows) {
             this.parent = parent;
-            this.type = vType;
-            this.var = vType.newInstance(rows);
+            this.type = varType;
+            this.var = varType.newInstance(rows);
             this.text = null;
         }
 
