@@ -46,7 +46,7 @@ public interface DVector extends Serializable, Printable {
      * Builds a new real dense vector of size {@param n} filled with 0.
      *
      * @param n the size of the vector
-     * @return vector instance
+     * @return dense vector instance
      */
     static DVector zeros(int n) {
         return fill(VType.DENSE, n, 0);
@@ -55,7 +55,8 @@ public interface DVector extends Serializable, Printable {
     /**
      * Builds a new real vector of size {@param n} filled with 0.
      *
-     * @param n the size of the vector
+     * @param type implementation type of the vector
+     * @param n    the size of the vector
      * @return vector instance
      */
     static DVector zeros(VType type, int n) {
@@ -73,8 +74,9 @@ public interface DVector extends Serializable, Printable {
     }
 
     /**
-     * Builds a new double dense vector of size {@param n} filled with 1.
+     * Builds a new double vector of size {@param n} filled with 1.
      *
+     * @param type implementation type of the vector
      * @param n the size of the vector
      * @return vector instance
      */
@@ -83,8 +85,7 @@ public interface DVector extends Serializable, Printable {
     }
 
     /**
-     * Builds a new real dense vector of <i>len</i> size,
-     * filled with <i>fill</i> value given as parameter.
+     * Builds a new real dense vector of {@code len} size, filled with {@code fill} value given as parameter.
      *
      * @param n    size of the vector
      * @param fill fill value
@@ -95,11 +96,12 @@ public interface DVector extends Serializable, Printable {
     }
 
     /**
-     * Builds a new real vector of <i>len</i> size, filled with <i>fill</i> value given as parameter.
+     * Builds a new real vector of {@code len} size, filled with {@code fill} value given as parameter.
      *
+     * @param type implementation type of the vector
      * @param n    size of the vector
      * @param fill fill value
-     * @return new real dense vector
+     * @return new dense vector of given type
      */
     static DVector fill(VType type, int n, double fill) {
         switch (type) {
@@ -112,6 +114,14 @@ public interface DVector extends Serializable, Printable {
         }
     }
 
+    /**
+     * Builds a dense vector filled with values from a {@link Var} variable.
+     * The variable can have any {@link Var#type()}, the values from variable
+     * being obtained using {@link Var#getDouble(int)} calls.
+     *
+     * @param v source variable
+     * @return
+     */
     static DVector from(Var v) {
         return from(VType.DENSE, v);
     }
