@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.ml.classifier.svm.kernel;
+package rapaio.ml.common.kernel;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
@@ -59,13 +59,13 @@ public class RBFKernel extends AbstractKernel {
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double value = deltaSumSquares(df1, row1, df2, row2);
-        return Math.exp(factor * value * value);
+        return Math.exp(factor * value);
     }
 
     @Override
     public double compute(DVector v, DVector u) {
         double value = deltaSumSquares(v, u);
-        return Math.exp(factor * value * value);
+        return Math.exp(factor * value);
     }
 
     @Override

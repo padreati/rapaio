@@ -47,7 +47,7 @@ public class DVectorDenseTest extends StandardDVectorTest {
 
     @Override
     public DVector generateWrap(double[] values) {
-        return DVectorDense.wrap(values);
+        return DVector.wrap(values);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class DVectorDenseTest extends StandardDVectorTest {
             assertEquals(i, x.get(i + N), TOL);
         }
 
-        x = DVectorDense.wrap(0, 1, 2, 3, 4, 5);
+        x = DVector.wrap(0, 1, 2, 3, 4, 5);
         assertNotNull(x);
         for (int i = 0; i < 6; i++) {
             assertEquals(i, x.get(i), TOL);
@@ -127,7 +127,7 @@ public class DVectorDenseTest extends StandardDVectorTest {
         for (int i = 0; i < x.length; i++) {
             x[i] = i;
         }
-        DVector y = DVectorDense.wrap(x);
+        DVector y = DVector.wrap(x);
 
         double xsum = Arrays.stream(x).sum();
         double ysum = y.valueStream().sum();

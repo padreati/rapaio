@@ -29,10 +29,10 @@ import rapaio.data.VarType;
 import rapaio.math.MTools;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.classifier.svm.kernel.Kernel;
-import rapaio.ml.classifier.svm.kernel.PolyKernel;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.kernel.Kernel;
+import rapaio.ml.common.kernel.PolyKernel;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 

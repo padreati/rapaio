@@ -31,7 +31,8 @@ import rapaio.math.linear.DVector;
 public interface LineSearch {
 
     /**
-     * Computes a positive step size that adequately reduces the objective function {@code f} in the direction {@code p}.
+     * Computes a positive step size that adequately reduces the objective function {@code f} in the direction {@code p}
+     * starting from 1.0.
      * <p>
      * In other words, it computes a factor {@code alpha} such as {@code f(x + alpha*p) < f(x)}.
      *
@@ -41,5 +42,21 @@ public interface LineSearch {
      * @param p  search direction
      * @return computed step size {@code alpha}
      */
-    double search(RFunction f, RDerivative df, DVector x, DVector p);
+    default double search(RFunction f, RDerivative df, DVector x, DVector p) {
+        return search(f, df, x, p, 1.0);
+    }
+
+    /**
+     * Computes a positive step size that adequately reduces the objective function {@code f} in the direction {@code p}.
+     * <p>
+     * In other words, it computes a factor {@code alpha} such as {@code f(x + alpha*p) < f(x)}.
+     *
+     * @param f  objective function
+     * @param df objective function derivative
+     * @param x  starting position
+     * @param p  search direction
+     * @param t0 initial step size value
+     * @return computed step size {@code alpha}
+     */
+    double search(RFunction f, RDerivative df, DVector x, DVector p, double t0);
 }

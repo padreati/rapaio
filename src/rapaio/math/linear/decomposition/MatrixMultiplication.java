@@ -132,8 +132,10 @@ public class MatrixMultiplication {
 
 //        Pick a tile size T = theta(sqrt(M))
         int T = 1;
-        while (T < Math.sqrt(A.colCount()))
+        while (T < Math.sqrt(A.colCount())) {
             T *= 2;
+        }
+        int TT = T;
 
 //        For I from 1 to n in steps of T:
         for (int I = 0; I < A.rowCount(); I += T) {
@@ -161,6 +163,24 @@ public class MatrixMultiplication {
                 }
             }
         }
+        return C;
+    }
+
+    public static DMatrix copyParallel(DMatrix A, DMatrix B) {
+        DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
+        DVector[] as = new DVector[C.rowCount()];
+        DVector[] bs = new DVector[C.colCount()];
+        for (int i = 0; i < C.rowCount(); i++) {
+            as[i] = A.mapRow(i);
+        }
+        for (int i = 0; i < C.colCount(); i++) {
+            bs[i] = B.mapCol(i);
+        }
+        IntStream.range(0, C.rowCount()).parallel().forEach(i -> {
+            for (int j = 0; j < C.colCount(); j++) {
+                C.set(i, j, as[i].dot(bs[j]));
+            }
+        });
         return C;
     }
 

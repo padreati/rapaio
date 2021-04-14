@@ -26,8 +26,6 @@ package rapaio.math.linear;
  */
 public enum MType {
     BASE,
-    RSTRIPE,
-    CSTRIPE,
     RDENSE,
     CDENSE,
     MAP

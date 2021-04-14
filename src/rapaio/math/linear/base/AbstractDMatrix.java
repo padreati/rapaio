@@ -28,7 +28,6 @@ import rapaio.math.linear.MType;
 import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.math.linear.decomposition.SVDecomposition;
 import rapaio.math.linear.dense.DMatrixMap;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -91,7 +90,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix rangeRowsCopy(int start, int end) {
-        DMatrix copy = DMatrix.empty(MType.RSTRIPE, end - start, colCount());
+        DMatrix copy = DMatrix.empty(MType.RDENSE, end - start, colCount());
         for (int i = start; i < end; i++) {
             for (int j = 0; j < colCount(); j++) {
                 copy.set(i - start, j, get(i, j));
@@ -155,7 +154,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix mapColsCopy(int... cols) {
-        DMatrix copy = DMatrix.empty(MType.RSTRIPE, rowCount(), cols.length);
+        DMatrix copy = DMatrix.empty(MType.RDENSE, rowCount(), cols.length);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < cols.length; j++) {
                 copy.set(i, j, get(i, cols[j]));
@@ -390,7 +389,7 @@ public abstract class AbstractDMatrix implements DMatrix {
                     String.format("Matrices not conformant for multiplication: (%d,%d) x (%d,%d)",
                             rowCount(), colCount(), B.rowCount(), B.colCount()));
         }
-        return MatrixMultiplication.ikjParallel(this, B);
+        return MatrixMultiplication.copyParallel(this, B);
     }
 
     @Override
@@ -476,7 +475,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix scatter() {
-        DMatrix scatter = DMatrix.empty(MType.RSTRIPE, colCount(), colCount());
+        DMatrix scatter = DMatrix.empty(MType.RDENSE, colCount(), colCount());
         double[] mean = new double[colCount()];
         for (int i = 0; i < colCount(); i++) {
             mean[i] = mapCol(i).mean();
@@ -514,7 +513,7 @@ public abstract class AbstractDMatrix implements DMatrix {
                     sum[j] += get(i, j);
                 }
             }
-            return DVectorDense.wrap(sum);
+            return DVector.wrap(sum);
         }
         double[] sum = new double[rowCount()];
         for (int i = 0; i < rowCount(); i++) {
@@ -522,7 +521,7 @@ public abstract class AbstractDMatrix implements DMatrix {
                 sum[i] += get(i, j);
             }
         }
-        return DVectorDense.wrap(sum);
+        return DVector.wrap(sum);
     }
 
     @Override

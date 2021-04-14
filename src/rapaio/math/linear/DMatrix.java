@@ -29,9 +29,6 @@ import rapaio.math.linear.base.DMatrixBase;
 import rapaio.math.linear.dense.DMatrixDense;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
-import rapaio.math.linear.dense.DMatrixStripe;
-import rapaio.math.linear.dense.DMatrixStripeC;
-import rapaio.math.linear.dense.DMatrixStripeR;
 import rapaio.printer.Printable;
 import rapaio.util.NotImplementedException;
 import rapaio.util.function.Double2DoubleFunction;
@@ -49,7 +46,7 @@ import java.util.stream.DoubleStream;
 public interface DMatrix extends Serializable, Printable {
 
     static DMatrix empty(int rows, int cols) {
-        return empty(MType.RSTRIPE, rows, cols);
+        return empty(MType.RDENSE, rows, cols);
     }
 
     static DMatrix empty(MType type, int rows, int cols) {
@@ -60,17 +57,13 @@ public interface DMatrix extends Serializable, Printable {
                 return new DMatrixDenseR(rows, cols);
             case CDENSE:
                 return new DMatrixDenseC(rows, cols);
-            case RSTRIPE:
-                return new DMatrixStripeR(rows, cols);
-            case CSTRIPE:
-                return new DMatrixStripeC(rows, cols);
             default:
                 throw new NotImplementedException();
         }
     }
 
     static DMatrix identity(int n) {
-        return identity(MType.RSTRIPE, n);
+        return identity(MType.RDENSE, n);
     }
 
     /**
@@ -91,7 +84,7 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     static DMatrix fill(int rows, int cols, double fill) {
-        return fill(MType.RSTRIPE, rows, cols, fill);
+        return fill(MType.RDENSE, rows, cols, fill);
     }
 
     /**
@@ -115,17 +108,12 @@ public interface DMatrix extends Serializable, Printable {
                     }
                 }
                 break;
-            case RSTRIPE:
-            case CSTRIPE:
-                double[][] elements = ((DMatrixStripe) m).getElements();
+            case RDENSE:
+            case CDENSE:
+                double[][] elements = ((DMatrixDense) m).getElements();
                 for (double[] v : elements) {
                     Arrays.fill(v, fill);
                 }
-                break;
-            case CDENSE:
-            case RDENSE:
-                double[] array = ((DMatrixDense) m).getElements();
-                Arrays.fill(array, fill);
                 break;
             default:
                 throw new NotImplementedException();
@@ -134,7 +122,7 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     static DMatrix fill(int rows, int cols, IntInt2DoubleBiFunction fun) {
-        return fill(MType.RSTRIPE, rows, cols, fun);
+        return fill(MType.RDENSE, rows, cols, fun);
     }
 
     /**
@@ -157,7 +145,7 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     static DMatrix random(int rows, int cols) {
-        return random(MType.RSTRIPE, rows, cols, Normal.std());
+        return random(MType.RDENSE, rows, cols, Normal.std());
     }
 
     static DMatrix random(MType type, int rows, int cols) {
@@ -169,11 +157,11 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     static DMatrix wrap(double[][] values) {
-        return wrap(MType.RSTRIPE, true, values);
+        return wrap(MType.RDENSE, true, values);
     }
 
     static DMatrix wrap(boolean byRows, double[][] values) {
-        return wrap(MType.RSTRIPE, byRows, values);
+        return wrap(MType.RDENSE, byRows, values);
     }
 
     static DMatrix wrap(MType type, boolean byRows, double[][] values) {
@@ -181,29 +169,19 @@ public interface DMatrix extends Serializable, Printable {
             switch (type) {
                 case BASE:
                     return new DMatrixBase(values);
-                case RSTRIPE:
-                    return new DMatrixStripeR(values.length, values[0].length, values);
+                case RDENSE:
+                    return new DMatrixDenseR(values.length, values[0].length, values);
             }
         } else {
-            if (type == MType.CSTRIPE) {
-                return new DMatrixStripeC(values[0].length, values.length, values);
+            if (type == MType.CDENSE) {
+                return new DMatrixDenseC(values[0].length, values.length, values);
             }
         }
         return copy(type, byRows, 0, byRows ? values.length : values[0].length, 0, byRows ? values[0].length : values.length, values);
     }
 
-    static DMatrix wrap(MType type, boolean byRows, int rows, int cols, double[] values) {
-        if (byRows && type == MType.RDENSE) {
-            return new DMatrixDenseR(rows, cols, values);
-        }
-        if (!byRows && type == MType.CDENSE) {
-            return new DMatrixDenseC(rows, cols, values);
-        }
-        return copy(type, byRows, rows, cols, 0, rows, 0, cols, values);
-    }
-
     static DMatrix copy(double[][] values) {
-        return copy(MType.RSTRIPE, true, 0, values.length, 0, values[0].length, values);
+        return copy(MType.RDENSE, true, 0, values.length, 0, values[0].length, values);
     }
 
     static DMatrix copy(MType type, boolean byRows, double[][] values) {
@@ -235,7 +213,7 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     static DMatrix copy(int inputRows, int inputCols, double... values) {
-        return copy(MType.RSTRIPE, true, inputRows, inputCols, 0, inputRows, 0, inputCols, values);
+        return copy(MType.RDENSE, true, inputRows, inputCols, 0, inputRows, 0, inputCols, values);
     }
 
     static DMatrix copy(MType type, boolean byRows, int inputRows, int inputCols, double[] values) {
@@ -264,7 +242,7 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     static DMatrix copy(Frame df) {
-        return copy(MType.RSTRIPE, df);
+        return copy(MType.RDENSE, df);
     }
 
     static DMatrix copy(MType type, Frame df) {
@@ -280,7 +258,7 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     static DMatrix copy(Var... vars) {
-        return copy(MType.RSTRIPE, vars);
+        return copy(MType.RDENSE, vars);
     }
 
     static DMatrix copy(MType type, Var... vars) {

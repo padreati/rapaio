@@ -21,72 +21,56 @@
 
 package rapaio.math.optimization.linesearch;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
 
 /**
  * Backtracking strategy for line search.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
-public class BacktrackLineSearch implements LineSearch {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implements LineSearch {
 
-    public static BacktrackLineSearch fromDefaults() {
-        return new BacktrackLineSearch(DEFAULT_ALPHA_0, DEFAULT_SHRINK_FACTOR, DEFAULT_C);
+    private static final long serialVersionUID = -831087752500069658L;
+
+    public static BacktrackLineSearch newSearch() {
+        return new BacktrackLineSearch();
     }
 
-    public static BacktrackLineSearch from(double alpha0) {
-        return new BacktrackLineSearch(alpha0, DEFAULT_SHRINK_FACTOR, DEFAULT_C);
-    }
+    // typically between 0.01 and 0.3
+    public static final double DEFAULT_ALPHA = 0.1;
+    // 0.1 (which corresponds to a very crude search) and 0.8 (which corresponds to a less crude search)
+    public static final double DEFAULT_BETA = 0.7;
 
-    public static BacktrackLineSearch from(double alpha0, double shrink, double c) {
-        return new BacktrackLineSearch(alpha0, shrink, c);
-    }
-
-    public static final double DEFAULT_ALPHA_0 = 1.0;
-    public static final double DEFAULT_SHRINK_FACTOR = 0.5;
-    public static final double DEFAULT_C = 0.9;
-
-    private final double alpha0;
-    private final double shrink; // in (0,0.5]
-    private final double c; // in (0,1]
-
-    private BacktrackLineSearch(double alpha0, double shrink, double c) {
-
-        validateParameters(alpha0, shrink, c);
-        this.alpha0 = alpha0;
-        this.shrink = shrink;
-        this.c = c;
-    }
-
-    private void validateParameters(double alpha0, double shrink, double c) {
-        if (alpha0 <= 0) {
-            throw new IllegalArgumentException();
-        }
-        if (shrink <= 0 || shrink >= 1) {
-            throw new IllegalArgumentException();
-        }
-        if (c <= 0 || c >= 1) {
-            throw new IllegalArgumentException();
-        }
-    }
+    public final ValueParam<Double, BacktrackLineSearch> alpha = new ValueParam<>(this,
+            DEFAULT_ALPHA, "alpha", "Alpha parameter which corresponds to how much gain is is enough for a good fit.",
+            value -> Double.isFinite(value) && value > 0 && value < 0.5);
+    public final ValueParam<Double, BacktrackLineSearch> beta = new ValueParam<>(this,
+            DEFAULT_BETA, "beta", "Beta parameter which corresponds with the backtrack shrinking factor for " +
+            "each search iteration.", value -> Double.isFinite(value) && value > 0 && value < 1);
 
     @Override
-    public double search(RFunction f, RDerivative df, DVector x, DVector p) {
+    public double search(RFunction f, RDerivative df, DVector x, DVector p, double t0) {
         double fx = f.apply(x);
-        double t = c * df.apply(x).dot(p);
+        double dfxp = df.apply(x).dot(p);
 
-        double alpha = alpha0;
+        double xalpha = alpha.get();
+        double xbeta = beta.get();
+
+        double t = t0;
         while (true) {
-            DVector palpha = p.caxpy(alpha, x);
-            double fdelta = f.apply(palpha);
-            if (fdelta > fx + alpha * t) {
-                alpha *= shrink;
+            double fdelta = f.apply(p.caxpy(t, x));
+            if (fdelta > fx + xalpha * t * dfxp) {
+                t *= xbeta;
                 continue;
             }
-            break;
+            return t;
         }
-        return alpha;
     }
 }

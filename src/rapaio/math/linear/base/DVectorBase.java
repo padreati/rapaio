@@ -34,10 +34,6 @@ import java.util.stream.DoubleStream;
  */
 public class DVectorBase extends AbstractDVector {
 
-    public static DVectorBase wrap(double... values) {
-        return new DVectorBase(values.length, values);
-    }
-
     private static final long serialVersionUID = -6444914455097469657L;
 
     protected final int size;
@@ -69,7 +65,7 @@ public class DVectorBase extends AbstractDVector {
         for (int i = 0; i < copy.length; i++) {
             copy[i] = values[indexes[i]];
         }
-        return DVectorBase.wrap(copy);
+        return new DVectorBase(copy.length, copy);
     }
 
     @Override

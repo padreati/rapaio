@@ -19,52 +19,62 @@
  *
  */
 
-package rapaio.ml.classifier.svm.kernel;
+package rapaio.ml.common.kernel;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**
- * The Multiquadric kernel can be used in the same situations as the Rational Quadratic kernel.
- * As is the case with the Sigmoid kernel, it is also an example of an
- * non-positive definite kernel.
+ * Circular Kernel
  * <p>
- * k(x, y) = \sqrt{\lVert x-y \rVert^2 + c^2}
+ * The circular kernel is used in geostatic applications.
+ * It is an example of an isotropic stationary kernel
+ * and is positive definite in R2.
+ * <p>
+ * k(x, y) = \frac{2}{\pi} \arccos ( - \frac{ \lVert x-y \rVert}{\sigma}) - \frac{2}{\pi} \frac{ \lVert x-y \rVert}{\sigma} \sqrt{1 - \left(\frac{ \lVert x-y \rVert}{\sigma} \right)^2}
+ * <p>
+ * \mbox{if}~ \lVert x-y \rVert < \sigma \mbox{, zero otherwise}
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
-public class MultiQuadricKernel extends AbstractKernel {
+public class CircularKernel extends AbstractKernel {
 
-    private static final long serialVersionUID = -4215277675823113044L;
+    private static final long serialVersionUID = -3141672110292845302L;
 
-    private final double c;
-    private final double c_square;
+    private final double sigma;
 
-    public MultiQuadricKernel(double c) {
-        this.c = c;
-        this.c_square = c * c;
+    public CircularKernel(double sigma) {
+        this.sigma = sigma;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double dot = deltaSumSquares(df1, row1, df2, row2);
-        return Math.sqrt(dot * dot + c_square);
+        if (dot < sigma) {
+            return 0;
+        }
+        double f = dot / sigma;
+        return 2 * (Math.acos(-f) - f * Math.sqrt(1 - f * f)) / Math.PI;
     }
 
     @Override
     public double compute(DVector v, DVector u) {
         double dot = deltaSumSquares(u, v);
-        return Math.sqrt(dot * dot + c_square);
+        if (dot < sigma) {
+            return 0;
+        }
+        double f = dot / sigma;
+        return 2 * (Math.acos(-f) - f * Math.sqrt(1 - f * f)) / Math.PI;
     }
 
     @Override
     public Kernel newInstance() {
-        return new MultiQuadricKernel(c);
+        return new CircularKernel(sigma);
     }
 
     @Override
     public String name() {
-        return "MultiQuadric(c=" + Format.floatFlex(c) + ")";
+        return "Circular(sigma=" + Format.floatFlex(sigma) + ")";
     }
 }

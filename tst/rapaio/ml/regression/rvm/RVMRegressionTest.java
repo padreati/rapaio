@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.svm.kernel.RBFKernel;
+import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.linear.LinearRegressionModel;
 
@@ -75,18 +75,18 @@ public class RVMRegressionTest {
         Frame df = Datasets.loadISLAdvertising();
         final String target = "Sales";
 
-        RVMRegression rvm = RVMRegression.newModel().kernel.set(new RBFKernel(400));
+        RVMRegression rvm = RVMRegression.newModel().kernel.set(new RBFKernel(20));
 
-        assertEquals("RVMRegression{kernel=RBF(sigma=400)}; fitted=false", rvm.toString());
+        assertEquals("RVMRegression{kernel=RBF(sigma=20)}; fitted=false", rvm.toString());
 
         RegressionResult rvmResult = rvm.fit(df, target).predict(df, true);
 
-        assertEquals("RVMRegression{kernel=RBF(sigma=400)}; fitted=true, rvm count=57", rvm.toString());
+        assertEquals("RVMRegression{kernel=RBF(sigma=20)}; fitted=true, rvm count=44", rvm.toString());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: RVMRegression\n" +
-                "Model instance: RVMRegression{kernel=RBF(sigma=400)}\n" +
+                "Model instance: RVMRegression{kernel=RBF(sigma=20)}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. TV        dbl \n" +
@@ -98,15 +98,15 @@ public class RVMRegressionTest {
                 "Fit and residuals for Sales\n" +
                 "===========================\n" +
                 "* summary: \n" +
-                "    Sales [dbl]          Sales [dbl]         Mean : 13.6143239    Mean :  0.4081761 \n" +
-                "   Min. :  1.0205857    Min. : -4.0513838 2nd Qu. : 17.1194427 2nd Qu. :  1.2808171 \n" +
-                "1st Qu. :  9.9663868 1st Qu. : -0.4797786    Max. : 28.4687762    Max. :  6.5281341 \n" +
-                " Median : 12.9114577  Median :  0.2398231                                           \n" +
+                "    Sales [dbl]          Sales [dbl]         Mean : 13.9191270    Mean :  0.1033730 \n" +
+                "   Min. :  2.5357814    Min. : -2.6614187 2nd Qu. : 17.4096608 2nd Qu. :  0.5255609 \n" +
+                "1st Qu. : 10.2752223 1st Qu. : -0.3540864    Max. : 27.0614187    Max. :  3.3858013 \n" +
+                " Median : 12.9077941  Median :  0.1139818                                           \n" +
                 "Total sum of squares     (TSS) : 5417.149\n" +
-                "Explained sum of squares (ESS) : 5749.542\n" +
-                "Residual sum of squares  (RSS) :  444.871\n" +
+                "Explained sum of squares (ESS) : 5519.327\n" +
+                "Residual sum of squares  (RSS) :  138.486\n" +
                 "\n" +
-                "Coeff. of determination  (R^2) :    0.918\n" +
+                "Coeff. of determination  (R^2) :    0.974\n" +
                 "\n", rvmResult.toSummary());
 
         assertEquals(rvm.toContent(), rvm.toSummary());
@@ -118,10 +118,10 @@ public class RVMRegressionTest {
         final String target = "Sales";
 
         RVMRegression rvm1 = RVMRegression.newModel()
-                .kernel.set(new RBFKernel(1000))
+                .kernel.set(new RBFKernel(40))
                 .method.set(RVMRegression.Method.EVIDENCE_APPROXIMATION);
         RVMRegression rvm2 = RVMRegression.newModel()
-                .kernel.set(new RBFKernel(1000))
+                .kernel.set(new RBFKernel(40))
                 .method.set(RVMRegression.Method.FAST_TIPPING);
 
         RegressionResult result1 = rvm1.fit(df, target).predict(df, true);

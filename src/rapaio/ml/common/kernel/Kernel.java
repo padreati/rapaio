@@ -19,24 +19,32 @@
  *
  */
 
-package rapaio.ml.classifier.svm.kernel.cache;
+package rapaio.ml.common.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 
 import java.io.Serializable;
 
 /**
- * Defines operations available on a kernel cache.
- * A kernel cache is a in memory data structure which is able to cache results of
- * operations to fasten th training and prediction of a svm.
+ * Kernel function interface
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
-public interface KernelCache extends Serializable {
+public interface Kernel extends Serializable {
 
-    Double retrieve(Frame df1, int row1, Frame df2, int row2);
+    Kernel newInstance();
 
-    void store(Frame df1, int row1, Frame df2, int row2, double value);
+    String name();
 
-    void clear();
+    boolean isLinear();
+
+    void buildKernelCache(String[] varNames, Frame df);
+
+    double compute(Frame df1, int row1, Frame df2, int row2);
+
+    double compute(DVector v, DVector u);
+
+    default void clean() {
+    }
 }

@@ -41,7 +41,7 @@ public class DVectorBaseTest extends StandardDVectorTest {
 
     @Override
     public DVector generateWrap(double[] values) {
-        return DVectorBase.wrap(values);
+        return DVector.wrap(VType.BASE, values);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class DVectorBaseTest extends StandardDVectorTest {
         for (int i = 0; i < size; i++) {
             array[i] = fill;
         }
-        return DVectorBase.wrap(array);
+        return DVector.wrap(VType.BASE, array);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class DVectorBaseTest extends StandardDVectorTest {
 
     @Test
     void testBuilders() {
-        DVector vector = DVectorBase.wrap(values);
+        DVector vector = DVector.wrap(VType.BASE, values);
 
         assertEquals(100, vector.size());
         for (int i = 0; i < 100; i++) {

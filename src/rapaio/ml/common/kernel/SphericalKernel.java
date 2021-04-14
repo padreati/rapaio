@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.ml.classifier.svm.kernel;
+package rapaio.ml.common.kernel;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;

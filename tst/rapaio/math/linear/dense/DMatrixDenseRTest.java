@@ -38,10 +38,9 @@ public class DMatrixDenseRTest extends StandardDMatrixTest {
     @Override
     protected DMatrix generateSequential(int n, int m) {
         DMatrix matrix = DMatrix.empty(MType.RDENSE, n, m);
-        int seq = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                matrix.set(i, j, seq++);
+                matrix.set(i, j, i * m + j);
             }
         }
         return matrix;
@@ -59,7 +58,7 @@ public class DMatrixDenseRTest extends StandardDMatrixTest {
 
     @Override
     protected DMatrix generateCopy(double[][] values) {
-        return DMatrix.copy(MType.RDENSE, true, values);
+        return DMatrix.wrap(MType.RDENSE, true, values);
     }
 
     @Override
@@ -143,7 +142,7 @@ public class DMatrixDenseRTest extends StandardDMatrixTest {
         }
 
         DMatrix copy5 = DMatrix.copy(MType.RDENSE, true, 1, 3, 1, 4, m);
-        assertTrue(copy5.deepEquals(DMatrix.copy(MType.RDENSE, true, new double[][]{{6, 7, 8}, {10, 11, 12}})));
+        assertTrue(copy5.deepEquals(DMatrix.wrap(new double[][]{{6, 7, 8}, {10, 11, 12}})));
 
         DMatrix copy6 = DMatrix.random(MType.RDENSE, 2, 2);
         assertEquals(4, copy6.valueStream().filter(Double::isFinite).filter(v -> v != 0).count());

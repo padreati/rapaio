@@ -54,7 +54,7 @@ public class DVectorDense extends DVectorBase {
         for (int i = 0; i < copy.length; i++) {
             copy[i] = values[indexes[i]];
         }
-        return DVectorDense.wrap(copy);
+        return new DVectorDense(copy.length, copy);
     }
 
     @Override
@@ -127,9 +127,9 @@ public class DVectorDense extends DVectorBase {
         if (y instanceof DVectorDense) {
             double[] copy = new double[size];
             DoubleArrays.axpyTo(a, values, y.asDense().values, copy, 0, size);
-            return DVectorDense.wrap(copy);
+            return new DVectorDense(copy.length, copy);
         }
-        DVector copy = DVectorDense.wrap(new double[size]);
+        DVector copy = new DVectorDense(size, new double[size]);
         for (int i = 0; i < size(); i++) {
             copy.set(i, a * values[i] + y.get(i));
         }
@@ -139,14 +139,15 @@ public class DVectorDense extends DVectorBase {
     @Override
     public double dot(DVector b) {
         checkConformance(b);
-        double s = 0;
         if (b instanceof DVectorDense) {
-            DVectorDense sb = (DVectorDense) b;
+            double s = 0;
+            double[] bvalues = ((DVectorDense) b).elements();
             for (int i = 0; i < size; i++) {
-                s = Math.fma(values[i], sb.values[i], s);
+                s = Math.fma(values[i], bvalues[i], s);
             }
             return s;
         }
+        double s = 0;
         for (int i = 0; i < size; i++) {
             s = Math.fma(values[i], b.get(i), s);
         }

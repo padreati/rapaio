@@ -45,6 +45,10 @@ import static java.lang.Math.abs;
  */
 public class SteepestDescentMinimize extends ParamSet<SteepestDescentMinimize> implements Minimize {
 
+    public static SteepestDescentMinimize newMinimizer() {
+        return new SteepestDescentMinimize();
+    }
+
     private static final long serialVersionUID = 6935528214774334177L;
 
     public final ValueParam<Double, SteepestDescentMinimize> tol = new ValueParam<>(this,
@@ -53,23 +57,20 @@ public class SteepestDescentMinimize extends ParamSet<SteepestDescentMinimize> i
             10, "maxIt", "Maximum number of iterations");
 
     public final ValueParam<LineSearch, SteepestDescentMinimize> lineSearch = new ValueParam<>(this,
-            BacktrackLineSearch.fromDefaults(), "lineSearch", "Line search algorithm");
+            BacktrackLineSearch.newSearch(), "lineSearch", "Line search algorithm");
 
-    private final DVector x;
-    private final RFunction f;
-    private final RDerivative d1f;
+    public final ValueParam<RFunction, SteepestDescentMinimize> f = new ValueParam<>(this,
+            null, "f", "function to be optimized");
+    public final ValueParam<RDerivative, SteepestDescentMinimize> d1f = new ValueParam<>(this,
+            null, "d1f", "function's derivative");
+    public final ValueParam<DVector, SteepestDescentMinimize> x0 = new ValueParam<>(this,
+            null, "x0", "initial value");
 
     private DVector sol;
 
     private final List<DVector> solutions = new ArrayList<>();
     private VarDouble errors;
     private boolean converged = false;
-
-    public SteepestDescentMinimize(DVector x, RFunction f, RDerivative d1f) {
-        this.x = x;
-        this.f = f;
-        this.d1f = d1f;
-    }
 
     public VarDouble getErrors() {
         return errors;
@@ -78,15 +79,15 @@ public class SteepestDescentMinimize extends ParamSet<SteepestDescentMinimize> i
     @Override
     public void compute() {
         converged = false;
-        sol = x.copy();
+        sol = x0.get().copy();
         for (int i = 0; i < maxIt.get(); i++) {
             solutions.add(sol.copy());
-            DVector delta_x = d1f.apply(sol).mult(-1);
+            DVector delta_x = d1f.get().apply(sol).mult(-1);
             if (abs(delta_x.norm(2)) < tol.get()) {
                 converged = true;
                 break;
             }
-            double t = lineSearch.get().search(f, d1f, x, delta_x);
+            double t = lineSearch.get().search(f.get(), d1f.get(), x0.get(), delta_x);
             sol.add(delta_x.mult(t));
         }
     }

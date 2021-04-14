@@ -55,7 +55,7 @@ public class FRandomProjectionTest {
 
 
         double corr = CorrPearson.of(df).singleValue();
-        assertEquals(0.4085654587641364, corr, 1e-20);
+        assertEquals(0.4085654587641364, corr, 1e-12);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class FRandomProjectionTest {
 
 
         double corr = CorrPearson.of(df).singleValue();
-        assertEquals(-0.5035565970961098, corr, 1e-20);
+        assertEquals(-0.5035565970961098, corr, 1e-12);
     }
 
     @Test
@@ -89,6 +89,6 @@ public class FRandomProjectionTest {
 
 
         double corr = CorrPearson.of(df).singleValue();
-        assertEquals(-0.5195786390214067, corr, 1e-20);
+        assertEquals(-0.5195786390214069, corr, 1e-15);
     }
 }

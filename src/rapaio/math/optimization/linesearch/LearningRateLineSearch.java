@@ -49,7 +49,7 @@ public class LearningRateLineSearch implements LineSearch {
     }
 
     @Override
-    public double search(RFunction f, RDerivative df, DVector x, DVector p) {
+    public double search(RFunction f, RDerivative df, DVector x, DVector p, double t0) {
         return r;
     }
 }

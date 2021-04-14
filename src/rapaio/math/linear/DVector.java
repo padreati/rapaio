@@ -557,7 +557,7 @@ public interface DVector extends Serializable, Printable {
     DVector copy(VType type);
 
     default DMatrix asMatrix() {
-        return asMatrix(MType.CSTRIPE);
+        return asMatrix(MType.CDENSE);
     }
 
     /**

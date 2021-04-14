@@ -106,7 +106,7 @@ public class BinaryLogisticIRLSTest {
         assertEquals(0.5, 1. / (1. + Math.exp(-result.getW().get(0) * x.mapCol(0).mean())), 1e-12);
 
         // aligned with python
-        assertEquals(-0.5584820971090906, result.getW().get(0));
+        assertEquals(-0.5584820971090904, result.getW().get(0));
 
         assertEquals(result.getWs().size(), result.getNlls().size());
         assertTrue(result.getW().deepEquals(result.getWs().get(result.getNlls().size() - 1)));

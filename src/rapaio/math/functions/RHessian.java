@@ -23,7 +23,6 @@ package rapaio.math.functions;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
 
 import java.io.Serializable;
 
@@ -34,7 +33,7 @@ import java.io.Serializable;
 public interface RHessian extends Serializable {
 
     default DMatrix apply(double... x) {
-        return apply(DVectorDense.wrap(x));
+        return apply(DVector.wrap(x));
     }
 
     DMatrix apply(DVector x);

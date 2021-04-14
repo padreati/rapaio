@@ -19,51 +19,48 @@
  *
  */
 
-package rapaio.ml.classifier.svm.kernel;
+package rapaio.ml.common.kernel;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**
- * The Rational Quadratic kernel is less computationally intensive than the GaussianPdf kernel
- * and can be used as an alternative when using the GaussianPdf becomes too expensive.
+ * The Power kernel is also known as the (unrectified) triangular kernel.
+ * It is an example of scale-invariant kernel (Sahbi and Fleuret, 2004)
+ * and is also only conditionally positive definite.
  * <p>
- * k(x, y) = 1 - \frac{\lVert x-y \rVert^2}{\lVert x-y \rVert^2 + c}
+ * k(x,y) = - \lVert x-y \rVert ^d
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
-public class RationalQuadraticKernel extends AbstractKernel {
+public class PowerKernel extends AbstractKernel {
 
-    private static final long serialVersionUID = 4637136575173648153L;
+    private static final long serialVersionUID = -974630838457936489L;
 
-    private final double c;
+    private final double degree;
 
-    public RationalQuadraticKernel(double c) {
-        this.c = c;
+    public PowerKernel(double degree) {
+        this.degree = degree;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double dot = deltaSumSquares(df1, row1, df2, row2);
-        double square = dot * dot;
-        return 1.0 - square / (square + c);
+        return -Math.pow(deltaSumSquares(df1, row1, df2, row2), degree);
     }
 
     @Override
     public double compute(DVector v, DVector u) {
-        double dot = deltaSumSquares(u, v);
-        double square = dot * dot;
-        return 1.0 - square / (square + c);
+        return -Math.pow(deltaSumSquares(u, v), degree);
     }
 
     @Override
     public Kernel newInstance() {
-        return new RationalQuadraticKernel(c);
+        return new PowerKernel(degree);
     }
 
     @Override
     public String name() {
-        return "RationalQuadratic(c=" + Format.floatFlex(c) + ")";
+        return "Power(degree=" + Format.floatFlex(degree) + ")";
     }
 }

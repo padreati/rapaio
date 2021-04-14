@@ -19,13 +19,13 @@
  *
  */
 
-package rapaio.ml.classifier.svm.kernel;
+package rapaio.ml.common.kernel;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
-import rapaio.ml.classifier.svm.kernel.cache.KernelCache;
-import rapaio.ml.classifier.svm.kernel.cache.MapKernelCache;
-import rapaio.ml.classifier.svm.kernel.cache.SolidKernelCache;
+import rapaio.ml.common.kernel.cache.KernelCache;
+import rapaio.ml.common.kernel.cache.MapKernelCache;
+import rapaio.ml.common.kernel.cache.SolidKernelCache;
 
 import java.util.Arrays;
 

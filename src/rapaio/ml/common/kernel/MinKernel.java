@@ -19,51 +19,48 @@
  *
  */
 
-package rapaio.ml.classifier.svm.kernel;
+package rapaio.ml.common.kernel;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 
 /**
- * The Chi-Square kernel comes from the Chi-Square distribution.
+ * The Histogram Intersection Kernel is also known as the Min Kernel
+ * and has been proven useful in image classification.
  * <p>
- * k(x,y) = 1 - \sum_{i=1}^n \frac{(x_i-y_i)^2}{\frac{1}{2}(x_i+y_i)}
+ * k(x,y) = \sum_{i=1}^n \min(x_i,y_i)
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
-public class ChiSquareKernel extends AbstractKernel {
+public class MinKernel extends AbstractKernel {
 
-    private static final long serialVersionUID = -3301596992870913061L;
+    private static final long serialVersionUID = -2388704255494979581L;
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double result = 0;
+        double sum = 0;
         for (String varName : varNames) {
-            double sum = df1.getDouble(row1, varName) + df2.getDouble(row2, varName);
-            double diff = df1.getDouble(row1, varName) - df2.getDouble(row2, varName);
-            result = 2 * diff * diff / sum;
+            sum += Math.min(df1.getDouble(row1, varName), df2.getDouble(row2, varName));
         }
-        return 1 - result;
+        return sum;
     }
 
     @Override
     public double compute(DVector v, DVector u) {
-        double result = 0;
-        for (int i = 0; i < u.size(); i++) {
-            double sum = u.get(i) + v.get(i);
-            double diff = u.get(i) - v.get(i);
-            result = 2 * diff * diff / sum;
+        double sum = 0;
+        for (int i = 0; i < v.size(); i++) {
+            sum += Math.min(v.get(i), u.get(i));
         }
-        return 1 - result;
+        return sum;
     }
 
     @Override
     public Kernel newInstance() {
-        return new ChiSquareKernel();
+        return new MinKernel();
     }
 
     @Override
     public String name() {
-        return "ChiSquare";
+        return "Min";
     }
 }

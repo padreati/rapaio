@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CholeskyDecompositionTest {
 
-    private static final double TOL = 1e-14;
+    private static final double TOL = 1e-12;
     private static final int TIMES = 100;
 
     @BeforeEach

@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.ml.classifier.svm.kernel.cache;
+package rapaio.ml.common.kernel.cache;
 
 import rapaio.data.Frame;
 

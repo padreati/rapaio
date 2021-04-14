@@ -19,54 +19,51 @@
  *
  */
 
-package rapaio.ml.classifier.svm.kernel;
+package rapaio.ml.common.kernel;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**
- * Inverse Multiquadric Kernel
+ * The Rational Quadratic kernel is less computationally intensive than the GaussianPdf kernel
+ * and can be used as an alternative when using the GaussianPdf becomes too expensive.
  * <p>
- * The Inverse Multi Quadric kernel. As with the GaussianPdf kernel,
- * it results in a kernel matrix with full rank (Micchelli, 1986)
- * and thus forms a infinite dimension feature space.
- * <p>
- * k(x, y) = \frac{1}{\sqrt{\lVert x-y \rVert^2 + \theta^2}}
+ * k(x, y) = 1 - \frac{\lVert x-y \rVert^2}{\lVert x-y \rVert^2 + c}
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
-public class InverseMultiQuadricKernel extends AbstractKernel {
+public class RationalQuadraticKernel extends AbstractKernel {
 
-    private static final long serialVersionUID = -2377890141986212381L;
+    private static final long serialVersionUID = 4637136575173648153L;
 
     private final double c;
-    private final double c_square;
 
-    public InverseMultiQuadricKernel(double c) {
+    public RationalQuadraticKernel(double c) {
         this.c = c;
-        this.c_square = c * c;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double dot = deltaSumSquares(df1, row1, df2, row2);
-        return 1.0 / Math.sqrt(dot * dot + c_square);
+        double square = dot * dot;
+        return 1.0 - square / (square + c);
     }
 
     @Override
     public double compute(DVector v, DVector u) {
         double dot = deltaSumSquares(u, v);
-        return 1.0 / Math.sqrt(dot * dot + c_square);
+        double square = dot * dot;
+        return 1.0 - square / (square + c);
     }
 
     @Override
     public Kernel newInstance() {
-        return new InverseMultiQuadricKernel(c);
+        return new RationalQuadraticKernel(c);
     }
 
     @Override
     public String name() {
-        return "InverseMultiQuadric(c=" + Format.floatFlex(c) + ")";
+        return "RationalQuadratic(c=" + Format.floatFlex(c) + ")";
     }
 }

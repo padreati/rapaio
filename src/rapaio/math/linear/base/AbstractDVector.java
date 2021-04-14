@@ -24,6 +24,7 @@ package rapaio.math.linear.base;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -117,7 +118,7 @@ public abstract class AbstractDVector implements DVector {
     @Override
     public DVector caxpy(double a, DVector y) {
         checkConformance(y);
-        DVector copy = DVectorBase.wrap(new double[size()]);
+        DVector copy = new DVectorDense(size(), new double[size()]);
         for (int i = 0; i < size(); i++) {
             copy.set(i, a * get(i) + y.get(i));
         }

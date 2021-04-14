@@ -19,48 +19,51 @@
  *
  */
 
-package rapaio.ml.classifier.svm.kernel;
+package rapaio.ml.common.kernel;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**
- * The Power kernel is also known as the (unrectified) triangular kernel.
- * It is an example of scale-invariant kernel (Sahbi and Fleuret, 2004)
- * and is also only conditionally positive definite.
+ * The Generalized T-Student Kernel has been proven to be a
+ * Mercer Kernel, thus having a positive semi-definite Kernel
+ * matrix (Boughorbel, 2004).
+ * It is given by:
  * <p>
- * k(x,y) = - \lVert x-y \rVert ^d
+ * k(x,y) = \frac{1}{1 + \lVert x-y \rVert ^d}
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
-public class PowerKernel extends AbstractKernel {
+public class GeneralizedStudentTKernel extends AbstractKernel {
 
-    private static final long serialVersionUID = -974630838457936489L;
+    private static final long serialVersionUID = -1302773223473974349L;
 
     private final double degree;
 
-    public PowerKernel(double degree) {
+    public GeneralizedStudentTKernel(double degree) {
         this.degree = degree;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        return -Math.pow(deltaSumSquares(df1, row1, df2, row2), degree);
+        double dot = deltaSumSquares(df1, row1, df2, row2);
+        return 1.0 / (1.0 + Math.pow(dot, degree));
     }
 
     @Override
     public double compute(DVector v, DVector u) {
-        return -Math.pow(deltaSumSquares(u, v), degree);
+        double dot = deltaSumSquares(u, v);
+        return 1.0 / (1.0 + Math.pow(dot, degree));
     }
 
     @Override
     public Kernel newInstance() {
-        return new PowerKernel(degree);
+        return new GeneralizedStudentTKernel(degree);
     }
 
     @Override
     public String name() {
-        return "Power(degree=" + Format.floatFlex(degree) + ")";
+        return "GeneralizedStudent(degree=" + Format.floatFlex(degree) + ")";
     }
 }

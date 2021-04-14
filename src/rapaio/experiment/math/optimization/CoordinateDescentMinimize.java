@@ -50,11 +50,14 @@ public class CoordinateDescentMinimize extends ParamSet<CoordinateDescentMinimiz
     public final ValueParam<Integer, CoordinateDescentMinimize> maxIt = new ValueParam<>(this, 100,
             "maxIt", "Maximum number of iterations");
     public final ValueParam<LineSearch, CoordinateDescentMinimize> lineSearch = new ValueParam<>(this,
-            BacktrackLineSearch.fromDefaults(), "lineSearch", "Line search algorithm");
+            BacktrackLineSearch.newSearch(), "lineSearch", "Line search algorithm");
 
-    private final DVector x;
-    private final RFunction f;
-    private final RDerivative d1f;
+    public final ValueParam<RFunction, CoordinateDescentMinimize> f = new ValueParam<>(this,
+            null, "f", "function to be optimized");
+    public final ValueParam<RDerivative, CoordinateDescentMinimize> d1f = new ValueParam<>(this,
+            null, "d1f", "function's derivative");
+    public final ValueParam<DVector, CoordinateDescentMinimize> x0 = new ValueParam<>(this,
+            null, "x0", "initial value");
 
     private DVector sol;
 
@@ -66,20 +69,14 @@ public class CoordinateDescentMinimize extends ParamSet<CoordinateDescentMinimiz
         return errors;
     }
 
-    public CoordinateDescentMinimize(DVector x, RFunction f, RDerivative d1f) {
-        this.x = x;
-        this.f = f;
-        this.d1f = d1f;
-    }
-
     @Override
     public void compute() {
 
         converged = false;
-        sol = x.copy();
+        sol = x0.get().copy();
         for (int i = 0; i < maxIt.get(); i++) {
             solutions.add(sol.copy());
-            DVector d1fx = d1f.apply(sol);
+            DVector d1fx = d1f.get().apply(sol);
             double max = abs(d1fx.get(0));
             int index = 0;
             for (int j = 1; j < d1fx.size(); j++) {
@@ -95,7 +92,7 @@ public class CoordinateDescentMinimize extends ParamSet<CoordinateDescentMinimiz
                 converged = true;
                 break;
             }
-            double t = lineSearch.get().search(f, d1f, x, deltaX);
+            double t = lineSearch.get().search(f.get(), d1f.get(), x0.get(), deltaX);
             sol.add(deltaX.mult(t));
         }
     }

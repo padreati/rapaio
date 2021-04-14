@@ -76,7 +76,6 @@ public class RootFind1D extends ParamSet<RootFind1D> implements Serializable {
     public enum Method {
         Bisection,
         RegulaFalsi,
-        Newton,
         ITP,
         Secant,
         Brent,
@@ -91,8 +90,6 @@ public class RootFind1D extends ParamSet<RootFind1D> implements Serializable {
                 return regula_falsi_optimize(f);
             case ITP:
                 return itp_optimize(f);
-            case Newton:
-                return newton_optimize(f);
             case Secant:
                 return secant_optimization(f);
             case Brent:
@@ -257,15 +254,6 @@ public class RootFind1D extends ParamSet<RootFind1D> implements Serializable {
         x = xa + (xb - xa) / 2;
         converged = j != maxIter.get();
         iterations = j;
-        return x;
-    }
-
-    private double newton_optimize(Double2DoubleFunction f) {
-
-
-        x = Double.NaN;
-        converged = false;
-        iterations = maxIter.get();
         return x;
     }
 

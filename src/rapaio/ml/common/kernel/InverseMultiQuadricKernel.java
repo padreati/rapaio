@@ -19,48 +19,54 @@
  *
  */
 
-package rapaio.ml.classifier.svm.kernel;
+package rapaio.ml.common.kernel;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.printer.Format;
 
 /**
- * The Histogram Intersection Kernel is also known as the Min Kernel
- * and has been proven useful in image classification.
+ * Inverse Multiquadric Kernel
  * <p>
- * k(x,y) = \sum_{i=1}^n \min(x_i,y_i)
+ * The Inverse Multi Quadric kernel. As with the GaussianPdf kernel,
+ * it results in a kernel matrix with full rank (Micchelli, 1986)
+ * and thus forms a infinite dimension feature space.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
+ * k(x, y) = \frac{1}{\sqrt{\lVert x-y \rVert^2 + \theta^2}}
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
-public class MinKernel extends AbstractKernel {
+public class InverseMultiQuadricKernel extends AbstractKernel {
 
-    private static final long serialVersionUID = -2388704255494979581L;
+    private static final long serialVersionUID = -2377890141986212381L;
+
+    private final double c;
+    private final double c_square;
+
+    public InverseMultiQuadricKernel(double c) {
+        this.c = c;
+        this.c_square = c * c;
+    }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double sum = 0;
-        for (String varName : varNames) {
-            sum += Math.min(df1.getDouble(row1, varName), df2.getDouble(row2, varName));
-        }
-        return sum;
+        double dot = deltaSumSquares(df1, row1, df2, row2);
+        return 1.0 / Math.sqrt(dot * dot + c_square);
     }
 
     @Override
     public double compute(DVector v, DVector u) {
-        double sum = 0;
-        for (int i = 0; i < v.size(); i++) {
-            sum += Math.min(v.get(i), u.get(i));
-        }
-        return sum;
+        double dot = deltaSumSquares(u, v);
+        return 1.0 / Math.sqrt(dot * dot + c_square);
     }
 
     @Override
     public Kernel newInstance() {
-        return new MinKernel();
+        return new InverseMultiQuadricKernel(c);
     }
 
     @Override
     public String name() {
-        return "Min";
+        return "InverseMultiQuadric(c=" + Format.floatFlex(c) + ")";
     }
 }

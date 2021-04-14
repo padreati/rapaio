@@ -22,7 +22,6 @@
 package rapaio.math.functions;
 
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
 
 import java.io.Serializable;
 
@@ -33,7 +32,7 @@ import java.io.Serializable;
 public interface RDerivative extends Serializable {
 
     default DVector apply(double... x) {
-        return apply(DVectorDense.wrap(x));
+        return apply(DVector.wrap(x));
     }
 
     DVector apply(DVector x);

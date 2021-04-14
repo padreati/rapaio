@@ -21,12 +21,12 @@
 
 package rapaio.math.optimization.linesearch;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,13 +37,7 @@ public class BacktrackLineSearchTest {
 
     @Test
     void validationTest() {
-        assertThrows(IllegalArgumentException.class, () -> BacktrackLineSearch.from(0));
-
-        assertThrows(IllegalArgumentException.class, () -> BacktrackLineSearch.from(1, 0, 0.4));
-        assertThrows(IllegalArgumentException.class, () -> BacktrackLineSearch.from(1, 1, 0.4));
-
-        assertThrows(IllegalArgumentException.class, () -> BacktrackLineSearch.from(1, 0.1, 0));
-        assertThrows(IllegalArgumentException.class, () -> BacktrackLineSearch.from(1, 0.1, 1));
+        assertThrows(IllegalArgumentException.class, () -> BacktrackLineSearch.newSearch().alpha.set(0.0));
     }
 
     @Test
@@ -54,17 +48,16 @@ public class BacktrackLineSearchTest {
         RFunction f = (DVector x) -> x.get(0) * x.get(0);
         RDerivative df = (DVector x) -> x.copy().mult(2.0);
 
-        for (int i = 0; i < 10_000; i++) {
+        for (int i = 0; i < 1_000; i++) {
             double next = (RandomSource.nextDouble() - 0.5) * 100;
-            DVector x0 = DVectorDense.wrap(next);
+            DVector x0 = DVector.wrap(next);
             DVector p = df.apply(x0).mult(-1);
-            double alpha = BacktrackLineSearch.fromDefaults().search(f, df, x0, p);
+            double t = BacktrackLineSearch.newSearch().search(f, df, x0, p);
             double fx0 = f.apply(x0);
-            double fx1 = f.apply(p.caxpy(alpha, x0));
+            double fx1 = f.apply(p.caxpy(t, x0));
             assertTrue(fx0 >= fx1);
-            assertEquals(0.0625, alpha);
+            assertEquals(0.7, t);
         }
-
     }
 
     @Test
@@ -72,17 +65,56 @@ public class BacktrackLineSearchTest {
 
         // here we test f(x) = -Math.exp(x^2)
         RFunction f = (DVector x) -> -Math.exp(-x.get(0) * x.get(0));
-        RDerivative df = (DVector x) -> DVectorDense.wrap(Math.exp(-x.get(0) * x.get(0)) * 2 * x.get(0));
+        RDerivative df = (DVector x) -> DVector.wrap(Math.exp(-x.get(0) * x.get(0)) * 2 * x.get(0));
 
-        for (int i = 0; i < 10_000; i++) {
+        for (int i = 0; i < 1_000; i++) {
             double next = (RandomSource.nextDouble() - 0.5);
-            DVector x0 = DVectorDense.wrap(next);
+            DVector x0 = DVector.wrap(next);
             DVector p = df.apply(x0).mult(-1);
-            double alpha = BacktrackLineSearch.from(100_000).search(f, df, x0, p);
+            double alpha = BacktrackLineSearch.newSearch().search(f, df, x0, p, 100_000.0);
             double fx0 = f.apply(x0);
             double fx1 = f.apply(p.caxpy(alpha, x0));
             assertTrue(fx0 >= fx1);
         }
+    }
 
+    @Test
+    void documentedTests() {
+
+        T[] tests = new T[]{
+                new T(
+                        // this test is taken from Algorithms for Optimization, p.58
+                        v -> v.get(0) * v.get(0) + v.get(0) * v.get(1) + v.get(1) * v.get(1),
+                        v -> DVector.wrap(2 * v.get(0), 2 * v.get(1)),
+                        DVector.wrap(-1, -1),
+                        DVector.wrap(1, 2),
+                        1e-4,
+                        0.5,
+                        10,
+                        DVector.wrap(-1.5, -0.5)
+                )
+        };
+
+        for (T test : tests) {
+            double alpha = BacktrackLineSearch.newSearch()
+                    .alpha.set(test.alpha)
+                    .beta.set(test.beta)
+                    .search(test.f, test.d1f, test.x0, test.d, test.t);
+            DVector x1 = test.x0.copy().add(test.d.mult(alpha));
+            assertTrue(x1.deepEquals(test.x1));
+        }
+
+    }
+
+    @RequiredArgsConstructor
+    static class T {
+        public final RFunction f;
+        public final RDerivative d1f;
+        public final DVector d;
+        public final DVector x0;
+        public final double alpha;
+        public final double beta;
+        public final double t;
+        public final DVector x1;
     }
 }

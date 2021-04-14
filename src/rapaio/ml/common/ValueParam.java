@@ -63,7 +63,7 @@ public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
     @Override
     public S set(T value) {
         if (!validate(value)) {
-            throw new RuntimeException("Value " + value + " for parameter " + name() + " is invalid!");
+            throw new IllegalArgumentException("Value " + value + " for parameter " + name() + " is invalid!");
         }
         this.value = value;
         return params;

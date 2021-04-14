@@ -24,7 +24,6 @@ package rapaio.math.linear;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.math.linear.dense.DVectorDense;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -346,8 +345,8 @@ public abstract class StandardDMatrixTest {
     void testSum() {
         var m1 = generateSequential(5, 3);
         assertEquals(105, m1.sum());
-        assertTrue(DVectorDense.wrap(30, 35, 40).deepEquals(m1.sum(0)));
-        assertTrue(DVectorDense.wrap(3, 12, 21, 30, 39).deepEquals(m1.sum(1)));
+        assertTrue(DVector.wrap(30, 35, 40).deepEquals(m1.sum(0)));
+        assertTrue(DVector.wrap(3, 12, 21, 30, 39).deepEquals(m1.sum(1)));
     }
 
     @Test
@@ -386,7 +385,7 @@ public abstract class StandardDMatrixTest {
     @Test
     void dotDiagTest() {
         var m = generateFill(10, 3, 1);
-        var v1 = DVectorDense.wrap(1, 2, 3);
+        var v1 = DVector.wrap(1, 2, 3);
 
         var d = DMatrix.wrap(new double[][]{
                 {1, 0, 0},
