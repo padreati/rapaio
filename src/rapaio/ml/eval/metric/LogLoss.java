@@ -24,6 +24,8 @@ package rapaio.ml.eval.metric;
 import rapaio.data.Var;
 import rapaio.ml.classifier.ClassifierResult;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
@@ -33,6 +35,7 @@ public class LogLoss extends AbstractClassifierMetric {
         return new LogLoss(eps);
     }
 
+    @Serial
     private static final long serialVersionUID = 8850076650664844719L;
     private static final String NAME = "LogLoss";
 
@@ -49,7 +52,7 @@ public class LogLoss extends AbstractClassifierMetric {
         for (int i = 0; i < actual.size(); i++) {
             logloss -= Math.log(Math.max(eps, Math.min(1 - eps, result.firstDensity().getDouble(i, actual.getLabel(i)))));
         }
-        score = ClassifierScore.builder().value(logloss).build();
+        score = new ClassifierScore(logloss);
         return this;
     }
 }

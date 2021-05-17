@@ -51,16 +51,17 @@ public class ClassifierModelSerializationTest {
         Var varAcc = VarDouble.empty();
 
         Frame iris = Datasets.loadIrisDataset();
-        testModel(OneRule.newModel(), iris, "class", "iris", varModel, varData, varAcc);
-        testModel(NaiveBayes.newModel().estimators.set(KernelEstimator.forType(iris, VarType.DOUBLE)), iris, "class", "iris", varModel, varData, varAcc);
-        testModel(CTree.newC45(), iris, "class", "iris", varModel, varData, varAcc);
-        testModel(CTree.newCART(), iris, "class", "iris", varModel, varData, varAcc);
+        testModel(OneRule.newModel(), iris, varModel, varData, varAcc);
+        testModel(NaiveBayes.newModel().estimators.set(KernelEstimator.forType(iris, VarType.DOUBLE)), iris, varModel, varData, varAcc);
+        testModel(CTree.newC45(), iris, varModel, varData, varAcc);
+        testModel(CTree.newCART(), iris, varModel, varData, varAcc);
 
         SolidFrame.byVars(varData, varModel, varAcc).printHead();
     }
 
-    private <T extends ClassifierModel> void testModel(T model, Frame df, String target, String dataName, Var varModel, Var varData, Var varAcc) throws IOException, ClassNotFoundException {
-        model.fit(df, target);
+    @SuppressWarnings("unchecked")
+    private <T extends ClassifierModel> void testModel(T model, Frame df, Var varModel, Var varData, Var varAcc) throws IOException, ClassNotFoundException {
+        model.fit(df, "class");
         model.printSummary();
 
         File tmp = File.createTempFile("model-", "ser");
@@ -74,8 +75,8 @@ public class ClassifierModelSerializationTest {
         modelFit.printSummary();
         assertEquals(modelFit.toSummary(), shaddowFit.toSummary());
 
-        varData.addLabel(dataName);
+        varData.addLabel("iris");
         varModel.addLabel(model.name());
-        varAcc.addDouble(Confusion.from(df.rvar(target), modelFit.firstClasses()).accuracy());
+        varAcc.addDouble(Confusion.from(df.rvar("class"), modelFit.firstClasses()).accuracy());
     }
 }

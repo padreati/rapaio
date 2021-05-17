@@ -22,8 +22,10 @@
 package rapaio.ml.common.kernel;
 
 import rapaio.data.Frame;
-import rapaio.math.MTools;
+import rapaio.math.MathTools;
 import rapaio.math.linear.DVector;
+
+import java.io.Serial;
 
 import static rapaio.printer.Format.floatFlex;
 
@@ -47,6 +49,7 @@ import static rapaio.printer.Format.floatFlex;
  */
 public class PolyKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = 7520286921201342580L;
 
     private final double exponent;
@@ -55,7 +58,7 @@ public class PolyKernel extends AbstractKernel {
 
     @Override
     public boolean isLinear() {
-        return MTools.eq(exponent, 1.0);
+        return MathTools.eq(exponent, 1.0);
     }
 
     @Override

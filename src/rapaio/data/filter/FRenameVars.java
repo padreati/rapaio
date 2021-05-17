@@ -26,6 +26,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import java.util.Map;
  */
 public class FRenameVars extends AbstractFFilter {
 
+    @Serial
     private static final long serialVersionUID = 1697029209693507138L;
 
     public static FRenameVars of(VarRange varRange, String... varNames) {

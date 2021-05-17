@@ -108,14 +108,12 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
 
     @Override
     public VarDouble plus(Var x) {
-        if (x instanceof VarDouble) {
-            VarDouble xd = (VarDouble) x;
+        if (x instanceof VarDouble xd) {
             double[] xdarray = xd.elements();
             for (int i = 0; i < rowCount; i++) {
                 data[i] += xdarray[i];
             }
-        } else if (x instanceof VarInt) {
-            VarInt xi = (VarInt) x;
+        } else if (x instanceof VarInt xi) {
             int[] xiarray = xi.elements();
             for (int i = 0; i < rowCount; i++) {
                 if (xiarray[i] == VarInt.MISSING_VALUE) {
@@ -142,14 +140,12 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
 
     @Override
     public VarDouble minus(Var x) {
-        if (x instanceof VarDouble) {
-            VarDouble xd = (VarDouble) x;
+        if (x instanceof VarDouble xd) {
             double[] xdarray = xd.elements();
             for (int i = 0; i < rowCount; i++) {
                 data[i] -= xdarray[i];
             }
-        } else if (x instanceof VarInt) {
-            VarInt xi = (VarInt) x;
+        } else if (x instanceof VarInt xi) {
             int[] xiarray = xi.elements();
             for (int i = 0; i < rowCount; i++) {
                 if (xiarray[i] == VarInt.MISSING_VALUE) {
@@ -176,14 +172,12 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
 
     @Override
     public VarDouble mult(Var x) {
-        if (x instanceof VarDouble) {
-            VarDouble xd = (VarDouble) x;
+        if (x instanceof VarDouble xd) {
             double[] xdarray = xd.elements();
             for (int i = 0; i < rowCount; i++) {
                 data[i] *= xdarray[i];
             }
-        } else if (x instanceof VarInt) {
-            VarInt xi = (VarInt) x;
+        } else if (x instanceof VarInt xi) {
             int[] xiarray = xi.elements();
             for (int i = 0; i < rowCount; i++) {
                 if (xiarray[i] == VarInt.MISSING_VALUE) {
@@ -210,14 +204,12 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
 
     @Override
     public VarDouble divide(Var x) {
-        if (x instanceof VarDouble) {
-            VarDouble xd = (VarDouble) x;
+        if (x instanceof VarDouble xd) {
             double[] xdarray = xd.elements();
             for (int i = 0; i < rowCount; i++) {
                 data[i] /= xdarray[i];
             }
-        } else if (x instanceof VarInt) {
-            VarInt xi = (VarInt) x;
+        } else if (x instanceof VarInt xi) {
             int[] xiarray = xi.elements();
             for (int i = 0; i < rowCount; i++) {
                 if (xiarray[i] == VarInt.MISSING_VALUE) {

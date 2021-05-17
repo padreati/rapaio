@@ -28,6 +28,7 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.printer.Format;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,6 +62,7 @@ public class PoissonEstimator extends AbstractEstimator {
         return varRange.parseVarNames(df).stream().map(PoissonEstimator::new).collect(Collectors.toList());
     }
 
+    @Serial
     private static final long serialVersionUID = -75942136113239906L;
     private static final double eps = 1e-100;
     private static final Logger LOGGER = Logger.getLogger(PoissonEstimator.class.getName());

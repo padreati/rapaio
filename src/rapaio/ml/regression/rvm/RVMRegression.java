@@ -21,8 +21,6 @@
 
 package rapaio.ml.regression.rvm;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import rapaio.core.RandomSource;
 import rapaio.core.correlation.CorrPearson;
 import rapaio.core.distributions.Normal;
@@ -49,6 +47,7 @@ import rapaio.printer.opt.POption;
 import rapaio.util.NotImplementedException;
 import rapaio.util.collection.IntArrays;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.RecursiveAction;
@@ -71,6 +70,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         EXPERIMENT_FAST_TRUNCATED
     }
 
+    @Serial
     private static final long serialVersionUID = 9165148257709665706L;
 
     public ValueParam<Kernel, RVMRegression> kernel = new ValueParam<>(this, new RBFKernel(1),
@@ -91,25 +91,19 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
     public ValueParam<Integer, RVMRegression> maxIter = new ValueParam<>(this, 1000,
             "maxIter", "Max number of iterations");
 
-    @Getter
     private int[] indexes;
 
-    @Getter
     private DVector m;
 
     /**
      * Fitted covariance matrix.
      */
-    @Getter
     private DMatrix sigma;
     private DMatrix x;
     private DVector alpha;
-    @Getter
     private DVector rbfBeta;
-    @Getter
     private double beta;
     private boolean converged;
-    @Getter
     private int iterations;
 
     private RVMRegression() {
@@ -134,6 +128,30 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         return "RVMRegression";
     }
 
+    public int[] getIndexes() {
+        return indexes;
+    }
+
+    public DVector getM() {
+        return m;
+    }
+
+    public DMatrix getSigma() {
+        return sigma;
+    }
+
+    public DVector getRbfBeta() {
+        return rbfBeta;
+    }
+
+    public double getBeta() {
+        return beta;
+    }
+
+    public int getIterations() {
+        return iterations;
+    }
+
     /**
      * Describes the learning algorithm
      *
@@ -141,16 +159,9 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
      */
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .allowMissingInputValues(false)
-                .allowMissingTargetValues(false)
-                .inputTypes(List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY))
-                .targetType(VarType.DOUBLE)
-                .maxInputCount(Integer.MAX_VALUE)
-                .minInputCount(1)
-                .maxTargetCount(1)
-                .minTargetCount(1)
-                .build();
+        return new Capabilities(
+                1, Integer.MAX_VALUE, List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY), false,
+                1, 1, List.of(VarType.DOUBLE), false);
     }
 
     /**
@@ -162,18 +173,13 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        switch (method.get()) {
-            case EVIDENCE_APPROXIMATION:
-                return new EvidenceApproximation(this, df).fit();
-            case FAST_TIPPING:
-                return new FastTipping(this, df).fit();
-            case EXPERIMENT_ADAPTIVE_RBF:
-                return new AdaptiveRBF(this, df).fit();
-            case EXPERIMENT_FAST_TRUNCATED:
-                return new FastTruncated(this, df).fit();
-            default:
-                throw new NotImplementedException("The method selected for fitting RVMRegression is not implemented.");
-        }
+        return switch (method.get()) {
+            case EVIDENCE_APPROXIMATION -> new EvidenceApproximation(this, df).fit();
+            case FAST_TIPPING -> new FastTipping(this, df).fit();
+            case EXPERIMENT_ADAPTIVE_RBF -> new AdaptiveRBF(this, df).fit();
+            case EXPERIMENT_FAST_TRUNCATED -> new FastTruncated(this, df).fit();
+            default -> throw new NotImplementedException("The method selected for fitting RVMRegression is not implemented.");
+        };
     }
 
     /**
@@ -293,7 +299,6 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         return sb.toString();
     }
 
-    @RequiredArgsConstructor
     private static abstract class BaseAlgorithm {
 
         protected final RVMRegression parent;
@@ -308,6 +313,11 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         public DVector alpha;
         public double beta;
+
+        protected BaseAlgorithm(RVMRegression parent, Frame df) {
+            this.parent = parent;
+            this.df = df;
+        }
 
         protected DMatrix buildPhi() {
             int n = x.rowCount();
@@ -655,8 +665,8 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         }
 
         private void computeBeta() {
-            DMatrix pruned_phi = phi.mapCols(indexes);
             DVector gamma = DVector.from(m.size(), i -> 1 - alpha.get(indexes[i]) * sigma.get(i, i));
+            DMatrix pruned_phi = phi.mapCols(indexes);
             DVector delta = pruned_phi.dot(m).sub(y);
             beta = (n - gamma.sum()) / delta.dot(delta);
         }
@@ -675,10 +685,10 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
     private static final class AdaptiveRBF extends BaseAlgorithm {
 
-        private static double ksigma_init = 2;
-        private static double rbfBetaDelta = 1e-3;
+        private static final double ksigma_init = 2;
+        private static final double rbfBetaDelta = 1e-3;
 
-        private static double min_delta_threshold = 1e-100;
+        private static final double min_delta_threshold = 1e-100;
         private static DVector rbfBeta;
 
         public static double rbf(double beta, DVector u, DVector v) {
@@ -1077,13 +1087,18 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             active = Arrays.copyOf(active, activeLen);
         }
 
-        @RequiredArgsConstructor
         private static class RecursiveTruncate extends RecursiveAction {
 
             private final int pos;
             private final double[] correlations;
 
+            @Serial
             private static final long serialVersionUID = 5360432925103729246L;
+
+            private RecursiveTruncate(int pos, double[] correlations) {
+                this.pos = pos;
+                this.correlations = correlations;
+            }
 
             @Override
             protected void compute() {

@@ -23,6 +23,7 @@ package rapaio.data;
 
 import rapaio.math.linear.DMatrix;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -117,6 +118,7 @@ public class SolidFrame extends AbstractFrame {
         return df;
     }
 
+    @Serial
     private static final long serialVersionUID = 4963238370571140813L;
     private final Var[] vars;
     private final HashMap<String, Integer> colIndex;

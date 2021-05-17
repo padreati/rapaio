@@ -26,6 +26,7 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
 import rapaio.util.collection.DoubleArrays;
 
+import java.io.Serial;
 import java.util.stream.IntStream;
 
 /**
@@ -35,6 +36,7 @@ import java.util.stream.IntStream;
  */
 public class DMatrixDenseR extends DMatrixDense {
 
+    @Serial
     private static final long serialVersionUID = -2186520026933442642L;
 
     public DMatrixDenseR(int rowCount, int colCount) {
@@ -97,8 +99,7 @@ public class DMatrixDenseR extends DMatrixDense {
 
     @Override
     public DVector dot(DVector b) {
-        if (b instanceof DVectorDense) {
-            DVectorDense vd = (DVectorDense) b;
+        if (b instanceof DVectorDense vd) {
             int vlen = vd.size();
             double[] varray = vd.elements();
 

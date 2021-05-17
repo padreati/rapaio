@@ -26,6 +26,7 @@ import rapaio.math.linear.MType;
 import rapaio.math.linear.base.AbstractDMatrix;
 import rapaio.util.function.Double2DoubleFunction;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
@@ -49,6 +50,7 @@ import java.util.stream.DoubleStream;
  */
 public abstract class DMatrixDense extends AbstractDMatrix {
 
+    @Serial
     private static final long serialVersionUID = -1798941400862688438L;
 
     protected final MType type;

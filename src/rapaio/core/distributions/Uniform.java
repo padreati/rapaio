@@ -21,6 +21,8 @@
 
 package rapaio.core.distributions;
 
+import java.io.Serial;
+
 import static rapaio.printer.Format.floatFlex;
 
 /**
@@ -34,6 +36,7 @@ public class Uniform implements Distribution {
         return new Uniform(a, b);
     }
 
+    @Serial
     private static final long serialVersionUID = -6077483164719205038L;
     private final double a;
     private final double b;

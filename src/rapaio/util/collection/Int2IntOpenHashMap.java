@@ -23,6 +23,7 @@ package rapaio.util.collection;
 
 import rapaio.core.RandomSource;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import static rapaio.util.hash.Murmur3.murmur3A;
  */
 public class Int2IntOpenHashMap implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 5146955493932065218L;
 
     public enum Probing {

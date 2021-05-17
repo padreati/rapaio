@@ -25,6 +25,8 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
+import java.io.Serial;
+
 import static rapaio.printer.Format.floatFlex;
 
 /**
@@ -32,6 +34,7 @@ import static rapaio.printer.Format.floatFlex;
  */
 public class HuberLoss implements Loss {
 
+    @Serial
     private static final long serialVersionUID = -8624877244857556563L;
     private double alpha = 0.25;
 

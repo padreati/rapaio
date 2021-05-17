@@ -21,9 +21,6 @@
 
 package rapaio.ml.regression.boost;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -43,6 +40,7 @@ import rapaio.ml.regression.tree.RTree;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,13 +51,13 @@ import java.util.Objects;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GBTRegression extends AbstractRegressionModel<GBTRegression, RegressionResult> {
 
     public static GBTRegression newModel() {
         return new GBTRegression();
     }
 
+    @Serial
     private static final long serialVersionUID = 4559540258922653130L;
 
     public final ValueParam<Double, GBTRegression> shrinkage = new ValueParam<>(this, 1.0,
@@ -88,10 +86,8 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
             "Threshold to stop growing trees if gain is not met.",
             Double::isFinite);
 
-    @Getter
     private VarDouble fitValues;
 
-    @Getter
     private List<GBTRtree<? extends RegressionModel, ? extends RegressionResult>> trees;
 
     @Override
@@ -106,14 +102,18 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .minInputCount(1).maxInputCount(1_000_000)
-                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL))
-                .minTargetCount(1).maxTargetCount(1)
-                .targetType(VarType.DOUBLE)
-                .allowMissingInputValues(true)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(
+                1, 1_000_000,
+                Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL), true,
+                1, 1, List.of(VarType.DOUBLE), false);
+    }
+
+    public VarDouble getFitValues() {
+        return fitValues;
+    }
+
+    public List<GBTRtree<? extends RegressionModel, ? extends RegressionResult>> getTrees() {
+        return trees;
     }
 
     @Override
@@ -136,7 +136,7 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
 
             // frame sampling
 
-            Mapping sampleRows = rowSampler.get().nextSample(xm, weights).getMapping();
+            Mapping sampleRows = rowSampler.get().nextSample(xm, weights).mapping();
             Frame xmLearn = xm.mapRows(sampleRows);
 
             // build regions

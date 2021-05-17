@@ -26,6 +26,8 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
@@ -39,6 +41,7 @@ public class VTransformBoxCox implements VFilter {
         return new VTransformBoxCox(lambda, shift);
     }
 
+    @Serial
     private static final long serialVersionUID = 1914770412929840529L;
     private final double lambda;
     private final double shift;

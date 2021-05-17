@@ -21,9 +21,9 @@
 
 package rapaio.graphics.plot;
 
-import lombok.RequiredArgsConstructor;
 import rapaio.graphics.base.XWilkinson;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,11 +32,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @author algoshipda
+ * @author padreati
  */
-@RequiredArgsConstructor
 public final class Axis implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 8011268159946315468L;
 
     public enum Type {
@@ -197,7 +197,7 @@ public final class Axis implements Serializable {
 
     public String toString() {
         return "Axis{min=" + min + ", max=" + max +
-                ", tickers=" + tickers.stream().map(String::valueOf).collect(Collectors.joining()) +
+                ", tickers=" + tickers.stream().map(String::valueOf).collect(Collectors.joining(",")) +
                 ", labels=" + String.join(",", labels) +
                 '}';
     }

@@ -21,6 +21,7 @@
 
 package rapaio.core.tools;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -36,6 +37,7 @@ import java.io.Serializable;
  */
 public class DistanceMatrix implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1663354103398810554L;
 
     public static DistanceMatrix empty(String[] names) {

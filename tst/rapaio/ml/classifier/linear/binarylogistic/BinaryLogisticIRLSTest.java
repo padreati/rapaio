@@ -45,25 +45,21 @@ public class BinaryLogisticIRLSTest {
 
     @Test
     void testDefaults() {
-        var optimizer = BinaryLogisticIRLS.builder()
-                .withX(DMatrix.identity(1))
-                .withY(DVector.zeros(1))
-                .withW0(DVector.ones(1))
-                .build();
-        assertEquals(1e-20, optimizer.getEps());
-        assertEquals(10, optimizer.getMaxIter());
-        assertEquals(0, optimizer.getLambda());
-        assertTrue(DMatrix.identity(1).deepEquals(optimizer.getX()));
-        assertTrue(DVector.zeros(1).deepEquals(optimizer.getY()));
-        assertTrue(DVector.ones(1).deepEquals(optimizer.getW0()));
+        var optimizer = new BinaryLogisticIRLS()
+                .x.set(DMatrix.identity(1))
+                .y.set(DVector.zeros(1))
+                .w0.set(DVector.ones(1));
+        assertEquals(1e-20, optimizer.eps.get());
+        assertEquals(10, optimizer.maxIter.get());
+        assertEquals(0, optimizer.lambda.get());
+        assertTrue(DMatrix.identity(1).deepEquals(optimizer.x.get()));
+        assertTrue(DVector.zeros(1).deepEquals(optimizer.y.get()));
+        assertTrue(DVector.ones(1).deepEquals(optimizer.w0.get()));
     }
 
     @Test
     void testResult() {
-        BinaryLogisticIRLS.Result result = BinaryLogisticIRLS.Result.builder()
-                .withWs(Collections.emptyList())
-                .withNlls(Collections.emptyList())
-                .build();
+        BinaryLogisticIRLS.Result result = new BinaryLogisticIRLS.Result(Collections.emptyList(), Collections.emptyList(), false);
         assertNull(result.getW());
         assertEquals(Double.NaN, result.getNll());
     }
@@ -75,15 +71,14 @@ public class BinaryLogisticIRLSTest {
         var y = DVector.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
         var w0 = DVector.zeros(1);
 
-        var result = BinaryLogisticIRLS.builder()
-                .withX(x)
-                .withY(y)
-                .withW0(w0)
-                .withMaxIter(100)
-                .withEps(0.0001)
-                .build()
+        var result = new BinaryLogisticIRLS()
+                .x.set(x)
+                .y.set(y)
+                .w0.set(w0)
+                .maxIter.set(100)
+                .eps.set(0.0001)
                 .fit();
-        assertTrue(result.isConverged());
+        assertTrue(result.converged());
         assertEquals(0.5, 1. / (1. + Math.exp(-result.getW().get(0) * x.mapCol(0).mean())), 1e-12);
     }
 
@@ -94,23 +89,22 @@ public class BinaryLogisticIRLSTest {
         var y = DVector.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
         var w0 = DVector.zeros(1);
 
-        var result = BinaryLogisticIRLS.builder()
-                .withX(x)
-                .withY(y)
-                .withW0(w0)
-                .withMaxIter(100)
-                .withEps(0.0001)
-                .build()
+        var result = new BinaryLogisticIRLS()
+                .x.set(x)
+                .y.set(y)
+                .w0.set(w0)
+                .maxIter.set(100)
+                .eps.set(0.0001)
                 .fit();
-        assertTrue(result.isConverged());
+        assertTrue(result.converged());
         assertEquals(0.5, 1. / (1. + Math.exp(-result.getW().get(0) * x.mapCol(0).mean())), 1e-12);
 
         // aligned with python
         assertEquals(-0.5584820971090904, result.getW().get(0));
 
-        assertEquals(result.getWs().size(), result.getNlls().size());
-        assertTrue(result.getW().deepEquals(result.getWs().get(result.getNlls().size() - 1)));
-        assertEquals(result.getNll(), result.getNlls().get(result.getNlls().size() - 1));
+        assertEquals(result.ws().size(), result.nlls().size());
+        assertTrue(result.getW().deepEquals(result.ws().get(result.nlls().size() - 1)));
+        assertEquals(result.getNll(), result.nlls().get(result.nlls().size() - 1));
     }
 
     @Test
@@ -119,15 +113,14 @@ public class BinaryLogisticIRLSTest {
         var y = DVector.wrap(1, 0);
         var w0 = DVector.zeros(1);
 
-        var result = BinaryLogisticIRLS.builder()
-                .withX(x)
-                .withY(y)
-                .withW0(w0)
-                .withMaxIter(10)
-                .withEps(0.000000001)
-                .build()
+        var result = new BinaryLogisticIRLS()
+                .x.set(x)
+                .y.set(y)
+                .w0.set(w0)
+                .maxIter.set(10)
+                .eps.set(0.000000001)
                 .fit();
-        assertFalse(result.isConverged());
+        assertFalse(result.converged());
         assertEquals(0.5, 1. / (1. + Math.exp(-result.getW().get(0) * x.mapCol(0).mean())), 1e-12);
     }
 
@@ -140,16 +133,15 @@ public class BinaryLogisticIRLSTest {
             var x = DMatrix.copy(10, 1, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
             var y = DVector.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
             var w0 = DVector.zeros(1);
-            var result = BinaryLogisticIRLS.builder()
-                    .withX(x)
-                    .withY(y)
-                    .withW0(w0)
-                    .withMaxIter(100)
-                    .withEps(0.000000001)
-                    .withLambda(lambda)
-                    .build()
+            var result = new BinaryLogisticIRLS()
+                    .x.set(x)
+                    .y.set(y)
+                    .w0.set(w0)
+                    .maxIter.set(100)
+                    .eps.set(0.000000001)
+                    .lambda.set(lambda)
                     .fit();
-            assertTrue(result.isConverged());
+            assertTrue(result.converged());
             assertEquals(0.5, 1. / (1. + Math.exp(-result.getW().get(0) * x.mapCol(0).mean())), 1e-12);
             loss.addDouble(result.getNll());
         }
@@ -172,11 +164,10 @@ public class BinaryLogisticIRLSTest {
         DVector y = DVector.from(y1);
         DVector w0 = DVector.wrap(0, 0);
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> BinaryLogisticIRLS.builder()
-                .withX(x)
-                .withY(y)
-                .withW0(w0)
-                .build()
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> new BinaryLogisticIRLS()
+                .x.set(x)
+                .y.set(y)
+                .w0.set(w0)
                 .fit());
         assertEquals("Matrix is rank deficient.", ex.getMessage());
     }

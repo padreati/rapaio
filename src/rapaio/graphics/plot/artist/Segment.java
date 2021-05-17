@@ -27,12 +27,14 @@ import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/5/16.
  */
 public class Segment extends Artist {
 
+    @Serial
     private static final long serialVersionUID = 6358307433520540622L;
 
     private final double x1;

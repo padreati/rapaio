@@ -23,20 +23,17 @@ package rapaio.math.functions;
 
 import rapaio.math.linear.DVector;
 
+import java.io.Serial;
 import java.util.function.BiFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.
  */
-public class R2Derivative implements RDerivative {
+public record R2Derivative(
+        BiFunction<Double, Double, DVector> f) implements RDerivative {
 
+    @Serial
     private static final long serialVersionUID = -8662264063600073136L;
-
-    private final BiFunction<Double, Double, DVector> f;
-
-    public R2Derivative(BiFunction<Double, Double, DVector> f) {
-        this.f = f;
-    }
 
     @Override
     public DVector apply(double... x) {

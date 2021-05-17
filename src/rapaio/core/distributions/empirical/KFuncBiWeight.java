@@ -24,12 +24,15 @@ package rapaio.core.distributions.empirical;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * BiCubic kernel function
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KFuncBiWeight implements KFunc {
 
+    @Serial
     private static final long serialVersionUID = -7870965133827784297L;
 
     @Override

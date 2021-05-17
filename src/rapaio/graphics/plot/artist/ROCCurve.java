@@ -29,12 +29,14 @@ import rapaio.ml.eval.metric.ROC;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.io.Serial;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 public class ROCCurve extends Artist {
 
+    @Serial
     private static final long serialVersionUID = 4110642211338491615L;
     private final ROC roc;
 

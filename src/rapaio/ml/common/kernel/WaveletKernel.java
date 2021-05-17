@@ -25,6 +25,7 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
 import java.util.function.Function;
 
 /**
@@ -51,6 +52,7 @@ import java.util.function.Function;
  */
 public class WaveletKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -3640571660076086354L;
 
     private final boolean invariant;

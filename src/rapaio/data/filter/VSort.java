@@ -25,6 +25,8 @@ import rapaio.data.Var;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
@@ -38,6 +40,7 @@ public class VSort implements VFilter {
         return new VSort(ascending);
     }
 
+    @Serial
     private static final long serialVersionUID = -6260151471065618233L;
     private final boolean asc;
 

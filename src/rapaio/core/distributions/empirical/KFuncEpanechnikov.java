@@ -24,12 +24,15 @@ package rapaio.core.distributions.empirical;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * Epanechnikov kernel function
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KFuncEpanechnikov implements KFunc {
 
+    @Serial
     private static final long serialVersionUID = 8568853478296387174L;
 
     @Override

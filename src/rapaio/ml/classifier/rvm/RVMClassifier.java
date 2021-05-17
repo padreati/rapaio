@@ -27,11 +27,14 @@ import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/21.
  */
 public class RVMClassifier extends AbstractClassifierModel<RVMClassifier, ClassifierResult> {
 
+    @Serial
     private static final long serialVersionUID = -7522271488023157133L;
 
     public enum Method {

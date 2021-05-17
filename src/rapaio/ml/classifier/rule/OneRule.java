@@ -38,8 +38,8 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -53,6 +53,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
         return new OneRule();
     }
 
+    @Serial
     private static final long serialVersionUID = 6220103690711818091L;
     private static final Logger log = Logger.getLogger(OneRule.class.getName());
 
@@ -95,32 +96,20 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .minInputCount(1)
-                .maxInputCount(1_000_000)
-                .minTargetCount(1)
-                .maxTargetCount(1)
-                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE, VarType.LONG))
-                .targetType(VarType.NOMINAL)
-                .allowMissingInputValues(true)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(
+                1, 1_000_000,
+                List.of(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE, VarType.LONG), true,
+                1, 1, List.of(VarType.NOMINAL), false);
     }
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         bestRuleSet = null;
         for (String testCol : inputNames()) {
-            RuleSet ruleSet;
-            switch (df.rvar(testCol).type()) {
-                case INT:
-                case DOUBLE:
-                case LONG:
-                    ruleSet = binning.get().compute(testCol, this, df, weights);
-                    break;
-                default:
-                    ruleSet = buildNominal(testCol, df, weights);
-            }
+            RuleSet ruleSet = switch (df.rvar(testCol).type()) {
+                case INT, DOUBLE, LONG -> binning.get().compute(testCol, this, df, weights);
+                default -> buildNominal(testCol, df, weights);
+            };
             if (bestRuleSet == null || ruleSet.getAccuracy() > bestRuleSet.getAccuracy()) {
                 bestRuleSet = ruleSet;
             }
@@ -165,9 +154,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
         }
 
         switch (df.rvar(testVar).type()) {
-            case INT:
-            case DOUBLE:
-            case LONG:
+            case INT, DOUBLE, LONG -> {
                 double value = df.getDouble(row, testVar);
                 for (Rule oneRule : bestRuleSet.getRules()) {
                     NumericRule numRule = (NumericRule) oneRule;
@@ -178,8 +165,8 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
                         return Pair.from(numRule.getTargetClass(), numRule.getDensityVector());
                     }
                 }
-                break;
-            default:
+            }
+            default -> {
                 String label = df.getLabel(row, testVar);
                 for (Rule oneRule : bestRuleSet.getRules()) {
                     NominalRule nomRule = (NominalRule) oneRule;
@@ -187,6 +174,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
                         return Pair.from(nomRule.getTargetClass(), nomRule.getDensityVector());
                     }
                 }
+            }
         }
         return Pair.from("?", DensityVector.emptyByLabels(true, firstTargetLevels()));
     }

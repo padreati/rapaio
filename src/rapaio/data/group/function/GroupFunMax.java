@@ -45,7 +45,7 @@ public class GroupFunMax extends DefaultSingleGroupFun {
     @Override
     public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, Mapping rows) {
         switch (aggregate.type()) {
-            case DOUBLE:
+            case DOUBLE -> {
                 double max1 = Double.NaN;
                 for (int row : rows) {
                     if (df.isMissing(row, varIndex)) {
@@ -57,9 +57,8 @@ public class GroupFunMax extends DefaultSingleGroupFun {
                     }
                 }
                 aggregate.setDouble(aggregateRow, max1);
-                break;
-            case INT:
-            case BINARY:
+            }
+            case INT, BINARY -> {
                 int max2 = Integer.MIN_VALUE;
                 for (int row : rows) {
                     if (df.isMissing(row, varIndex)) continue;
@@ -69,8 +68,8 @@ public class GroupFunMax extends DefaultSingleGroupFun {
                     }
                 }
                 aggregate.setInt(aggregateRow, max2);
-                break;
-            case LONG:
+            }
+            case LONG -> {
                 long max3 = Long.MIN_VALUE;
                 for (int row : rows) {
                     if (df.isMissing(row, varIndex)) continue;
@@ -80,8 +79,8 @@ public class GroupFunMax extends DefaultSingleGroupFun {
                     }
                 }
                 aggregate.setLong(aggregateRow, max3);
-                break;
-            default:
+            }
+            default -> {
                 String max4 = null;
                 for (int row : rows) {
                     String value4 = df.getLabel(row, varIndex);
@@ -90,6 +89,7 @@ public class GroupFunMax extends DefaultSingleGroupFun {
                     }
                 }
                 aggregate.setLabel(aggregateRow, max4);
+            }
         }
     }
 }

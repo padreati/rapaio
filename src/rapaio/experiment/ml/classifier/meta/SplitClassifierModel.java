@@ -31,6 +31,7 @@ import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.printer.Printable;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 public class SplitClassifierModel
         extends AbstractClassifierModel<SplitClassifierModel, ClassifierResult> implements Printable {
 
+    @Serial
     private static final long serialVersionUID = 3332377951136731541L;
 
     boolean ignoreUncovered = true;

@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * The Generalized Histogram Intersection kernel is built based on
  * the Histogram Intersection Kernel for image classification but
@@ -37,6 +39,7 @@ import rapaio.printer.Format;
  */
 public class GeneralizedMinKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -5905853828762141455L;
 
     private final double alpha;

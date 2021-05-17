@@ -21,12 +21,11 @@
 
 package rapaio.util.collection;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import rapaio.util.IntComparator;
 import rapaio.util.IntIterator;
 import rapaio.util.function.Int2IntFunction;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -45,7 +44,6 @@ import java.util.stream.IntStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/8/19.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IntArrays {
 
     /**
@@ -528,7 +526,8 @@ public final class IntArrays {
     }
 
     protected static class ForkJoinQuickSortComp extends RecursiveAction {
-        private static final long serialVersionUID = 1L;
+        @Serial
+        private static final long serialVersionUID = -8205272777060082445L;
         private final int from;
         private final int to;
         private final int[] x;
@@ -746,7 +745,8 @@ public final class IntArrays {
     }
 
     protected static class ForkJoinQuickSort extends RecursiveAction {
-        private static final long serialVersionUID = 1L;
+        @Serial
+        private static final long serialVersionUID = -5796422686450520496L;
         private final int from;
         private final int to;
         private final int[] x;
@@ -959,7 +959,8 @@ public final class IntArrays {
     }
 
     protected static class ForkJoinQuickSortIndirect extends RecursiveAction {
-        private static final long serialVersionUID = 1L;
+        @Serial
+        private static final long serialVersionUID = -1214362895430371120L;
         private final int from;
         private final int to;
         private final int[] perm;
@@ -1247,7 +1248,8 @@ public final class IntArrays {
     }
 
     protected static class ForkJoinQuickSort2 extends RecursiveAction {
-        private static final long serialVersionUID = 1L;
+        @Serial
+        private static final long serialVersionUID = -8103612594173799536L;
         private final int from;
         private final int to;
         private final int[] x, y;
@@ -1846,19 +1848,7 @@ public final class IntArrays {
         }
     }
 
-    protected static final class Segment {
-        protected final int offset, length, level;
-
-        protected Segment(final int offset, final int length, final int level) {
-            this.offset = offset;
-            this.length = length;
-            this.level = level;
-        }
-
-        @Override
-        public String toString() {
-            return "Segment [offset=" + offset + ", length=" + length + ", level=" + level + "]";
-        }
+    record Segment(int offset, int length, int level) {
     }
 
     protected static final Segment POISON_PILL = new Segment(-1, -1, -1);

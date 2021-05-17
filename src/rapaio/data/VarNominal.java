@@ -28,6 +28,7 @@ import rapaio.printer.opt.POption;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,6 +127,7 @@ public final class VarNominal extends AbstractVar {
         return nominal;
     }
 
+    @Serial
     private static final long serialVersionUID = -7541719735879481349L;
     public static final String MISSING_VALUE = "?";
     private static final int missingIndex = 0;
@@ -383,6 +385,7 @@ public final class VarNominal extends AbstractVar {
         return (VarNominal) super.copy();
     }
 
+    @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(size());
         out.writeInt(dict.size());
@@ -394,6 +397,7 @@ public final class VarNominal extends AbstractVar {
         }
     }
 
+    @Serial
     private void readObject(ObjectInputStream in) throws IOException {
         rows = in.readInt();
         dict = new ArrayList<>();

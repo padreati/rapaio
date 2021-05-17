@@ -21,11 +21,14 @@
 
 package rapaio.graphics.opt;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
 public class GOptionProb implements GOption<Boolean> {
 
+    @Serial
     private static final long serialVersionUID = -2622006323719065328L;
     private final boolean prob;
 

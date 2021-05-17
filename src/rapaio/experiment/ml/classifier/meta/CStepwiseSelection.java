@@ -33,6 +33,7 @@ import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,6 +50,7 @@ import static java.util.stream.Collectors.toList;
 public class CStepwiseSelection
         extends AbstractClassifierModel<CStepwiseSelection, ClassifierResult> implements Printable {
 
+    @Serial
     private static final long serialVersionUID = 2642562123626893974L;
     ClassifierModel best;
     private ClassifierModel c;

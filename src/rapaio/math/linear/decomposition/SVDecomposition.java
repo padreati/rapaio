@@ -24,6 +24,8 @@ package rapaio.math.linear.decomposition;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.MType;
 
+import java.io.Serial;
+
 import static java.lang.StrictMath.hypot;
 
 /**
@@ -42,6 +44,7 @@ import static java.lang.StrictMath.hypot;
  */
 public class SVDecomposition implements java.io.Serializable {
 
+    @Serial
     private static final long serialVersionUID = -502574786523851631L;
 
     public static SVDecomposition from(DMatrix A) {
@@ -326,26 +329,24 @@ public class SVDecomposition implements java.io.Serializable {
             switch (kase) {
 
                 // Deflate negligible s(p).
-                case 1:
-                    deflate(e, k);
-                    break;
+                case 1 -> deflate(e, k);
+
 
                 // Split at negligible s(k).
-                case 2:
-                    split(e, k);
-                    break;
+                case 2 -> split(e, k);
+
 
                 // Perform one qr step.
-                case 3:
+                case 3 -> {
                     oneQrStep(e, k);
                     iter = iter + 1;
-                    break;
+                }
 
                 // Convergence.
-                case 4:
+                case 4 -> {
                     k = convergence(k);
                     iter = 0;
-                    break;
+                }
             }
         }
     }

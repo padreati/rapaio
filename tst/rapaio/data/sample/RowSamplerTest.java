@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -58,8 +55,8 @@ public class RowSamplerTest {
     @Test
     void identitySamplerTest() {
         RowSampler.Sample s = RowSampler.identity().nextSample(df, w);
-        assertTrue(s.getDf().deepEquals(df));
-        assertTrue(s.getWeights().deepEquals(w));
+        assertTrue(s.df().deepEquals(df));
+        assertTrue(s.weights().deepEquals(w));
     }
 
     @Test
@@ -70,7 +67,7 @@ public class RowSamplerTest {
         VarDouble count = VarDouble.empty().name("bcount");
         for (int i = 0; i < N; i++) {
             RowSampler.Sample s = RowSampler.bootstrap(1.0).nextSample(df, w);
-            count.addDouble(1.0 * s.getMapping().stream().distinct().count() / df.rowCount());
+            count.addDouble(1.0 * s.mapping().stream().distinct().count() / df.rowCount());
         }
 
         // close to 1 - 1 / exp(1)
@@ -85,7 +82,7 @@ public class RowSamplerTest {
         VarDouble count = VarDouble.fill(df.rowCount(), 0.0).name("sscount");
         for (int i = 0; i < N; i++) {
             RowSampler.Sample s = RowSampler.subsampler(0.5).nextSample(df, w);
-            s.getMapping().stream().forEach(r -> count.setDouble(r, count.getDouble(r) + 1));
+            s.mapping().stream().forEach(r -> count.setDouble(r, count.getDouble(r) + 1));
         }
 
         // uniform counts close to 500

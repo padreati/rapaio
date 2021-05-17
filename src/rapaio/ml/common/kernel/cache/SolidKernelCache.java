@@ -23,11 +23,14 @@ package rapaio.ml.common.kernel.cache;
 
 import rapaio.data.Frame;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
  */
 public class SolidKernelCache implements KernelCache {
 
+    @Serial
     private static final long serialVersionUID = -1003713236239594088L;
 
     private final Frame df;

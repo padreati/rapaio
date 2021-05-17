@@ -31,6 +31,7 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import static rapaio.printer.Format.floatFlex;
@@ -49,6 +50,7 @@ public class ROC implements Printable, Serializable {
     public static final String fpr = "fpr";
     public static final String tpr = "tpr";
     public static final String acc = "acc";
+    @Serial
     private static final long serialVersionUID = -4598096059703515426L;
     private final Var score;
     private final Var classes;

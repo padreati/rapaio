@@ -29,6 +29,7 @@ import rapaio.printer.opt.POption;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
 
+import java.io.Serial;
 import java.util.function.Function;
 
 /**
@@ -86,6 +87,7 @@ public class VToDouble implements VFilter {
         return new VToDouble(new TransformLabel(fun));
     }
 
+    @Serial
     private static final long serialVersionUID = -6471901421507667237L;
     private final Function<Var, Var> fun;
 
@@ -103,24 +105,18 @@ public class VToDouble implements VFilter {
 
         @Override
         public Var apply(Var var) {
-            switch (var.type()) {
-                case DOUBLE:
-                    return new TransformDouble(x -> x).apply(var);
-                case INT:
-                case BINARY:
-                    return new TransformInt(x -> x).apply(var);
-                case NOMINAL:
-                case STRING:
-                    return new TransformLabel(x -> {
-                        try {
-                            return Double.parseDouble(x);
-                        } catch (NumberFormatException ex) {
-                            return VarDouble.MISSING_VALUE;
-                        }
-                    }).apply(var);
-                default:
-                    throw new IllegalArgumentException("Variable type: " + var.type().code() + " is not supported.");
-            }
+            return switch (var.type()) {
+                case DOUBLE -> new TransformDouble(x -> x).apply(var);
+                case INT, BINARY -> new TransformInt(x -> x).apply(var);
+                case NOMINAL, STRING -> new TransformLabel(x -> {
+                    try {
+                        return Double.parseDouble(x);
+                    } catch (NumberFormatException ex) {
+                        return VarDouble.MISSING_VALUE;
+                    }
+                }).apply(var);
+                default -> throw new IllegalArgumentException("Variable type: " + var.type().code() + " is not supported.");
+            };
         }
     }
 

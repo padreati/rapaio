@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * The Cauchy kernel comes from the Cauchy distribution (Basak, 2008).
  * It is a long-tailed kernel and can be used to give long-range influence
@@ -36,6 +38,7 @@ import rapaio.printer.Format;
  */
 public class CauchyKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -5631098319904454645L;
 
     private final double sigma;

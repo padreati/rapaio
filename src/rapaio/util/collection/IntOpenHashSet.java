@@ -25,6 +25,7 @@ import rapaio.core.RandomSource;
 import rapaio.util.IntIterable;
 import rapaio.util.IntIterator;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +38,7 @@ import static rapaio.util.hash.Murmur3.murmur3A;
  */
 public class IntOpenHashSet implements Serializable, IntIterable {
 
+    @Serial
     private static final long serialVersionUID = 8709214224656233765L;
 
     public static final double DEFAULT_LOAD_FACTOR = 0.75;

@@ -338,14 +338,9 @@ public class TTestTwoSamples implements HTest {
 
         StudentT st = StudentT.of(df);
         switch (alt) {
-            case GREATER_THAN:
-                pValue = 1 - st.cdf(t);
-                break;
-            case LESS_THAN:
-                pValue = st.cdf(t);
-                break;
-            default:
-                pValue = st.cdf(-Math.abs(t)) * 2;
+            case GREATER_THAN -> pValue = 1 - st.cdf(t);
+            case LESS_THAN -> pValue = st.cdf(t);
+            default -> pValue = st.cdf(-Math.abs(t)) * 2;
         }
 
         ciLow = StudentT.of(df, xSampleMean - ySampleMean, pv).quantile(sl / 2);

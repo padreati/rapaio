@@ -27,6 +27,7 @@ import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +64,7 @@ public class FOneHotEncoding extends AbstractFFilter {
         return new FOneHotEncoding(varRange, lessOne, useNa);
     }
 
+    @Serial
     private static final long serialVersionUID = 4893532203594639069L;
     private Map<String, List<String>> levels;
     private final boolean lessOne;

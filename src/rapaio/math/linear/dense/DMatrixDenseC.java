@@ -26,6 +26,8 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
 import rapaio.util.collection.DoubleArrays;
 
+import java.io.Serial;
+
 /**
  * Dense matrix with values in double floating point precision.
  * Values are stored in arrays of arrays with first array holding column references
@@ -33,6 +35,7 @@ import rapaio.util.collection.DoubleArrays;
  */
 public class DMatrixDenseC extends DMatrixDense {
 
+    @Serial
     private static final long serialVersionUID = -2186520026933442642L;
 
     public DMatrixDenseC(int rows, int cols) {
@@ -92,8 +95,7 @@ public class DMatrixDenseC extends DMatrixDense {
 
     @Override
     public DVector dot(DVector b) {
-        if (b instanceof DVectorDense) {
-            DVectorDense vd = (DVectorDense) b;
+        if (b instanceof DVectorDense vd) {
             double[] array = vd.elements();
 
             double[] c = DoubleArrays.newFill(rowCount, 0);

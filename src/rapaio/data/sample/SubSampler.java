@@ -26,6 +26,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
+import java.io.Serial;
 import java.util.Objects;
 
 import static rapaio.printer.Format.floatFlex;
@@ -35,14 +36,10 @@ import static rapaio.printer.Format.floatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
  */
-final class SubSampler implements RowSampler {
+final record SubSampler(double percent) implements RowSampler {
 
+    @Serial
     private static final long serialVersionUID = -7987373317949449262L;
-    private final double percent;
-
-    public SubSampler(double percent) {
-        this.percent = percent;
-    }
 
     @Override
     public Sample nextSample(Frame df, Var weights) {

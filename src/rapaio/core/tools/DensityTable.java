@@ -21,7 +21,6 @@
 
 package rapaio.core.tools;
 
-import lombok.AllArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Var;
@@ -31,11 +30,12 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import static rapaio.math.MTools.log2;
+import static rapaio.math.MathTools.log2;
 import static rapaio.util.collection.DoubleArrays.nanSum;
 
 /**
@@ -179,6 +179,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         return fromBinaryLevelWeights(withMissing, df.rvar(rowVarName), df.rvar(colVarName), weights, rowLevel);
     }
 
+    @Serial
     private static final long serialVersionUID = 4359080329548577980L;
 
     public static final List<String> NUMERIC_DEFAULT_LABELS = Arrays.asList("?", "less-equals", "greater");
@@ -425,7 +426,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         return gini;
     }
 
-    private final DensityTableFunction concreteRowAverageEntropy = new DensityTableFunction(true,
+    private final DensityTableFunction concreteRowAverageEntropy = new DensityTableFunction(this, true,
             (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
                 double gain = 0;
                 for (int i = 0; i < rowLength; i++) {
@@ -437,7 +438,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                 return gain;
             });
 
-    private final DensityTableFunction concreteRowIntrinsicInfo = new DensityTableFunction(true,
+    private final DensityTableFunction concreteRowIntrinsicInfo = new DensityTableFunction(this, true,
             (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
                 double splitInfo = 0;
                 for (double val : totals) {
@@ -447,7 +448,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                 }
                 return splitInfo;
             });
-    private final DensityTableFunction concreteTotalColEntropy = new DensityTableFunction(false,
+    private final DensityTableFunction concreteTotalColEntropy = new DensityTableFunction(this, false,
             (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
                 double entropy = 0;
                 for (double val : totals) {
@@ -458,21 +459,17 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                 return entropy;
             });
 
-    @AllArgsConstructor
-    class DensityTableFunction {
-
-        private final boolean onRow;
-        private final Function function;
+    record DensityTableFunction(DensityTable<?, ?> dt, boolean onRow, Function function) {
 
         public double getSplitInfo() {
-            double[] totals = new double[onRow ? rowIndex.size() : colIndex.size()];
-            for (int i = 0; i < rowIndex.size(); i++) {
-                for (int j = 0; j < colIndex.size(); j++) {
-                    totals[onRow ? i : j] += values[i][j];
+            double[] totals = new double[onRow ? dt.rowIndex.size() : dt.colIndex.size()];
+            for (int i = 0; i < dt.rowIndex.size(); i++) {
+                for (int j = 0; j < dt.colIndex.size(); j++) {
+                    totals[onRow ? i : j] += dt.values[i][j];
                 }
             }
             double total = nanSum(totals, 0, totals.length);
-            return function.apply(total, totals, values, rowIndex.size(), colIndex.size());
+            return function.apply(total, totals, dt.values, dt.rowIndex.size(), dt.colIndex.size());
         }
     }
 

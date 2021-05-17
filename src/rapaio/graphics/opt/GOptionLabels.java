@@ -21,6 +21,7 @@
 
 package rapaio.graphics.opt;
 
+import java.io.Serial;
 import java.util.Arrays;
 
 /**
@@ -28,6 +29,7 @@ import java.util.Arrays;
  */
 public class GOptionLabels implements GOption<String[]> {
 
+    @Serial
     private static final long serialVersionUID = -2973335521011797183L;
 
     private final String[] labels;

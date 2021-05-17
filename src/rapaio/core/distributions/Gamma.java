@@ -22,8 +22,10 @@
 package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
-import rapaio.math.MTools;
+import rapaio.math.MathTools;
 import rapaio.printer.Format;
+
+import java.io.Serial;
 
 import static rapaio.printer.Format.floatFlex;
 
@@ -81,6 +83,7 @@ public class Gamma implements Distribution {
         return new Gamma(alpha, beta);
     }
 
+    @Serial
     private static final long serialVersionUID = -7748384822665249829L;
     private final double alpha;
     private final double beta;
@@ -124,7 +127,7 @@ public class Gamma implements Distribution {
         }
         if (alpha == 1.0)
             return Math.exp(-x / beta) / beta;
-        return Math.exp((alpha - 1.0) * Math.log(x / beta) - x / beta - MTools.lnGamma(alpha)) / beta;
+        return Math.exp((alpha - 1.0) * Math.log(x / beta) - x / beta - MathTools.lnGamma(alpha)) / beta;
     }
 
     /**
@@ -133,7 +136,7 @@ public class Gamma implements Distribution {
     public double cdf(double x) {
         if (x < 0.0)
             return 0.0;
-        return MTools.incompleteGamma(alpha, x / beta);
+        return MathTools.incompleteGamma(alpha, x / beta);
     }
 
     @Override

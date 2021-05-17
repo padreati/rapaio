@@ -352,20 +352,7 @@ public final class SamplingTools {
         return maps;
     }
 
-    public static class TrainTestSplit {
-
-        public final Frame trainDf;
-        public final Var trainW;
-
-        public final Frame testDf;
-        public final Var testW;
-
-        public TrainTestSplit(Frame trainDf, Var trainW, Frame testDf, Var testW) {
-            this.trainDf = trainDf;
-            this.trainW = trainW;
-            this.testDf = testDf;
-            this.testW = testW;
-        }
+    public record TrainTestSplit(Frame trainDf, Var trainW, Frame testDf, Var testW) {
     }
 
     public static TrainTestSplit trainTestSplit(Frame df, double p) {

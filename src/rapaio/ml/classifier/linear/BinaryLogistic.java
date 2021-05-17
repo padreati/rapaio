@@ -21,8 +21,6 @@
 
 package rapaio.ml.classifier.linear;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -37,9 +35,9 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -53,6 +51,7 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         return new BinaryLogistic();
     }
 
+    @Serial
     private static final long serialVersionUID = 1609956190070125059L;
 
     /**
@@ -104,19 +103,16 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
      * True if the model is trained and it has converged to a solution in less than
      * maximum number of iterations (runs), false otherwise.
      */
-    @Getter
     private boolean converged = false;
     private VarDouble w;
     /**
      * List of coefficients computed at each iteration.
      */
-    @Getter
     private List<DVector> iterationWeights;
 
     /**
      * List of loss function values evaluated after each iteration.
      */
-    @Getter
     private List<Double> iterationLoss;
 
     private BinaryLogistic() {
@@ -132,17 +128,23 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         return "BinaryLogistic";
     }
 
+    public boolean isConverged() {
+        return converged;
+    }
+
+    public List<DVector> getIterationWeights() {
+        return iterationWeights;
+    }
+
+    public List<Double> getIterationLoss() {
+        return iterationLoss;
+    }
+
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE))
-                .minInputCount(1).maxInputCount(10000)
-                .targetType(VarType.NOMINAL)
-                .targetType(VarType.BINARY)
-                .minTargetCount(1).maxTargetCount(1)
-                .allowMissingInputValues(false)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(
+                1, 10_000, List.of(VarType.BINARY, VarType.INT, VarType.DOUBLE), false,
+                1, 1, List.of(VarType.NOMINAL, VarType.BINARY), false);
     }
 
     @Override
@@ -153,36 +155,34 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         DVector w0 = DVector.fill(x.colCount(), init.get().getFunction().apply(y));
 
         switch (solver.get()) {
-            case IRLS:
-                BinaryLogisticIRLS.Result irlsResult = BinaryLogisticIRLS.builder()
-                        .withEps(eps.get())
-                        .withMaxIter(runs.get())
-                        .withLambda(l2Factor.get())
-                        .withX(x)
-                        .withY(y)
-                        .withW0(w0)
-                        .build()
+            case IRLS -> {
+                BinaryLogisticIRLS.Result irlsResult = new BinaryLogisticIRLS()
+                        .eps.set(eps.get())
+                        .maxIter.set(runs.get())
+                        .lambda.set(l2Factor.get())
+                        .x.set(x)
+                        .y.set(y)
+                        .w0.set(w0)
                         .fit();
                 w = irlsResult.getW().asVarDouble();
-                iterationLoss = new ArrayList<>(irlsResult.getNlls());
-                iterationWeights = new ArrayList<>(irlsResult.getWs());
-                converged = irlsResult.isConverged();
-                break;
-            case NEWTON:
-                BinaryLogisticNewton.Result newtonResult = BinaryLogisticNewton.builder()
-                        .withEps(eps.get())
-                        .withMaxIter(runs.get())
-                        .withLambda(l2Factor.get())
-                        .withX(x)
-                        .withY(y)
-                        .withW0(w0)
-                        .build()
+                iterationLoss = new ArrayList<>(irlsResult.nlls());
+                iterationWeights = new ArrayList<>(irlsResult.ws());
+                converged = irlsResult.converged();
+            }
+            case NEWTON -> {
+                BinaryLogisticNewton.Result newtonResult = new BinaryLogisticNewton()
+                        .eps.set(eps.get())
+                        .maxIter.set(runs.get())
+                        .lambda.set(l2Factor.get())
+                        .x.set(x)
+                        .y.set(y)
+                        .w0.set(w0)
                         .fit();
-                w = newtonResult.getW().asVarDouble();
-                iterationLoss = new ArrayList<>(newtonResult.getNll());
-                iterationWeights = new ArrayList<>(newtonResult.getWs());
-                converged = newtonResult.isConverged();
-                break;
+                w = newtonResult.w().asVarDouble();
+                iterationLoss = new ArrayList<>(newtonResult.nll());
+                iterationWeights = new ArrayList<>(newtonResult.ws());
+                converged = newtonResult.converged();
+            }
         }
         return true;
     }
@@ -253,8 +253,6 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         NEWTON
     }
 
-    @Getter
-    @RequiredArgsConstructor
     public enum Initialize implements Serializable {
         ZERO(v -> 0.0),
         ONE(v -> 1.0),
@@ -262,5 +260,13 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
 
         private static final long serialVersionUID = 8945270404852488614L;
         private final Function<DVector, Double> function;
+
+        Initialize(Function<DVector, Double> function) {
+            this.function = function;
+        }
+
+        public Function<DVector, Double> getFunction() {
+            return function;
+        }
     }
 }

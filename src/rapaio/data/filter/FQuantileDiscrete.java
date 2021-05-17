@@ -26,6 +26,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +55,7 @@ public class FQuantileDiscrete extends AbstractFFilter {
         return new FQuantileDiscrete(p, varRange);
     }
 
+    @Serial
     private static final long serialVersionUID = -2447577449010618416L;
 
     private final Map<String, VQuantileDiscrete> filters = new HashMap<>();

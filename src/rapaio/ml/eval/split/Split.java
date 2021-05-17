@@ -21,25 +21,16 @@
 
 package rapaio.ml.eval.split;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
-@Getter
-@Builder
-public class Split {
+public record Split(int round, int fold, Frame trainDf, Var trainWeights, Frame testDf, Var testWeights) {
 
-    private final int round;
-    private final int fold;
-    @NonNull
-    private final Frame trainDf;
-    @NonNull
-    private final Frame testDf;
-    private final Var trainWeights;
-    private final Var testWeights;
+    public Split(int round, int fold, Frame trainDf, Frame testDf) {
+        this(round, fold, trainDf, VarDouble.fill(trainDf.rowCount()), testDf, VarDouble.fill(testDf.rowCount(), 1));
+    }
 }

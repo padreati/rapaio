@@ -29,6 +29,8 @@ import rapaio.data.VarRange;
 import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
@@ -38,6 +40,7 @@ public final class FRefSort extends AbstractFFilter {
         return new FRefSort(comparators);
     }
 
+    @Serial
     private static final long serialVersionUID = 3579078253849199109L;
     private final IntComparator aggregateComparator;
 

@@ -24,6 +24,7 @@ package rapaio.graphics.plot;
 import rapaio.graphics.opt.GOptions;
 
 import java.awt.*;
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -31,6 +32,7 @@ import java.io.Serializable;
  */
 public abstract class Artist implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -797168275849511614L;
     protected final GOptions options = new GOptions();
     protected Plot plot;

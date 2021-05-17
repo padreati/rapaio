@@ -50,16 +50,12 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     static DMatrix empty(MType type, int rows, int cols) {
-        switch (type) {
-            case BASE:
-                return new DMatrixBase(rows, cols);
-            case RDENSE:
-                return new DMatrixDenseR(rows, cols);
-            case CDENSE:
-                return new DMatrixDenseC(rows, cols);
-            default:
-                throw new NotImplementedException();
-        }
+        return switch (type) {
+            case BASE -> new DMatrixBase(rows, cols);
+            case RDENSE -> new DMatrixDenseR(rows, cols);
+            case CDENSE -> new DMatrixDenseC(rows, cols);
+            default -> throw new NotImplementedException();
+        };
     }
 
     static DMatrix identity(int n) {

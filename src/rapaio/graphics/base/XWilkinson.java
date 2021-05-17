@@ -21,7 +21,7 @@
 
 package rapaio.graphics.base;
 
-import rapaio.math.MTools;
+import rapaio.math.MathTools;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static rapaio.math.MTools.*;
+import static rapaio.math.MathTools.*;
 
 /**
  * Reference:
@@ -279,7 +279,7 @@ public class XWilkinson {
                         break;
                     }
                     delta = (dmax - dmin) / (k + 1) / (j * q);
-                    int z = (int) Math.ceil(MTools.logBase(delta, base));
+                    int z = (int) Math.ceil(MathTools.logBase(delta, base));
                     while (z < Integer.MAX_VALUE) {
                         double step = z == -1 ? j * q : j * q * Math.pow(base, z);
                         cm = coverageMax(dmin, dmax, step * (k - 1));

@@ -28,6 +28,7 @@ import rapaio.printer.opt.POption;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -131,6 +132,7 @@ public final class VarBinary extends AbstractVar {
     }
 
 
+    @Serial
     private static final long serialVersionUID = -4977697633437126744L;
     private int rows;
 
@@ -408,6 +410,7 @@ public final class VarBinary extends AbstractVar {
         return (VarBinary) super.copy();
     }
 
+    @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(size());
         byte[] buff = values.toByteArray();
@@ -418,6 +421,7 @@ public final class VarBinary extends AbstractVar {
         out.write(buff);
     }
 
+    @Serial
     private void readObject(ObjectInputStream in) throws IOException {
         rows = in.readInt();
         byte[] buff = new byte[in.readInt()];

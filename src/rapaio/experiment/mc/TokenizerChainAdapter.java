@@ -28,13 +28,7 @@ import java.util.StringTokenizer;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/2/15.
  */
-public class TokenizerChainAdapter implements ChainAdapter {
-
-    private final int n;
-
-    public TokenizerChainAdapter(int n) {
-        this.n = n;
-    }
+public record TokenizerChainAdapter(int n) implements ChainAdapter {
 
     @Override
     public List<String> tokenize(String rawChain) {

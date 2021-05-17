@@ -21,11 +21,14 @@
 
 package rapaio.graphics.opt;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
 public class GOptionLwd implements GOption<Float> {
 
+    @Serial
     private static final long serialVersionUID = -7688510496295412340L;
     private final float lwd;
 

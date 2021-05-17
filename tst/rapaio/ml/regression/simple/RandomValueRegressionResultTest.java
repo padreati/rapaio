@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ml.regression.simple;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,8 +37,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class RandomValueRegressionResultTest {
 
-    private String father = "Father";
-    private String son = "Son";
+    private final String father = "Father";
+    private final String son = "Son";
     private Frame df;
 
     @BeforeEach
@@ -48,43 +69,51 @@ public class RandomValueRegressionResultTest {
 
         assertEquals("Normal(mu=10, sd=20)", RandomValueRegression.from(Normal.of(10, 20)).newInstance().distribution.get().name());
 
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: RandomValueRegression\n" +
-                "Model instance: RandomValueRegression{}\n" +
-                "> model not trained.\n", model.toContent());
+        assertEquals("""
+                Regression predict summary
+                =======================
+                Model class: RandomValueRegression
+                Model instance: RandomValueRegression{}
+                > model not trained.
+                """, model.toContent());
 
         model = model.fit(df, "Son");
         assertEquals("RandomValueRegression{}", model.toString());
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: RandomValueRegression\n" +
-                "Model instance: RandomValueRegression{}\n" +
-                "> model is trained.\n" +
-                "> input variables: \n" +
-                "1. Father dbl \n" +
-                "> target variables: \n" +
-                "1. Son dbl \n" +
-                "Model is trained.\n", model.toContent());
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: RandomValueRegression\n" +
-                "Model instance: RandomValueRegression{}\n" +
-                "> model is trained.\n" +
-                "> input variables: \n" +
-                "1. Father dbl \n" +
-                "> target variables: \n" +
-                "1. Son dbl \n" +
-                "Model is trained.\n", model.toFullContent());
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: RandomValueRegression\n" +
-                "Model instance: RandomValueRegression{}\n" +
-                "> model is trained.\n" +
-                "> input variables: \n" +
-                "1. Father dbl \n" +
-                "> target variables: \n" +
-                "1. Son dbl \n" +
-                "Model is trained.\n", model.toSummary());
+        assertEquals("""
+                Regression predict summary
+                =======================
+                Model class: RandomValueRegression
+                Model instance: RandomValueRegression{}
+                > model is trained.
+                > input variables:\s
+                1. Father dbl\s
+                > target variables:\s
+                1. Son dbl\s
+                Model is trained.
+                """, model.toContent());
+        assertEquals("""
+                Regression predict summary
+                =======================
+                Model class: RandomValueRegression
+                Model instance: RandomValueRegression{}
+                > model is trained.
+                > input variables:\s
+                1. Father dbl\s
+                > target variables:\s
+                1. Son dbl\s
+                Model is trained.
+                """, model.toFullContent());
+        assertEquals("""
+                Regression predict summary
+                =======================
+                Model class: RandomValueRegression
+                Model instance: RandomValueRegression{}
+                > model is trained.
+                > input variables:\s
+                1. Father dbl\s
+                > target variables:\s
+                1. Son dbl\s
+                Model is trained.
+                """, model.toSummary());
     }
 }

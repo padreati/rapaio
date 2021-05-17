@@ -24,6 +24,8 @@ package rapaio.core.distributions.empirical;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * Tri-cubic kernel function
  * <p>
@@ -31,6 +33,7 @@ import rapaio.printer.opt.POption;
  */
 public class KFuncTricube implements KFunc {
 
+    @Serial
     private static final long serialVersionUID = 3788981779668937261L;
 
     @Override

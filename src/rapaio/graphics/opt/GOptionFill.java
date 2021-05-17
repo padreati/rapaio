@@ -25,6 +25,7 @@ import rapaio.data.Var;
 import rapaio.util.function.SFunction;
 
 import java.awt.*;
+import java.io.Serial;
 import java.util.Arrays;
 
 /**
@@ -32,6 +33,7 @@ import java.util.Arrays;
  */
 public class GOptionFill implements GOption<Color[]> {
 
+    @Serial
     private static final long serialVersionUID = 7534853593877383832L;
     private final SFunction<GOptions, Color[]> function;
 

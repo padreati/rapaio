@@ -23,6 +23,7 @@ package rapaio.math.functions;
 
 import rapaio.math.linear.DVector;
 
+import java.io.Serial;
 import java.util.function.BiFunction;
 
 /**
@@ -30,15 +31,10 @@ import java.util.function.BiFunction;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.
  */
-public class R2Function implements RFunction {
+public record R2Function(BiFunction<Double, Double, Double> f) implements RFunction {
 
+    @Serial
     private static final long serialVersionUID = -2881307255778321959L;
-
-    public final BiFunction<Double, Double, Double> f;
-
-    public R2Function(BiFunction<Double, Double, Double> f) {
-        this.f = f;
-    }
 
     @Override
     public double apply(double... x) {

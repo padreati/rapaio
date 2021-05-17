@@ -28,6 +28,7 @@ import rapaio.util.collection.IntArrayList;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Int2IntFunction;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
@@ -36,6 +37,7 @@ import java.util.stream.IntStream;
  */
 public final class ArrayMapping implements Mapping {
 
+    @Serial
     private static final long serialVersionUID = 5485844129188037454L;
     private final IntArrayList data;
 

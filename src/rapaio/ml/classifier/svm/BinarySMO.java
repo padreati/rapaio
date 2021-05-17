@@ -26,7 +26,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.math.MTools;
+import rapaio.math.MathTools;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
@@ -36,6 +36,7 @@ import rapaio.ml.common.kernel.PolyKernel;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
@@ -61,6 +62,7 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
         return new BinarySMO();
     }
 
+    @Serial
     private static final long serialVersionUID = 1208515184777030598L;
 
     public final ValueParam<Kernel, BinarySMO> kernel = new ValueParam<>(this, new PolyKernel(1),
@@ -146,14 +148,10 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE))
-                .minInputCount(1).maxInputCount(100_000)
-                .allowMissingInputValues(false)
-                .targetType(VarType.NOMINAL)
-                .minTargetCount(1).maxTargetCount(1)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(
+                1, 100_000,
+                Arrays.asList(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE), false,
+                1, 1, List.of(VarType.NOMINAL), false);
     }
 
     private void convertWeightVector() {
@@ -553,7 +551,7 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
             a2 = alpha2 - y2 * (F1 - F2) / eta;
 
             // Compute constrained maximum
-            a2 = MTools.cut(a2, L, H);
+            a2 = MathTools.cut(a2, L, H);
 
         } else {
 

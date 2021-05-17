@@ -21,10 +21,12 @@
 
 package rapaio.core.distributions;
 
-import rapaio.math.MTools;
 import rapaio.printer.Format;
 
-import static rapaio.math.MTools.*;
+import java.io.Serial;
+
+import static java.lang.Math.*;
+import static rapaio.math.MathTools.*;
 
 /**
  * Binomial distribution.
@@ -39,6 +41,7 @@ public final class Binomial implements Distribution {
         return new Binomial(p, n);
     }
 
+    @Serial
     private static final long serialVersionUID = 8813621560796556828L;
     private final double p;
     private final int n;
@@ -77,7 +80,7 @@ public final class Binomial implements Distribution {
         if (x >= n) {
             return 1.0;
         }
-        x = MTools.floor(x);
+        x = floor(x);
         return betaIncReg(1 - p, n - x, x + 1);
     }
 

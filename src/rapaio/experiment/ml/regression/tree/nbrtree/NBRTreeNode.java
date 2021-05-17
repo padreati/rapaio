@@ -31,6 +31,7 @@ import rapaio.experiment.ml.regression.tree.NestedBoostingRTree;
 import rapaio.ml.common.VarSelector;
 import rapaio.util.collection.IntArrays;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,7 @@ import java.util.List;
  */
 public class NBRTreeNode implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -377340948451917779L;
 
     private final int id;

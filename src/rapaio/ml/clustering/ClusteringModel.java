@@ -60,7 +60,7 @@ public interface ClusteringModel extends Printable {
      * @return capabilities of the clustering algorithm
      */
     default Capabilities capabilities() {
-        return Capabilities.builder().build();
+        return null;
     }
 
     /**

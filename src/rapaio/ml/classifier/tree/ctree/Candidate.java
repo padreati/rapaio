@@ -21,9 +21,9 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
-import lombok.RequiredArgsConstructor;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,14 +31,14 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/12/20.
  */
-@RequiredArgsConstructor
-public final class Candidate implements Serializable {
+public record Candidate(double score, String testName, List<RowPredicate> groupPredicates) implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -1547847207988912332L;
 
-    public final double score;
-    public final String testName;
-    public final List<RowPredicate> groupPredicates = new ArrayList<>();
+    public Candidate(double score, String testName) {
+        this(score, testName, new ArrayList<>());
+    }
 
     public void addGroup(RowPredicate predicate) {
         groupPredicates.add(predicate);

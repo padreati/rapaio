@@ -21,6 +21,7 @@
 
 package rapaio.core;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Random;
 
@@ -34,6 +35,7 @@ import java.util.Random;
  */
 public final class RandomSource implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -1201316989986445607L;
 
     private static final Random rand = new Random();

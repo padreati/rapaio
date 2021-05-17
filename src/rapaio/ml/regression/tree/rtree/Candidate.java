@@ -23,6 +23,7 @@ package rapaio.ml.regression.tree.rtree;
 
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  */
 public class Candidate implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 6698766675237089849L;
     private final double score;
     private final String testName;

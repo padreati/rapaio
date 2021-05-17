@@ -108,98 +108,104 @@ public class CForestTest {
         assertEquals("CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}", model.fullName());
 
         assertEquals("CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}; fitted:false", model.toString());
-        assertEquals("CForest\n" +
-                "=======\n" +
-                "\n" +
-                "Description:\n" +
-                "CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}\n" +
-                "\n" +
-                "Capabilities:\n" +
-                "types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL\n" +
-                "counts inputs/targets: [1,1000000] / [1,1]\n" +
-                "missing inputs/targets: true/false\n" +
-                "\n" +
-                "Model fitted: false.\n", model.toSummary());
+        assertEquals("""
+                CForest
+                =======
+
+                Description:
+                CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}
+
+                Capabilities:
+                types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL
+                counts inputs/targets: [1,1000000] / [1,1]
+                missing inputs/targets: true/false
+
+                Model fitted: false.
+                """, model.toSummary());
         assertEquals(model.toSummary(), model.toContent());
         assertEquals(model.toSummary() + "\n", model.toFullContent());
 
         model.fit(iris, "class");
 
         assertEquals("CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}; fitted:true, fitted trees:100", model.toString());
-        assertEquals("CForest\n" +
-                "=======\n" +
-                "\n" +
-                "Description:\n" +
-                "CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}\n" +
-                "\n" +
-                "Capabilities:\n" +
-                "types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL\n" +
-                "counts inputs/targets: [1,1000000] / [1,1]\n" +
-                "missing inputs/targets: true/false\n" +
-                "\n" +
-                "Model fitted: true.\n" +
-                "Learned model:\n" +
-                "input vars: \n" +
-                "0. sepal-length : DOUBLE  | \n" +
-                "1.  sepal-width : DOUBLE  | \n" +
-                "2. petal-length : DOUBLE  | \n" +
-                "3.  petal-width : DOUBLE  | \n" +
-                "\n" +
-                "target vars:\n" +
-                "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
-                "\n" +
-                "\n" +
-                "Fitted trees:100\n" +
-                "oob enabled:true\n" +
-                "oob error:0.04\n", model.toSummary());
+        assertEquals("""
+                CForest
+                =======
+
+                Description:
+                CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}
+
+                Capabilities:
+                types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL
+                counts inputs/targets: [1,1000000] / [1,1]
+                missing inputs/targets: true/false
+
+                Model fitted: true.
+                Learned model:
+                input vars:\s
+                0. sepal-length : DOUBLE  |\s
+                1.  sepal-width : DOUBLE  |\s
+                2. petal-length : DOUBLE  |\s
+                3.  petal-width : DOUBLE  |\s
+
+                target vars:
+                > class : NOMINAL [?,setosa,versicolor,virginica]
+
+
+                Fitted trees:100
+                oob enabled:true
+                oob error:0.04
+                """, model.toSummary());
         assertEquals(model.toSummary(), model.toContent());
-        assertEquals("CForest\n" +
-                "=======\n" +
-                "\n" +
-                "Description:\n" +
-                "CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}\n" +
-                "\n" +
-                "Capabilities:\n" +
-                "types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL\n" +
-                "counts inputs/targets: [1,1000000] / [1,1]\n" +
-                "missing inputs/targets: true/false\n" +
-                "\n" +
-                "Model fitted: true.\n" +
-                "Learned model:\n" +
-                "input vars: \n" +
-                "0. sepal-length : DOUBLE  | \n" +
-                "1.  sepal-width : DOUBLE  | \n" +
-                "2. petal-length : DOUBLE  | \n" +
-                "3.  petal-width : DOUBLE  | \n" +
-                "\n" +
-                "target vars:\n" +
-                "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
-                "\n" +
-                "\n" +
-                "Fitted trees:100\n" +
-                "oob enabled:true\n" +
-                "oob error:0.04\n" +
-                "\n" +
-                "Frequency Variable Importance:\n" +
-                "        name      mean      sd     scaled score \n" +
-                "[0] petal-length 164.71 82.3588226 100          \n" +
-                "[1]  petal-width 139.03 80.1589904  84.4089612  \n" +
-                "[2] sepal-length  78.6  85.4258495  47.7202356  \n" +
-                "[3]  sepal-width  35.46 37.9205496  21.5287475  \n" +
-                "\n" +
-                "Gain Variable Importance:\n" +
-                "        name        mean        sd     scaled score \n" +
-                "[0] petal-length 39.5796441 28.6634617 100          \n" +
-                "[1]  petal-width 33.9636502 28.1915658  85.8109035  \n" +
-                "[2] sepal-length  9.2588583 14.0932391  23.3929801  \n" +
-                "[3]  sepal-width  1.5107091  3.6596976   3.8168839  \n" +
-                "\n" +
-                "Permutation Variable Importance:\n" +
-                "        name        mean        sd     scaled score \n" +
-                "[0] petal-length 39.5796441 28.6634617 100          \n" +
-                "[1]  petal-width 33.9636502 28.1915658  85.8109035  \n" +
-                "[2] sepal-length  9.2588583 14.0932391  23.3929801  \n" +
-                "[3]  sepal-width  1.5107091  3.6596976   3.8168839  \n" +
-                "\n", model.toFullContent());
+        assertEquals("""
+                CForest
+                =======
+
+                Description:
+                CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}
+
+                Capabilities:
+                types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL
+                counts inputs/targets: [1,1000000] / [1,1]
+                missing inputs/targets: true/false
+
+                Model fitted: true.
+                Learned model:
+                input vars:\s
+                0. sepal-length : DOUBLE  |\s
+                1.  sepal-width : DOUBLE  |\s
+                2. petal-length : DOUBLE  |\s
+                3.  petal-width : DOUBLE  |\s
+
+                target vars:
+                > class : NOMINAL [?,setosa,versicolor,virginica]
+
+
+                Fitted trees:100
+                oob enabled:true
+                oob error:0.04
+
+                Frequency Variable Importance:
+                        name      mean      sd     scaled score\s
+                [0] petal-length 164.71 82.3588226 100         \s
+                [1]  petal-width 139.03 80.1589904  84.4089612 \s
+                [2] sepal-length  78.6  85.4258495  47.7202356 \s
+                [3]  sepal-width  35.46 37.9205496  21.5287475 \s
+
+                Gain Variable Importance:
+                        name        mean        sd     scaled score\s
+                [0] petal-length 39.5796441 28.6634617 100         \s
+                [1]  petal-width 33.9636502 28.1915658  85.8109035 \s
+                [2] sepal-length  9.2588583 14.0932391  23.3929801 \s
+                [3]  sepal-width  1.5107091  3.6596976   3.8168839 \s
+
+                Permutation Variable Importance:
+                        name        mean        sd     scaled score\s
+                [0] petal-length 39.5796441 28.6634617 100         \s
+                [1]  petal-width 33.9636502 28.1915658  85.8109035 \s
+                [2] sepal-length  9.2588583 14.0932391  23.3929801 \s
+                [3]  sepal-width  1.5107091  3.6596976   3.8168839 \s
+
+                """, model.toFullContent());
     }
 }

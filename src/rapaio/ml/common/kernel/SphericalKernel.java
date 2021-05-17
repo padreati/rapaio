@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * Spherical Kernel
  * <p>
@@ -38,6 +40,7 @@ import rapaio.printer.Format;
  */
 public class SphericalKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -7447828392149152605L;
 
     private final double sigma;

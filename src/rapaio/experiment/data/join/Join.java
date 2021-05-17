@@ -133,16 +133,11 @@ public class Join {
         process(idMap, leftIdToRows, leftRowToId, dfLeft, leftVarNames);
         process(idMap, rightIdToRows, rightRowToId, dfRight, rightVarNames);
 
-        switch (type) {
-            case LEFT:
-                return leftJoin();
-            case RIGHT:
-                return rightJoin();
-            case INNER:
-            case OUTER:
-            default:
-                throw new IllegalArgumentException("Join type not implemented");
-        }
+        return switch (type) {
+            case LEFT -> leftJoin();
+            case RIGHT -> rightJoin();
+            default -> throw new IllegalArgumentException("Join type not implemented");
+        };
     }
 
     private Frame leftJoin() {
@@ -281,15 +276,15 @@ public class Join {
             return;
         }
         switch (dst.type()) {
-            case BINARY:
-            case INT:
+            case BINARY, INT -> {
                 dst.addInt(src.getInt(row, varIndex));
                 return;
-            case DOUBLE:
+            }
+            case DOUBLE -> {
                 dst.addDouble(src.getDouble(row, varIndex));
                 return;
-            default:
-                dst.addLabel(src.getLabel(row, varIndex));
+            }
+            default -> dst.addLabel(src.getLabel(row, varIndex));
         }
     }
 

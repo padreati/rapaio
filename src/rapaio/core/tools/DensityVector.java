@@ -25,12 +25,12 @@ import rapaio.core.RandomSource;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
-import rapaio.math.MTools;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.function.DoublePredicate;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
+
+import static java.lang.Math.pow;
 
 /**
  * Nominal distribution vector.
@@ -126,6 +128,7 @@ public class DensityVector<T> implements Printable, Serializable {
         return dv;
     }
 
+    @Serial
     private static final long serialVersionUID = -546802690694348698L;
     private final Index<T> index;
     private final double[] values;
@@ -271,7 +274,7 @@ public class DensityVector<T> implements Printable, Serializable {
     public DensityVector<T> normalize(double pow) {
         total = 0.0;
         for (double value : values) {
-            total += MTools.pow(value, pow);
+            total += pow(value, pow);
         }
         if (total == 0)
             return this;

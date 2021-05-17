@@ -21,6 +21,8 @@
 
 package rapaio.core.distributions;
 
+import java.io.Serial;
+
 import static rapaio.printer.Format.floatFlex;
 
 /**
@@ -59,6 +61,7 @@ public class Normal implements Distribution {
             2.445134137142996e+00, 3.754408661907416e+00
     };
 
+    @Serial
     private static final long serialVersionUID = 3618971055326379083L;
     private final double mu;
     private final double sd;

@@ -27,6 +27,8 @@ import rapaio.data.VarRange;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
@@ -36,6 +38,7 @@ public class FImputeClassifier extends AbstractFFilter {
         return new FImputeClassifier(model, inputVars, targetName);
     }
 
+    @Serial
     private static final long serialVersionUID = 7428989420235407246L;
 
     private final ClassifierModel model;

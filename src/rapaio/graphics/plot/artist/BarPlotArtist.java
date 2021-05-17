@@ -33,6 +33,7 @@ import rapaio.graphics.plot.Axis;
 import rapaio.util.collection.IntArrays;
 
 import java.awt.*;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -45,8 +46,9 @@ import static rapaio.graphics.Plotter.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class BarPlot extends Artist {
+public class BarPlotArtist extends Artist {
 
+    @Serial
     private static final long serialVersionUID = -3953248625109450364L;
 
     private static final Set<VarType> categoryTypes = Set.of(VarType.BINARY, VarType.NOMINAL);
@@ -57,7 +59,7 @@ public class BarPlot extends Artist {
     private final double[][] hits;
     private final double[] totals;
 
-    public BarPlot(Var category, Var condition, Var weights, GOption<?>... opts) {
+    public BarPlotArtist(Var category, Var condition, Var weights, GOption<?>... opts) {
         if (!categoryTypes.contains(category.type())) {
             throw new IllegalArgumentException("Categories are nominal only");
         }

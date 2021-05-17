@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * The exponential kernel is closely related to the GaussianPdf kernel, with only the square of the norm left out.
  * It is also a radial basis function kernel.
@@ -35,6 +37,7 @@ import rapaio.printer.Format;
  */
 public class ExponentialKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = 7590795016650597990L;
 
     private final double sigma;

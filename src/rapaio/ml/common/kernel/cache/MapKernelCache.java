@@ -23,6 +23,7 @@ package rapaio.ml.common.kernel.cache;
 
 import rapaio.data.Frame;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import java.util.Map;
  */
 public class MapKernelCache implements KernelCache {
 
+    @Serial
     private static final long serialVersionUID = -654236501370533888L;
 
     final transient private Map<Frame, Map<Frame, Map<Long, Double>>> cache = new HashMap<>();

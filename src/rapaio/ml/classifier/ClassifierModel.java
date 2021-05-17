@@ -67,7 +67,7 @@ public interface ClassifierModel extends Printable, Serializable {
      * @return capabilities of the classification algorithm
      */
     default Capabilities capabilities() {
-        return Capabilities.builder().build();
+        return Capabilities.newDefault();
     }
 
     /**

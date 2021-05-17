@@ -25,17 +25,16 @@ package rapaio.math.linear.decomposition;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.MType;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
  * Cholesky Decomposition.
  * <p>
- * For a symmetric, positive definite matrix A, the Cholesky decomposition is an
- * lower triangular matrix L so that A = L*L'.
+ * For a symmetric, positive definite matrix A, the Cholesky decomposition is an lower triangular matrix L so that A = L*L'.
  * <p>
- * If the matrix is not symmetric or positive definite, the constructor returns
- * a partial decomposition and sets an internal flag that may be queried by the
- * isSPD() method.
+ * If the matrix is not symmetric or positive definite, the constructor returns a partial decomposition and sets an internal
+ * flag that may be queried by the {@link #isSPD()} method.
  */
 public class CholeskyDecomposition implements Serializable {
 
@@ -43,6 +42,7 @@ public class CholeskyDecomposition implements Serializable {
         return new CholeskyDecomposition(a);
     }
 
+    @Serial
     private static final long serialVersionUID = -3047433451986241586L;
 
     /**
@@ -65,7 +65,6 @@ public class CholeskyDecomposition implements Serializable {
      *
      * @param A Square, symmetric matrix.
      */
-
     private CholeskyDecomposition(DMatrix A) {
 
         // Initialize.

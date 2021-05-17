@@ -85,15 +85,15 @@ public class BinaryLogisticTest {
     @Test
     void testCapabilities() {
         Capabilities capabilities = BinaryLogistic.newModel().capabilities();
-        assertEquals(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE), capabilities.getInputTypes());
-        assertEquals(1, capabilities.getMinInputCount());
-        assertEquals(10000, capabilities.getMaxInputCount());
-        assertFalse(capabilities.getAllowMissingInputValues());
+        assertEquals(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE), capabilities.inputTypes());
+        assertEquals(1, capabilities.minInputCount());
+        assertEquals(10000, capabilities.maxInputCount());
+        assertFalse(capabilities.allowMissingInputValues());
 
-        assertEquals(Arrays.asList(VarType.NOMINAL, VarType.BINARY), capabilities.getTargetTypes());
-        assertEquals(1, capabilities.getMinTargetCount());
-        assertEquals(1, capabilities.getMaxTargetCount());
-        assertFalse(capabilities.getAllowMissingTargetValues());
+        assertEquals(Arrays.asList(VarType.NOMINAL, VarType.BINARY), capabilities.targetTypes());
+        assertEquals(1, capabilities.minTargetCount());
+        assertEquals(1, capabilities.maxTargetCount());
+        assertFalse(capabilities.allowMissingTargetValues());
     }
 
     @Test

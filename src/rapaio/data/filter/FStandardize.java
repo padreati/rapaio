@@ -24,6 +24,7 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +50,7 @@ public class FStandardize extends AbstractFFilter {
         return new FStandardize(varRange);
     }
 
+    @Serial
     private static final long serialVersionUID = -2447577449010618416L;
     private final Map<String, VStandardize> filters = new HashMap<>();
 

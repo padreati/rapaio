@@ -21,8 +21,6 @@
 
 package rapaio.ml.regression.linear;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
@@ -30,10 +28,11 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 
+import java.io.Serial;
+
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegressionModel> {
 
     /**
@@ -45,6 +44,7 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
         return new LinearRegressionModel();
     }
 
+    @Serial
     private static final long serialVersionUID = 8595413796946622895L;
 
     @Override

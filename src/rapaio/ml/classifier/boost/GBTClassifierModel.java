@@ -21,9 +21,6 @@
 
 package rapaio.ml.classifier.boost;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
@@ -41,6 +38,7 @@ import rapaio.ml.regression.tree.RTree;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,13 +48,13 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierModel, ClassifierResult> {
 
     public static GBTClassifierModel newModel() {
         return new GBTClassifierModel();
     }
 
+    @Serial
     private static final long serialVersionUID = -2979235364091072967L;
 
     public final ValueParam<Double, GBTClassifierModel> shrinkage = new ValueParam<>(this, 1.0,
@@ -80,8 +78,10 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
     private DMatrix p;
     private DMatrix residual;
 
-    @Getter
     private List<List<RTree>> trees;
+
+    private GBTClassifierModel() {
+    }
 
     @Override
     public GBTClassifierModel newInstance() {
@@ -95,14 +95,13 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .minInputCount(1).maxInputCount(1_000_000)
-                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE))
-                .allowMissingInputValues(true)
-                .minTargetCount(1).maxTargetCount(1)
-                .targetType(VarType.NOMINAL)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(
+                1, 1_000_000, Arrays.asList(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE), true,
+                1, 1, List.of(VarType.NOMINAL), false);
+    }
+
+    public List<List<RTree>> getTrees() {
+        return trees;
     }
 
     @Override
@@ -157,10 +156,10 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
 
         for (int k = 0; k < K; k++) {
 
-            Var residual_k = residual.mapRow(k).asVarDouble().mapRows(sample.getMapping()).name("##tt##");
+            Var residual_k = residual.mapRow(k).asVarDouble().mapRows(sample.mapping()).name("##tt##");
 
             var tree = model.get().newInstance();
-            tree.fit(sample.getDf().bindVars(residual_k), sample.getWeights(), "##tt##");
+            tree.fit(sample.df().bindVars(residual_k), sample.weights(), "##tt##");
             tree.boostUpdate(df, yk.mapRow(k).asVarDouble(), p.mapRow(k).asVarDouble(), new KDevianceLoss(K));
 
             trees.get(k).add(tree);

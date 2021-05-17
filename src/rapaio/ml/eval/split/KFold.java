@@ -21,8 +21,6 @@
 
 package rapaio.ml.eval.split;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -35,12 +33,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
-@AllArgsConstructor
-@Getter
-public class KFold implements SplitStrategy {
-
-    private final int rounds;
-    private final int folds;
+public record KFold(int rounds, int folds) implements SplitStrategy {
 
     public KFold(int folds) {
         this(1, folds);
@@ -75,14 +68,9 @@ public class KFold implements SplitStrategy {
             // generate splits
             for (int i = 0; i < mappings.length; i++) {
                 Mapping mapping = mappings[i];
-                splits.add(Split.builder()
-                        .round(round)
-                        .fold(i)
-                        .trainDf(df.removeRows(mapping))
-                        .trainWeights(weights == null ? null : weights.removeRows(mapping))
-                        .testDf(df.mapRows(mapping))
-                        .testWeights(weights == null ? null : weights.mapRows(mapping))
-                        .build());
+                splits.add(new Split(round, i,
+                        df.removeRows(mapping), weights == null ? null : weights.removeRows(mapping),
+                        df.mapRows(mapping), weights == null ? null : weights.mapRows(mapping)));
             }
 
         }

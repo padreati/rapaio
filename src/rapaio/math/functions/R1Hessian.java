@@ -24,20 +24,16 @@ package rapaio.math.functions;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 
+import java.io.Serial;
 import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.
  */
-public class R1Hessian implements RHessian {
+public record R1Hessian(Function<Double, Double> f) implements RHessian {
 
+    @Serial
     private static final long serialVersionUID = -7499515114017044967L;
-
-    private final Function<Double, Double> f;
-
-    public R1Hessian(Function<Double, Double> f) {
-        this.f = f;
-    }
 
     @Override
     public DMatrix apply(double... x) {

@@ -21,10 +21,6 @@
 
 package rapaio.ml.common;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Singular;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
@@ -39,37 +35,14 @@ import static java.util.stream.Collectors.joining;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
-@Getter
-@Builder
-public class Capabilities {
+public record Capabilities(int minInputCount, int maxInputCount, List<VarType> inputTypes, boolean allowMissingInputValues,
+                           int minTargetCount, int maxTargetCount, List<VarType> targetTypes, boolean allowMissingTargetValues) {
 
-    @NonNull
-    private final Integer minInputCount;
-
-    @NonNull
-    private final Integer maxInputCount;
-
-    @Singular
-    @NonNull
-    private final List<VarType> inputTypes;
-
-    @NonNull
-    private final Boolean allowMissingInputValues;
-
-    @NonNull
-    @Builder.Default
-    private final Integer minTargetCount = 0;
-
-    @NonNull
-    @Builder.Default
-    private final Integer maxTargetCount = 0;
-
-    @Singular
-    @NonNull
-    private final List<VarType> targetTypes;
-
-    @NonNull
-    private final Boolean allowMissingTargetValues;
+    public static Capabilities newDefault() {
+        return new Capabilities(
+                0, 0, List.of(), true,
+                0, 0, List.of(), false);
+    }
 
     /**
      * This method evaluates the capabilities of the algorithm at the learning phase.
@@ -123,7 +96,7 @@ public class Capabilities {
             }
         }
         if (sb.length() > 0)
-            throw new IllegalArgumentException("Algorithm does not allow target variables with missing values; see : " + sb.toString());
+            throw new IllegalArgumentException("Algorithm does not allow target variables with missing values; see : " + sb);
     }
 
     private void checkInputCount(Frame df, Var weights, String... targetVars) {
@@ -149,7 +122,7 @@ public class Capabilities {
             }
         }
         if (sb.length() > 0) {
-            throw new IllegalArgumentException("Algorithm does not allow input variables of give types: " + sb.toString());
+            throw new IllegalArgumentException("Algorithm does not allow input variables of give types: " + sb);
         }
     }
 
@@ -167,8 +140,7 @@ public class Capabilities {
             }
         }
         if (sb.length() > 0)
-            throw new IllegalArgumentException("Algorithm does not allow input variables with missing values; " +
-                    "see : " + sb.toString());
+            throw new IllegalArgumentException("Algorithm does not allow input variables with missing values; see : " + sb);
     }
 
     @Override

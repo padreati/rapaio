@@ -21,6 +21,7 @@
 
 package rapaio.ml.classifier.bayes.nb;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,7 @@ public abstract class AbstractEstimator implements Estimator {
         this.testVarNames = new ArrayList<>(testVarNames);
     }
 
+    @Serial
     private static final long serialVersionUID = 2641684738382610007L;
 
     public List<String> getTestNames() {

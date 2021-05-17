@@ -21,14 +21,9 @@
 
 package rapaio.math.linear;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/12/21.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TOptions {
 
     public static final int DEFAULT_RESULT = TOptionResult.INPLACE;
@@ -65,14 +60,11 @@ public class TOptions {
         return new TOptionAxis(axis);
     }
 
-    @RequiredArgsConstructor
-    private static final class TOptionResult implements TOption<Integer> {
+    private static record TOptionResult(int result) implements TOption<Integer> {
 
         public static final int INPLACE = 0;
         public static final int COPY = 1;
         public static final int ADD = 2;
-
-        private final int result;
 
         @Override
         public void bind(TOptions options) {
@@ -92,9 +84,7 @@ public class TOptions {
         }
     }
 
-    @RequiredArgsConstructor
-    private static class TOptionAxis implements TOption<Integer> {
-        private final int axis;
+    private static record TOptionAxis(int axis) implements TOption<Integer> {
 
         @Override
         public void bind(TOptions options) {

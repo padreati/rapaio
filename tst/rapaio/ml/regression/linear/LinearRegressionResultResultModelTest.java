@@ -52,36 +52,40 @@ public class LinearRegressionResultResultModelTest {
                 .removeVars(VarRange.of("ID", "Sales", "Newspaper"));
 
         LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: LinearRegression\n" +
-                "Model instance: LinearRegression{}\n" +
-                "> model not trained.\n" +
-                "\n", lm.toSummary());
+        assertEquals("""
+                Regression predict summary
+                =======================
+                Model class: LinearRegression
+                Model instance: LinearRegression{}
+                > model not trained.
+
+                """, lm.toSummary());
         assertEquals("LinearRegression{}, not fitted.",
                 lm.toString());
         lm.fit(df, "Radio");
         assertEquals("LinearRegression{}, fitted on: 2 IVs [(Intercept),TV], 1 DVs [Radio].",
                 lm.toString());
         assertEquals(
-                "Regression predict summary\n" +
-                        "=======================\n" +
-                        "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression{}\n" +
-                        "> model is trained.\n" +
-                        "> input variables: \n" +
-                        "1. (Intercept) dbl \n" +
-                        "2. TV          dbl \n" +
-                        "> target variables: \n" +
-                        "1. Radio dbl \n" +
-                        "\n" +
-                        "Target <<< Radio >>>\n" +
-                        "\n" +
-                        "> Coefficients: \n" +
-                        "   Name      Estimate  \n" +
-                        "(Intercept) 21.8703186 \n" +
-                        "TV           0.0094781 \n" +
-                        "\n", lm.toSummary());
+                """
+                        Regression predict summary
+                        =======================
+                        Model class: LinearRegression
+                        Model instance: LinearRegression{}
+                        > model is trained.
+                        > input variables:\s
+                        1. (Intercept) dbl\s
+                        2. TV          dbl\s
+                        > target variables:\s
+                        1. Radio dbl\s
+
+                        Target <<< Radio >>>
+
+                        > Coefficients:\s
+                           Name      Estimate \s
+                        (Intercept) 21.8703186\s
+                        TV           0.0094781\s
+
+                        """, lm.toSummary());
 
         var lmfit = lm.predict(df, true);
         assertEquals(

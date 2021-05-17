@@ -29,6 +29,7 @@ import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
 
 import java.awt.*;
+import java.io.Serial;
 
 /**
  * Plot component which allows one to add points to a plot.
@@ -37,6 +38,7 @@ import java.awt.*;
  */
 public class Points extends Artist {
 
+    @Serial
     private static final long serialVersionUID = -4766079423843859315L;
 
     private final Var x;

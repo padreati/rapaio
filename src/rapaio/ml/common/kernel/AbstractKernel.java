@@ -27,6 +27,7 @@ import rapaio.ml.common.kernel.cache.KernelCache;
 import rapaio.ml.common.kernel.cache.MapKernelCache;
 import rapaio.ml.common.kernel.cache.SolidKernelCache;
 
+import java.io.Serial;
 import java.util.Arrays;
 
 /**
@@ -34,6 +35,7 @@ import java.util.Arrays;
  */
 public abstract class AbstractKernel implements Kernel {
 
+    @Serial
     private static final long serialVersionUID = -2216556261751685749L;
 
     protected String[] varNames;

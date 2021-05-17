@@ -34,12 +34,14 @@ import rapaio.util.collection.IntArrays;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public abstract class AbstractVar implements Var {
 
+    @Serial
     private static final long serialVersionUID = 2607349261526552662L;
     private String name = "?";
 
@@ -113,10 +115,12 @@ public abstract class AbstractVar implements Var {
         return new DefaultDVarOp<>(this);
     }
 
+    @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeUTF(name);
     }
 
+    @Serial
     private void readObject(ObjectInputStream in) throws IOException {
         name = in.readUTF();
     }

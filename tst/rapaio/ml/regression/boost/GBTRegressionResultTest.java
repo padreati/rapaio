@@ -92,13 +92,14 @@ public class GBTRegressionResultTest {
                 "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}," +
                 "runs=100}; fitted=false", model.toString());
 
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: GBTRegression\n" +
-                "Model instance: GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority," +
-                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},runs=100}\n" +
-                "> model not trained.\n" +
-                "\n", model.toSummary());
+        assertEquals("""
+                Regression predict summary
+                =======================
+                Model class: GBTRegression
+                Model instance: GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},runs=100}
+                > model not trained.
+
+                """, model.toSummary());
 
         assertEquals(model.toSummary(), model.toContent());
         assertEquals(model.toSummary(), model.toFullContent());
@@ -115,22 +116,23 @@ public class GBTRegressionResultTest {
                 "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}," +
                 "runs=100}; fitted=true, fitted trees:100", model.toString());
 
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: GBTRegression\n" +
-                "Model instance: GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumericBinary,INT=NumericBinary," +
-                "NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},runs=100}\n" +
-                "> model is trained.\n" +
-                "> input variables: \n" +
-                "1. TV        dbl \n" +
-                "2. Radio     dbl \n" +
-                "3. Newspaper dbl \n" +
-                "> target variables: \n" +
-                "1. Sales dbl \n" +
-                "\n" +
-                "Target <<< Sales >>>\n" +
-                "\n" +
-                "> Number of fitted trees: 100\n", model.toSummary());
+        assertEquals("""
+                Regression predict summary
+                =======================
+                Model class: GBTRegression
+                Model instance: GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},runs=100}
+                > model is trained.
+                > input variables:\s
+                1. TV        dbl\s
+                2. Radio     dbl\s
+                3. Newspaper dbl\s
+                > target variables:\s
+                1. Sales dbl\s
+
+                Target <<< Sales >>>
+
+                > Number of fitted trees: 100
+                """, model.toSummary());
 
         assertEquals(model.toSummary(), model.toContent());
         assertEquals(model.toSummary(), model.toFullContent());

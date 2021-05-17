@@ -45,6 +45,7 @@ import rapaio.graphics.opt.GOptionLwd;
 import rapaio.graphics.opt.GOptionPalette;
 import rapaio.graphics.opt.GOptionPch;
 import rapaio.graphics.opt.GOptionPoints;
+import rapaio.graphics.opt.GOptionPosition;
 import rapaio.graphics.opt.GOptionProb;
 import rapaio.graphics.opt.GOptionSort;
 import rapaio.graphics.opt.GOptionStacked;
@@ -52,16 +53,18 @@ import rapaio.graphics.opt.GOptionSz;
 import rapaio.graphics.opt.GOptionTop;
 import rapaio.graphics.opt.GOptionVAlign;
 import rapaio.graphics.opt.GOptionWidths;
+import rapaio.graphics.opt.Position;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.artist.ABLine;
-import rapaio.graphics.plot.artist.BarPlot;
+import rapaio.graphics.plot.artist.ABLineArtist;
+import rapaio.graphics.plot.artist.BarPlotArtist;
 import rapaio.graphics.plot.artist.BoxPlot;
 import rapaio.graphics.plot.artist.CorrGram;
 import rapaio.graphics.plot.artist.DensityLine;
 import rapaio.graphics.plot.artist.FunctionLine;
 import rapaio.graphics.plot.artist.Histogram;
 import rapaio.graphics.plot.artist.Histogram2D;
+import rapaio.graphics.plot.artist.ImageArtist;
 import rapaio.graphics.plot.artist.IsoCurves;
 import rapaio.graphics.plot.artist.Lines;
 import rapaio.graphics.plot.artist.Matrix;
@@ -75,6 +78,7 @@ import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public final class Plotter {
 
@@ -167,27 +171,27 @@ public final class Plotter {
     }
 
     public static Plot barplot(Var category, GOption<?>... opts) {
-        return plot().add(new BarPlot(category, null, null, opts));
+        return plot().add(new BarPlotArtist(category, null, null, opts));
     }
 
     public static Plot barplot(Var category, Var cond, GOption<?>... opts) {
-        return plot().add(new BarPlot(category, cond, null, opts));
+        return plot().add(new BarPlotArtist(category, cond, null, opts));
     }
 
     public static Plot barplot(Var category, Var cond, Var numeric, GOption<?>... opts) {
-        return plot().add(new BarPlot(category, cond, numeric, opts));
+        return plot().add(new BarPlotArtist(category, cond, numeric, opts));
     }
 
     public static Plot hLine(double a, GOption<?>... opts) {
-        return plot().add(new ABLine(true, a, opts));
+        return plot().add(new ABLineArtist(true, a, opts));
     }
 
     public static Plot vLine(double a, GOption<?>... opts) {
-        return plot().add(new ABLine(false, a, opts));
+        return plot().add(new ABLineArtist(false, a, opts));
     }
 
     public static Plot abLine(double a, double b, GOption<?>... opts) {
-        return plot().add(new ABLine(a, b, opts));
+        return plot().add(new ABLineArtist(a, b, opts));
     }
 
     public static Plot corrGram(DistanceMatrix d, GOption<?>... opts) {
@@ -196,6 +200,10 @@ public final class Plotter {
 
     public static Plot corrGram(DistanceMatrix d, boolean labels, boolean grid, GOption<?>... opts) {
         return plot().add(new CorrGram(d, labels, grid, opts));
+    }
+
+    public static Plot image(BufferedImage image, GOption<?>... opts) {
+        return plot().add(new ImageArtist(image, opts));
     }
 
     public static Plot text(double x, double y, String text, GOption<?>... opts) {
@@ -397,5 +405,13 @@ public final class Plotter {
 
     public static GOptionFont font(String fontName, int style, int size) {
         return new GOptionFont(new Font(fontName, style, size));
+    }
+
+    public static GOptionPosition position(Position position) {
+        return new GOptionPosition(position);
+    }
+
+    public static GOptionPosition position(int x, int y, int width, int height) {
+        return new GOptionPosition(new Position(x, y, width, height));
     }
 }

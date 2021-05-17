@@ -184,14 +184,9 @@ public class TTestOneSample implements HTest {
         StudentT dist = StudentT.of(sampleSize - 1);
 
         switch (alt) {
-            case GREATER_THAN:
-                pValue = 1 - dist.cdf(this.t);
-                break;
-            case LESS_THAN:
-                pValue = dist.cdf(this.t);
-                break;
-            default:
-                pValue = dist.cdf(-Math.abs(this.t)) * 2;
+            case GREATER_THAN -> pValue = 1 - dist.cdf(this.t);
+            case LESS_THAN -> pValue = dist.cdf(this.t);
+            default -> pValue = dist.cdf(-Math.abs(this.t)) * 2;
         }
 
         ciLow = StudentT.of(sampleSize - 1, sampleMean, sampleSd / Math.sqrt(sampleSize)).quantile(sl / 2);

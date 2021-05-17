@@ -21,10 +21,10 @@
 
 package rapaio.experiment.ml.common.predicate;
 
-import lombok.EqualsAndHashCode;
 import rapaio.data.Frame;
 import rapaio.printer.Format;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -81,6 +81,7 @@ public interface RowPredicate extends Serializable {
 
 final class All implements RowPredicate {
 
+    @Serial
     private static final long serialVersionUID = -3530613310623768690L;
 
     @Override
@@ -94,17 +95,10 @@ final class All implements RowPredicate {
     }
 }
 
-@EqualsAndHashCode
-final class NumLessEqual implements RowPredicate {
+record NumLessEqual(String testName, double testValue) implements RowPredicate {
 
+    @Serial
     private static final long serialVersionUID = 8215441575970091295L;
-    private final String testName;
-    private final double testValue;
-
-    NumLessEqual(String testName, double testValue) {
-        this.testName = testName;
-        this.testValue = testValue;
-    }
 
     @Override
     public boolean test(int row, Frame df) {
@@ -117,17 +111,10 @@ final class NumLessEqual implements RowPredicate {
     }
 }
 
-@EqualsAndHashCode
-final class NumGreaterEqual implements RowPredicate {
+record NumGreaterEqual(String testName, double testValue) implements RowPredicate {
 
+    @Serial
     private static final long serialVersionUID = 8904590203760623732L;
-    public final String testName;
-    public final double testValue;
-
-    NumGreaterEqual(String testName, double testValue) {
-        this.testName = testName;
-        this.testValue = testValue;
-    }
 
     @Override
     public boolean test(int row, Frame df) {
@@ -142,17 +129,10 @@ final class NumGreaterEqual implements RowPredicate {
     }
 }
 
-@EqualsAndHashCode
-final class NumLess implements RowPredicate {
+record NumLess(String testName, double testValue) implements RowPredicate {
 
+    @Serial
     private static final long serialVersionUID = -8274469785632211359L;
-    public final String testName;
-    public final double testValue;
-
-    NumLess(String testName, double testValue) {
-        this.testName = testName;
-        this.testValue = testValue;
-    }
 
     @Override
     public boolean test(int row, Frame df) {
@@ -168,17 +148,10 @@ final class NumLess implements RowPredicate {
     }
 }
 
-@EqualsAndHashCode
-final class NumGreater implements RowPredicate {
+record NumGreater(String testName, double testValue) implements RowPredicate {
 
+    @Serial
     private static final long serialVersionUID = 5664720893373938432L;
-    public final String testName;
-    public final double testValue;
-
-    NumGreater(String testName, double testValue) {
-        this.testName = testName;
-        this.testValue = testValue;
-    }
 
     @Override
     public boolean test(int row, Frame df) {
@@ -194,70 +167,46 @@ final class NumGreater implements RowPredicate {
     }
 }
 
-@EqualsAndHashCode
-final class BinaryEqual implements RowPredicate {
+record BinaryEqual(String testName, boolean testValue) implements RowPredicate {
 
+    @Serial
     private static final long serialVersionUID = 830863153933290391L;
-
-    private final String testName;
-    private final int testValue;
-
-    public BinaryEqual(String testName, boolean testValue) {
-        this.testName = testName;
-        this.testValue = testValue ? 1 : 0;
-    }
 
     @Override
     public boolean test(int row, Frame df) {
         if (df.isMissing(row, testName))
             return false;
-        return df.getInt(row, testName) == testValue;
+        return df.getInt(row, testName) == (testValue ? 1 : 0);
     }
 
     @Override
     public String toString() {
-        return testName + "=" + testValue;
+        return testName + "=" + (testValue ? 1 : 0);
     }
 }
 
-@EqualsAndHashCode
-final class BinaryNotEqual implements RowPredicate {
+record BinaryNotEqual(String testName, boolean testValue) implements RowPredicate {
 
+    @Serial
     private static final long serialVersionUID = 830863153933290391L;
-
-    private final String testName;
-    private final int testValue;
-
-    public BinaryNotEqual(String testName, boolean testValue) {
-        this.testName = testName;
-        this.testValue = testValue ? 1 : 0;
-    }
 
     @Override
     public boolean test(int row, Frame df) {
         if (df.isMissing(row, testName))
             return false;
-        return df.getInt(row, testName) != testValue;
+        return df.getInt(row, testName) != (testValue ? 1 : 0);
     }
 
     @Override
     public String toString() {
-        return testName + "!=" + testValue;
+        return testName + "!=" + (testValue ? 1 : 0);
     }
 }
 
-@EqualsAndHashCode
-final class NominalEqual implements RowPredicate {
+record NominalEqual(String testName, String testValue) implements RowPredicate {
 
-
+    @Serial
     private static final long serialVersionUID = -148943086245103236L;
-    private final String testName;
-    private final String testValue;
-
-    public NominalEqual(String testName, String testValue) {
-        this.testName = testName;
-        this.testValue = testValue;
-    }
 
     @Override
     public boolean test(int row, Frame df) {
@@ -272,18 +221,10 @@ final class NominalEqual implements RowPredicate {
     }
 }
 
-@EqualsAndHashCode
-final class NominalNotEqual implements RowPredicate {
+record NominalNotEqual(String testName, String testValue) implements RowPredicate {
 
-
+    @Serial
     private static final long serialVersionUID = -148943086245103236L;
-    private final String testName;
-    private final String testValue;
-
-    public NominalNotEqual(String testName, String testValue) {
-        this.testName = testName;
-        this.testValue = testValue;
-    }
 
     @Override
     public boolean test(int row, Frame df) {

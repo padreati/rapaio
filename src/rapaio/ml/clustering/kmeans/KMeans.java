@@ -21,7 +21,6 @@
 
 package rapaio.ml.clustering.kmeans;
 
-import lombok.Getter;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
@@ -41,6 +40,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -102,6 +102,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         }
     }
 
+    @Serial
     private static final long serialVersionUID = -1046184364541391871L;
 
     public final ValueParam<Integer, KMeans> k = new ValueParam<>(this, 2, "k", "number of clusters");
@@ -113,9 +114,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
     // clustering artifacts
 
     private DMatrix c;
-    @Getter
     private Frame centroids;
-    @Getter
     private VarDouble errors;
 
     @Override
@@ -128,6 +127,14 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         return "KMeans";
     }
 
+    public Frame getCentroids() {
+        return centroids;
+    }
+
+    public VarDouble getErrors() {
+        return errors;
+    }
+
     public double getInertia() {
         return errors.size() == 0 ? Double.NaN : errors.getDouble(errors.size() - 1);
     }
@@ -138,14 +145,9 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .allowMissingInputValues(true)
-                .allowMissingTargetValues(true)
-                .inputTypes(List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY))
-                .minInputCount(1).maxInputCount(10_000)
-                .minTargetCount(0).maxTargetCount(0)
-                .targetTypes(List.of())
-                .build();
+        return new Capabilities(1, 10_000,
+                List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY), true,
+                0, 0, List.of(), true);
     }
 
     @Override

@@ -28,6 +28,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.printer.Format;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +66,7 @@ public class BernoulliEstimator extends AbstractEstimator {
         return forNames(laplaceSmoother, varNames.toArray(String[]::new));
     }
 
+    @Serial
     private static final long serialVersionUID = 3019563706421891472L;
 
     private final String testName;

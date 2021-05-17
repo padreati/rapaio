@@ -64,11 +64,11 @@ public class LDA implements Printable {
 
     protected final boolean scaling = true;
 
-    public DVector getEigenValues() {
+    public DVector eigenValues() {
         return eigenValues;
     }
 
-    public DMatrix getEigenVectors() {
+    public DMatrix eigenVectors() {
         return eigenVectors;
     }
 
@@ -160,8 +160,8 @@ public class LDA implements Printable {
         EigenPair p = Linear.eigenDecomp(sbplus.dot(swi).dot(sbplus), maxRuns, tol);
 
         logger.fine("compute eigenvalues");
-        eigenValues = p.getVector();
-        eigenVectors = sbminus.dot(p.getMatrix());
+        eigenValues = p.values();
+        eigenVectors = sbminus.dot(p.vectors());
 //        eigenVectors = p.vectors();
 
         logger.fine("sort eigen values and vectors");

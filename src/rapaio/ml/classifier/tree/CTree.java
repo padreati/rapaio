@@ -21,7 +21,6 @@
 
 package rapaio.ml.classifier.tree;
 
-import lombok.Getter;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -45,8 +44,8 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
-import rapaio.util.Triple;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -110,6 +109,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                 .purity.set(Purity.GiniGain);
     }
 
+    @Serial
     private static final long serialVersionUID = 1203926824359387358L;
 
     // parameter default values
@@ -158,8 +158,11 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
             "Pruning data frame",
             x -> true);
 
-    @Getter
     private Node root;
+
+    public Node getRoot() {
+        return root;
+    }
 
     @Override
     public CTree newInstance() {
@@ -173,14 +176,12 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .inputTypes(Arrays.asList(VarType.NOMINAL, VarType.INT, VarType.DOUBLE, VarType.BINARY))
-                .minInputCount(1).maxInputCount(1_000_000)
-                .allowMissingInputValues(true)
-                .targetType(VarType.NOMINAL)
-                .minTargetCount(1).maxTargetCount(1)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(1, 1_000_000,
+                Arrays.asList(VarType.NOMINAL, VarType.INT, VarType.DOUBLE, VarType.BINARY), true,
+                1, 1, List.of(VarType.NOMINAL), false);
+    }
+
+    record Triple(Node node, Frame df, Var weight) {
     }
 
     @Override
@@ -196,15 +197,15 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
         idGenerator.set(0);
         root = new Node(null, idGenerator.get(), 0, "root", RowPredicate.all());
 
-        Queue<Triple<Node, Frame, Var>> queue = new ConcurrentLinkedQueue<>();
-        queue.add(Triple.of(root, df, weights));
+        Queue<Triple> queue = new ConcurrentLinkedQueue<>();
+        queue.add(new Triple(root, df, weights));
 
         while (!queue.isEmpty()) {
             var t = queue.poll();
 
-            Node node = t.getV1();
-            Frame nodeDf = t.getV2();
-            Var weightsDf = t.getV3();
+            Node node = t.node;
+            Frame nodeDf = t.df;
+            Var weightsDf = t.weight;
 
             learnNode(node, nodeDf, weightsDf);
 
@@ -212,20 +213,20 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                 continue;
             }
             Candidate bestCandidate = node.bestCandidate;
-            String testName = bestCandidate.testName;
+            String testName = bestCandidate.testName();
 
             // now that we have a best candidate, do the effective split
             Pair<List<Frame>, List<Var>> frames = splitter.get().performSplit(nodeDf, weightsDf,
-                    bestCandidate.groupPredicates);
+                    bestCandidate.groupPredicates());
 
-            for (RowPredicate predicate : bestCandidate.groupPredicates) {
+            for (RowPredicate predicate : bestCandidate.groupPredicates()) {
                 var child = new Node(node,
                         idGenerator.incrementAndGet(), node.depth + 1, predicate.toString(), predicate);
                 node.children.add(child);
             }
             for (int i = 0; i < node.children.size(); i++) {
                 var child = node.children.get(i);
-                queue.add(Triple.of(child, frames.v1.get(i), frames.v2.get(i)));
+                queue.add(new Triple(child, frames.v1.get(i), frames.v2.get(i)));
             }
         }
 
@@ -275,12 +276,12 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                 exhaustList.add(testCol);
             }
         }
-        candidateList.sort((o1, o2) -> -(Double.compare(o1.score, o2.score)));
-        if (candidateList.isEmpty() || candidateList.get(0).groupPredicates.isEmpty()) {
+        candidateList.sort((o1, o2) -> -(Double.compare(o1.score(), o2.score())));
+        if (candidateList.isEmpty() || candidateList.get(0).groupPredicates().isEmpty()) {
             return;
         }
         // leave as leaf if the gain is not bigger than minimum gain
-        if (candidateList.get(0).score <= minGain.get()) {
+        if (candidateList.get(0).score() <= minGain.get()) {
             return;
         }
 
@@ -423,7 +424,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
         if (node.leaf) {
             sb.append("*");
         } else {
-            sb.append("[").append(Format.floatFlex(node.bestCandidate.score)).append("]");
+            sb.append("[").append(Format.floatFlex(node.bestCandidate.score())).append("]");
         }
         sb.append("\n");
 

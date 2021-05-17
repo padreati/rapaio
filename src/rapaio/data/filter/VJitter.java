@@ -27,6 +27,8 @@ import rapaio.data.Var;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * Applies a random noise from a given distribution to a numeric vector.
  * <p>
@@ -58,6 +60,7 @@ public class VJitter implements VFilter {
         return new VJitter(d);
     }
 
+    @Serial
     private static final long serialVersionUID = -8411939170432884225L;
     private final Distribution d;
 

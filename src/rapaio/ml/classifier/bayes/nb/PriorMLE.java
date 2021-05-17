@@ -26,6 +26,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.printer.Format;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
  */
 public class PriorMLE implements Prior {
 
+    @Serial
     private static final long serialVersionUID = 2590209274166763951L;
 
     private Map<String, Double> priors = new HashMap<>();

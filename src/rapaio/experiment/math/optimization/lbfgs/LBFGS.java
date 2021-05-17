@@ -21,6 +21,8 @@
 
 package rapaio.experiment.math.optimization.lbfgs;
 
+import java.io.Serial;
+
 /**
  * <p> This class contains code for the limited-memory Broyden-Fletcher-Goldfarb-Shanno
  * (LBFGS) algorithm for large-scale multidimensional unconstrained minimization problems.
@@ -664,6 +666,7 @@ public class LBFGS {
      */
 
     public static class ExceptionWithIflag extends Exception {
+        @Serial
         private static final long serialVersionUID = -7826713489112275104L;
         public final int iflag;
 

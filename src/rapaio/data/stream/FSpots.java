@@ -25,6 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -57,6 +58,7 @@ import java.util.stream.StreamSupport;
  */
 public class FSpots implements Stream<FSpot>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -1062266227832968382L;
 
     private final Frame source;

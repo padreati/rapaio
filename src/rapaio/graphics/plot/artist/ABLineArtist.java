@@ -28,15 +28,16 @@ import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.io.Serial;
 
 import static rapaio.graphics.Plotter.color;
 
 /**
  * Artist which draws a line of the form y = f(x) = a*x + b
- * There is a generic form of the line by calling {@link #ABLine(double, double, GOption...)}.
+ * There is a generic form of the line by calling {@link #ABLineArtist(double, double, GOption...)}.
  * <p>
  * Also there is a simpler form for drawing horizontal or vertical lines.
- * The simpler form is called by using {@link #ABLine(boolean, double, GOption...)},
+ * The simpler form is called by using {@link #ABLineArtist(boolean, double, GOption...)},
  * with the boolean parameter specifying if the line is horizontal or vertical.
  * <p>
  * Also there are two dedicated shortcuts in plotter {@link Plotter#hLine(double, GOption...)}
@@ -46,15 +47,16 @@ import static rapaio.graphics.Plotter.color;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ABLine extends Artist {
+public class ABLineArtist extends Artist {
 
+    @Serial
     private static final long serialVersionUID = 8980967297314815554L;
     private final double a;
     private final double b;
     private final boolean h;
     private final boolean v;
 
-    public ABLine(boolean horiz, double a, GOption<?>... opts) {
+    public ABLineArtist(boolean horiz, double a, GOption<?>... opts) {
         this.a = a;
         this.b = a;
         this.h = horiz;
@@ -63,7 +65,7 @@ public class ABLine extends Artist {
         this.options.bind(opts);
     }
 
-    public ABLine(double a, double b, GOption<?>... opts) {
+    public ABLineArtist(double a, double b, GOption<?>... opts) {
         this.a = a;
         this.b = b;
         this.h = false;

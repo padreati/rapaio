@@ -31,12 +31,14 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/19.
  */
 public class Matrix extends Artist {
 
+    @Serial
     private static final long serialVersionUID = -642370269224702175L;
     private final DMatrix m;
 
@@ -89,18 +91,18 @@ public class Matrix extends Artist {
             }
         }
 
-        final double eps = 0.1;
+        final double eps = 1 / (xScale(1) - xScale(0));
 
-        for (int i = 0; i < m.colCount(); i++) {
-            for (int j = 0; j < m.rowCount(); j++) {
+        for (int i = 0; i < m.rowCount(); i++) {
+            for (int j = 0; j < m.colCount(); j++) {
                 Path2D.Double path = new Path2D.Double();
-                path.moveTo(xScale(i), yScale(j));
-                path.lineTo(xScale(i + 1 + eps), yScale(j));
-                path.lineTo(xScale(i + 1 + eps), yScale(j + 1 + eps));
-                path.lineTo(xScale(i), yScale(j + 1 + eps));
-                path.lineTo(xScale(i), yScale(j));
+                path.moveTo(xScale(j), yScale(i));
+                path.lineTo(xScale(j + 1 + eps), yScale(i));
+                path.lineTo(xScale(j + 1 + eps), yScale(i + 1 + eps));
+                path.lineTo(xScale(j), yScale(i + 1 + eps));
+                path.lineTo(xScale(j), yScale(i));
 
-                int color = (int) Math.floor((m.get(j, i) - min) * size / (max - min));
+                int color = (int) Math.floor((m.get(i, j) - min) * size / (max - min));
                 g2d.setColor(options.getPalette().getColor(color));
                 g2d.setStroke(new BasicStroke());
                 g2d.fill(path);
@@ -114,7 +116,7 @@ public class Matrix extends Artist {
                 Point2D.Double to = new Point2D.Double(xScale(i), yScale(m.rowCount()));
 
                 g2d.setColor(options.getColor(0));
-                g2d.setStroke(new BasicStroke(options.getLwd()));
+                g2d.setStroke(new BasicStroke(0f));
                 g2d.draw(new Line2D.Double(from, to));
             }
             for (int i = 0; i <= m.rowCount(); i++) {

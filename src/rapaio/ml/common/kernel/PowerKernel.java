@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * The Power kernel is also known as the (unrectified) triangular kernel.
  * It is an example of scale-invariant kernel (Sahbi and Fleuret, 2004)
@@ -36,6 +38,7 @@ import rapaio.printer.Format;
  */
 public class PowerKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -974630838457936489L;
 
     private final double degree;

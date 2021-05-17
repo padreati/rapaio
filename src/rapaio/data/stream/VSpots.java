@@ -26,6 +26,7 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -57,6 +58,7 @@ import java.util.stream.StreamSupport;
  */
 public class VSpots implements Stream<VSpot>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 6173562979588338610L;
 
     private Stream<VSpot> stream;

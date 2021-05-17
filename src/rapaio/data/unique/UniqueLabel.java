@@ -26,6 +26,7 @@ import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.util.collection.IntArrays;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -115,6 +116,7 @@ public class UniqueLabel extends AbstractUnique {
 
 class UniqueLabelComparator implements Comparator<String>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1347615489598406390L;
 
     @Override

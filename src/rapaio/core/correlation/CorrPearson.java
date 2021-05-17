@@ -27,6 +27,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
@@ -41,6 +42,7 @@ import java.util.stream.IntStream;
  */
 public class CorrPearson extends AbstractCorrelation {
 
+    @Serial
     private static final long serialVersionUID = -7342261109217205843L;
 
     public static CorrPearson of(Frame df) {

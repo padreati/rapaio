@@ -24,6 +24,7 @@ package rapaio.math.linear.decomposition;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -42,6 +43,7 @@ public class QRDecomposition implements Serializable {
         return new QRDecomposition(A);
     }
 
+    @Serial
     private static final long serialVersionUID = -8322866575684242727L;
 
     private final DMatrix QR;

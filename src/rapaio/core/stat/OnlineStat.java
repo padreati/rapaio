@@ -21,7 +21,7 @@
 
 package rapaio.core.stat;
 
-import rapaio.math.MTools;
+import static java.lang.Math.sqrt;
 
 /**
  * Class which implements core online statistics. This class does not hold
@@ -122,7 +122,7 @@ public class OnlineStat {
     }
 
     public double sd() {
-        return MTools.sqrt(variance());
+        return sqrt(variance());
     }
 
     public double sampleVariance() {
@@ -130,11 +130,11 @@ public class OnlineStat {
     }
 
     public double sampleSd() {
-        return MTools.sqrt(sampleVariance());
+        return sqrt(sampleVariance());
     }
 
     public double skewness() {
-        return Math.sqrt(n) * m3 / Math.pow(m2, 1.5);
+        return sqrt(n) * m3 / Math.pow(m2, 1.5);
     }
 
     public double kurtosis() {

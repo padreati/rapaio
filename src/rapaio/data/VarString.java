@@ -26,6 +26,7 @@ import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.function.SFunction;
 
+import java.io.Serial;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,6 +83,7 @@ public class VarString extends AbstractVar {
         return text;
     }
 
+    @Serial
     private static final long serialVersionUID = -7130782019269889796L;
     private List<String> values;
 

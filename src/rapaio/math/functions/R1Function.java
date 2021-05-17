@@ -23,6 +23,7 @@ package rapaio.math.functions;
 
 import rapaio.math.linear.DVector;
 
+import java.io.Serial;
 import java.util.function.Function;
 
 /**
@@ -30,15 +31,10 @@ import java.util.function.Function;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.
  */
-public class R1Function implements RFunction {
+public record R1Function(Function<Double, Double> f) implements RFunction {
 
+    @Serial
     private static final long serialVersionUID = -2881307255778321959L;
-
-    public final Function<Double, Double> f;
-
-    public R1Function(Function<Double, Double> f) {
-        this.f = f;
-    }
 
     @Override
     public double apply(double... x) {

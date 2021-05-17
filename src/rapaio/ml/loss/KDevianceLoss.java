@@ -24,6 +24,8 @@ package rapaio.ml.loss;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
+import java.io.Serial;
+
 /**
  * Deviance loss function. The formula for deviance loss is -sum_{k=1}^{K} y_k log(p_k(x))
  * where y_k = 1(class==k), 0 otherwise.
@@ -34,6 +36,7 @@ import rapaio.data.VarDouble;
  */
 public class KDevianceLoss implements Loss {
 
+    @Serial
     private static final long serialVersionUID = 3608607822562742621L;
     private final int k;
 

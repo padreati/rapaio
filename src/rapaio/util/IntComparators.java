@@ -20,23 +20,24 @@
  */
 package rapaio.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * A class providing static methods and objects that do useful things with comparators.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IntComparators {
+
+    private IntComparators() {
+    }
 
     /**
      * A type-specific comparator mimicking the natural order.
      */
     protected static class NaturalImplicitComparator implements IntComparator, Serializable {
 
+        @Serial
         private static final long serialVersionUID = -112179606092054669L;
 
         @Override
@@ -57,6 +58,7 @@ public final class IntComparators {
      */
     protected static class OppositeImplicitComparator implements IntComparator, Serializable {
 
+        @Serial
         private static final long serialVersionUID = -8075354892984295L;
 
         @Override
@@ -73,6 +75,7 @@ public final class IntComparators {
     public static final IntComparator OPPOSITE_COMPARATOR = new OppositeImplicitComparator();
 
     protected static class OppositeComparator implements IntComparator, java.io.Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
         final IntComparator comparator;
 

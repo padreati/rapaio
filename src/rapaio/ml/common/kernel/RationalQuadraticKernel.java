@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * The Rational Quadratic kernel is less computationally intensive than the GaussianPdf kernel
  * and can be used as an alternative when using the GaussianPdf becomes too expensive.
@@ -35,6 +37,7 @@ import rapaio.printer.Format;
  */
 public class RationalQuadraticKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = 4637136575173648153L;
 
     private final double c;

@@ -21,9 +21,6 @@
 
 package rapaio.ml.analysis;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -41,6 +38,7 @@ import rapaio.printer.opt.POption;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,13 +47,13 @@ import java.util.logging.Logger;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PCA extends ParamSet<PCA> implements Printable {
 
     public static PCA newModel() {
         return new PCA();
     }
 
+    @Serial
     private static final long serialVersionUID = 6441166473576114983L;
     private static final Logger logger = Logger.getLogger(PCA.class.getName());
 
@@ -74,14 +72,29 @@ public class PCA extends ParamSet<PCA> implements Printable {
     private int inputVars;
     private String[] inputNames;
 
-    @Getter
+    private PCA() {
+    }
+
     protected DVector eigenValues;
-    @Getter
     protected DMatrix eigenVectors;
-    @Getter
     protected DVector mean;
-    @Getter
     protected DVector sd;
+
+    public DVector getValues() {
+        return eigenValues;
+    }
+
+    public DMatrix getVectors() {
+        return eigenVectors;
+    }
+
+    public DVector getMean() {
+        return mean;
+    }
+
+    public DVector getSd() {
+        return sd;
+    }
 
     public PCA fit(Frame df) {
         preFit(df);
@@ -103,8 +116,8 @@ public class PCA extends ParamSet<PCA> implements Printable {
 
         logger.fine("compute eigenvalues");
         EigenPair ep = Linear.eigenDecomp(s, maxRuns.get(), eps.get());
-        eigenValues = ep.getVector().div(x.rowCount() - 1);
-        eigenVectors = ep.getMatrix();
+        eigenValues = ep.values().div(x.rowCount() - 1);
+        eigenVectors = ep.vectors();
 
         logger.fine("sort eigen values and vectors");
 

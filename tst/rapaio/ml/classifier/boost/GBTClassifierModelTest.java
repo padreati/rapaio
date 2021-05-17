@@ -53,8 +53,8 @@ public class GBTClassifierModelTest {
         var spam = Datasets.loadSpamBase();
         var split = SamplingTools.trainTestSplit(spam, null, 0.8, true, "spam");
         var hook = new ClassifierRunHook()
-                .train.set(split.trainDf)
-                .test.set(split.testDf)
+                .train.set(split.trainDf())
+                .test.set(split.testDf())
                 .skipStep.set(50)
                 .metrics.set(Accuracy.newMetric());
         var model = GBTClassifierModel.newModel().runs.set(2000).runningHook.set(hook);

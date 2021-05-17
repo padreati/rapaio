@@ -22,10 +22,12 @@
 package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
-import rapaio.math.MTools;
 import rapaio.printer.Format;
 
-import static rapaio.math.MTools.*;
+import java.io.Serial;
+
+import static java.lang.Math.*;
+import static rapaio.math.MathTools.*;
 
 /**
  * ChiSquare distribution.
@@ -38,6 +40,7 @@ public final class ChiSquare implements Distribution {
         return new ChiSquare(df);
     }
 
+    @Serial
     private static final long serialVersionUID = 2967287812574824823L;
     private final double df;
     private final double b;
@@ -122,7 +125,7 @@ public final class ChiSquare implements Distribution {
 
     @Override
     public double mode() {
-        return MTools.max(0, df - 2);
+        return Math.max(0, df - 2);
     }
 
     @Override

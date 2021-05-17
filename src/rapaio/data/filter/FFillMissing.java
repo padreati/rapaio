@@ -24,6 +24,8 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/22/16.
  */
@@ -41,6 +43,7 @@ public class FFillMissing extends AbstractFFilter {
         return new FFillMissing(varRange, Type.STRING, Double.NaN, 0, fill);
     }
 
+    @Serial
     private static final long serialVersionUID = 281130325474491898L;
     private final Type type;
     private final double doubleFill;
@@ -71,15 +74,9 @@ public class FFillMissing extends AbstractFFilter {
             for (int i = 0; i < var.size(); i++) {
                 if (var.isMissing(i)) {
                     switch (type) {
-                        case DOUBLE:
-                            var.setDouble(i, doubleFill);
-                            break;
-                        case INT:
-                            var.setInt(i, intFill);
-                            break;
-                        case STRING:
-                            var.setLabel(i, stringFill);
-                            break;
+                        case DOUBLE -> var.setDouble(i, doubleFill);
+                        case INT -> var.setInt(i, intFill);
+                        case STRING -> var.setLabel(i, stringFill);
                     }
                 }
             }

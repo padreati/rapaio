@@ -21,6 +21,7 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ import static rapaio.printer.Format.floatFlexLong;
  */
 public class RuleSet implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 9205593021518165406L;
 
     final String varName;

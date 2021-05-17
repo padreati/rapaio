@@ -21,13 +21,9 @@
 
 package rapaio.util.collection;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LongArrays {
 
     public static boolean checkCapacity(long[] array, int pos) {

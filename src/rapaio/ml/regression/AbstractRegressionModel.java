@@ -31,6 +31,7 @@ import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.printer.TextTable;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +50,7 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
         extends ParamSet<M>
         implements RegressionModel {
 
+    @Serial
     private static final long serialVersionUID = 5544999078321108408L;
 
     public final BiFunction<RegressionModel, Integer, Boolean> DEFAULT_STOPPING_HOOK = (regression, integer) -> false;

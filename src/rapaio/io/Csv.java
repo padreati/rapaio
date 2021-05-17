@@ -21,8 +21,6 @@
 
 package rapaio.io;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -45,6 +43,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Serial;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -59,9 +58,9 @@ import java.util.zip.GZIPInputStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Csv extends ParamSet<Csv> {
 
+    @Serial
     private static final long serialVersionUID = -5217533858566320281L;
 
     /**
@@ -72,6 +71,9 @@ public class Csv extends ParamSet<Csv> {
     }
 
     private static final VarType[] DEFAULT_TYPES = new VarType[]{VarType.BINARY, VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING};
+
+    private Csv() {
+    }
 
     /**
      * Configures white space trimming for field values. If the white space trimming is enabled,

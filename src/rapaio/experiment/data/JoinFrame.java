@@ -35,6 +35,7 @@ import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,6 +48,7 @@ import java.util.List;
  */
 public class JoinFrame extends AbstractFrame {
 
+    @Serial
     private static final long serialVersionUID = 8499563251193872775L;
 
     private final Frame leftDf;

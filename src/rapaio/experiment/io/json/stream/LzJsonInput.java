@@ -89,27 +89,18 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
             is.readByte();
         }
         byte type = is.readByte();
-        switch (type) {
-            case TYPE_NULL:
-                return VALUE_NULL;
-            case TYPE_TRUE:
-                return VALUE_TRUE;
-            case TYPE_FALSE:
-                return VALUE_FALSE;
-            case TYPE_NUMERIC:
-                return readNumber();
-            case TYPE_NUMERIC_TERM:
-                return readNumTerm();
-            case TYPE_STRING:
-                return readString();
-            case TYPE_STRING_TERM:
-                return readStringTerm();
-            case TYPE_ARRAY:
-                return readArray();
-            case TYPE_OBJECT:
-                return readObject(true);
-        }
-        return null;
+        return switch (type) {
+            case TYPE_NULL -> VALUE_NULL;
+            case TYPE_TRUE -> VALUE_TRUE;
+            case TYPE_FALSE -> VALUE_FALSE;
+            case TYPE_NUMERIC -> readNumber();
+            case TYPE_NUMERIC_TERM -> readNumTerm();
+            case TYPE_STRING -> readString();
+            case TYPE_STRING_TERM -> readStringTerm();
+            case TYPE_ARRAY -> readArray();
+            case TYPE_OBJECT -> readObject(true);
+            default -> null;
+        };
     }
 
     private JsonNumber readNumber() throws IOException {
@@ -137,33 +128,15 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
         for (int i = 0; i < size; i++) {
             byte type = is.readByte();
             switch (type) {
-                case TYPE_NULL:
-                    array.addValue(VALUE_NULL);
-                    break;
-                case TYPE_TRUE:
-                    array.addValue(VALUE_TRUE);
-                    break;
-                case TYPE_FALSE:
-                    array.addValue(VALUE_FALSE);
-                    break;
-                case TYPE_STRING:
-                    array.addValue(readString());
-                    break;
-                case TYPE_STRING_TERM:
-                    array.addValue(readStringTerm());
-                    break;
-                case TYPE_ARRAY:
-                    array.addValue(readArray());
-                    break;
-                case TYPE_OBJECT:
-                    array.addValue(readObject(false));
-                    break;
-                case TYPE_NUMERIC:
-                    array.addValue(readNumber());
-                    break;
-                case TYPE_NUMERIC_TERM:
-                    array.addValue(readNumTerm());
-                    break;
+                case TYPE_NULL -> array.addValue(VALUE_NULL);
+                case TYPE_TRUE -> array.addValue(VALUE_TRUE);
+                case TYPE_FALSE -> array.addValue(VALUE_FALSE);
+                case TYPE_STRING -> array.addValue(readString());
+                case TYPE_STRING_TERM -> array.addValue(readStringTerm());
+                case TYPE_ARRAY -> array.addValue(readArray());
+                case TYPE_OBJECT -> array.addValue(readObject(false));
+                case TYPE_NUMERIC -> array.addValue(readNumber());
+                case TYPE_NUMERIC_TERM -> array.addValue(readNumTerm());
             }
         }
         return array;
@@ -174,17 +147,11 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
         int size = readInt();
         for (int i = 0; i < size; i++) {
             byte type = is.readByte();
-            String key;
-            switch (type) {
-                case TYPE_STRING:
-                    key = readString().asString().get();
-                    break;
-                case TYPE_STRING_TERM:
-                    key = readStringTerm().asString().get();
-                    break;
-                default:
-                    throw new IOException("invalid type for key of the object, type: " + type + ", object: " + object);
-            }
+            String key = switch (type) {
+                case TYPE_STRING -> readString().asString().get();
+                case TYPE_STRING_TERM -> readStringTerm().asString().get();
+                default -> throw new IOException("invalid type for key of the object, type: " + type + ", object: " + object);
+            };
             if (withLen) {
                 int len = readInt();
                 if (!shouldParse(key)) {
@@ -195,33 +162,15 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
 
             type = is.readByte();
             switch (type) {
-                case TYPE_STRING:
-                    object.addValue(key, readString());
-                    break;
-                case TYPE_STRING_TERM:
-                    object.addValue(key, readStringTerm());
-                    break;
-                case TYPE_ARRAY:
-                    object.addValue(key, readArray());
-                    break;
-                case TYPE_OBJECT:
-                    object.addValue(key, readObject(false));
-                    break;
-                case TYPE_NULL:
-                    object.addValue(key, VALUE_NULL);
-                    break;
-                case TYPE_TRUE:
-                    object.addValue(key, VALUE_TRUE);
-                    break;
-                case TYPE_FALSE:
-                    object.addValue(key, VALUE_FALSE);
-                    break;
-                case TYPE_NUMERIC:
-                    object.addValue(key, readNumber());
-                    break;
-                case TYPE_NUMERIC_TERM:
-                    object.addValue(key, readNumTerm());
-                    break;
+                case TYPE_STRING -> object.addValue(key, readString());
+                case TYPE_STRING_TERM -> object.addValue(key, readStringTerm());
+                case TYPE_ARRAY -> object.addValue(key, readArray());
+                case TYPE_OBJECT -> object.addValue(key, readObject(false));
+                case TYPE_NULL -> object.addValue(key, VALUE_NULL);
+                case TYPE_TRUE -> object.addValue(key, VALUE_TRUE);
+                case TYPE_FALSE -> object.addValue(key, VALUE_FALSE);
+                case TYPE_NUMERIC -> object.addValue(key, readNumber());
+                case TYPE_NUMERIC_TERM -> object.addValue(key, readNumTerm());
             }
         }
         return object;

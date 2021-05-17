@@ -23,20 +23,16 @@ package rapaio.math.functions;
 
 import rapaio.math.linear.DVector;
 
+import java.io.Serial;
 import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.
  */
-public class R1Derivative implements RDerivative {
+public record R1Derivative(Function<Double, Double> f) implements RDerivative {
 
+    @Serial
     private static final long serialVersionUID = -8662264063600073136L;
-
-    private final Function<Double, Double> f;
-
-    public R1Derivative(Function<Double, Double> f) {
-        this.f = f;
-    }
 
     @Override
     public DVector apply(double... x) {

@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * The Generalized T-Student Kernel has been proven to be a
  * Mercer Kernel, thus having a positive semi-definite Kernel
@@ -37,6 +39,7 @@ import rapaio.printer.Format;
  */
 public class GeneralizedStudentTKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -1302773223473974349L;
 
     private final double degree;

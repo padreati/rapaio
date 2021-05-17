@@ -62,19 +62,21 @@ public class KMeansResultTest {
         KMeansResult result = model.predict(df);
 
         assertEquals("KMeansResult{}", result.toString());
-        assertEquals("Overall: \n" +
-                "> count: 272\n" +
-                "> mean: 19.224481\n" +
-                "> var: 693.0516358\n" +
-                "> sd: 26.3258739\n" +
-                "> inertia:5,229.05884\n" +
-                "> iterations:4\n" +
-                "\n" +
-                "Per cluster: \n" +
-                "    ID count    mean         var      var/total    sd     \n" +
-                "[0]  1    97 31.3079183 1,116.6942881 1.6112714 33.416976 \n" +
-                "[1]  2    91 12.2831184   312.4622575 0.4508499 17.676602 \n" +
-                "[2]  3    84 12.7907975   367.087476  0.5296683 19.159527 \n", result.toSummary());
+        assertEquals("""
+                Overall:\s
+                > count: 272
+                > mean: 19.224481
+                > var: 693.0516358
+                > sd: 26.3258739
+                > inertia:5,229.05884
+                > iterations:4
+
+                Per cluster:\s
+                    ID count    mean         var      var/total    sd    \s
+                [0]  1    97 31.3079183 1,116.6942881 1.6112714 33.416976\s
+                [1]  2    91 12.2831184   312.4622575 0.4508499 17.676602\s
+                [2]  3    84 12.7907975   367.087476  0.5296683 19.159527\s
+                """, result.toSummary());
         assertEquals(result.toSummary(), result.toContent());
         assertEquals(result.toSummary(), result.toFullContent());
     }

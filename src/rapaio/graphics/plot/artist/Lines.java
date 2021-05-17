@@ -31,12 +31,14 @@ import rapaio.graphics.plot.Axis;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Lines extends Artist {
 
+    @Serial
     private static final long serialVersionUID = 9183829873670164532L;
     private final Var x;
     private final Var y;

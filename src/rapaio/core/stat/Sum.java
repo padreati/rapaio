@@ -98,9 +98,11 @@ public class Sum implements Printable {
 
     @Override
     public String toContent(Printer printer, POption<?>... options) {
-        return String.format("> sum[%s]\n" +
-                        "total rows: %d (complete: %d, missing: %d)\n" +
-                        "sum: %s\n",
+        return String.format("""
+                        > sum[%s]
+                        total rows: %d (complete: %d, missing: %d)
+                        sum: %s
+                        """,
                 varName, completeCount + missingCount, completeCount, missingCount,
                 floatFlex(value));
     }

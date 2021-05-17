@@ -31,6 +31,7 @@ import rapaio.data.VarDouble;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.function.BiFunction;
 
@@ -104,6 +105,7 @@ public class GridData implements Serializable {
         return new GridData(x, y);
     }
 
+    @Serial
     private static final long serialVersionUID = 779676910310235832L;
     private final Var x;
     private final Var y;

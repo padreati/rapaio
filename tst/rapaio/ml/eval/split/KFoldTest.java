@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ml.eval.split;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -32,8 +53,8 @@ public class KFoldTest {
     void testKFold() {
 
         KFold kFold = new KFold(2, 2);
-        assertEquals(2, kFold.getFolds());
-        assertEquals(2, kFold.getRounds());
+        assertEquals(2, kFold.folds());
+        assertEquals(2, kFold.rounds());
 
         List<Split> splits = kFold.generateSplits(df, weights);
 
@@ -45,17 +66,17 @@ public class KFoldTest {
         Map<Integer, Double> dfsSum = new HashMap<>();
         Map<Integer, Double> weightsSum = new HashMap<>();
         for (Split split : splits) {
-            roundSum += split.getRound();
-            foldSum += split.getFold();
+            roundSum += split.round();
+            foldSum += split.fold();
 
-            if (!dfsSum.containsKey(split.getRound())) {
-                dfsSum.put(split.getRound(), 0.0);
+            if (!dfsSum.containsKey(split.round())) {
+                dfsSum.put(split.round(), 0.0);
             }
-            if (!weightsSum.containsKey(split.getRound())) {
-                weightsSum.put(split.getRound(), 0.0);
+            if (!weightsSum.containsKey(split.round())) {
+                weightsSum.put(split.round(), 0.0);
             }
-            dfsSum.put(split.getRound(), dfsSum.get(split.getRound()) + split.getTrainDf().rvar(0).op().nansum());
-            weightsSum.put(split.getRound(), weightsSum.get(split.getRound()) + split.getTrainWeights().op().nansum());
+            dfsSum.put(split.round(), dfsSum.get(split.round()) + split.trainDf().rvar(0).op().nansum());
+            weightsSum.put(split.round(), weightsSum.get(split.round()) + split.trainWeights().op().nansum());
         }
 
         assertEquals(2, roundSum);
@@ -71,7 +92,7 @@ public class KFoldTest {
         KFold kFold1 = new KFold(1, 10);
         KFold kFold2 = new KFold(10);
 
-        assertEquals(kFold1.getRounds(), kFold2.getRounds());
-        assertEquals(kFold1.getFolds(), kFold2.getFolds());
+        assertEquals(kFold1.rounds(), kFold2.rounds());
+        assertEquals(kFold1.folds(), kFold2.folds());
     }
 }

@@ -21,7 +21,6 @@
 
 package rapaio.ml.classifier;
 
-import lombok.Getter;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
@@ -32,6 +31,7 @@ import rapaio.ml.eval.metric.ClassifierMetric;
 import rapaio.printer.Format;
 import rapaio.util.function.SBiConsumer;
 
+import java.io.Serial;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +43,7 @@ import java.util.Objects;
  */
 public class ClassifierRunHook extends ParamSet<ClassifierRunHook> implements SBiConsumer<ClassifierModel, Integer> {
 
+    @Serial
     private static final long serialVersionUID = 7165160125378670196L;
 
     private final static List<ClassifierMetric> DEFAULT_METRICS = List.of();
@@ -67,12 +68,21 @@ public class ClassifierRunHook extends ParamSet<ClassifierRunHook> implements SB
             "Metrics",
             (m1, m2) -> true);
 
-    @Getter
     private final VarInt runs = VarInt.empty().name("runs");
-    @Getter
     private final LinkedHashMap<String, VarDouble> trainScores = new LinkedHashMap<>();
-    @Getter
     private final LinkedHashMap<String, VarDouble> testScores = new LinkedHashMap<>();
+
+    public VarInt getRuns() {
+        return runs;
+    }
+
+    public LinkedHashMap<String, VarDouble> getTrainScores() {
+        return trainScores;
+    }
+
+    public LinkedHashMap<String, VarDouble> getTestScores() {
+        return testScores;
+    }
 
     @Override
     public void accept(ClassifierModel model, Integer run) {
@@ -86,19 +96,19 @@ public class ClassifierRunHook extends ParamSet<ClassifierRunHook> implements SB
                 sb.append(metric.getName()).append(" ");
                 if (train.get() != null) {
                     var result = model.predict(train.get(), true, true);
-                    double score = metric.compute(train.get().rvar(model.firstTargetName()), result).getScore().getValue();
+                    double score = metric.compute(train.get().rvar(model.firstTargetName()), result).getScore().value();
                     trainScores.computeIfAbsent(metric.getName(), m -> VarDouble.empty()).addDouble(score);
                     sb.append("train:").append(Format.floatFlex(score));
                 }
 
                 if (test.get() != null) {
                     var result = model.predict(test.get(), true, true);
-                    double score = metric.compute(test.get().rvar(model.firstTargetName()), result).getScore().getValue();
+                    double score = metric.compute(test.get().rvar(model.firstTargetName()), result).getScore().value();
                     testScores.computeIfAbsent(metric.getName(), m -> VarDouble.empty()).addDouble(score);
                     sb.append(", test:").append(Format.floatFlex(score));
                 }
             }
-            System.out.println(sb.toString());
+            System.out.println(sb);
         }
     }
 }

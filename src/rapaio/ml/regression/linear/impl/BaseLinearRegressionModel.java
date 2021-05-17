@@ -34,7 +34,9 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -44,6 +46,7 @@ import java.util.Objects;
 public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionModel<M>>
         extends AbstractRegressionModel<M, LinearRegressionResult> {
 
+    @Serial
     private static final long serialVersionUID = -3722395862627404126L;
 
     public final ValueParam<Boolean, M> intercept = new ValueParam<>((M) this, true,
@@ -67,14 +70,10 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY))
-                .targetType(VarType.DOUBLE)
-                .minInputCount(1).maxInputCount(1_000_000)
-                .minTargetCount(1).maxTargetCount(1_000_000)
-                .allowMissingInputValues(false)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(
+                1, 1_000_000,
+                Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY), false,
+                1, 1_000_000, List.of(VarType.DOUBLE), false);
     }
 
     @Override

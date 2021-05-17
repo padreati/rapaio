@@ -24,6 +24,7 @@ package rapaio.math.linear;
 import rapaio.printer.Printable;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -34,17 +35,16 @@ import java.util.Arrays;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/25/21.
  */
-public class Shape implements Serializable, Printable {
+public record Shape(int[] dimensions) implements Serializable, Printable {
 
+    @Serial
     private static final long serialVersionUID = 8629690522468837031L;
 
     public static Shape of(int... lengths) {
         return new Shape(lengths);
     }
 
-    private final int[] dimensions;
-
-    private Shape(int[] dimensions) {
+    public Shape {
         if (dimensions == null || dimensions.length < 1) {
             throw new IllegalArgumentException("Cannot create shape: dimension array is empty or null.");
         }
@@ -53,7 +53,6 @@ public class Shape implements Serializable, Printable {
                 throw new IllegalArgumentException("Dimension value cannot be zero.");
             }
         }
-        this.dimensions = dimensions;
     }
 
     public int size() {

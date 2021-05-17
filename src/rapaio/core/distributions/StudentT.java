@@ -23,7 +23,9 @@ package rapaio.core.distributions;
 
 import rapaio.printer.Format;
 
-import static rapaio.math.MTools.*;
+import java.io.Serial;
+
+import static rapaio.math.MathTools.*;
 
 /**
  * Student's T distribution, or T distribution.
@@ -42,6 +44,7 @@ public final class StudentT implements Distribution {
         return new StudentT(df, mu, sigma);
     }
 
+    @Serial
     private static final long serialVersionUID = 2573925611489986427L;
 
     private final double df;

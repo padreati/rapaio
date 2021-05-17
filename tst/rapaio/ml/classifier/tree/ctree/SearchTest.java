@@ -58,8 +58,8 @@ public class SearchTest {
         var candidate = Search.NumericRandom.computeCandidate(
                 null, play, VarDouble.fill(play.rowCount(), 1.0), "temp", "class", Purity.GiniGain);
 
-        assertEquals("temp", candidate.testName);
-        assertEquals("temp<=75", candidate.groupPredicates.get(0).toString());
+        assertEquals("temp", candidate.testName());
+        assertEquals("temp<=75", candidate.groupPredicates().get(0).toString());
     }
 
     @Test
@@ -69,8 +69,8 @@ public class SearchTest {
                 CTree.newDecisionStump().minCount.set(2),
                 play, VarDouble.fill(play.rowCount(), 1.0), "temp", "class", Purity.GiniGain);
 
-        assertEquals("temp", candidate.testName);
-        assertEquals("temp<=70.5", candidate.groupPredicates.get(0).toString());
+        assertEquals("temp", candidate.testName());
+        assertEquals("temp<=70.5", candidate.groupPredicates().get(0).toString());
     }
 
     @Test
@@ -83,8 +83,8 @@ public class SearchTest {
         var candidate = Search.BinaryBinary.computeCandidate(CTree.newDecisionStump().minCount.set(1),
                 df, null, "x", "y", Purity.GiniGain);
 
-        assertEquals("x", candidate.testName);
-        assertEquals("x=1", candidate.groupPredicates.get(0).toString());
+        assertEquals("x", candidate.testName());
+        assertEquals("x=1", candidate.groupPredicates().get(0).toString());
     }
 
     @Test
@@ -92,10 +92,10 @@ public class SearchTest {
         var candidate = Search.NominalFull.computeCandidate(CTree.newDecisionStump().minCount.set(1),
                 play, VarDouble.fill(play.rowCount(), 1), "outlook", "class", Purity.GiniGain);
 
-        assertEquals("outlook", candidate.testName);
-        assertEquals("outlook='sunny'", candidate.groupPredicates.get(0).toString());
-        assertEquals("outlook='overcast'", candidate.groupPredicates.get(1).toString());
-        assertEquals("outlook='rain'", candidate.groupPredicates.get(2).toString());
+        assertEquals("outlook", candidate.testName());
+        assertEquals("outlook='sunny'", candidate.groupPredicates().get(0).toString());
+        assertEquals("outlook='overcast'", candidate.groupPredicates().get(1).toString());
+        assertEquals("outlook='rain'", candidate.groupPredicates().get(2).toString());
     }
 
     @Test
@@ -105,8 +105,8 @@ public class SearchTest {
         var candidate = Search.NominalBinary.computeCandidate(CTree.newDecisionStump().minCount.set(1),
                 play, VarDouble.fill(play.rowCount(), 1), "outlook", "class", Purity.GiniGain);
 
-        assertEquals("outlook", candidate.testName);
-        assertEquals("outlook='rain'", candidate.groupPredicates.get(0).toString());
-        assertEquals("outlook!='rain'", candidate.groupPredicates.get(1).toString());
+        assertEquals("outlook", candidate.testName());
+        assertEquals("outlook='rain'", candidate.groupPredicates().get(0).toString());
+        assertEquals("outlook!='rain'", candidate.groupPredicates().get(1).toString());
     }
 }

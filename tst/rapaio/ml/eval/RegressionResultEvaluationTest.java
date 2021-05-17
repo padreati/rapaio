@@ -23,9 +23,6 @@ package rapaio.ml.eval;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -33,25 +30,22 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.ml.eval.metric.RMSE;
 import rapaio.ml.eval.metric.RegressionMetric;
-import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.Split;
+import rapaio.ml.eval.split.SplitStrategy;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.simple.L2Regression;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/19.
  */
-@ExtendWith(MockitoExtension.class)
 public class RegressionResultEvaluationTest {
 
-    @Mock
-    private KFold splitStrategy;
+    private final SplitStrategy splitStrategy = (df, weights) -> List.of(
+            new Split(0, 0, df, df), new Split(0, 1, df, df));
 
     private final String targetName = "target";
 
@@ -66,30 +60,13 @@ public class RegressionResultEvaluationTest {
         RegressionModel model = L2Regression.newModel();
         RegressionMetric metric = RMSE.newMetric();
 
-        doReturn(List.of(
-                Split.builder()
-                        .trainDf(df)
-                        .testDf(df)
-                        .fold(0)
-                        .round(0)
-                        .build(),
-                Split.builder()
-                        .trainDf(df)
-                        .testDf(df)
-                        .fold(1)
-                        .round(0)
-                        .build())
-        )
-                .when(splitStrategy).generateSplits(any(), any());
-
-        RegressionEvaluation eval = RegressionEvaluation.builder()
-                .df(df)
-                .model(model)
-                .splitStrategy(splitStrategy)
-                .threads(1)
-                .metric(metric)
-                .targetName(targetName)
-                .build();
+        RegressionEvaluation eval = RegressionEvaluation.newEval()
+                .df.set(df)
+                .model.set(model)
+                .splitStrategy.set(splitStrategy)
+                .threads.set(1)
+                .metrics.add(metric)
+                .targetName.set(targetName);
 
         Var target = df.rvar(targetName);
         double mean = target.op().nanmean();

@@ -25,6 +25,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.filter.VSort;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -81,6 +82,7 @@ public class KDE implements Serializable {
         return new KDE(values, kernel, bandwidth);
     }
 
+    @Serial
     private static final long serialVersionUID = -9221394390068126299L;
     private final double[] values;
     private final KFunc kernel;

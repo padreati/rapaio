@@ -21,15 +21,14 @@
 
 package rapaio.ml.classifier.linear.binarylogistic;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.QRDecomposition;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,27 +37,30 @@ import static java.lang.Math.exp;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
  */
-@Builder(setterPrefix = "with")
-@Getter
-public class BinaryLogisticIRLS {
+public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
 
-    @Builder.Default
-    private final double eps = 1e-20;
-    @Builder.Default
-    private final int maxIter = 10;
-    @Builder.Default
-    private final double lambda = 0.0;
-    @NonNull
-    private final DMatrix x;
-    @NonNull
-    private final DVector y;
-    @NonNull
-    private final DVector w0;
+    @Serial
+    private static final long serialVersionUID = -1351523770434554322L;
 
-    @Builder(setterPrefix = "with")
-    @Getter
-    @ToString
-    public static class Result {
+    public final ValueParam<Double, BinaryLogisticIRLS> eps = new ValueParam<>(this,
+            1e-20, "eps", "eps");
+
+    public final ValueParam<Integer, BinaryLogisticIRLS> maxIter = new ValueParam<>(this,
+            10, "maxIter", "maxIter");
+
+    public final ValueParam<Double, BinaryLogisticIRLS> lambda = new ValueParam<>(this,
+            0.0, "lambda", "lambda");
+
+    public final ValueParam<DMatrix, BinaryLogisticIRLS> x = new ValueParam<>(this,
+            null, "x", "initial value");
+
+    public final ValueParam<DVector, BinaryLogisticIRLS> y = new ValueParam<>(this,
+            null, "y", "y");
+
+    public final ValueParam<DVector, BinaryLogisticIRLS> w0 = new ValueParam<>(this,
+            null, "w0", "w0");
+
+    public record Result(List<Double> nlls, List<DVector> ws, boolean converged) {
 
         public DVector getW() {
             if (ws.size() > 0) {
@@ -73,46 +75,30 @@ public class BinaryLogisticIRLS {
             }
             return Double.NaN;
         }
-
-        @NonNull
-        private final List<Double> nlls;
-
-        @NonNull
-        private final List<DVector> ws;
-
-        private final boolean converged;
     }
 
     public Result fit() {
         int it = 0;
         // current solution
-        DVector w = w0.copy();
+        DVector w = w0.get().copy();
         ArrayList<DVector> ws = new ArrayList<>();
         ws.add(w);
         List<Double> nlls = new ArrayList<>();
-        nlls.add(negativeLogLikelihood(x, y, w));
+        nlls.add(negativeLogLikelihood(x.get(), y.get(), w));
 
-        while (it++ < maxIter) {
+        while (it++ < maxIter.get()) {
             DVector wnew = iterate(w);
-            double nll = negativeLogLikelihood(x, y, wnew);
+            double nll = negativeLogLikelihood(x.get(), y.get(), wnew);
 
             double nll_delta = nll - nlls.get(nlls.size() - 1);
-            if (it > 1 && (Math.abs(nll_delta) <= eps)) {
-                return Result.builder()
-                        .withConverged(true)
-                        .withNlls(nlls)
-                        .withWs(ws)
-                        .build();
+            if (it > 1 && (Math.abs(nll_delta) <= eps.get())) {
+                return new Result(nlls, ws, true);
             }
             ws.add(wnew);
             nlls.add(nll);
             w = wnew;
         }
-        return Result.builder()
-                .withWs(ws)
-                .withNlls(nlls)
-                .withConverged(false)
-                .build();
+        return new Result(nlls, ws, false);
     }
 
     private double negativeLogLikelihood(DMatrix x, DVector y, DVector w) {
@@ -130,7 +116,7 @@ public class BinaryLogisticIRLS {
     private DVector iterate(DVector w) {
 
         // Xw dot product
-        DVector xw = x.dot(w);
+        DVector xw = x.get().dot(w);
 
         // p diag = 1/(1+exp(-Xw))
         DVector p = xw.copy().apply(value -> cut(1. / (1. + exp(-value))));
@@ -139,10 +125,10 @@ public class BinaryLogisticIRLS {
         DVector pvars = p.copy().apply(value -> value * (1 - value));
 
         // z = Wx - I(p(1-p))^{-1}(y-p)
-        DVector z = xw.add(y.copy().sub(p).div(pvars));
+        DVector z = xw.add(y.get().copy().sub(p).div(pvars));
 
         // Xt(p(1-p)
-        DMatrix xpvar = x.copy();
+        DMatrix xpvar = x.get().copy();
         for (int i = 0; i < xpvar.rowCount(); i++) {
             double pvar = pvars.get(i);
             for (int j = 0; j < xpvar.colCount(); j++) {
@@ -151,12 +137,12 @@ public class BinaryLogisticIRLS {
         }
 
         // XI(p(1-p))^T * X
-        DMatrix mA = xpvar.t().dot(x);
+        DMatrix mA = xpvar.t().dot(x.get());
 
         // for L2 regularization we inflate main diagonal
-        if (lambda != 0) {
+        if (lambda.get() != 0) {
             for (int i = 0; i < mA.rowCount(); i++) {
-                mA.inc(i, i, lambda);
+                mA.inc(i, i, lambda.get());
             }
         }
 

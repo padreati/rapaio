@@ -22,15 +22,12 @@
 package rapaio.util.collection;
 
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleIterator;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -47,7 +44,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DoubleArrays {
 
     /**
@@ -639,7 +635,8 @@ public final class DoubleArrays {
     }
 
     private static class ForkJoinQuickSortComp extends RecursiveAction {
-        private static final long serialVersionUID = 1L;
+        @Serial
+        private static final long serialVersionUID = 148666739567982885L;
         private final int from;
         private final int to;
         private final double[] x;
@@ -857,7 +854,8 @@ public final class DoubleArrays {
     }
 
     protected static class ForkJoinQuickSort extends RecursiveAction {
-        private static final long serialVersionUID = 1L;
+        @Serial
+        private static final long serialVersionUID = 5946421837363465218L;
         private final int from;
         private final int to;
         private final double[] x;
@@ -1070,7 +1068,8 @@ public final class DoubleArrays {
     }
 
     protected static class ForkJoinQuickSortIndirect extends RecursiveAction {
-        private static final long serialVersionUID = 1L;
+        @Serial
+        private static final long serialVersionUID = 1491029076069500451L;
         private final int from;
         private final int to;
         private final int[] perm;
@@ -1084,7 +1083,6 @@ public final class DoubleArrays {
         }
 
         @Override
-
         protected void compute() {
             final double[] x = this.x;
             final int len = to - from;
@@ -1358,6 +1356,7 @@ public final class DoubleArrays {
     }
 
     protected static class ForkJoinQuickSort2 extends RecursiveAction {
+        @Serial
         private static final long serialVersionUID = 1L;
         private final int from;
         private final int to;
@@ -1371,7 +1370,6 @@ public final class DoubleArrays {
         }
 
         @Override
-
         protected void compute() {
             final double[] x = this.x;
             final double[] y = this.y;
@@ -1964,10 +1962,7 @@ public final class DoubleArrays {
         }
     }
 
-    @AllArgsConstructor
-    @ToString
-    protected static final class Segment {
-        protected final int offset, length, level;
+    protected record Segment(int offset, int length, int level) {
     }
 
     protected static final Segment POISON_PILL = new Segment(-1, -1, -1);

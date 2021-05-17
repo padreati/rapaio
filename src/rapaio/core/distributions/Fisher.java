@@ -23,8 +23,10 @@ package rapaio.core.distributions;
 
 import rapaio.printer.Format;
 
-import static java.lang.Math.pow;
-import static rapaio.math.MTools.*;
+import java.io.Serial;
+
+import static java.lang.Math.*;
+import static rapaio.math.MathTools.*;
 
 /**
  * F distribution, also known as Fisher-Snedecor distribution.
@@ -39,6 +41,7 @@ public class Fisher implements Distribution {
         return new Fisher(df1, df2);
     }
 
+    @Serial
     private static final long serialVersionUID = 2272786897584427248L;
     private final double df1;
     private final double df2;

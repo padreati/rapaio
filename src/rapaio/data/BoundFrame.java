@@ -21,6 +21,7 @@
 
 package rapaio.data;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -181,6 +182,7 @@ public class BoundFrame extends AbstractFrame {
         }
     }
 
+    @Serial
     private static final long serialVersionUID = -445349340356580788L;
     private final int rowCount;
     private final List<Var> vars;

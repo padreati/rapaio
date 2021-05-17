@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -61,7 +58,7 @@ public class SplitterTest {
 
     @Test
     void testIgnored() {
-        Pair<List<Frame>, List<Var>> pairs = Splitter.Ignore.performSplit(df, w, c.groupPredicates);
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Ignore.performSplit(df, w, c.groupPredicates());
         assertEquals(2, pairs.v1.size());
         assertEquals(2, pairs.v2.size());
 
@@ -74,7 +71,7 @@ public class SplitterTest {
 
     @Test
     void testMajority() {
-        Pair<List<Frame>, List<Var>> pairs = Splitter.Majority.performSplit(df, w, c.groupPredicates);
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Majority.performSplit(df, w, c.groupPredicates());
 
         assertEquals(2, pairs.v1.size());
         assertEquals(2, pairs.v2.size());
@@ -88,7 +85,7 @@ public class SplitterTest {
 
     @Test
     void testToAllWeighted() {
-        Pair<List<Frame>, List<Var>> pairs = Splitter.Weighted.performSplit(df, w, c.groupPredicates);
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Weighted.performSplit(df, w, c.groupPredicates());
 
         assertEquals(2, pairs.v1.size());
         assertEquals(2, pairs.v2.size());
@@ -105,7 +102,7 @@ public class SplitterTest {
 
     @Test
     void testToRandom() {
-        Pair<List<Frame>, List<Var>> pairs = Splitter.Random.performSplit(df, w, c.groupPredicates);
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Random.performSplit(df, w, c.groupPredicates());
 
         df.printHead();
 

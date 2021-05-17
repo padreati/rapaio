@@ -33,13 +33,14 @@ import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
-import rapaio.graphics.plot.artist.ABLine;
-import rapaio.graphics.plot.artist.BarPlot;
+import rapaio.graphics.plot.artist.ABLineArtist;
+import rapaio.graphics.plot.artist.BarPlotArtist;
 import rapaio.graphics.plot.artist.BoxPlot;
 import rapaio.graphics.plot.artist.DensityLine;
 import rapaio.graphics.plot.artist.FunctionLine;
 import rapaio.graphics.plot.artist.Histogram;
 import rapaio.graphics.plot.artist.Histogram2D;
+import rapaio.graphics.plot.artist.ImageArtist;
 import rapaio.graphics.plot.artist.IsoCurves;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.graphics.plot.artist.Lines;
@@ -55,6 +56,8 @@ import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +66,7 @@ import java.util.List;
  */
 public class Plot implements Figure {
 
+    @Serial
     private static final long serialVersionUID = 1898871481989584539L;
 
     protected static final Font TITLE_FONT = new Font("Verdana", Font.BOLD, 18);
@@ -370,17 +374,17 @@ public class Plot implements Figure {
     }
 
     public Plot hLine(double a, GOption<?>... opts) {
-        add(new ABLine(true, a, opts));
+        add(new ABLineArtist(true, a, opts));
         return this;
     }
 
     public Plot vLine(double a, GOption<?>... opts) {
-        add(new ABLine(false, a, opts));
+        add(new ABLineArtist(false, a, opts));
         return this;
     }
 
     public Plot abLine(double a, double b, GOption<?>... opts) {
-        add(new ABLine(a, b, opts));
+        add(new ABLineArtist(a, b, opts));
         return this;
     }
 
@@ -468,17 +472,17 @@ public class Plot implements Figure {
     }
 
     public Plot barplot(Var category, GOption<?>... opts) {
-        add(new BarPlot(category, null, null, opts));
+        add(new BarPlotArtist(category, null, null, opts));
         return this;
     }
 
     public Plot barplot(Var category, Var cond, GOption<?>... opts) {
-        add(new BarPlot(category, cond, null, opts));
+        add(new BarPlotArtist(category, cond, null, opts));
         return this;
     }
 
     public Plot barplot(Var category, Var cond, Var numeric, GOption<?>... opts) {
-        add(new BarPlot(category, cond, numeric, opts));
+        add(new BarPlotArtist(category, cond, numeric, opts));
         return this;
     }
 
@@ -509,6 +513,11 @@ public class Plot implements Figure {
 
     public Plot isoBands(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
         add(new IsoCurves(grid, false, true, gradient, levels, opts));
+        return this;
+    }
+
+    public Plot image(BufferedImage image, GOption<?>... opts) {
+        add(new ImageArtist(image, opts));
         return this;
     }
 

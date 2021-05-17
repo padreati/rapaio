@@ -23,6 +23,7 @@ package rapaio.data;
 
 import rapaio.util.IntComparator;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -32,6 +33,7 @@ import java.util.Comparator;
  */
 public final class RowComparators implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -3396667513004042385L;
 
     public static IntComparator from(final IntComparator... comparators) {

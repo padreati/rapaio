@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -40,8 +37,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ConstantRegressionResultTest {
 
-    private String father = "Father";
-    private String son = "Son";
+    private final String father = "Father";
+    private final String son = "Son";
     private Frame df;
 
     @BeforeEach
@@ -55,21 +52,23 @@ public class ConstantRegressionResultTest {
         ConstantRegression r1 = ConstantRegression.with(66).newInstance();
         r1.fit(df, father);
         var fit1 = r1.predict(df);
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: ConstantRegression\n" +
-                "Model instance: ConstantRegression{constant=66}\n" +
-                "> model is trained.\n" +
-                "> input variables: \n" +
-                "1. Son dbl \n" +
-                "> target variables: \n" +
-                "1. Father dbl \n" +
-                "\n" +
-                "Fitted values:\n" +
-                "\n" +
-                "Target Estimate \n" +
-                "Father    66    \n" +
-                "\n", r1.toSummary());
+        assertEquals("""
+                Regression predict summary
+                =======================
+                Model class: ConstantRegression
+                Model instance: ConstantRegression{constant=66}
+                > model is trained.
+                > input variables:\s
+                1. Son dbl\s
+                > target variables:\s
+                1. Father dbl\s
+
+                Fitted values:
+
+                Target Estimate\s
+                Father    66   \s
+
+                """, r1.toSummary());
 
         ConstantRegression r2 = ConstantRegression.with(1);
         r2.fit(df, father);
@@ -88,20 +87,22 @@ public class ConstantRegressionResultTest {
         assertEquals("ConstantRegression{constant=66}", r1.toString());
         assertEquals("ConstantRegression{constant=66}", r1.toContent());
         assertEquals("ConstantRegression{constant=66}", r1.toFullContent());
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: ConstantRegression\n" +
-                "Model instance: ConstantRegression{constant=66}\n" +
-                "> model is trained.\n" +
-                "> input variables: \n" +
-                "1. Son dbl \n" +
-                "> target variables: \n" +
-                "1. Father dbl \n" +
-                "\n" +
-                "Fitted values:\n" +
-                "\n" +
-                "Target Estimate \n" +
-                "Father    66    \n" +
-                "\n", r1.toSummary());
+        assertEquals("""
+                Regression predict summary
+                =======================
+                Model class: ConstantRegression
+                Model instance: ConstantRegression{constant=66}
+                > model is trained.
+                > input variables:\s
+                1. Son dbl\s
+                > target variables:\s
+                1. Father dbl\s
+
+                Fitted values:
+
+                Target Estimate\s
+                Father    66   \s
+
+                """, r1.toSummary());
     }
 }

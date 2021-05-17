@@ -21,7 +21,6 @@
 
 package rapaio.ml.regression.tree.rtree;
 
-import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -29,6 +28,7 @@ import rapaio.data.VarDouble;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.ml.loss.Loss;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +36,9 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/2/17.
  */
-@RequiredArgsConstructor
 public class Node implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 385363626560575837L;
 
     public final Node parent;
@@ -47,12 +47,21 @@ public class Node implements Serializable {
     public final RowPredicate predicate;
     public final int depth;
 
+
     public boolean leaf = true;
     public double value;
     public double weight;
 
     public final List<Node> children = new ArrayList<>();
     public Candidate bestCandidate;
+
+    public Node(Node parent, int id, String groupName, RowPredicate predicate, int depth) {
+        this.parent = parent;
+        this.id = id;
+        this.groupName = groupName;
+        this.predicate = predicate;
+        this.depth = depth;
+    }
 
     public void boostUpdate(Frame x, Var y, Var fx, Loss loss, Splitter splitter) {
         if (leaf) {

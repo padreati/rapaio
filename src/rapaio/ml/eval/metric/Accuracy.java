@@ -24,6 +24,8 @@ package rapaio.ml.eval.metric;
 import rapaio.data.Var;
 import rapaio.ml.classifier.ClassifierResult;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
@@ -38,6 +40,7 @@ public class Accuracy extends AbstractClassifierMetric implements ClassifierMetr
         return newMetric(true);
     }
 
+    @Serial
     private static final long serialVersionUID = -3526955062164344415L;
 
     private final boolean normalize;
@@ -55,9 +58,7 @@ public class Accuracy extends AbstractClassifierMetric implements ClassifierMetr
                 match++;
             }
         }
-        score = ClassifierScore.builder()
-                .value(normalize ? match / prediction.firstClasses().size() : match)
-                .build();
+        score = new ClassifierScore(normalize ? match / prediction.firstClasses().size() : match);
         return this;
     }
 }

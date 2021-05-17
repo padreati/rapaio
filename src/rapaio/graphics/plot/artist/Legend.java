@@ -28,6 +28,7 @@ import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 import java.util.stream.IntStream;
 
 /**
@@ -35,6 +36,7 @@ import java.util.stream.IntStream;
  */
 public class Legend extends Artist {
 
+    @Serial
     private static final long serialVersionUID = 7360504551525942239L;
 
     public static final int UP_LEFT = 0;
@@ -88,9 +90,10 @@ public class Legend extends Artist {
 
         if (place != -1) {
             switch (place) {
-                case UP_LEFT:
+                case UP_LEFT -> {
                     xstart = xScale(plot.xAxis().min());
                     ystart = yScale(plot.yAxis().max());
+                }
             }
         }
 

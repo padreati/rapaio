@@ -30,6 +30,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.printer.Format;
 
+import java.io.Serial;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,7 @@ public class KernelEstimator extends AbstractEstimator {
                 .collect(Collectors.toList());
     }
 
+    @Serial
     private static final long serialVersionUID = 7974390604811353859L;
 
     private final String testVarName;

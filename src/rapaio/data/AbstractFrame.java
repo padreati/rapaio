@@ -26,6 +26,7 @@ import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.sys.WS;
 
+import java.io.Serial;
 import java.util.List;
 
 /**
@@ -36,6 +37,7 @@ import java.util.List;
  */
 public abstract class AbstractFrame implements Frame {
 
+    @Serial
     private static final long serialVersionUID = -4375603852723666661L;
 
     @Override

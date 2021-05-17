@@ -21,7 +21,6 @@
 
 package rapaio.graphics;
 
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
@@ -44,7 +43,7 @@ import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.Text;
-import rapaio.image.ImageUtility;
+import rapaio.image.ImageTools;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.sys.WS;
 
@@ -79,23 +78,22 @@ public class ImageGraphicsTest {
     void setUp() throws Exception {
         RandomSource.setSeed(1234);
         df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
-        ImageUtility.setSpeedHints();
+        ImageTools.setBestRenderingHints();
     }
 
     private void assertTest(Figure f, String name) throws IOException {
         if (regenerate) {
-            ImageUtility.saveImage(f, 500, 400, root + "/rapaio/graphics/" + name + ".png");
+            ImageTools.saveFigureImage(f, 500, 400, root + "/rapaio/graphics/" + name + ".png");
         }
 
-        BufferedImage bi1 = ImageUtility.buildImage(f, 500, 400);
+        BufferedImage bi1 = ImageTools.buildFigureImage(f, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream(name + ".png"));
         boolean condition = bufferedImagesEqual(bi1, bi2);
         assertTrue(condition);
     }
 
     @Test
-    @SneakyThrows
-    void testABLine() {
+    void testABLine() throws IOException {
         Plot plot = new Plot();
         plot.xLim(-10, 10);
         plot.yLim(-10, 10);
@@ -113,8 +111,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    @SneakyThrows
-    void testCorrGram() {
+    void testCorrGram() throws IOException {
         Frame sel = Datasets.loadHousing();
         DistanceMatrix d = CorrSpearman.of(sel).matrix();
         assertTest(corrGram(d), "corrgram-test");
@@ -129,8 +126,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    @SneakyThrows
-    void testBarPlot() {
+    void testBarPlot() throws IOException {
         var mush = Datasets.loadMushrooms();
 
         GridLayer grid = gridLayer(2, 2);
@@ -245,8 +241,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    @SneakyThrows
-    void testSegment() {
+    void testSegment() throws IOException {
         Plot plot = new Plot();
         plot.xLim(0, 1);
         plot.yLim(0, 1);
@@ -258,8 +253,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    @SneakyThrows
-    void testText() {
+    void testText() throws IOException {
         var plot = plot().xLim(0, 1).yLim(0, 1);
         plot.text(0.1, 0.9, "Ana\nAre\nMere", hAlign(HALIGN_LEFT));
         plot.text(0.5, 0.9, "Ana\nAre\nMere", hAlign(HALIGN_CENTER), color(2));
@@ -269,8 +263,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    @SneakyThrows
-    void testRapaioLogo() {
+    void testRapaioLogo() throws IOException {
         var x = VarDouble.seq(0, 1, 0.004).name("x");
 
         var green = Normal.of(0.24, 0.08);

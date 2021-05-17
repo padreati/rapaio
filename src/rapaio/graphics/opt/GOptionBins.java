@@ -21,11 +21,14 @@
 
 package rapaio.graphics.opt;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
 public class GOptionBins implements GOption<Integer> {
 
+    @Serial
     private static final long serialVersionUID = 364936549124065257L;
     private final int bins;
 

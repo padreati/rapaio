@@ -33,7 +33,9 @@ import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -44,6 +46,7 @@ import java.util.Objects;
  */
 public class RandomValueRegression extends AbstractRegressionModel<RandomValueRegression, RegressionResult> {
 
+    @Serial
     private static final long serialVersionUID = 819192240406617594L;
 
     public static RandomValueRegression newRVR() {
@@ -71,14 +74,10 @@ public class RandomValueRegression extends AbstractRegressionModel<RandomValueRe
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .minInputCount(0).maxInputCount(1_000_000)
-                .minTargetCount(1).maxTargetCount(1)
-                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.STRING))
-                .targetType(VarType.DOUBLE)
-                .allowMissingInputValues(true)
-                .allowMissingTargetValues(true)
-                .build();
+        return new Capabilities(
+                0, 1_000_000,
+                Arrays.asList(VarType.DOUBLE, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.STRING), true,
+                1, 1, List.of(VarType.DOUBLE), true);
     }
 
     @Override

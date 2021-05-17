@@ -35,6 +35,7 @@ import rapaio.printer.opt.POption;
 import rapaio.util.function.SBiConsumer;
 import rapaio.util.function.SBiFunction;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,6 +54,7 @@ import java.util.stream.IntStream;
 public abstract class AbstractClassifierModel<M extends AbstractClassifierModel<M, R>, R extends ClassifierResult>
         extends ParamSet<M> implements ClassifierModel {
 
+    @Serial
     private static final long serialVersionUID = -6866948033065091047L;
 
     // parameters

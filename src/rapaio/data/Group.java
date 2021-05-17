@@ -623,15 +623,9 @@ public class Group implements Printable {
                         unstacked.setMissing(rowIndex, varIndex);
                     }
                     switch (aggregateType) {
-                        case DOUBLE:
-                            unstacked.setDouble(rowIndex, varIndex, result.getDouble(i, aggregateVarIndex));
-                            break;
-                        case BINARY:
-                        case INT:
-                            unstacked.setInt(rowIndex, varIndex, result.getInt(i, aggregateVarIndex));
-                            break;
-                        default:
-                            throw new IllegalArgumentException("var type " + aggregateType.code() + " not unstacked.");
+                        case DOUBLE -> unstacked.setDouble(rowIndex, varIndex, result.getDouble(i, aggregateVarIndex));
+                        case BINARY, INT -> unstacked.setInt(rowIndex, varIndex, result.getInt(i, aggregateVarIndex));
+                        default -> throw new IllegalArgumentException("var type " + aggregateType.code() + " not unstacked.");
                     }
                 }
 

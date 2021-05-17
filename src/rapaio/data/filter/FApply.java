@@ -27,6 +27,7 @@ import rapaio.data.stream.FSpot;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2IntFunction;
 
+import java.io.Serial;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -53,6 +54,7 @@ public class FApply extends AbstractFFilter {
         return new FApply(Type.LABEL, F_SPOT, F_DOUBLE, F_INT, fun, varRange);
     }
 
+    @Serial
     private static final long serialVersionUID = 3982915877968295381L;
     private static final Consumer<FSpot> F_SPOT = vSpot -> {
     };

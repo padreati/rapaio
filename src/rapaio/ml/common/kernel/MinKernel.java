@@ -24,6 +24,8 @@ package rapaio.ml.common.kernel;
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 
+import java.io.Serial;
+
 /**
  * The Histogram Intersection Kernel is also known as the Min Kernel
  * and has been proven useful in image classification.
@@ -34,6 +36,7 @@ import rapaio.math.linear.DVector;
  */
 public class MinKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -2388704255494979581L;
 
     @Override

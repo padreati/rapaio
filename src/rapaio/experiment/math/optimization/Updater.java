@@ -24,6 +24,7 @@ package rapaio.experiment.math.optimization;
 import rapaio.math.linear.DVector;
 import rapaio.util.Pair;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -40,6 +41,7 @@ public interface Updater extends Serializable {
  */
 @Deprecated
 class SimpleUpdater implements Updater {
+    @Serial
     private static final long serialVersionUID = -2067278844383126771L;
 
     public Pair<DVector, Double> compute(DVector weightsOld, DVector gradient, double stepSize, int iter, double regParam) {
@@ -69,6 +71,7 @@ class SimpleUpdater implements Updater {
  */
 @Deprecated
 class L1Updater implements Updater {
+    @Serial
     private static final long serialVersionUID = -581601380754106199L;
 
     public Pair<DVector, Double> compute(DVector weightsOld, DVector gradient, double stepSize, int iter, double regParam) {
@@ -97,6 +100,7 @@ class L1Updater implements Updater {
  */
 @Deprecated
 class SquaredL2Updater implements Updater {
+    @Serial
     private static final long serialVersionUID = -9217486067545972690L;
 
     public Pair<DVector, Double> compute(DVector weightsOld, DVector gradient, double stepSize, int iter, double regParam) {

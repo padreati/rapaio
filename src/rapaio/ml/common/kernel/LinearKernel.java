@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * The Linear kernel is the simplest kernel function. It is given by the inner product <x,y> plus an optional constant c.
  * Kernel algorithms using a linear kernel are often equivalent to their non-kernel counterparts,
@@ -34,6 +36,7 @@ import rapaio.printer.Format;
  */
 public class LinearKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -4046108952113023779L;
 
     private final double c;

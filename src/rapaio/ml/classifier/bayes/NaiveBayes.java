@@ -21,8 +21,6 @@
 
 package rapaio.ml.classifier.bayes;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -40,6 +38,7 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,13 +53,13 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierResult> implements Printable {
 
     public static NaiveBayes newModel() {
         return new NaiveBayes();
     }
 
+    @Serial
     private static final long serialVersionUID = -7602854063045679683L;
 
     // algorithm parameters
@@ -110,17 +109,10 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .minInputCount(0)
-                .maxInputCount(1_000_000)
-                .inputTypes(Arrays.asList(VarType.NOMINAL, VarType.DOUBLE, VarType.INT, VarType.BINARY))
-                .minTargetCount(1)
-                .maxTargetCount(1)
-                .targetType(VarType.NOMINAL)
-                .targetType(VarType.BINARY)
-                .allowMissingTargetValues(false)
-                .allowMissingInputValues(true)
-                .build();
+        return new Capabilities(
+                0, 1_000_000, Arrays.asList(VarType.NOMINAL, VarType.DOUBLE, VarType.INT, VarType.BINARY), true,
+                1, 1, List.of(VarType.NOMINAL, VarType.BINARY), false
+        );
     }
 
     @Override

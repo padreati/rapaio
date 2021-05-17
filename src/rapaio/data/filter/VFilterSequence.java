@@ -23,6 +23,7 @@ package rapaio.data.filter;
 
 import rapaio.data.Var;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import java.util.List;
  */
 public class VFilterSequence implements VFilter {
 
+    @Serial
     private static final long serialVersionUID = -2495739155198558730L;
     private final List<VFilter> filters;
 

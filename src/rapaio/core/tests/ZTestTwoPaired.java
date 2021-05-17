@@ -123,14 +123,9 @@ public class ZTestTwoPaired implements HTest {
 
         Normal normal = Normal.std();
         switch (alt) {
-            case GREATER_THAN:
-                pValue = 1 - normal.cdf(zScore);
-                break;
-            case LESS_THAN:
-                pValue = normal.cdf(zScore);
-                break;
-            default:
-                pValue = normal.cdf(-Math.abs(zScore)) * 2;
+            case GREATER_THAN -> pValue = 1 - normal.cdf(zScore);
+            case LESS_THAN -> pValue = normal.cdf(zScore);
+            default -> pValue = normal.cdf(-Math.abs(zScore)) * 2;
         }
 
         ciLow = Normal.of(sampleMean, sv).quantile(sl / 2);

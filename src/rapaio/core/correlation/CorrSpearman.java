@@ -30,6 +30,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.filter.VRefSort;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
@@ -44,6 +45,7 @@ import java.util.stream.IntStream;
  */
 public class CorrSpearman extends AbstractCorrelation {
 
+    @Serial
     private static final long serialVersionUID = -270091303091388587L;
 
     public static CorrSpearman of(Frame df) {

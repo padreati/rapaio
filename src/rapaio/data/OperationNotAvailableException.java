@@ -21,11 +21,14 @@
 
 package rapaio.data;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/29/19.
  */
 public class OperationNotAvailableException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 3051557424272123529L;
 
     private static final String DEFAULT_MESSAGE = "Operation not available.";

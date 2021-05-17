@@ -31,7 +31,8 @@ import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
-import java.util.Arrays;
+import java.io.Serial;
+import java.util.List;
 
 /**
  * ZeroR classification algorithm.
@@ -49,6 +50,7 @@ public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult
         return new ZeroRule();
     }
 
+    @Serial
     private static final long serialVersionUID = 3972781939411346774L;
     private String prediction;
 
@@ -67,17 +69,10 @@ public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .allowMissingInputValues(true)
-                .allowMissingTargetValues(true)
-                .minInputCount(0)
-                .maxInputCount(Integer.MAX_VALUE)
-                .minTargetCount(1)
-                .maxTargetCount(1)
-                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.NOMINAL, VarType.BINARY, VarType.LONG, VarType.INSTANT, VarType.STRING))
-                .targetType(VarType.NOMINAL)
-                .targetType(VarType.BINARY)
-                .build();
+        return new Capabilities(
+                0, Integer.MAX_VALUE,
+                List.of(VarType.DOUBLE, VarType.INT, VarType.NOMINAL, VarType.BINARY, VarType.LONG, VarType.INSTANT, VarType.STRING), true,
+                1, 1, List.of(VarType.NOMINAL, VarType.BINARY), true);
     }
 
     @Override

@@ -25,6 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -43,6 +44,7 @@ public class FRetainTypes extends AbstractFFilter {
         return new FRetainTypes(new HashSet<>(Arrays.asList(types)));
     }
 
+    @Serial
     private static final long serialVersionUID = -5152761273156719785L;
 
     private final Set<VarType> types;

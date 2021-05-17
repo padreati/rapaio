@@ -27,7 +27,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.FIntercept;
-import rapaio.math.MTools;
+import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.QRDecomposition;
@@ -175,7 +175,7 @@ public class LinearRegressionResult extends RegressionResult {
 
                 int fdegree1 = model.inputNames().length - 1;
                 double fvalue = (ess.get(targetName) * degrees) / (rss.get(targetName) * (fdegree1));
-                double fpvalue = MTools.fdist(fvalue, fdegree1, degrees);
+                double fpvalue = MathTools.fdist(fvalue, fdegree1, degrees);
 
                 sb.append("> Residuals: \n");
                 sb.append(getHorizontalSummary5(res, printer, options));

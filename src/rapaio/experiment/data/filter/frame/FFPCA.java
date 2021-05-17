@@ -28,10 +28,12 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.analysis.PCA;
 
+import java.io.Serial;
 import java.util.function.BiFunction;
 
 public class FFPCA extends AbstractFFilter {
 
+    @Serial
     private static final long serialVersionUID = 2797285371357486124L;
 
     final BiFunction<DVector, DMatrix, Integer> kFun;
@@ -56,7 +58,7 @@ public class FFPCA extends AbstractFFilter {
     @Override
     public Frame apply(Frame df) {
         Frame rest = df.removeVars(VarRange.of(varNames));
-        int k = kFun.apply(pca.getEigenValues(), pca.getEigenVectors());
+        int k = kFun.apply(pca.getValues(), pca.getVectors());
         Frame trans = pca.transform(df.mapVars(varNames), k);
         return rest.bindVars(trans);
     }

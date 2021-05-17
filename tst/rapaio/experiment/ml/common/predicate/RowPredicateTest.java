@@ -29,7 +29,6 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.stream.FSpot;
-import rapaio.math.MTools;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -45,7 +44,7 @@ public class RowPredicateTest {
     @Test
     void testNumPredicates() {
 
-        Frame df = SolidFrame.byVars(VarDouble.from(50, MTools::sqrt).name("x"));
+        Frame df = SolidFrame.byVars(VarDouble.from(50, Math::sqrt).name("x"));
 
         // test basic numeric predicates
 

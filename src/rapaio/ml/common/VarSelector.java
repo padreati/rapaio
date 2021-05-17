@@ -23,6 +23,7 @@ package rapaio.ml.common;
 
 import rapaio.core.SamplingTools;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +34,7 @@ import java.util.stream.Stream;
  */
 public class VarSelector implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -6800363806127327947L;
 
     public static VarSelector all() {

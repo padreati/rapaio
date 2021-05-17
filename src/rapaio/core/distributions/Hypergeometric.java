@@ -21,6 +21,7 @@
 
 package rapaio.core.distributions;
 
+import java.io.Serial;
 import java.util.Arrays;
 
 /**
@@ -43,6 +44,7 @@ public class Hypergeometric implements Distribution {
         return new Hypergeometric(m, n, k);
     }
 
+    @Serial
     private static final long serialVersionUID = 5557359074330033049L;
 
     private final int m; // the number of white balls from the urn

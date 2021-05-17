@@ -94,8 +94,7 @@ public class CBinaryRelief {
             VarType type = v.type();
 
             switch (type) {
-                case DOUBLE:
-                case INT:
+                case DOUBLE, INT -> {
                     numeric[i] = true;
                     double min = Minimum.of(v).value();
                     double max = Maximum.of(v).value();
@@ -106,9 +105,8 @@ public class CBinaryRelief {
                             x.set(j, i, (v.getDouble(j) + min) / (max - min));
                         }
                     }
-                    break;
-
-                case BINARY:
+                }
+                case BINARY -> {
                     numeric[i] = true;
                     for (int j = 0; j < df.rowCount(); j++) {
                         if (v.isMissing(j)) {
@@ -117,12 +115,13 @@ public class CBinaryRelief {
                             x.set(j, i, v.getInt(j));
                         }
                     }
-                    break;
-                case NOMINAL:
+                }
+                case NOMINAL -> {
                     numeric[i] = false;
                     for (int j = 0; j < df.rowCount(); j++) {
                         x.set(j, i, v.isMissing(j) ? Double.NaN : v.getInt(j));
                     }
+                }
             }
         }
 

@@ -33,6 +33,7 @@ import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,6 +50,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResult> implements Printable {
 
+    @Serial
     private static final long serialVersionUID = -9087871586729573030L;
 
     private static final Logger logger = Logger.getLogger(CStacking.class.getName());
@@ -88,14 +90,10 @@ public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResu
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .allowMissingTargetValues(false)
-                .allowMissingInputValues(false)
-                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE))
-                .targetType(VarType.NOMINAL)
-                .minInputCount(1).maxInputCount(100_000)
-                .minTargetCount(1).maxTargetCount(1)
-                .build();
+        return new Capabilities(
+                1, 100_000,
+                Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE), false,
+                1, 1, List.of(VarType.NOMINAL), false);
     }
 
     protected FitSetup baseFit(Frame df, Var w, String... targetVars) {

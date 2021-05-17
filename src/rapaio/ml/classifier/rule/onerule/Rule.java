@@ -23,6 +23,7 @@ package rapaio.ml.classifier.rule.onerule;
 
 import rapaio.core.tools.DensityVector;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -32,6 +33,7 @@ import java.io.Serializable;
  */
 public abstract class Rule implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 7073304176052957223L;
 
     protected final String targetLevel;

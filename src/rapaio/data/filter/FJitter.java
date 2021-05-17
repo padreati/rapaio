@@ -26,6 +26,8 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/10/14.
  */
@@ -43,6 +45,7 @@ public class FJitter extends AbstractFFilter {
         return new FJitter(d, varRange);
     }
 
+    @Serial
     private static final long serialVersionUID = 33367007274996702L;
     private final Distribution d;
 

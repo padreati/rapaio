@@ -1,10 +1,28 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ml.eval;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -12,23 +30,19 @@ import rapaio.data.VarNominal;
 import rapaio.ml.classifier.rule.ZeroRule;
 import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.eval.metric.ClassifierMetric;
-import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.Split;
+import rapaio.ml.eval.split.SplitStrategy;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/28/20.
  */
-@ExtendWith(MockitoExtension.class)
 public class ClassifierModelEvaluationTest {
 
-    @Mock
-    private KFold splitStrategy;
+    private final SplitStrategy splitStrategy = (df, weights) -> List.of(new Split(0, 0, df, df), new Split(0, 1, df, df));
 
     private final String targetName = "target";
 
@@ -43,25 +57,9 @@ public class ClassifierModelEvaluationTest {
         var model = ZeroRule.newModel();
         ClassifierMetric metric = Accuracy.newMetric(true);
 
-        doReturn(List.of(
-                Split.builder()
-                        .trainDf(df)
-                        .testDf(df)
-                        .fold(0)
-                        .round(0)
-                        .build(),
-                Split.builder()
-                        .trainDf(df)
-                        .testDf(df)
-                        .fold(1)
-                        .round(0)
-                        .build())
-        )
-                .when(splitStrategy).generateSplits(any(), any());
-
         var eval = ClassifierEvaluation.eval(df, targetName, model, metric)
-                .withSplit(splitStrategy)
-                .withThreads(1);
+                .splitStrategy.set(splitStrategy)
+                .threads.set(1);
 
         var result = eval.run();
         assertEquals(2, result.getTrainScores().rowCount());

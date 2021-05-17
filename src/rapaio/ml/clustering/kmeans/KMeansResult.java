@@ -21,7 +21,6 @@
 
 package rapaio.ml.clustering.kmeans;
 
-import lombok.Getter;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
@@ -41,7 +40,6 @@ import java.util.Map;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/2/20.
  */
-@Getter
 public class KMeansResult extends ClusteringResult {
 
     public static KMeansResult valueOf(KMeans model, Frame df, VarInt clusterAssignment) {
@@ -86,6 +84,18 @@ public class KMeansResult extends ClusteringResult {
             std.setDouble(e.getKey(), Math.sqrt(v));
         }
         clusterSummary = SolidFrame.byVars(id, count, mean, variance, variancePercentage, std);
+    }
+
+    public KMeans getKmeans() {
+        return kmeans;
+    }
+
+    public Frame getClusterSummary() {
+        return clusterSummary;
+    }
+
+    public Var getDistances() {
+        return distances;
     }
 
     @Override

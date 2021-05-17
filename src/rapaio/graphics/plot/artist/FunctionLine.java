@@ -30,6 +30,7 @@ import rapaio.util.function.Double2DoubleFunction;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.io.Serial;
 
 import static rapaio.graphics.Plotter.points;
 
@@ -38,6 +39,7 @@ import static rapaio.graphics.Plotter.points;
  */
 public class FunctionLine extends Artist {
 
+    @Serial
     private static final long serialVersionUID = 8388944194915495215L;
     private final Double2DoubleFunction f;
 

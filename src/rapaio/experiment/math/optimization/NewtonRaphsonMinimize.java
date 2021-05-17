@@ -34,6 +34,7 @@ import rapaio.math.optimization.linesearch.LineSearch;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,7 @@ import static java.lang.Math.*;
  */
 public class NewtonRaphsonMinimize extends ParamSet<NewtonRaphsonMinimize> implements Minimize {
 
+    @Serial
     private static final long serialVersionUID = -6600678871841923200L;
 
     public final ValueParam<Double, NewtonRaphsonMinimize> tol = new ValueParam<>(this, 1e-3,

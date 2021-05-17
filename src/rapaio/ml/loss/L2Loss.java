@@ -28,6 +28,8 @@ import rapaio.data.VarDouble;
 import rapaio.ml.regression.tree.RTreeLoss;
 import rapaio.ml.regression.tree.rtree.SearchPayload;
 
+import java.io.Serial;
+
 import static rapaio.util.collection.DoubleArrays.sum;
 
 /**
@@ -35,6 +37,7 @@ import static rapaio.util.collection.DoubleArrays.sum;
  */
 public class L2Loss implements Loss, RTreeLoss {
 
+    @Serial
     private static final long serialVersionUID = 5089493401870663231L;
 
     @Override

@@ -21,8 +21,6 @@
 
 package rapaio.graphics.plot;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import rapaio.graphics.Figure;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
@@ -30,6 +28,7 @@ import rapaio.graphics.opt.GOptions;
 import rapaio.util.collection.DoubleArrays;
 
 import java.awt.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +42,7 @@ public class GridLayer implements Figure {
         return new GridLayer(rows, cols, options);
     }
 
+    @Serial
     private static final long serialVersionUID = 4476430187955007744L;
 
     protected static final Font TITLE_FONT = new Font("Verdana", Font.BOLD, 18);
@@ -51,7 +51,6 @@ public class GridLayer implements Figure {
     protected static final int TITLE_PAD = 40;
     protected static final int MINIMUM_PAD = 20;
 
-    @Getter
     protected final GOptions options = new GOptions();
 
     protected Rectangle viewport;
@@ -63,6 +62,8 @@ public class GridLayer implements Figure {
     private final G[][] assign;
     private final List<G> list = new ArrayList<>();
 
+    protected int sizeTitle;
+
     public GridLayer(int rows, int cols, GOption<?>... options) {
         this.rows = rows;
         this.cols = cols;
@@ -70,7 +71,9 @@ public class GridLayer implements Figure {
         this.options.bind(options);
     }
 
-    protected int sizeTitle;
+    public GOptions getOptions() {
+        return options;
+    }
 
     protected void buildViewport(Rectangle rectangle) {
         viewport = new Rectangle(rectangle);
@@ -179,13 +182,8 @@ public class GridLayer implements Figure {
         }
     }
 
-    @AllArgsConstructor
-    static class G implements Serializable {
+    static record G(int row, int col, int width, int height, Plot plot) implements Serializable {
+        @Serial
         private static final long serialVersionUID = -2763424578024274986L;
-        final int row;
-        final int col;
-        final int width;
-        final int height;
-        final Plot plot;
     }
 }

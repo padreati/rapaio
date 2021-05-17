@@ -28,10 +28,12 @@ import rapaio.experiment.ml.analysis.LDA;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 
+import java.io.Serial;
 import java.util.function.BiFunction;
 
 public class FFLDA extends AbstractFFilter {
 
+    @Serial
     private static final long serialVersionUID = 2797285371357486124L;
 
     final BiFunction<DVector, DMatrix, Integer> kFun;

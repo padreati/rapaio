@@ -21,15 +21,11 @@
 
 package rapaio.util;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-
 import static rapaio.printer.Format.floatFlex;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/18.
  */
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public final class DoublePair {
 
     public static DoublePair of(double u, double v) {
@@ -42,6 +38,11 @@ public final class DoublePair {
 
     public double v1;
     public double v2;
+
+    private DoublePair(double v1, double v2) {
+        this.v1 = v1;
+        this.v2 = v2;
+    }
 
     @Override
     public String toString() {

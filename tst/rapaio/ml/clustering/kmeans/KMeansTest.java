@@ -103,8 +103,10 @@ public class KMeansTest {
 
         assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}, fitted=false", model.toString());
         assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}", model.fullName());
-        assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}\n" +
-                "Model fitted=false\n", model.toSummary());
+        assertEquals("""
+                KMeans{init=PlusPlus,nstart=100,runs=100}
+                Model fitted=false
+                """, model.toSummary());
         assertEquals(model.toContent(), model.toSummary());
         assertEquals(model.toFullContent(), model.toSummary());
 
@@ -112,21 +114,25 @@ public class KMeansTest {
 
         assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}, fitted=true", model.toString());
         assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}", model.fullName());
-        assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}\n" +
-                "Model fitted=true\n" +
-                "Inertia:8901.768720947213\n" +
-                "Iterations:3\n" +
-                "Learned clusters:2\n", model.toSummary());
+        assertEquals("""
+                KMeans{init=PlusPlus,nstart=100,runs=100}
+                Model fitted=true
+                Inertia:8901.768720947213
+                Iterations:3
+                Learned clusters:2
+                """, model.toSummary());
         assertEquals(model.toContent(), model.toSummary());
-        assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}\n" +
-                "Model fitted=true\n" +
-                "Inertia:8901.768720947213\n" +
-                "Iterations:3\n" +
-                "Learned clusters:2\n" +
-                "Centroids:\n" +
-                "    eruptions  waiting   \n" +
-                "[0] 4.2979302 80.2848837 \n" +
-                "[1] 2.09433   54.75      \n", model.toFullContent());
+        assertEquals("""
+                KMeans{init=PlusPlus,nstart=100,runs=100}
+                Model fitted=true
+                Inertia:8901.768720947213
+                Iterations:3
+                Learned clusters:2
+                Centroids:
+                    eruptions  waiting  \s
+                [0] 4.2979302 80.2848837\s
+                [1] 2.09433   54.75     \s
+                """, model.toFullContent());
 
     }
 }

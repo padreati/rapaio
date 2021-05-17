@@ -21,22 +21,22 @@
 
 package rapaio.ml.eval;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.common.ListParam;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
 import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.eval.metric.ClassifierMetric;
+import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.Split;
 import rapaio.ml.eval.split.SplitStrategy;
 import rapaio.ml.eval.split.StratifiedKFold;
 import rapaio.sys.WS;
 
-import java.util.ArrayList;
+import java.io.Serial;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,84 +51,63 @@ import java.util.concurrent.Future;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/26/20.
  */
-@Getter
-public class ClassifierEvaluation {
+public class ClassifierEvaluation extends ParamSet<ClassifierEvaluation> {
+
+    @Serial
+    private static final long serialVersionUID = 8533424311527093792L;
 
     public static ClassifierEvaluation eval(Frame df, String targetName, ClassifierModel model, ClassifierMetric... metrics) {
-        ClassifierEvaluation eval = new ClassifierEvaluation()
-                .withData(df)
-                .withTarget(targetName)
-                .withModel(model);
-        for (ClassifierMetric metric : metrics) {
-            eval.withMetric(metric);
-        }
-        return eval;
+        return new ClassifierEvaluation()
+                .data.set(df)
+                .targetName.set(targetName)
+                .model.set(model)
+                .metrics.set(metrics);
     }
 
     public static ClassifierEvaluation cv(Frame df, String targetName, ClassifierModel model, int folds, ClassifierMetric... metrics) {
-        ClassifierEvaluation eval = new ClassifierEvaluation()
-                .withData(df)
-                .withTarget(targetName)
-                .withModel(model)
-                .withSplit(new StratifiedKFold(folds, targetName));
-        for (ClassifierMetric metric : metrics) {
-            eval.withMetric(metric);
-        }
-        return eval;
+        return new ClassifierEvaluation()
+                .data.set(df)
+                .targetName.set(targetName)
+                .model.set(model)
+                .splitStrategy.set(new StratifiedKFold(folds, targetName))
+                .metrics.set(metrics);
     }
 
-    private ClassifierModel model;
-    private Frame data;
-    private Var weights;
-    private String targetName;
-    private SplitStrategy splitStrategy;
-    private int threads = 1;
-    private final List<ClassifierMetric> metrics = new ArrayList<>();
+    public final ValueParam<ClassifierModel, ClassifierEvaluation> model = new ValueParam<>(this,
+            null, "model", "Classification model.");
 
-    public ClassifierEvaluation withData(Frame data) {
-        this.data = data;
-        return this;
-    }
+    public final ValueParam<Frame, ClassifierEvaluation> data = new ValueParam<>(this,
+            null, "df", "Data frame");
 
-    public ClassifierEvaluation withTarget(String targetName) {
-        this.targetName = targetName;
-        return this;
-    }
+    public final ValueParam<Var, ClassifierEvaluation> weights = new ValueParam<>(this,
+            null, "weights", "Weights");
 
-    public ClassifierEvaluation withModel(ClassifierModel model) {
-        this.model = model;
-        return this;
-    }
+    public final ValueParam<String, ClassifierEvaluation> targetName = new ValueParam<>(this,
+            null, "target", "Target variable name");
 
-    public ClassifierEvaluation withSplit(SplitStrategy splitStrategy) {
-        this.splitStrategy = splitStrategy;
-        return this;
-    }
+    public final ValueParam<SplitStrategy, ClassifierEvaluation> splitStrategy = new ValueParam<>(this,
+            new KFold(10), "splitStrategy", "Split strategy used to obtain train and validation data sets.");
 
-    public ClassifierEvaluation withThreads(int threads) {
-        this.threads = threads;
-        return this;
-    }
+    public final ValueParam<Integer, ClassifierEvaluation> threads = new ValueParam<>(this,
+            1, "threads", "Number of threads used for evaluation.");
 
-    public ClassifierEvaluation withMetric(ClassifierMetric metric) {
-        this.metrics.add(metric);
-        return this;
-    }
+    public final ListParam<ClassifierMetric, ClassifierEvaluation> metrics = new ListParam<>(this,
+            List.of(Accuracy.newMetric()), "metrics", "Metrics used at evaluation time.", (in, out) -> true);
 
     public ClassifierEvaluationResult run() {
-        ExecutorService executorService = Executors.newFixedThreadPool(threads);
+        ExecutorService executorService = Executors.newFixedThreadPool(threads.get());
         List<Future<Run>> futures = new LinkedList<>();
 
         // create features for parallel execution
 
-        List<Split> splits = splitStrategy.generateSplits(data, weights);
+        List<Split> splits = splitStrategy.get().generateSplits(data.get(), weights.get());
 
         for (Split split : splits) {
             Future<Run> futureRun = executorService.submit(() -> {
-                var m = model.newInstance();
-                m.fit(split.getTrainDf(), targetName);
-                var trainResult = m.predict(split.getTrainDf(), true, true);
-                var testResult = m.predict(split.getTestDf(), true, true);
+                var m = model.get().newInstance();
+                m.fit(split.trainDf(), targetName.get());
+                var trainResult = m.predict(split.trainDf(), true, true);
+                var testResult = m.predict(split.testDf(), true, true);
                 return new Run(split, trainResult, testResult);
             });
             futures.add(futureRun);
@@ -144,7 +123,7 @@ public class ClassifierEvaluation {
                 if (future.isDone()) {
                     try {
                         var run = future.get();
-                        result.appendRun(run.getSplit(), run.getTrainResult(), run.getTestResult());
+                        result.appendRun(run.split, run.trainResult, run.testResult);
                         iterator.remove();
                     } catch (InterruptedException | ExecutionException e) {
                         // do nothing
@@ -162,20 +141,6 @@ public class ClassifierEvaluation {
         return result;
     }
 
-    @AllArgsConstructor
-    @Getter
-    private static class Run {
-
-        private final Split split;
-        private final ClassifierResult trainResult;
-        private final ClassifierResult testResult;
-    }
-
-    public static void main(String[] args) {
-        Frame df = Datasets.loadIrisDataset();
-        CTree tree = CTree.newC45().maxDepth.set(3);
-        var result = ClassifierEvaluation.cv(df, "class", tree, 10, Accuracy.newMetric(true)).run();
-
-        result.printFullContent();
+    private record Run(Split split, ClassifierResult trainResult, ClassifierResult testResult) {
     }
 }

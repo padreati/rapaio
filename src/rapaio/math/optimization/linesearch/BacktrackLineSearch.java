@@ -21,22 +21,22 @@
 
 package rapaio.math.optimization.linesearch;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 
+import java.io.Serial;
+
 /**
  * Backtracking strategy for line search.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implements LineSearch {
 
+    @Serial
     private static final long serialVersionUID = -831087752500069658L;
 
     public static BacktrackLineSearch newSearch() {
@@ -54,6 +54,9 @@ public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implement
     public final ValueParam<Double, BacktrackLineSearch> beta = new ValueParam<>(this,
             DEFAULT_BETA, "beta", "Beta parameter which corresponds with the backtrack shrinking factor for " +
             "each search iteration.", value -> Double.isFinite(value) && value > 0 && value < 1);
+
+    private BacktrackLineSearch() {
+    }
 
     @Override
     public double search(RFunction f, RDerivative df, DVector x, DVector p, double t0) {

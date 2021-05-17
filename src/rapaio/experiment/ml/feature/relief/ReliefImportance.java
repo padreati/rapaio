@@ -30,24 +30,7 @@ import rapaio.util.collection.IntArrays;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/19/18.
  */
-public class ReliefImportance {
-
-    private final String[] names;
-    private final double[] weights;
-
-
-    public ReliefImportance(String[] names, double[] weights) {
-        this.names = names;
-        this.weights = weights;
-    }
-
-    public String[] getNames() {
-        return names;
-    }
-
-    public double[] getWeights() {
-        return weights;
-    }
+public record ReliefImportance(String[] names, double[] weights) {
 
     public Frame orderedFrame() {
         int[] rows = IntArrays.newSeq(0, names.length);

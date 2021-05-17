@@ -23,6 +23,7 @@ package rapaio.data.stream;
 
 import rapaio.data.Frame;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +35,7 @@ import java.util.Objects;
  */
 public final class FSpot implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 5414699690274410204L;
     private final Frame df;
     private final int row;

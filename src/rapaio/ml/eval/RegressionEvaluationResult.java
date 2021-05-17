@@ -21,7 +21,6 @@
 
 package rapaio.ml.eval;
 
-import lombok.Getter;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
@@ -50,16 +49,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/19.
  */
-public class RegressionEvaluationResult implements Printable {
+public final class RegressionEvaluationResult implements Printable {
 
     private static final String FIELD_ROUND = "round";
     private static final String FIELD_FOLD = "fold";
 
-    @Getter
     private final RegressionEvaluation eval;
-    @Getter
     private Frame trainScores;
-    @Getter
     private Frame testScores;
 
     private final ReentrantLock scoresLock = new ReentrantLock();
@@ -70,11 +66,19 @@ public class RegressionEvaluationResult implements Printable {
         List<Var> vars = new ArrayList<>();
         vars.add(VarInt.empty().name(FIELD_ROUND));
         vars.add(VarInt.empty().name(FIELD_FOLD));
-        for (RegressionMetric metric : eval.getMetrics()) {
+        for (RegressionMetric metric : eval.metrics.get()) {
             vars.add(VarDouble.empty().name(metric.getName()));
         }
         trainScores = SolidFrame.byVars(vars).copy();
         testScores = trainScores.copy();
+    }
+
+    public Frame getTrainScores() {
+        return trainScores;
+    }
+
+    public Frame getTestScores() {
+        return testScores;
     }
 
     public double getMeanTrainScore(String metric) {
@@ -92,11 +96,11 @@ public class RegressionEvaluationResult implements Printable {
             int lastRow = trainScores.rowCount();
 
             trainScores.addRows(1);
-            trainScores.setInt(lastRow, FIELD_ROUND, split.getRound());
-            trainScores.setInt(lastRow, FIELD_FOLD, split.getFold());
-            for (RegressionMetric metric : eval.getMetrics()) {
+            trainScores.setInt(lastRow, FIELD_ROUND, split.round());
+            trainScores.setInt(lastRow, FIELD_FOLD, split.fold());
+            for (RegressionMetric metric : eval.metrics.get()) {
                 trainScores.setDouble(lastRow, metric.getName(),
-                        metric.compute(split.getTrainDf().rvar(eval.getTargetName()), trainResult).getValue());
+                        metric.compute(split.trainDf().rvar(eval.targetName.get()), trainResult).value());
             }
             trainScores = trainScores.fapply(FRefSort.by(
                     trainScores.rvar(FIELD_ROUND).refComparator(),
@@ -104,11 +108,11 @@ public class RegressionEvaluationResult implements Printable {
             )).copy();
 
             testScores.addRows(1);
-            testScores.setInt(lastRow, FIELD_ROUND, split.getRound());
-            testScores.setInt(lastRow, FIELD_FOLD, split.getFold());
-            for (RegressionMetric metric : eval.getMetrics()) {
+            testScores.setInt(lastRow, FIELD_ROUND, split.round());
+            testScores.setInt(lastRow, FIELD_FOLD, split.fold());
+            for (RegressionMetric metric : eval.metrics.get()) {
                 testScores.setDouble(lastRow, metric.getName(),
-                        metric.compute(split.getTrainDf().rvar(eval.getTargetName()), trainResult).getValue());
+                        metric.compute(split.trainDf().rvar(eval.targetName.get()), trainResult).value());
             }
 
             testScores = testScores.fapply(FRefSort.by(
@@ -123,7 +127,7 @@ public class RegressionEvaluationResult implements Printable {
     private String toContentName(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Model:\n");
-        sb.append(eval.getModel().fullName()).append("\n");
+        sb.append(eval.model.get().fullName()).append("\n");
         return sb.toString();
     }
 
@@ -136,7 +140,7 @@ public class RegressionEvaluationResult implements Printable {
         Var stdVar = VarDouble.empty().name("std");
         Frame global = SolidFrame.byVars(metricVar, meanVar, stdVar);
 
-        for (RegressionMetric metric : eval.getMetrics()) {
+        for (RegressionMetric metric : eval.metrics.get()) {
             global.addRows(1);
             global.setLabel(global.rowCount() - 1, "metric", metric.getName());
             global.setDouble(global.rowCount() - 1, "mean", Mean.of(trainScores.rvar(metric.getName())).value());
@@ -161,7 +165,7 @@ public class RegressionEvaluationResult implements Printable {
     public String toFullContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Model:\n");
-        sb.append(eval.getModel().fullName()).append("\n");
+        sb.append(eval.model.get().fullName()).append("\n");
 
         sb.append("Raw scores:\n");
         sb.append("===========\n");
@@ -171,7 +175,7 @@ public class RegressionEvaluationResult implements Printable {
         sb.append("Round scores:\n");
         sb.append("=============\n");
         List<GroupFun> groupFuns = new ArrayList<>();
-        for (RegressionMetric metric : eval.getMetrics()) {
+        for (RegressionMetric metric : eval.metrics.get()) {
             groupFuns.add(Group.mean(metric.getName()));
             groupFuns.add(Group.std(metric.getName()));
         }

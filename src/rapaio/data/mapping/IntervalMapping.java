@@ -25,6 +25,7 @@ import rapaio.data.Mapping;
 import rapaio.util.IntIterator;
 import rapaio.util.collection.IntArrays;
 
+import java.io.Serial;
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
@@ -33,6 +34,7 @@ import java.util.stream.IntStream;
  */
 public final class IntervalMapping implements Mapping {
 
+    @Serial
     private static final long serialVersionUID = -7421133121383028265L;
 
     private final int start;

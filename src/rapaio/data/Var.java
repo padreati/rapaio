@@ -412,17 +412,12 @@ public interface Var extends Serializable, Printable {
     }
 
     default IntComparator refComparator(boolean asc) {
-        switch (this.type()) {
-            case DOUBLE:
-                return RowComparators.doubleComparator(this, asc);
-            case LONG:
-                return RowComparators.longComparator(this, asc);
-            case INT:
-            case BINARY:
-                return RowComparators.integerComparator(this, asc);
-            default:
-                return RowComparators.labelComparator(this, asc);
-        }
+        return switch (this.type()) {
+            case DOUBLE -> RowComparators.doubleComparator(this, asc);
+            case LONG -> RowComparators.longComparator(this, asc);
+            case INT, BINARY -> RowComparators.integerComparator(this, asc);
+            default -> RowComparators.labelComparator(this, asc);
+        };
     }
 
     DVarOp<? extends Var> op();

@@ -43,6 +43,7 @@ import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -148,8 +149,7 @@ public class JsonStream implements Stream<JsonValue> {
 
     @Override
     public JsonValue[] toArray() {
-        List<JsonValue> list = collect(toList());
-        return list.toArray(new JsonValue[0]);
+        return stream.toArray(JsonValue[]::new);
     }
 
     @Override
@@ -274,6 +274,6 @@ public class JsonStream implements Stream<JsonValue> {
             cnt++;
             countMap.put(t, cnt);
         });
-        return countMap.entrySet().stream().collect(groupingBy(Map.Entry::getValue, TreeMap::new, mapping(Map.Entry::getKey, toList()))).descendingMap();
+        return countMap.entrySet().stream().collect(groupingBy(Map.Entry::getValue, TreeMap::new, mapping(Map.Entry::getKey, Collectors.toList()))).descendingMap();
     }
 }

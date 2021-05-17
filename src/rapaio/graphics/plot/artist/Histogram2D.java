@@ -30,12 +30,14 @@ import rapaio.graphics.plot.Plot;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
 public class Histogram2D extends Artist {
 
+    @Serial
     private static final long serialVersionUID = 136436073834179971L;
 
     private final Var x;
@@ -46,9 +48,8 @@ public class Histogram2D extends Artist {
     public Histogram2D(Var x, Var y, GOption<?>... opts) {
         this.x = x;
         this.y = y;
-        this.options.bind(opts);
         this.options.setBins(new GOptionBins(10));
-        options.bind(opts);
+        this.options.bind(opts);
     }
 
     @Override

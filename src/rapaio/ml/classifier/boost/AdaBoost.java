@@ -21,9 +21,6 @@
 
 package rapaio.ml.classifier.boost;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
@@ -38,6 +35,7 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,13 +48,13 @@ import java.util.Objects;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult> implements Printable {
 
     public static AdaBoost newModel() {
         return new AdaBoost();
     }
 
+    @Serial
     private static final long serialVersionUID = -9154973036108114765L;
 
     // parameters
@@ -83,11 +81,12 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
 
     // model artifacts
 
-    @Getter
     private final List<Double> alphas = new ArrayList<>();
 
-    @Getter
     private final List<ClassifierModel> learners = new ArrayList<>();
+
+    private AdaBoost() {
+    }
 
     @Override
     public AdaBoost newInstance() {
@@ -101,14 +100,17 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.NOMINAL, VarType.INT, VarType.BINARY))
-                .minInputCount(1).maxInputCount(10_000)
-                .allowMissingInputValues(true)
-                .targetType(VarType.NOMINAL)
-                .minTargetCount(1).maxTargetCount(1)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(
+                1, 10_000, Arrays.asList(VarType.DOUBLE, VarType.NOMINAL, VarType.INT, VarType.BINARY), true,
+                1, 1, List.of(VarType.NOMINAL), false);
+    }
+
+    public List<Double> getAlphas() {
+        return alphas;
+    }
+
+    public List<ClassifierModel> getLearners() {
+        return learners;
     }
 
     @Override
@@ -136,7 +138,7 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
         ClassifierModel hh = model.get().newInstance();
 
         RowSampler.Sample sample = rowSampler.get().nextSample(df, w);
-        hh.fit(sample.getDf(), sample.getWeights(), targetNames());
+        hh.fit(sample.df(), sample.weights(), targetNames());
 
         var predict = hh.predict(df, true, false).firstClasses();
 

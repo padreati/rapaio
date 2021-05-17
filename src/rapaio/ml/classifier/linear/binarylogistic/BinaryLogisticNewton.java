@@ -21,15 +21,14 @@
 
 package rapaio.ml.classifier.linear.binarylogistic;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.QRDecomposition;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,72 +37,49 @@ import static java.lang.Math.exp;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
  */
-@Builder(setterPrefix = "with")
-@Getter
-public class BinaryLogisticNewton {
+public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
 
-    @Builder.Default
-    private final double eps = 1e-100;
-    @Builder.Default
-    private final int maxIter = 10;
-    @Builder.Default
-    private final double lambda = 0.0;
-    @NonNull
-    private final DMatrix x;
-    @NonNull
-    private final DVector y;
-    @NonNull
-    private final DVector w0;
+    @Serial
+    private static final long serialVersionUID = 4772367031535421893L;
 
-    @Builder
-    @Getter
-    @ToString
-    public static class Result {
+    public final ValueParam<Double, BinaryLogisticNewton> eps = new ValueParam<>(this,
+            1e-100, "eps", "eps");
+    public final ValueParam<Integer, BinaryLogisticNewton> maxIter = new ValueParam<>(this,
+            10, "maxIter", "maxIter");
+    public final ValueParam<Double, BinaryLogisticNewton> lambda = new ValueParam<>(this,
+            0.0, "lambda", "lambda");
+    public final ValueParam<DMatrix, BinaryLogisticNewton> x = new ValueParam<>(this,
+            null, "x", "x");
+    public final ValueParam<DVector, BinaryLogisticNewton> y = new ValueParam<>(this,
+            null, "y", "y");
+    public final ValueParam<DVector, BinaryLogisticNewton> w0 = new ValueParam<>(this,
+            null, "w0", "w0");
 
-        @NonNull
-        private final DVector w;
-
-        @NonNull
-        private final List<Double> nll;
-
-        @NonNull
-        private final List<DVector> ws;
-
-        private final boolean converged;
+    public static record Result(DVector w, List<Double> nll, List<DVector> ws, boolean converged) {
     }
 
     public Result fit() {
         int it = 0;
         // current solution
-        DVector w = w0.copy();
+        DVector w = w0.get().copy();
         ArrayList<DVector> ws = new ArrayList<>();
         ws.add(w);
         List<Double> nlls = new ArrayList<>();
-        nlls.add(negativeLogLikelihood(x, y, w));
+        nlls.add(negativeLogLikelihood(x.get(), y.get(), w));
 
-        while (it++ < maxIter) {
+        while (it++ < maxIter.get()) {
             DVector wnew = iterate(w);
-            double nll = negativeLogLikelihood(x, y, wnew);
+            double nll = negativeLogLikelihood(x.get(), y.get(), wnew);
 
             double nll_delta = nll - nlls.get(nlls.size() - 1);
-            if (it > 1 && (Math.abs(nll_delta) <= eps /*|| nll_delta > 0*/)) {
-                return Result.builder()
-                        .w(w)
-                        .converged(true)
-                        .nll(nlls)
-                        .ws(ws)
-                        .build();
+            if (it > 1 && (Math.abs(nll_delta) <= eps.get() /*|| nll_delta > 0*/)) {
+                return new Result(w, nlls, ws, true);
             }
             ws.add(wnew);
             nlls.add(nll);
             w = wnew;
         }
-        return Result.builder()
-                .ws(ws)
-                .nll(nlls)
-                .converged(false)
-                .w(w)
-                .build();
+        return new Result(w, nlls, ws, false);
     }
 
     private double negativeLogLikelihood(DMatrix x, DVector y, DVector w) {
@@ -123,7 +99,7 @@ public class BinaryLogisticNewton {
         // compute delta weights first as (X^t I_{p(1-p)} X)^{-1} X^t (y-p)
 
         // Xw dot product
-        DVector xw = x.dot(w);
+        DVector xw = x.get().dot(w);
 
         // p diag = 1/(1+exp(-Xw))
         DVector p = xw.copy().apply(value -> cut(1. / (1. + exp(-value))));
@@ -132,7 +108,7 @@ public class BinaryLogisticNewton {
         DVector pvars = p.copy().apply(value -> value * (1 - value));
 
         // Xt(p(1-p)
-        DMatrix xpvar = x.copy();
+        DMatrix xpvar = x.get().copy();
         for (int i = 0; i < xpvar.rowCount(); i++) {
             double pvar = pvars.get(i);
             for (int j = 0; j < xpvar.colCount(); j++) {
@@ -141,7 +117,7 @@ public class BinaryLogisticNewton {
         }
 
         // X^t * I(p(1-p))^T * X
-        DMatrix mA = xpvar.t().dot(x);
+        DMatrix mA = xpvar.t().dot(x.get());
 
         DMatrix invA;
         CholeskyDecomposition chol = CholeskyDecomposition.from(mA);
@@ -153,7 +129,7 @@ public class BinaryLogisticNewton {
         }
 
         // z = Wx - I(p(1-p))^{-1}(y-p)
-        DVector delta = invA.dot(x.t().dot(y.copy().sub(p)));
+        DVector delta = invA.dot(x.get().t().dot(y.get().copy().sub(p)));
 
 
         // otherwise we fall in QR decomposition

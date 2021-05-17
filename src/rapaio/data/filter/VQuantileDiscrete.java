@@ -28,6 +28,7 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,6 +64,7 @@ public class VQuantileDiscrete implements VFilter {
     }
 
 
+    @Serial
     private static final long serialVersionUID = -6702714518094848749L;
 
     private final List<String> dict = new ArrayList<>();

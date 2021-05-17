@@ -27,6 +27,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,7 @@ public class FIntercept extends AbstractFFilter {
         return new FIntercept();
     }
 
+    @Serial
     private static final long serialVersionUID = -7268280264499694765L;
     public static final String INTERCEPT = "(Intercept)";
 

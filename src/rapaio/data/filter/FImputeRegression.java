@@ -27,6 +27,8 @@ import rapaio.data.VarRange;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
@@ -36,6 +38,7 @@ public class FImputeRegression extends AbstractFFilter {
         return new FImputeRegression(model, inputVars, targetName);
     }
 
+    @Serial
     private static final long serialVersionUID = 7428989420235407246L;
 
     private final RegressionModel model;

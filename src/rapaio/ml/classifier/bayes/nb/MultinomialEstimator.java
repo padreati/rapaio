@@ -28,6 +28,7 @@ import rapaio.data.VarRange;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +37,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static rapaio.math.MTools.*;
+import static java.lang.Math.*;
+import static rapaio.math.MathTools.lnGamma;
 
 /**
  * Naive Bayes Multinomial estimator allows one to model two or more variables
@@ -81,6 +83,7 @@ public class MultinomialEstimator extends AbstractEstimator {
         return new MultinomialEstimator(laplaceSmoother, varRange.parseVarNames(df));
     }
 
+    @Serial
     private static final long serialVersionUID = -3469344351162271991L;
     public static final double eps = 1e-300; // minimum value to avoid NaN
     public static final double DEFAULT_LAPLACE = 1e-5; // small empirical value

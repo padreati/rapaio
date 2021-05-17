@@ -25,6 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.printer.Format;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +36,7 @@ import java.util.Set;
  */
 public class PriorUniform implements Prior {
 
+    @Serial
     private static final long serialVersionUID = 4346918440758937122L;
 
     private final Set<String> levels = new HashSet<>();

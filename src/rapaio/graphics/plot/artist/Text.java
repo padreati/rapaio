@@ -27,6 +27,7 @@ import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 import java.util.Arrays;
 
 import static rapaio.graphics.Plotter.*;
@@ -36,6 +37,7 @@ import static rapaio.graphics.Plotter.*;
  */
 public class Text extends Artist {
 
+    @Serial
     private static final long serialVersionUID = 1699360902819848697L;
 
     private final double x;
@@ -92,23 +94,14 @@ public class Text extends Artist {
             int voffset = 0;
 
             switch (options.getHAlign()) {
-                case HALIGN_CENTER:
-                    hoffset = -(int) r.getWidth() / 2;
-                    break;
-                case HALIGN_RIGHT:
-                    hoffset = -(int) r.getWidth();
-                    break;
+                case HALIGN_CENTER -> hoffset = -(int) r.getWidth() / 2;
+                case HALIGN_RIGHT -> hoffset = -(int) r.getWidth();
             }
 
             switch (options.getVAlign()) {
-                case VALIGN_TOP:
-                    voffset = fm.getAscent();
-                    break;
-                case VALIGN_CENTER:
-                    voffset = fm.getAscent() - (int) r.getHeight() / 2;
-                    break;
-                case VALIGN_BOTTOM:
-                    voffset = fm.getAscent() - (int) r.getHeight();
+                case VALIGN_TOP -> voffset = fm.getAscent();
+                case VALIGN_CENTER -> voffset = fm.getAscent() - (int) r.getHeight() / 2;
+                case VALIGN_BOTTOM -> voffset = fm.getAscent() - (int) r.getHeight();
             }
             g2d.drawString(line, xx + hoffset, yy + voffset);
 

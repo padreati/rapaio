@@ -21,10 +21,10 @@
 
 package rapaio.ml.common;
 
-import lombok.Getter;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.printer.Format;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -48,8 +48,9 @@ import java.util.function.Function;
  */
 public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -3083758110942840984L;
-    @Getter
+
     private final TreeMap<String, Param<?, T>> parameterMap = new TreeMap<>();
 
     public ParamSet() {
@@ -57,6 +58,10 @@ public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
 
     public ParamSet(T source) {
         this.copyParameterValues(source);
+    }
+
+    public TreeMap<String, Param<?, T>> getParameterMap() {
+        return parameterMap;
     }
 
     public void registerParameter(Param<?, T> parameter) {

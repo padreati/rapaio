@@ -25,6 +25,8 @@ import rapaio.core.distributions.Normal;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * GaussianPdf kernel function
  * <p>
@@ -32,6 +34,7 @@ import rapaio.printer.opt.POption;
  */
 public class KFuncGaussian implements KFunc {
 
+    @Serial
     private static final long serialVersionUID = 4766872325548110258L;
 
     private final Normal normal = Normal.std();

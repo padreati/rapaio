@@ -47,6 +47,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.DoublePair;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +67,7 @@ import static rapaio.printer.Format.floatFlex;
  */
 public class RTree extends AbstractRegressionModel<RTree, RegressionResult> implements GBTRtree<RTree, RegressionResult> {
 
+    @Serial
     private static final long serialVersionUID = -2748764643670512376L;
 
     public static RTree newDecisionStump() {
@@ -171,14 +173,10 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .minInputCount(1).maxInputCount(1_000_000)
-                .minTargetCount(1).maxTargetCount(1)
-                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL))
-                .targetType(VarType.DOUBLE)
-                .allowMissingInputValues(true)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(
+                1, 1_000_000,
+                Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL), true,
+                1, 1, List.of(VarType.DOUBLE), false);
     }
 
     public Node root() {

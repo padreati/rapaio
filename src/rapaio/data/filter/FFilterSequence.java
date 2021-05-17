@@ -23,6 +23,7 @@ package rapaio.data.filter;
 
 import rapaio.data.Frame;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +37,7 @@ public class FFilterSequence implements FFilter {
         return new FFilterSequence(filters);
     }
 
+    @Serial
     private static final long serialVersionUID = -4180868104157224336L;
     private final List<FFilter> filters;
     private String[] varNames = new String[0];

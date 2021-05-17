@@ -23,6 +23,7 @@ package rapaio.data.stream;
 
 import rapaio.data.Var;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -33,6 +34,7 @@ import java.util.Objects;
  */
 public class VSpot implements Comparable<VSpot>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -6730609711071770571L;
     private final int row;
     private final Var var;
@@ -142,17 +144,12 @@ public class VSpot implements Comparable<VSpot>, Serializable {
 
     @Override
     public int compareTo(VSpot o) {
-        switch (var.type()) {
-            case DOUBLE:
-                return Double.compare(getDouble(), o.getDouble());
-            case BINARY:
-            case INT:
-                return Integer.compare(getInt(), o.getInt());
-            case LONG:
-                return Long.compare(getLong(), o.getLong());
-            default:
-                return getLabel().compareTo(o.getLabel());
-        }
+        return switch (var.type()) {
+            case DOUBLE -> Double.compare(getDouble(), o.getDouble());
+            case BINARY, INT -> Integer.compare(getInt(), o.getInt());
+            case LONG -> Long.compare(getLong(), o.getLong());
+            default -> getLabel().compareTo(o.getLabel());
+        };
     }
 
 

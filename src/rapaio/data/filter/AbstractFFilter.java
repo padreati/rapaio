@@ -24,11 +24,14 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
 public abstract class AbstractFFilter implements FFilter {
 
+    @Serial
     private static final long serialVersionUID = 5619103016781092137L;
     protected final VarRange varRange;
     protected String[] varNames;

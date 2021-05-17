@@ -78,15 +78,10 @@ public class JsonInputFlat implements JsonInput {
     private boolean isNumeric(int ch) {
         if (ch >= '0' && ch <= '9')
             return true;
-        switch (ch) {
-            case '+':
-            case '-':
-            case '.':
-            case 'e':
-            case 'E':
-                return true;
-        }
-        return false;
+        return switch (ch) {
+            case '+', '-', '.', 'e', 'E' -> true;
+            default -> false;
+        };
     }
 
     private boolean isWhite(int ch) {
@@ -180,7 +175,7 @@ public class JsonInputFlat implements JsonInput {
             while (_next == COMMA || isWhite(_next)) _next = getNext();
 
             if ('"' != _next) {
-                throw new IllegalArgumentException("objects contains key value pairs, parsed object: " + obj.toString() + ", next char: " + ((char) _next));
+                throw new IllegalArgumentException("objects contains key value pairs, parsed object: " + obj + ", next char: " + ((char) _next));
             }
             key = readString().asString().get();
             while (isWhite(_next)) _next = getNext();

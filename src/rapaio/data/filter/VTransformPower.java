@@ -27,6 +27,8 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * Filter to create monotonic power transformations
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
@@ -37,6 +39,7 @@ public class VTransformPower implements VFilter {
         return new VTransformPower(lambda);
     }
 
+    @Serial
     private static final long serialVersionUID = -4496756339460112649L;
     private final double lambda;
     private double gm = 0.0;

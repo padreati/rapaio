@@ -21,7 +21,6 @@
 
 package rapaio.ml.clustering;
 
-import lombok.AllArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -30,6 +29,7 @@ import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.util.function.SBiConsumer;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -40,6 +40,7 @@ import java.util.List;
 public abstract class AbstractClusteringModel<M extends AbstractClusteringModel<M, R>, R extends ClusteringResult>
         extends ParamSet<M> implements ClusteringModel, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1917244313225596517L;
 
     public final SBiConsumer<ClusteringModel, Integer> DEFAULT_RUNNING_HOOK = (m, i) -> {
@@ -106,7 +107,7 @@ public abstract class AbstractClusteringModel<M extends AbstractClusteringModel<
         this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
 
         capabilities().checkAtLearnPhase(df, weights);
-        return FitSetup.valueOf(df, weights);
+        return new FitSetup(df, weights);
     }
 
     public abstract ClusteringModel coreFit(Frame df, Var weights);
@@ -119,14 +120,6 @@ public abstract class AbstractClusteringModel<M extends AbstractClusteringModel<
 
     public abstract R corePredict(Frame df, boolean withScores);
 
-    @AllArgsConstructor
-    private static final class FitSetup {
-
-        public static FitSetup valueOf(Frame df, Var weights) {
-            return new FitSetup(df, weights);
-        }
-
-        public final Frame df;
-        public final Var weights;
+    private record FitSetup(Frame df, Var weights) {
     }
 }

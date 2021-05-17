@@ -104,14 +104,11 @@ public interface DVector extends Serializable, Printable {
      * @return new dense vector of given type
      */
     static DVector fill(VType type, int n, double fill) {
-        switch (type) {
-            case BASE:
-                return new DVectorBase(n, DoubleArrays.newFill(n, fill));
-            case DENSE:
-                return new DVectorDense(n, DoubleArrays.newFill(n, fill));
-            default:
-                throw new IllegalArgumentException();
-        }
+        return switch (type) {
+            case BASE -> new DVectorBase(n, DoubleArrays.newFill(n, fill));
+            case DENSE -> new DVectorDense(n, DoubleArrays.newFill(n, fill));
+            default -> throw new IllegalArgumentException();
+        };
     }
 
     /**
@@ -135,8 +132,7 @@ public interface DVector extends Serializable, Printable {
      * @return new real dense vector
      */
     static DVector from(VType type, Var v) {
-        if (v instanceof VarDouble) {
-            VarDouble vd = (VarDouble) v;
+        if (v instanceof VarDouble vd) {
             double[] array = vd.elements();
             return wrapArray(type, vd.size(), array);
         }
@@ -197,14 +193,11 @@ public interface DVector extends Serializable, Printable {
      */
     static DVector wrapArray(VType type, int size, double[] values) {
         Objects.requireNonNull(values);
-        switch (type) {
-            case BASE:
-                return new DVectorBase(size, values);
-            case DENSE:
-                return new DVectorDense(size, values);
-            default:
-                throw new IllegalArgumentException("Operation not implemented for vector type: " + type.name());
-        }
+        return switch (type) {
+            case BASE -> new DVectorBase(size, values);
+            case DENSE -> new DVectorDense(size, values);
+            default -> throw new IllegalArgumentException("Operation not implemented for vector type: " + type.name());
+        };
     }
 
     static DVector from(int len, Int2DoubleFunction fun) {

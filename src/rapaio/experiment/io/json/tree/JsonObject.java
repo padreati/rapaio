@@ -136,7 +136,7 @@ public final class JsonObject extends JsonValue {
                 sb.append(",");
             sb.append('\"').append(entry.getKey()).append("\":");
             if (entry.getValue() != null) {
-                sb.append(entry.getValue().toString());
+                sb.append(entry.getValue());
             } else {
                 sb.append("<null>");
             }

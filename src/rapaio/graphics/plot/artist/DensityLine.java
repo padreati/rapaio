@@ -33,6 +33,7 @@ import rapaio.graphics.plot.Axis;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
+import java.io.Serial;
 
 /**
  * Artist which draws a KDE density estimator function.
@@ -41,6 +42,7 @@ import java.awt.geom.Path2D;
  */
 public class DensityLine extends Artist {
 
+    @Serial
     private static final long serialVersionUID = -9207144655129877629L;
     private final Var var;
     private final double bandwidth;

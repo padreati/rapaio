@@ -24,11 +24,14 @@ package rapaio.graphics.opt;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
 public class GOptionSz implements GOption<Var> {
 
+    @Serial
     private static final long serialVersionUID = 6568267641815981670L;
     private final Var size;
 

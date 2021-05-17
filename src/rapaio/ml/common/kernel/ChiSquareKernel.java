@@ -24,6 +24,8 @@ package rapaio.ml.common.kernel;
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 
+import java.io.Serial;
+
 /**
  * The Chi-Square kernel comes from the Chi-Square distribution.
  * <p>
@@ -33,6 +35,7 @@ import rapaio.math.linear.DVector;
  */
 public class ChiSquareKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -3301596992870913061L;
 
     @Override

@@ -21,7 +21,7 @@
 
 package rapaio.math.linear.base;
 
-import rapaio.math.MTools;
+import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
@@ -32,6 +32,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractDMatrix implements DMatrix {
 
+    @Serial
     private static final long serialVersionUID = -8475836385935066885L;
 
     protected void checkMatrixSameSize(DMatrix b) {
@@ -667,7 +669,7 @@ public abstract class AbstractDMatrix implements DMatrix {
         }
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                if (!MTools.eq(get(i, j), m.get(i, j), eps)) {
+                if (!MathTools.eq(get(i, j), m.get(i, j), eps)) {
                     return false;
                 }
             }

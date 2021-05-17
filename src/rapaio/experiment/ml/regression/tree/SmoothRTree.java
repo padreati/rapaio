@@ -36,7 +36,9 @@ import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
@@ -44,6 +46,7 @@ import java.util.Arrays;
 public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, RegressionResult>
         implements GBTRtree<SmoothRTree, RegressionResult> {
 
+    @Serial
     private static final long serialVersionUID = 5062591010395009141L;
 
     private int minCount = 5;
@@ -68,14 +71,9 @@ public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, Regression
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .allowMissingInputValues(false)
-                .allowMissingTargetValues(false)
-                .minInputCount(1).maxInputCount(Integer.MAX_VALUE)
-                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY, VarType.LONG))
-                .minTargetCount(1).maxTargetCount(1)
-                .targetType(VarType.DOUBLE)
-                .build();
+        return new Capabilities(
+                1, Integer.MAX_VALUE, Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY, VarType.LONG), false,
+                1, 1, List.of(VarType.DOUBLE), false);
     }
 
     public int getMinCount() {

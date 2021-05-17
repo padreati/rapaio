@@ -23,6 +23,7 @@ package rapaio.ml.common;
 
 import rapaio.util.function.SBiFunction;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.List;
  */
 public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
 
+    @Serial
     private static final long serialVersionUID = 4085743402578672837L;
     private final S params;
     private final List<T> defaultValues;

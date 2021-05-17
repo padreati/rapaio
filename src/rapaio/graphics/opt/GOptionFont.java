@@ -22,12 +22,14 @@
 package rapaio.graphics.opt;
 
 import java.awt.*;
+import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
 public class GOptionFont implements GOption<Font> {
 
+    @Serial
     private static final long serialVersionUID = 7534853593877383832L;
     private final Font font;
 

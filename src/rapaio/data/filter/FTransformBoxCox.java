@@ -24,6 +24,8 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
@@ -37,6 +39,7 @@ public class FTransformBoxCox extends AbstractFFilter {
         return new FTransformBoxCox(lambda, shift, varRange);
     }
 
+    @Serial
     private static final long serialVersionUID = 1804199711139024129L;
     private final VTransformBoxCox bct;
 

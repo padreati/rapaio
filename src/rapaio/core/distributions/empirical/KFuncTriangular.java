@@ -24,6 +24,8 @@ package rapaio.core.distributions.empirical;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * Triangular kernel function
  * <p>
@@ -31,6 +33,7 @@ import rapaio.printer.opt.POption;
  */
 public class KFuncTriangular implements KFunc {
 
+    @Serial
     private static final long serialVersionUID = 1480270434501342674L;
 
     @Override

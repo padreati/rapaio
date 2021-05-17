@@ -21,8 +21,6 @@
 
 package rapaio.ml.eval.split;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -35,13 +33,7 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
-@AllArgsConstructor
-@Getter
-public class StratifiedKFold implements SplitStrategy {
-
-    private final int rounds;
-    private final int folds;
-    private final String strata;
+public record StratifiedKFold(int rounds, int folds, String strata) implements SplitStrategy {
 
     public StratifiedKFold(int folds, String strata) {
         this(1, folds, strata);
@@ -55,14 +47,9 @@ public class StratifiedKFold implements SplitStrategy {
             List<Mapping> mappings = buildStrata(df, strata);
             for (int i = 0; i < mappings.size(); i++) {
                 Mapping mapping = mappings.get(i);
-                splits.add(Split.builder()
-                        .round(round)
-                        .fold(i)
-                        .trainDf(df.removeRows(mapping))
-                        .trainWeights(weights == null ? null : weights.removeRows(mapping))
-                        .testDf(df.mapRows(mapping))
-                        .testWeights(weights == null ? null : weights.mapRows(mapping))
-                        .build());
+                splits.add(new Split(round, i,
+                        df.removeRows(mapping), weights == null ? null : weights.removeRows(mapping),
+                        df.mapRows(mapping), weights == null ? null : weights.mapRows(mapping)));
             }
         }
         return splits;

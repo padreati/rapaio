@@ -29,6 +29,7 @@ import rapaio.data.VarRange;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 
+import java.io.Serial;
 import java.util.stream.IntStream;
 
 /**
@@ -50,6 +51,7 @@ public class FRandomProjection extends AbstractFFilter {
         return new FRandomProjection(k, achlioptas(s), varRange);
     }
 
+    @Serial
     private static final long serialVersionUID = -2790372378136065870L;
 
     private final int k;

@@ -54,17 +54,11 @@ public class SplitterTest {
     }
 
     private void populate(int group, int count, double weight) {
-        Uniform u;
-        switch (group) {
-            case 0:
-                u = Uniform.of(0, 9);
-                break;
-            case 1:
-                u = Uniform.of(21, 30);
-                break;
-            default:
-                u = Uniform.of(11, 19);
-        }
+        Uniform u = switch (group) {
+            case 0 -> Uniform.of(0, 9);
+            case 1 -> Uniform.of(21, 30);
+            default -> Uniform.of(11, 19);
+        };
         VarDouble sample = u.sample(count);
         for (int i = 0; i < sample.size(); i++) {
             df.addRows(1);

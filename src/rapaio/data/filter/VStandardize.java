@@ -28,6 +28,8 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
@@ -45,6 +47,7 @@ public class VStandardize implements VFilter {
         return new VStandardize(mean, sd);
     }
 
+    @Serial
     private static final long serialVersionUID = -2817341319523250499L;
 
     private double mean;

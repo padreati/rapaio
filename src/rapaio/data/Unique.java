@@ -58,18 +58,12 @@ public interface Unique extends Printable {
     }
 
     static Unique of(Var var, boolean sorted) {
-        switch (var.type()) {
-            case DOUBLE:
-                return ofDouble(var, sorted);
-            case STRING:
-            case NOMINAL:
-                return ofLabel(var, sorted);
-            case INT:
-            case BINARY:
-                return ofInt(var, sorted);
-            default:
-                throw new IllegalArgumentException("Cannot build unique structure for given type: not implemented.");
-        }
+        return switch (var.type()) {
+            case DOUBLE -> ofDouble(var, sorted);
+            case STRING, NOMINAL -> ofLabel(var, sorted);
+            case INT, BINARY -> ofInt(var, sorted);
+            default -> throw new IllegalArgumentException("Cannot build unique structure for given type: not implemented.");
+        };
     }
 
     static UniqueDouble ofDouble(Var var) {

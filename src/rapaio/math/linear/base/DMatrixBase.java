@@ -25,6 +25,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.MType;
 import rapaio.util.function.Double2DoubleFunction;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
@@ -47,6 +48,7 @@ import java.util.stream.DoubleStream;
  */
 public class DMatrixBase extends AbstractDMatrix {
 
+    @Serial
     private static final long serialVersionUID = -7586346894985345827L;
 
     protected final int rowCount;

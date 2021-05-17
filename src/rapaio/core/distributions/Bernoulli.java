@@ -23,6 +23,8 @@ package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
 
+import java.io.Serial;
+
 /**
  * Bernoulli distribution
  *
@@ -34,6 +36,7 @@ public final class Bernoulli implements Distribution {
         return new Bernoulli(p);
     }
 
+    @Serial
     private static final long serialVersionUID = -180129876504915848L;
     private final double prob;
 

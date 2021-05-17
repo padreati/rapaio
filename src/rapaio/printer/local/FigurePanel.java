@@ -22,11 +22,12 @@
 package rapaio.printer.local;
 
 import rapaio.graphics.Figure;
-import rapaio.image.ImageUtility;
+import rapaio.image.ImageTools;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.Serial;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -34,6 +35,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class FigurePanel extends JPanel {
 
+    @Serial
     private static final long serialVersionUID = 6956337145639708156L;
 
     private final Figure figure;
@@ -86,7 +88,7 @@ public class FigurePanel extends JPanel {
                 if (figure == null) {
                     return currentImage;
                 }
-                return ImageUtility.buildImage(figure, getWidth(), getHeight());
+                return ImageTools.buildFigureImage(figure, getWidth(), getHeight());
             }
 
             @Override

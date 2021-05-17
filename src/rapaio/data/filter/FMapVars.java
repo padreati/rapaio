@@ -24,6 +24,8 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
+
 /**
  * Filter to map vars from a data frame.
  * <p>
@@ -35,6 +37,7 @@ public class FMapVars extends AbstractFFilter {
         return new FMapVars(varRange);
     }
 
+    @Serial
     private static final long serialVersionUID = 5540246008233767364L;
 
     private FMapVars(VarRange varRange) {

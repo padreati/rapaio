@@ -25,6 +25,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.time.Instant;
 import java.util.List;
 
@@ -64,14 +65,14 @@ public class MappedVar extends AbstractVar {
         return new MappedVar(source, Mapping.wrap(rows));
     }
 
+    @Serial
     private static final long serialVersionUID = -2293127457462742840L;
     private final Var source;
     private final Mapping mapping;
 
     private MappedVar(Var var, Mapping mapping) {
         name(var.name());
-        if (var instanceof MappedVar) {
-            MappedVar src = (MappedVar) var;
+        if (var instanceof MappedVar src) {
             Mapping srcMap = src.getMapping();
             this.mapping = Mapping.from(mapping, srcMap::get);
             this.source = src.source;

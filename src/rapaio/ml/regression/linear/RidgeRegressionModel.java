@@ -21,9 +21,6 @@
 
 package rapaio.ml.regression.linear;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
@@ -32,6 +29,7 @@ import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -39,7 +37,6 @@ import java.util.Objects;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegressionModel> {
 
     public static RidgeRegressionModel newModel(double lambda) {
@@ -53,9 +50,9 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
                 .scaling.set(scaling);
     }
 
+    @Serial
     private static final long serialVersionUID = 6868244273014714128L;
 
-    @Getter
     public final ValueParam<Double, RidgeRegressionModel> lambda = new ValueParam<>(this, 1.0,
             "lambda",
             "Coefficient of the ridge penalry term.",

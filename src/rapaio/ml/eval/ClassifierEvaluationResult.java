@@ -21,7 +21,6 @@
 
 package rapaio.ml.eval;
 
-import lombok.Getter;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
@@ -53,11 +52,8 @@ public class ClassifierEvaluationResult implements Printable {
     private static final String FIELD_ROUND = "round";
     private static final String FIELD_FOLD = "fold";
 
-    @Getter
     private final ClassifierEvaluation eval;
-    @Getter
     private Frame trainScores;
-    @Getter
     private Frame testScores;
 
     private final ReentrantLock scoresLock = new ReentrantLock();
@@ -69,11 +65,23 @@ public class ClassifierEvaluationResult implements Printable {
         vars.add(VarNominal.empty().name(FIELD_DATASET));
         vars.add(VarInt.empty().name(FIELD_ROUND));
         vars.add(VarInt.empty().name(FIELD_FOLD));
-        for (ClassifierMetric metric : eval.getMetrics()) {
+        for (ClassifierMetric metric : eval.metrics.get()) {
             vars.add(VarDouble.empty().name(metric.getName()));
         }
         trainScores = SolidFrame.byVars(vars).copy();
         testScores = trainScores.copy();
+    }
+
+    public ClassifierEvaluation getEval() {
+        return eval;
+    }
+
+    public Frame getTestScores() {
+        return testScores;
+    }
+
+    public Frame getTrainScores() {
+        return trainScores;
     }
 
     public double getMeanTrainScore(String metric) {
@@ -92,11 +100,11 @@ public class ClassifierEvaluationResult implements Printable {
 
             trainScores.addRows(1);
             trainScores.setLabel(lastRow, FIELD_DATASET, "train");
-            trainScores.setInt(lastRow, FIELD_ROUND, split.getRound());
-            trainScores.setInt(lastRow, FIELD_FOLD, split.getFold());
-            for (ClassifierMetric metric : eval.getMetrics()) {
+            trainScores.setInt(lastRow, FIELD_ROUND, split.round());
+            trainScores.setInt(lastRow, FIELD_FOLD, split.fold());
+            for (ClassifierMetric metric : eval.metrics.get()) {
                 trainScores.setDouble(lastRow, metric.getName(),
-                        metric.compute(split.getTrainDf().rvar(eval.getTargetName()), trainResult).getScore().getValue());
+                        metric.compute(split.trainDf().rvar(eval.targetName.get()), trainResult).getScore().value());
             }
             trainScores = trainScores.fapply(FRefSort.by(
                     trainScores.rvar(FIELD_ROUND).refComparator(),
@@ -105,11 +113,11 @@ public class ClassifierEvaluationResult implements Printable {
 
             testScores.addRows(1);
             testScores.setLabel(lastRow, FIELD_DATASET, "test");
-            testScores.setInt(lastRow, FIELD_ROUND, split.getRound());
-            testScores.setInt(lastRow, FIELD_FOLD, split.getFold());
-            for (ClassifierMetric metric : eval.getMetrics()) {
+            testScores.setInt(lastRow, FIELD_ROUND, split.round());
+            testScores.setInt(lastRow, FIELD_FOLD, split.fold());
+            for (ClassifierMetric metric : eval.metrics.get()) {
                 testScores.setDouble(lastRow,
-                        metric.getName(), metric.compute(split.getTestDf().rvar(eval.getTargetName()), testResult).getScore().getValue());
+                        metric.getName(), metric.compute(split.testDf().rvar(eval.targetName.get()), testResult).getScore().value());
             }
 
             testScores = testScores.fapply(FRefSort.by(
@@ -124,7 +132,7 @@ public class ClassifierEvaluationResult implements Printable {
     private String toContentName(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Model:\n");
-        sb.append(eval.getModel().fullName()).append("\n");
+        sb.append(eval.model.get().fullName()).append("\n");
         return sb.toString();
     }
 
@@ -139,14 +147,14 @@ public class ClassifierEvaluationResult implements Printable {
         Var stdVar = VarDouble.empty().name("std");
         Frame global = SolidFrame.byVars(datasetVar, metricVar, meanVar, stdVar);
 
-        for (ClassifierMetric metric : eval.getMetrics()) {
+        for (ClassifierMetric metric : eval.metrics.get()) {
             global.addRows(1);
             global.setLabel(global.rowCount() - 1, "dataset", "test");
             global.setLabel(global.rowCount() - 1, "metric", metric.getName());
             global.setDouble(global.rowCount() - 1, "mean", Mean.of(testScores.rvar(metric.getName())).value());
             global.setDouble(global.rowCount() - 1, "std", Variance.of(testScores.rvar(metric.getName())).sdValue());
         }
-        for (ClassifierMetric metric : eval.getMetrics()) {
+        for (ClassifierMetric metric : eval.metrics.get()) {
             global.addRows(1);
             global.setLabel(global.rowCount() - 1, "dataset", "train");
             global.setLabel(global.rowCount() - 1, "metric", metric.getName());
@@ -173,7 +181,7 @@ public class ClassifierEvaluationResult implements Printable {
     public String toFullContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Model:\n");
-        sb.append(eval.getModel().fullName()).append("\n");
+        sb.append(eval.model.get().fullName()).append("\n");
 
         sb.append("Raw scores:\n");
         sb.append("===========\n");
@@ -183,7 +191,7 @@ public class ClassifierEvaluationResult implements Printable {
         sb.append("Round scores:\n");
         sb.append("=============\n");
         List<GroupFun> groupFuns = new ArrayList<>();
-        for (ClassifierMetric metric : eval.getMetrics()) {
+        for (ClassifierMetric metric : eval.metrics.get()) {
             groupFuns.add(Group.mean(metric.getName()));
             groupFuns.add(Group.std(metric.getName()));
         }

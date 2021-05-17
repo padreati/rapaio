@@ -32,6 +32,7 @@ import rapaio.util.function.Int2IntFunction;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -176,6 +177,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
         return index;
     }
 
+    @Serial
     private static final long serialVersionUID = -2809318697565282310L;
     public static final int MISSING_VALUE = Integer.MAX_VALUE;
     private int[] data;
@@ -447,6 +449,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
         return this;
     }
 
+    @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(size());
         for (int i = 0; i < size(); i++) {
@@ -454,6 +457,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
         }
     }
 
+    @Serial
     private void readObject(ObjectInputStream in) throws IOException {
         rows = in.readInt();
         data = new int[rows];

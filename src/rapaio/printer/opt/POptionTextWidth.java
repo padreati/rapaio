@@ -21,11 +21,14 @@
 
 package rapaio.printer.opt;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/25/20.
  */
 public class POptionTextWidth implements POption<Integer> {
 
+    @Serial
     private static final long serialVersionUID = 2485016171417227463L;
     private final int textWidth;
 

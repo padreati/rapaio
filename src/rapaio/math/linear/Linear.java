@@ -73,7 +73,7 @@ public final class Linear {
 
     public static DMatrix pdPower(DMatrix s, double power, int maxRuns, double tol) {
         EigenPair eigenPair = eigenDecomp(s, maxRuns, tol);
-        DMatrix U = eigenPair.getMatrix();
+        DMatrix U = eigenPair.vectors();
         DMatrix lambda = eigenPair.expandedValues();
         for (int i = 0; i < lambda.rowCount(); i++) {
             //TODO quick fix

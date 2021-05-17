@@ -25,6 +25,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -259,6 +260,7 @@ public class VarLong extends AbstractVar {
     }
 
     public static final long MISSING_VALUE = Long.MAX_VALUE;
+    @Serial
     private static final long serialVersionUID = -6387573611986137666L;
     private long[] data;
     private int rows;

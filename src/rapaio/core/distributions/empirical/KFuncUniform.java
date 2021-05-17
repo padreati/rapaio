@@ -24,11 +24,14 @@ package rapaio.core.distributions.empirical;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KFuncUniform implements KFunc {
 
+    @Serial
     private static final long serialVersionUID = 3237652502168949601L;
 
     @Override

@@ -21,14 +21,14 @@
 
 package rapaio.ml.eval.metric;
 
-import lombok.Getter;
+import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/28/20.
  */
-@Getter
 public abstract class AbstractClassifierMetric implements ClassifierMetric {
 
+    @Serial
     private static final long serialVersionUID = 518689520489561196L;
 
     private final String name;
@@ -36,5 +36,15 @@ public abstract class AbstractClassifierMetric implements ClassifierMetric {
 
     protected AbstractClassifierMetric(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public ClassifierScore getScore() {
+        return score;
     }
 }

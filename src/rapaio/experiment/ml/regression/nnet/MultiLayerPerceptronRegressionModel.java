@@ -33,7 +33,9 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.Arrays;
+import java.util.List;
 
 import static rapaio.printer.Format.floatFlex;
 
@@ -43,6 +45,7 @@ import static rapaio.printer.Format.floatFlex;
 @Deprecated
 public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel<MultiLayerPerceptronRegressionModel, RegressionResult> implements Printable {
 
+    @Serial
     private static final long serialVersionUID = -7855492977246862795L;
     private final int[] layerSizes;
     private final NetNode[][] net;
@@ -120,14 +123,9 @@ public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY))
-                .targetType(VarType.DOUBLE)
-                .minInputCount(1).maxInputCount(1_000_000)
-                .minTargetCount(1).maxTargetCount(1_000_000)
-                .allowMissingInputValues(false)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(
+                1, 1_000_000, Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY), false,
+                1, 1_000_000, List.of(VarType.DOUBLE), false);
     }
 
     public MultiLayerPerceptronRegressionModel withFunction(TFunction function) {

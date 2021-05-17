@@ -21,11 +21,14 @@
 
 package rapaio.graphics.opt;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
 public class GOptionPalette implements GOption<ColorPalette> {
 
+    @Serial
     private static final long serialVersionUID = -353977248937212431L;
     private final ColorPalette palette;
 

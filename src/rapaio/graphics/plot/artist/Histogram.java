@@ -28,10 +28,11 @@ import rapaio.graphics.opt.GOptionFill;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
-import rapaio.math.MTools;
+import rapaio.math.MathTools;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 
 import static rapaio.graphics.Plotter.bins;
 
@@ -42,6 +43,7 @@ import static rapaio.graphics.Plotter.bins;
  */
 public class Histogram extends Artist {
 
+    @Serial
     private static final long serialVersionUID = -7990247895216501553L;
 
     private final Var v;
@@ -145,7 +147,7 @@ public class Histogram extends Artist {
                 continue;
             }
             int index = (int) ((v.getDouble(i) - minValue) / step);
-            index = MTools.cut(index, 0, freqTable.length - 1);
+            index = MathTools.cut(index, 0, freqTable.length - 1);
             freqTable[index]++;
         }
 

@@ -26,6 +26,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
+import java.io.Serial;
 import java.util.Objects;
 
 import static rapaio.printer.Format.floatFlex;
@@ -38,6 +39,7 @@ import static rapaio.printer.Format.floatFlex;
  */
 final class Bootstrap implements RowSampler {
 
+    @Serial
     private static final long serialVersionUID = -7987373317949449262L;
     private final double percent;
 

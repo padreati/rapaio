@@ -26,6 +26,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ public class FToDouble extends AbstractFFilter {
         return new FToDouble(varRange);
     }
 
+    @Serial
     private static final long serialVersionUID = -6745637493367588453L;
 
     private FToDouble(VarRange varRange) {

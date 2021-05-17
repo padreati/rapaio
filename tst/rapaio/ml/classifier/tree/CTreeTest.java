@@ -52,15 +52,15 @@ public class CTreeTest {
 
         Frame df = SolidFrame.byVars(VarDouble.wrap(0).name("x"));
 
-        assertTrue(c.groupPredicates.get(0).test(0, df));
-        assertFalse(c.groupPredicates.get(1).test(0, df));
+        assertTrue(c.groupPredicates().get(0).test(0, df));
+        assertFalse(c.groupPredicates().get(1).test(0, df));
 
-        assertEquals(0.1, c.score, 1e-10);
-        assertEquals("t1", c.testName);
+        assertEquals(0.1, c.score(), 1e-10);
+        assertEquals("t1", c.testName());
 
         Candidate b = new Candidate(0.2, "t2");
 
-        assertTrue(c.score < b.score);
+        assertTrue(c.score() < b.score());
     }
 
     @Test
@@ -75,15 +75,15 @@ public class CTreeTest {
         Node root = tree.getRoot();
         assertEquals("root", root.groupName);
 
-        String testName = root.bestCandidate.testName;
+        String testName = root.bestCandidate.testName();
         if ("petal-width".equals(testName)) {
-            assertEquals("petal-width", root.bestCandidate.testName);
-            assertEquals("petal-width<=0.8", root.bestCandidate.groupPredicates.get(0).toString());
-            assertEquals("petal-width>0.8", root.bestCandidate.groupPredicates.get(1).toString());
+            assertEquals("petal-width", root.bestCandidate.testName());
+            assertEquals("petal-width<=0.8", root.bestCandidate.groupPredicates().get(0).toString());
+            assertEquals("petal-width>0.8", root.bestCandidate.groupPredicates().get(1).toString());
         } else {
-            assertEquals("petal-length", root.bestCandidate.testName);
-            assertEquals("petal-length<=2.45", root.bestCandidate.groupPredicates.get(0).toString());
-            assertEquals("petal-length>2.45", root.bestCandidate.groupPredicates.get(1).toString());
+            assertEquals("petal-length", root.bestCandidate.testName());
+            assertEquals("petal-length<=2.45", root.bestCandidate.groupPredicates().get(0).toString());
+            assertEquals("petal-length>2.45", root.bestCandidate.groupPredicates().get(1).toString());
         }
     }
 

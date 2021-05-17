@@ -23,6 +23,7 @@ package rapaio.math.linear.decomposition;
 
 import rapaio.math.linear.DMatrix;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -44,6 +45,7 @@ public class EigenDecomposition implements Serializable {
         return new EigenDecomposition(a);
     }
 
+    @Serial
     private static final long serialVersionUID = 5064091847331016868L;
 
     // Row and column dimension (square matrix).
@@ -610,7 +612,7 @@ public class EigenDecomposition implements Serializable {
 
 
                 switch (iter) {
-                    case 10:
+                    case 10 -> {
                         exshift += x;
                         for (int i = low; i <= n; i++) {
                             nonSymHessenbergForm[i][i] -= x;
@@ -618,8 +620,8 @@ public class EigenDecomposition implements Serializable {
                         s = Math.abs(nonSymHessenbergForm[n][n - 1]) + Math.abs(nonSymHessenbergForm[n - 1][n - 2]);
                         x = y = 0.75 * s;
                         w = -0.4375 * s * s;
-                        break;
-                    case 30:
+                    }
+                    case 30 -> {
                         s = (y - x) / 2.0;
                         s = s * s + w;
                         if (s > 0) {
@@ -634,7 +636,7 @@ public class EigenDecomposition implements Serializable {
                             exshift += s;
                             x = y = w = 0.964;
                         }
-
+                    }
                 }
 
                 // MATLAB's new ad hoc shift

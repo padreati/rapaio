@@ -21,6 +21,7 @@
 
 package rapaio.data;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +54,7 @@ public class MappedFrame extends AbstractFrame {
         return new MappedFrame(df, mapping, varRange.parseVarNames(df));
     }
 
+    @Serial
     private static final long serialVersionUID = 1368765233851124235L;
     private final Frame source;
     private final Mapping mapping;
@@ -67,8 +69,7 @@ public class MappedFrame extends AbstractFrame {
     private MappedFrame(Frame df, Mapping mapping, List<String> columns) {
         if (mapping == null)
             mapping = Mapping.empty();
-        if (df instanceof MappedFrame) {
-            MappedFrame mappedFrame = (MappedFrame) df;
+        if (df instanceof MappedFrame mappedFrame) {
             this.source = mappedFrame.source;
             this.mapping = Mapping.from(mapping, mappedFrame.mapping::get);
         } else {

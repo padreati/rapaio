@@ -28,6 +28,8 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
 
+import java.io.Serial;
+
 /**
  * Filter which shuffles observations from a given variable. The new variable is
  * a mapped variable over the original one.
@@ -40,6 +42,7 @@ public class VShuffle implements VFilter {
         return new VShuffle();
     }
 
+    @Serial
     private static final long serialVersionUID = -5571537968976749556L;
 
     private VShuffle() {

@@ -21,7 +21,6 @@
 
 package rapaio.ml.regression.ensemble;
 
-import lombok.AllArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -39,6 +38,7 @@ import rapaio.ml.regression.tree.rtree.Splitter;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,6 +81,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
         return new RForest().model.set(model);
     }
 
+    @Serial
     private static final long serialVersionUID = -3926256335736143438L;
 
     public final Param<RegressionModel, RForest> model = new ValueParam<>(this,
@@ -106,14 +107,11 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .minInputCount(1).maxInputCount(1_000_000)
-                .minTargetCount(1).maxTargetCount(1)
-                .inputTypes(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL))
-                .targetType(VarType.DOUBLE)
-                .allowMissingInputValues(true)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(
+                1, 1_000_000,
+                Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL), true,
+                1, 1,
+                List.of(VarType.DOUBLE), false);
     }
 
     @Override
@@ -169,18 +167,15 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
         return fit;
     }
 
-    @AllArgsConstructor
-    private static class FitTask implements Callable<RegressionModel>, Serializable {
+    private static record FitTask(RowSampler.Sample sample, RegressionModel model, String[] targetNames)
+            implements Callable<RegressionModel>, Serializable {
 
+        @Serial
         private static final long serialVersionUID = -5432992679557031337L;
-
-        private final RowSampler.Sample sample;
-        private final RegressionModel model;
-        private final String[] targetNames;
 
         @Override
         public RegressionModel call() {
-            return model.fit(sample.getDf(), sample.getWeights(), targetNames);
+            return model.fit(sample.df(), sample.weights(), targetNames);
         }
     }
 

@@ -26,12 +26,14 @@ import rapaio.graphics.opt.GOption;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
+import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/26/20.
  */
-public class PolyLine extends BasePoly {
+public class PolyLine extends BasePolyArtist {
 
+    @Serial
     private static final long serialVersionUID = 8507830080358347197L;
 
     private final boolean closed;

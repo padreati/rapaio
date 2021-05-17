@@ -28,6 +28,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.printer.Format;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,6 +63,7 @@ public class MultinoulliEstimator extends AbstractEstimator {
         return new MultinoulliEstimator(varRange.parseVarNames(df), laplaceSmoother);
     }
 
+    @Serial
     private static final long serialVersionUID = 4232189912660290961L;
     private final double laplaceSmoother;
 
@@ -112,15 +114,15 @@ public class MultinoulliEstimator extends AbstractEstimator {
     public boolean fit(Frame df, Var weights, String targetName) {
         // validate variables
         ourCase = validate(df, targetName);
-        switch (ourCase) {
-            case 1:
-                // one nominal variable
-                return fitNominal(df, targetName);
-            case 2:
-                // multiple binary variables summed to 1
-                return fitBinary(df, targetName);
-        }
-        return false;
+        return switch (ourCase) {
+            case 1 ->
+                    // one nominal variable
+                    fitNominal(df, targetName);
+            case 2 ->
+                    // multiple binary variables summed to 1
+                    fitBinary(df, targetName);
+            default -> false;
+        };
     }
 
     private int validate(Frame df, String targetName) {

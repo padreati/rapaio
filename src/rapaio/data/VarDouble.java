@@ -31,6 +31,7 @@ import rapaio.printer.opt.POption;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.Arrays;
@@ -282,6 +283,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         return VarDouble.from(reference.size(), i -> transform.apply(reference.getDouble(i)));
     }
 
+    @Serial
     private static final long serialVersionUID = -3167416341273129670L;
     public static final double MISSING_VALUE = Double.NaN;
     private double[] data;
@@ -551,6 +553,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         return copy;
     }
 
+    @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(size());
         for (int i = 0; i < size(); i++) {
@@ -558,6 +561,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         }
     }
 
+    @Serial
     private void readObject(ObjectInputStream in) throws IOException {
         rows = in.readInt();
         data = new double[rows];

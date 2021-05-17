@@ -25,12 +25,15 @@ package rapaio.core.distributions.empirical;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * Cosine kernel function
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KFuncCosine implements KFunc {
 
+    @Serial
     private static final long serialVersionUID = -7574263625299448350L;
 
     @Override

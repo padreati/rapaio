@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * The Wave kernel (Zhang et al, 2004) comes from Wavelet theory and is given as:
  * <p>
@@ -47,6 +49,7 @@ import rapaio.printer.Format;
  */
 public class WaveKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = 3332090004050972059L;
 
     private final double theta;

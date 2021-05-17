@@ -29,6 +29,7 @@ import rapaio.printer.opt.POption;
 import rapaio.util.function.Double2IntFunction;
 import rapaio.util.function.Int2IntFunction;
 
+import java.io.Serial;
 import java.util.function.Function;
 
 /**
@@ -56,6 +57,7 @@ public class VToInt implements VFilter {
         return new VToInt(new TransformLabel(fun));
     }
 
+    @Serial
     private static final long serialVersionUID = -699221182441440988L;
     private final Function<Var, Var> fun;
 
@@ -73,24 +75,18 @@ public class VToInt implements VFilter {
 
         @Override
         public Var apply(Var var) {
-            switch (var.type()) {
-                case DOUBLE:
-                    return new VToInt.TransformDouble(x -> (int) Math.rint(x)).apply(var);
-                case INT:
-                case BINARY:
-                    return new VToInt.TransformInt(x -> x).apply(var);
-                case NOMINAL:
-                case STRING:
-                    return new VToInt.TransformLabel(x -> {
-                        try {
-                            return Integer.parseInt(x);
-                        } catch (NumberFormatException ex) {
-                            return VarInt.MISSING_VALUE;
-                        }
-                    }).apply(var);
-                default:
-                    throw new IllegalArgumentException("Variable type: " + var.type().code() + " is not supported.");
-            }
+            return switch (var.type()) {
+                case DOUBLE -> new TransformDouble(x -> (int) Math.rint(x)).apply(var);
+                case INT, BINARY -> new TransformInt(x -> x).apply(var);
+                case NOMINAL, STRING -> new TransformLabel(x -> {
+                    try {
+                        return Integer.parseInt(x);
+                    } catch (NumberFormatException ex) {
+                        return VarInt.MISSING_VALUE;
+                    }
+                }).apply(var);
+                default -> throw new IllegalArgumentException("Variable type: " + var.type().code() + " is not supported.");
+            };
         }
     }
 

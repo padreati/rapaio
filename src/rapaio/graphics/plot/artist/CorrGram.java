@@ -30,13 +30,15 @@ import rapaio.graphics.opt.GOptionFill;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
-import rapaio.math.MTools;
 import rapaio.printer.Format;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 import java.util.stream.DoubleStream;
+
+import static java.lang.Math.*;
 
 /**
  * Correlograms are artists which helps visualize data in correlation matrices.
@@ -58,6 +60,7 @@ import java.util.stream.DoubleStream;
  */
 public class CorrGram extends Artist {
 
+    @Serial
     private static final long serialVersionUID = 7529398214880633755L;
 
     private final boolean grid;
@@ -96,9 +99,9 @@ public class CorrGram extends Artist {
 
     private int computeIndex(int i, int j) {
         double value = d.get(i, j);
-        value = Math.min(value, 1);
-        value = Math.max(value, -1);
-        return (int) MTools.floor((1 + value) * 50);
+        value = min(value, 1);
+        value = max(value, -1);
+        return (int) floor((1 + value) * 50);
     }
 
     @Override

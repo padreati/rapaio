@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * Inverse Multiquadric Kernel
  * <p>
@@ -38,6 +40,7 @@ import rapaio.printer.Format;
  */
 public class InverseMultiQuadricKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -2377890141986212381L;
 
     private final double c;

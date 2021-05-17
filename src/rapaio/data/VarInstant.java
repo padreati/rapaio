@@ -27,6 +27,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -65,6 +66,7 @@ public class VarInstant extends AbstractVar {
         return time;
     }
 
+    @Serial
     private static final long serialVersionUID = -3619715862394998978L;
 
     private static final String STRING_CLASS_NAME = "VarInstant";

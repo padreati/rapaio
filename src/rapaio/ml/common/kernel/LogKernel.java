@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * Log Kernel
  * <p>
@@ -37,6 +39,7 @@ import rapaio.printer.Format;
  */
 public class LogKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = 6198322741512752359L;
 
     private final double degree;

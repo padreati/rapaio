@@ -24,6 +24,8 @@ package rapaio.ml.eval.metric;
 import rapaio.data.Var;
 import rapaio.ml.regression.RegressionResult;
 
+import java.io.Serial;
+
 /**
  * Regression evaluation tool which enables one to compute
  * Root Mean Squared Error, which is the sum of the squared
@@ -34,6 +36,7 @@ import rapaio.ml.regression.RegressionResult;
  */
 public class RMSE extends AbstractRegressionMetric {
 
+    @Serial
     private static final long serialVersionUID = -4538721622397952296L;
 
     public static RMSE newMetric() {
@@ -68,6 +71,6 @@ public class RMSE extends AbstractRegressionMetric {
             count++;
             sum += Math.pow(actual.getDouble(j) - prediction.getDouble(j), 2);
         }
-        return RegressionScore.builder().metric(this).value(Math.sqrt(sum / count)).build();
+        return new RegressionScore(this, Math.sqrt(sum / count));
     }
 }

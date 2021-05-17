@@ -23,6 +23,8 @@ package rapaio.core.distributions;
 
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/20.
  */
@@ -32,6 +34,7 @@ public class Exponential implements Distribution {
         return new Exponential(lambda);
     }
 
+    @Serial
     private static final long serialVersionUID = 5064238118800143270L;
 
     private final double lambda;

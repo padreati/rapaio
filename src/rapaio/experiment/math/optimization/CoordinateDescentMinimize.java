@@ -31,6 +31,7 @@ import rapaio.math.optimization.linesearch.LineSearch;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,7 @@ import static java.lang.Math.*;
  */
 public class CoordinateDescentMinimize extends ParamSet<CoordinateDescentMinimize> implements Minimize {
 
+    @Serial
     private static final long serialVersionUID = 6285470727505415422L;
 
     public final ValueParam<Double, CoordinateDescentMinimize> tol = new ValueParam<>(this, 1e-10,

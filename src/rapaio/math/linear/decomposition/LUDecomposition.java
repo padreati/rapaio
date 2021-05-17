@@ -26,6 +26,7 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
@@ -45,6 +46,7 @@ import java.util.function.BiConsumer;
  */
 public class LUDecomposition implements Serializable, Printable {
 
+    @Serial
     private static final long serialVersionUID = -4226024886673558685L;
 
     // internal storage of decomposition

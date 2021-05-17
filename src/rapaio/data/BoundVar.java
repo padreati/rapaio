@@ -25,6 +25,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,7 @@ public class BoundVar extends AbstractVar {
         );
     }
 
+    @Serial
     private static final long serialVersionUID = 5449912906816640189L;
     private final int rowCount;
     private final VarType varType;
@@ -78,8 +80,7 @@ public class BoundVar extends AbstractVar {
 
         int last = 0;
         for (int i = 0; i < counts.size(); i++) {
-            if (vars.get(i) instanceof BoundVar) {
-                BoundVar boundVar = (BoundVar) vars.get(i);
+            if (vars.get(i) instanceof BoundVar boundVar) {
                 for (int j = 0; j < boundVar.counts.size(); j++) {
                     this.counts.add(boundVar.counts.get(j) + last);
                     this.vars.add(boundVar.vars.get(j));
@@ -117,7 +118,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public Var bindRows(Var var) {
-        if (var instanceof BoundVar) {
+        if (var instanceof BoundVar boundVar) {
             List<Integer> newCounts = new ArrayList<>();
             List<Var> newVars = new ArrayList<>();
             int last = 0;
@@ -126,7 +127,6 @@ public class BoundVar extends AbstractVar {
                 newVars.add(vars.get(i));
                 last = counts.get(i);
             }
-            BoundVar boundVar = (BoundVar) var;
             last = 0;
             for (int i = 0; i < boundVar.counts.size(); i++) {
                 newCounts.add(boundVar.counts.get(i) - last);

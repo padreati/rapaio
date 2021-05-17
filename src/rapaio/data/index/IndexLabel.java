@@ -26,6 +26,7 @@ import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
  */
 public class IndexLabel implements Index<String> {
 
+    @Serial
     private static final long serialVersionUID = -1426561398594993638L;
 
     public static IndexLabel fromLabelValues(List<String> values) {

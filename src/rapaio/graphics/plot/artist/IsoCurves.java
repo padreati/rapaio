@@ -32,6 +32,7 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ import static java.lang.Math.*;
  */
 public class IsoCurves extends Artist {
 
+    @Serial
     private static final long serialVersionUID = -642370269224702175L;
     private final GridData grid;
     private final ColorGradient gradient;
@@ -276,6 +278,7 @@ public class IsoCurves extends Artist {
      */
     private static final class MeshStripe implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = -2138677255967203689L;
 
         private final GridData g;

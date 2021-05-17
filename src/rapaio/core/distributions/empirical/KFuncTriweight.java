@@ -24,6 +24,8 @@ package rapaio.core.distributions.empirical;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
+
 /**
  * Triweight kernel function
  * <p>
@@ -31,6 +33,7 @@ import rapaio.printer.opt.POption;
  */
 public class KFuncTriweight implements KFunc {
 
+    @Serial
     private static final long serialVersionUID = 6194654792689206173L;
 
     @Override

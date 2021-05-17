@@ -74,9 +74,9 @@ public class RForestTest {
                 .runs.set(N)
                 .runningHook.set((m, run) -> {
                     errorTest.addDouble(RMSE.newMetric().compute(test.rvar("Sales"),
-                            m.predict(test).firstPrediction()).getValue());
+                            m.predict(test).firstPrediction()).value());
                     errorTrain.addDouble(RMSE.newMetric().compute(train.rvar("Sales"),
-                            m.predict(train).firstPrediction()).getValue());
+                            m.predict(train).firstPrediction()).value());
                 });
         rf.fit(train, "Sales");
         assertEquals(N, rf.getFittedModels().size());

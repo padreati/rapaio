@@ -32,91 +32,81 @@ import java.math.RoundingMode;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class MTools {
+public class MathTools {
 
     /**
      * sqrt(2)
      */
-    public static final double M_SQRT_2 = 1.41421356237309504880168872420969807856967187537694807317667973799073247846210703885038753432764157273501384623091229702;
+    public static final double SQRT_2 = 1.41421356237309504880168872420969807856967187537694807317667973799073247846210703885038753432764157273501384623091229702;
 
     /**
      * 1/sqrt(2)
      */
-    public static final double M_1_SQRT_2 = 0.70710678118654752440084436210484903928483593768847403658833986899536623923105351942519376716382078636750692311545614851;
+    public static final double INV_SQRT_2 = 0.70710678118654752440084436210484903928483593768847403658833986899536623923105351942519376716382078636750692311545614851;
     /**
      * sqrt(32)
      */
-    public static final double M_SQRT_32 = 5.65685424949238019520675489683879231427868750150779229270671895196292991384842815540155013731056629094005538492364918809;
+    public static final double SQRT_32 = 5.65685424949238019520675489683879231427868750150779229270671895196292991384842815540155013731056629094005538492364918809;
 
     /**
      * ln(2)
      */
-    public static final double M_LN2 = 0.69314718055994530941723212145817656807550013436025525412068000949339362196969471560586332699641868754200148102057068573;
+    public static final double LN_2 = 0.69314718055994530941723212145817656807550013436025525412068000949339362196969471560586332699641868754200148102057068573;
 
     /**
      * ln(10)
      */
-    public static final double M_LN10 = 2.30258509299404568401799145468436420760110148862877297603332790096757260967735248023599720508959829834196778404228624863;
+    public static final double LN_10 = 2.30258509299404568401799145468436420760110148862877297603332790096757260967735248023599720508959829834196778404228624863;
 
     /**
      * log_10(2)
      */
-    public static final double M_LOG10_2 = 0.30102999566398119521373889472449302676818988146210854131042746112710818927442450948692725211818617204068447719143099537;
+    public static final double LOG10_2 = 0.30102999566398119521373889472449302676818988146210854131042746112710818927442450948692725211818617204068447719143099537;
 
     /**
      * pi
      */
-    public static final double M_PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664;
+    public static final double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664;
 
     /**
      * 2*pi
      */
-    public static final double M_2PI = 6.28318530717958647692528676655900576839433879875021164194988918461563281257241799725606965068423413596429617302656461329;
+    public static final double DOUBLE_PI = 6.28318530717958647692528676655900576839433879875021164194988918461563281257241799725606965068423413596429617302656461329;
 
     /**
      *
      */
-    public static final double M_LOG_PI = 1.14472988584940017414342735135305871164729481291531157151362307147213776988482607978362327027548970770200981222869798915;
+    public static final double LN_PI = 1.14472988584940017414342735135305871164729481291531157151362307147213776988482607978362327027548970770200981222869798915;
 
     /* 1/pi */
-    public static final double M_1_PI = 0.31830988618379067153776752674502872406891929148091289749533468811779359526845307018022760553250617191214568545351591607;
+    public static final double INV_PI = 0.31830988618379067153776752674502872406891929148091289749533468811779359526845307018022760553250617191214568545351591607;
 
     /* pi/2 */
-    public static final double M_PI_2 = 1.57079632679489661923132169163975144209858469968755291048747229615390820314310449931401741267105853399107404325664115332;
+    public static final double HALF_PI = 1.57079632679489661923132169163975144209858469968755291048747229615390820314310449931401741267105853399107404325664115332;
 
-    public static final double M_LN_2PI = 1.83787706640934548356065947281123527972279494727556682563430308096553139185452079538948659727190839524401129324926867489;
+    public static final double LN_2PI = 1.83787706640934548356065947281123527972279494727556682563430308096553139185452079538948659727190839524401129324926867489;
 
     /* sqrt(pi),  1/sqrt(2pi),  sqrt(2/pi) : */
-    public static final double M_SQRT_PI = 1.77245385090551602729816748334114518279754945612238712821380778985291128459103218137495065673854466541622682362428257066;
-    public static final double M_1_SQRT_2PI = 0.39894228040143267793994605993438186847585863116493465766592582967065792589930183850125233390730693643030255886263518268;
+    public static final double SQRT_PI = 1.77245385090551602729816748334114518279754945612238712821380778985291128459103218137495065673854466541622682362428257066;
+    public static final double INV_SQRT_2PI = 0.39894228040143267793994605993438186847585863116493465766592582967065792589930183850125233390730693643030255886263518268;
     public static final double M_SQRT_2dPI = 0.79788456080286535587989211986876373695171726232986931533185165934131585179860367700250466781461387286060511772527036537;
 
     /* log(sqrt(pi)) = log(pi)/2 : */
-    public static final double M_LN_SQRT_PI = 0.57236494292470008707171367567652935582364740645765578575681153573606888494241303989181163513774485385100490611434899457;
+    public static final double LN_SQRT_PI = 0.57236494292470008707171367567652935582364740645765578575681153573606888494241303989181163513774485385100490611434899457;
     /* log(sqrt(2*pi)) = log(2*pi)/2 : */
-    public static final double M_LN_SQRT_2PI = 0.91893853320467274178032973640561763986139747363778341281715154048276569592726039769474329863595419762200564662463433744;
+    public static final double LN_SQRT_2PI = 0.91893853320467274178032973640561763986139747363778341281715154048276569592726039769474329863595419762200564662463433744;
     /* log(sqrt(pi/2)) = log(pi/2)/2 : */
-    public static final double M_LN_SQRT_PId2 = 0.22579135264472743236309761494744107178589733927752815869647153098937207395756568208887997163953551008000416560406365171;
-
-    public static final double ME_NONE = 0;
-    public static final double ME_DOMAIN = 1;
-    public static final double ME_RANGE = 2;
-    public static final double ME_NOCONV = 3;
-    public static final double ME_PRECISION = 4;
-    public static final double ME_UNDERFLOW = 5;
+    public static final double HALF_LN_SQRT_HALF_PI = 0.22579135264472743236309761494744107178589733927752815869647153098937207395756568208887997163953551008000416560406365171;
 
     /* constants taken from float.h for gcc 2.90.29 for Linux 2.0 i386  */
     /* -- should match Java since both are supposed to be IEEE 754 compliant */
-
-    /* Radix of exponent representation */
-    public static final int FLT_RADIX = 2;
 
     /* Difference between 1.0 and the minimum float/double greater than 1.0 */
     public static final double FLT_EPSILON = 1.19209290e-07F;
     public static final double DBL_EPSILON = 2.2204460492503131e-16;
     public static final double DBL_MIN = 2.22507385850720138309e-308;
     public static final double DBL_MAX = 1.797693134862315708145e+308;
-    public static final double SQRT_DBL_EPSILON = sqrt(DBL_EPSILON);
+    public static final double SQRT_DBL_EPSILON = Math.sqrt(DBL_EPSILON);
 
     /*
      * machine constants
@@ -212,7 +202,7 @@ public class MTools {
     /**
      * 1/2 * log(2 &#960;).
      */
-    private static final double HALF_LOG_2_PI = 0.5 * M_LN_2PI;
+    private static final double HALF_LOG_2_PI = 0.5 * LN_2PI;
     /**
      * exact Stirling expansion error for certain values.
      */
@@ -372,29 +362,29 @@ public class MTools {
             }
 
             switch (i) {
-                case 0:
+                case 0 -> {
                     z = y * y;
                     p1 = lng_a0 + z * (lng_a2 + z * (lng_a4 + z * (lng_a6 + z * (lng_a8 + z * lng_a10))));
                     p2 = z * (lng_a1 + z * (lng_a3 + z * (lng_a5 + z * (lng_a7 + z * (lng_a9 + z * lng_a11)))));
                     p = y * p1 + p2;
                     r += (p - 0.5 * y);
-                    break;
-                case 1:
+                }
+                case 1 -> {
                     z = y * y;
                     w = z * y;
                     p1 = lng_t0 + w * (t3 + w * (t6 + w * (t9 + w * t12)));    /*
                      * parallel comp
                      */
-
                     p2 = t1 + w * (t4 + w * (t7 + w * (t10 + w * t13)));
                     p3 = t2 + w * (t5 + w * (t8 + w * (t11 + w * t14)));
                     p = z * p1 - (lng_tt - w * (p2 + y * p3));
                     r += (lng_tf + p);
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     p1 = y * (u0 + y * (u1 + y * (u2 + y * (u3 + y * (u4 + y * u5)))));
                     p2 = 1 + y * (v1 + y * (v2 + y * (v3 + y * (v4 + y * v5))));
                     r += (-0.5 * y + p1 / p2);
+                }
             }
         } else if (ix < 0x40200000) {            /*
          * x < 8.0
@@ -944,52 +934,6 @@ public class MTools {
 
     public static double round(double value, int digits) {
         return BigDecimal.valueOf(value).setScale(digits, RoundingMode.HALF_UP).doubleValue();
-    }
-
-    /// math wappers
-
-    public static double sin(double x) {
-        return Math.sin(x);
-    }
-
-    public static double exp(double x) {
-        return Math.exp(x);
-    }
-
-    public static double sqrt(double x) {
-        return Math.sqrt(x);
-    }
-
-    public static double rint(double x) {
-        return Math.rint(x);
-    }
-
-    public static double floor(double x) {
-        return Math.floor(x);
-    }
-
-    public static double log(double x) {
-        return Math.log(x);
-    }
-
-    public static double max(double x, double y) {
-        return Math.max(x, y);
-    }
-
-    public static int max(int x, int y) {
-        return Math.max(x, y);
-    }
-
-    public static double pow(double x, double pow) {
-        return Math.pow(x, pow);
-    }
-
-    public static int floorMod(int a, int b) {
-        return Math.floorMod(a, b);
-    }
-
-    public static long floorMod(long a, long b) {
-        return Math.floorMod(a, b);
     }
 
     public static double floorMod(double a, double n) {

@@ -83,31 +83,33 @@ public class RVMRegressionTest {
 
         assertEquals("RVMRegression{kernel=RBF(sigma=20)}; fitted=true, rvm count=44", rvm.toString());
 
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: RVMRegression\n" +
-                "Model instance: RVMRegression{kernel=RBF(sigma=20)}\n" +
-                "> model is trained.\n" +
-                "> input variables: \n" +
-                "1. TV        dbl \n" +
-                "2. Radio     dbl \n" +
-                "3. Newspaper dbl \n" +
-                "> target variables: \n" +
-                "1. Sales dbl \n" +
-                "\n" +
-                "Fit and residuals for Sales\n" +
-                "===========================\n" +
-                "* summary: \n" +
-                "    Sales [dbl]          Sales [dbl]         Mean : 13.9191270    Mean :  0.1033730 \n" +
-                "   Min. :  2.5357814    Min. : -2.6614187 2nd Qu. : 17.4096608 2nd Qu. :  0.5255609 \n" +
-                "1st Qu. : 10.2752223 1st Qu. : -0.3540864    Max. : 27.0614187    Max. :  3.3858013 \n" +
-                " Median : 12.9077941  Median :  0.1139818                                           \n" +
-                "Total sum of squares     (TSS) : 5417.149\n" +
-                "Explained sum of squares (ESS) : 5519.327\n" +
-                "Residual sum of squares  (RSS) :  138.486\n" +
-                "\n" +
-                "Coeff. of determination  (R^2) :    0.974\n" +
-                "\n", rvmResult.toSummary());
+        assertEquals("""
+                Regression predict summary
+                =======================
+                Model class: RVMRegression
+                Model instance: RVMRegression{kernel=RBF(sigma=20)}
+                > model is trained.
+                > input variables:\s
+                1. TV        dbl\s
+                2. Radio     dbl\s
+                3. Newspaper dbl\s
+                > target variables:\s
+                1. Sales dbl\s
+
+                Fit and residuals for Sales
+                ===========================
+                * summary:\s
+                    Sales [dbl]          Sales [dbl]         Mean : 13.9191270    Mean :  0.1033730\s
+                   Min. :  2.5357814    Min. : -2.6614187 2nd Qu. : 17.4096608 2nd Qu. :  0.5255609\s
+                1st Qu. : 10.2752223 1st Qu. : -0.3540864    Max. : 27.0614187    Max. :  3.3858013\s
+                 Median : 12.9077941  Median :  0.1139818                                          \s
+                Total sum of squares     (TSS) : 5417.149
+                Explained sum of squares (ESS) : 5519.327
+                Residual sum of squares  (RSS) :  138.486
+
+                Coeff. of determination  (R^2) :    0.974
+
+                """, rvmResult.toSummary());
 
         assertEquals(rvm.toContent(), rvm.toSummary());
     }

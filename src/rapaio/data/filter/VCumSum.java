@@ -23,6 +23,8 @@ package rapaio.data.filter;
 
 import rapaio.data.Var;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
  */
@@ -32,6 +34,7 @@ public class VCumSum implements VFilter {
         return new VCumSum();
     }
 
+    @Serial
     private static final long serialVersionUID = -4903712768679690937L;
 
     @Override

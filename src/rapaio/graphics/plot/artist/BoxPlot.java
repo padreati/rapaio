@@ -30,7 +30,6 @@ import rapaio.data.stream.VSpot;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionFill;
 import rapaio.graphics.opt.GOptionPch;
-import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.PchPalette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -38,6 +37,7 @@ import rapaio.graphics.plot.Axis;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -50,11 +50,11 @@ import static rapaio.graphics.Plotter.color;
  */
 public class BoxPlot extends Artist {
 
+    @Serial
     private static final long serialVersionUID = 8868603141563818477L;
 
     private final Var[] vars;
     private final String[] names;
-    private final GOptions options = new GOptions();
 
     public BoxPlot(Var x, Var factor, GOption<?>... opts) {
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.getLabel(s.row()), mapping(VSpot::getDouble, toList())));

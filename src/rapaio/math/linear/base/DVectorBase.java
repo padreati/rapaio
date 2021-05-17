@@ -26,6 +26,7 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.VType;
 import rapaio.math.linear.dense.DVectorDense;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
@@ -34,6 +35,7 @@ import java.util.stream.DoubleStream;
  */
 public class DVectorBase extends AbstractDVector {
 
+    @Serial
     private static final long serialVersionUID = -6444914455097469657L;
 
     protected final int size;
@@ -87,14 +89,11 @@ public class DVectorBase extends AbstractDVector {
     public DVector copy(VType type) {
         double[] copy = new double[size];
         System.arraycopy(values, 0, copy, 0, size);
-        switch (type) {
-            case BASE:
-                return new DVectorBase(size, copy);
-            case DENSE:
-                return new DVectorDense(size, copy);
-            default:
-                throw new IllegalArgumentException("DVType." + type.name() + " cannot be used to create a copy.");
-        }
+        return switch (type) {
+            case BASE -> new DVectorBase(size, copy);
+            case DENSE -> new DVectorDense(size, copy);
+            default -> throw new IllegalArgumentException("DVType." + type.name() + " cannot be used to create a copy.");
+        };
     }
 
     @Override

@@ -71,7 +71,7 @@ public class RMSETest {
         var prediction = lm.predict(df, true);
         for (String target : targets) {
             RegressionScore rmse = RMSE.newMetric().compute(df.rvar(target), prediction.prediction(target));
-            assertEquals(prediction.rss(target) / df.rowCount(), Math.pow(rmse.getValue(), 2), TOL);
+            assertEquals(prediction.rss(target) / df.rowCount(), Math.pow(rmse.value(), 2), TOL);
         }
     }
 }

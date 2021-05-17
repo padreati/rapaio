@@ -21,9 +21,6 @@
 
 package rapaio.ml.eval.metric;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -32,13 +29,7 @@ import rapaio.printer.opt.POption;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/28/20.
  */
-@Builder
-@Getter
-public class RegressionScore implements Printable {
-
-    @NonNull
-    private final RegressionMetric metric;
-    private final double value;
+public record RegressionScore(RegressionMetric metric, double value) implements Printable {
 
     @Override
     public String toString() {

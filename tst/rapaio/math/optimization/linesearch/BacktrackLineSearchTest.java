@@ -21,7 +21,6 @@
 
 package rapaio.math.optimization.linesearch;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.math.functions.RDerivative;
@@ -106,15 +105,6 @@ public class BacktrackLineSearchTest {
 
     }
 
-    @RequiredArgsConstructor
-    static class T {
-        public final RFunction f;
-        public final RDerivative d1f;
-        public final DVector d;
-        public final DVector x0;
-        public final double alpha;
-        public final double beta;
-        public final double t;
-        public final DVector x1;
+    record T(RFunction f, RDerivative d1f, DVector d, DVector x0, double alpha, double beta, double t, DVector x1) {
     }
 }

@@ -21,6 +21,8 @@
 
 package rapaio.core.distributions;
 
+import java.io.Serial;
+
 /**
  * Discrete uniform distribution
  *
@@ -32,6 +34,7 @@ public class DUniform implements Distribution {
         return new DUniform(a, b);
     }
 
+    @Serial
     private static final long serialVersionUID = -6164593855805329051L;
     private final double a;
     private final double b;

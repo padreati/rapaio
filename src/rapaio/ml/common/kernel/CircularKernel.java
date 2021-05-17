@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * Circular Kernel
  * <p>
@@ -40,6 +42,7 @@ import rapaio.printer.Format;
  */
 public class CircularKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -3141672110292845302L;
 
     private final double sigma;

@@ -26,6 +26,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 
 import java.awt.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -38,6 +39,7 @@ import static rapaio.graphics.Plotter.*;
  */
 public class GOptions implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -8407683729055712796L;
 
     private static final GOptions defaults;
@@ -64,6 +66,7 @@ public class GOptions implements Serializable {
         defaults.hAlign = new GOptionHAlign(HALIGN_LEFT);
         defaults.vAlign = new GOptionVAlign(VALIGN_TOP);
         defaults.font = new GOptionFont(new Font("DejaVu Sans", Font.PLAIN, 20));
+        defaults.position = new GOptionPosition(new Position(0, 0, 1, 1));
     }
 
     private GOptions parent;
@@ -88,6 +91,7 @@ public class GOptions implements Serializable {
     private GOptionHAlign hAlign;
     private GOptionVAlign vAlign;
     private GOptionFont font;
+    private GOptionPosition position;
 
     public GOptions bind(GOption<?>... options) {
         Arrays.stream(options).forEach(o -> o.bind(this));
@@ -115,7 +119,8 @@ public class GOptions implements Serializable {
                 labels,
                 hAlign,
                 vAlign,
-                font
+                font,
+                position
         };
     }
 
@@ -395,5 +400,16 @@ public class GOptions implements Serializable {
 
     public void setFont(GOptionFont font) {
         this.font = font;
+    }
+
+    public Position getPosition() {
+        if (position == null) {
+            return parent != null ? parent.getPosition() : defaults.position.apply(this);
+        }
+        return position.apply(this);
+    }
+
+    public void setPosition(GOptionPosition position) {
+        this.position = position;
     }
 }

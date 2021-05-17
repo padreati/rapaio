@@ -28,6 +28,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.Arrays;
 
 /**
@@ -35,6 +36,7 @@ import java.util.Arrays;
  */
 public abstract class AbstractCorrelation implements Correlation {
 
+    @Serial
     private static final long serialVersionUID = 1291660783599973889L;
     protected final DistanceMatrix d;
     protected final int rowCount;

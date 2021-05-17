@@ -21,14 +21,12 @@
 
 package rapaio.math.optimization.scalar;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.util.NotImplementedException;
 import rapaio.util.function.Double2DoubleFunction;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -36,13 +34,13 @@ import java.io.Serializable;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/26/21.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class RootFind1D extends ParamSet<RootFind1D> implements Serializable {
 
     public static RootFind1D newModel() {
         return new RootFind1D();
     }
 
+    @Serial
     private static final long serialVersionUID = -2933255484925187026L;
 
     public final ValueParam<Double, RootFind1D> x0 = new ValueParam<>(this,
@@ -63,42 +61,44 @@ public class RootFind1D extends ParamSet<RootFind1D> implements Serializable {
     public final ValueParam<Method, RootFind1D> method = new ValueParam<>(this,
             Method.ITP, "method", "method usd for scalar root finding");
 
-    @Getter
     private double x;
-
-    @Getter
     private boolean converged;
-
-    @Getter
     private int iterations;
 
-    @RequiredArgsConstructor
     public enum Method {
         Bisection,
         RegulaFalsi,
         ITP,
         Secant,
         Brent,
-        Ridder;
+        Ridder
+    }
+
+    private RootFind1D() {
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public boolean isConverged() {
+        return converged;
+    }
+
+    public int getIterations() {
+        return iterations;
     }
 
     public double optimize(Double2DoubleFunction f) {
-        switch (method.get()) {
-            case Bisection:
-                return bisection_optimize(f);
-            case RegulaFalsi:
-                return regula_falsi_optimize(f);
-            case ITP:
-                return itp_optimize(f);
-            case Secant:
-                return secant_optimization(f);
-            case Brent:
-                return brent_optimization(f);
-            case Ridder:
-                return ridder_optimization(f);
-            default:
-                throw new NotImplementedException();
-        }
+        return switch (method.get()) {
+            case Bisection -> bisection_optimize(f);
+            case RegulaFalsi -> regula_falsi_optimize(f);
+            case ITP -> itp_optimize(f);
+            case Secant -> secant_optimization(f);
+            case Brent -> brent_optimization(f);
+            case Ridder -> ridder_optimization(f);
+            default -> throw new NotImplementedException();
+        };
     }
 
     private double bisection_optimize(Double2DoubleFunction f) {

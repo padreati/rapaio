@@ -60,7 +60,7 @@ public class PCATest {
         pca.fit(df);
 
         assertArrayEquals(new double[]{1.67100943, 0.83832597, 0.68195393},
-                pca.getEigenValues().asDense().elements(), TOL);
+                pca.getValues().asDense().elements(), TOL);
 
         double[][] eigenvectors = new double[][]{
                 {-0.49210223, -0.64670286, 0.58276136},
@@ -69,7 +69,7 @@ public class PCATest {
         };
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                assertEquals(Math.abs(eigenvectors[i][j]), Math.abs(pca.getEigenVectors().get(i, j)), 1e-6);
+                assertEquals(Math.abs(eigenvectors[i][j]), Math.abs(pca.getVectors().get(i, j)), 1e-6);
             }
         }
 

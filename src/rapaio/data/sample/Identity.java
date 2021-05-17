@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
+import java.io.Serial;
+
 /**
  * Identity sampling means the sample is identical with the original set of data
  * <p>
@@ -32,6 +34,7 @@ import rapaio.data.Var;
  */
 public final class Identity implements RowSampler {
 
+    @Serial
     private static final long serialVersionUID = -1133893495082466752L;
 
     @Override

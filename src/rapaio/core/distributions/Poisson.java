@@ -21,8 +21,10 @@
 
 package rapaio.core.distributions;
 
-import rapaio.math.MTools;
+import rapaio.math.MathTools;
 import rapaio.printer.Format;
+
+import java.io.Serial;
 
 /**
  * Discrete probability distribution which expresses the probability of a
@@ -36,6 +38,7 @@ public class Poisson implements Distribution {
         return new Poisson(lambda);
     }
 
+    @Serial
     private static final long serialVersionUID = 2013039227493064895L;
     private final double lambda;
 
@@ -67,14 +70,14 @@ public class Poisson implements Distribution {
         double xx = Math.rint(x);
         if (xx != x)
             return 0;
-        return MTools.pdfPois(x, lambda);
+        return MathTools.pdfPois(x, lambda);
     }
 
     @Override
     public double cdf(double x) {
         if (x < 0)
             return 0.0;
-        return MTools.incompleteGammaComplement(Math.floor(x + 1), lambda);
+        return MathTools.incompleteGammaComplement(Math.floor(x + 1), lambda);
     }
 
     @Override

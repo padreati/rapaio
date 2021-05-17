@@ -119,9 +119,12 @@ public class MatrixMultiplication {
         }
 
         DVector C = DVector.zeros(A.rowCount());
-        IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
-            for (int j = 0; j < A.colCount(); j++) {
-                C.set(i, C.get(i) + A.get(i, j) * b.get(j));
+        int len = Math.floorDiv(A.rowCount(), 16);
+        IntStream.range(0, len + 1).parallel().forEach(s -> {
+            for (int i = s * 16; i < Math.min((s + 1) * 16, A.rowCount()); i++) {
+                for (int j = 0; j < A.colCount(); j++) {
+                    C.set(i, C.get(i) + A.get(i, j) * b.get(j));
+                }
             }
         });
         return C;
@@ -176,9 +179,12 @@ public class MatrixMultiplication {
         for (int i = 0; i < C.colCount(); i++) {
             bs[i] = B.mapCol(i);
         }
-        IntStream.range(0, C.rowCount()).parallel().forEach(i -> {
-            for (int j = 0; j < C.colCount(); j++) {
-                C.set(i, j, as[i].dot(bs[j]));
+        int len = Math.floorDiv(C.rowCount(), 16);
+        IntStream.range(0, len + 1).parallel().forEach(s -> {
+            for (int i = s * 16; i < Math.min((s + 1) * 16, C.rowCount()); i++) {
+                for (int j = 0; j < C.colCount(); j++) {
+                    C.set(i, j, as[i].dot(bs[j]));
+                }
             }
         });
         return C;

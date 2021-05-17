@@ -29,6 +29,7 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,6 +64,7 @@ public class GaussianEstimator extends AbstractEstimator {
         return Arrays.stream(names).map(GaussianEstimator::new).collect(Collectors.toList());
     }
 
+    @Serial
     private static final long serialVersionUID = -5974296887792054267L;
 
     private final Map<String, Normal> normals = new HashMap<>();

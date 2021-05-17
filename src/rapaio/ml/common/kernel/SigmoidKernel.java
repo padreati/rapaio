@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * The Hyperbolic Tangent Kernel is also known as the Sigmoid Kernel and as
  * the Multilayer Perceptron (MLP) kernel. The Sigmoid Kernel comes from the
@@ -50,6 +52,7 @@ import rapaio.printer.Format;
  */
 public class SigmoidKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = 7321024091559311770L;
 
     private final double alpha;

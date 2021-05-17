@@ -30,6 +30,7 @@ import rapaio.math.optimization.linesearch.LineSearch;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class SteepestDescentMinimize extends ParamSet<SteepestDescentMinimize> i
         return new SteepestDescentMinimize();
     }
 
+    @Serial
     private static final long serialVersionUID = 6935528214774334177L;
 
     public final ValueParam<Double, SteepestDescentMinimize> tol = new ValueParam<>(this,

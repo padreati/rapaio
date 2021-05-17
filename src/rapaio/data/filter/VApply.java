@@ -26,6 +26,7 @@ import rapaio.data.stream.VSpot;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2IntFunction;
 
+import java.io.Serial;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -56,6 +57,7 @@ public class VApply implements VFilter {
         return new VApply(Type.LABEL, F_SPOT, F_DOUBLE, F_INT, function);
     }
 
+    @Serial
     private static final long serialVersionUID = 3929781693784001199L;
 
     private static final Consumer<VSpot> F_SPOT = vSpot -> {

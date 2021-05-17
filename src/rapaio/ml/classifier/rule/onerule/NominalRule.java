@@ -23,6 +23,8 @@ package rapaio.ml.classifier.rule.onerule;
 
 import rapaio.core.tools.DensityVector;
 
+import java.io.Serial;
+
 import static rapaio.printer.Format.floatFlexLong;
 
 /**
@@ -32,6 +34,7 @@ import static rapaio.printer.Format.floatFlexLong;
  */
 public class NominalRule extends Rule {
 
+    @Serial
     private static final long serialVersionUID = -6974686908599235407L;
 
     private final String testLabel;

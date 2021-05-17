@@ -23,6 +23,7 @@ package rapaio.ml.common;
 
 import rapaio.util.function.SFunction;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import java.util.TreeMap;
  */
 public class MultiListParam<K, T, S extends ParamSet<S>> implements Param<Map<K, List<T>>, S> {
 
+    @Serial
     private static final long serialVersionUID = 6971154885891319057L;
     private final S params;
     private final TreeMap<K, List<T>> defaultValue;

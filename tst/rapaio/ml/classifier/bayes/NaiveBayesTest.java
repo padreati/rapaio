@@ -194,22 +194,24 @@ public class NaiveBayesTest {
                 "Gaussian{test=petal-length, values=[]}," +
                 "Gaussian{test=petal-width, values=[]}]}", model.toString());
 
-        assertEquals("NaiveBayes model\n" +
-                "================\n" +
-                "\n" +
-                "Capabilities:\n" +
-                "types inputs/targets: NOMINAL,DOUBLE,INT,BINARY/NOMINAL,BINARY\n" +
-                "counts inputs/targets: [0,1000000] / [1,1]\n" +
-                "missing inputs/targets: true/false\n" +
-                "\n" +
-                "Model not fitted.\n" +
-                "\n" +
-                "Prior: MLE\n" +
-                "Estimators: \n" +
-                "\t- Gaussian{test=sepal-length, values=[]}\n" +
-                "\t- Gaussian{test=sepal-width, values=[]}\n" +
-                "\t- Gaussian{test=petal-length, values=[]}\n" +
-                "\t- Gaussian{test=petal-width, values=[]}\n", model.toContent());
+        assertEquals("""
+                NaiveBayes model
+                ================
+
+                Capabilities:
+                types inputs/targets: NOMINAL,DOUBLE,INT,BINARY/NOMINAL,BINARY
+                counts inputs/targets: [0,1000000] / [1,1]
+                missing inputs/targets: true/false
+
+                Model not fitted.
+
+                Prior: MLE
+                Estimators:\s
+                \t- Gaussian{test=sepal-length, values=[]}
+                \t- Gaussian{test=sepal-width, values=[]}
+                \t- Gaussian{test=petal-length, values=[]}
+                \t- Gaussian{test=petal-width, values=[]}
+                """, model.toContent());
         assertEquals(model.toSummary(), model.toContent());
         assertEquals(model.toFullContent(), model.toContent());
 
@@ -225,31 +227,33 @@ public class NaiveBayesTest {
                 "Gaussian{test=petal-width, values=[virginica:Normal(mu=2.026, sd=0.2718897), " +
                 "setosa:Normal(mu=0.246, sd=0.1043264), versicolor:Normal(mu=1.326, sd=0.1957652)]}]}", model.toString());
 
-        assertEquals("NaiveBayes model\n" +
-                "================\n" +
-                "\n" +
-                "Capabilities:\n" +
-                "types inputs/targets: NOMINAL,DOUBLE,INT,BINARY/NOMINAL,BINARY\n" +
-                "counts inputs/targets: [0,1000000] / [1,1]\n" +
-                "missing inputs/targets: true/false\n" +
-                "\n" +
-                "Model is fitted.\n" +
-                "\n" +
-                "input vars: \n" +
-                "0. sepal-length : DOUBLE  | \n" +
-                "1.  sepal-width : DOUBLE  | \n" +
-                "2. petal-length : DOUBLE  | \n" +
-                "3.  petal-width : DOUBLE  | \n" +
-                "\n" +
-                "target vars:\n" +
-                "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
-                "\n" +
-                "Prior: MLE{virginica:0.3333333,setosa:0.3333333,versicolor:0.3333333}\n" +
-                "Estimators: \n" +
-                "\t- Gaussian{test=sepal-length, values=[virginica:Normal(mu=6.588, sd=0.6294887), setosa:Normal(mu=5.006, sd=0.348947), versicolor:Normal(mu=5.936, sd=0.5109834)]}\n" +
-                "\t- Gaussian{test=sepal-width, values=[virginica:Normal(mu=2.974, sd=0.3192554), setosa:Normal(mu=3.428, sd=0.3752546), versicolor:Normal(mu=2.77, sd=0.3106445)]}\n" +
-                "\t- Gaussian{test=petal-length, values=[virginica:Normal(mu=5.552, sd=0.5463479), setosa:Normal(mu=1.462, sd=0.1719186), versicolor:Normal(mu=4.26, sd=0.4651881)]}\n" +
-                "\t- Gaussian{test=petal-width, values=[virginica:Normal(mu=2.026, sd=0.2718897), setosa:Normal(mu=0.246, sd=0.1043264), versicolor:Normal(mu=1.326, sd=0.1957652)]}\n", model.toContent());
+        assertEquals("""
+                NaiveBayes model
+                ================
+
+                Capabilities:
+                types inputs/targets: NOMINAL,DOUBLE,INT,BINARY/NOMINAL,BINARY
+                counts inputs/targets: [0,1000000] / [1,1]
+                missing inputs/targets: true/false
+
+                Model is fitted.
+
+                input vars:\s
+                0. sepal-length : DOUBLE  |\s
+                1.  sepal-width : DOUBLE  |\s
+                2. petal-length : DOUBLE  |\s
+                3.  petal-width : DOUBLE  |\s
+
+                target vars:
+                > class : NOMINAL [?,setosa,versicolor,virginica]
+
+                Prior: MLE{virginica:0.3333333,setosa:0.3333333,versicolor:0.3333333}
+                Estimators:\s
+                \t- Gaussian{test=sepal-length, values=[virginica:Normal(mu=6.588, sd=0.6294887), setosa:Normal(mu=5.006, sd=0.348947), versicolor:Normal(mu=5.936, sd=0.5109834)]}
+                \t- Gaussian{test=sepal-width, values=[virginica:Normal(mu=2.974, sd=0.3192554), setosa:Normal(mu=3.428, sd=0.3752546), versicolor:Normal(mu=2.77, sd=0.3106445)]}
+                \t- Gaussian{test=petal-length, values=[virginica:Normal(mu=5.552, sd=0.5463479), setosa:Normal(mu=1.462, sd=0.1719186), versicolor:Normal(mu=4.26, sd=0.4651881)]}
+                \t- Gaussian{test=petal-width, values=[virginica:Normal(mu=2.026, sd=0.2718897), setosa:Normal(mu=0.246, sd=0.1043264), versicolor:Normal(mu=1.326, sd=0.1957652)]}
+                """, model.toContent());
         assertEquals(model.toSummary(), model.toContent());
         assertEquals(model.toFullContent(), model.toContent());
 

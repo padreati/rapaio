@@ -32,13 +32,16 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public class ConstantRegression extends AbstractRegressionModel<ConstantRegression, RegressionResult> {
 
+    @Serial
     private static final long serialVersionUID = -2537862585258148528L;
 
     public static ConstantRegression with(double c) {
@@ -62,16 +65,10 @@ public class ConstantRegression extends AbstractRegressionModel<ConstantRegressi
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .minInputCount(0)
-                .maxInputCount(1_000_000)
-                .minTargetCount(1)
-                .maxTargetCount(1)
-                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.STRING))
-                .targetType(VarType.DOUBLE)
-                .allowMissingInputValues(true)
-                .allowMissingTargetValues(true)
-                .build();
+        return new Capabilities(
+                0, 1_000_000,
+                Arrays.asList(VarType.DOUBLE, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.STRING), true,
+                1, 1, List.of(VarType.DOUBLE), true);
     }
 
     @Override

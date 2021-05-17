@@ -25,6 +25,8 @@ import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
+import java.io.Serial;
+
 /**
  * The Multiquadric kernel can be used in the same situations as the Rational Quadratic kernel.
  * As is the case with the Sigmoid kernel, it is also an example of an
@@ -36,6 +38,7 @@ import rapaio.printer.Format;
  */
 public class MultiQuadricKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -4215277675823113044L;
 
     private final double c;

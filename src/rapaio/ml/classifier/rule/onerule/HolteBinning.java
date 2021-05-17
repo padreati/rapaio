@@ -27,11 +27,14 @@ import rapaio.data.Var;
 import rapaio.ml.classifier.rule.OneRule;
 import rapaio.util.collection.IntArrays;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/30/20.
  */
 public class HolteBinning implements OneRule.Binning {
 
+    @Serial
     private static final long serialVersionUID = -31152824223543734L;
 
     private final int minCount;

@@ -21,20 +21,12 @@
 
 package rapaio.graphics.opt;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import rapaio.util.collection.DoubleArrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/20.
  */
-@RequiredArgsConstructor
-public final class Sizes {
-
-    @Getter
-    private final boolean absolute;
-    private final double[] relativeSizes;
-    private final int[] absoluteSizes;
+public record Sizes(boolean absolute, double[] relativeSizes, int[] absoluteSizes) {
 
     public double[] getRelativeSizes(int length, double totalSize) {
         double[] dimensions = DoubleArrays.newFill(length, -1);
@@ -97,6 +89,6 @@ public final class Sizes {
     }
 
     public double[] computeSizes(int length, double totalSize) {
-        return isAbsolute() ? getAbsoluteSizes(length, totalSize) : getRelativeSizes(length, totalSize);
+        return absolute() ? getAbsoluteSizes(length, totalSize) : getRelativeSizes(length, totalSize);
     }
 }

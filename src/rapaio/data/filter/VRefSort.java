@@ -29,6 +29,8 @@ import rapaio.printer.opt.POption;
 import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
  */
@@ -38,6 +40,7 @@ public class VRefSort implements VFilter {
         return new VRefSort(rowComparators);
     }
 
+    @Serial
     private static final long serialVersionUID = -1075060445963356550L;
     private final IntComparator aggregateComparator;
 

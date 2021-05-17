@@ -95,12 +95,8 @@ public class JavaDBUtil {
             for (int i = 0; i < df.rowCount(); i++) {
                 for (int j = 0; j < types.length; j++) {
                     switch (types[j]) {
-                        case "VARCHAR(8000)":
-                            ps.setString(j + 1, df.getLabel(i, j));
-                            break;
-                        case "DOUBLE":
-                            ps.setDouble(j + 1, df.getDouble(i, j));
-                            break;
+                        case "VARCHAR(8000)" -> ps.setString(j + 1, df.getLabel(i, j));
+                        case "DOUBLE" -> ps.setDouble(j + 1, df.getDouble(i, j));
                     }
                 }
                 ps.execute();
@@ -123,12 +119,8 @@ public class JavaDBUtil {
                 for (int i = 0; i < md.getColumnCount(); i++) {
                     String sqlTypeName = md.getColumnTypeName(i + 1);
                     switch (sqlTypeName) {
-                        case "DOUBLE":
-                        case "INTEGER":
-                            lists.get(i).add(rs.getDouble(i + 1));
-                            break;
-                        default:
-                            lists.get(i).add(rs.getString(i + 1));
+                        case "DOUBLE", "INTEGER" -> lists.get(i).add(rs.getDouble(i + 1));
+                        default -> lists.get(i).add(rs.getString(i + 1));
                     }
                 }
             }
@@ -136,15 +128,14 @@ public class JavaDBUtil {
             for (int i = 0; i < md.getColumnCount(); i++) {
                 String sqlTypeName = md.getColumnTypeName(i + 1);
                 switch (sqlTypeName) {
-                    case "DOUBLE":
-                    case "INTEGER":
+                    case "DOUBLE", "INTEGER" -> {
                         VarDouble v1 = VarDouble.empty(lists.get(i).size());
                         for (int j = 0; j < lists.get(i).size(); j++) {
                             v1.setDouble(j, (Double) lists.get(i).get(j));
                         }
                         vars.add(v1);
-                        break;
-                    default:
+                    }
+                    default -> {
                         ArrayList<String> dict = new ArrayList<>();
                         for (int j = 0; j < lists.get(i).size(); j++) {
                             dict.add((String) lists.get(i).get(j));
@@ -154,6 +145,7 @@ public class JavaDBUtil {
                             v2.setLabel(j, (String) lists.get(i).get(j));
                         }
                         vars.add(v2);
+                    }
                 }
             }
             for (int i = 0; i < vars.size(); i++) {

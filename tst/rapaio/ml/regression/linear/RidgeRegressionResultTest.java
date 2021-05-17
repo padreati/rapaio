@@ -180,25 +180,27 @@ public class RidgeRegressionResultTest {
 
         assertEquals("RidgeRegression{lambda=1.2}, not fitted.", model1.toContent());
 
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: RidgeRegression\n" +
-                "Model instance: RidgeRegression{centering=NONE,intercept=false,lambda=3.1415927,scaling=NONE}\n" +
-                "> model is trained.\n" +
-                "> input variables: \n" +
-                "1. TV        dbl \n" +
-                "2. Radio     dbl \n" +
-                "3. Newspaper dbl \n" +
-                "> target variables: \n" +
-                "1. Sales dbl \n" +
-                "\n" +
-                "Target <<< Sales >>>\n" +
-                "\n" +
-                "> Coefficients: \n" +
-                "  Name    Estimate  \n" +
-                "TV        0.0537927 \n" +
-                "Radio     0.2222129 \n" +
-                "Newspaper 0.0168220 \n" +
-                "\n", model2.fit(df, "Sales").toSummary());
+        assertEquals("""
+                Regression predict summary
+                =======================
+                Model class: RidgeRegression
+                Model instance: RidgeRegression{centering=NONE,intercept=false,lambda=3.1415927,scaling=NONE}
+                > model is trained.
+                > input variables:\s
+                1. TV        dbl\s
+                2. Radio     dbl\s
+                3. Newspaper dbl\s
+                > target variables:\s
+                1. Sales dbl\s
+
+                Target <<< Sales >>>
+
+                > Coefficients:\s
+                  Name    Estimate \s
+                TV        0.0537927\s
+                Radio     0.2222129\s
+                Newspaper 0.0168220\s
+
+                """, model2.fit(df, "Sales").toSummary());
     }
 }

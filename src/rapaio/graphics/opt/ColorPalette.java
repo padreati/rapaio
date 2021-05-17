@@ -22,6 +22,7 @@
 package rapaio.graphics.opt;
 
 import java.awt.*;
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -61,6 +62,7 @@ public enum ColorPalette implements Serializable {
 
 class StandardColorPalette implements ColorPalette.Mapping {
 
+    @Serial
     private static final long serialVersionUID = -7776446499900459739L;
     private static final Color[] colors;
 
@@ -111,6 +113,7 @@ class StandardColorPalette implements ColorPalette.Mapping {
 
 class GrayColorPalette implements ColorPalette.Mapping {
 
+    @Serial
     private static final long serialVersionUID = 1322632809893188876L;
 
     @Override
@@ -127,6 +130,7 @@ class GrayColorPalette implements ColorPalette.Mapping {
 
 class HueColorPalette implements ColorPalette.Mapping {
 
+    @Serial
     private static final long serialVersionUID = -677234648694278016L;
 
     @Override
@@ -142,6 +146,7 @@ class HueColorPalette implements ColorPalette.Mapping {
 
 class HueBlueRed implements ColorPalette.Mapping {
 
+    @Serial
     private static final long serialVersionUID = -1363705251691599652L;
 
     @Override
@@ -157,6 +162,7 @@ class HueBlueRed implements ColorPalette.Mapping {
 
 class RedBlueGradient implements ColorPalette.Mapping {
 
+    @Serial
     private static final long serialVersionUID = -8475382197708592744L;
 
     @Override
@@ -179,6 +185,7 @@ class RedBlueGradient implements ColorPalette.Mapping {
 
 class RedGreenBluePalette implements ColorPalette.Mapping {
 
+    @Serial
     private static final long serialVersionUID = 7373521590860220143L;
 
     @Override

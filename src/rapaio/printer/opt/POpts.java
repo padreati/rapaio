@@ -23,6 +23,7 @@ package rapaio.printer.opt;
 
 import rapaio.printer.Format;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -34,6 +35,7 @@ import java.util.Arrays;
  */
 public class POpts implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -2369999674228369814L;
 
     public static final POpts defaults;

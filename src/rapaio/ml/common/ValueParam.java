@@ -23,6 +23,7 @@ package rapaio.ml.common;
 
 import rapaio.util.function.SFunction;
 
+import java.io.Serial;
 import java.util.Objects;
 
 /**
@@ -32,6 +33,7 @@ import java.util.Objects;
  */
 public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
 
+    @Serial
     private static final long serialVersionUID = -199987098272932206L;
     protected final S params;
     protected final T defaultValue;

@@ -24,6 +24,8 @@ package rapaio.ml.common.kernel;
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 
+import java.io.Serial;
+
 import static rapaio.printer.Format.floatFlex;
 
 /**
@@ -46,6 +48,7 @@ import static rapaio.printer.Format.floatFlex;
  */
 public class RBFKernel extends AbstractKernel {
 
+    @Serial
     private static final long serialVersionUID = -2105174939802643460L;
 
     private final double sigma;

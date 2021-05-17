@@ -22,7 +22,7 @@
 package rapaio.sys;
 
 import rapaio.graphics.Figure;
-import rapaio.image.ImageUtility;
+import rapaio.image.ImageTools;
 import rapaio.printer.Printer;
 import rapaio.printer.standard.StandardPrinter;
 
@@ -85,7 +85,7 @@ public class WS {
 
     public static void saveImage(Figure figure, int width, int height, String fileName) {
         try {
-            ImageUtility.saveImage(figure, width, height, fileName);
+            ImageTools.saveFigureImage(figure, width, height, fileName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -96,6 +96,6 @@ public class WS {
     }
 
     public static BufferedImage image(Figure figure, int w, int h) {
-        return ImageUtility.buildImage(figure, w, h);
+        return ImageTools.buildFigureImage(figure, w, h);
     }
 }

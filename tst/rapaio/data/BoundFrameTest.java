@@ -41,7 +41,7 @@ public class BoundFrameTest {
     // frame with first rows
     private final Frame df1 = SolidFrame.byVars(
             VarDouble.wrap(1, 2, 3, 4).name("x"),
-            VarDouble.wrap(1 / 1., 1 / 2., 1 / 3., 1 / 4.).name("1/x")
+            VarDouble.wrap(1, 1 / 2., 1 / 3., 1 / 4.).name("1/x")
     );
 
     // frame with second set of rows
@@ -134,6 +134,7 @@ public class BoundFrameTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testBuildersByRows() {
 
         Frame source = Datasets.loadRandom();
@@ -222,7 +223,7 @@ public class BoundFrameTest {
         assertEquals(6, df.rvar(0).size());
         assertEquals(1., df.rvar(0).getDouble(0), 1e-12);
         assertEquals(6., df.rvar("x").getDouble(5), 1e-12);
-        assertEquals(1 / 1., df.rvar(1).getDouble(0), 1e-12);
+        assertEquals(1, df.rvar(1).getDouble(0), 1e-12);
         assertEquals(1 / 6., df.rvar("1/x").getDouble(5), 1e-12);
         assertEquals(0, df.varIndex("x"));
         assertEquals(1, df.varIndex("1/x"));

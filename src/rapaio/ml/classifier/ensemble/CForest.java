@@ -21,7 +21,6 @@
 
 package rapaio.ml.classifier.ensemble;
 
-import lombok.Getter;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
@@ -54,6 +53,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -73,6 +73,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         return new CForest();
     }
 
+    @Serial
     private static final long serialVersionUID = -145958939373105497L;
 
     public final ValueParam<Boolean, CForest> oob = new ValueParam<>(this, false,
@@ -96,15 +97,10 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
             "bagging", "Bagging mode used to average the results");
 
     // learning artifacts
-    @Getter
     private List<ClassifierModel> predictors = new ArrayList<>();
-    @Getter
     private double oobError = Double.NaN;
-    @Getter
     private DMatrix oobDensities;
-    @Getter
     private Var oobPredictedClasses;
-    @Getter
     private Var oobTrueClass;
 
     private final Map<String, List<Double>> freqVIMap = new HashMap<>();
@@ -113,6 +109,26 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
 
     private CForest() {
         rowSampler.set(RowSampler.bootstrap());
+    }
+
+    public List<ClassifierModel> getPredictors() {
+        return predictors;
+    }
+
+    public double getOobError() {
+        return oobError;
+    }
+
+    public DMatrix getOobDensities() {
+        return oobDensities;
+    }
+
+    public Var getOobPredictedClasses() {
+        return oobPredictedClasses;
+    }
+
+    public Var getOobTrueClass() {
+        return oobTrueClass;
     }
 
     @Override
@@ -128,14 +144,9 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     @Override
     public Capabilities capabilities() {
         Capabilities cc = model.get().capabilities();
-        return Capabilities.builder()
-                .minInputCount(cc.getMinInputCount()).maxInputCount(cc.getMaxInputCount())
-                .inputTypes(Arrays.asList(cc.getInputTypes().toArray(VarType[]::new)))
-                .allowMissingInputValues(cc.getAllowMissingInputValues())
-                .minTargetCount(1).maxTargetCount(1)
-                .targetType(VarType.NOMINAL)
-                .allowMissingTargetValues(false)
-                .build();
+        return new Capabilities(
+                cc.minInputCount(), cc.maxInputCount(), Arrays.asList(cc.inputTypes().toArray(VarType[]::new)), cc.allowMissingInputValues(),
+                1, 1, List.of(VarType.NOMINAL), false);
     }
 
     private Frame getVIInfo(Map<String, List<Double>> viMap) {
@@ -289,8 +300,8 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     private void collectGainVI(Node node, DensityVector<String> dv) {
         if (node.leaf)
             return;
-        String varName = node.bestCandidate.testName;
-        double score = Math.abs(node.bestCandidate.score);
+        String varName = node.bestCandidate.testName();
+        double score = Math.abs(node.bestCandidate.score());
         dv.increment(varName, score * node.density.sum());
         node.children.forEach(child -> collectGainVI(child, dv));
     }
@@ -308,8 +319,8 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         if (node.leaf) {
             return;
         }
-        String varName = node.bestCandidate.testName;
-        double score = Math.abs(node.bestCandidate.score);
+        String varName = node.bestCandidate.testName();
+        double score = Math.abs(node.bestCandidate.score());
         dv.increment(varName, node.density.sum());
         node.children.forEach(child -> collectFreqVI(child, dv));
     }
@@ -344,7 +355,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     private Pair<ClassifierModel, Mapping> buildWeakPredictor(Frame df, Var weights) {
         var weak = model.get().newInstance();
         RowSampler.Sample sample = rowSampler.get().nextSample(df, weights);
-        weak.fit(sample.getDf(), sample.getWeights(), firstTargetName());
+        weak.fit(sample.df(), sample.weights(), firstTargetName());
         return Pair.from(weak, sample.getComplementMapping());
     }
 

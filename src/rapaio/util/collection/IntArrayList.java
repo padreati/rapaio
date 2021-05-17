@@ -23,6 +23,7 @@ package rapaio.util.collection;
 import rapaio.util.IntComparator;
 import rapaio.util.IntIterator;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,6 +32,7 @@ import java.util.RandomAccess;
 
 public class IntArrayList implements RandomAccess, Cloneable, java.io.Serializable {
 
+    @Serial
     private static final long serialVersionUID = -7046029254386353130L;
 
     /**
@@ -492,11 +494,13 @@ public class IntArrayList implements RandomAccess, Cloneable, java.io.Serializab
         return i < s2 ? -1 : (i < s1 ? 1 : 0);
     }
 
+    @Serial
     private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
         s.defaultWriteObject();
         for (int i = 0; i < size; i++) s.writeInt(data[i]);
     }
 
+    @Serial
     private void readObject(java.io.ObjectInputStream s) throws java.io.IOException, ClassNotFoundException {
         s.defaultReadObject();
         data = new int[size];

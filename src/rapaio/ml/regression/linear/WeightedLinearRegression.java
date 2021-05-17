@@ -29,6 +29,8 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/20.
  */
@@ -43,6 +45,7 @@ public class WeightedLinearRegression extends BaseLinearRegressionModel<Weighted
         return new WeightedLinearRegression();
     }
 
+    @Serial
     private static final long serialVersionUID = 8595413796946622895L;
 
     @Override

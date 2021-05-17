@@ -213,8 +213,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
             js.valueStream().forEach(jss -> countJs(counter, numericCounter, jss));
             return;
         }
-        if (js instanceof JsonObject) {
-            JsonObject obj = (JsonObject) js;
+        if (js instanceof JsonObject obj) {
             for (String key : obj.keySet()) {
                 Integer c = counter.get(key);
                 if (c == null) {
@@ -336,8 +335,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
             }
             return count + 1 + countBuff(value.getBytes());
         }
-        if (js instanceof JsonArray) {
-            JsonArray array = (JsonArray) js;
+        if (js instanceof JsonArray array) {
             List<JsonValue> valueList = array.valueList();
             int size = valueList.size();
             count += 1 + countLen(size);
@@ -346,8 +344,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
             }
             return count;
         }
-        if (js instanceof JsonObject) {
-            JsonObject jsObject = (JsonObject) js;
+        if (js instanceof JsonObject jsObject) {
             int size = jsObject.keySet().size();
             count += 1;
             count += countLen(size);

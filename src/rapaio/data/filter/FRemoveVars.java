@@ -24,6 +24,8 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 
+import java.io.Serial;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
@@ -33,6 +35,7 @@ public class FRemoveVars extends AbstractFFilter {
         return new FRemoveVars(varRange);
     }
 
+    @Serial
     private static final long serialVersionUID = -932131127278719356L;
 
     private FRemoveVars(VarRange varRange) {

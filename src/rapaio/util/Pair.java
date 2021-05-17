@@ -21,6 +21,7 @@
 
 package rapaio.util;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -30,6 +31,7 @@ import java.io.Serializable;
  */
 public class Pair<T1, T2> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -1594916059995575867L;
 
     public T1 v1;

@@ -21,33 +21,24 @@
 
 package rapaio.math.linear;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/7/15.
  */
-@Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class EigenPair {
-
-    private final DVector vector;
-    private final DMatrix matrix;
+public record EigenPair(DVector values, DMatrix vectors) {
 
     public static EigenPair from(DVector values, DMatrix vectors) {
         return new EigenPair(values, vectors);
     }
 
     public DMatrix expandedValues() {
-        DMatrix expandedRV = DMatrix.empty(vector.size(), vector.size());
-        for (int i = 0; i < vector.size(); i++) {
-            expandedRV.set(i, i, vector.get(i));
+        DMatrix expandedRV = DMatrix.empty(values.size(), values.size());
+        for (int i = 0; i < values.size(); i++) {
+            expandedRV.set(i, i, values.get(i));
         }
         return expandedRV;
     }
 
     public DVector vector(int colNum) {
-        return matrix.mapCol(colNum);
+        return vectors.mapCol(colNum);
     }
 }

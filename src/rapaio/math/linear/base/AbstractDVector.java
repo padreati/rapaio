@@ -31,6 +31,7 @@ import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.function.Double2DoubleFunction;
 
+import java.io.Serial;
 import java.util.function.BiFunction;
 
 /**
@@ -38,6 +39,7 @@ import java.util.function.BiFunction;
  */
 public abstract class AbstractDVector implements DVector {
 
+    @Serial
     private static final long serialVersionUID = 4164614372206348682L;
 
     protected void checkConformance(DVector vector) {

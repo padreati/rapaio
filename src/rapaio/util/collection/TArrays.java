@@ -21,15 +21,11 @@
 
 package rapaio.util.collection;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import java.lang.reflect.Array;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/22/20.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TArrays {
 
     public static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;

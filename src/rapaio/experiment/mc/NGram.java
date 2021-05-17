@@ -29,13 +29,7 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/1/15.
  */
-public class NGram implements ChainAdapter {
-
-    private final int n;
-
-    public NGram(int n) {
-        this.n = n;
-    }
+public record NGram(int n) implements ChainAdapter {
 
     @Override
     public List<String> tokenize(String rawChain) {

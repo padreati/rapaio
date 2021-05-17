@@ -21,8 +21,6 @@
 
 package rapaio.ml.classifier.ensemble;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.VarNominal;
@@ -36,8 +34,6 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
-@RequiredArgsConstructor
-@Getter
 public enum BaggingMode implements Serializable {
 
     VOTING(true, false) {
@@ -97,6 +93,19 @@ public enum BaggingMode implements Serializable {
 
     private final boolean useClass;
     private final boolean useDensities;
+
+    BaggingMode(boolean useClass, boolean useDensities) {
+        this.useClass = useClass;
+        this.useDensities = useDensities;
+    }
+
+    public boolean isUseClass() {
+        return useClass;
+    }
+
+    public boolean isUseDensities() {
+        return useDensities;
+    }
 
     abstract void computeDensity(List<String> dictionary, List<ClassifierResult> treeFits, VarNominal classes, Frame densities);
 }

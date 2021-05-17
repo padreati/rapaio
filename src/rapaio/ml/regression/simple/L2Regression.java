@@ -36,7 +36,9 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.io.Serial;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -44,6 +46,7 @@ import java.util.Arrays;
 public class L2Regression extends AbstractRegressionModel<L2Regression, RegressionResult>
         implements ParametricEquals<L2Regression> {
 
+    @Serial
     private static final long serialVersionUID = -8666168876139028337L;
 
     public static L2Regression newModel() {
@@ -67,14 +70,10 @@ public class L2Regression extends AbstractRegressionModel<L2Regression, Regressi
 
     @Override
     public Capabilities capabilities() {
-        return Capabilities.builder()
-                .minInputCount(0).maxInputCount(1_000_000)
-                .minTargetCount(1).maxTargetCount(1_000_000)
-                .inputTypes(Arrays.asList(VarType.DOUBLE, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.STRING))
-                .targetType(VarType.DOUBLE)
-                .allowMissingInputValues(true)
-                .allowMissingTargetValues(true)
-                .build();
+        return new Capabilities(
+                0, 1_000_000,
+                Arrays.asList(VarType.DOUBLE, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.STRING), true,
+                1, 1_000_000, List.of(VarType.DOUBLE), true);
     }
 
     @Override

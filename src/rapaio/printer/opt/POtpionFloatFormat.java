@@ -21,6 +21,7 @@
 
 package rapaio.printer.opt;
 
+import java.io.Serial;
 import java.text.DecimalFormat;
 
 /**
@@ -28,6 +29,7 @@ import java.text.DecimalFormat;
  */
 public class POtpionFloatFormat implements POption<DecimalFormat> {
 
+    @Serial
     private static final long serialVersionUID = -6426137730862137730L;
 
     private final DecimalFormat format;
