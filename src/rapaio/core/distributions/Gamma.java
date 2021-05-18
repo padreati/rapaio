@@ -77,7 +77,7 @@ import static rapaio.printer.Format.floatFlex;
  * @author wolfgang.hoschek@cern.ch
  * @version 1.0, 09/24/99
  */
-public class Gamma implements Distribution {
+public record Gamma(double alpha, double beta) implements Distribution {
 
     public static Gamma of(double alpha, double beta) {
         return new Gamma(alpha, beta);
@@ -85,20 +85,16 @@ public class Gamma implements Distribution {
 
     @Serial
     private static final long serialVersionUID = -7748384822665249829L;
-    private final double alpha;
-    private final double beta;
 
     /**
      * Constructs a Gamma distribution. Example: alpha=1.0, beta=1.0.
      *
      * @throws IllegalArgumentException if <tt>alpha <= 0.0 || beta <= 0.0</tt>.
      */
-    private Gamma(double alpha, double beta) {
+    public Gamma {
         if (alpha <= 0 || beta <= 0)
             throw new IllegalArgumentException("Value parameters alpha (" + Format.floatFlex(alpha) +
                     ") and beta (" + Format.floatFlex(beta) + ") parameters should be strictly positive.");
-        this.alpha = alpha;
-        this.beta = beta;
     }
 
     @Override

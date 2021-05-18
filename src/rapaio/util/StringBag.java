@@ -56,7 +56,7 @@ public class StringBag implements Comparable<StringBag> {
 
     public static StringBag of(FSpot s, VarRange varRange) {
         Map<String, String> map = new HashMap<>();
-        for (String varName : varRange.parseVarNames(s.frame())) {
+        for (String varName : varRange.parseVarNames(s.df())) {
             map.put(varName, s.getLabel(varName));
         }
         return new StringBag(map);

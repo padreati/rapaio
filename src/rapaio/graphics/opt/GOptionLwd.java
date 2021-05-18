@@ -26,15 +26,10 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class GOptionLwd implements GOption<Float> {
+public record GOptionLwd(float lwd) implements GOption<Float> {
 
     @Serial
     private static final long serialVersionUID = -7688510496295412340L;
-    private final float lwd;
-
-    public GOptionLwd(float lwd) {
-        this.lwd = lwd;
-    }
 
     @Override
     public void bind(GOptions opts) {

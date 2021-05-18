@@ -30,7 +30,7 @@ import static rapaio.printer.Format.floatFlex;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Uniform implements Distribution {
+public record Uniform(double a, double b) implements Distribution {
 
     public static Uniform of(double a, double b) {
         return new Uniform(a, b);
@@ -38,21 +38,6 @@ public class Uniform implements Distribution {
 
     @Serial
     private static final long serialVersionUID = -6077483164719205038L;
-    private final double a;
-    private final double b;
-
-    private Uniform(double a, double b) {
-        this.a = a;
-        this.b = b;
-    }
-
-    public double a() {
-        return a;
-    }
-
-    public double b() {
-        return b;
-    }
 
     @Override
     public String name() {

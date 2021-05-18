@@ -26,15 +26,10 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class GOptionAlpha implements GOption<Float> {
+public record GOptionAlpha(float alpha) implements GOption<Float> {
 
     @Serial
     private static final long serialVersionUID = -1727266027662363808L;
-    private final float alpha;
-
-    public GOptionAlpha(float alpha) {
-        this.alpha = alpha;
-    }
 
     @Override
     public void bind(GOptions opts) {

@@ -151,14 +151,6 @@ public class SplitClassifierModel
         return pred;
     }
 
-    public static class Split {
-
-        private final Predicate<FSpot> predicate;
-        private final ClassifierModel classifierModel;
-
-        public Split(Predicate<FSpot> predicate, ClassifierModel classifierModel) {
-            this.predicate = predicate;
-            this.classifierModel = classifierModel;
-        }
+    public record Split(Predicate<FSpot> predicate, ClassifierModel classifierModel) {
     }
 }

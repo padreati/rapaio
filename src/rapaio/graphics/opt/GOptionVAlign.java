@@ -26,15 +26,10 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class GOptionVAlign implements GOption<Integer> {
+public record GOptionVAlign(int vAlign) implements GOption<Integer> {
 
     @Serial
     private static final long serialVersionUID = -4310646137630324226L;
-    private final int vAlign;
-
-    public GOptionVAlign(int vAlign) {
-        this.vAlign = vAlign;
-    }
 
     @Override
     public void bind(GOptions opts) {

@@ -26,15 +26,10 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class GOptionTop implements GOption<Integer> {
+public record GOptionTop(int top) implements GOption<Integer> {
 
     @Serial
     private static final long serialVersionUID = -4310646137630324226L;
-    private final int top;
-
-    public GOptionTop(int top) {
-        this.top = top;
-    }
 
     @Override
     public void bind(GOptions opts) {

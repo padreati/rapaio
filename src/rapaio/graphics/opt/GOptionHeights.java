@@ -26,18 +26,17 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class GOptionHeights implements GOption<Sizes> {
+public record GOptionHeights(Sizes heights) implements GOption<Sizes> {
 
     @Serial
     private static final long serialVersionUID = 6568267641815981670L;
-    private final Sizes heights;
 
     public GOptionHeights(double... percentages) {
-        this.heights = new Sizes(false, percentages, null);
+        this(new Sizes(false, percentages, null));
     }
 
     public GOptionHeights(int... sizes) {
-        this.heights = new Sizes(true, null, sizes);
+        this(new Sizes(true, null, sizes));
     }
 
     @Override

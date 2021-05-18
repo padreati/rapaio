@@ -35,7 +35,7 @@ import static rapaio.math.MathTools.*;
  *
  * @see <a href="https://en.wikipedia.org/wiki/F-distribution">https://en.wikipedia.org/wiki/F-distribution</a>
  */
-public class Fisher implements Distribution {
+public record Fisher(double df1, double df2) implements Distribution {
 
     public static Fisher of(double df1, double df2) {
         return new Fisher(df1, df2);
@@ -43,13 +43,6 @@ public class Fisher implements Distribution {
 
     @Serial
     private static final long serialVersionUID = 2272786897584427248L;
-    private final double df1;
-    private final double df2;
-
-    private Fisher(double df1, double df2) {
-        this.df1 = df1;
-        this.df2 = df2;
-    }
 
     @Override
     public String name() {

@@ -28,7 +28,7 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/20.
  */
-public class Exponential implements Distribution {
+public record Exponential(double lambda) implements Distribution {
 
     public static Exponential of(double lambda) {
         return new Exponential(lambda);
@@ -36,12 +36,6 @@ public class Exponential implements Distribution {
 
     @Serial
     private static final long serialVersionUID = 5064238118800143270L;
-
-    private final double lambda;
-
-    private Exponential(double lambda) {
-        this.lambda = lambda;
-    }
 
     @Override
     public String name() {

@@ -29,15 +29,10 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class GOptionPch implements GOption<Var> {
+public record GOptionPch(VarInt pch) implements GOption<Var> {
 
     @Serial
     private static final long serialVersionUID = -8246311944152824478L;
-    private final VarInt pch;
-
-    public GOptionPch(VarInt pch) {
-        this.pch = pch;
-    }
 
     @Override
     public void bind(GOptions opts) {

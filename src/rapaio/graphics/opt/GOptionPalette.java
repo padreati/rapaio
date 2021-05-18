@@ -26,15 +26,10 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class GOptionPalette implements GOption<ColorPalette> {
+public record GOptionPalette(ColorPalette palette) implements GOption<ColorPalette> {
 
     @Serial
     private static final long serialVersionUID = -353977248937212431L;
-    private final ColorPalette palette;
-
-    public GOptionPalette(ColorPalette palette) {
-        this.palette = palette;
-    }
 
     @Override
     public void bind(GOptions opts) {

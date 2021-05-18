@@ -26,15 +26,10 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class GOptionHorizontal implements GOption<Boolean> {
+public record GOptionHorizontal(boolean horizontal) implements GOption<Boolean> {
 
     @Serial
     private static final long serialVersionUID = -2622006323719065328L;
-    private final boolean horizontal;
-
-    public GOptionHorizontal(boolean horizontal) {
-        this.horizontal = horizontal;
-    }
 
     @Override
     public void bind(GOptions opts) {

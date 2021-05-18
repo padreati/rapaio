@@ -26,15 +26,10 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class GOptionSort implements GOption<Integer> {
+public record GOptionSort(int sort) implements GOption<Integer> {
 
     @Serial
     private static final long serialVersionUID = -4310646137630324226L;
-    private final int sort;
-
-    public GOptionSort(int sort) {
-        this.sort = sort;
-    }
 
     @Override
     public void bind(GOptions opts) {

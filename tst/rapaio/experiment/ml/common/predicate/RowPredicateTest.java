@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class RowPredicateTest {
 
     private boolean test(FSpot s, RowPredicate rp) {
-        return rp.test(s.row(), s.frame());
+        return rp.test(s.row(), s.df());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class RowPredicateTest {
         int[] values = SamplingTools.sampleWR(2, 100);
         SolidFrame df = SolidFrame.byVars(VarBinary.from(values.length, row -> values[row] == 1).name("x"));
 
-        assertEquals(100, df.stream().filter(s -> RowPredicate.binEqual("x", true).test(s.row(), s.frame())).count()
-                + df.stream().filter(s -> RowPredicate.binEqual("x", false).test(s.row(), s.frame())).count());
+        assertEquals(100, df.stream().filter(s -> RowPredicate.binEqual("x", true).test(s.row(), s.df())).count()
+                + df.stream().filter(s -> RowPredicate.binEqual("x", false).test(s.row(), s.df())).count());
     }
 }

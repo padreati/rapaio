@@ -26,16 +26,10 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/21.
  */
-public class GOptionPosition implements GOption<Position> {
+public record GOptionPosition(Position position) implements GOption<Position> {
 
     @Serial
     private static final long serialVersionUID = 5320193537092151537L;
-
-    private final Position position;
-
-    public GOptionPosition(Position position) {
-        this.position = position;
-    }
 
     @Override
     public void bind(GOptions opts) {

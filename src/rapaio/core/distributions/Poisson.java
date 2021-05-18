@@ -32,7 +32,7 @@ import java.io.Serial;
  * if these events occur with a known average rate and independent
  * of the last occurrence of last events.
  */
-public class Poisson implements Distribution {
+public record Poisson(double lambda) implements Distribution {
 
     public static Poisson of(double lambda) {
         return new Poisson(lambda);
@@ -40,13 +40,11 @@ public class Poisson implements Distribution {
 
     @Serial
     private static final long serialVersionUID = 2013039227493064895L;
-    private final double lambda;
 
-    private Poisson(double lambda) {
+    public Poisson {
         if (lambda <= 0) {
             throw new IllegalArgumentException("lambda parameter value must be a real positive value");
         }
-        this.lambda = lambda;
     }
 
     @Override

@@ -33,41 +33,10 @@ import java.util.Objects;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public final class FSpot implements Serializable {
+public record FSpot(Frame df, int row) implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 5414699690274410204L;
-    private final Frame df;
-    private final int row;
-
-    /**
-     * Builds a frame spot for a given frame and a given row of the observation
-     *
-     * @param df  given data frame
-     * @param row given row
-     */
-    public FSpot(final Frame df, final int row) {
-        this.df = df;
-        this.row = row;
-    }
-
-    /**
-     * Returns the underlying frame of the spot
-     *
-     * @return the underlying frame
-     */
-    public Frame frame() {
-        return df;
-    }
-
-    /**
-     * Returns the row of the observation referenced by spot
-     *
-     * @return row number
-     */
-    public int row() {
-        return row;
-    }
 
     /**
      * @return true if missing value on any variable, false otherwise

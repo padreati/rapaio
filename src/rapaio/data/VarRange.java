@@ -203,13 +203,7 @@ class VarRangeByName implements VarRange {
     }
 }
 
-class VarRangeByPredName implements VarRange {
-
-    private final Predicate<String> predicate;
-
-    VarRangeByPredName(Predicate<String> predicate) {
-        this.predicate = predicate;
-    }
+record VarRangeByPredName(Predicate<String> predicate) implements VarRange {
 
     @Override
     public List<Integer> parseVarIndexes(Frame df) {
@@ -234,13 +228,7 @@ class VarRangeByPredName implements VarRange {
     }
 }
 
-class VarRangeByPred implements VarRange {
-
-    private final Predicate<Var> predicate;
-
-    VarRangeByPred(Predicate<Var> predicate) {
-        this.predicate = predicate;
-    }
+record VarRangeByPred(Predicate<Var> predicate) implements VarRange {
 
     @Override
     public List<Integer> parseVarIndexes(Frame df) {

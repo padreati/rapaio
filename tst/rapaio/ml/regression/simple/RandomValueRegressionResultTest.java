@@ -65,7 +65,7 @@ public class RandomValueRegressionResultTest {
     void testNaming() {
         RandomValueRegression model = RandomValueRegression.newRVR();
         assertEquals("RandomValueRegression", model.name());
-        assertEquals("RandomValueRegression{distribution=Uniform(a=0,b=1)}", model.newInstance().fullName());
+        assertEquals("RandomValueRegression{}", model.newInstance().fullName());
 
         assertEquals("Normal(mu=10, sd=20)", RandomValueRegression.from(Normal.of(10, 20)).newInstance().distribution.get().name());
 

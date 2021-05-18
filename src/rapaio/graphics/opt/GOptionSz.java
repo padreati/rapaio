@@ -29,18 +29,13 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class GOptionSz implements GOption<Var> {
+public record GOptionSz(Var size) implements GOption<Var> {
 
     @Serial
     private static final long serialVersionUID = 6568267641815981670L;
-    private final Var size;
-
-    public GOptionSz(Var size) {
-        this.size = size;
-    }
 
     public GOptionSz(double size) {
-        this.size = VarDouble.scalar(size);
+        this(VarDouble.scalar(size));
     }
 
     @Override
