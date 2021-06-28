@@ -23,8 +23,8 @@ package rapaio.math.linear;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.base.DVectorBase;
 import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorMap;
 import rapaio.printer.Printable;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
@@ -105,7 +105,6 @@ public interface DVector extends Serializable, Printable {
      */
     static DVector fill(VType type, int n, double fill) {
         return switch (type) {
-            case BASE -> new DVectorBase(n, DoubleArrays.newFill(n, fill));
             case DENSE -> new DVectorDense(n, DoubleArrays.newFill(n, fill));
             default -> throw new IllegalArgumentException();
         };
@@ -117,7 +116,7 @@ public interface DVector extends Serializable, Printable {
      * being obtained using {@link Var#getDouble(int)} calls.
      *
      * @param v source variable
-     * @return
+     * @return new dense vector with values takes from variable v
      */
     static DVector from(Var v) {
         return from(VType.DENSE, v);
@@ -143,10 +142,6 @@ public interface DVector extends Serializable, Printable {
         return wrapArray(type, values.length, values);
     }
 
-    static DVector copy(DVector source) {
-        return copy(VType.DENSE, source);
-    }
-
     /**
      * Builds a new real dense vector which is a solid copy
      * of the given source vector.
@@ -154,15 +149,12 @@ public interface DVector extends Serializable, Printable {
      * @param source source vector
      * @return new real dense vector which is a copy of the source vector
      */
-    static DVector copy(VType type, DVector source) {
-        if (type == source.type()) {
-            source.copy();
-        }
+    static DVector copy(DVector source) {
         double[] copy = new double[source.size()];
         for (int i = 0; i < copy.length; i++) {
             copy[i] = source.get(i);
         }
-        return wrapArray(type, copy.length, copy);
+        return wrapArray(VType.DENSE, copy.length, copy);
     }
 
     static DVector wrap(double... values) {
@@ -194,7 +186,6 @@ public interface DVector extends Serializable, Printable {
     static DVector wrapArray(VType type, int size, double[] values) {
         Objects.requireNonNull(values);
         return switch (type) {
-            case BASE -> new DVectorBase(size, values);
             case DENSE -> new DVectorDense(size, values);
             default -> throw new IllegalArgumentException("Operation not implemented for vector type: " + type.name());
         };
@@ -229,12 +220,38 @@ public interface DVector extends Serializable, Printable {
     int size();
 
     /**
+     * Creates a new vector map which wrap values from specified indexes
+     *
+     * @param indexes of the values to keep
+     * @return map instance vector
+     */
+    default DVectorMap map(int... indexes) {
+        return new DVectorMap(this, indexes);
+    }
+
+    /**
      * Creates a new vector copy retaining only the values from specified indexes
      *
      * @param indexes of the values to keep
      * @return reduced instance vector
      */
-    DVector mapCopy(int... indexes);
+    DVectorDense mapCopy(int... indexes);
+
+    /**
+     * Creates a new copy of the vector.
+     * There are two common reasons why we would need such an operations:
+     *
+     * <ul>
+     * <li>the current vector could be the result of multiple
+     * mapping or binding operations and we would like to have a solid
+     * copy of all those values</li>
+     * <li>most of the operations work on the current instance, if we want
+     * to avoid altering this instance than we need a new copy</li>
+     * </ul>
+     *
+     * @return a new solid copy of the vector
+     */
+    DVectorDense copy();
 
     /**
      * Gets value from zero-based position index
@@ -343,7 +360,7 @@ public interface DVector extends Serializable, Printable {
      * @param y vector added to the result
      * @return new vector which contains the result of {@code a*this+y}
      */
-    DVector caxpy(double a, DVector y);
+    DVector axpyCopy(double a, DVector y);
 
     /**
      * Dot product between two vectors is equal to the sum of the
@@ -366,7 +383,7 @@ public interface DVector extends Serializable, Printable {
     double dotBilinear(DMatrix m, DVector y);
 
     /**
-     * Computes self bilinear dot product through a matrix {@code x^t m x}.Matrix {@code m} must be squared and conformant
+     * Computes self bilinear dot product through a matrix {@code x^t m x}.Matrix {@code m} must be squared and conform
      * to multiplication.
      *
      * @param m bilinear matrix
@@ -376,7 +393,7 @@ public interface DVector extends Serializable, Printable {
 
     /**
      * Computes bilinear dot product through a diagonal matrix {@code x^t diag(m) y}.
-     * Matrix {@code m} have to be conformat for multiplication. If the matrix is not diagonal, only the diagonal elements are used.
+     * Matrix {@code m} have to be conform for multiplication. If the matrix is not diagonal, only the diagonal elements are used.
      *
      * @param m bilinear matrix
      * @param y bilinear vector
@@ -528,26 +545,6 @@ public interface DVector extends Serializable, Printable {
     DVector apply(Double2DoubleFunction f);
 
     DVector apply(BiFunction<Integer, Double, Double> f);
-
-    /**
-     * Creates a new copy of the vector.
-     * There are two common reasons why we would need such an operations:
-     *
-     * <ul>
-     * <li>the current vector could be the result of multiple
-     * mapping or binding operations and we would like to have a solid
-     * copy of all those values</li>
-     * <li>most of the operations work on the current instance, if we want
-     * to avoid altering this instance than we need a new copy</li>
-     * </ul>
-     *
-     * @return a new solid copy of the vector
-     */
-    default DVector copy() {
-        return copy(type());
-    }
-
-    DVector copy(VType type);
 
     default DMatrix asMatrix() {
         return asMatrix(MType.CDENSE);

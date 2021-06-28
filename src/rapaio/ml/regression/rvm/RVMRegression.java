@@ -22,9 +22,9 @@
 package rapaio.ml.regression.rvm;
 
 import rapaio.core.RandomSource;
-import rapaio.core.correlation.CorrPearson;
+import rapaio.core.SamplingTools;
+import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
-import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -36,21 +36,26 @@ import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.LUDecomposition;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.ListParam;
 import rapaio.ml.common.ValueParam;
-import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.util.NotImplementedException;
 import rapaio.util.collection.IntArrays;
 
 import java.io.Serial;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.RecursiveAction;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -66,32 +71,142 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
     public enum Method {
         EVIDENCE_APPROXIMATION,
         FAST_TIPPING,
-        EXPERIMENT_ADAPTIVE_RBF,
-        EXPERIMENT_FAST_TRUNCATED
+        ONLINE_PRUNING
+    }
+
+    private record Factory(
+            String key,
+            int index,
+            DVector phii,
+            Supplier<DVector> trainingFeature,
+            Function<DVector, Double> testingFeature) {
+    }
+
+    public interface FactoryProvider {
+        Factory[] generateFactories(DMatrix x);
+    }
+
+    public record InterceptProvider() implements FactoryProvider {
+
+        @Override
+        public Factory[] generateFactories(DMatrix x) {
+            DVector mean = DVector.from(x.colCount(), col -> x.mapCol(col).mean());
+            return new Factory[]{new Factory("intercept", -1, mean, () -> DVector.fill(x.rowCount(), 1.0), v -> 1.0)};
+        }
+    }
+
+    public record RBFProvider(VarDouble sigmas, double p) implements FactoryProvider {
+
+        public RBFProvider(double sigma) {
+            this(VarDouble.scalar(sigma), 1);
+        }
+
+        @Override
+        public Factory[] generateFactories(DMatrix x) {
+            int len = (int) (x.rowCount() * sigmas.size() * Math.min(1, p));
+            int[] selection = SamplingTools.sampleWOR(x.rowCount() * sigmas.size(), len);
+            Factory[] factories = new Factory[selection.length];
+            IntArrays.quickSort(selection);
+            int pp = 0;
+            for (int i = 0; i < sigmas.size(); i++) {
+                for (int j = 0; j < x.rowCount(); j++) {
+                    int pos = i * x.rowCount() + j;
+                    if (pp >= selection.length) {
+                        break;
+                    }
+                    if (selection[pp] != pos) {
+                        continue;
+                    }
+                    int jj = j;
+                    RBFKernel kernel = new RBFKernel(sigmas.getDouble(i));
+                    factories[pp++] = new Factory(
+                            String.format("RBF sigma:%s, index: %d", Format.floatFlex(sigmas.getDouble(i)), jj),
+                            jj,
+                            x.mapRowCopy(jj),
+                            () -> DVector.from(x.rowCount(), r -> kernel.compute(x.mapRow(jj), x.mapRow(r))),
+                            vector -> kernel.compute(vector, x.mapRow(jj))
+                    );
+                }
+            }
+            return factories;
+        }
+    }
+
+    public record RandomRBFProvider(VarDouble sigmas, double p, Distribution noise) implements FactoryProvider {
+
+        @Override
+        public Factory[] generateFactories(DMatrix x) {
+            int len = (int) (sigmas.size() * x.rowCount() * Math.min(1.0, p));
+            Factory[] factories = new Factory[len];
+            for (int i = 0; i < len; i++) {
+                factories[i] = nextFactory(x);
+            }
+            return factories;
+        }
+
+        public Factory nextFactory(DMatrix x) {
+            double sigma = sigmas.getDouble(RandomSource.nextInt(sigmas.size()));
+            RBFKernel kernel = new RBFKernel(sigma);
+            DVector out = DVector.fill(x.colCount(), 0);
+            for (int j = 0; j < out.size(); j++) {
+                out.set(j, x.get(RandomSource.nextInt(x.rowCount()), j) + noise.sampleNext());
+            }
+            return new Factory(
+                    String.format("RBF sigma:%s, index: %s", Format.floatFlex(sigma), out),
+                    -1,
+                    out,
+                    () -> DVector.from(x.rowCount(), r -> kernel.compute(out, x.mapRow(r))),
+                    vector -> kernel.compute(vector, out)
+            );
+        }
+    }
+
+    public static final class DefaultRunningHook implements BiConsumer<RVMRegression, Integer> {
+
+        private final Consumer<Info> consumer;
+
+        public DefaultRunningHook(Consumer<Info> consumer) {
+            this.consumer = consumer;
+        }
+
+        @Override
+        public void accept(RVMRegression rvmRegression, Integer integer) {
+            consumer.accept(new Info(rvmRegression, integer));
+        }
+
+        public record Info(
+                RVMRegression model,
+                int iteration
+        ) {
+        }
     }
 
     @Serial
     private static final long serialVersionUID = 9165148257709665706L;
 
-    public ValueParam<Kernel, RVMRegression> kernel = new ValueParam<>(this, new RBFKernel(1),
-            "kernel", "Kernel function used to build the design matrix.");
-
-    public ValueParam<Boolean, RVMRegression> intercept = new ValueParam<>(this, true,
-            "intercept", "If we add an intercept to features or not.");
+    public ListParam<FactoryProvider, RVMRegression> providers = new ListParam<>(this,
+            List.of(new InterceptProvider(), new RBFProvider(VarDouble.wrap(1), -1)),
+            "providers", "Feature factory providers",
+            (fp1, fp2) -> true);
 
     public ValueParam<Method, RVMRegression> method = new ValueParam<>(this, Method.EVIDENCE_APPROXIMATION,
             "method", "Method used to fit the model.");
 
-    public ValueParam<Double, RVMRegression> fitThreshold = new ValueParam<>(this, Math.exp(10e-10),
+    public ValueParam<Double, RVMRegression> fitThreshold = new ValueParam<>(this, Math.exp(1e-10),
             "fitThreshold", "Fit threshold used in convergence criteria.");
 
-    public ValueParam<Double, RVMRegression> alphaThreshold = new ValueParam<>(this, 1e6,
+    public ValueParam<Double, RVMRegression> alphaThreshold = new ValueParam<>(this, 1e9,
             "alphaThreshold", "Fit threshold for setting an alpha weight's prior to infinity.");
 
-    public ValueParam<Integer, RVMRegression> maxIter = new ValueParam<>(this, 1000,
+    public ValueParam<Integer, RVMRegression> maxIter = new ValueParam<>(this, 10_000,
             "maxIter", "Max number of iterations");
 
-    private int[] indexes;
+    public ValueParam<Integer, RVMRegression> maxFailures = new ValueParam<>(this, 10_000,
+            "maxFailures", "Maximum number of failures for a feature, before it is pruned.");
+
+    private int[] featureIndexes;
+    private int[] trainingIndexes;
+    private DMatrix relevanceVectors;
 
     private DVector m;
 
@@ -99,12 +214,13 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
      * Fitted covariance matrix.
      */
     private DMatrix sigma;
-    private DMatrix x;
     private DVector alpha;
-    private DVector rbfBeta;
     private double beta;
     private boolean converged;
     private int iterations;
+
+    private MethodImpl methodImpl;
+    private List<Factory> factories;
 
     private RVMRegression() {
     }
@@ -128,8 +244,20 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         return "RVMRegression";
     }
 
-    public int[] getIndexes() {
-        return indexes;
+    public int[] getFeatureIndexes() {
+        return featureIndexes;
+    }
+
+    public String[] getFeatureKeys() {
+        return IntStream.of(featureIndexes).mapToObj(i -> factories.get(i).key).toArray(String[]::new);
+    }
+
+    public int[] getTrainingIndexes() {
+        return trainingIndexes;
+    }
+
+    public DMatrix getRelevanceVectors() {
+        return relevanceVectors;
     }
 
     public DVector getM() {
@@ -138,10 +266,6 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
     public DMatrix getSigma() {
         return sigma;
-    }
-
-    public DVector getRbfBeta() {
-        return rbfBeta;
     }
 
     public double getBeta() {
@@ -168,71 +292,64 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
      * @return Numbers of fitted relevant vectors count, -1 if model is not fitted.
      */
     public int getVectorCount() {
-        return hasLearned ? indexes.length : -1;
+        return hasLearned ? relevanceVectors.rowCount() : -1;
     }
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        return switch (method.get()) {
-            case EVIDENCE_APPROXIMATION -> new EvidenceApproximation(this, df).fit();
-            case FAST_TIPPING -> new FastTipping(this, df).fit();
-            case EXPERIMENT_ADAPTIVE_RBF -> new AdaptiveRBF(this, df).fit();
-            case EXPERIMENT_FAST_TRUNCATED -> new FastTruncated(this, df).fit();
-            default -> throw new NotImplementedException("The method selected for fitting RVMRegression is not implemented.");
+
+        DMatrix x = buildInput(df);
+        DVector y = buildTarget(df);
+
+        factories = new ArrayList<>();
+        for (FactoryProvider fp : providers.get()) {
+            factories.addAll(Arrays.asList(fp.generateFactories(x)));
+        }
+        methodImpl = switch (method.get()) {
+            case EVIDENCE_APPROXIMATION -> new EvidenceApproximation(this, x, y);
+            case FAST_TIPPING -> new FastTipping(this, x, y);
+            case ONLINE_PRUNING -> new FastOnline(this, x, y);
         };
+
+        return methodImpl.fit();
     }
 
     /**
      * Builds features from the data frame as a matrix with observations on rows
-     * and features on columns. An optional intercept is added as the first columns,
-     * depending on the value of the parameter {@link #intercept}.
+     * and features on columns.
      *
      * @param df source data frame
      * @return matrix of features
      */
-    private DMatrix buildFeatures(Frame df) {
-        int inputLen = inputNames.length;
-        int offset = (intercept.get() ? 1 : 0);
-        DMatrix m = DMatrix.empty(MType.RDENSE, df.rowCount(), inputLen + offset);
+    private DMatrix buildInput(Frame df) {
+        return DMatrix.copy(MType.RDENSE, df.mapVars(inputNames));
+    }
+
+    protected DVector buildTarget(Frame df) {
+        DVector t = DVector.zeros(df.rowCount());
+        int index = df.varIndex(targetNames[0]);
         for (int i = 0; i < df.rowCount(); i++) {
-            if (intercept.get()) {
-                m.set(i, 0, 1.0);
-            }
-            for (int j = 0; j < inputNames.length; j++) {
-                m.set(i, j + offset, df.getDouble(i, inputNames[j]));
-            }
+            t.set(i, df.getDouble(i, index));
         }
-        return m;
+        return t;
     }
 
     @Override
     protected RegressionResult corePredict(Frame df, boolean withResiduals, final double[] quantiles) {
-        DMatrix feat = buildFeatures(df);
+        DMatrix feat = buildInput(df);
         RegressionResult prediction = RegressionResult.build(this, df, withResiduals, quantiles);
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = 0;
-            if (method.get() != Method.EXPERIMENT_ADAPTIVE_RBF) {
-                for (int j = 0; j < m.size(); j++) {
-                    pred += kernel.get().compute(feat.mapRow(i), x.mapRow(j)) * m.get(j);
-                }
-            } else {
-                for (int j = 0; j < m.size(); j++) {
-                    pred += AdaptiveRBF.rbf(rbfBeta.get(j), feat.mapRow(i), x.mapRow(j)) * m.get(j);
-                }
+            for (int j = 0; j < m.size(); j++) {
+                pred += factories.get(featureIndexes[j]).testingFeature.apply(feat.mapRow(i)) * m.get(j);
             }
             prediction.prediction(firstTargetName()).setDouble(i, pred);
             if (quantiles != null && quantiles.length > 0) {
                 DVector phi_m = DVector.zeros(m.size());
-                if (method.get() != Method.EXPERIMENT_ADAPTIVE_RBF) {
-                    for (int j = 0; j < m.size(); j++) {
-                        phi_m.set(j, kernel.get().compute(feat.mapRow(i), x.mapRow(j)));
-                    }
-                } else {
-                    for (int j = 0; j < m.size(); j++) {
-                        phi_m.set(j, AdaptiveRBF.rbf(rbfBeta.get(j), feat.mapRow(i), x.mapRow(j)));
-                    }
+                for (int j = 0; j < m.size(); j++) {
+                    phi_m.set(j, factories.get(featureIndexes[j]).testingFeature.apply(feat.mapRow(i)));
                 }
-                double variance = 1.0 / beta + phi_m.asMatrix().t().dot(sigma).dot(phi_m).get(0);
+                double variance = 1.0 / beta + sigma.dot(phi_m).dot(phi_m);
                 Normal normal = Normal.of(pred, Math.sqrt(variance));
                 for (int j = 0; j < quantiles.length; j++) {
                     double q = normal.quantile(quantiles[j]);
@@ -250,7 +367,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         sb.append(fullName());
         sb.append("; fitted=").append(hasLearned);
         if (hasLearned) {
-            sb.append(", rvm count=").append(indexes.length);
+            sb.append(", rvm count=").append(trainingIndexes.length);
         }
         return sb.toString();
     }
@@ -265,9 +382,10 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             return sb.toString();
         }
 
-        sb.append("> relevant vectors count: ").append(indexes.length).append("\n");
-        sb.append("> relevant vector indexes: [")
-                .append(IntArrays.stream(indexes, 0, indexes.length).mapToObj(String::valueOf).collect(Collectors.joining(",")))
+        sb.append("> relevant vectors count: ").append(relevanceVectors.rowCount()).append("\n");
+        sb.append("> relevant vector training indexes: [")
+                .append(IntArrays.stream(trainingIndexes, 0, trainingIndexes.length).mapToObj(String::valueOf)
+                        .collect(Collectors.joining(",")))
                 .append("]");
         sb.append("> convergence: ").append(converged).append(", iterations: ").append(iterations).append("\n");
 
@@ -293,71 +411,80 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         sb.append("> sigma: \n");
         sb.append(sigma.toContent(options));
 
-        sb.append("> x: \n");
-        sb.append(x.toContent(options));
-
         return sb.toString();
     }
 
-    private static abstract class BaseAlgorithm {
+    private static abstract class MethodImpl {
 
         protected final RVMRegression parent;
-        protected final Frame df;
+        public final DMatrix x;
+        public final DVector y;
+
+        protected MethodImpl(RVMRegression parent, DMatrix x, DVector y) {
+            this.parent = parent;
+            this.x = x;
+            this.y = y;
+        }
+
+        public abstract boolean fit();
+    }
+
+    private static abstract class BaseAlgorithm extends MethodImpl {
 
         public int[] indexes;
-        public DMatrix x;
         public DMatrix phi;
-        public DVector y;
         public DVector m;
         public DMatrix sigma;
 
         public DVector alpha;
         public double beta;
 
-        protected BaseAlgorithm(RVMRegression parent, Frame df) {
-            this.parent = parent;
-            this.df = df;
+        protected BaseAlgorithm(RVMRegression parent, DMatrix x, DVector y) {
+            super(parent, x, y);
         }
 
         protected DMatrix buildPhi() {
-            int n = x.rowCount();
-            DMatrix m = DMatrix.empty(MType.CDENSE, n, n);
-            Kernel k = parent.kernel.get();
-            for (int i = 0; i < n; i++) {
-                m.set(i, i, k.compute(x.mapRow(i), x.mapRow(i)));
-                for (int j = i + 1; j < n; j++) {
-                    double value = k.compute(x.mapRow(i), x.mapRow(j));
-                    m.set(i, j, value);
-                    m.set(j, i, value);
-                }
+            DVector[] vectors = new DVector[parent.factories.size()];
+            for (int i = 0; i < parent.factories.size(); i++) {
+                vectors[i] = parent.factories.get(i).trainingFeature.get();
             }
-            return m;
+            return DMatrix.wrap(false, vectors);
         }
 
-        protected DVector buildTarget(Frame df) {
-            DVector t = DVector.zeros(df.rowCount());
-            int index = df.varIndex(parent.targetNames[0]);
-            for (int i = 0; i < df.rowCount(); i++) {
-                t.set(i, df.getDouble(i, index));
+        protected boolean testConvergence(DVector oldAlpha, DVector alpha) {
+            double delta = 0;
+            for (int i = 0; i < alpha.size(); i++) {
+                double new_value = alpha.get(i);
+                double old_value = oldAlpha.get(i);
+                if (Double.isInfinite(new_value) && Double.isInfinite(old_value)) {
+                    continue;
+                }
+                if (Double.isInfinite(new_value) || Double.isInfinite(old_value)) {
+                    return false;
+                }
+                delta += Math.abs(old_value - new_value);
             }
-            return t;
+            return delta < parent.fitThreshold.get();
         }
     }
 
     private static final class EvidenceApproximation extends BaseAlgorithm {
 
-        public EvidenceApproximation(RVMRegression parent, Frame df) {
-            super(parent, df);
+        public EvidenceApproximation(RVMRegression parent, DMatrix x, DVector y) {
+            super(parent, x, y);
         }
 
-        public DMatrix phi_t_phi;
-        public DVector phi_t_y;
+        private DMatrix phi_t_phi;
+        private DVector phi_t_y;
+
+        private int n;
+        private int fcount;
 
         public boolean fit() {
-            x = parent.buildFeatures(df);
+            n = x.rowCount();
+            fcount = parent.factories.size();
             phi = buildPhi();
-            y = buildTarget(df);
-            indexes = IntArrays.newSeq(0, phi.colCount());
+            indexes = IntArrays.newSeq(0, parent.factories.size());
             phi_t_phi = phi.t().dot(phi);
             phi_t_y = phi.t().dot(y);
 
@@ -389,7 +516,8 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
                     alpha.set(i, gamma.get(i) / (m.get(i) * m.get(i)));
                 }
                 // update sigma
-                beta = (alpha.size() - gamma.sum()) / Math.pow(phi.dot(m).sub(y).norm(2), 2);
+                DVector deltaDiff = phi.dot(m).sub(y);
+                beta = (n - gamma.sum()) / (deltaDiff.dot(deltaDiff));
 
                 pruneAlphas();
 
@@ -400,14 +528,6 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             }
             updateResults(parent, false, parent.maxIter.get());
             return true;
-        }
-
-        private boolean testConvergence(DVector oldAlpha, DVector alpha) {
-            double total = 0;
-            for (int i = 0; i < alpha.size(); i++) {
-                total += Math.abs(oldAlpha.get(i) - alpha.get(i));
-            }
-            return total < parent.fitThreshold.get();
         }
 
         private void pruneAlphas() {
@@ -446,37 +566,48 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
                 }
             }
             indexes = newIndex;
+            alpha = alpha.mapCopy(keep);
 
-            phi = phi.mapCols(keep).mapRows(keep).copy();
+            phi = phi.mapCols(keep).copy();
             phi_t_phi = phi_t_phi.mapCols(keep).mapRows(keep).copy();
             phi_t_y = phi_t_y.mapCopy(keep);
 
-            y = y.mapCopy(keep);
-            m = m.mapCopy(keep);
-            sigma = sigma.mapCols(keep).mapRows(keep).copy();
-            alpha = alpha.mapCopy(keep);
+            DMatrix t = phi_t_phi.copy().mult(beta);
+            for (int i = 0; i < t.rowCount(); i++) {
+                t.inc(i, i, alpha.get(i));
+            }
+
+            try {
+                sigma = LUDecomposition.from(t).solve(DMatrix.identity(t.rowCount()));
+            } catch (IllegalArgumentException ignored) {
+                sigma = QRDecomposition.from(t).solve(DMatrix.identity(t.rowCount()));
+            }
+
+            m = sigma.dot(phi_t_y).mult(beta);
         }
 
         private void initializeAlphaBeta() {
             beta = 1.0 / (y.variance() * 0.1);
-            alpha = DVector.from(phi.colCount(), row -> RandomSource.nextDouble() / 10);
+            alpha = DVector.from(phi.colCount(), row -> Math.abs(RandomSource.nextDouble() / 10));
         }
 
         protected void updateResults(RVMRegression parent, boolean convergent, int iterations) {
-            this.parent.indexes = indexes;
-            this.parent.m = m.copy();
-            this.parent.sigma = sigma.copy();
-            this.parent.x = x.mapRows(indexes);
-            this.parent.alpha = alpha.copy();
-            this.parent.beta = beta;
-            this.parent.converged = convergent;
-            this.parent.iterations = iterations;
+            parent.featureIndexes = indexes;
+            parent.trainingIndexes = IntStream.of(indexes).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
+            parent.relevanceVectors = DMatrix.wrap(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
+            parent.m = m.copy();
+            parent.sigma = sigma.copy();
+            parent.alpha = alpha.copy();
+            parent.beta = beta;
+            parent.converged = convergent;
+            parent.iterations = iterations;
         }
     }
 
     private static final class FastTipping extends BaseAlgorithm {
 
         private int n;
+        private int fcount;
         private double[] ss;
         private double[] qq;
         private double[] s;
@@ -485,22 +616,21 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         private DMatrix phi_hat;
         private DVector phi_dot_y;
 
-        public FastTipping(RVMRegression parent, Frame df) {
-            super(parent, df);
+        public FastTipping(RVMRegression parent, DMatrix x, DVector y) {
+            super(parent, x, y);
         }
 
         public boolean fit() {
-            x = parent.buildFeatures(df);
             phi = buildPhi();
-            y = buildTarget(df);
             phi_hat = phi.t().dot(phi);
             phi_dot_y = phi.t().dot(y);
 
             n = phi.rowCount();
-            ss = new double[n];
-            qq = new double[n];
-            s = new double[n];
-            q = new double[n];
+            fcount = parent.factories.size();
+            ss = new double[fcount];
+            qq = new double[fcount];
+            s = new double[fcount];
+            q = new double[fcount];
 
             initialize();
             computeSigmaAndMu();
@@ -515,7 +645,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
                 computeSQ();
                 computeBeta();
 
-                if (testConvergence(old_alpha)) {
+                if (testConvergence(old_alpha, alpha)) {
                     updateResults(parent, true, it);
                     return true;
                 }
@@ -528,10 +658,10 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         private void updateBestVector() {
 
-            double[] theta = new double[n];
-            double[] llDelta = new double[n];
+            double[] theta = new double[fcount];
+            double[] llDelta = new double[fcount];
 
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < fcount; i++) {
                 theta[i] = q[i] * q[i] - s[i];
                 if (theta[i] > 0) {
                     if (Double.isInfinite(alpha.get(i))) {
@@ -549,7 +679,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             }
 
             int i = 0;
-            for (int j = 1; j < n; j++) {
+            for (int j = 1; j < fcount; j++) {
                 if (llDelta[j] > llDelta[i]) {
                     i = j;
                 }
@@ -574,27 +704,6 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         }
 
-        private boolean testConvergence(DVector old_alpha) {
-            /*
-                In step 11, we must judge if we have attained a local maximum of the marginal likelihood. We
-                terminate when the changes in log α in Step 6 for all basis functions in the model are smaller than
-                10 −6 and all other θ i ≤ 0.
-             */
-            double delta = 0.0;
-            for (int i = 0; i < alpha.size(); i++) {
-                double new_value = alpha.get(i);
-                double old_value = old_alpha.get(i);
-                if (Double.isInfinite(new_value) && Double.isInfinite(old_value)) {
-                    continue;
-                }
-                if (Double.isInfinite(new_value) || Double.isInfinite(old_value)) {
-                    return false;
-                }
-                delta += Math.abs(old_value - new_value);
-            }
-            return delta < parent.fitThreshold.get();
-        }
-
         private int[] addIndex(int[] original, int i) {
             int[] copy = new int[indexes.length + 1];
             System.arraycopy(indexes, 0, copy, 0, indexes.length);
@@ -615,14 +724,14 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         private void initialize() {
             beta = 1.0 / (y.variance() * 0.1);
-            alpha = DVector.fill(phi.rowCount(), Double.POSITIVE_INFINITY);
+            alpha = DVector.fill(parent.factories.size(), Double.POSITIVE_INFINITY);
 
             // select one alpha
 
             int best_index = 0;
             double best_projection = phi_dot_y.get(0) / phi_hat.get(0, 0);
 
-            for (int i = 1; i < phi.colCount(); i++) {
+            for (int i = 1; i < parent.factories.size(); i++) {
                 double projection = phi_dot_y.get(i) / phi_hat.get(i, i);
                 if (projection >= best_projection) {
                     best_projection = projection;
@@ -645,14 +754,14 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         }
 
         void computeSQ() {
-            for (int i = 0; i < n; i++) {
-                DVector left = phi_hat.mapRow(i).mapCopy(indexes);
+            for (int i = 0; i < fcount; i++) {
+                DVector left = phi_hat.mapCol(i).mapCopy(indexes);
                 DVector right = phi_dot_y.mapCopy(indexes);
                 ss[i] = beta * phi_hat.get(i, i) - beta * beta * sigma.dot(left).dot(left);
                 qq[i] = beta * phi_dot_y.get(i) - beta * beta * sigma.dot(left).dot(right);
             }
 
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < fcount; i++) {
                 double alpha_i = alpha.get(i);
                 if (Double.isInfinite(alpha_i)) {
                     s[i] = ss[i];
@@ -672,61 +781,56 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         }
 
         protected void updateResults(RVMRegression parent, boolean convergent, int iterations) {
-            this.parent.indexes = indexes;
-            this.parent.m = m.copy();
-            this.parent.sigma = sigma.copy();
-            this.parent.x = x.mapRows(indexes);
-            this.parent.alpha = alpha.mapCopy(indexes);
-            this.parent.beta = beta;
-            this.parent.converged = convergent;
-            this.parent.iterations = iterations;
+            parent.featureIndexes = indexes;
+            parent.trainingIndexes = IntStream.of(indexes).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
+            parent.relevanceVectors = DMatrix.wrap(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
+            parent.m = m.copy();
+            parent.sigma = sigma.copy();
+            parent.alpha = alpha.mapCopy(indexes);
+            parent.beta = beta;
+            parent.converged = convergent;
+            parent.iterations = iterations;
         }
     }
 
-    private static final class AdaptiveRBF extends BaseAlgorithm {
-
-        private static final double ksigma_init = 2;
-        private static final double rbfBetaDelta = 1e-3;
-
-        private static final double min_delta_threshold = 1e-100;
-        private static DVector rbfBeta;
-
-        public static double rbf(double beta, DVector u, DVector v) {
-            double sum = 0.0;
-            for (int i = 0; i < u.size(); i++) {
-                double delta = u.get(i) - v.get(i);
-                sum += delta * delta;
-            }
-            return Math.exp(beta * sum);
-        }
+    private static final class FastOnline extends MethodImpl {
 
         private int n;
-        private double[] ss;
-        private double[] qq;
-        private double[] s;
-        private double[] q;
+        private int fcount;
+        private double beta;
+        private DMatrix sigma;
+        private DVector m;
 
-        private DMatrix phi_hat;
+        private DMatrix phiHat;
 
-        public AdaptiveRBF(RVMRegression parent, Frame df) {
-            super(parent, df);
+        private DVector phiiDotPhii;
+        private DVector phiiDotY;
+        private double yTy;
+        private DVector ss;
+        private DVector qq;
+        private DVector s;
+        private DVector q;
+        private DVector alpha;
+
+        private final List<Integer> candidates = new LinkedList<>();
+        private int[] fails;
+
+        // cached for all vectors
+
+        // cached for active vectors only
+        private final ArrayList<ActiveFeature> active = new ArrayList<>();
+
+        private final PhiCache cache = new PhiCache();
+
+        public FastOnline(RVMRegression parent, DMatrix x, DVector y) {
+            super(parent, x, y);
         }
 
         public boolean fit() {
-            x = parent.buildFeatures(df);
-            n = x.rowCount();
-            rbfBeta = DVector.fill(n, -1.0 / (2.0 * ksigma_init * ksigma_init));
-
-            phi = buildPhi();
-            y = buildTarget(df);
-            phi_hat = phi.t().dot(phi);
-
-            ss = new double[n];
-            qq = new double[n];
-            s = new double[n];
-            q = new double[n];
-
             initialize();
+
+            n = x.rowCount();
+
             computeSigmaAndMu();
             computeSQ();
             computeBeta();
@@ -739,8 +843,6 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
                 computeSQ();
                 computeBeta();
 
-                updateBestRbfBeta();
-
                 if (testConvergence(old_alpha)) {
                     updateResults(parent, true, it);
                     return true;
@@ -752,147 +854,266 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             return true;
         }
 
-        protected DMatrix buildPhi() {
-            int n = x.rowCount();
-            return DMatrix.fill(MType.CDENSE, n, n, (i, j) -> rbf(rbfBeta.get(j), x.mapRow(i), x.mapRow(j)));
+        private void initialize() {
+
+            fcount = parent.factories.size();
+            for (int i = 0; i < fcount; i++) {
+                candidates.add(i);
+            }
+
+            fails = IntArrays.newFill(fcount, 0);
+
+            // initialize raw features
+            phiiDotPhii = DVector.fill(fcount, Double.NaN);
+            phiiDotY = DVector.fill(fcount, Double.NaN);
+            yTy = y.dot(y);
+
+            ss = DVector.fill(fcount, 0);
+            qq = DVector.fill(fcount, 0);
+            s = DVector.fill(fcount, 0);
+            q = DVector.fill(fcount, 0);
+            alpha = DVector.fill(fcount, Double.POSITIVE_INFINITY);
+
+            beta = 1.0 / (y.variance() * 0.1);
+
+            // select one alpha
+
+            int bestIndex = 0;
+            DVector bestVector = parent.factories.get(0).trainingFeature.get();
+            phiiDotPhii.set(0, bestVector.dot(bestVector));
+            phiiDotY.set(0, bestVector.dot(y));
+            double bestProjection = phiiDotY.get(0) / phiiDotPhii.get(0);
+
+            for (int i = 1; i < fcount; i++) {
+                DVector phii = parent.factories.get(i).trainingFeature.get();
+                phiiDotPhii.set(i, phii.dot(phii));
+                phiiDotY.set(i, phii.dot(y));
+                double projection = phiiDotY.get(i) / phiiDotPhii.get(i);
+                if (projection >= bestProjection) {
+                    bestIndex = i;
+                    bestVector = phii;
+                    bestProjection = projection;
+                }
+            }
+            active.add(new ActiveFeature(bestIndex, bestVector));
+            alpha.set(bestIndex, phiiDotPhii.get(bestIndex) / (bestProjection - 1.0 / beta));
+
+            // initial phi_hat, dimension 1x1 with value computed already in artifacts
+            phiHat = DMatrix.fill(MType.RDENSE, 1, 1, phiiDotPhii.get(bestIndex));
+        }
+
+        private void computeSigmaAndMu() {
+
+            DMatrix m_sigma_inv = phiHat.copy().mult(beta);
+            for (int i = 0; i < active.size(); i++) {
+                m_sigma_inv.inc(i, i, alpha.get(active.get(i).index));
+            }
+            sigma = CholeskyDecomposition.from(m_sigma_inv).solve(DMatrix.identity(active.size()));
+            m = sigma.dot(computePhiDotY().mult(beta));
+        }
+
+        private DVector computePhiiDotPhi(int i) {
+
+            // first check if it is active, since if it is active the values are already in phi_hat
+            if (Double.isFinite(alpha.get(i))) {
+                for (int j = 0; j < active.size(); j++) {
+                    if (i == active.get(j).index) {
+                        return phiHat.mapCol(j);
+                    }
+                }
+            }
+
+            // if not active then try to complete the vector from cache
+
+            DVector v = DVector.fill(active.size(), Double.NaN);
+            boolean full = true;
+            for (int j = 0; j < active.size(); j++) {
+                ActiveFeature a = active.get(j);
+                double value = cache.get(i, a.index);
+                if (Double.isNaN(value)) {
+                    full = false;
+                } else {
+                    v.set(j, value);
+                }
+            }
+
+            // if not full from cache, then regenerate the vector and fill missing values, do that also in cache
+            if (!full) {
+                DVector phii = parent.factories.get(i).trainingFeature.get();
+                for (int j = 0; j < v.size(); j++) {
+                    if (Double.isNaN(v.get(j))) {
+                        double value = active.get(j).vector.dot(phii);
+                        v.set(j, value);
+                        cache.store(i, active.get(j).index, value);
+                    }
+                }
+            }
+
+            return v;
+        }
+
+        private DVector computePhiDotY() {
+            double[] v = new double[active.size()];
+            int pos = 0;
+            for (var a : active) {
+                v[pos++] = phiiDotY.get(a.index);
+            }
+            return DVector.wrap(v);
+        }
+
+        void computeSQ() {
+            DVector right = computePhiDotY();
+            for (int i : candidates) {
+                DVector left = computePhiiDotPhi(i);
+                DVector sigmaDotLeft = sigma.dot(left);
+                ss.set(i, beta * phiiDotPhii.get(i) - beta * beta * sigmaDotLeft.dot(left));
+                qq.set(i, beta * phiiDotY.get(i) - beta * beta * sigmaDotLeft.dot(right));
+
+                double alpha_i = alpha.get(i);
+                if (Double.isInfinite(alpha_i)) {
+                    s.set(i, ss.get(i));
+                    q.set(i, qq.get(i));
+                } else {
+                    s.set(i, alpha_i * ss.get(i) / (alpha_i - ss.get(i)));
+                    q.set(i, alpha_i * qq.get(i) / (alpha_i - ss.get(i)));
+                }
+            }
+        }
+
+        private void computeBeta() {
+            double gammaSum = 0;
+            for (int i = 0; i < active.size(); i++) {
+                gammaSum += alpha.get(active.get(i).index) * sigma.get(i, i);
+            }
+            double low = yTy - 2 * m.dot(computePhiDotY()) + phiHat.dot(m).dot(m);
+            beta = (n - active.size() + gammaSum) / low;
         }
 
         private void updateBestVector() {
 
-            double[] theta = new double[n];
-            double[] llDelta = new double[n];
+            // compute likelihood criteria
 
-            for (int i = 0; i < n; i++) {
-                theta[i] = q[i] * q[i] - s[i];
-                if (theta[i] > 0) {
+            int bestIndex = 0;
+            double bestTheta = Double.NaN;
+            double bestDelta = Double.NaN;
+
+            List<Integer> toRemove = new LinkedList<>();
+            for (int i : candidates) {
+                double theta = q.get(i) * q.get(i) - s.get(i);
+                double delta = Double.NEGATIVE_INFINITY;
+                if (theta > 0) {
                     if (Double.isInfinite(alpha.get(i))) {
-                        llDelta[i] = (qq[i] * qq[i] - ss[i]) / ss[i] + Math.log(ss[i] / (qq[i] * qq[i]));
+                        delta = (qq.get(i) * qq.get(i) - ss.get(i)) / ss.get(i) + Math.log(ss.get(i) / (qq.get(i) * qq.get(i)));
                     } else {
-                        double alpha_new = s[i] * s[i] / theta[i];
+                        double alpha_new = s.get(i) * s.get(i) / theta;
                         double delta_alpha = 1. / alpha_new - 1.0 / alpha.get(i);
-                        llDelta[i] = (qq[i] * qq[i]) / (ss[i] + 1. / delta_alpha) - Math.log1p(ss[i] * delta_alpha);
+                        delta = (qq.get(i) * qq.get(i)) / (ss.get(i) + 1. / delta_alpha) - Math.log1p(ss.get(i) * delta_alpha);
                     }
                 } else {
                     if (Double.isFinite(alpha.get(i))) {
-                        llDelta[i] = qq[i] * qq[i] / (ss[i] - alpha.get(i)) - Math.log(1 - ss[i] / alpha.get(i));
+                        delta = qq.get(i) * qq.get(i) / (ss.get(i) - alpha.get(i)) - Math.log(1 - ss.get(i) / alpha.get(i));
+                    }
+                    fails[i]++;
+                    if (fails[i] >= parent.maxFailures.get()) {
+                        toRemove.add(i);
                     }
                 }
-            }
-
-            int i = 0;
-            for (int j = 1; j < n; j++) {
-                if (llDelta[j] > llDelta[i]) {
-                    i = j;
+                if (Double.isNaN(bestDelta) || delta > bestDelta) {
+                    bestDelta = delta;
+                    bestTheta = theta;
+                    bestIndex = i;
                 }
             }
-            double alpha_i = alpha.get(i);
+            /*
+            VarDouble f = VarDouble.from(fails.length, i -> (double) fails[i]);
+            Unique.of(f).printString();
+            System.out.println("remaining: " + f.stream().filter(s -> s.getDouble() < parent.maxFailures.get()).count());
+            */
+            candidates.removeAll(toRemove);
 
-            if (theta[i] > 0) {
+            double alpha_i = alpha.get(bestIndex);
+            double _alpha = s.get(bestIndex) * s.get(bestIndex) / bestTheta;
+
+            if (bestTheta > 0) {
                 if (Double.isInfinite(alpha_i)) {
                     // add alpha_i to model
-                    alpha.set(i, s[i] * s[i] / theta[i]);
-                    indexes = addIndex(indexes, i);
+                    addActiveFeature(bestIndex, _alpha);
                 } else {
                     // alpha is in set, re-estimate alpha
-                    alpha.set(i, s[i] * s[i] / theta[i]);
+                    updateActiveFeature(bestIndex, _alpha);
                 }
             } else {
-                if (Double.isFinite(alpha_i) && indexes.length > 1) {
-                    alpha.set(i, Double.POSITIVE_INFINITY);
-                    indexes = removeIndex(indexes, i);
+                if (Double.isFinite(alpha_i) && active.size() > 1) {
+                    removeActiveFeature(bestIndex);
                 }
             }
         }
 
-        private void updateBestRbfBeta() {
+        private void addActiveFeature(int index, double _alpha) {
+            alpha.set(index, _alpha);
 
-            for (int t = 0; t < 1000; t++) {
+            // add active feature to the index
 
+            DVector phii = parent.factories.get(index).trainingFeature.get();
+            active.add(new ActiveFeature(index, phii));
 
-                double[] ll_current = new double[indexes.length];
-                double[] ll_delta_plus = new double[indexes.length];
-                double[] ll_delta_minus = new double[indexes.length];
+            // adjust phiHat by adding a new row and column
 
-                DMatrix phi_active = phi.mapCols(indexes).t();
-                DVector right = phi_active.dot(y);
+            phiHat = phiHat.resizeCopy(phiHat.rowCount() + 1, phiHat.colCount() + 1, Double.NaN);
 
-                double delta = rbfBetaDelta;
-                for (int i = 0; i < indexes.length; i++) {
-                    final int ii = i;
-                    DVector phi_m = phi.mapCol(indexes[i]);
-                    ll_current[i] = compute_ll(phi_active, right, indexes[i], phi_m);
-
-                    DVector phi_m_plus = DVector.from(n, j -> rbf(rbfBeta.get(indexes[ii]) + delta, x.mapRow(indexes[ii]), x.mapRow(j)));
-                    ll_delta_plus[i] = compute_ll(phi_active, right, indexes[i], phi_m_plus);
-                    if (!Double.isFinite(ll_delta_plus[i]) || rbfBeta.get(indexes[ii]) + delta >= 0) {
-                        ll_delta_plus[i] = 0;
-                    }
-
-                    DVector phi_m_minus = DVector.from(n, j -> rbf(rbfBeta.get(indexes[ii]) - delta, x.mapRow(indexes[ii]), x.mapRow(j)));
-                    ll_delta_minus[i] = compute_ll(phi_active, right, indexes[i], phi_m_minus);
-                    if (!Double.isFinite(ll_delta_minus[i]) || rbfBeta.get(indexes[ii]) - delta >= 0) {
-                        ll_delta_minus[i] = 0;
-                    }
-                }
-
-                int best_plus = 0;
-                double best_delta_plus = ll_delta_plus[0] - ll_current[0];
-                int best_minus = 0;
-                double best_delta_minus = ll_delta_minus[0] - ll_current[0];
-                for (int i = 1; i < indexes.length; i++) {
-                    if (ll_delta_plus[i] - ll_current[i] > best_delta_plus) {
-                        best_delta_plus = ll_delta_plus[i] - ll_current[i];
-                        best_plus = i;
-                    }
-                    if (ll_delta_minus[i] - ll_current[i] > best_delta_minus) {
-                        best_delta_minus = ll_delta_minus[i] - ll_current[i];
-                        best_minus = i;
-                    }
-                }
-
-                if (best_delta_plus > best_delta_minus) {
-                    if (best_delta_plus > min_delta_threshold) {
-                        System.out.println("index " + indexes[best_plus] + " +");
-                        int ii = best_plus;
-                        DVector phi_m_plus = DVector.from(n, j -> rbf(rbfBeta.get(indexes[ii]) + delta, x.mapRow(indexes[ii]), x.mapRow(j)));
-                        for (int i = 0; i < n; i++) {
-                            phi.set(i, indexes[ii], phi_m_plus.get(i));
-                        }
-                        rbfBeta.inc(indexes[ii], delta);
-                    } else {
-                        int ii = best_minus;
-                        System.out.println("index " + indexes[best_minus] + " -");
-                        DVector phi_m_minus = DVector.from(n, j -> rbf(rbfBeta.get(indexes[ii]) - delta, x.mapRow(indexes[ii]), x.mapRow(j)));
-                        for (int i = 0; i < n; i++) {
-                            phi.set(i, indexes[ii], phi_m_minus.get(i));
-                        }
-                        rbfBeta.inc(indexes[ii], -delta);
-                    }
-                    phi_hat = phi.t().dot(phi);
-
-                    computeSigmaAndMu();
-                    computeSQ();
-                    computeBeta();
+            // fill the remaining entries from cache
+            boolean full = true;
+            for (int i = 0; i < phiHat.rowCount(); i++) {
+                double value = cache.get(index, active.get(i).index);
+                if (Double.isNaN(value)) {
+                    full = false;
+                } else {
+                    phiHat.set(phiHat.rowCount() - 1, i, value);
+                    phiHat.set(i, phiHat.colCount() - 1, value);
                 }
             }
 
+            // if not completed from cache
+            if (!full) {
+                for (int i = 0; i < phiHat.rowCount(); i++) {
+                    double value = phiHat.get(phiHat.rowCount() - 1, i);
+                    if (Double.isNaN(value)) {
+                        value = active.get(i).vector.dot(phii);
+                        phiHat.set(phiHat.rowCount() - 1, i, value);
+                        phiHat.set(i, phiHat.colCount() - 1, value);
+                        cache.store(index, active.get(i).index, value);
+                    }
+                }
+            }
         }
 
-        private double compute_ll(DMatrix phi_active, DVector right, int index, DVector phi_m) {
-            DVector left = phi_active.dot(phi_m);
-            double ssi = beta * phi_m.dot(phi_m) - beta * beta * sigma.dot(left).dot(left);
-            double qqi = beta * phi_m.dot(y) - beta * beta * sigma.dot(left).dot(right);
-            double alpha_i = alpha.get(index);
-            double si, qi;
-            if (Double.isInfinite(alpha_i)) {
-                si = ssi;
-                qi = qqi;
-            } else {
-                si = alpha_i * ssi / (alpha_i - ssi);
-                qi = alpha_i * qqi / (alpha_i - ssi);
+        private void updateActiveFeature(int index, double _alpha) {
+            alpha.set(index, _alpha);
+        }
+
+        private void removeActiveFeature(int index) {
+            alpha.set(index, Double.POSITIVE_INFINITY);
+
+            // find position of active feature to be removed
+            int pos = -1;
+            for (int i = 0; i < active.size(); i++) {
+                if (active.get(i).index == index) {
+                    pos = i;
+                    break;
+                }
             }
 
-            return 0.5 * (Math.log(alpha_i) - Math.log(alpha_i + si)) + qi * qi / (alpha_i + si);
+            // if pos == -1 it means we want to remove a feature which is not active
+            if (pos == -1) {
+                throw new IllegalStateException("Try to remove active feature with index: " + index);
+            }
+
+            // now remove from active features
+            active.remove(pos);
+
+            // adjust phiHat
+
+            phiHat = phiHat.removeRows(pos).removeCols(pos).copy();
         }
 
         private boolean testConvergence(DVector old_alpha) {
@@ -916,349 +1137,45 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             return delta < parent.fitThreshold.get();
         }
 
-        private int[] addIndex(int[] original, int i) {
-            int[] copy = new int[indexes.length + 1];
-            System.arraycopy(indexes, 0, copy, 0, indexes.length);
-            copy[indexes.length] = i;
-            return copy;
-        }
-
-        private int[] removeIndex(int[] original, int j) {
-            int[] copy = new int[original.length - 1];
-            int pos = 0;
-            for (int k : original) {
-                if (k != j) {
-                    copy[pos++] = k;
-                }
-            }
-            return copy;
-        }
-
-        private void initialize() {
-            beta = 1.0 / (y.variance() * 0.1);
-            alpha = DVector.fill(phi.colCount(), Double.POSITIVE_INFINITY);
-
-            // select one alpha
-
-            int best_index = 0;
-
-            DVector phi_m = phi.mapCol(0);
-            double best_projection = phi_m.dot(y) / phi_m.dot(phi_m);
-
-            for (int i = 1; i < phi.colCount(); i++) {
-                phi_m = phi.mapCol(i);
-                double projection = phi_m.dot(y) / phi_m.dot(phi_m);
-                if (projection >= best_projection) {
-                    best_projection = projection;
-                    best_index = i;
-                }
-            }
-            indexes = new int[]{best_index};
-
-            phi_m = phi.mapCol(best_index);
-            alpha.set(best_index, phi_m.dot(phi_m) / (best_projection - 1.0 / beta));
-        }
-
-        private void computeSigmaAndMu() {
-
-            DMatrix m_sigma_inv = phi_hat.mapCols(indexes).mapRows(indexes).copy().mult(beta);
-            for (int i = 0; i < indexes.length; i++) {
-                m_sigma_inv.inc(i, i, alpha.get(indexes[i]));
-            }
-            try {
-                sigma = CholeskyDecomposition.from(m_sigma_inv).solve(DMatrix.identity(indexes.length));
-            } catch (IllegalArgumentException ex) {
-                sigma = QRDecomposition.from(m_sigma_inv).solve(DMatrix.identity(indexes.length));
-            }
-            m = sigma.dot(phi.mapCols(indexes).t().dot(y)).mult(beta);
-        }
-
-        void computeSQ() {
-            for (int i = 0; i < n; i++) {
-                DVector phi_m = phi.mapCol(i);
-                DMatrix phi_active = phi.mapCols(indexes).t();
-                DVector left = phi_active.dot(phi_m);
-                DVector right = phi_active.dot(y);
-                ss[i] = beta * phi_m.dot(phi_m) - beta * beta * sigma.dot(left).dot(left);
-                qq[i] = beta * phi_m.dot(y) - beta * beta * sigma.dot(left).dot(right);
-                double alpha_i = alpha.get(i);
-                if (Double.isInfinite(alpha_i)) {
-                    s[i] = ss[i];
-                    q[i] = qq[i];
-                } else {
-                    s[i] = alpha_i * ss[i] / (alpha_i - ss[i]);
-                    q[i] = alpha_i * qq[i] / (alpha_i - ss[i]);
-                }
-            }
-        }
-
-        private void computeBeta() {
-            DMatrix pruned_phi = phi.mapCols(indexes);
-            DVector gamma = DVector.from(m.size(), i -> 1 - alpha.get(indexes[i]) * sigma.get(i, i));
-            DVector delta = pruned_phi.dot(m).sub(y);
-            beta = (n - gamma.sum()) / delta.dot(delta);
-        }
-
         protected void updateResults(RVMRegression parent, boolean convergent, int iterations) {
-            this.parent.indexes = indexes;
-            this.parent.m = m.copy();
-            this.parent.sigma = sigma.copy();
-            this.parent.x = x.mapRows(indexes);
-            this.parent.alpha = alpha.mapCopy(indexes);
-            this.parent.rbfBeta = rbfBeta.mapCopy(indexes);
-            this.parent.beta = beta;
-            this.parent.converged = convergent;
-            this.parent.iterations = iterations;
-        }
-    }
-
-    private static final class FastTruncated extends BaseAlgorithm {
-
-        private int n;
-        private int[] active;
-        private double[] ss;
-        private double[] qq;
-        private double[] s;
-        private double[] q;
-
-        private DMatrix phi_hat;
-        private DVector phi_dot_y;
-
-        public FastTruncated(RVMRegression parent, Frame df) {
-            super(parent, df);
+            parent.featureIndexes = active.stream().mapToInt(a -> a.index).toArray();
+            parent.trainingIndexes = active.stream().mapToInt(a -> a.index).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
+            parent.relevanceVectors = DMatrix.wrap(true, active
+                    .stream().mapToInt(a -> a.index)
+                    .mapToObj(i -> parent.factories.get(i).phii)
+                    .toArray(DVector[]::new));
+            parent.m = m.copy();
+            parent.sigma = sigma.copy();
+            parent.alpha = alpha.mapCopy(parent.featureIndexes);
+            parent.beta = beta;
+            parent.converged = convergent;
+            parent.iterations = iterations;
         }
 
-        public boolean fit() {
-            x = parent.buildFeatures(df);
-            phi = buildPhi();
-            n = phi.rowCount();
-            y = buildTarget(df);
-            truncateFeatures();
-            phi_hat = phi.t().dot(phi);
-            phi_dot_y = phi.t().dot(y);
+        public static final class PhiCache {
 
-            ss = new double[n];
-            qq = new double[n];
-            s = new double[n];
-            q = new double[n];
+            private final HashMap<Long, Double> cache = new HashMap<>(10_000, 0.5f);
 
-            initialize();
-            computeSigmaAndMu();
-            computeSQ();
-            computeBeta();
-
-            DVector old_alpha = alpha.copy();
-            for (int it = 1; it <= parent.maxIter.get(); it++) {
-
-                updateBestVector();
-                computeSigmaAndMu();
-                computeSQ();
-                if (it % 2 == 0) {
-                    computeBeta();
-                }
-
-                if (testConvergence(old_alpha)) {
-                    updateResults(parent, true, it);
-                    return true;
-                }
-                old_alpha = alpha.copy();
+            public double get(int i, int j) {
+                long pos = (i >= j) ? ((long) i << 32) | j : ((long) j << 32) | i;
+                return cache.getOrDefault(pos, Double.NaN);
             }
 
-            updateResults(parent, false, parent.maxIter.get());
-            return true;
-        }
-
-        private void truncateFeatures() {
-            active = new int[n];
-            int activeLen = 0;
-
-            int[] vectors = IntArrays.newSeq(0, n);
-
-            final double[] correlations = new double[n];
-            IntStream.range(0, n).parallel().forEach(
-                    i -> correlations[i] = Math.abs(CorrPearson.of(y.asVarDouble(), phi.mapCol(i).asVarDouble()).singleValue()));
-
-            double threshold = Quantiles.of(VarDouble.wrap(correlations), 0.9).values()[0];
-            for (int i = 0; i < n; i++) {
-                if (correlations[i] > threshold) {
-                    active[activeLen++] = i;
-                }
-            }
-            active = Arrays.copyOf(active, activeLen);
-        }
-
-        private static class RecursiveTruncate extends RecursiveAction {
-
-            private final int pos;
-            private final double[] correlations;
-
-            @Serial
-            private static final long serialVersionUID = 5360432925103729246L;
-
-            private RecursiveTruncate(int pos, double[] correlations) {
-                this.pos = pos;
-                this.correlations = correlations;
-            }
-
-            @Override
-            protected void compute() {
+            public void store(int i, int j, double value) {
+                long pos = (i >= j) ? ((long) i << 32) | j : ((long) j << 32) | i;
+                cache.putIfAbsent(pos, value);
             }
         }
 
-        private void updateBestVector() {
+        private static final class ActiveFeature {
 
-            double[] theta = new double[n];
-            double[] llDelta = new double[n];
+            final int index;
+            final DVector vector;
 
-            for (int i : active) {
-                theta[i] = q[i] * q[i] - s[i];
-                if (theta[i] > 0) {
-                    if (Double.isInfinite(alpha.get(i))) {
-                        llDelta[i] = (qq[i] * qq[i] - ss[i]) / ss[i] + Math.log(ss[i] / (qq[i] * qq[i]));
-                    } else {
-                        double alpha_new = s[i] * s[i] / theta[i];
-                        double delta_alpha = 1. / alpha_new - 1.0 / alpha.get(i);
-                        llDelta[i] = (qq[i] * qq[i]) / (ss[i] + 1. / delta_alpha) - Math.log1p(ss[i] * delta_alpha);
-                    }
-                } else {
-                    if (Double.isFinite(alpha.get(i))) {
-                        llDelta[i] = qq[i] * qq[i] / (ss[i] - alpha.get(i)) - Math.log(1 - ss[i] / alpha.get(i));
-                    }
-                }
+            public ActiveFeature(int index, DVector vector) {
+                this.index = index;
+                this.vector = vector;
             }
-
-            int i = active[0];
-            for (int j = 1; j < active.length; j++) {
-                if (llDelta[active[j]] > llDelta[i]) {
-                    i = active[j];
-                }
-            }
-            double alpha_i = alpha.get(i);
-
-            if (theta[i] > 0) {
-                if (Double.isInfinite(alpha_i)) {
-                    // add alpha_i to model
-                    alpha.set(i, s[i] * s[i] / theta[i]);
-                    indexes = addIndex(indexes, i);
-                } else {
-                    // alpha is in set, re-estimate alpha
-                    alpha.set(i, s[i] * s[i] / theta[i]);
-                }
-            } else {
-                if (Double.isFinite(alpha_i) && indexes.length > 1) {
-                    alpha.set(i, Double.POSITIVE_INFINITY);
-                    indexes = removeIndex(indexes, i);
-                }
-            }
-
-        }
-
-        private boolean testConvergence(DVector old_alpha) {
-            /*
-                In step 11, we must judge if we have attained a local maximum of the marginal likelihood. We
-                terminate when the changes in log α in Step 6 for all basis functions in the model are smaller than
-                10 −6 and all other θ i ≤ 0.
-             */
-            double delta = 0.0;
-            for (int i = 0; i < alpha.size(); i++) {
-                double new_value = alpha.get(i);
-                double old_value = old_alpha.get(i);
-                if (Double.isInfinite(new_value) && Double.isInfinite(old_value)) {
-                    continue;
-                }
-                if (Double.isInfinite(new_value) || Double.isInfinite(old_value)) {
-                    return false;
-                }
-                delta += Math.abs(old_value - new_value);
-            }
-            return delta < parent.fitThreshold.get();
-        }
-
-        private int[] addIndex(int[] original, int i) {
-            int[] copy = new int[indexes.length + 1];
-            System.arraycopy(indexes, 0, copy, 0, indexes.length);
-            copy[indexes.length] = i;
-            return copy;
-        }
-
-        private int[] removeIndex(int[] original, int j) {
-            int[] copy = new int[original.length - 1];
-            int pos = 0;
-            for (int k : original) {
-                if (k != j) {
-                    copy[pos++] = k;
-                }
-            }
-            return copy;
-        }
-
-        private void initialize() {
-            beta = 1.0 / (y.variance() * 0.1);
-            alpha = DVector.fill(phi.rowCount(), Double.POSITIVE_INFINITY);
-
-            // select one alpha
-
-            int best_index = -1;
-            double best_projection = Double.NaN;
-
-            for (int i : active) {
-                double projection = phi_dot_y.get(i) / phi_hat.get(i, i);
-                if (best_index < 0 || projection >= best_projection) {
-                    best_projection = projection;
-                    best_index = i;
-                }
-            }
-            indexes = new int[]{best_index};
-            alpha.set(best_index, phi_hat.get(best_index, best_index) / (best_projection - 1.0 / beta));
-        }
-
-        private void computeSigmaAndMu() {
-
-            DMatrix m_sigma_inv = phi_hat.mapRows(indexes).mapCols(indexes).copy().mult(beta);
-            for (int i = 0; i < indexes.length; i++) {
-                m_sigma_inv.inc(i, i, alpha.get(indexes[i]));
-            }
-            sigma = QRDecomposition.from(m_sigma_inv).solve(DMatrix.identity(indexes.length));
-            m = sigma.dot(phi_dot_y.mapCopy(indexes)).mult(beta);
-        }
-
-        void computeSQ() {
-            for (int i : active) {
-                DVector phi_m = phi.mapCol(i);
-                DMatrix phi_active = phi.mapCols(indexes).t();
-                DVector left = phi_hat.mapRow(i).mapCopy(indexes);
-                ss[i] = beta * phi_hat.get(i, i) - beta * beta * sigma.dot(left).dot(left);
-                qq[i] = beta * phi_dot_y.get(i) - beta * beta * sigma.dot(left).dot(phi_dot_y.mapCopy(indexes));
-            }
-
-            for (int i : active) {
-                double alpha_i = alpha.get(i);
-                if (Double.isInfinite(alpha_i)) {
-                    s[i] = ss[i];
-                    q[i] = qq[i];
-                } else {
-                    s[i] = alpha_i * ss[i] / (alpha_i - ss[i]);
-                    q[i] = alpha_i * qq[i] / (alpha_i - ss[i]);
-                }
-            }
-        }
-
-        private void computeBeta() {
-            DMatrix pruned_phi = phi.mapCols(indexes);
-            DVector gamma = DVector.from(m.size(), i -> 1 - alpha.get(indexes[i]) * sigma.get(i, i));
-            DVector delta = pruned_phi.dot(m).sub(y);
-            beta = (n - gamma.sum()) / delta.dot(delta);
-        }
-
-        protected void updateResults(RVMRegression parent, boolean convergent, int iterations) {
-            this.parent.indexes = indexes;
-            this.parent.m = m.copy();
-            this.parent.sigma = sigma.copy();
-            this.parent.x = x.mapRows(indexes);
-            this.parent.alpha = alpha.mapCopy(indexes);
-            this.parent.beta = beta;
-            this.parent.converged = convergent;
-            this.parent.iterations = iterations;
         }
     }
 }

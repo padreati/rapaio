@@ -147,10 +147,24 @@ public class DMatrixDenseC extends DMatrixDense {
 
     @Override
     public DMatrixDenseC copy() {
-        DMatrixDenseC copy = new DMatrixDenseC(rowCount, colCount);
+        double[][] copy = new double[colCount][rowCount];
         for (int i = 0; i < colCount; i++) {
-            System.arraycopy(values[i], 0, copy.values[i], 0, values[i].length);
+            copy[i] = DoubleArrays.copy(values[i], 0, rowCount);
         }
-        return copy;
+        return new DMatrixDenseC(rowCount, colCount, copy);
+    }
+
+    @Override
+    public DMatrix resizeCopy(int rows, int cols, double fill) {
+        double[][] copy = new double[cols][rows];
+
+        for (int i = 0; i < Math.min(cols, colCount); i++) {
+            copy[i] = DoubleArrays.newFill(rows, fill);
+            System.arraycopy(values[i], 0, copy[i], 0, Math.min(rows, rowCount));
+        }
+        for (int i = colCount; i < cols; i++) {
+            copy[i] = DoubleArrays.newFill(rows, fill);
+        }
+        return new DMatrixDenseC(rows, cols, copy);
     }
 }

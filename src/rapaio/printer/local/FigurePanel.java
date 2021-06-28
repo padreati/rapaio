@@ -88,7 +88,7 @@ public class FigurePanel extends JPanel {
                 if (figure == null) {
                     return currentImage;
                 }
-                return ImageTools.buildFigureImage(figure, getWidth(), getHeight());
+                return ImageTools.makeImage(figure, getWidth(), getHeight());
             }
 
             @Override
@@ -102,6 +102,7 @@ public class FigurePanel extends JPanel {
                         repaint();
                     } catch (InterruptedException | ExecutionException ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage());
+                        ex.printStackTrace();
                     }
                 });
 

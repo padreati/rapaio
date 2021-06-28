@@ -73,6 +73,11 @@ public class DMatrixBase extends AbstractDMatrix {
     }
 
     @Override
+    public MType innerType() {
+        return MType.BASE;
+    }
+
+    @Override
     public int rowCount() {
         return rowCount;
     }

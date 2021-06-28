@@ -86,11 +86,11 @@ public class ImageTools {
         return defaultHints;
     }
 
-    public static BufferedImage buildFigureImage(Figure figure, int width, int height) {
-        return buildFigureImage(figure, width, height, BufferedImage.TYPE_4BYTE_ABGR_PRE);
+    public static BufferedImage makeImage(Figure figure, int width, int height) {
+        return makeImage(figure, width, height, BufferedImage.TYPE_4BYTE_ABGR_PRE);
     }
 
-    public static BufferedImage buildFigureImage(Figure figure, int width, int height, int type) {
+    public static BufferedImage makeImage(Figure figure, int width, int height, int type) {
         BufferedImage newImage = new BufferedImage(width, height, type);
         Graphics g = newImage.getGraphics();
         Graphics2D g2d = (Graphics2D) g;
@@ -102,12 +102,12 @@ public class ImageTools {
     }
 
     public static void saveFigureImage(Figure figure, int width, int height, String fileName) throws IOException {
-        BufferedImage bi = buildFigureImage(figure, width, height);
+        BufferedImage bi = makeImage(figure, width, height);
         ImageIO.write(bi, "png", new File(fileName));
     }
 
     public static void saveFigureImage(Figure figure, int width, int height, OutputStream os) throws IOException {
-        BufferedImage bi = buildFigureImage(figure, width, height);
+        BufferedImage bi = makeImage(figure, width, height);
         ImageIO.write(bi, "png", os);
     }
 

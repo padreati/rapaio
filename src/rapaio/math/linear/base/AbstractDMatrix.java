@@ -36,6 +36,7 @@ import java.io.Serial;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
@@ -44,6 +45,9 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Serial
     private static final long serialVersionUID = -8475836385935066885L;
+
+    @Override
+    public abstract MType innerType();
 
     protected void checkMatrixSameSize(DMatrix b) {
         if ((rowCount() != b.rowCount()) || (colCount() != b.colCount())) {
@@ -331,11 +335,11 @@ public abstract class AbstractDMatrix implements DMatrix {
     @Override
     public DMatrix mult(DMatrix b) {
         checkMatrixSameSize(b);
-        for (int i = 0; i < rowCount(); i++) {
+        IntStream.range(0, rowCount()).parallel().forEach(i -> {
             for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) * b.get(i, j));
             }
-        }
+        });
         return this;
     }
 
@@ -468,8 +472,8 @@ public abstract class AbstractDMatrix implements DMatrix {
      */
     @Override
     public DVector diag() {
-        DVector v = DVector.zeros(rowCount());
-        for (int i = 0; i < rowCount(); i++) {
+        DVector v = DVector.zeros(colCount());
+        for (int i = 0; i < colCount(); i++) {
             v.set(i, get(i, i));
         }
         return v;
@@ -657,6 +661,21 @@ public abstract class AbstractDMatrix implements DMatrix {
             }
         }
         return max;
+    }
+
+    @Override
+    public DMatrix resizeCopy(int rows, int cols, double fill) {
+        DMatrix copy = DMatrix.empty(innerType(), rows, cols);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (i < rowCount() && j < colCount()) {
+                    copy.set(i, j, get(i, j));
+                } else {
+                    copy.set(i, j, fill);
+                }
+            }
+        }
+        return copy;
     }
 
     @Override

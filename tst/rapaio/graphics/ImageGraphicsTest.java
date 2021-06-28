@@ -86,7 +86,7 @@ public class ImageGraphicsTest {
             ImageTools.saveFigureImage(f, 500, 400, root + "/rapaio/graphics/" + name + ".png");
         }
 
-        BufferedImage bi1 = ImageTools.buildFigureImage(f, 500, 400);
+        BufferedImage bi1 = ImageTools.makeImage(f, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream(name + ".png"));
         boolean condition = bufferedImagesEqual(bi1, bi2);
         assertTrue(condition);

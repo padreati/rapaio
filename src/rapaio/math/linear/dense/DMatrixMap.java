@@ -67,6 +67,11 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
+    public MType innerType() {
+        return ref.innerType();
+    }
+
+    @Override
     public int rowCount() {
         return rowIndexes.length;
     }
@@ -140,7 +145,13 @@ public class DMatrixMap extends AbstractDMatrix {
 
     @Override
     public DMatrix copy() {
-        DMatrix copy = DMatrix.empty(rowIndexes.length, colIndexes.length);
+        DMatrix r = ref;
+        while (r.type() == MType.MAP) {
+            if (r instanceof DMatrixMap mm) {
+                r = mm.ref;
+            }
+        }
+        DMatrix copy = DMatrix.empty(r.type(), rowIndexes.length, colIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 copy.set(i, j, ref.get(rowIndexes[i], colIndexes[j]));

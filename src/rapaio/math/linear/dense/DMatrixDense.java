@@ -71,6 +71,11 @@ public abstract class DMatrixDense extends AbstractDMatrix {
     }
 
     @Override
+    public MType innerType() {
+        return type;
+    }
+
+    @Override
     public int rowCount() {
         return rowCount;
     }

@@ -96,6 +96,6 @@ public class WS {
     }
 
     public static BufferedImage image(Figure figure, int w, int h) {
-        return ImageTools.buildFigureImage(figure, w, h);
+        return ImageTools.makeImage(figure, w, h);
     }
 }

@@ -68,7 +68,7 @@ public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implement
 
         double t = t0;
         while (true) {
-            double fdelta = f.apply(p.caxpy(t, x));
+            double fdelta = f.apply(p.axpyCopy(t, x));
             if (fdelta > fx + xalpha * t * dfxp) {
                 t *= xbeta;
                 continue;

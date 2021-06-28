@@ -22,9 +22,10 @@
 package rapaio.math.linear.dense;
 
 import rapaio.data.VarDouble;
+import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.VType;
-import rapaio.math.linear.base.DVectorBase;
+import rapaio.math.linear.base.AbstractDVector;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -32,17 +33,17 @@ import java.io.Serial;
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
-public class DVectorDense extends DVectorBase {
+public class DVectorDense extends AbstractDVector {
 
     @Serial
     private static final long serialVersionUID = 5763094452899116225L;
 
-    public DVectorDense(int len) {
-        super(len, new double[len]);
-    }
+    private final int size;
+    private final double[] values;
 
-    public DVectorDense(int len, double[] values) {
-        super(len, values);
+    public DVectorDense(int size, double[] values) {
+        this.size = size;
+        this.values = values;
     }
 
     @Override
@@ -51,39 +52,108 @@ public class DVectorDense extends DVectorBase {
     }
 
     @Override
-    public DVector mapCopy(int... indexes) {
+    public int size() {
+        return size;
+    }
+
+    public double[] elements() {
+        return values;
+    }
+
+    @Override
+    public double get(int i) {
+        return values[i];
+    }
+
+    @Override
+    public void set(int i, double value) {
+        values[i] = value;
+    }
+
+    @Override
+    public void inc(int i, double value) {
+        values[i] += value;
+    }
+
+    @Override
+    public DVectorDense mapCopy(int... indexes) {
         double[] copy = new double[indexes.length];
-        for (int i = 0; i < copy.length; i++) {
-            copy[i] = values[indexes[i]];
+        int pos = 0;
+        for (int i : indexes) {
+            copy[pos++] = values[i];
         }
         return new DVectorDense(copy.length, copy);
     }
 
+    public DVectorDense copy() {
+        double[] copy = new double[size];
+        System.arraycopy(values, 0, copy, 0, size);
+        return new DVectorDense(size, copy);
+    }
+
     @Override
-    public DVectorBase add(double x) {
+    public double dotBilinear(DMatrix m, DVector y) {
+        if (m.rowCount() != size || m.colCount() != y.size()) {
+            throw new IllegalArgumentException("Bilinear matrix and vector are not conform for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < y.size(); j++) {
+                sum += values[i] * m.get(i, j) * y.get(j);
+            }
+        }
+        return sum;
+    }
+
+    @Override
+    public double dotBilinear(DMatrix m) {
+        if (m.rowCount() != size() || m.colCount() != size()) {
+            throw new IllegalArgumentException("Bilinear matrix is not conform for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            for (int j = 0; j < size(); j++) {
+                sum += values[i] * m.get(i, j) * values[j];
+            }
+        }
+        return sum;
+    }
+
+    @Override
+    public DVectorDense add(double x) {
         DoubleArrays.add(values, 0, x, size);
         return this;
     }
 
     @Override
-    public DVectorBase add(DVector b) {
+    public DVectorDense add(DVector b) {
+        checkConformance(b);
         if (b.isDense()) {
-            checkConformance(b);
             DoubleArrays.add(values, 0, b.asDense().values, 0, size);
             return this;
         }
-        super.add(b);
+        for (int i = 0; i < size; i++) {
+            values[i] += b.get(i);
+        }
         return this;
     }
 
     @Override
-    public DVectorBase sub(DVector b) {
+    public DVector sub(double x) {
+        DoubleArrays.sub(values, 0, x, size);
+        return this;
+    }
+
+    @Override
+    public DVectorDense sub(DVector b) {
+        checkConformance(b);
         if (b instanceof DVectorDense) {
-            checkConformance(b);
             DoubleArrays.sub(values, 0, b.asDense().values, 0, size);
             return this;
         }
-        super.sub(b);
+        for (int i = 0; i < size; i++) {
+            values[i] -= b.get(i);
+        }
         return this;
     }
 
@@ -100,7 +170,9 @@ public class DVectorDense extends DVectorBase {
             DoubleArrays.mult(values, 0, b.asDense().values, 0, size);
             return this;
         }
-        super.mult(b);
+        for (int i = 0; i < size; i++) {
+            values[i] *= b.get(i);
+        }
         return this;
     }
 
@@ -124,18 +196,18 @@ public class DVectorDense extends DVectorBase {
     }
 
     @Override
-    public DVector caxpy(double a, DVector y) {
+    public DVector axpyCopy(double a, DVector y) {
         checkConformance(y);
         if (y instanceof DVectorDense) {
             double[] copy = new double[size];
             DoubleArrays.axpyTo(a, values, y.asDense().values, copy, 0, size);
             return new DVectorDense(copy.length, copy);
         }
-        DVector copy = new DVectorDense(size, new double[size]);
+        double[] copy = new double[size];
         for (int i = 0; i < size(); i++) {
-            copy.set(i, a * values[i] + y.get(i));
+            copy[i] = a * values[i] + y.get(i);
         }
-        return copy;
+        return new DVectorDense(copy.length, copy);
     }
 
     @Override
@@ -163,8 +235,6 @@ public class DVectorDense extends DVectorBase {
         if (p == Double.POSITIVE_INFINITY) {
             double max = Double.NaN;
             for (double value : values) {
-                if (Double.isNaN(value))
-                    continue;
                 if (Double.isNaN(max)) {
                     max = value;
                     continue;
@@ -180,13 +250,6 @@ public class DVectorDense extends DVectorBase {
         return Math.pow(s, 1.0 / p);
     }
 
-    public DVector normalize(double p) {
-        double norm = norm(p);
-        if (norm != 0.0)
-            mult(1.0 / norm);
-        return this;
-    }
-
     @Override
     public double sum() {
         return DoubleArrays.sum(values, 0, size);
@@ -195,6 +258,44 @@ public class DVectorDense extends DVectorBase {
     @Override
     public double nansum() {
         return DoubleArrays.nanSum(values, 0, size);
+    }
+
+    @Override
+    public DVector cumsum() {
+        for (int i = 1; i < size(); i++) {
+            values[i] += values[i - 1];
+        }
+        return this;
+    }
+
+    @Override
+    public double prod() {
+        double prod = 1;
+        for (int i = 0; i < size(); i++) {
+            prod *= values[i];
+        }
+        return prod;
+    }
+
+    @Override
+    public double nanprod() {
+        double nanprod = 1;
+        for (int i = 0; i < size(); i++) {
+            double value = values[i];
+            if (Double.isNaN(value)) {
+                continue;
+            }
+            nanprod *= value;
+        }
+        return nanprod;
+    }
+
+    @Override
+    public DVector cumprod() {
+        for (int i = 1; i < size(); i++) {
+            values[i] = values[i - 1] * values[i];
+        }
+        return this;
     }
 
     @Override
@@ -230,21 +331,6 @@ public class DVectorDense extends DVectorBase {
         return this;
     }
 
-    public DVectorDense copy() {
-        return new DVectorDense(size, Arrays.copyOf(values, size));
-    }
-
-    @Override
-    public DVector copy(VType type) {
-        double[] copy = new double[size];
-        System.arraycopy(values, 0, copy, 0, size);
-        return switch (type) {
-            case BASE -> new DVectorBase(size, copy);
-            case DENSE -> new DVectorDense(size, copy);
-            default -> throw new IllegalArgumentException("DVType." + type.name() + " cannot be used to create a copy.");
-        };
-    }
-
     @Override
     public DoubleStream valueStream() {
         return Arrays.stream(values).limit(size);
@@ -253,9 +339,5 @@ public class DVectorDense extends DVectorBase {
     @Override
     public VarDouble asVarDouble() {
         return VarDouble.wrapArray(size, values);
-    }
-
-    public double[] elements() {
-        return values;
     }
 }

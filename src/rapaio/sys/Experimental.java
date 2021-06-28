@@ -21,10 +21,6 @@
 
 package rapaio.sys;
 
-import jdk.jfr.Description;
-import jdk.jfr.Label;
-import jdk.jfr.MetadataDefinition;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -34,9 +30,6 @@ import java.lang.annotation.Target;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/21.
  */
-@MetadataDefinition
-@Label("Experimental")
-@Description("Implementation of the element is still in progress and might change in next revisions.")
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})

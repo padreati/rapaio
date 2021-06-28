@@ -136,7 +136,6 @@ public final class DoubleArrays {
             a[i] += s;
         }
     }
-
     public static void addTo(double[] a, int aStart, double s, double[] to, int toStart, int len) {
         for (int i = 0; i < len; i++) {
             to[toStart++] = a[aStart++] + s;

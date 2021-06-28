@@ -151,10 +151,10 @@ public class DMatrixDenseR extends DMatrixDense {
 
     @Override
     public DMatrixDenseR copy() {
-        DMatrixDenseR copy = new DMatrixDenseR(rowCount, colCount);
+        double[][] copy = new double[rowCount][colCount];
         for (int i = 0; i < rowCount; i++) {
-            System.arraycopy(values[i], 0, copy.values[i], 0, values[i].length);
+            copy[i] = DoubleArrays.copy(values[i], 0, colCount);
         }
-        return copy;
+        return new DMatrixDenseR(rowCount, colCount, copy);
     }
 }

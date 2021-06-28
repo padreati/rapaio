@@ -24,28 +24,35 @@ package rapaio.math.linear.dense;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.StandardDVectorTest;
 import rapaio.math.linear.VType;
+import rapaio.util.collection.IntArrays;
 
-public class DVectorDenseTest extends StandardDVectorTest {
+/**
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/21.
+ */
+public class DVectorMapTest extends StandardDVectorTest {
+
 
     private static final double TOL = 1e-15;
 
     @Override
     public VType type() {
-        return VType.DENSE;
+        return VType.MAP;
     }
 
     @Override
     public DVector generateFill(int size, double fill) {
-        return DVector.fill(size, fill);
+        DVector source = DVector.fill(size, fill);
+        return source.map(IntArrays.newSeq(0, source.size()));
     }
 
     @Override
     public DVector generateWrap(double[] values) {
-        return DVector.wrap(values);
+        DVector source = DVector.wrap(values);
+        return source.map(IntArrays.newSeq(0, source.size()));
     }
 
     @Override
     public String className() {
-        return "DVectorDense";
+        return "DVectorMap";
     }
 }

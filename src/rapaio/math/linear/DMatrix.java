@@ -29,6 +29,7 @@ import rapaio.math.linear.base.DMatrixBase;
 import rapaio.math.linear.dense.DMatrixDense;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.util.NotImplementedException;
 import rapaio.util.function.Double2DoubleFunction;
@@ -160,6 +161,20 @@ public interface DMatrix extends Serializable, Printable {
         return wrap(MType.RDENSE, byRows, values);
     }
 
+    static DMatrix wrap(boolean byRows, DVector[] vectors) {
+        int len = Integer.MAX_VALUE;
+        double[][] values = new double[vectors.length][];
+        for (int i = 0; i < vectors.length; i++) {
+            len = Math.min(len, vectors[i].size());
+            if (vectors[i] instanceof DVectorDense dv) {
+                values[i] = dv.elements();
+            } else {
+                values[i] = vectors[i].valueStream().toArray();
+            }
+        }
+        return wrap(byRows, values);
+    }
+
     static DMatrix wrap(MType type, boolean byRows, double[][] values) {
         if (byRows) {
             switch (type) {
@@ -273,6 +288,8 @@ public interface DMatrix extends Serializable, Printable {
      * @return matrix storage type
      */
     MType type();
+
+    MType innerType();
 
     /**
      * @return number of rows of the matrix
@@ -827,4 +844,6 @@ public interface DMatrix extends Serializable, Printable {
      * @return true if dimensions and elements are equal
      */
     boolean deepEquals(DMatrix m, double eps);
+
+    DMatrix resizeCopy(int rows, int cols, double fill);
 }

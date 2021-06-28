@@ -24,10 +24,13 @@ package rapaio.math.linear;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
+import rapaio.core.SamplingTools;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
+import rapaio.data.VarDouble;
 import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.IntArrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,6 +46,7 @@ public abstract class StandardDVectorTest {
 
     protected DVector x;
     protected DVector z;
+    protected DMatrix m;
 
     @BeforeEach
     void beforeEach() {
@@ -51,6 +55,7 @@ public abstract class StandardDVectorTest {
         values = DoubleArrays.newFrom(0, 100, row -> normal.sampleNext());
         x = generateWrap(values);
         z = generateFill(100, 10);
+        m = DMatrix.identity(MType.RDENSE, 100).mult(2);
     }
 
     public abstract VType type();
@@ -72,23 +77,119 @@ public abstract class StandardDVectorTest {
     }
 
     @Test
+    void testBuilderZeros() {
+        var zeros = DVector.zeros(N);
+        assertNotNull(zeros);
+        for (int i = 0; i < N; i++) {
+            assertEquals(0, zeros.get(i), TOL);
+        }
+    }
+
+    @Test
+    void testBuildersOnes() {
+        var ones = DVector.ones(N);
+        assertNotNull(ones);
+        assertEquals(N, ones.size());
+        for (int i = 0; i < ones.size(); i++) {
+            assertEquals(1., ones.get(i), TOL);
+        }
+    }
+
+    @Test
+    void testBuildersFill() {
+        var fill = DVector.fill(N, 13);
+        assertNotNull(fill);
+        assertEquals(N, fill.size());
+        for (int i = 0; i < fill.size(); i++) {
+            assertEquals(13, fill.get(i), TOL);
+        }
+    }
+
+    @Test
+    void testBuilders() {
+        x = DVector.from(VarDouble.seq(N - 1));
+        assertNotNull(x);
+        for (int i = 0; i < N; i++) {
+            assertEquals(i, x.get(i), TOL);
+        }
+
+        DVector y = DVector.from(VarDouble.seq(N - 1));
+        x = DVector.copy(y);
+        assertNotNull(x);
+        for (int i = 0; i < N; i++) {
+            assertEquals(i, x.get(i), TOL);
+        }
+
+        x = DVector.from(VarDouble.fill(N, 1).bindRows(VarDouble.seq(N - 1)));
+        assertNotNull(x);
+        for (int i = 0; i < N; i++) {
+            assertEquals(1, x.get(i), TOL);
+            assertEquals(i, x.get(i + N), TOL);
+        }
+
+        x = DVector.wrap(0, 1, 2, 3, 4, 5);
+        assertNotNull(x);
+        for (int i = 0; i < 6; i++) {
+            assertEquals(i, x.get(i), TOL);
+        }
+
+        x = DVector.from(10, Math::sqrt);
+        assertNotNull(x);
+        for (int i = 0; i < 10; i++) {
+            assertEquals(Math.sqrt(i), x.get(i), TOL);
+        }
+    }
+
+    @Test
     void typeTest() {
         assertEquals(type(), generateFill(10, 1).type());
     }
 
     @Test
+    void mapCopyTest() {
+        int[] sample = SamplingTools.sampleWOR(100, 10);
+        DVector mapCopy = x.mapCopy(sample);
+        assertEquals(sample.length, mapCopy.size());
+        for (int i = 0; i < 10; i++) {
+            assertEquals(x.get(sample[i]), mapCopy.get(i), TOL);
+        }
+        assertEquals(VType.DENSE, mapCopy.type());
+    }
+
+    @Test
+    void axpyCopyTest() {
+        DVector ones = DVector.ones(x.size());
+        double result = x.axpyCopy(1, ones).sum();
+        assertEquals(x.sum() + x.size(), result);
+        DVector map = ones.map(IntArrays.newSeq(0, x.size()));
+        result = x.axpyCopy(1, map).sum();
+        assertEquals(x.sum() + ones.size(), result);
+    }
+
+    @Test
     void testAddScalar() {
-        DVector y = x.copy().add(10);
-        for (int i = 0; i < y.size(); i++) {
-            assertEquals(x.get(i) + 10, y.get(i), TOL);
+        DVector xcopy = x.copy();
+        x.add(10);
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) + 10, x.get(i), TOL);
         }
     }
 
     @Test
     void testAddVector() {
-        DVector y = x.copy().add(z);
-        for (int i = 0; i < y.size(); i++) {
-            assertEquals(x.get(i) + z.get(i), y.get(i), TOL);
+        DVector xcopy = x.copy();
+        x.add(z);
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) + z.get(i), x.get(i), TOL);
+        }
+    }
+
+    @Test
+    void testAddVectorMap() {
+        DVector xcopy = x.copy();
+        x.add(z.map(IntArrays.newSeq(0, x.size())));
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) + z.get(i), x.get(i), TOL);
         }
     }
 
@@ -100,17 +201,28 @@ public abstract class StandardDVectorTest {
 
     @Test
     void testScalarSubtract() {
-        DVector y = x.copy().sub(10);
-        for (int i = 0; i < y.size(); i++) {
-            assertEquals(x.get(i) - 10, y.get(i), TOL);
+        DVector xcopy = x.copy();
+        x.sub(10);
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) - 10, x.get(i), TOL);
         }
     }
 
     @Test
     void testVectorSubtract() {
-        DVector y = x.copy().sub(z);
-        for (int i = 0; i < y.size(); i++) {
-            assertEquals(x.get(i) - z.get(i), y.get(i), TOL);
+        DVector xcopy = x.copy();
+        x.sub(z);
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) - z.get(i), x.get(i), TOL);
+        }
+    }
+
+    @Test
+    void testVectorSubtractMap() {
+        DVector xcopy = x.copy();
+        x.sub(z.map(IntArrays.newSeq(0, x.size())));
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) - z.get(i), x.get(i), TOL);
         }
     }
 
@@ -122,43 +234,109 @@ public abstract class StandardDVectorTest {
 
     @Test
     void testScalarMultiply() {
-        DVector y = x.copy().mult(10);
-        for (int i = 0; i < y.size(); i++) {
-            assertEquals(x.get(i) * 10, y.get(i), TOL);
+        DVector xcopy = x.copy();
+        x.mult(10);
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) * 10, x.get(i), TOL);
         }
     }
 
     @Test
     void testVectorMultiply() {
-        DVector y = x.copy().mult(z);
-        assertEquals(100, y.size());
-        for (int i = 0; i < y.size(); i++) {
-            assertEquals(x.get(i) * 10, y.get(i), TOL);
+        DVector xcopy = x.copy();
+        x.mult(z);
+        assertEquals(100, x.size());
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) * 10, x.get(i), TOL);
         }
     }
 
+    @Test
+    void testVectorMultiplyMap() {
+        DVector xcopy = x.copy();
+        x.mult(z.map(IntArrays.newSeq(0, x.size())));
+        assertEquals(100, x.size());
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) * 10, x.get(i), TOL);
+        }
+    }
 
     @Test
     void testScalarDivide() {
-        DVector y = x.copy().div(10);
-        for (int i = 0; i < y.size(); i++) {
-            assertEquals(x.get(i) / 10, y.get(i), TOL);
+        DVector xcopy = x.copy();
+        x.div(10);
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) / 10, x.get(i), TOL);
         }
     }
 
     @Test
     void vectorDivTest() {
-        DVector y = x.copy().div(z);
-        assertEquals(100, y.size());
-        for (int i = 0; i < y.size(); i++) {
-            assertEquals(x.get(i) / 10, y.get(i), TOL);
+        DVector xcopy = x.copy();
+        x.div(z);
+        assertEquals(100, x.size());
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) / 10, x.get(i), TOL);
+        }
+    }
+
+    @Test
+    void vectorDivTestMap() {
+        DVector xcopy = x.copy();
+        x.div(z.map(IntArrays.newSeq(0, x.size())));
+        assertEquals(100, x.size());
+        for (int i = 0; i < x.size(); i++) {
+            assertEquals(xcopy.get(i) / 10, x.get(i), TOL);
         }
     }
 
     @Test
     void vectorDotTest() {
-        double result = x.copy().dot(z);
+        double result = x.dot(z);
         assertEquals(x.sum() * 10, result, TOL);
+    }
+
+    @Test
+    void vectorDotTestMap() {
+        double result = x.dot(z.map(IntArrays.newSeq(0, z.size())));
+        assertEquals(x.sum() * 10, result, TOL);
+    }
+
+    @Test
+    void dotBilinearTest() {
+        double result = z.dotBilinear(m, z);
+        assertEquals(Math.pow(z.norm(2), 2) * 2, result);
+
+        result = z.dotBilinear(m);
+        assertEquals(Math.pow(z.norm(2), 2) * 2, result);
+
+        var ex = assertThrows(IllegalArgumentException.class, () -> z.dotBilinear(DMatrix.identity(10), z));
+        assertEquals("Bilinear matrix and vector are not conform for multiplication.", ex.getMessage());
+
+        ex = assertThrows(IllegalArgumentException.class, () -> z.dotBilinear(DMatrix.identity(10)));
+        assertEquals("Bilinear matrix is not conform for multiplication.", ex.getMessage());
+    }
+
+    @Test
+    void dotBilinearDiag() {
+        assertEquals(x.dotBilinearDiag(m), x.dotBilinearDiag(m, x));
+        assertEquals(x.dotBilinearDiag(z), x.dotBilinearDiag(z, x));
+
+        assertEquals(assertThrows(IllegalArgumentException.class,
+                () -> x.dotBilinearDiag(DMatrix.identity(1))).getMessage(),
+                "Bilinear matrix is not conform for multiplication.");
+
+        assertEquals(assertThrows(IllegalArgumentException.class,
+                () -> x.dotBilinearDiag(DMatrix.identity(1), z)).getMessage(),
+                "Bilinear matrix is not conform for multiplication.");
+
+        assertEquals(assertThrows(IllegalArgumentException.class,
+                () -> x.dotBilinearDiag(DVector.ones(1))).getMessage(),
+                "Bilinear diagonal vector is not conform for multiplication.");
+
+        assertEquals(assertThrows(IllegalArgumentException.class,
+                () -> x.dotBilinearDiag(DVector.ones(1), z)).getMessage(),
+                "Bilinear diagonal vector is not conform for multiplication.");
     }
 
     @Test
@@ -171,7 +349,7 @@ public abstract class StandardDVectorTest {
 
     @Test
     void normalizeTest() {
-        assertEquals(1, x.copy().apply(Math::abs).normalize(1).sum(), TOL);
+        assertEquals(1, x.apply(Math::abs).normalize(1).sum(), TOL);
     }
 
     @Test
@@ -190,24 +368,34 @@ public abstract class StandardDVectorTest {
         assertEquals(5, generateOnesWithMissing().nancount(), TOL);
         assertEquals(1, generateOnesWithMissing().nanmean(), TOL);
         assertEquals(0, generateOnesWithMissing().nanvariance(), TOL);
+        DVector v = generateOnesWithMissing();
+        double nanprod = v.valueStream().filter(Double::isFinite).reduce(1.0, (left, right) -> left * right);
+        assertEquals(nanprod, v.nanprod(), TOL);
+    }
+
+    @Test
+    void testCumSum() {
+        z.cumsum();
+        assertTrue(z.deepEquals(DVector.wrap(DoubleArrays.newSeq(1, z.size() + 1)).mult(10)));
+    }
+
+    @Test
+    void testProduct() {
+        assertEquals(1.0000000000000006E100, z.prod());
+
+        DVector v = generateFill(10, 2);
+        v.cumprod();
+        for (int i = 0; i < v.size(); i++) {
+            assertEquals(2 << i, v.get(i));
+        }
     }
 
     @Test
     void copyTest() {
         var v = generateFill(10, 1);
-
-        var copy1 = v.copy(VType.BASE);
-        var copy2 = v.copy(VType.DENSE);
-
+        var copy1 = v.copy();
         assertTrue(v.deepEquals(copy1));
-        assertTrue(v.deepEquals(copy2));
-
-        assertEquals(VType.BASE, copy1.type());
-        assertEquals(VType.DENSE, copy2.type());
-
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> v.copy(VType.VIEW));
-        assertNotNull(ex);
-        assertEquals("DVType.VIEW cannot be used to create a copy.", ex.getMessage());
+        assertEquals(VType.DENSE, copy1.type());
     }
 
     @Test
@@ -273,5 +461,11 @@ public abstract class StandardDVectorTest {
                 " [5]  2  [11]  2  [17]  2  \n", generateFill(30, 2).toSummary());
 
 
+    }
+
+    @Test
+    void testStream() {
+        double xsum = z.valueStream().sum();
+        assertEquals(1_000, xsum, TOL);
     }
 }

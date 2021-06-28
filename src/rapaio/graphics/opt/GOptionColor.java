@@ -37,6 +37,18 @@ public class GOptionColor implements GOption<Color[]> {
     private static final long serialVersionUID = 8113363057332129656L;
     private final SFunction<GOptions, Color[]> function;
 
+    public GOptionColor(String... names) {
+        function = gOpts -> Arrays.stream(names).map(NamedColors.getInstance()::getColor).toArray(Color[]::new);
+    }
+
+    public GOptionColor(char... names) {
+        String[] strNames = new String[names.length];
+        for (int i = 0; i < names.length; i++) {
+            strNames[i] = String.valueOf(names[i]);
+        }
+        function = gOpts -> Arrays.stream(strNames).map(NamedColors.getInstance()::getColor).toArray(Color[]::new);
+    }
+
     public GOptionColor(int... index) {
         if (index.length == 1 && index[0] == -1) {
             function = gOpts -> null;
