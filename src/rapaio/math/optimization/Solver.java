@@ -21,6 +21,7 @@
 
 package rapaio.math.optimization;
 
+import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
 
 import java.util.List;
@@ -35,17 +36,22 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/31/21.
  */
-public interface Minimize {
+public interface Solver {
 
     /**
      * Runs the computation to obtain solutions.
      */
-    void compute();
+    Solver compute();
 
     /**
      * @return list of partial solution (if we have an iterative algorithm), otherwise it will contain only the final solution
      */
     List<DVector> solutions();
+
+    /**
+     * @return Vector of errors for each iteration
+     */
+    VarDouble errors();
 
     /**
      * @return final solution of the algorithm

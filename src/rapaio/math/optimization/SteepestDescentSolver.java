@@ -44,28 +44,28 @@ import static java.lang.Math.abs;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
-public class SteepestDescentMinimize extends ParamSet<SteepestDescentMinimize> implements Minimize {
+public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> implements Solver {
 
-    public static SteepestDescentMinimize newMinimizer() {
-        return new SteepestDescentMinimize();
+    public static SteepestDescentSolver newMinimizer() {
+        return new SteepestDescentSolver();
     }
 
     @Serial
     private static final long serialVersionUID = 6935528214774334177L;
 
-    public final ValueParam<Double, SteepestDescentMinimize> tol = new ValueParam<>(this,
+    public final ValueParam<Double, SteepestDescentSolver> tol = new ValueParam<>(this,
             1e-10, "tol", "Tolerance error admissible for accepting a convergent solution");
-    public final ValueParam<Integer, SteepestDescentMinimize> maxIt = new ValueParam<>(this,
+    public final ValueParam<Integer, SteepestDescentSolver> maxIt = new ValueParam<>(this,
             10, "maxIt", "Maximum number of iterations");
 
-    public final ValueParam<LineSearch, SteepestDescentMinimize> lineSearch = new ValueParam<>(this,
+    public final ValueParam<LineSearch, SteepestDescentSolver> lineSearch = new ValueParam<>(this,
             BacktrackLineSearch.newSearch(), "lineSearch", "Line search algorithm");
 
-    public final ValueParam<RFunction, SteepestDescentMinimize> f = new ValueParam<>(this,
+    public final ValueParam<RFunction, SteepestDescentSolver> f = new ValueParam<>(this,
             null, "f", "function to be optimized");
-    public final ValueParam<RDerivative, SteepestDescentMinimize> d1f = new ValueParam<>(this,
+    public final ValueParam<RDerivative, SteepestDescentSolver> d1f = new ValueParam<>(this,
             null, "d1f", "function's derivative");
-    public final ValueParam<DVector, SteepestDescentMinimize> x0 = new ValueParam<>(this,
+    public final ValueParam<DVector, SteepestDescentSolver> x0 = new ValueParam<>(this,
             null, "x0", "initial value");
 
     private DVector sol;
@@ -74,12 +74,13 @@ public class SteepestDescentMinimize extends ParamSet<SteepestDescentMinimize> i
     private VarDouble errors;
     private boolean converged = false;
 
-    public VarDouble getErrors() {
+    @Override
+    public VarDouble errors() {
         return errors;
     }
 
     @Override
-    public void compute() {
+    public SteepestDescentSolver compute() {
         converged = false;
         sol = x0.get().copy();
         for (int i = 0; i < maxIt.get(); i++) {
@@ -92,6 +93,7 @@ public class SteepestDescentMinimize extends ParamSet<SteepestDescentMinimize> i
             double t = lineSearch.get().search(f.get(), d1f.get(), x0.get(), delta_x);
             sol.add(delta_x.mult(t));
         }
+        return this;
     }
 
     @Override

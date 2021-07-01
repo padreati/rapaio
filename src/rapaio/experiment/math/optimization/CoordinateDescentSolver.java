@@ -25,7 +25,7 @@ import rapaio.data.VarDouble;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
-import rapaio.math.optimization.Minimize;
+import rapaio.math.optimization.Solver;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
 import rapaio.ml.common.ParamSet;
@@ -42,23 +42,23 @@ import static java.lang.Math.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/19/17.
  */
-public class CoordinateDescentMinimize extends ParamSet<CoordinateDescentMinimize> implements Minimize {
+public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> implements Solver {
 
     @Serial
     private static final long serialVersionUID = 6285470727505415422L;
 
-    public final ValueParam<Double, CoordinateDescentMinimize> tol = new ValueParam<>(this, 1e-10,
+    public final ValueParam<Double, CoordinateDescentSolver> tol = new ValueParam<>(this, 1e-10,
             "tol", "Tolerance on errors for determining convergence");
-    public final ValueParam<Integer, CoordinateDescentMinimize> maxIt = new ValueParam<>(this, 100,
+    public final ValueParam<Integer, CoordinateDescentSolver> maxIt = new ValueParam<>(this, 100,
             "maxIt", "Maximum number of iterations");
-    public final ValueParam<LineSearch, CoordinateDescentMinimize> lineSearch = new ValueParam<>(this,
+    public final ValueParam<LineSearch, CoordinateDescentSolver> lineSearch = new ValueParam<>(this,
             BacktrackLineSearch.newSearch(), "lineSearch", "Line search algorithm");
 
-    public final ValueParam<RFunction, CoordinateDescentMinimize> f = new ValueParam<>(this,
+    public final ValueParam<RFunction, CoordinateDescentSolver> f = new ValueParam<>(this,
             null, "f", "function to be optimized");
-    public final ValueParam<RDerivative, CoordinateDescentMinimize> d1f = new ValueParam<>(this,
+    public final ValueParam<RDerivative, CoordinateDescentSolver> d1f = new ValueParam<>(this,
             null, "d1f", "function's derivative");
-    public final ValueParam<DVector, CoordinateDescentMinimize> x0 = new ValueParam<>(this,
+    public final ValueParam<DVector, CoordinateDescentSolver> x0 = new ValueParam<>(this,
             null, "x0", "initial value");
 
     private DVector sol;
@@ -67,12 +67,13 @@ public class CoordinateDescentMinimize extends ParamSet<CoordinateDescentMinimiz
     private VarDouble errors;
     private boolean converged = false;
 
-    public VarDouble getErrors() {
+    @Override
+    public VarDouble errors() {
         return errors;
     }
 
     @Override
-    public void compute() {
+    public CoordinateDescentSolver compute() {
 
         converged = false;
         sol = x0.get().copy();
@@ -97,6 +98,7 @@ public class CoordinateDescentMinimize extends ParamSet<CoordinateDescentMinimiz
             double t = lineSearch.get().search(f.get(), d1f.get(), x0.get(), deltaX);
             sol.add(deltaX.mult(t));
         }
+        return this;
     }
 
     @Override

@@ -30,7 +30,7 @@ import rapaio.math.linear.DVector;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/31/21.
  */
-public class SteepestDescentMinimizeTest {
+public class SteepestDescentSolverTest {
 
     @BeforeEach
     void beforeEach() {
@@ -43,7 +43,7 @@ public class SteepestDescentMinimizeTest {
         RFunction f = v -> v.dot(v);
         RDerivative d1f = v -> v.mult(2);
 
-        SteepestDescentMinimize optimizer = SteepestDescentMinimize
+        SteepestDescentSolver optimizer = SteepestDescentSolver
                 .newMinimizer()
                 .f.set(f)
                 .d1f.set(d1f)

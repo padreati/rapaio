@@ -28,7 +28,7 @@ import rapaio.math.functions.RHessian;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
-import rapaio.math.optimization.Minimize;
+import rapaio.math.optimization.Solver;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
 import rapaio.ml.common.ParamSet;
@@ -43,25 +43,25 @@ import static java.lang.Math.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
-public class NewtonRaphsonMinimize extends ParamSet<NewtonRaphsonMinimize> implements Minimize {
+public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implements Solver {
 
     @Serial
     private static final long serialVersionUID = -6600678871841923200L;
 
-    public final ValueParam<Double, NewtonRaphsonMinimize> tol = new ValueParam<>(this, 1e-3,
+    public final ValueParam<Double, NewtonRaphsonSolver> tol = new ValueParam<>(this, 1e-3,
             "tol", "Tolerance on errors for determining convergence");
-    public final ValueParam<Integer, NewtonRaphsonMinimize> maxIt = new ValueParam<>(this, 100,
+    public final ValueParam<Integer, NewtonRaphsonSolver> maxIt = new ValueParam<>(this, 100,
             "maxIt", "Maximum number of iterations");
-    public final ValueParam<LineSearch, NewtonRaphsonMinimize> lineSearch = new ValueParam<>(this,
+    public final ValueParam<LineSearch, NewtonRaphsonSolver> lineSearch = new ValueParam<>(this,
             BacktrackLineSearch.newSearch(), "lineSearch", "Line search algorithm");
 
-    public final ValueParam<RFunction, NewtonRaphsonMinimize> f = new ValueParam<>(this,
+    public final ValueParam<RFunction, NewtonRaphsonSolver> f = new ValueParam<>(this,
             null, "f", "function to be optimized");
-    public final ValueParam<RDerivative, NewtonRaphsonMinimize> d1f = new ValueParam<>(this,
+    public final ValueParam<RDerivative, NewtonRaphsonSolver> d1f = new ValueParam<>(this,
             null, "d1f", "function's derivative");
-    public final ValueParam<RHessian, NewtonRaphsonMinimize> d2f = new ValueParam<>(this,
+    public final ValueParam<RHessian, NewtonRaphsonSolver> d2f = new ValueParam<>(this,
             null, "d2f", "second derivative of the function");
-    public final ValueParam<DVector, NewtonRaphsonMinimize> x0 = new ValueParam<>(this,
+    public final ValueParam<DVector, NewtonRaphsonSolver> x0 = new ValueParam<>(this,
             null, "x0", "initial value");
 
     private DVector sol;
@@ -70,12 +70,13 @@ public class NewtonRaphsonMinimize extends ParamSet<NewtonRaphsonMinimize> imple
     private VarDouble errors;
     private boolean converged = false;
 
-    public VarDouble getErrors() {
+    @Override
+    public VarDouble errors() {
         return errors;
     }
 
     @Override
-    public void compute() {
+    public NewtonRaphsonSolver compute() {
         converged = false;
         sol = x0.get().copy();
         for (int i = 0; i < maxIt.get(); i++) {
@@ -108,6 +109,7 @@ public class NewtonRaphsonMinimize extends ParamSet<NewtonRaphsonMinimize> imple
             double t = lineSearch.get().search(f.get(), d1f.get(), x0.get(), delta_x);
             sol.add(delta_x.mult(t));
         }
+        return this;
     }
 
     private CholeskyDecomposition modifiedCholesky(DMatrix A) {

@@ -22,6 +22,7 @@
 package rapaio.math.linear.decomposition;
 
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
 
 import java.io.Serial;
@@ -570,5 +571,11 @@ public class SVDecomposition implements java.io.Serializable {
             }
         }
         return r;
+    }
+
+    public DMatrix pinv() {
+        DVector sv = DVector.wrap(getSingularValues()).copy();
+        sv.apply(v -> 1 / v);
+        return getV().dotDiag(sv).dot(getU().t());
     }
 }

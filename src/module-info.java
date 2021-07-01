@@ -35,6 +35,16 @@ module rapaio {
     exports rapaio.math.linear.decomposition;
     exports rapaio.math.functions;
     exports rapaio.math.optimization;
+    exports rapaio.math.optimization.linesearch;
+    exports rapaio.math.optimization.scalar;
+
+    exports rapaio.ml.common;
+    exports rapaio.ml.common.kernel;
+    exports rapaio.ml.loss;
+    exports rapaio.ml.eval;
+    exports rapaio.ml.eval.metric;
+    exports rapaio.ml.eval.split;
+
 
     exports rapaio.printer;
     exports rapaio.printer.opt;

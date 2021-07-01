@@ -24,6 +24,7 @@ package rapaio.math.linear.dense;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.MType;
 import rapaio.math.linear.VType;
 import rapaio.math.linear.base.AbstractDVector;
 import rapaio.util.collection.DoubleArrays;
@@ -226,6 +227,20 @@ public class DVectorDense extends AbstractDVector {
             s = Math.fma(values[i], b.get(i), s);
         }
         return s;
+    }
+
+    @Override
+    public DMatrix diagDot(MType type, DMatrix m) {
+        if (size() != m.rowCount()) {
+            throw new IllegalArgumentException("Matrix not conform for multiplication.");
+        }
+        DMatrix result = DMatrix.fill(size(), m.colCount(), 0);
+        for (int i = 0; i < m.rowCount(); i++) {
+            for (int j = 0; j < m.colCount(); j++) {
+                result.set(i, j, m.get(i, j) * values[i]);
+            }
+        }
+        return result;
     }
 
     public double norm(double p) {

@@ -77,7 +77,7 @@ public interface DVector extends Serializable, Printable {
      * Builds a new double vector of size {@param n} filled with 1.
      *
      * @param type implementation type of the vector
-     * @param n the size of the vector
+     * @param n    the size of the vector
      * @return vector instance
      */
     static DVector ones(VType type, int n) {
@@ -104,10 +104,10 @@ public interface DVector extends Serializable, Printable {
      * @return new dense vector of given type
      */
     static DVector fill(VType type, int n, double fill) {
-        return switch (type) {
-            case DENSE -> new DVectorDense(n, DoubleArrays.newFill(n, fill));
-            default -> throw new IllegalArgumentException();
-        };
+        if (type == VType.DENSE) {
+            return new DVectorDense(n, DoubleArrays.newFill(n, fill));
+        }
+        throw new IllegalArgumentException();
     }
 
     /**
@@ -130,16 +130,16 @@ public interface DVector extends Serializable, Printable {
      * @param v given variable
      * @return new real dense vector
      */
-    static DVector from(VType type, Var v) {
+    static DVectorDense from(VType type, Var v) {
         if (v instanceof VarDouble vd) {
             double[] array = vd.elements();
-            return wrapArray(type, vd.size(), array);
+            return wrapArray(vd.size(), array);
         }
         double[] values = new double[v.size()];
         for (int i = 0; i < values.length; i++) {
             values[i] = v.getDouble(i);
         }
-        return wrapArray(type, values.length, values);
+        return wrapArray(values.length, values);
     }
 
     /**
@@ -154,11 +154,11 @@ public interface DVector extends Serializable, Printable {
         for (int i = 0; i < copy.length; i++) {
             copy[i] = source.get(i);
         }
-        return wrapArray(VType.DENSE, copy.length, copy);
+        return wrapArray(copy.length, copy);
     }
 
     static DVector wrap(double... values) {
-        return wrapArray(VType.DENSE, values.length, values);
+        return wrapArray(values.length, values);
     }
 
     /**
@@ -168,35 +168,17 @@ public interface DVector extends Serializable, Printable {
      * @param values referenced array of values
      * @return new real dense vector
      */
-    static DVector wrap(VType type, double... values) {
-        return wrapArray(type, values.length, values);
-    }
-
-    static DVector wrapArray(int size, double[] values) {
-        return wrapArray(VType.DENSE, size, values);
-    }
-
-    /**
-     * Builds a new random vector which wraps a double array.
-     * It uses the same reference.
-     *
-     * @param values referenced array of values
-     * @return new real dense vector
-     */
-    static DVector wrapArray(VType type, int size, double[] values) {
+    static DVectorDense wrapArray(int size, double[] values) {
         Objects.requireNonNull(values);
-        return switch (type) {
-            case DENSE -> new DVectorDense(size, values);
-            default -> throw new IllegalArgumentException("Operation not implemented for vector type: " + type.name());
-        };
+        return new DVectorDense(size, values);
     }
 
     static DVector from(int len, Int2DoubleFunction fun) {
-        return wrapArray(VType.DENSE, len, DoubleArrays.newFrom(0, len, fun));
+        return wrapArray(len, DoubleArrays.newFrom(0, len, fun));
     }
 
     static DVector from(VType type, int len, Int2DoubleFunction fun) {
-        return wrapArray(type, len, DoubleArrays.newFrom(0, len, fun));
+        return wrapArray(len, DoubleArrays.newFrom(0, len, fun));
     }
 
     default boolean isDense() {
@@ -372,6 +354,30 @@ public interface DVector extends Serializable, Printable {
      * @return same vector object
      */
     double dot(DVector y);
+
+    /**
+     * Computes dot product between diag(this) and a given matrix. {@code diag(this) dot m}.
+     * This vector have to have {@link #size()} equal with {@code m.rowCount()}.
+     * The result is a new matrix of size {@code this.sizze() x m.col.count}
+     *
+     * @param type type of the new matrix
+     * @param m    matrix parameter
+     * @return new matrix which is the result of dot product
+     */
+    DMatrix diagDot(MType type, DMatrix m);
+
+    /**
+     * Computes dot product between diag(this) and a given matrix. {@code diag(this) dot m}.
+     * This vector have to have {@link #size()} equal with {@code m.rowCount()}.
+     * The result is a new matrix of size {@code this.sizze() x m.col.count}
+     * and type {@code RDENSE}.
+     *
+     * @param m matrix parameter
+     * @return new matrix which is the result of dot product
+     */
+    default DMatrix diagDot(DMatrix m) {
+        return diagDot(MType.RDENSE, m);
+    }
 
     /**
      * Computes bilinear dot product through a matrix {@code x^t m y}. Matrix {@code m} have to be conformat for multiplication.
