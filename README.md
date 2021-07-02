@@ -29,7 +29,7 @@ library written in Java.*
 
 ### Build status
 
-[![build status](https://travis-ci.org/padreati/rapaio.svg?branch=master)](https://travis-ci.org/padreati/rapaio)
+[![build](https://github.com/padreati/rapaio/actions/workflows/maven.yml/badge.svg)](https://github.com/padreati/rapaio/actions/workflows/maven.yml/badge.svg)
 [![codecov.io](https://codecov.io/github/padreati/rapaio/coverage.svg?branch=master)](https://codecov.io/github/padreati/rapaio?branch=master)
 </td>
 </tr>
