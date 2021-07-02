@@ -10,3 +10,5 @@ mvnsettings.xml
 .gitignore
 /.github/
 /mkdocs/site/
+/rapaio/rapaio.iml
+/out/artifacts/rapaio_jar/rapaio.jar
