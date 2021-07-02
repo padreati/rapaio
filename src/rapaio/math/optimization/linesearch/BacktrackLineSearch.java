@@ -59,21 +59,17 @@ public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implement
     }
 
     @Override
-    public double search(RFunction f, RDerivative df, DVector x, DVector p, double t0) {
+    public double search(RFunction f, RDerivative g, DVector x, DVector p, double t0) {
         double fx = f.apply(x);
-        double dfxp = df.apply(x).dot(p);
+        double gxp = g.apply(x).dot(p);
 
         double xalpha = alpha.get();
         double xbeta = beta.get();
 
         double t = t0;
-        while (true) {
-            double fdelta = f.apply(p.axpyCopy(t, x));
-            if (fdelta > fx + xalpha * t * dfxp) {
-                t *= xbeta;
-                continue;
-            }
-            return t;
+        while (f.apply(p.axpyCopy(t, x)) > fx + xalpha * t * gxp) {
+            t *= xbeta;
         }
+        return t;
     }
 }

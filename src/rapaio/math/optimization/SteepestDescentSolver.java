@@ -46,7 +46,7 @@ import static java.lang.Math.abs;
  */
 public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> implements Solver {
 
-    public static SteepestDescentSolver newMinimizer() {
+    public static SteepestDescentSolver newSolver() {
         return new SteepestDescentSolver();
     }
 
@@ -56,7 +56,7 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
     public final ValueParam<Double, SteepestDescentSolver> tol = new ValueParam<>(this,
             1e-10, "tol", "Tolerance error admissible for accepting a convergent solution");
     public final ValueParam<Integer, SteepestDescentSolver> maxIt = new ValueParam<>(this,
-            10, "maxIt", "Maximum number of iterations");
+            100_000, "maxIt", "Maximum number of iterations");
 
     public final ValueParam<LineSearch, SteepestDescentSolver> lineSearch = new ValueParam<>(this,
             BacktrackLineSearch.newSearch(), "lineSearch", "Line search algorithm");
@@ -70,45 +70,52 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
 
     private DVector sol;
 
-    private final List<DVector> solutions = new ArrayList<>();
+    private List<DVector> solutions;
     private VarDouble errors;
     private boolean converged = false;
 
     @Override
-    public VarDouble errors() {
-        return errors;
-    }
-
-    @Override
     public SteepestDescentSolver compute() {
         converged = false;
+        errors = VarDouble.empty().name("errors");
+        solutions = new ArrayList<>();
         sol = x0.get().copy();
+        solutions.add(sol.copy());
         for (int i = 0; i < maxIt.get(); i++) {
-            solutions.add(sol.copy());
-            DVector delta_x = d1f.get().apply(sol).mult(-1);
-            if (abs(delta_x.norm(2)) < tol.get()) {
+            DVector p = d1f.get().apply(sol).mult(-1);
+            double error = p.norm(2);
+            errors.addDouble(error);
+            if (abs(error) < tol.get()) {
                 converged = true;
                 break;
             }
-            double t = lineSearch.get().search(f.get(), d1f.get(), x0.get(), delta_x);
-            sol.add(delta_x.mult(t));
+            double t = lineSearch.get().search(f.get(), d1f.get(), sol, p);
+            sol = sol.copy().add(p.mult(t));
+            solutions.add(sol.copy());
         }
         return this;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("solution: ").append(sol.toString()).append("\n");
-        return sb.toString();
+        return "solution: " + sol.toString() + ","
+                + "converged: " + converged + ","
+                + "iterations: " + solutions.size();
     }
 
+    @Override
     public List<DVector> solutions() {
         return solutions;
     }
 
+    @Override
     public DVector solution() {
         return sol;
+    }
+
+    @Override
+    public VarDouble errors() {
+        return errors;
     }
 
     @Override

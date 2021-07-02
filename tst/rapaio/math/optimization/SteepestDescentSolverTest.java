@@ -21,35 +21,64 @@
 
 package rapaio.math.optimization;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.graphics.Plotter.color;
+import static rapaio.graphics.Plotter.fill;
+import static rapaio.graphics.Plotter.lines;
+import static rapaio.graphics.Plotter.points;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
+import rapaio.data.VarDouble;
+import rapaio.graphics.Plotter;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
+import rapaio.math.optimization.linesearch.BacktrackLineSearch;
+import rapaio.math.optimization.linesearch.LearningRateLineSearch;
+import rapaio.sys.WS;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/31/21.
  */
 public class SteepestDescentSolverTest {
 
+    private static final double tol = 1e-8;
+
     @BeforeEach
     void beforeEach() {
         RandomSource.setSeed(42);
     }
 
-    //    @Test
+    @Test
     void smokeTest() {
 
-        RFunction f = v -> v.dot(v);
-        RDerivative d1f = v -> v.mult(2);
+        RFunction f = v -> v.dotBilinearDiag(DVector.wrap(1, 3));
+        RDerivative d1f = v -> v.copy().mult(DVector.wrap(2, 6));
 
-        SteepestDescentSolver optimizer = SteepestDescentSolver
-                .newMinimizer()
+        SteepestDescentSolver solver1 = SteepestDescentSolver
+                .newSolver()
+                .lineSearch.set(BacktrackLineSearch.newSearch())
                 .f.set(f)
                 .d1f.set(d1f)
-                .x0.set(DVector.wrap(1, 2, 3));
-        optimizer.compute();
+                .maxIt.set(100_000)
+                .tol.set(1e-20)
+                .x0.set(DVector.wrap(3, 20))
+                .compute();
 
-        optimizer.solution().printFullContent();
+        SteepestDescentSolver solver2 = SteepestDescentSolver
+                .newSolver()
+                .lineSearch.set(LearningRateLineSearch.from(0.0001))
+                .f.set(f)
+                .d1f.set(d1f)
+                .maxIt.set(100_000)
+                .tol.set(1e-20)
+                .x0.set(DVector.wrap(3, 20)).compute();
+
+        assertTrue(solver1.solution().deepEquals(solver2.solution(), tol));
     }
 }

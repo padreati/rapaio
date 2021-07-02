@@ -97,7 +97,6 @@ public class RootFind1D extends ParamSet<RootFind1D> implements Serializable {
             case Secant -> secant_optimization(f);
             case Brent -> brent_optimization(f);
             case Ridder -> ridder_optimization(f);
-            default -> throw new NotImplementedException();
         };
     }
 
