@@ -32,8 +32,8 @@ import rapaio.data.VarInt;
 import rapaio.data.VarType;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.ml.clustering.AbstractClusteringModel;
 import rapaio.ml.clustering.ClusteringModel;
+import rapaio.ml.clustering.DefaultHookInfo;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printer;
@@ -51,7 +51,7 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
+public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInfo> {
 
     public static KMeans newModel() {
         return new KMeans();
@@ -118,7 +118,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
     private VarDouble errors;
 
     @Override
-    public ClusteringModel newInstance() {
+    public KMeans newInstance() {
         return new KMeans().copyParameterValues(this);
     }
 
@@ -151,7 +151,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
     }
 
     @Override
-    public ClusteringModel coreFit(Frame initialDf, Var weights) {
+    public KMeans coreFit(Frame initialDf, Var weights) {
 
         DMatrix m = DMatrix.copy(initialDf);
         c = initializeClusters(m);
@@ -170,10 +170,11 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
 
             if (runningHook != null) {
                 learned = true;
-                runningHook.get().accept(this, runs.get() - rounds);
+                runningHook.get().accept(new DefaultHookInfo(this, runs.get() - rounds));
             }
             int erc = errors.size();
-            if (erc > 1 && errors.getDouble(erc - 2) - errors.getDouble(erc - 1) < eps.get() && errors.getDouble(erc - 1) <= errors.getDouble(erc - 2)) {
+            if (erc > 1 && errors.getDouble(erc - 2) - errors.getDouble(erc - 1) < eps.get()
+                    && errors.getDouble(erc - 1) <= errors.getDouble(erc - 2)) {
                 break;
             }
         }
@@ -200,20 +201,12 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         return bestCentroids;
     }
 
-    private double computeInitError(DMatrix m, DMatrix c) {
+    private double computeInitError(DMatrix m, DMatrix centroids) {
         double sum = 0;
         for (int i = 0; i < m.rowCount(); i++) {
             DVector mrow = m.mapRow(i);
-            int cluster = 0;
-            double d = space.get().distance(mrow, c.mapRow(0));
-            for (int j = 1; j < c.rowCount(); j++) {
-                double dd = space.get().distance(mrow, c.mapRow(j));
-                if (d > dd) {
-                    d = dd;
-                    cluster = j;
-                }
-            }
-            sum += space.get().observationError(c.mapRow(cluster), mrow);
+            int cluster = findClosestCentroid(mrow, centroids);
+            sum += space.get().observationError(centroids.mapRow(cluster), mrow);
         }
         return sum;
     }
@@ -222,19 +215,24 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         double totalError = 0.0;
         for (int i = 0; i < m.rowCount(); i++) {
             DVector row = m.mapRow(i);
-            double d = space.get().distance(row, c.mapRow(0));
-            int cluster = 0;
-            for (int j = 1; j < c.rowCount(); j++) {
-                double dd = space.get().distance(row, c.mapRow(j));
-                if (dd < d) {
-                    d = dd;
-                    cluster = j;
-                }
-            }
+            int cluster = findClosestCentroid(row, c);
             totalError += space.get().observationError(c.mapRow(cluster), row);
             assignment[i] = cluster;
         }
         errors.addDouble(totalError);
+    }
+
+    private int findClosestCentroid(DVector mrow, DMatrix centroids) {
+        int cluster = 0;
+        double d = space.get().distance(mrow, centroids.mapRow(0));
+        for (int j = 1; j < centroids.rowCount(); j++) {
+            double dd = space.get().distance(mrow, centroids.mapRow(j));
+            if (d > dd) {
+                d = dd;
+                cluster = j;
+            }
+        }
+        return cluster;
     }
 
     private void recomputeCentroids(DMatrix m, int[] assignment) {
@@ -283,14 +281,17 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
                 // check if it does not collide with existent valid clusters
 
                 for (int i = 0; i < c.rowCount(); i++) {
-                    if (emptyCentroids.contains(i))
+                    if (emptyCentroids.contains(i)) {
                         continue;
+                    }
                     if (!checkIfEqual(c, i, df, next)) {
                         found = true;
                         break;
                     }
                 }
-                if (!found) continue;
+                if (!found) {
+                    continue;
+                }
 
                 // we found a valid centroid, it will be assigned
 

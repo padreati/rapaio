@@ -25,8 +25,9 @@ import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.classifier.rule.onerule.HolteBinning;
 import rapaio.ml.classifier.rule.onerule.NominalRule;
 import rapaio.ml.classifier.rule.onerule.NumericRule;
@@ -47,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> {
+public class OneRule extends ClassifierModel<OneRule, ClassifierResult, DefaultHookInfo> {
 
     public static OneRule newModel() {
         return new OneRule();

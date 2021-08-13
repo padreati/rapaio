@@ -27,8 +27,9 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.classifier.linear.binarylogistic.BinaryLogisticIRLS;
 import rapaio.ml.classifier.linear.binarylogistic.BinaryLogisticNewton;
 import rapaio.ml.common.Capabilities;
@@ -44,8 +45,7 @@ import java.util.function.Function;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, ClassifierResult>
-        implements Printable {
+public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierResult, DefaultHookInfo> {
 
     public static BinaryLogistic newModel() {
         return new BinaryLogistic();

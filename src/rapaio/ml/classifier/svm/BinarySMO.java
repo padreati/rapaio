@@ -27,8 +27,9 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.math.MathTools;
-import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.kernel.Kernel;
@@ -56,7 +57,7 @@ import static rapaio.printer.Format.floatFlex;
  * - as a side note: multi class svm can be deffered to a generic multiclass classifier which
  * should be able to transform any binary classifier into a multi class one.
  */
-public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResult> {
+public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, DefaultHookInfo> {
 
     public static BinarySMO newModel() {
         return new BinarySMO();
@@ -241,7 +242,7 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
             }
 
             if (runningHook.get() != null) {
-                runningHook.get().accept(this, maxRuns.get() - runs - 1);
+                runningHook.get().accept(new DefaultHookInfo(this, maxRuns.get() - runs - 1));
             }
         }
 

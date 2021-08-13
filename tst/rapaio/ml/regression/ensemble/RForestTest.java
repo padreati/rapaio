@@ -43,7 +43,7 @@ public class RForestTest {
     private static Frame advertising;
 
     @BeforeAll
-    static void beforeAll() throws IOException {
+    static void beforeAll() {
         advertising = Datasets.loadISLAdvertising().removeVars("ID");
     }
 
@@ -72,11 +72,11 @@ public class RForestTest {
         var errorTest = VarDouble.empty();
         RForest rf = RForest.newRF()
                 .runs.set(N)
-                .runningHook.set((m, run) -> {
+                .runningHook.set(info -> {
                     errorTest.addDouble(RMSE.newMetric().compute(test.rvar("Sales"),
-                            m.predict(test).firstPrediction()).value());
+                            info.model().predict(test).firstPrediction()).value());
                     errorTrain.addDouble(RMSE.newMetric().compute(train.rvar("Sales"),
-                            m.predict(train).firstPrediction()).value());
+                            info.model().predict(train).firstPrediction()).value());
                 });
         rf.fit(train, "Sales");
         assertEquals(N, rf.getFittedModels().size());

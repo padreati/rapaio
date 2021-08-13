@@ -46,7 +46,7 @@ public class GBTRegressionResultTest {
     }
 
     @Test
-    void smokeTest() throws IOException {
+    void smokeTest() {
 
         Var err = VarDouble.empty();
         var loss = new L2Loss();
@@ -56,13 +56,13 @@ public class GBTRegressionResultTest {
                 .shrinkage.set(0.6)
                 .eps.set(1e-20)
                 .model.set(RTree.newCART().maxDepth.set(3))
-                .runningHook.set((m, r) -> {
-                    if ((r + 1) % 25 != 0) {
+                .runningHook.set(info -> {
+                    if ((info.run() + 1) % 25 != 0) {
                         err.addMissing();
                         return;
                     }
                     double e = loss.errorScore(advertise.rvar("Sales"),
-                            m.predict(advertise).firstPrediction());
+                            info.model().predict(advertise).firstPrediction());
                     err.addDouble(e);
                 });
 
@@ -76,7 +76,7 @@ public class GBTRegressionResultTest {
     }
 
     @Test
-    void printingTest() throws IOException {
+    void printingTest() {
         var advertise = Datasets.loadISLAdvertising().removeVars("ID");
         var model = GBTRegression.newModel()
                 .runs.set(100)

@@ -32,8 +32,8 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
-import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.simple.L2Regression;
 import rapaio.ml.regression.tree.RTree;
@@ -51,7 +51,7 @@ import java.util.Objects;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class GBTRegression extends AbstractRegressionModel<GBTRegression, RegressionResult> {
+public class GBTRegression extends RegressionModel<GBTRegression, RegressionResult, DefaultHookInfo> {
 
     public static GBTRegression newModel() {
         return new GBTRegression();
@@ -70,13 +70,13 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
             "Loss function",
             Objects::nonNull);
 
-    public final ValueParam<? extends RegressionModel, GBTRegression> initModel = new ValueParam<>(this, L2Regression.newModel(),
+    public final ValueParam<RegressionModel<?, ?, ?>, GBTRegression> initModel = new ValueParam<>(this, L2Regression.newModel(),
             "initModel",
             "Initial model",
             Objects::nonNull);
 
-    public final ValueParam<GBTRtree<? extends RegressionModel, ? extends RegressionResult>, GBTRegression> model =
-            new ValueParam<>(this, RTree.newCART().maxDepth.set(2).minCount.set(10),
+    public final ValueParam<GBTRtree<? extends RegressionModel<?, ?, ?>, ? extends RegressionResult, DefaultHookInfo>, GBTRegression>
+            model = new ValueParam<>(this, RTree.newCART().maxDepth.set(2).minCount.set(10),
                     "nodeModel",
                     "Node model",
                     Objects::nonNull);
@@ -88,7 +88,7 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
 
     private VarDouble fitValues;
 
-    private List<GBTRtree<? extends RegressionModel, ? extends RegressionResult>> trees;
+    private List<GBTRtree<? extends RegressionModel<?, ?, ?>, ? extends RegressionResult, DefaultHookInfo>> trees;
 
     @Override
     public GBTRegression newInstance() {
@@ -112,11 +112,12 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
         return fitValues;
     }
 
-    public List<GBTRtree<? extends RegressionModel, ? extends RegressionResult>> getTrees() {
+    public List<GBTRtree<? extends RegressionModel<?, ?, ?>, ? extends RegressionResult, DefaultHookInfo>> getTrees() {
         return trees;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected boolean coreFit(Frame df, Var weights) {
 
         trees = new ArrayList<>();
@@ -132,7 +133,7 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
             Var gradient = loss.get().gradient(y, fitValues).name("target");
 
             Frame xm = x.bindVars(gradient);
-            var tree = (GBTRtree<? extends RegressionModel, ? extends RegressionResult>) model.get().newInstance();
+            var tree = (GBTRtree<? extends RegressionModel<?, ?, ?>, ? extends RegressionResult, DefaultHookInfo>) model.get().newInstance();
 
             // frame sampling
 
@@ -163,7 +164,7 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
                 // add tree in the predictors list
                 trees.add(tree);
             }
-            runningHook.get().accept(this, i);
+            runningHook.get().accept(new DefaultHookInfo(this, i));
         }
         return true;
     }

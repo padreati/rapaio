@@ -25,9 +25,9 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
-import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
@@ -48,7 +48,7 @@ import java.util.Objects;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult> implements Printable {
+public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, DefaultHookInfo> implements Printable {
 
     public static AdaBoost newModel() {
         return new AdaBoost();
@@ -59,7 +59,7 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
 
     // parameters
 
-    public final ValueParam<ClassifierModel, AdaBoost> model = new ValueParam<>(this,
+    public final ValueParam<ClassifierModel<?, ?, ?>, AdaBoost> model = new ValueParam<>(this,
             CTree.newCART().maxDepth.set(6).minCount.set(6),
             "model",
             "Weak learner model",
@@ -83,7 +83,7 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
 
     private final List<Double> alphas = new ArrayList<>();
 
-    private final List<ClassifierModel> learners = new ArrayList<>();
+    private final List<ClassifierModel<?, ?, ?>> learners = new ArrayList<>();
 
     private AdaBoost() {
     }
@@ -109,7 +109,7 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
         return alphas;
     }
 
-    public List<ClassifierModel> getLearners() {
+    public List<ClassifierModel<?, ?, ?>> getLearners() {
         return learners;
     }
 
@@ -127,7 +127,7 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
                 break;
             }
             if (runningHook.get() != null) {
-                runningHook.get().accept(this, i);
+                runningHook.get().accept(new DefaultHookInfo(this, i));
             }
         }
         return true;
@@ -135,7 +135,7 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
 
     private boolean learnRound(Frame df, Var w, double k) {
 
-        ClassifierModel hh = model.get().newInstance();
+        ClassifierModel<?, ?, ?> hh = model.get().newInstance();
 
         RowSampler.Sample sample = rowSampler.get().nextSample(df, w);
         hh.fit(sample.df(), sample.weights(), targetNames());

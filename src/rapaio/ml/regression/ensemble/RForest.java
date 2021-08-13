@@ -30,8 +30,8 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.Param;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.ml.regression.tree.rtree.Splitter;
@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
  */
-public class RForest extends AbstractRegressionModel<RForest, RegressionResult> {
+public class RForest extends RegressionModel<RForest, RegressionResult, DefaultHookInfo> {
 
     public static RForest newBagging() {
         return new RForest()
@@ -77,14 +77,14 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
                 );
     }
 
-    public static RForest newRF(RegressionModel model) {
+    public static RForest newRF(RegressionModel<?, ?, ?> model) {
         return new RForest().model.set(model);
     }
 
     @Serial
     private static final long serialVersionUID = -3926256335736143438L;
 
-    public final Param<RegressionModel, RForest> model = new ValueParam<>(this,
+    public final Param<RegressionModel<?, ?, ?>, RForest> model = new ValueParam<>(this,
             RTree.newCART()
                     .varSelector.set(VarSelector.auto())
                     .splitter.set(Splitter.Random)
@@ -93,7 +93,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
             "Weak learner model",
             Objects::nonNull);
 
-    private final List<RegressionModel> regressions = new ArrayList<>();
+    private final List<RegressionModel<?, ?, ?>> regressions = new ArrayList<>();
 
     @Override
     public RForest newInstance() {
@@ -117,25 +117,24 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         regressions.clear();
-        int threads = poolSize.get() < 0 ? Runtime.getRuntime().availableProcessors() - 1 : poolSize.get();
-        Queue<Future<RegressionModel>> futures = new LinkedList<>();
+        Queue<Future<RegressionModel<?, ?, ?>>> futures = new LinkedList<>();
         for (int i = 0; i < runs.get(); i++) {
             RowSampler.Sample sample = rowSampler.get().nextSample(df, weights);
-            RegressionModel m = model.get().newInstance();
-            Future<RegressionModel> future = ForkJoinPool.commonPool().submit(new FitTask(sample, m, targetNames));
+            RegressionModel<?, ?, ?> m = model.get().newInstance();
+            Future<RegressionModel<?, ?, ?>> future = ForkJoinPool.commonPool().submit(new FitTask(sample, m, targetNames));
             futures.add(future);
         }
 
         int run = 1;
         while (!futures.isEmpty()) {
-            Iterator<Future<RegressionModel>> it = futures.iterator();
+            Iterator<Future<RegressionModel<?, ?, ?>>> it = futures.iterator();
             while (it.hasNext()) {
-                Future<RegressionModel> future = it.next();
+                Future<RegressionModel<?, ?, ?>> future = it.next();
                 if (future.isDone()) {
                     try {
-                        RegressionModel m = future.get();
+                        RegressionModel<?, ?, ?> m = future.get();
                         regressions.add(m);
-                        runningHook.get().accept(this, run++);
+                        runningHook.get().accept(new DefaultHookInfo(this, run++));
                         it.remove();
                     } catch (InterruptedException | ExecutionException ignored) {
                     }
@@ -145,7 +144,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
         return true;
     }
 
-    public List<RegressionModel> getFittedModels() {
+    public List<RegressionModel<?, ?, ?>> getFittedModels() {
         return regressions;
     }
 
@@ -167,14 +166,14 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
         return fit;
     }
 
-    private static record FitTask(RowSampler.Sample sample, RegressionModel model, String[] targetNames)
-            implements Callable<RegressionModel>, Serializable {
+    private static record FitTask(RowSampler.Sample sample, RegressionModel<?, ?, ?> model, String[] targetNames)
+            implements Callable<RegressionModel<?, ?, ?>>, Serializable {
 
         @Serial
         private static final long serialVersionUID = -5432992679557031337L;
 
         @Override
-        public RegressionModel call() {
+        public RegressionModel<?, ?, ?> call() {
             return model.fit(sample.df(), sample.weights(), targetNames);
         }
     }
@@ -186,11 +185,9 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Model:\n");
-        sb.append(fullName()).append("\n");
-        sb.append("fitted: ").append(isFitted()).append("\n");
-        return sb.toString();
+        return "Model:\n"
+                + fullName() + "\n"
+                + "fitted: " + isFitted() + "\n";
     }
 
     @Override

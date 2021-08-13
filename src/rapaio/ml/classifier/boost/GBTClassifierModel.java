@@ -27,8 +27,10 @@ import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.ClassifierRunHook;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.loss.KDevianceLoss;
@@ -48,7 +50,7 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
  */
-public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierModel, ClassifierResult> {
+public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, ClassifierResult, DefaultHookInfo> {
 
     public static GBTClassifierModel newModel() {
         return new GBTClassifierModel();
@@ -126,7 +128,7 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
         for (int m = 0; m < runs.get(); m++) {
             buildAdditionalTree(df, weights, yk);
             if (runningHook.get() != null) {
-                runningHook.get().accept(this, m);
+                runningHook.get().accept(new DefaultHookInfo(this, m));
             }
         }
         return true;
@@ -178,7 +180,7 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
         DMatrix p_f = DMatrix.empty(K, df.rowCount());
 
         for (int k = 0; k < K; k++) {
-            for (RegressionModel tree : trees.get(k)) {
+            for (RegressionModel<?, ?, ?> tree : trees.get(k)) {
                 var rr = tree.predict(df, false).firstPrediction();
                 for (int i = 0; i < df.rowCount(); i++) {
                     p_f.set(k, i, p_f.get(k, i) + shrinkage.get() * rr.getDouble(i));

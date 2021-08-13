@@ -28,7 +28,8 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
-import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -44,7 +45,7 @@ import java.util.Objects;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class RandomValueRegression extends AbstractRegressionModel<RandomValueRegression, RegressionResult> {
+public class RandomValueRegression extends RegressionModel<RandomValueRegression, RegressionResult, DefaultHookInfo> {
 
     @Serial
     private static final long serialVersionUID = 819192240406617594L;

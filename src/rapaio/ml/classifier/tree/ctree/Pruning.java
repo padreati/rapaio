@@ -22,6 +22,7 @@
 package rapaio.ml.classifier.tree.ctree;
 
 import rapaio.data.Frame;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.util.DoublePair;
 import rapaio.util.collection.IntArrayList;
@@ -54,7 +55,7 @@ public enum Pruning implements Serializable {
         public CTree prune(CTree tree, Frame df, boolean all) {
             // collect how current fitting works
 
-            HashMap<Integer, Node> nodes = collectNodes(tree, tree.getRoot(), new HashMap<>());
+            HashMap<Integer, Node> nodes = collectNodes(tree.getRoot(), new HashMap<>());
 
             // collect predictions produced in each node in a cumulative way
 
@@ -77,7 +78,6 @@ public enum Pruning implements Serializable {
             IntArrayList ids = new IntArrayList(nodes.keySet());
             IntOpenHashSet pruned = new IntOpenHashSet();
             boolean found = true;
-            double rowCount = df.rowCount();
             while (found) {
                 found = false;
                 double maxAcc = -1;
@@ -114,7 +114,7 @@ public enum Pruning implements Serializable {
                 }
 
                 if (tree.runningHook.get() != null) {
-                    tree.runningHook.get().accept(tree, nodes.size());
+                    tree.runningHook.get().accept(new DefaultHookInfo(tree, nodes.size()));
                 }
             }
 
@@ -142,10 +142,10 @@ public enum Pruning implements Serializable {
                 addToPruned(id, child, pruned, topDown, bottomUp, nodes);
         }
 
-        private HashMap<Integer, Node> collectNodes(CTree tree, Node node, HashMap<Integer, Node> nodes) {
+        private HashMap<Integer, Node> collectNodes(Node node, HashMap<Integer, Node> nodes) {
             nodes.put(node.id, node);
             for (Node child : node.children) {
-                collectNodes(tree, child, nodes);
+                collectNodes(child, nodes);
             }
             return nodes;
         }

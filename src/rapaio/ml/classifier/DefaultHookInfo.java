@@ -19,18 +19,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.tree;
+package rapaio.ml.classifier;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.ml.loss.Loss;
-import rapaio.ml.regression.RegressionModel;
-import rapaio.ml.regression.RegressionResult;
-
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/21/19.
- */
-public abstract class GBTRtree<M extends RegressionModel<M, R, H>, R extends RegressionResult, H> extends RegressionModel<M, R, H> {
-
-    public abstract void boostUpdate(Frame x, Var y, Var fx, Loss lossFunction);
+public record DefaultHookInfo(ClassifierModel<?, ?, ?> model, int run) {
 }

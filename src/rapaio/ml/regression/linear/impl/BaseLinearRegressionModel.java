@@ -28,7 +28,8 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
-import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.linear.LinearRegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -44,7 +45,7 @@ import java.util.Objects;
  */
 @SuppressWarnings("unchecked")
 public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionModel<M>>
-        extends AbstractRegressionModel<M, LinearRegressionResult> {
+        extends RegressionModel<M, LinearRegressionResult, DefaultHookInfo> {
 
     @Serial
     private static final long serialVersionUID = -3722395862627404126L;

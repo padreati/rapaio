@@ -24,9 +24,9 @@ package rapaio.experiment.ml.classifier.meta;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
-import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.printer.Format;
@@ -48,12 +48,12 @@ import static java.util.stream.Collectors.toList;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/15.
  */
 public class CStepwiseSelection
-        extends AbstractClassifierModel<CStepwiseSelection, ClassifierResult> implements Printable {
+        extends ClassifierModel<CStepwiseSelection, ClassifierResult, DefaultHookInfo> implements Printable {
 
     @Serial
     private static final long serialVersionUID = 2642562123626893974L;
-    ClassifierModel best;
-    private ClassifierModel c;
+    private ClassifierModel<?, ?, ?> best;
+    private ClassifierModel<?, ?, ?> c;
     private int minVars = 1;
     private int maxVars = 1;
     private String[] startSelection = new String[]{};
@@ -89,7 +89,7 @@ public class CStepwiseSelection
         return c.capabilities();
     }
 
-    public CStepwiseSelection withClassifier(ClassifierModel c) {
+    public CStepwiseSelection withClassifier(ClassifierModel<?, ?, ?> c) {
         this.c = c;
         return this;
     }
@@ -130,8 +130,7 @@ public class CStepwiseSelection
         selection = VarRange.of(startSelection).parseVarNames(df);
         Frame testFrame = test != null ? test : df;
 
-        List<String> bestSelection = new ArrayList<>(selection);
-        ClassifierModel bestClassifierModel = null;
+        ClassifierModel<?, ?, ?> bestClassifierModel = null;
         double bestAcc = 0.0;
         String forwardNext = null;
         String backwardNext = null;
@@ -154,7 +153,7 @@ public class CStepwiseSelection
                     next.add(test);
                     next.add(firstTargetName());
 
-                    ClassifierModel cNext = c.newInstance();
+                    ClassifierModel<?, ?, ?> cNext = c.newInstance();
                     cNext.fit(df.mapVars(next), firstTargetName());
                     Confusion cm = Confusion.from(testFrame.rvar(firstTargetName()), cNext.predict(testFrame).firstClasses());
 
@@ -184,7 +183,7 @@ public class CStepwiseSelection
                     List<String> next = selection.stream().filter(n -> !test.equals(n)).collect(toList());
                     next.add(firstTargetName());
 
-                    ClassifierModel cNext = c.newInstance();
+                    ClassifierModel<?, ?, ?> cNext = c.newInstance();
                     cNext.fit(df.mapVars(next), firstTargetName());
                     Confusion cm = Confusion.from(testFrame.rvar(firstTargetName()), cNext.predict(testFrame).firstClasses());
 

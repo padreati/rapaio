@@ -39,7 +39,7 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ListParam;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.kernel.RBFKernel;
-import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
@@ -52,8 +52,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -62,7 +60,7 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/21.
  */
-public class RVMRegression extends AbstractRegressionModel<RVMRegression, RegressionResult> {
+public class RVMRegression extends RegressionModel<RVMRegression, RegressionResult, RVMRegression.RHInfo> {
 
     public static RVMRegression newModel() {
         return new RVMRegression();
@@ -91,7 +89,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         @Override
         public Factory[] generateFactories(DMatrix x) {
             DVector mean = DVector.from(x.colCount(), col -> x.mapCol(col).mean());
-            return new Factory[]{new Factory("intercept", -1, mean, () -> DVector.fill(x.rowCount(), 1.0), v -> 1.0)};
+            return new Factory[] {new Factory("intercept", -1, mean, () -> DVector.fill(x.rowCount(), 1.0), v -> 1.0)};
         }
     }
 
@@ -103,7 +101,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         @Override
         public Factory[] generateFactories(DMatrix x) {
-            int len = (int) (x.rowCount() * sigmas.size() * Math.min(1, p));
+            int len = Math.max(1, (int) (x.rowCount() * sigmas.size() * p));
             int[] selection = SamplingTools.sampleWOR(x.rowCount() * sigmas.size(), len);
             Factory[] factories = new Factory[selection.length];
             IntArrays.quickSort(selection);
@@ -136,7 +134,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         @Override
         public Factory[] generateFactories(DMatrix x) {
-            int len = (int) (sigmas.size() * x.rowCount() * Math.min(1.0, p));
+            int len = Math.min(1, (int) (sigmas.size() * x.rowCount() * p));
             Factory[] factories = new Factory[len];
             for (int i = 0; i < len; i++) {
                 factories[i] = nextFactory(x);
@@ -161,38 +159,27 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         }
     }
 
-    public static final class DefaultRunningHook implements BiConsumer<RVMRegression, Integer> {
-
-        private final Consumer<Info> consumer;
-
-        public DefaultRunningHook(Consumer<Info> consumer) {
-            this.consumer = consumer;
-        }
-
-        @Override
-        public void accept(RVMRegression rvmRegression, Integer integer) {
-            consumer.accept(new Info(rvmRegression, integer));
-        }
-
-        public record Info(
-                RVMRegression model,
-                int iteration
-        ) {
-        }
-    }
+    public static final record RHInfo(
+            RVMRegression model,
+            int run,
+            boolean[] activeFlag,
+            DVector activeIndexes,
+            DVector alpha,
+            DVector theta
+    ) {}
 
     @Serial
     private static final long serialVersionUID = 9165148257709665706L;
 
     public ListParam<FactoryProvider, RVMRegression> providers = new ListParam<>(this,
-            List.of(new InterceptProvider(), new RBFProvider(VarDouble.wrap(1), -1)),
+            List.of(new InterceptProvider(), new RBFProvider(VarDouble.wrap(1), 1)),
             "providers", "Feature factory providers",
             (fp1, fp2) -> true);
 
     public ValueParam<Method, RVMRegression> method = new ValueParam<>(this, Method.EVIDENCE_APPROXIMATION,
             "method", "Method used to fit the model.");
 
-    public ValueParam<Double, RVMRegression> fitThreshold = new ValueParam<>(this, Math.exp(1e-10),
+    public ValueParam<Double, RVMRegression> fitThreshold = new ValueParam<>(this, 1e-10,
             "fitThreshold", "Fit threshold used in convergence criteria.");
 
     public ValueParam<Double, RVMRegression> alphaThreshold = new ValueParam<>(this, 1e9,
@@ -386,8 +373,8 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         sb.append("> relevant vector training indexes: [")
                 .append(IntArrays.stream(trainingIndexes, 0, trainingIndexes.length).mapToObj(String::valueOf)
                         .collect(Collectors.joining(",")))
-                .append("]");
-        sb.append("> convergence: ").append(converged).append(", iterations: ").append(iterations).append("\n");
+                .append("]\n");
+        sb.append("> convergence: ").append(converged).append("\n> iterations: ").append(iterations).append("\n");
 
         sb.append("> mean: \n");
         sb.append(m.toFullContent(options));
@@ -405,13 +392,9 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
     @Override
     public String toFullContent(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(toSummary(printer, options));
-
-        sb.append("> sigma: \n");
-        sb.append(sigma.toContent(options));
-
-        return sb.toString();
+        return toSummary(printer, options)
+                + "> sigma: \n"
+                + sigma.toContent(options);
     }
 
     private static abstract class MethodImpl {
@@ -489,7 +472,6 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             phi_t_y = phi.t().dot(y);
 
             initializeAlphaBeta();
-
             for (int it = 1; it <= parent.maxIter.get(); it++) {
 
                 // compute m and sigma
@@ -591,10 +573,11 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             alpha = DVector.from(phi.colCount(), row -> Math.abs(RandomSource.nextDouble() / 10));
         }
 
-        protected void updateResults(RVMRegression parent, boolean convergent, int iterations) {
+        private void updateResults(RVMRegression parent, boolean convergent, int iterations) {
             parent.featureIndexes = indexes;
             parent.trainingIndexes = IntStream.of(indexes).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
-            parent.relevanceVectors = DMatrix.wrap(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
+            parent.relevanceVectors =
+                    DMatrix.wrap(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
             parent.m = m.copy();
             parent.sigma = sigma.copy();
             parent.alpha = alpha.copy();
@@ -690,7 +673,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
                 if (Double.isInfinite(alpha_i)) {
                     // add alpha_i to model
                     alpha.set(i, s[i] * s[i] / theta[i]);
-                    indexes = addIndex(indexes, i);
+                    indexes = addIndex(i);
                 } else {
                     // alpha is in set, re-estimate alpha
                     alpha.set(i, s[i] * s[i] / theta[i]);
@@ -704,7 +687,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         }
 
-        private int[] addIndex(int[] original, int i) {
+        private int[] addIndex(int i) {
             int[] copy = new int[indexes.length + 1];
             System.arraycopy(indexes, 0, copy, 0, indexes.length);
             copy[indexes.length] = i;
@@ -738,7 +721,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
                     best_index = i;
                 }
             }
-            indexes = new int[]{best_index};
+            indexes = new int[] {best_index};
 
             alpha.set(best_index, phi_hat.get(best_index, best_index) / (best_projection - 1.0 / beta));
         }
@@ -757,8 +740,8 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             for (int i = 0; i < fcount; i++) {
                 DVector left = phi_hat.mapCol(i).mapCopy(indexes);
                 DVector right = phi_dot_y.mapCopy(indexes);
-                ss[i] = beta * phi_hat.get(i, i) - beta * beta * sigma.dot(left).dot(left);
-                qq[i] = beta * phi_dot_y.get(i) - beta * beta * sigma.dot(left).dot(right);
+                ss[i] = beta * phi_hat.get(i, i) - beta * beta * left.dotBilinear(sigma);
+                qq[i] = beta * phi_dot_y.get(i) - beta * beta * left.dotBilinear(sigma, right);
             }
 
             for (int i = 0; i < fcount; i++) {
@@ -780,10 +763,11 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             beta = (n - gamma.sum()) / delta.dot(delta);
         }
 
-        protected void updateResults(RVMRegression parent, boolean convergent, int iterations) {
+        private void updateResults(RVMRegression parent, boolean convergent, int iterations) {
             parent.featureIndexes = indexes;
             parent.trainingIndexes = IntStream.of(indexes).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
-            parent.relevanceVectors = DMatrix.wrap(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
+            parent.relevanceVectors =
+                    DMatrix.wrap(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
             parent.m = m.copy();
             parent.sigma = sigma.copy();
             parent.alpha = alpha.mapCopy(indexes);
@@ -817,7 +801,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         // cached for all vectors
 
-        // cached for active vectors only
+        // cached for activeFlag vectors only
         private final ArrayList<ActiveFeature> active = new ArrayList<>();
 
         private final PhiCache cache = new PhiCache();
@@ -835,6 +819,16 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             computeSQ();
             computeBeta();
 
+            if (parent.runningHook.get() != null) {
+                boolean[] a = new boolean[fcount];
+                for (ActiveFeature ac : active) {
+                    a[ac.index] = true;
+                }
+                DVector activeIndexes = DVector.from(active.size(), i -> active.get(i).index);
+                parent.runningHook.get().accept(new RHInfo(parent, 0, a,
+                        activeIndexes, alpha.copy(), q.copy().apply(x -> x*x).sub(s)));
+            }
+
             DVector old_alpha = alpha.copy();
             for (int it = 1; it <= parent.maxIter.get(); it++) {
 
@@ -842,6 +836,16 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
                 computeSigmaAndMu();
                 computeSQ();
                 computeBeta();
+
+                if (parent.runningHook.get() != null) {
+                    boolean[] a = new boolean[fcount];
+                    for (ActiveFeature ac : active) {
+                        a[ac.index] = true;
+                    }
+                    DVector activeIndexes = DVector.from(active.size(), i -> active.get(i).index);
+                    parent.runningHook.get().accept(new RHInfo(parent, it, a,
+                            activeIndexes, alpha.copy(), q.copy().apply(x -> x*x).sub(s).apply(Math::log1p)));
+                }
 
                 if (testConvergence(old_alpha)) {
                     updateResults(parent, true, it);
@@ -914,7 +918,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
 
         private DVector computePhiiDotPhi(int i) {
 
-            // first check if it is active, since if it is active the values are already in phi_hat
+            // first check if it is activeFlag, since if it is activeFlag the values are already in phi_hat
             if (Double.isFinite(alpha.get(i))) {
                 for (int j = 0; j < active.size(); j++) {
                     if (i == active.get(j).index) {
@@ -923,7 +927,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
                 }
             }
 
-            // if not active then try to complete the vector from cache
+            // if not activeFlag then try to complete the vector from cache
 
             DVector v = DVector.fill(active.size(), Double.NaN);
             boolean full = true;
@@ -1018,17 +1022,13 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
                         toRemove.add(i);
                     }
                 }
+                delta *= 1 + Math.pow(phiiDotY.get(i), 0.7);
                 if (Double.isNaN(bestDelta) || delta > bestDelta) {
                     bestDelta = delta;
                     bestTheta = theta;
                     bestIndex = i;
                 }
             }
-            /*
-            VarDouble f = VarDouble.from(fails.length, i -> (double) fails[i]);
-            Unique.of(f).printString();
-            System.out.println("remaining: " + f.stream().filter(s -> s.getDouble() < parent.maxFailures.get()).count());
-            */
             candidates.removeAll(toRemove);
 
             double alpha_i = alpha.get(bestIndex);
@@ -1052,7 +1052,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         private void addActiveFeature(int index, double _alpha) {
             alpha.set(index, _alpha);
 
-            // add active feature to the index
+            // add activeFlag feature to the index
 
             DVector phii = parent.factories.get(index).trainingFeature.get();
             active.add(new ActiveFeature(index, phii));
@@ -1094,7 +1094,7 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
         private void removeActiveFeature(int index) {
             alpha.set(index, Double.POSITIVE_INFINITY);
 
-            // find position of active feature to be removed
+            // find position of activeFlag feature to be removed
             int pos = -1;
             for (int i = 0; i < active.size(); i++) {
                 if (active.get(i).index == index) {
@@ -1103,12 +1103,12 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
                 }
             }
 
-            // if pos == -1 it means we want to remove a feature which is not active
+            // if pos == -1 it means we want to remove a feature which is not activeFlag
             if (pos == -1) {
-                throw new IllegalStateException("Try to remove active feature with index: " + index);
+                throw new IllegalStateException("Try to remove activeFlag feature with index: " + index);
             }
 
-            // now remove from active features
+            // now remove from activeFlag features
             active.remove(pos);
 
             // adjust phiHat
@@ -1137,9 +1137,10 @@ public class RVMRegression extends AbstractRegressionModel<RVMRegression, Regres
             return delta < parent.fitThreshold.get();
         }
 
-        protected void updateResults(RVMRegression parent, boolean convergent, int iterations) {
+        private void updateResults(RVMRegression parent, boolean convergent, int iterations) {
             parent.featureIndexes = active.stream().mapToInt(a -> a.index).toArray();
-            parent.trainingIndexes = active.stream().mapToInt(a -> a.index).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
+            parent.trainingIndexes =
+                    active.stream().mapToInt(a -> a.index).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
             parent.relevanceVectors = DMatrix.wrap(true, active
                     .stream().mapToInt(a -> a.index)
                     .mapToObj(i -> parent.factories.get(i).phii)

@@ -30,7 +30,8 @@ import rapaio.data.VarNominal;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ParametricEquals;
-import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
@@ -43,7 +44,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L2Regression extends AbstractRegressionModel<L2Regression, RegressionResult>
+public class L2Regression extends RegressionModel<L2Regression, RegressionResult, DefaultHookInfo>
         implements ParametricEquals<L2Regression> {
 
     @Serial

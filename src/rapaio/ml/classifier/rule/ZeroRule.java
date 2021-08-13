@@ -25,8 +25,9 @@ import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -44,7 +45,7 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/24/20.
  */
-public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult> {
+public class ZeroRule extends ClassifierModel<ZeroRule, ClassifierResult, DefaultHookInfo> {
 
     public static ZeroRule newModel() {
         return new ZeroRule();

@@ -27,9 +27,9 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.filter.VApply;
-import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
@@ -48,19 +48,19 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
-public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogisticStacking, ClassifierResult> implements Printable {
+public class CBinaryLogisticStacking extends ClassifierModel<CBinaryLogisticStacking, ClassifierResult, DefaultHookInfo> implements Printable {
 
     @Serial
     private static final long serialVersionUID = -9087871586729573030L;
 
     private static final Logger logger = Logger.getLogger(CBinaryLogisticStacking.class.getName());
 
-    private final List<ClassifierModel> weaks = new ArrayList<>();
+    private final List<ClassifierModel<?, ?, ?>> weaks = new ArrayList<>();
     private final BinaryLogistic log = BinaryLogistic.newModel();
     private double tol = 1e-5;
     private int maxRuns = 1_000_000;
 
-    public CBinaryLogisticStacking withLearners(ClassifierModel... learners) {
+    public CBinaryLogisticStacking withLearners(ClassifierModel<?, ?, ?>... learners) {
         weaks.clear();
         Collections.addAll(weaks, learners);
         return this;

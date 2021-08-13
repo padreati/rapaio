@@ -48,7 +48,6 @@ public enum KMeansInit implements Serializable {
         @Override
         public DMatrix init(KMeans.Space space, DMatrix m, int k) {
 
-            int[] rows = IntArrays.newSeq(0, m.rowCount());
             int[] centroids = IntArrays.newFill(k, -1);
 
             centroids[0] = RandomSource.nextInt(m.rowCount());

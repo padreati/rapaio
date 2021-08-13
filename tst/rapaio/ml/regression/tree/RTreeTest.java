@@ -23,6 +23,7 @@ package rapaio.ml.regression.tree;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
@@ -39,15 +40,15 @@ import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.RMSE;
 import rapaio.ml.eval.metric.RegressionScore;
 import rapaio.ml.loss.L2Loss;
-import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.rtree.Search;
 import rapaio.ml.regression.tree.rtree.Splitter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -68,9 +69,8 @@ public class RTreeTest {
 
     @Test
     void testNewInstance() {
-        BiFunction<RegressionModel, Integer, Boolean> myStoppingHook = (rTree, integer) -> false;
-        BiConsumer<RegressionModel, Integer> myRunningHook = (rTree, integer) -> {
-        };
+        Function<DefaultHookInfo, Boolean> myStoppingHook = info -> false;
+        Consumer<DefaultHookInfo> myRunningHook = info -> {};
         RTree rt1 = RTree.newCART()
                 .maxDepth.set(2)
                 .maxSize.set(10)
@@ -107,7 +107,7 @@ public class RTreeTest {
         assertNull(rt2.root());
 
         assertEquals("RTree{maxDepth=2,maxSize=10,poolSize=10,rowSampler=Bootstrap(p=1)," +
-                "runningHook=BiCosumer(),runs=10,stopHook=BiFunction()," +
+                "runningHook=Consumer(),runs=10,stopHook=Function()," +
                 "testMap={BINARY=Ignore,INT=Ignore,NOMINAL=Ignore,DOUBLE=Ignore,LONG=Ignore,STRING=Ignore}," +
                 "varSelector=VarSelector[AUTO]}", rt2.fullName());
 
@@ -208,7 +208,7 @@ public class RTreeTest {
 
     @Test
     void testLinearSeparableTest() {
-        Var[] vars = new Var[]{
+        Var[] vars = new Var[] {
                 VarDouble.empty().name("x"),
                 VarNominal.empty().name("cat"),
                 VarDouble.empty().name("target")};

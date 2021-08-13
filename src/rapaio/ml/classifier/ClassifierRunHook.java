@@ -35,13 +35,14 @@ import java.io.Serial;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Utility class for following progress while fitting a classifier during runs.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/20.
  */
-public class ClassifierRunHook extends ParamSet<ClassifierRunHook> implements SBiConsumer<ClassifierModel, Integer> {
+public class ClassifierRunHook extends ParamSet<ClassifierRunHook> implements Consumer<DefaultHookInfo> {
 
     @Serial
     private static final long serialVersionUID = 7165160125378670196L;
@@ -85,25 +86,25 @@ public class ClassifierRunHook extends ParamSet<ClassifierRunHook> implements SB
     }
 
     @Override
-    public void accept(ClassifierModel model, Integer run) {
-        if (run == 0 || (run % skipStep.get() == 0)) {
+    public void accept(DefaultHookInfo info) {
+        if (info.run() == 0 || (info.run() % skipStep.get() == 0)) {
 
-            runs.addInt(run);
+            runs.addInt(info.run());
 
             StringBuilder sb = new StringBuilder();
-            sb.append("run ").append(run).append("\n");
+            sb.append("run ").append(info.run()).append("\n");
             for (var metric : metrics.get()) {
                 sb.append(metric.getName()).append(" ");
                 if (train.get() != null) {
-                    var result = model.predict(train.get(), true, true);
-                    double score = metric.compute(train.get().rvar(model.firstTargetName()), result).getScore().value();
+                    var result = info.model().predict(train.get(), true, true);
+                    double score = metric.compute(train.get().rvar(info.model().firstTargetName()), result).getScore().value();
                     trainScores.computeIfAbsent(metric.getName(), m -> VarDouble.empty()).addDouble(score);
                     sb.append("train:").append(Format.floatFlex(score));
                 }
 
                 if (test.get() != null) {
-                    var result = model.predict(test.get(), true, true);
-                    double score = metric.compute(test.get().rvar(model.firstTargetName()), result).getScore().value();
+                    var result = info.model().predict(test.get(), true, true);
+                    double score = metric.compute(test.get().rvar(info.model().firstTargetName()), result).getScore().value();
                     testScores.computeIfAbsent(metric.getName(), m -> VarDouble.empty()).addDouble(score);
                     sb.append(", test:").append(Format.floatFlex(score));
                 }

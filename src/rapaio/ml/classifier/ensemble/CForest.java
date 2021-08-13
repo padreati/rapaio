@@ -39,9 +39,9 @@ import rapaio.data.filter.FRefSort;
 import rapaio.data.filter.VShuffle;
 import rapaio.data.sample.RowSampler;
 import rapaio.math.linear.DMatrix;
-import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.classifier.tree.ctree.Node;
 import rapaio.ml.common.Capabilities;
@@ -67,7 +67,7 @@ import java.util.stream.IntStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
-public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> {
+public class CForest extends ClassifierModel<CForest, ClassifierResult, DefaultHookInfo> {
 
     public static CForest newModel() {
         return new CForest();
@@ -97,7 +97,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
             "bagging", "Bagging mode used to average the results");
 
     // learning artifacts
-    private List<ClassifierModel> predictors = new ArrayList<>();
+    private List<ClassifierModel<?, ?, ?>> predictors = new ArrayList<>();
     private double oobError = Double.NaN;
     private DMatrix oobDensities;
     private Var oobPredictedClasses;
@@ -111,7 +111,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         rowSampler.set(RowSampler.bootstrap());
     }
 
-    public List<ClassifierModel> getPredictors() {
+    public List<ClassifierModel<?, ?, ?>> getPredictors() {
         return predictors;
     }
 
@@ -198,8 +198,6 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
-        double totalOobInstances = 0;
-        double totalOobError = 0;
         if (oob.get()) {
             oobDensities = DMatrix.fill(df.rowCount(), firstTargetLevels().size() - 1, 0.0);
             oobTrueClass = df.rvar(firstTargetName()).copy();
@@ -223,11 +221,11 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         if (poolSize.get() != 0) {
             range = range.parallel();
         }
-        List<Pair<ClassifierModel, Mapping>> list = range
+        List<Pair<ClassifierModel<?, ?, ?>, Mapping>> list = range
                 .mapToObj(s -> buildWeakPredictor(df, weights))
                 .collect(Collectors.toList());
         for (int i = 0; i < list.size(); i++) {
-            Pair<ClassifierModel, Mapping> weak = list.get(i);
+            Pair<ClassifierModel<?, ?, ?>, Mapping> weak = list.get(i);
             predictors.add(weak.v1);
             if (oob.get()) {
                 oobCompute(df, weak);
@@ -241,13 +239,13 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
             if (viPerm.get()) {
                 permVICompute(df, weak);
             }
-            runningHook.get().accept(this, i + 1);
+            runningHook.get().accept(new DefaultHookInfo(this, i + 1));
         }
         return true;
     }
 
-    private void permVICompute(Frame df, Pair<ClassifierModel, Mapping> weak) {
-        ClassifierModel c = weak.v1;
+    private void permVICompute(Frame df, Pair<ClassifierModel<?, ?, ?>, Mapping> weak) {
+        ClassifierModel<?, ?, ?> c = weak.v1;
         Mapping oobIndexes = weak.v2;
 
         // build oob data frame
@@ -284,7 +282,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         }
     }
 
-    private void gainVICompute(Pair<ClassifierModel, Mapping> weak) {
+    private void gainVICompute(Pair<ClassifierModel<?, ?, ?>, Mapping> weak) {
         CTree weakTree = (CTree) weak.v1;
         var scores = DensityVector.emptyByLabels(true, inputNames());
         collectGainVI(weakTree.getRoot(), scores);
@@ -306,7 +304,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         node.children.forEach(child -> collectGainVI(child, dv));
     }
 
-    private void freqVICompute(Pair<ClassifierModel, Mapping> pair) {
+    private void freqVICompute(Pair<ClassifierModel<?, ?, ?>, Mapping> pair) {
         CTree weak = (CTree) pair.v1;
         var scores = DensityVector.emptyByLabels(true, inputNames());
         collectFreqVI(weak.getRoot(), scores);
@@ -320,12 +318,11 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
             return;
         }
         String varName = node.bestCandidate.testName();
-        double score = Math.abs(node.bestCandidate.score());
         dv.increment(varName, node.density.sum());
         node.children.forEach(child -> collectFreqVI(child, dv));
     }
 
-    private void oobCompute(Frame df, Pair<ClassifierModel, Mapping> pair) {
+    private void oobCompute(Frame df, Pair<ClassifierModel<?, ?, ?>, Mapping> pair) {
         double totalOobError;
         double totalOobInstances;
         Mapping oobMap = pair.v2;
@@ -352,7 +349,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         oobError = (totalOobInstances > 0) ? totalOobError / totalOobInstances : 0.0;
     }
 
-    private Pair<ClassifierModel, Mapping> buildWeakPredictor(Frame df, Var weights) {
+    private Pair<ClassifierModel<?, ?, ?>, Mapping> buildWeakPredictor(Frame df, Var weights) {
         var weak = model.get().newInstance();
         RowSampler.Sample sample = rowSampler.get().nextSample(df, weights);
         weak.fit(sample.df(), sample.weights(), firstTargetName());

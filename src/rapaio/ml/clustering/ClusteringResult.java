@@ -30,17 +30,17 @@ import rapaio.printer.Printable;
  */
 public class ClusteringResult implements Printable {
 
-    protected final ClusteringModel model;
+    protected final ClusteringModel<?, ?, ?> model;
     protected final Frame df;
     protected final VarInt assignment;
 
-    public ClusteringResult(ClusteringModel model, Frame df, VarInt assignment) {
+    public ClusteringResult(ClusteringModel<?, ?, ?> model, Frame df, VarInt assignment) {
         this.model = model;
         this.df = df;
         this.assignment = assignment;
     }
 
-    public ClusteringModel getModel() {
+    public ClusteringModel<?, ?, ?> getModel() {
         return model;
     }
 

@@ -37,7 +37,8 @@ import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
-import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.rtree.Candidate;
 import rapaio.ml.regression.tree.rtree.Node;
@@ -65,7 +66,7 @@ import static rapaio.printer.Format.floatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/14.
  */
-public class RTree extends AbstractRegressionModel<RTree, RegressionResult> implements GBTRtree<RTree, RegressionResult> {
+public class RTree extends GBTRtree<RTree, RegressionResult, DefaultHookInfo> {
 
     @Serial
     private static final long serialVersionUID = -2748764643670512376L;

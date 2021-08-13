@@ -29,7 +29,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
@@ -50,7 +51,7 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L1Regression extends AbstractRegressionModel<L1Regression, RegressionResult> {
+public class L1Regression extends RegressionModel<L1Regression, RegressionResult, DefaultHookInfo> {
 
     @Serial
     private static final long serialVersionUID = 6125284399953219419L;

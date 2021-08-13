@@ -26,9 +26,9 @@ import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
-import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.printer.Printable;
 
 import java.io.Serial;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  */
 @Deprecated
 public class SplitClassifierModel
-        extends AbstractClassifierModel<SplitClassifierModel, ClassifierResult> implements Printable {
+        extends ClassifierModel<SplitClassifierModel, ClassifierResult, DefaultHookInfo> implements Printable {
 
     @Serial
     private static final long serialVersionUID = 3332377951136731541L;
@@ -67,7 +67,7 @@ public class SplitClassifierModel
                 .withSplits(splits);
     }
 
-    public SplitClassifierModel withSplit(Predicate<FSpot> predicate, ClassifierModel c) {
+    public SplitClassifierModel withSplit(Predicate<FSpot> predicate, ClassifierModel<?, ?, ?> c) {
         this.splits.add(new Split(predicate, c));
         return this;
     }
@@ -151,6 +151,6 @@ public class SplitClassifierModel
         return pred;
     }
 
-    public record Split(Predicate<FSpot> predicate, ClassifierModel classifierModel) {
+    public record Split(Predicate<FSpot> predicate, ClassifierModel<?, ?, ?> classifierModel) {
     }
 }

@@ -45,11 +45,11 @@ import static java.util.Collections.nCopies;
  */
 public class RegressionResult implements Printable {
 
-    public static RegressionResult build(RegressionModel model, Frame df, boolean withResiduals, double[] quantiles) {
+    public static RegressionResult build(RegressionModel<?, ?, ?> model, Frame df, boolean withResiduals, double[] quantiles) {
         return new RegressionResult(model, df, withResiduals, quantiles);
     }
 
-    protected final RegressionModel model;
+    protected final RegressionModel<?, ?, ?> model;
     protected final Frame df;
     protected final boolean withResiduals;
     protected final double[] quantiles;
@@ -61,7 +61,7 @@ public class RegressionResult implements Printable {
     protected final Map<String, Double> rss;
     protected final Map<String, Double> rsquare;
 
-    protected RegressionResult(final RegressionModel model, final Frame df, final boolean withResiduals, final double[] quantiles) {
+    protected RegressionResult(final RegressionModel<?, ?, ?> model, final Frame df, final boolean withResiduals, final double[] quantiles) {
         this.df = df;
         this.model = model;
         this.withResiduals = withResiduals;
@@ -91,7 +91,7 @@ public class RegressionResult implements Printable {
 
     // private constructor
 
-    public RegressionModel getModel() {
+    public RegressionModel<?, ?, ?> getModel() {
         return model;
     }
 

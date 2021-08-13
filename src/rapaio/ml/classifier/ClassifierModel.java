@@ -23,21 +23,99 @@ package rapaio.ml.classifier;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarRange;
 import rapaio.data.VarType;
+import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
+import rapaio.util.function.SFunction;
 
+import java.io.Serial;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
- * Interface for all classification model algorithms.
- * A classifier is able to classify multiple target columns, if implementation allows that.
+ * Abstract base class for all classifier implementations.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface ClassifierModel extends Printable, Serializable {
+@SuppressWarnings("unchecked")
+public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R extends ClassifierResult, H>
+        extends ParamSet<M> implements Printable, Serializable {
+
+    @Serial
+    private static final long serialVersionUID = -6866948033065091047L;
+
+    public final ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
+            "rowSampler",
+            "Method used to sample rows.",
+            Objects::nonNull);
+
+    /**
+     * Number of threads for execution pool size. Negative values are considered
+     * automatically as pool of number of available CPUs, zero means
+     * no pooling and positive values means pooling with a specified
+     * value.
+     */
+    public final ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, 0,
+            "poolSize",
+            "Number of threads in execution pool to be used for fitting the model.",
+            x -> true);
+    /**
+     * Specifies the runs / rounds of learning.
+     * For various models composed of multiple sub-models
+     * the runs represents often the number of sub-models.
+     * <p>
+     * For example for CForest the number of runs is used to specify
+     * the number of decision trees to be built.
+     */
+    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1,
+            "runs",
+            "Number of iterations for iterative iterations or number of sub ensembles.",
+            x -> x > 0
+    );
+
+    /**
+     * Lambda call hook called after each sub-component or iteration at training time.
+     */
+    public final ValueParam<Consumer<H>, M> runningHook = new ValueParam<>((M) this, (Consumer<H> & Serializable) h -> {},
+            "runningHook",
+            "Hook executed at each iteration.",
+            Objects::nonNull
+    );
+    /**
+     * Lambda call hook which can be used to implement a criteria used to stop running
+     * an iterative procedure. If the call hook returns false, the iterative procedure is
+     * stopped, if true it continues until the algorithm stops itself.
+     */
+    public ValueParam<SFunction<H, Boolean>, M> stoppingHook = new ValueParam<>((M) this,
+            h -> false,
+            "stopHook",
+            "Hook queried at each iteration if execution should continue or not.",
+            Objects::nonNull);
+
+    // learning artifacts
+
+    protected boolean learned = false;
+    protected String[] inputNames;
+    protected VarType[] inputTypes;
+    protected String[] targetNames;
+    protected VarType[] targetTypes;
+    protected Map<String, List<String>> targetLevels;
 
     /**
      * Creates a new classifier instance with the same parameters as the original.
@@ -45,28 +123,30 @@ public interface ClassifierModel extends Printable, Serializable {
      *
      * @return new parametrized instance
      */
-    ClassifierModel newInstance();
+    public abstract ClassifierModel<M, R, H> newInstance();
 
     /**
      * Returns the classifier name.
      *
      * @return classifier name
      */
-    String name();
+    public abstract String name();
 
     /**
      * Builds a string which contains the classifier instance name and parameters.
      *
      * @return classifier algorithm name and parameters
      */
-    String fullName();
+    public String fullName() {
+        return name() + '{' + getStringParameterValues(true) + '}';
+    }
 
     /**
      * Describes the classification algorithm
      *
      * @return capabilities of the classification algorithm
      */
-    default Capabilities capabilities() {
+    public Capabilities capabilities() {
         return Capabilities.newDefault();
     }
 
@@ -75,7 +155,9 @@ public interface ClassifierModel extends Printable, Serializable {
      *
      * @return input variable names
      */
-    String[] inputNames();
+    public String[] inputNames() {
+        return inputNames;
+    }
 
     /**
      * Shortcut method which returns input variable name at the
@@ -84,7 +166,7 @@ public interface ClassifierModel extends Printable, Serializable {
      * @param pos given position
      * @return variable name
      */
-    default String inputName(int pos) {
+    public String inputName(int pos) {
         return inputNames()[pos];
     }
 
@@ -93,7 +175,9 @@ public interface ClassifierModel extends Printable, Serializable {
      *
      * @return array of input variable types
      */
-    VarType[] inputTypes();
+    public VarType[] inputTypes() {
+        return inputTypes;
+    }
 
     /**
      * Shortcut method which returns the type of the input variable at the given position
@@ -101,7 +185,7 @@ public interface ClassifierModel extends Printable, Serializable {
      * @param pos given position
      * @return variable type
      */
-    default VarType inputType(int pos) {
+    public VarType inputType(int pos) {
         return inputTypes()[pos];
     }
 
@@ -110,14 +194,16 @@ public interface ClassifierModel extends Printable, Serializable {
      *
      * @return target variable names
      */
-    String[] targetNames();
+    public String[] targetNames() {
+        return targetNames;
+    }
 
     /**
      * Returns first target variable built at learning time
      *
      * @return target variable names
      */
-    default String firstTargetName() {
+    public String firstTargetName() {
         return targetNames()[0];
     }
 
@@ -127,7 +213,7 @@ public interface ClassifierModel extends Printable, Serializable {
      * @param pos position of the target variable name
      * @return name of the target variable
      */
-    default String targetName(int pos) {
+    public String targetName(int pos) {
         return targetNames()[pos];
     }
 
@@ -136,7 +222,9 @@ public interface ClassifierModel extends Printable, Serializable {
      *
      * @return array of target types
      */
-    VarType[] targetTypes();
+    public VarType[] targetTypes() {
+        return targetTypes;
+    }
 
     /**
      * Shortcut method which returns target variable type
@@ -145,7 +233,7 @@ public interface ClassifierModel extends Printable, Serializable {
      * @param pos given position
      * @return target variable type
      */
-    default VarType targetType(int pos) {
+    public VarType targetType(int pos) {
         return targetTypes()[pos];
     }
 
@@ -154,9 +242,11 @@ public interface ClassifierModel extends Printable, Serializable {
      *
      * @return map with target variable names as key and levels as variables
      */
-    Map<String, List<String>> targetLevels();
+    public Map<String, List<String>> targetLevels() {
+        return targetLevels;
+    }
 
-    default List<String> targetLevels(String key) {
+    public List<String> targetLevels(String key) {
         return targetLevels().get(key);
     }
 
@@ -165,18 +255,20 @@ public interface ClassifierModel extends Printable, Serializable {
      *
      * @return map with target variable names as key and levels as variables
      */
-    default List<String> firstTargetLevels() {
+    public List<String> firstTargetLevels() {
         return targetLevels().get(firstTargetName());
     }
 
-    default String firstTargetLevel(int pos) {
+    public String firstTargetLevel(int pos) {
         return targetLevels().get(firstTargetName()).get(pos);
     }
 
     /**
      * @return true if the classifier has learned from a sample
      */
-    boolean hasLearned();
+    public boolean hasLearned() {
+        return learned;
+    }
 
     /**
      * Fit a classifier on instances specified by frame, with row weights
@@ -185,7 +277,10 @@ public interface ClassifierModel extends Printable, Serializable {
      * @param df         data set instances
      * @param targetVars target variables
      */
-    ClassifierModel fit(Frame df, String... targetVars);
+    public M fit(Frame df, String... targetVars) {
+        VarDouble weights = VarDouble.fill(df.rowCount(), 1);
+        return fit(df, weights, targetVars);
+    }
 
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetNames
@@ -194,7 +289,11 @@ public interface ClassifierModel extends Printable, Serializable {
      * @param weights    instance weights
      * @param targetVars target variables
      */
-    ClassifierModel fit(Frame df, Var weights, String... targetVars);
+    public M fit(Frame df, Var weights, String... targetVars) {
+        FitSetup setup = prepareFit(df, weights, targetVars);
+        learned = coreFit(setup.df, setup.w);
+        return (M) this;
+    }
 
     /**
      * Predict classes for new data set instances, with
@@ -202,7 +301,9 @@ public interface ClassifierModel extends Printable, Serializable {
      *
      * @param df data set instances
      */
-    <R extends ClassifierResult> R predict(Frame df);
+    public final R predict(Frame df) {
+        return predict(df, true, true);
+    }
 
     /**
      * Predict classes for given instances, generating classes if specified and
@@ -212,5 +313,112 @@ public interface ClassifierModel extends Printable, Serializable {
      * @param withClasses       generate classes
      * @param withDistributions generate densities for classes
      */
-    <R extends ClassifierResult> R predict(Frame df, boolean withClasses, boolean withDistributions);
+    public final R predict(Frame df, boolean withClasses, boolean withDistributions) {
+        PredSetup setup = preparePredict(df, withClasses, withDistributions);
+        return corePredict(setup.df, setup.withClasses, setup.withDistributions);
+    }
+
+    /**
+     * This method is prepares learning phase. It is a generic method which works
+     * for all learners. It's tass includes initialization of target names,
+     * input names, check the capabilities at learning phase, etc.
+     *
+     * @param df         data frame
+     * @param weights    weights of instances
+     * @param targetVars target variable names
+     */
+    protected FitSetup prepareFit(Frame df, final Var weights, final String... targetVars) {
+        List<String> targets = VarRange.of(targetVars).parseVarNames(df);
+        this.targetNames = targets.toArray(new String[0]);
+        this.targetTypes = targets.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
+        this.targetLevels = new HashMap<>();
+        this.targetLevels.put(firstTargetName(), df.rvar(firstTargetName()).levels());
+
+        HashSet<String> targetSet = new HashSet<>(targets);
+
+        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
+        this.inputNames = inputs.toArray(new String[0]);
+        this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
+
+        capabilities().checkAtLearnPhase(df, weights, targetVars);
+        return FitSetup.valueOf(df, weights, targetVars);
+    }
+
+    protected abstract boolean coreFit(Frame df, Var weights);
+
+    protected PredSetup preparePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        return PredSetup.valueOf(df, withClasses, withDistributions);
+    }
+
+    protected abstract R corePredict(Frame df, boolean withClasses, boolean withDistributions);
+
+    public String fullNameSummary() {
+        return name() + " model\n"
+                + "================\n\n"
+                + "Description:\n"
+                + fullName() + "\n\n";
+    }
+
+    public String capabilitiesSummary() {
+        return "Capabilities:\n"
+                + capabilities().toString() + "\n";
+    }
+
+    public String inputVarsSummary(Printer printer, POption<?>... options) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("input vars: \n");
+
+        int varCount = inputNames.length;
+        TextTable tt = TextTable.empty(varCount, 5);
+        for (int i = 0; i < varCount; i++) {
+            tt.textRight(i, 0, i + ".");
+            tt.textRight(i, 1, inputNames[i]);
+            tt.textLeft(i, 2, ":");
+            tt.textLeft(i, 3, inputTypes[i].name());
+            tt.textRight(i, 4, " |");
+        }
+        sb.append(tt.getDynamicText(printer, options)).append("\n");
+        return sb.toString();
+    }
+
+    public String targetVarsSummary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("target vars:\n");
+        IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")
+                .append(targetName(i)).append(" : ")
+                .append(targetType(i))
+                .append(" [").append(String.join(",", targetLevels(targetName(i)))).append("]")
+                .append("\n"));
+        sb.append("\n");
+        return sb.toString();
+    }
+
+    protected static class FitSetup {
+        public Frame df;
+        public Var w;
+        public String[] targetVars;
+
+        public static FitSetup valueOf(Frame df, Var w, String[] targetVars) {
+            FitSetup setup = new FitSetup();
+            setup.df = df;
+            setup.w = w;
+            setup.targetVars = Arrays.copyOf(targetVars, targetVars.length);
+            return setup;
+        }
+    }
+
+    protected static final class PredSetup {
+
+        public Frame df;
+        public boolean withClasses;
+        public boolean withDistributions;
+
+        public static PredSetup valueOf(Frame df, boolean withClasses, boolean withDistributions) {
+            PredSetup setup = new PredSetup();
+            setup.df = df;
+            setup.withClasses = withClasses;
+            setup.withDistributions = withDistributions;
+            return setup;
+        }
+    }
 }

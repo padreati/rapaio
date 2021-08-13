@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -94,8 +95,8 @@ public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
     }
 
     private String format(Object value) {
-        if (value instanceof RegressionModel) {
-            return ((RegressionModel) value).fullName();
+        if (value instanceof RegressionModel<?, ?, ?>) {
+            return ((RegressionModel<?, ?, ?>) value).fullName();
         }
         if (value instanceof Double) {
             return Format.floatFlex((double) value);
@@ -125,11 +126,8 @@ public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
         if (value instanceof Function<?, ?>) {
             return "Function()";
         }
-        if (value instanceof BiFunction<?, ?, ?>) {
-            return "BiFunction()";
-        }
-        if (value instanceof BiConsumer<?, ?>) {
-            return "BiCosumer()";
+        if (value instanceof Consumer<?>) {
+            return "Consumer()";
         }
         return value.toString();
     }

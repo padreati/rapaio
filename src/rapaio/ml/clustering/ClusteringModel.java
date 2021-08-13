@@ -23,14 +23,50 @@ package rapaio.ml.clustering;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/31/20.
  */
-public interface ClusteringModel extends Printable {
+public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R extends ClusteringResult, H>
+        extends ParamSet<M> implements Printable, Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1917244313225596517L;
+
+    /**
+     * Specifies the runs / rounds of learning.
+     * For various models composed of multiple sub-models
+     * the runs represents often the number of sub-models.
+     * <p>
+     * For example for CForest the number of runs is used to specify
+     * the number of decision trees to be built.
+     */
+    @SuppressWarnings("unchecked")
+    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1_000,
+            "runs",
+            "Number of iterations for iterative iterations or number of sub ensembles.",
+            x -> x > 0
+    );
+
+    @SuppressWarnings("unchecked")
+    public final ValueParam<Consumer<H>, M> runningHook = new ValueParam<>((M) this, (Consumer<H> & Serializable) h -> {},
+            "runningHook", "Running hook");
+
+    protected String[] inputNames;
+    protected VarType[] inputTypes;
+    protected boolean learned = false;
 
     /**
      * Creates a new clustering instance with the same parameters as the original.
@@ -38,28 +74,30 @@ public interface ClusteringModel extends Printable {
      *
      * @return new parametrized instance
      */
-    ClusteringModel newInstance();
+    public abstract ClusteringModel<M, R, H> newInstance();
 
     /**
      * Returns the clustering algorithm name.
      *
      * @return clustering name
      */
-    String name();
+    public abstract String name();
 
     /**
      * Builds a string which contains the clustering instance name and parameters.
      *
      * @return clustering algorithm name and parameters
      */
-    String fullName();
+    public String fullName() {
+        return name() + '{' + getStringParameterValues(true) + '}';
+    }
 
     /**
      * Describes the clustering algorithm
      *
      * @return capabilities of the clustering algorithm
      */
-    default Capabilities capabilities() {
+    public Capabilities capabilities() {
         return null;
     }
 
@@ -68,7 +106,9 @@ public interface ClusteringModel extends Printable {
      *
      * @return input variable names
      */
-    String[] inputNames();
+    public String[] inputNames() {
+        return inputNames;
+    }
 
     /**
      * Shortcut method which returns input variable name at the given position
@@ -76,7 +116,7 @@ public interface ClusteringModel extends Printable {
      * @param pos given position
      * @return variable name
      */
-    default String inputName(int pos) {
+    public String inputName(int pos) {
         return inputNames()[pos];
     }
 
@@ -85,7 +125,9 @@ public interface ClusteringModel extends Printable {
      *
      * @return array of input variable types
      */
-    VarType[] inputTypes();
+    public VarType[] inputTypes() {
+        return inputTypes;
+    }
 
     /**
      * Shortcut method which returns the type of the input variable at the given position
@@ -93,14 +135,16 @@ public interface ClusteringModel extends Printable {
      * @param pos given position
      * @return variable type
      */
-    default VarType inputType(int pos) {
+    public VarType inputType(int pos) {
         return inputTypes()[pos];
     }
 
     /**
      * @return true if the algorithm was fitted successfully
      */
-    boolean hasLearned();
+    public boolean hasLearned() {
+        return learned;
+    }
 
     /**
      * Fit a clustering model on instances specified by frame, with row weights
@@ -108,7 +152,9 @@ public interface ClusteringModel extends Printable {
      *
      * @param df data set instances
      */
-    ClusteringModel fit(Frame df);
+    public M fit(Frame df) {
+        return fit(df, VarDouble.fill(df.rowCount(), 1));
+    }
 
     /**
      * Fit a clustering on instances specified by frame, with row weights and targetNames
@@ -116,7 +162,11 @@ public interface ClusteringModel extends Printable {
      * @param df      predict frame
      * @param weights instance weights
      */
-    ClusteringModel fit(Frame df, Var weights);
+    public M fit(Frame df, Var weights) {
+        FitSetup fitSetup = prepareFit(df, weights);
+        return coreFit(fitSetup.df, fitSetup.weights);
+    }
+
 
     /**
      * Predict clusters for new data set instances, with
@@ -124,7 +174,7 @@ public interface ClusteringModel extends Printable {
      *
      * @param df data set instances
      */
-    default <R extends ClusteringResult> R predict(Frame df) {
+    public R predict(Frame df) {
         return predict(df, true);
     }
 
@@ -134,5 +184,23 @@ public interface ClusteringModel extends Printable {
      * @param df         frame instances
      * @param withScores generate classes
      */
-    <R extends ClusteringResult> R predict(Frame df, boolean withScores);
+    public R predict(Frame df, boolean withScores) {
+        return corePredict(df, withScores);
+    }
+
+    public FitSetup prepareFit(Frame df, Var weights) {
+        List<String> inputs = Arrays.asList(df.varNames());
+        this.inputNames = inputs.toArray(new String[0]);
+        this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
+
+        capabilities().checkAtLearnPhase(df, weights);
+        return new FitSetup(df, weights);
+    }
+
+    public abstract M coreFit(Frame df, Var weights);
+
+    public abstract R corePredict(Frame df, boolean withScores);
+
+    private record FitSetup(Frame df, Var weights) {
+    }
 }

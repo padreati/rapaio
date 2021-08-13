@@ -26,8 +26,9 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
-import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.classifier.tree.ctree.Candidate;
 import rapaio.ml.classifier.tree.ctree.Node;
 import rapaio.ml.classifier.tree.ctree.Pruning;
@@ -61,7 +62,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> implements Printable, ParametricEquals<CTree> {
+public class CTree extends ClassifierModel<CTree, ClassifierResult, DefaultHookInfo> implements Printable, ParametricEquals<CTree> {
 
     public static CTree newID3() {
         return new CTree()

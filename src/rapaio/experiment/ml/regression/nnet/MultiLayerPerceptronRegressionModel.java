@@ -26,8 +26,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -43,7 +43,9 @@ import static rapaio.printer.Format.floatFlex;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel<MultiLayerPerceptronRegressionModel, RegressionResult> implements Printable {
+public class MultiLayerPerceptronRegressionModel
+        extends RegressionModel<MultiLayerPerceptronRegressionModel, RegressionResult, DefaultHookInfo>
+        implements Printable {
 
     @Serial
     private static final long serialVersionUID = -7855492977246862795L;
@@ -101,7 +103,7 @@ public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel
     }
 
     @Override
-    public RegressionModel newInstance() {
+    public MultiLayerPerceptronRegressionModel newInstance() {
         return new MultiLayerPerceptronRegressionModel(layerSizes);
     }
 
@@ -112,13 +114,11 @@ public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel
 
     @Override
     public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{");
-        sb.append("function=").append(function.name()).append(", ");
-        sb.append("learningRate=").append(floatFlex(learningRate)).append(", ");
-        sb.append("layerSizes=").append(Arrays.deepToString(Arrays.stream(layerSizes).boxed().toArray()));
-        sb.append("}");
-        return sb.toString();
+        return name() + "{"
+                + "function=" + function.name() + ", "
+                + "learningRate=" + floatFlex(learningRate) + ", "
+                + "layerSizes=" + Arrays.deepToString(Arrays.stream(layerSizes).boxed().toArray())
+                + "}";
     }
 
     @Override

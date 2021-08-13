@@ -26,7 +26,8 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
-import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -39,7 +40,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class ConstantRegression extends AbstractRegressionModel<ConstantRegression, RegressionResult> {
+public class ConstantRegression extends RegressionModel<ConstantRegression, RegressionResult, DefaultHookInfo> {
 
     @Serial
     private static final long serialVersionUID = -2537862585258148528L;

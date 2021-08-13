@@ -44,7 +44,7 @@ import java.util.Map;
  */
 public class ClassifierResult implements Printable {
 
-    private final ClassifierModel model;
+    private final ClassifierModel<?, ?, ?> model;
     private final Frame df;
     private final List<String> targetNames = new ArrayList<>();
     private final boolean hasClasses;
@@ -55,11 +55,11 @@ public class ClassifierResult implements Printable {
 
     // builder
 
-    public static ClassifierResult build(ClassifierModel model, Frame df, boolean withClasses, boolean withDensities) {
+    public static ClassifierResult build(ClassifierModel<?, ?, ?> model, Frame df, boolean withClasses, boolean withDensities) {
         return new ClassifierResult(model, df, withClasses, withDensities);
     }
 
-    public static ClassifierResult copy(ClassifierModel model, Frame df, boolean withClasses, boolean withDensities, ClassifierResult from) {
+    public static ClassifierResult copy(ClassifierModel<?, ?, ?> model, Frame df, boolean withClasses, boolean withDensities, ClassifierResult from) {
         ClassifierResult result = new ClassifierResult(model, df, withClasses, withDensities);
         for (String key : result.classes.keySet()) {
             result.classes.put(key, from.classes.get(key));
@@ -72,7 +72,7 @@ public class ClassifierResult implements Printable {
 
     // private constructor
 
-    private ClassifierResult(final ClassifierModel model, final Frame df, final boolean hasClasses, final boolean hasDensities) {
+    private ClassifierResult(final ClassifierModel<?, ?, ?> model, final Frame df, final boolean hasClasses, final boolean hasDensities) {
         this.model = model;
         this.df = df;
         this.hasClasses = hasClasses;
@@ -91,7 +91,7 @@ public class ClassifierResult implements Printable {
         }
     }
 
-    public ClassifierModel getModel() {
+    public ClassifierModel<?, ?, ?> getModel() {
         return model;
     }
 

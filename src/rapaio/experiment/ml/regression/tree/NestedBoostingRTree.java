@@ -30,7 +30,8 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
-import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -42,8 +43,8 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/19.
  */
-public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingRTree, RegressionResult>
-        implements GBTRtree<NestedBoostingRTree, RegressionResult> {
+public class NestedBoostingRTree
+        extends GBTRtree<NestedBoostingRTree, RegressionResult, DefaultHookInfo> {
 
     @Serial
     private static final long serialVersionUID = 1864784340491461993L;

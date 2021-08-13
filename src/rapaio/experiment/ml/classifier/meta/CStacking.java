@@ -26,9 +26,9 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
@@ -48,23 +48,23 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
-public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResult> implements Printable {
+public class CStacking extends ClassifierModel<CStacking, ClassifierResult, DefaultHookInfo> implements Printable {
 
     @Serial
     private static final long serialVersionUID = -9087871586729573030L;
 
     private static final Logger logger = Logger.getLogger(CStacking.class.getName());
 
-    private final List<ClassifierModel> weaks = new ArrayList<>();
-    private ClassifierModel stacker = CForest.newModel();
+    private final List<ClassifierModel<?, ?, ?>> weaks = new ArrayList<>();
+    private ClassifierModel<?, ?, ?> stacker = CForest.newModel();
 
-    public CStacking withLearners(ClassifierModel... learners) {
+    public CStacking withLearners(ClassifierModel<?, ?, ?>... learners) {
         weaks.clear();
         Collections.addAll(weaks, learners);
         return this;
     }
 
-    public CStacking withStacker(ClassifierModel stacker) {
+    public CStacking withStacker(ClassifierModel<?, ?, ?> stacker) {
         this.stacker = stacker;
         return this;
     }
@@ -83,9 +83,7 @@ public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResu
 
     @Override
     public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("CStacking{stacker=").append(stacker.fullName()).append(";");
-        return sb.toString();
+        return "CStacking{stacker=" + stacker.fullName() + ";";
     }
 
     @Override

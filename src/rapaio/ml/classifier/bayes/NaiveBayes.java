@@ -26,8 +26,9 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.classifier.bayes.nb.Estimator;
 import rapaio.ml.classifier.bayes.nb.Prior;
 import rapaio.ml.classifier.bayes.nb.PriorMLE;
@@ -53,7 +54,7 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierResult> implements Printable {
+public class NaiveBayes extends ClassifierModel<NaiveBayes, ClassifierResult, DefaultHookInfo> implements Printable {
 
     public static NaiveBayes newModel() {
         return new NaiveBayes();
@@ -99,12 +100,10 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
 
     @Override
     public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{prior=").append(prior.get().fittedName()).append(",");
-        sb.append("estimators=[")
-                .append(estimators.get().stream().map(Estimator::fittedName).collect(Collectors.joining(",")))
-                .append("]}");
-        return sb.toString();
+        return name() + "{prior=" + prior.get().fittedName() + ","
+                + "estimators=["
+                + estimators.get().stream().map(Estimator::fittedName).collect(Collectors.joining(","))
+                + "]}";
     }
 
     @Override
