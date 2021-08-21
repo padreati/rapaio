@@ -19,10 +19,13 @@
  *
  */
 
-package rapaio.experiment.ml.clustering;
+package rapaio.ml.eval;
 
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Var;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
+import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -32,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Computes cluster silhouette information based
@@ -46,17 +50,27 @@ import java.util.Map;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/13/17.
  */
-public class ClusterSilhouette implements Printable {
+public class ClusterSilhouette extends ParamSet<ClusterSilhouette> implements Printable {
 
-    public static ClusterSilhouette from(Var asgn, DistanceMatrix d, boolean similarity) {
-        return new ClusterSilhouette(asgn, d, similarity);
+    public static ClusterSilhouette newSilhouette() {
+        return new ClusterSilhouette();
     }
 
-    private final Var assignment;
-    private final DistanceMatrix d;
-    private final boolean similarity; // true is similarity, false if distance
+    public static ClusterSilhouette from(Var assignment, DistanceMatrix dm, boolean similarity) {
+        return new ClusterSilhouette()
+                .assignment.set(assignment)
+                .distanceMatrix.set(dm)
+                .similarity.set(similarity);
+    }
 
-    private boolean debug = false;
+    public final ValueParam<Var, ClusterSilhouette> assignment = new ValueParam<>(this, null,
+            "cluster assignment", "Cluster assignment", Objects::nonNull);
+
+    public final ValueParam<DistanceMatrix, ClusterSilhouette> distanceMatrix = new ValueParam<>(this, null,
+            "distance matrix", "Distance matrix", Objects::nonNull);
+
+    public final ValueParam<Boolean, ClusterSilhouette> similarity = new ValueParam<>(this, null,
+            "similarity function", "Similarity function (true) or disimilarity function (false)", Objects::nonNull);
 
     // artifacts
 
@@ -67,39 +81,57 @@ public class ClusterSilhouette implements Printable {
 
     private final Map<String, Integer> clusterIndex = new HashMap<>();
     private String[] clusterIds;
-    private double[] clusterScore;
+    private double[] clusterScores;
     private double overallScore;
 
     private List<Integer> clusterOrder;
     private List<List<Integer>> instanceOrder;
 
-    private ClusterSilhouette(Var assignment, DistanceMatrix d, boolean similarity) {
-        this.assignment = assignment;
-        this.d = d;
-        this.similarity = similarity;
-
-        compute();
+    public int getClusterCount() {
+        return clusterIndex.size();
     }
 
-    public ClusterSilhouette withDebug(boolean debug) {
-        this.debug = debug;
-        return this;
+    public String[] getClusterLabels() {
+        return clusterIds;
+    }
+
+    public double[] getClusterScores() {
+        return clusterScores;
+    }
+
+    public double[] getScores() {
+        return s;
+    }
+
+    public double getAverageClusterScore() {
+        return overallScore;
+    }
+
+    public List<Integer> getClusterOrder() {
+        return clusterOrder;
+    }
+
+    public List<List<Integer>> getInstanceOrder() {
+        return instanceOrder;
     }
 
     private int getCluster(int row) {
-        return clusterIndex.get(assignment.getLabel(row));
+        return clusterIndex.get(assignment.get().getLabel(row));
     }
 
-    private void compute() {
-        int len = d.length();
+    public ClusterSilhouette compute() {
+        if (assignment.get().size() != distanceMatrix.get().length()) {
+            throw new IllegalArgumentException("Assignment and distance matrix sizes does not match.");
+        }
 
-        for (int i = 0; i < assignment.size(); i++) {
-            if (assignment.isMissing(i)) {
+        for (int i = 0; i < assignment.get().size(); i++) {
+            if (assignment.get().isMissing(i)) {
                 throw new IllegalArgumentException("Assignment variable contains missing data");
             }
-            String clusterId = assignment.getLabel(i);
-            if (clusterIndex.containsKey(clusterId))
+            String clusterId = assignment.get().getLabel(i);
+            if (clusterIndex.containsKey(clusterId)) {
                 continue;
+            }
             clusterIndex.put(clusterId, clusterIndex.size());
         }
         clusterIds = new String[clusterIndex.size()];
@@ -109,12 +141,12 @@ public class ClusterSilhouette implements Printable {
 
         int clusters = clusterIds.length;
         if (clusters == 1) {
-            throw new IllegalArgumentException("Silhouettes cannot be computed for a signle cluster.");
+            throw new IllegalArgumentException("Silhouettes cannot be computed for a single cluster.");
         }
 
         // compute individual a and b vectors
 
-        int rows = d.length();
+        int rows = distanceMatrix.get().length();
 
         a = new double[rows];
         b = new double[rows];
@@ -133,7 +165,7 @@ public class ClusterSilhouette implements Printable {
                 }
                 int cluster = getCluster(i);
                 count[cluster]++;
-                sum[cluster] += d.get(row, i);
+                sum[cluster] += distanceMatrix.get().get(row, i);
             }
 
             int cluster = getCluster(row);
@@ -146,7 +178,7 @@ public class ClusterSilhouette implements Printable {
                     b[row] = sum[i] / count[i];
                     n[row] = i;
                 } else {
-                    if (similarity) {
+                    if (similarity.get()) {
                         if ((sum[i] / count[i]) > b[row]) {
                             b[row] = sum[i] / count[i];
                             n[row] = i;
@@ -180,9 +212,9 @@ public class ClusterSilhouette implements Printable {
             tcount++;
             tsum += s[i];
         }
-        clusterScore = new double[clusters];
+        clusterScores = new double[clusters];
         for (int i = 0; i < clusters; i++) {
-            clusterScore[i] = count[i] == 0 ? 0 : sum[i] / count[i];
+            clusterScores[i] = count[i] == 0 ? 0 : sum[i] / count[i];
         }
         overallScore = tsum / tcount;
 
@@ -192,7 +224,7 @@ public class ClusterSilhouette implements Printable {
         for (int i = 0; i < clusters; i++) {
             clusterOrder.add(i);
         }
-        clusterOrder.sort((o1, o2) -> -1 * Double.compare(clusterScore[o1], clusterScore[o2]));
+        clusterOrder.sort((o1, o2) -> -1 * Double.compare(clusterScores[o1], clusterScores[o2]));
 
         // build instance order
 
@@ -207,35 +239,66 @@ public class ClusterSilhouette implements Printable {
             instances.sort((o1, o2) -> -1 * Double.compare(s[o1], s[o2]));
             instanceOrder.add(instances);
         }
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "ClusterSilhouette{clusters:" + getClusterCount() + ", "
+                + "overall score: " + Format.floatFlex(getAverageClusterScore()) + "}";
     }
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
+        addHeader(sb);
+        addClusterAverages(sb);
+        return sb.toString();
+    }
+
+    private void addHeader(StringBuilder sb) {
         sb.append("Cluster silhouette summary\n");
         sb.append("==========================\n");
         sb.append("\n");
+    }
 
-        if (debug) {
-            for (int i = 0; i < clusterOrder.size(); i++) {
-                int cluster = clusterOrder.get(i);
-                for (int row : instanceOrder.get(i)) {
-                    sb.append(clusterIds[cluster]).append(" ");
-                    sb.append(clusterIds[n[row]]).append(" ");
-                    sb.append(String.format("%.2f ", s[row]));
-                    sb.append(d.name(row)).append(" ");
-                    sb.append("\n");
-                }
+    private void addClusterAverages(StringBuilder sb) {
+        for (int cluster : clusterOrder) {
+            sb.append("Cluster ")
+                    .append(clusterIds[cluster])
+                    .append(" has average silhouette width: ")
+                    .append(clusterScores[cluster])
+                    .append("\n");
+        }
+        sb.append("\n");
+    }
+
+    @Override
+    public String toContent(Printer printer, POption<?>... options) {
+        return toSummary(printer, options);
+    }
+
+    @Override
+    public String toFullContent(Printer printer, POption<?>... options) {
+        StringBuilder sb = new StringBuilder();
+        addHeader(sb);
+        addInstanceDetails(sb);
+        addClusterAverages(sb);
+        return sb.toString();
+    }
+
+    private void addInstanceDetails(StringBuilder sb) {
+        for (int i = 0; i < clusterOrder.size(); i++) {
+            int cluster = clusterOrder.get(i);
+            for (int row : instanceOrder.get(i)) {
+                sb.append(clusterIds[cluster]).append(" ");
+                sb.append(clusterIds[n[row]]).append(" ");
+                sb.append(String.format("%5.2f ", s[row]));
+                sb.append(distanceMatrix.get().name(row)).append(" ");
                 sb.append("\n");
             }
             sb.append("\n");
         }
-
-        for (int cluster : clusterOrder) {
-            sb.append("Cluster ").append(clusterIds[cluster]).append(" has average silhouette width: ").append(clusterScore[cluster]).append("\n");
-        }
         sb.append("\n");
-
-        return sb.toString();
     }
 }

@@ -23,6 +23,13 @@ package rapaio.core.tools;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.function.BiFunction;
+import java.util.stream.IntStream;
+
+import rapaio.math.linear.DMatrix;
+import rapaio.util.function.IntInt2DoubleBiFunction;
+import rapaio.util.function.SBiFunction;
 
 /**
  * Holds a matrix with distances between instances for a given metric.
@@ -40,7 +47,18 @@ public class DistanceMatrix implements Serializable {
     @Serial
     private static final long serialVersionUID = 1663354103398810554L;
 
+    public static DistanceMatrix empty(int length) {
+        if (length < 1) {
+            throw new IllegalArgumentException("Length must be positive.");
+        }
+        String[] names = IntStream.range(0, length).mapToObj(String::valueOf).toArray(String[]::new);
+        return new DistanceMatrix(names);
+    }
+
     public static DistanceMatrix empty(String[] names) {
+        if (names == null || names.length == 0) {
+            throw new IllegalArgumentException("Length must be positive.");
+        }
         return new DistanceMatrix(names);
     }
 
@@ -75,9 +93,24 @@ public class DistanceMatrix implements Serializable {
     }
 
     public double get(int i, int j) {
-        if (j > i)
+        if (j > i) {
             return get(j, i);
+        }
         int pos = i * (i + 1) / 2 + j;
         return values[pos];
+    }
+
+    public DistanceMatrix fill(IntInt2DoubleBiFunction fillFunction) {
+        for (int i = 0; i < length(); i++) {
+            for (int j = i; j < length(); j++) {
+                double value = fillFunction.applyIntIntAsDouble(i, j);
+                set(i, j, value);
+            }
+        }
+        return this;
+    }
+
+    public DMatrix toDMatrix() {
+        return DMatrix.fill(length(), length(), this::get);
     }
 }
