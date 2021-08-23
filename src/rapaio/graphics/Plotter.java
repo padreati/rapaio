@@ -74,6 +74,7 @@ import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Text;
 import rapaio.math.linear.DMatrix;
+import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -224,6 +225,10 @@ public final class Plotter {
 
     public static Plot isoBands(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
         return plot().add(new IsoCurves(grid, false, true, gradient, levels, opts));
+    }
+
+    public static Plot silhouette(ClusterSilhouette silhouette, GOption<?>... opts) {
+        return plot().silhouette(silhouette, opts);
     }
 
     public static GridLayer scatters(Frame df, GOption<?>... opts) {

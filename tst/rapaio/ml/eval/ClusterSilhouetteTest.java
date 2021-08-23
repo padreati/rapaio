@@ -25,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import static rapaio.graphics.Plotter.horizontal;
+import static rapaio.graphics.Plotter.plot;
+
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.tools.DistanceMatrix;
@@ -32,8 +35,11 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.Plotter;
+import rapaio.graphics.plot.artist.SilhouetteArtist;
 import rapaio.ml.clustering.kmeans.KMeans;
 import rapaio.ml.clustering.kmeans.KMeansResult;
+import rapaio.sys.WS;
 
 public class ClusterSilhouetteTest {
 
@@ -170,28 +176,6 @@ Cluster 2 has average silhouette width: 0.23636384893740545
                 Cluster 2 has average silhouette width: 0.23636384893740545
 
                                 """, cs2.toFullContent());
-
-    }
-
-    @Test
-    void irisTest() {
-        Frame df = Datasets.loadIrisDataset().removeVars("class");
-
-        KMeans kMeans = KMeans.newModel().k.set(2).space.set(new KMeans.L2());
-        kMeans.fit(df);
-        KMeansResult prediction = kMeans.predict(df);
-        VarInt assignment = prediction.getAssignment();
-
-        DistanceMatrix dm = DistanceMatrix.empty(df.rowCount()).fill((i, j) -> {
-            double sum = 0;
-            for (int k = 0; k < df.varCount(); k++) {
-                double delta = df.getDouble(i, k) - df.getDouble(j, k);
-                sum += delta * delta;
-            }
-            return Math.sqrt(sum);
-        });
-        ClusterSilhouette silhouette = ClusterSilhouette.from(assignment, dm, false).compute();
-        silhouette.printFullContent();
     }
 
     @Test

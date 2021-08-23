@@ -23,6 +23,7 @@ package rapaio.graphics;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.correlation.CorrSpearman;
 import rapaio.core.distributions.Distribution;
@@ -36,23 +37,30 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
 import rapaio.data.filter.VApply;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
+import rapaio.graphics.plot.artist.SilhouetteArtist;
 import rapaio.graphics.plot.artist.Text;
 import rapaio.image.ImageTools;
+import rapaio.ml.clustering.kmeans.KMeans;
+import rapaio.ml.clustering.kmeans.KMeansResult;
+import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.sys.WS;
 
 import javax.imageio.ImageIO;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static rapaio.graphics.Plotter.*;
 
 /**
@@ -70,7 +78,7 @@ import static rapaio.graphics.Plotter.*;
 public class ImageGraphicsTest {
 
     private static final boolean regenerate = false;
-    private static final String root = "/home/ati/work/rapaio/tst";
+    private static final String root = "/home/ati/rapaio/rapaio/tst";
 
     private Frame df;
 
@@ -260,6 +268,29 @@ public class ImageGraphicsTest {
         plot.text(0.8, 0.9, "Ana\nAre\nMere", hAlign(HALIGN_RIGHT), color(4));
 
         assertTest(plot, "text-test");
+    }
+
+    @Test
+    void testSilhouette() throws IOException {
+        Frame df = Datasets.loadIrisDataset().removeVars("class");
+
+        KMeans kMeans = KMeans.newModel().k.set(2).space.set(new KMeans.L2());
+        kMeans.fit(df);
+        KMeansResult prediction = kMeans.predict(df);
+        VarInt assignment = prediction.getAssignment();
+
+        DistanceMatrix dm = DistanceMatrix.empty(df.rowCount()).fill((i, j) -> {
+            double sum = 0;
+            for (int k = 0; k < df.varCount(); k++) {
+                double delta = df.getDouble(i, k) - df.getDouble(j, k);
+                sum += delta * delta;
+            }
+            return Math.sqrt(sum);
+        });
+        ClusterSilhouette silhouette = ClusterSilhouette.from(assignment, dm, false).compute();
+        silhouette.printFullContent();
+
+        assertTest(silhouette(silhouette, horizontal(true)), "silhouette-test");
     }
 
     @Test

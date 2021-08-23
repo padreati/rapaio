@@ -50,8 +50,10 @@ import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment;
+import rapaio.graphics.plot.artist.SilhouetteArtist;
 import rapaio.graphics.plot.artist.Text;
 import rapaio.math.linear.DMatrix;
+import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -528,6 +530,11 @@ public class Plot implements Figure {
 
     public Plot matrix(DMatrix m, GOption<?>... opts) {
         add(new Matrix(m, opts));
+        return this;
+    }
+
+    public Plot silhouette(ClusterSilhouette silhouette, GOption<?>... opts) {
+        add(new SilhouetteArtist(silhouette, opts));
         return this;
     }
 }
