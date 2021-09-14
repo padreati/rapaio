@@ -32,12 +32,12 @@ import java.io.Serial;
  */
 public class VSort implements VFilter {
 
-    public static VSort asc() {
-        return asc(true);
+    public static VSort ascending() {
+        return new VSort(true);
     }
 
-    public static VSort asc(boolean ascending) {
-        return new VSort(ascending);
+    public static VSort descending() {
+        return new VSort(false);
     }
 
     @Serial

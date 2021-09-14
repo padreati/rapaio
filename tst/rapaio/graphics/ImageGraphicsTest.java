@@ -44,11 +44,10 @@ import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
-import rapaio.graphics.plot.artist.SilhouetteArtist;
 import rapaio.graphics.plot.artist.Text;
 import rapaio.image.ImageTools;
-import rapaio.ml.clustering.kmeans.KMeans;
-import rapaio.ml.clustering.kmeans.KMeansResult;
+import rapaio.ml.clustering.km.KMCluster;
+import rapaio.ml.clustering.km.KMClusterResult;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.sys.WS;
@@ -274,9 +273,9 @@ public class ImageGraphicsTest {
     void testSilhouette() throws IOException {
         Frame df = Datasets.loadIrisDataset().removeVars("class");
 
-        KMeans kMeans = KMeans.newModel().k.set(2).space.set(new KMeans.L2());
+        KMCluster kMeans = KMCluster.newKMeans().k.set(2).method.set(KMCluster.KMeans);
         kMeans.fit(df);
-        KMeansResult prediction = kMeans.predict(df);
+        KMClusterResult prediction = kMeans.predict(df);
         VarInt assignment = prediction.getAssignment();
 
         DistanceMatrix dm = DistanceMatrix.empty(df.rowCount()).fill((i, j) -> {

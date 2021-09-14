@@ -25,21 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static rapaio.graphics.Plotter.horizontal;
-import static rapaio.graphics.Plotter.plot;
-
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.tools.DistanceMatrix;
-import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
-import rapaio.graphics.plot.artist.SilhouetteArtist;
-import rapaio.ml.clustering.kmeans.KMeans;
-import rapaio.ml.clustering.kmeans.KMeansResult;
-import rapaio.sys.WS;
 
 public class ClusterSilhouetteTest {
 

@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.ml.clustering.kmeans;
+package rapaio.ml.clustering.km;
 
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
@@ -30,6 +30,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarType;
+import rapaio.data.filter.VSort;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.clustering.ClusteringModel;
@@ -44,6 +45,7 @@ import java.io.Serial;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 /**
@@ -51,13 +53,19 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInfo> {
+public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, DefaultHookInfo> {
 
-    public static KMeans newModel() {
-        return new KMeans();
+    public static KMCluster newKMeans() {
+        return new KMCluster()
+                .method.set(KMeans);
     }
 
-    public interface Space {
+    public static KMCluster newKMedians() {
+        return new KMCluster()
+                .method.set(KMedians);
+    }
+
+    public interface Method {
 
         /**
          * Computes the distance between two observation vectors
@@ -77,9 +85,11 @@ public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInf
          * @return error contributed by this observation
          */
         double observationError(DVector c, DVector v);
+
+        void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment);
     }
 
-    public static class L2 implements Space {
+    public static Method KMeans = new Method() {
 
         @Override
         public double distance(DVector u, DVector v) {
@@ -100,16 +110,75 @@ public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInf
             }
             return distance;
         }
-    }
+
+        public void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment) {
+
+            // we compute mean for each feature separately
+            for (int j = 0; j < instances.colCount(); j++) {
+                // collect values for each cluster in mean, for a given input feature
+                Var[] means = IntStream.range(0, k).mapToObj(i -> VarDouble.empty()).toArray(VarDouble[]::new);
+                for (int i = 0; i < instances.rowCount(); i++) {
+                    means[assignment[i]].addDouble(instances.get(i, j));
+                }
+                for (int i = 0; i < k; i++) {
+                    c.set(i, j, Mean.of(means[i]).value());
+                }
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "KMeans";
+        }
+    };
+
+    public static Method KMedians = new Method() {
+
+        @Override
+        public double distance(DVector u, DVector v) {
+            double distance = 0;
+            for (int i = 0; i < u.size(); i++) {
+                distance += Math.abs(u.get(i) - v.get(i));
+            }
+            return distance;
+        }
+
+        @Override
+        public double observationError(DVector u, DVector v) {
+            return distance(u, v);
+        }
+
+        public void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment) {
+
+            // we compute mean for each feature separately
+            for (int j = 0; j < instances.colCount(); j++) {
+                // collect values for each cluster in mean, for a given input feature
+                Var[] means = IntStream.range(0, k).mapToObj(i -> VarDouble.empty()).toArray(VarDouble[]::new);
+                for (int i = 0; i < instances.rowCount(); i++) {
+                    means[assignment[i]].addDouble(instances.get(i, j));
+                }
+                for (int i = 0; i < k; i++) {
+                    Var sorted = means[i].apply(VSort.ascending());
+                    c.set(i, j, sorted.getDouble(sorted.size() / 2));
+                }
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "KMedians";
+        }
+    };
 
     @Serial
     private static final long serialVersionUID = -1046184364541391871L;
 
-    public final ValueParam<Integer, KMeans> k = new ValueParam<>(this, 2, "k", "number of clusters");
-    public final ValueParam<Integer, KMeans> nstart = new ValueParam<>(this, 1, "nstart", "Number of restarts", n -> n != null && n > 0);
-    public final ValueParam<KMeansInit, KMeans> init = new ValueParam<>(this, KMeansInit.Forgy, "init", "Initialization algorithm");
-    public final ValueParam<Space, KMeans> space = new ValueParam<>(this, new L2(), "L2 space", "L2 space");
-    public final ValueParam<Double, KMeans> eps = new ValueParam<>(this, 1e-20, "eps", "Tolerance for convergence measures");
+    public final ValueParam<Integer, KMCluster> k = new ValueParam<>(this, null, "k", "number of clusters", Objects::nonNull);
+    public final ValueParam<Integer, KMCluster> nstart = new ValueParam<>(this, 1, "nstart", "Number of restarts", n -> n != null && n > 0);
+    public final ValueParam<KMClusterInit, KMCluster> init =
+            new ValueParam<>(this, KMClusterInit.Forgy, "init", "Initialization algorithm");
+    public final ValueParam<Method, KMCluster> method = new ValueParam<>(this, null, "method", "method: kmeans, kmedians", Objects::nonNull);
+    public final ValueParam<Double, KMCluster> eps = new ValueParam<>(this, 1e-20, "eps", "Tolerance for convergence measures");
 
     // clustering artifacts
 
@@ -118,13 +187,13 @@ public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInf
     private VarDouble errors;
 
     @Override
-    public KMeans newInstance() {
-        return new KMeans().copyParameterValues(this);
+    public KMCluster newInstance() {
+        return new KMCluster().copyParameterValues(this);
     }
 
     @Override
     public String name() {
-        return "KMeans";
+        return "KMCluster";
     }
 
     public Frame getCentroids() {
@@ -135,7 +204,7 @@ public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInf
         return errors;
     }
 
-    public double getInertia() {
+    public double getError() {
         return errors.size() == 0 ? Double.NaN : errors.getDouble(errors.size() - 1);
     }
 
@@ -151,7 +220,7 @@ public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInf
     }
 
     @Override
-    public KMeans coreFit(Frame initialDf, Var weights) {
+    public KMCluster coreFit(Frame initialDf, Var weights) {
 
         DMatrix m = DMatrix.copy(initialDf);
         c = initializeClusters(m);
@@ -159,13 +228,13 @@ public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInf
         int[] assignment = IntArrays.newFill(m.rowCount(), -1);
         errors = VarDouble.empty().name("errors");
 
-        assignToCentroids(m, assignment);
+        assignToCentroids(m, assignment, true);
         repairEmptyClusters(m, assignment);
 
         int rounds = runs.get();
         while (rounds-- > 0) {
-            recomputeCentroids(m, assignment);
-            assignToCentroids(m, assignment);
+            method.get().recomputeCentroids(k.get(), c, m, assignment);
+            assignToCentroids(m, assignment, true);
             repairEmptyClusters(m, assignment);
 
             if (runningHook != null) {
@@ -184,14 +253,14 @@ public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInf
     }
 
     private DMatrix initializeClusters(DMatrix m) {
-        DMatrix bestCentroids = init.get().init(space.get(), m, k.get());
+        DMatrix bestCentroids = init.get().init(method.get(), m, k.get());
         double bestError = computeInitError(m, bestCentroids);
 
         // compute initial restarts if nstart is greater than 1
         // the best restart is kept as initial centroids
 
         for (int i = 1; i < nstart.get(); i++) {
-            DMatrix nextCentroids = init.get().init(space.get(), m, k.get());
+            DMatrix nextCentroids = init.get().init(method.get(), m, k.get());
             double nextError = computeInitError(m, nextCentroids);
             if (nextError < bestError) {
                 bestCentroids = nextCentroids;
@@ -206,50 +275,37 @@ public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInf
         for (int i = 0; i < m.rowCount(); i++) {
             DVector mrow = m.mapRow(i);
             int cluster = findClosestCentroid(mrow, centroids);
-            sum += space.get().observationError(centroids.mapRow(cluster), mrow);
+            sum += method.get().observationError(centroids.mapRow(cluster), mrow);
         }
         return sum;
     }
 
-    private void assignToCentroids(DMatrix m, int[] assignment) {
+    private void assignToCentroids(DMatrix m, int[] assignment, boolean withErrors) {
         double totalError = 0.0;
         for (int i = 0; i < m.rowCount(); i++) {
             DVector row = m.mapRow(i);
             int cluster = findClosestCentroid(row, c);
-            totalError += space.get().observationError(c.mapRow(cluster), row);
+            if (withErrors) {
+                totalError += method.get().observationError(c.mapRow(cluster), row);
+            }
             assignment[i] = cluster;
         }
-        errors.addDouble(totalError);
+        if (withErrors) {
+            errors.addDouble(totalError);
+        }
     }
 
     private int findClosestCentroid(DVector mrow, DMatrix centroids) {
         int cluster = 0;
-        double d = space.get().distance(mrow, centroids.mapRow(0));
+        double d = method.get().distance(mrow, centroids.mapRow(0));
         for (int j = 1; j < centroids.rowCount(); j++) {
-            double dd = space.get().distance(mrow, centroids.mapRow(j));
+            double dd = method.get().distance(mrow, centroids.mapRow(j));
             if (d > dd) {
                 d = dd;
                 cluster = j;
             }
         }
         return cluster;
-    }
-
-    private void recomputeCentroids(DMatrix m, int[] assignment) {
-
-        // we compute mean for each feature separately
-        for (int j = 0; j < m.colCount(); j++) {
-            // collect values for each cluster in mean, for a given input feature
-            Var[] means = IntStream.range(0, k.get()).boxed()
-                    .map(i -> VarDouble.empty())
-                    .toArray(VarDouble[]::new);
-            for (int i = 0; i < m.rowCount(); i++) {
-                means[assignment[i]].addDouble(m.get(i, j));
-            }
-            for (int i = 0; i < k.get(); i++) {
-                c.set(i, j, Mean.of(means[i]).value());
-            }
-        }
     }
 
     private void repairEmptyClusters(DMatrix df, int[] assignment) {
@@ -311,7 +367,7 @@ public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInf
         // the stopping criterion is given by a bound on error or a
         // maximum iteration
 
-        recomputeCentroids(df, assignment);
+        method.get().recomputeCentroids(k.get(), c, df, assignment);
     }
 
     private boolean checkIfEqual(DMatrix centroids, int c, DMatrix df, int i) {
@@ -325,11 +381,11 @@ public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInf
     }
 
     @Override
-    public KMeansResult corePredict(Frame df, boolean withScores) {
+    public KMClusterResult corePredict(Frame df, boolean withScores) {
         int[] assignment = IntArrays.newFill(df.rowCount(), -1);
         DMatrix m = DMatrix.copy(df);
-        assignToCentroids(m, assignment);
-        return KMeansResult.valueOf(this, df, VarInt.wrap(assignment));
+        assignToCentroids(m, assignment, false);
+        return KMClusterResult.valueOf(this, df, VarInt.wrap(assignment));
     }
 
     @Override
@@ -343,7 +399,7 @@ public class KMeans extends ClusteringModel<KMeans, KMeansResult, DefaultHookInf
         sb.append(fullName()).append("\n");
         sb.append("Model fitted=").append(hasLearned()).append("\n");
         if (learned) {
-            sb.append("Inertia:").append(getInertia()).append("\n");
+            sb.append("Inertia:").append(getError()).append("\n");
             sb.append("Iterations:").append(errors.size()).append("\n");
             sb.append("Learned clusters:").append(centroids.rowCount()).append("\n");
         }

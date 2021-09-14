@@ -489,7 +489,7 @@ public class Plot implements Figure {
     }
 
     public Plot qqplot(Var points, Distribution distribution, GOption<?>... opts) {
-        Var x = VSort.asc().fapply(points);
+        Var x = VSort.ascending().fapply(points);
         Var y = VarDouble.empty(x.size());
         for (int i = 0; i < y.size(); i++) {
             double p = (i + 1) / (y.size() + 1.);

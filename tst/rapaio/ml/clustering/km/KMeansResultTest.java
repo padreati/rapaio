@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.ml.clustering.kmeans;
+package rapaio.ml.clustering.km;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,8 +44,8 @@ public class KMeansResultTest {
     void basicTest() {
 
         Frame df = Datasets.loadOldFaithful();
-        KMeans model = KMeans.newModel().k.set(3).fit(df);
-        KMeansResult result = model.predict(df);
+        KMCluster model = KMCluster.newKMeans().k.set(3).fit(df);
+        KMClusterResult result = model.predict(df);
 
 
         Var distances = result.getDistances();
@@ -58,8 +58,8 @@ public class KMeansResultTest {
     @Test
     void printTest() {
         Frame df = Datasets.loadOldFaithful();
-        KMeans model = KMeans.newModel().k.set(3).fit(df);
-        KMeansResult result = model.predict(df);
+        KMCluster model = KMCluster.newKMeans().k.set(3).fit(df);
+        KMClusterResult result = model.predict(df);
 
         assertEquals("KMeansResult{}", result.toString());
         assertEquals("""

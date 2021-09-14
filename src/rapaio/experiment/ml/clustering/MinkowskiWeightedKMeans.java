@@ -33,7 +33,7 @@ import rapaio.data.VarRange;
 import rapaio.data.filter.FRefSort;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.ml.clustering.kmeans.KMeansInit;
+import rapaio.ml.clustering.km.KMClusterInit;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -60,7 +60,7 @@ public class MinkowskiWeightedKMeans implements Printable {
 
     private int nstart = 1;
     private int runs = Integer.MAX_VALUE;
-    private KMeansInit init = KMeansInit.Forgy;
+    private KMClusterInit init = KMClusterInit.Forgy;
     private BiConsumer<MinkowskiWeightedKMeans, Integer> runningHook = null;
     private Frame summary;
     private double eps = 1e-20;
@@ -92,7 +92,7 @@ public class MinkowskiWeightedKMeans implements Printable {
         return this;
     }
 
-    public MinkowskiWeightedKMeans withInit(KMeansInit init) {
+    public MinkowskiWeightedKMeans withInit(KMClusterInit init) {
         this.init = init;
         return this;
     }

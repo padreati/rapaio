@@ -65,7 +65,7 @@ public class VarTest {
         double[] src = IntStream.range(0, 100_000).mapToDouble(x -> x).toArray();
         Var x = VarDouble.wrap(src);
         Var y = Arrays.stream(src).boxed().parallel().collect(VarDouble.collector());
-        y = VSort.asc().fapply(y);
+        y = VSort.ascending().fapply(y);
 
         assertTrue(x.deepEquals(y));
     }
@@ -75,7 +75,7 @@ public class VarTest {
         int[] src = IntStream.range(0, 100_000).toArray();
         Var x = VarInt.wrap(src);
         Var y = Arrays.stream(src).boxed().parallel().collect(VarInt.collector());
-        y = VSort.asc().fapply(y);
+        y = VSort.ascending().fapply(y);
 
         assertTrue(x.deepEquals(y));
     }

@@ -48,10 +48,7 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
     /**
      * Specifies the runs / rounds of learning.
      * For various models composed of multiple sub-models
-     * the runs represents often the number of sub-models.
-     * <p>
-     * For example for CForest the number of runs is used to specify
-     * the number of decision trees to be built.
+     * the runs represents the number of sub-models.
      */
     @SuppressWarnings("unchecked")
     public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1_000,

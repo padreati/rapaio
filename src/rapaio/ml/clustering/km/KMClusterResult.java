@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.ml.clustering.kmeans;
+package rapaio.ml.clustering.km;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
@@ -40,17 +40,17 @@ import java.util.Map;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/2/20.
  */
-public class KMeansResult extends ClusteringResult {
+public class KMClusterResult extends ClusteringResult {
 
-    public static KMeansResult valueOf(KMeans model, Frame df, VarInt clusterAssignment) {
-        return new KMeansResult(model, df, clusterAssignment);
+    public static KMClusterResult valueOf(KMCluster model, Frame df, VarInt clusterAssignment) {
+        return new KMClusterResult(model, df, clusterAssignment);
     }
 
-    private final KMeans kmeans;
+    private final KMCluster kmeans;
     private final Frame clusterSummary;
     private final Var distances;
 
-    private KMeansResult(KMeans model, Frame df, VarInt assignment) {
+    private KMClusterResult(KMCluster model, Frame df, VarInt assignment) {
         super(model, df, assignment);
         this.kmeans = model;
 
@@ -70,7 +70,7 @@ public class KMeansResult extends ClusteringResult {
         Map<Integer, VarDouble> errors = new HashMap<>();
 
         for (int i = 0; i < m.rowCount(); i++) {
-            double d = model.space.get().distance(c.mapRow(assignment.getInt(i)), m.mapRow(i));
+            double d = model.method.get().distance(c.mapRow(assignment.getInt(i)), m.mapRow(i));
             errors.computeIfAbsent(assignment.getInt(i), row -> VarDouble.empty()).addDouble(d * d);
             distances.addDouble(d * d);
         }
@@ -86,7 +86,7 @@ public class KMeansResult extends ClusteringResult {
         clusterSummary = SolidFrame.byVars(id, count, mean, variance, variancePercentage, std);
     }
 
-    public KMeans getKmeans() {
+    public KMCluster getKmeans() {
         return kmeans;
     }
 
@@ -100,18 +100,18 @@ public class KMeansResult extends ClusteringResult {
 
     @Override
     public String toString() {
-        return "KMeansResult{}";
+        return "KMClusterResult{}";
     }
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Overall: \n");
+        sb.append("Overall errors: \n");
         sb.append("> count: ").append(distances.size()).append("\n");
         sb.append("> mean: ").append(Format.floatFlex(Mean.of(distances).value())).append("\n");
         sb.append("> var: ").append(Format.floatFlex(Variance.of(distances).value())).append("\n");
         sb.append("> sd: ").append(Format.floatFlex(Variance.of(distances).sdValue())).append("\n");
-        sb.append("> inertia:").append(Format.floatFlex(kmeans.getInertia())).append("\n");
+        sb.append("> inertia/error:").append(Format.floatFlex(kmeans.getError())).append("\n");
         sb.append("> iterations:").append(kmeans.getErrors().size()).append("\n");
         sb.append("\n");
 

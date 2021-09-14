@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.ml.clustering.kmeans;
+package rapaio.ml.clustering.km;
 
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
@@ -37,16 +37,16 @@ import java.util.Set;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/23/15.
  */
-public enum KMeansInit implements Serializable {
+public enum KMClusterInit implements Serializable {
 
     Forgy {
-        public DMatrix init(KMeans.Space space, DMatrix m, int k) {
+        public DMatrix init(KMCluster.Method space, DMatrix m, int k) {
             return m.mapRows(SamplingTools.sampleWOR(m.rowCount(), k)).copy();
         }
     },
     PlusPlus {
         @Override
-        public DMatrix init(KMeans.Space space, DMatrix m, int k) {
+        public DMatrix init(KMCluster.Method space, DMatrix m, int k) {
 
             int[] centroids = IntArrays.newFill(k, -1);
 
@@ -81,5 +81,5 @@ public enum KMeansInit implements Serializable {
         }
     };
 
-    public abstract DMatrix init(KMeans.Space space, DMatrix m, int k);
+    public abstract DMatrix init(KMCluster.Method space, DMatrix m, int k);
 }
