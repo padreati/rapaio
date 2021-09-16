@@ -61,16 +61,16 @@ public class KMeansResultTest {
         KMCluster model = KMCluster.newKMeans().k.set(3).fit(df);
         KMClusterResult result = model.predict(df);
 
-        assertEquals("KMeansResult{}", result.toString());
+        assertEquals("KMClusterResult{}", result.toString());
         assertEquals("""
-                Overall:\s
+                Overall errors:\s
                 > count: 272
                 > mean: 19.224481
                 > var: 693.0516358
                 > sd: 26.3258739
-                > inertia:5,229.05884
-                > iterations:4
-
+                > inertia/error:5,229.05884
+                > iterations:3
+                                
                 Per cluster:\s
                     ID count    mean         var      var/total    sd    \s
                 [0]  1    97 31.3079183 1,116.6942881 1.6112714 33.416976\s
