@@ -479,7 +479,7 @@ public abstract class StandardDMatrixTest {
     void deepEqualsTest() {
         DMatrix m1 = generateIdentity(2);
 
-        DMatrix m2 = DMatrix.wrap(MType.BASE, true, new double[][]{{1, 0}, {0, 1}});
+        DMatrix m2 = DMatrix.wrap( true, new double[][]{{1, 0}, {0, 1}});
         DMatrix m3 = DMatrix.identity(2);
 
         assertTrue(m1.deepEquals(m2));

@@ -22,6 +22,8 @@
 package rapaio.util.collection;
 
 
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleIterator;
 import rapaio.util.function.Double2DoubleFunction;
@@ -136,6 +138,7 @@ public final class DoubleArrays {
             a[i] += s;
         }
     }
+
     public static void addTo(double[] a, int aStart, double s, double[] to, int toStart, int len) {
         for (int i = 0; i < len; i++) {
             to[toStart++] = a[aStart++] + s;

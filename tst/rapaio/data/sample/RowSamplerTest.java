@@ -85,16 +85,12 @@ public class RowSamplerTest {
             s.mapping().stream().forEach(r -> count.setDouble(r, count.getDouble(r) + 1));
         }
 
-        // uniform counts close to 500
-        count.printContent();
-
         var freq = DensityVector.emptyByLabels(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             freq.set(i, count.getDouble(i));
         }
         double[] p = DoubleStream.generate(() -> 1 / 150.).limit(150).toArray();
         ChiSqGoodnessOfFit chiTest = ChiSqGoodnessOfFit.from(freq, VarDouble.wrap(p));
-        chiTest.printSummary();
 
         // chi square goodness of predict
 

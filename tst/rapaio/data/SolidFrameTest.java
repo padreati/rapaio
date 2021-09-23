@@ -200,7 +200,7 @@ public class SolidFrameTest {
 
     @Test
     void testMatrixBuilders() {
-        DMatrix rm = DMatrix.copy(MType.RDENSE, true, 3, 3, new double[]{
+        DMatrix rm = DMatrix.copy(MType.RSTRIPE, true, 3, 3, new double[]{
                 1, 2, 3,
                 2, 3, 4,
                 3, 4, 5
@@ -233,7 +233,7 @@ public class SolidFrameTest {
 
     @Test
     void testAddClearRows() {
-        DMatrix rm = DMatrix.copy(MType.RDENSE, true, 3, 3, new double[]{
+        DMatrix rm = DMatrix.copy(MType.RSTRIPE, true, 3, 3, new double[]{
                 1, 2, 3,
                 2, 3, 4,
                 3, 4, 5

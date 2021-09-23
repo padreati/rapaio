@@ -96,7 +96,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix rangeRowsCopy(int start, int end) {
-        DMatrix copy = DMatrix.empty(MType.RDENSE, end - start, colCount());
+        DMatrix copy = DMatrix.empty(MType.RSTRIPE, end - start, colCount());
         for (int i = start; i < end; i++) {
             for (int j = 0; j < colCount(); j++) {
                 copy.set(i - start, j, get(i, j));
@@ -160,7 +160,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix mapColsCopy(int... cols) {
-        DMatrix copy = DMatrix.empty(MType.RDENSE, rowCount(), cols.length);
+        DMatrix copy = DMatrix.empty(MType.RSTRIPE, rowCount(), cols.length);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < cols.length; j++) {
                 copy.set(i, j, get(i, cols[j]));
@@ -414,7 +414,7 @@ public abstract class AbstractDMatrix implements DMatrix {
             throw new IllegalArgumentException("Matrix and diagonal vector are " +
                     "not compatible for multiplication.");
         }
-        DMatrix result = DMatrix.empty(MType.BASE, rowCount(), colCount());
+        DMatrix result = DMatrix.empty(rowCount(), colCount());
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 result.set(i, j, get(i, j) * v.get(j));
@@ -429,7 +429,7 @@ public abstract class AbstractDMatrix implements DMatrix {
             throw new IllegalArgumentException("Matrix and diagonal vector are " +
                     "not compatible for multiplication.");
         }
-        DMatrix result = DMatrix.empty(MType.BASE, rowCount(), colCount());
+        DMatrix result = DMatrix.empty(rowCount(), colCount());
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 result.set(i, j, get(i, j) * v.get(i));
@@ -481,7 +481,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix scatter() {
-        DMatrix scatter = DMatrix.empty(MType.RDENSE, colCount(), colCount());
+        DMatrix scatter = DMatrix.empty(MType.RSTRIPE, colCount(), colCount());
         double[] mean = new double[colCount()];
         for (int i = 0; i < colCount(); i++) {
             mean[i] = mapCol(i).mean();

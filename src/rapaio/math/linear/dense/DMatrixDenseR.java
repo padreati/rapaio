@@ -21,127 +21,37 @@
 
 package rapaio.math.linear.dense;
 
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.DoubleArraysV;
 
-import java.io.Serial;
-import java.util.stream.IntStream;
-
-/**
- * Dense matrix with values in double floating point precision.
- * Values are stored in arrays of arrays with first array holding row references
- * and secondary level arrays being the row arrays.
- */
 public class DMatrixDenseR extends DMatrixDense {
 
-    @Serial
-    private static final long serialVersionUID = -2186520026933442642L;
-
-    public DMatrixDenseR(int rowCount, int colCount) {
-        super(MType.RDENSE, rowCount, colCount, newArray(rowCount, colCount));
+    public DMatrixDenseR(int rows, int cols) {
+        this(rows, cols, new double[rows * cols]);
     }
 
-    public DMatrixDenseR(int rowCount, int colCount, double[][] values) {
-        super(MType.RDENSE, rowCount, colCount, values);
-    }
-
-    private static double[][] newArray(int rowCount, int colCount) {
-        double[][] array = new double[rowCount][colCount];
-        for (int i = 0; i < rowCount; i++) {
-            array[i] = DoubleArrays.newFill(colCount, 0);
-        }
-        return array;
+    public DMatrixDenseR(int rows, int cols, double[] values) {
+        super(MType.RDENSE, rows, cols, values);
     }
 
     @Override
     public double get(int row, int col) {
-        return values[row][col];
+        return values[row * colCount + col];
     }
 
     @Override
     public void set(int row, int col, double value) {
-        values[row][col] = value;
+        values[row * colCount + col] = value;
     }
 
     @Override
     public void inc(int row, int col, double value) {
-        values[row][col] += value;
-    }
-
-    @Override
-    public DVector mapRow(final int row) {
-        return new DVectorDense(values[row].length, values[row]);
-    }
-
-    @Override
-    public DMatrix mapRows(int... indexes) {
-        if (indexes.length == 0) {
-            throw new IllegalArgumentException("Cannot map rows with empty indexes.");
-        }
-        double[][] wrap = new double[indexes.length][colCount];
-        for (int i = 0; i < indexes.length; i++) {
-            wrap[i] = values[indexes[i]];
-        }
-        return new DMatrixDenseR(indexes.length, colCount, wrap);
-    }
-
-    @Override
-    public DMatrix add(double x) {
-        for (double[] row : values) {
-            for (int i = 0; i < row.length; i++) {
-                row[i] += x;
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public DVector dot(DVector b) {
-        if (b instanceof DVectorDense vd) {
-            int vlen = vd.size();
-            double[] varray = vd.elements();
-
-            double[] c = DoubleArrays.newFill(rowCount, 0);
-            IntStream.range(0, rowCount).parallel().forEach(i -> c[i] = prodSum(values[i], varray));
-            return new DVectorDense(c.length, c);
-        }
-        return super.dot(b);
-    }
-
-    private double prodSum(double[] a, double[] b) {
-        double sum = 0;
-        for (int i = 0; i < a.length; i++) {
-            sum += a[i] * b[i];
-        }
-        return sum;
-    }
-
-    @Override
-    public DMatrix dotDiag(DVector v) {
-        if (v instanceof DVectorDense) {
-            var array = v.asDense().elements();
-            var len = v.size();
-            for (int i = 0; i < rowCount; i++) {
-                DoubleArrays.mult(values[i], 0, array, 0, len);
-            }
-            return this;
-        }
-        return super.dotDiag(v);
-    }
-
-    @Override
-    public DMatrix dotDiagT(DVector v) {
-        if (v.isDense()) {
-            var array = v.asDense().elements();
-            var len = v.size();
-            for (int i = 0; i < rowCount; i++) {
-                DoubleArrays.mult(values[i], 0, array[i], colCount);
-            }
-            return this;
-        }
-        return super.dotDiagT(v);
+        values[row * colCount + col] += value;
     }
 
     @Override
@@ -150,11 +60,36 @@ public class DMatrixDenseR extends DMatrixDense {
     }
 
     @Override
-    public DMatrixDenseR copy() {
-        double[][] copy = new double[rowCount][colCount];
-        for (int i = 0; i < rowCount; i++) {
-            copy[i] = DoubleArrays.copy(values[i], 0, colCount);
+    public DMatrix copy() {
+        return new DMatrixDenseR(rowCount, colCount, Arrays.copyOf(values, values.length));
+    }
+
+    @Override
+    public DVector dot(DVector b) {
+
+        if (b.size() != colCount) {
+            throw new IllegalArgumentException(String.format(
+                    "Matrix ( %d x %d ) and vector ( %d ) not compatible for multiplication.", rowCount, colCount, b.size()));
         }
-        return new DMatrixDenseR(rowCount, colCount, copy);
+
+        // obtain the vector array of elements either as a reference or as a copy
+        double[] vector = (b instanceof DVectorDense) ? ((DVectorDense) b).elements() : b.valueStream().toArray();
+
+        // allocate memory for the result vector
+        double[] c = new double[rowCount];
+
+        // employ parallelism only if we have large row vectors
+        final int sliceSize = 1024;
+        final int slices = rowCount / sliceSize;
+        IntStream stream = IntStream.range(0, slices + 1);
+        if (slices > 1) {
+            stream = stream.parallel();
+        }
+        stream.forEach(s -> {
+            for (int i = s * sliceSize; i < Math.min(rowCount, (s + 1) * sliceSize); i++) {
+                c[i] = DoubleArraysV.dotSum(values, i * colCount, vector, 0, colCount);
+            }
+        });
+        return new DVectorDense(c.length, c);
     }
 }

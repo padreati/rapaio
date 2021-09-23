@@ -76,8 +76,6 @@ public class JoinTest {
         a1 = a1.fapply(FRefSort.by(a1.rvar(0).refComparator(), a1.rvar(0).refComparator()));
         Frame b1 = Join.rightJoin(df2, df1);
         b1 = b1.fapply(FRefSort.by(b1.rvar(0).refComparator(), b1.rvar(0).refComparator()));
-        a1.printHead();
-        b1.printHead();
         assertTrue(a1.deepEquals(b1));
 
         assertTrue(Join.rightJoin(df1, df2).deepEquals(Join.leftJoin(df2, df1)));

@@ -168,6 +168,7 @@ public class BinaryLogisticIRLSTest {
                 .x.set(x)
                 .y.set(y)
                 .w0.set(w0)
+                .maxIter.set(10000)
                 .fit());
         assertEquals("Matrix is rank deficient.", ex.getMessage());
     }

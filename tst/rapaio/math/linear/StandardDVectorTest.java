@@ -55,7 +55,7 @@ public abstract class StandardDVectorTest {
         values = DoubleArrays.newFrom(0, 100, row -> normal.sampleNext());
         x = generateWrap(values);
         z = generateFill(100, 10);
-        m = DMatrix.identity(MType.RDENSE, 100).mult(2);
+        m = DMatrix.identity(MType.RSTRIPE, 100).mult(2);
     }
 
     public abstract VType type();

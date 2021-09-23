@@ -96,7 +96,6 @@ public class CholeskyDecompositionTest {
                 {1.33333333333333333333333333333333},
         });
         DMatrix s2 = LUDecomposition.from(a2).solve(b2);
-        s2.printSummary();
         assertTrue(x2.deepEquals(s2, TOL));
     }
 

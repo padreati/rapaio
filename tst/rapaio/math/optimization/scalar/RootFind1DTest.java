@@ -68,7 +68,7 @@ public class RootFind1DTest {
 
                 model.optimize(fs[i]);
 
-                System.out.println("method: " + method + ", root: " + model.getX() + ", it: " + model.getIterations());
+//                System.out.println("method: " + method + ", root: " + model.getX() + ", it: " + model.getIterations());
                 assertTrue(Math.abs(fs[i].apply(model.getX())) <= 1e-12);
                 assertTrue(model.isConverged());
             }

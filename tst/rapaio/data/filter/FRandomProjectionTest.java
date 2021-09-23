@@ -46,13 +46,11 @@ public class FRandomProjectionTest {
 
         FRandomProjection rp = FRandomProjection.newGaussianSd(3, VarRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
-        df.printSummary();
 
         assertEquals(3, df.varCount());
         assertEquals("RP_1", df.rvar(0).name());
         assertEquals("RP_2", df.rvar(1).name());
         assertEquals("RP_3", df.rvar(2).name());
-
 
         double corr = CorrPearson.of(df).singleValue();
         assertEquals(0.4085654587641364, corr, 1e-12);
@@ -63,7 +61,6 @@ public class FRandomProjectionTest {
 
         FRandomProjection rp = FRandomProjection.newAchlioptas(3, VarRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
-        df.printSummary();
 
         assertEquals(3, df.varCount());
         assertEquals("RP_1", df.rvar(0).name());
@@ -86,7 +83,6 @@ public class FRandomProjectionTest {
         assertEquals("RP_1", df.rvar(0).name());
         assertEquals("RP_2", df.rvar(1).name());
         assertEquals("RP_3", df.rvar(2).name());
-
 
         double corr = CorrPearson.of(df).singleValue();
         assertEquals(-0.5195786390214069, corr, 1e-15);

@@ -376,7 +376,7 @@ public interface DVector extends Serializable, Printable {
      * @return new matrix which is the result of dot product
      */
     default DMatrix diagDot(DMatrix m) {
-        return diagDot(MType.RDENSE, m);
+        return diagDot(MType.RSTRIPE, m);
     }
 
     /**
@@ -553,7 +553,7 @@ public interface DVector extends Serializable, Printable {
     DVector apply(BiFunction<Integer, Double, Double> f);
 
     default DMatrix asMatrix() {
-        return asMatrix(MType.CDENSE);
+        return asMatrix(MType.CSTRIPE);
     }
 
     /**

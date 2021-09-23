@@ -25,8 +25,9 @@ package rapaio.math.linear;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/21.
  */
 public enum MType {
-    BASE,
     RDENSE,
     CDENSE,
+    RSTRIPE,
+    CSTRIPE,
     MAP
 }

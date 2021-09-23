@@ -309,7 +309,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
      * @return matrix of features
      */
     private DMatrix buildInput(Frame df) {
-        return DMatrix.copy(MType.RDENSE, df.mapVars(inputNames));
+        return DMatrix.copy(MType.RSTRIPE, df.mapVars(inputNames));
     }
 
     protected DVector buildTarget(Frame df) {
@@ -903,7 +903,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             alpha.set(bestIndex, phiiDotPhii.get(bestIndex) / (bestProjection - 1.0 / beta));
 
             // initial phi_hat, dimension 1x1 with value computed already in artifacts
-            phiHat = DMatrix.fill(MType.RDENSE, 1, 1, phiiDotPhii.get(bestIndex));
+            phiHat = DMatrix.fill(MType.RSTRIPE, 1, 1, phiiDotPhii.get(bestIndex));
         }
 
         private void computeSigmaAndMu() {

@@ -21,123 +21,72 @@
 
 package rapaio.math.linear.dense;
 
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.DoubleArraysV;
 
-import java.io.Serial;
-
-/**
- * Dense matrix with values in double floating point precision.
- * Values are stored in arrays of arrays with first array holding column references
- * and secondary level arrays being the column arrays.
- */
 public class DMatrixDenseC extends DMatrixDense {
 
-    @Serial
-    private static final long serialVersionUID = -2186520026933442642L;
+    private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
 
     public DMatrixDenseC(int rows, int cols) {
-        super(MType.CDENSE, rows, cols, newArray(rows, cols));
+        this(rows, cols, new double[rows * cols]);
     }
 
-    public DMatrixDenseC(int rows, int cols, double[][] array) {
-        super(MType.CDENSE, rows, cols, array);
-    }
-
-    private static double[][] newArray(int rowCount, int colCount) {
-        double[][] array = new double[colCount][rowCount];
-        for (int i = 0; i < colCount; i++) {
-            array[i] = DoubleArrays.newFill(rowCount, 0);
-        }
-        return array;
-    }
-
-    @Override
-    public DVector mapCol(int col) {
-        return DVector.wrapArray(rowCount, values[col]);
-    }
-
-    @Override
-    public DMatrix mapCols(int... indexes) {
-        double[][] array = new double[indexes.length][rowCount];
-        for (int i = 0; i < indexes.length; i++) {
-            array[i] = values[indexes[i]];
-        }
-        return new DMatrixDenseC(rowCount, indexes.length, array);
+    public DMatrixDenseC(int rows, int cols, double[] values) {
+        super(MType.CDENSE, rows, cols, values);
     }
 
     @Override
     public double get(int row, int col) {
-        return values[col][row];
+        return values[col * rowCount + row];
     }
 
     @Override
     public void set(int row, int col, double value) {
-        values[col][row] = value;
+        values[col * rowCount + row] = value;
     }
 
     @Override
     public void inc(int row, int col, double value) {
-        values[col][row] += value;
-    }
-
-    @Override
-    public DMatrix add(double x) {
-        for (double[] col : values) {
-            for (int i = 0; i < col.length; i++) {
-                col[i] += x;
-            }
-        }
-        return this;
+        values[col * rowCount + row] += value;
     }
 
     @Override
     public DVector dot(DVector b) {
-        if (b instanceof DVectorDense vd) {
-            double[] array = vd.elements();
+        if (colCount != b.size()) {
+            throw new IllegalArgumentException(
+                    String.format("Matrix (%d x %d) and vector ( %d ) are not conform for multiplication.",
+                            rowCount, colCount, b.size()));
+        }
 
-            double[] c = DoubleArrays.newFill(rowCount, 0);
-            for (int i = 0; i < colCount; i++) {
-                double[] col = values[i];
-                addMultiplied(c, col, array[i]);
+        final int SLICE_SIZE = 1024;
+        int slices = colCount / SLICE_SIZE;
+        double[][] cslices = new double[slices + 1][];
+        IntStream stream = IntStream.range(0, slices + 1);
+        if (slices > 1) {
+            stream = stream.parallel();
+        }
+        stream.forEach(s -> {
+            double[] slice = new double[rowCount];
+            for (int j = s * SLICE_SIZE; j < Math.min(colCount, (s + 1) * SLICE_SIZE); j++) {
+                DoubleArraysV.accAXPY(slice, values,  j * rowCount, rowCount, b.get(j));
             }
-            return new DVectorDense(c.length, c);
-        }
-        return super.dot(b);
-    }
+            cslices[s] = slice;
+        });
 
-    private void addMultiplied(double[] c, double[] b, double factor) {
-        for (int i = 0; i < c.length; i++) {
-            c[i] += b[i] * factor;
+        double[] c = new double[rowCount];
+        for (var cslice : cslices) {
+            DoubleArraysV.add(cslice, c);
         }
-    }
 
-    @Override
-    public DMatrix dotDiag(DVector v) {
-        if (v instanceof DVectorDense) {
-            var array = v.asDense().elements();
-            var len = v.size();
-            for (int i = 0; i < colCount; i++) {
-                DoubleArrays.mult(values[i], 0, array[i], rowCount);
-            }
-            return this;
-        }
-        return super.dotDiag(v);
-    }
-
-    @Override
-    public DMatrix dotDiagT(DVector v) {
-        if (v.isDense()) {
-            var array = v.asDense().elements();
-            var len = v.size();
-            for (int i = 0; i < rowCount; i++) {
-                DoubleArrays.mult(values[i], 0, array[i], colCount);
-            }
-            return this;
-        }
-        return super.dotDiagT(v);
+        return new DVectorDense(c.length, c);
     }
 
     @Override
@@ -146,25 +95,7 @@ public class DMatrixDenseC extends DMatrixDense {
     }
 
     @Override
-    public DMatrixDenseC copy() {
-        double[][] copy = new double[colCount][rowCount];
-        for (int i = 0; i < colCount; i++) {
-            copy[i] = DoubleArrays.copy(values[i], 0, rowCount);
-        }
-        return new DMatrixDenseC(rowCount, colCount, copy);
-    }
-
-    @Override
-    public DMatrix resizeCopy(int rows, int cols, double fill) {
-        double[][] copy = new double[cols][rows];
-
-        for (int i = 0; i < Math.min(cols, colCount); i++) {
-            copy[i] = DoubleArrays.newFill(rows, fill);
-            System.arraycopy(values[i], 0, copy[i], 0, Math.min(rows, rowCount));
-        }
-        for (int i = colCount; i < cols; i++) {
-            copy[i] = DoubleArrays.newFill(rows, fill);
-        }
-        return new DMatrixDenseC(rows, cols, copy);
+    public DMatrix copy() {
+        return new DMatrixDenseC(rowCount, colCount, Arrays.copyOf(values, values.length));
     }
 }

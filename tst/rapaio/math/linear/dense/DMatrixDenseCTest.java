@@ -21,7 +21,11 @@
 
 package rapaio.math.linear.dense;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
@@ -30,8 +34,6 @@ import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.MType;
 import rapaio.math.linear.StandardDMatrixTest;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class DMatrixDenseCTest extends StandardDMatrixTest {
 
@@ -143,7 +145,7 @@ public class DMatrixDenseCTest extends StandardDMatrixTest {
         }
 
         DMatrix copy5 = DMatrix.copy(MType.CDENSE, true, 1, 3, 1, 4, m);
-        assertTrue(copy5.deepEquals(DMatrix.wrap(MType.CDENSE, true, new double[][]{{6, 7, 8}, {10, 11, 12}})));
+        assertTrue(copy5.deepEquals(DMatrix.copy(MType.CSTRIPE, true, new double[][]{{6, 7, 8}, {10, 11, 12}})));
 
         DMatrix copy6 = DMatrix.random(MType.CDENSE, 2, 2);
         assertEquals(4, copy6.valueStream().filter(Double::isFinite).filter(v -> v != 0).count());
