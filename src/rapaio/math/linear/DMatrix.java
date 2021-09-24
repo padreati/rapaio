@@ -643,7 +643,7 @@ public interface DMatrix extends Serializable, Printable {
      * Compute matrix multiplication between the current
      * matrix and the diagonal matrix obtained from the given vector.
      * <p>
-     * A * I * v
+     * A * I(v)
      *
      * @param v diagonal vector
      * @return result matrix
@@ -654,7 +654,7 @@ public interface DMatrix extends Serializable, Printable {
      * Compute matrix multiplication between the current
      * matrix and the diagonal matrix obtained from the given vector.
      * <p>
-     * v^T * I * A
+     * I(v) * A
      *
      * @param v diagonal vector
      * @return result matrix

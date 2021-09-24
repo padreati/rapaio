@@ -79,7 +79,7 @@ public class DMatrixDenseR extends DMatrixDense {
         double[] c = new double[rowCount];
 
         // employ parallelism only if we have large row vectors
-        final int sliceSize = 1024;
+        final int sliceSize = 256;
         final int slices = rowCount / sliceSize;
         IntStream stream = IntStream.range(0, slices + 1);
         if (slices > 1) {

@@ -44,7 +44,7 @@ public final class DoubleArraysV {
         double sum = vsum.reduceLanes(ADD);
         int xLen = len + xOff;
         for (; i < xLen; i++) {
-            sum = Math.fma(x[i], y[i + delta], sum);
+            sum += x[i] * y[i + delta];
         }
         return sum;
     }
