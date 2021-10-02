@@ -21,10 +21,10 @@
 
 package rapaio.math.functions;
 
-import rapaio.math.linear.DVector;
-
 import java.io.Serial;
 import java.util.function.Function;
+
+import rapaio.math.linear.DVector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.

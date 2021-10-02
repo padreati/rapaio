@@ -21,7 +21,13 @@
 
 package rapaio.core.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.StudentT;
@@ -30,22 +36,16 @@ import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KSTestTest {
 
     @Test
-    void testPearson() throws IOException, URISyntaxException {
+    void testPearson() throws IOException {
         RandomSource.setSeed(1);
         Frame df = Datasets.loadPearsonHeightDataset();
         KSTestTwoSamples test = KSTestTwoSamples.from(df.rvar("Son"), df.rvar("Father"));
-        test.printSummary();
 
         assertEquals(0.150278, test.d(), 10e-5);
         assertEquals(0.0000000000411316, test.pValue(), 10e-10);
@@ -57,7 +57,6 @@ public class KSTestTest {
         Normal d = Normal.std();
         VarDouble sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, d);
-        test.printSummary();
         assertTrue(test.d() < 0.4);
         assertTrue(test.pValue() > 0.08);
     }
@@ -67,7 +66,6 @@ public class KSTestTest {
         RandomSource.setSeed(1);
         VarDouble sample = Uniform.of(0, 1).sample(1_000);
         KSTestOneSample test = KSTestOneSample.from(sample, Normal.std());
-        test.printSummary();
         assertTrue(test.d() > 0.4);
         assertTrue(test.pValue() < 0.001);
     }
@@ -78,7 +76,6 @@ public class KSTestTest {
         StudentT d = StudentT.of(3, 0, 1);
         VarDouble sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, Normal.std());
-        test.printSummary();
         assertTrue(test.d() > 0.04);
         assertTrue(test.pValue() < 0.05);
     }

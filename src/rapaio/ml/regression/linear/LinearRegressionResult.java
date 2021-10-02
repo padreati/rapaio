@@ -21,6 +21,10 @@
 
 package rapaio.ml.regression.linear;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import rapaio.core.distributions.StudentT;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
@@ -37,10 +41,6 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
@@ -103,7 +103,7 @@ public class LinearRegressionResult extends RegressionResult {
 
                 int degrees = res.size() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
-                DVector coeff = beta_hat.mapCol(i);
+                DVector coeff = beta_hat.map(i, 1);
 
                 Frame features = df;
                 Set<String> availableFeatures = new HashSet<>(Arrays.asList(df.varNames()));

@@ -21,6 +21,14 @@
 
 package rapaio.experiment.math.optimization;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.pow;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
+
 import rapaio.data.VarDouble;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
@@ -33,12 +41,6 @@ import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
-
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.Math.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.

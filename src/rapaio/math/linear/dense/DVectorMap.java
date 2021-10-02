@@ -21,17 +21,19 @@
 
 package rapaio.math.linear.dense;
 
+import java.io.Serial;
+import java.util.function.BiFunction;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.MType;
 import rapaio.math.linear.VType;
 import rapaio.math.linear.base.AbstractDVector;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.function.Double2DoubleFunction;
-
-import java.io.Serial;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/21.
@@ -40,12 +42,21 @@ public class DVectorMap extends AbstractDVector {
 
     @Serial
     private static final long serialVersionUID = -1952913189054878826L;
+
     private final DVector source;
     private final int[] indexes;
 
     public DVectorMap(DVector source, int... indexes) {
         this.source = source;
-        this.indexes = indexes;
+        if (source instanceof DVectorMap sourcem) {
+            int[] copy = new int[indexes.length];
+            for (int i = 0; i < indexes.length; i++) {
+                copy[i] = sourcem.indexes[indexes[i]];
+            }
+            this.indexes = copy;
+        } else {
+            this.indexes = indexes;
+        }
     }
 
     @Override
@@ -54,8 +65,35 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
+    public VType innerType() {
+        return source.type();
+    }
+
+    @Override
     public int size() {
         return indexes.length;
+    }
+
+    @Override
+    public DVector map(int[] idxs, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[idxs.length];
+            for (int i = 0; i < idxs.length; i++) {
+                copy[i] = source.get(indexes[idxs[i]]);
+            }
+            return new DVectorDense(copy.length, copy);
+        } else {
+            return new DVectorMap(this, indexes);
+        }
+    }
+
+    @Override
+    public DVectorDense copy() {
+        double[] copy = new double[indexes.length];
+        for (int i = 0; i < indexes.length; i++) {
+            copy[i] = source.get(indexes[i]);
+        }
+        return new DVectorDense(copy.length, copy);
     }
 
     @Override
@@ -74,26 +112,14 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
-    public DVectorDense mapCopy(int... idxs) {
-        double[] copy = new double[idxs.length];
-        for (int i = 0; i < idxs.length; i++) {
-            copy[i] = source.get(indexes[idxs[i]]);
+    public DVector add(double x, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[indexes.length];
+            for (int i = 0; i < copy.length; i++) {
+                copy[i] = source.get(indexes[i]) + x;
+            }
+            return DVector.wrap(copy);
         }
-        return new DVectorDense(copy.length, copy);
-    }
-
-    @Override
-    public DVectorDense copy() {
-        double[] copy = new double[indexes.length];
-        int pos = 0;
-        for (int i : indexes) {
-            copy[pos++] = get(indexes[i]);
-        }
-        return new DVectorDense(copy.length, copy);
-    }
-
-    @Override
-    public DVector add(double x) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) + x);
         }
@@ -101,8 +127,15 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
-    public DVector add(DVector b) {
+    public DVector add(DVector b, AlgebraOption<?>... opts) {
         checkConformance(b);
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[indexes.length];
+            for (int i = 0; i < copy.length; i++) {
+                copy[i] = source.get(indexes[i]) + b.get(i);
+            }
+            return DVector.wrap(copy);
+        }
         for (int i = 0; i < size(); i++) {
             set(i, get(i) + b.get(i));
         }
@@ -110,7 +143,14 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
-    public DVector sub(double x) {
+    public DVector sub(double x, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[indexes.length];
+            for (int i = 0; i < copy.length; i++) {
+                copy[i] = source.get(indexes[i]) - x;
+            }
+            return DVector.wrap(copy);
+        }
         for (int i = 0; i < size(); i++) {
             set(i, get(i) - x);
         }
@@ -118,8 +158,15 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
-    public DVector sub(DVector b) {
+    public DVector sub(DVector b, AlgebraOption<?>... opts) {
         checkConformance(b);
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[indexes.length];
+            for (int i = 0; i < copy.length; i++) {
+                copy[i] = source.get(indexes[i]) - b.get(i);
+            }
+            return DVector.wrap(copy);
+        }
         for (int i = 0; i < size(); i++) {
             set(i, get(i) - b.get(i));
         }
@@ -127,16 +174,30 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
-    public DVector mult(double scalar) {
+    public DVector mult(double x, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[indexes.length];
+            for (int i = 0; i < copy.length; i++) {
+                copy[i] = source.get(indexes[i]) * x;
+            }
+            return DVector.wrap(copy);
+        }
         for (int i = 0; i < size(); i++) {
-            set(i, get(i) * scalar);
+            set(i, get(i) * x);
         }
         return this;
     }
 
     @Override
-    public DVector mult(DVector b) {
+    public DVector mult(DVector b, AlgebraOption<?>... opts) {
         checkConformance(b);
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[indexes.length];
+            for (int i = 0; i < copy.length; i++) {
+                copy[i] = source.get(indexes[i]) * b.get(i);
+            }
+            return DVector.wrap(copy);
+        }
         for (int i = 0; i < size(); i++) {
             set(i, get(i) * b.get(i));
         }
@@ -144,16 +205,30 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
-    public DVector div(double scalar) {
+    public DVector div(double x, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[indexes.length];
+            for (int i = 0; i < copy.length; i++) {
+                copy[i] = source.get(indexes[i]) / x;
+            }
+            return DVector.wrap(copy);
+        }
         for (int i = 0; i < size(); i++) {
-            set(i, get(i) / scalar);
+            set(i, get(i) / x);
         }
         return this;
     }
 
     @Override
-    public DVector div(DVector b) {
+    public DVector div(DVector b, AlgebraOption<?>... opts) {
         checkConformance(b);
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[indexes.length];
+            for (int i = 0; i < copy.length; i++) {
+                copy[i] = source.get(indexes[i]) / b.get(i);
+            }
+            return DVector.wrap(copy);
+        }
         for (int i = 0; i < size(); i++) {
             set(i, get(i) / b.get(i));
         }
@@ -161,27 +236,19 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
-    public DVector axpyCopy(double a, DVector y) {
+    public DVector xpay(double a, DVector y, AlgebraOption<?>... opts) {
         checkConformance(y);
-        double[] copy = new double[size()];
-        for (int i = 0; i < size(); i++) {
-            copy[i] = a * get(i) + y.get(i);
-        }
-        return new DVectorDense(copy.length, copy);
-    }
-
-    @Override
-    public DMatrix diagDot(MType type, DMatrix m) {
-        if (size() != m.rowCount()) {
-            throw new IllegalArgumentException("Matrix not conform for multiplication.");
-        }
-        DMatrix result = DMatrix.fill(size(), m.colCount(), 0);
-        for (int i = 0; i < m.rowCount(); i++) {
-            for (int j = 0; j < m.colCount(); j++) {
-                result.set(i, j, m.get(i, j) * source.get(indexes[i]));
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[size()];
+            for (int i = 0; i < size(); i++) {
+                copy[i] = a * get(i) + y.get(i);
             }
+            return new DVectorDense(copy.length, copy);
         }
-        return result;
+        for (int i = 0; i < size(); i++) {
+            set(i, get(i) + a * y.get(i));
+        }
+        return this;
     }
 
     @Override
@@ -213,6 +280,71 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
+    public double dotBilinearDiag(DMatrix m, DVector y) {
+        if (m.rowCount() != size() || m.colCount() != y.size()) {
+            throw new IllegalArgumentException("Bilinear matrix is not conform for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            sum += get(i) * m.get(i, i) * y.get(i);
+        }
+        return sum;
+    }
+
+    @Override
+    public double dotBilinearDiag(DVector m, DVector y) {
+        if (m.size() != size() || m.size() != y.size()) {
+            throw new IllegalArgumentException("Bilinear diagonal vector is not conform for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            sum += get(i) * m.get(i) * y.get(i);
+        }
+        return sum;
+    }
+
+    @Override
+    public double dotBilinearDiag(DMatrix m) {
+        if (m.rowCount() != size() || m.colCount() != size()) {
+            throw new IllegalArgumentException("Bilinear matrix is not conform for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            double xi = get(i);
+            sum += xi * m.get(i, i) * xi;
+        }
+        return sum;
+    }
+
+    @Override
+    public double dotBilinearDiag(DVector m) {
+        if (m.size() != size() || m.size() != size()) {
+            throw new IllegalArgumentException("Bilinear diagonal vector is not conform for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            double xi = get(i);
+            sum += xi * m.get(i) * xi;
+        }
+        return sum;
+    }
+
+    @Override
+    public AbstractDVector apply(BiFunction<Integer, Double, Double> f, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[indexes.length];
+            for (int i = 0; i < indexes.length; i++) {
+                copy[i] = f.apply(i, get(i));
+            }
+            return DVector.wrap(copy);
+        }
+        for (int i = 0; i < size(); i++) {
+            set(i, f.apply(i, get(i)));
+        }
+        return this;
+    }
+
+    @Override
     public double dot(DVector b) {
         checkConformance(b);
         double s = 0;
@@ -222,7 +354,7 @@ public class DVectorMap extends AbstractDVector {
         return s;
     }
 
-    public double norm(double p) {
+    public double pnorm(double p) {
         if (p <= 0) {
             return size();
         }
@@ -372,7 +504,14 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
-    public DVector apply(Double2DoubleFunction f) {
+    public DVector apply(Double2DoubleFunction f, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[size()];
+            for (int i = 0; i < size(); i++) {
+                set(i, f.apply(get(i)));
+            }
+            return DVector.wrap(copy);
+        }
         for (int i = 0; i < size(); i++) {
             set(i, f.applyAsDouble(get(i)));
         }
@@ -381,7 +520,7 @@ public class DVectorMap extends AbstractDVector {
 
     @Override
     public DoubleStream valueStream() {
-        return IntStream.of(indexes).mapToDouble(i -> source.get(indexes[i]));
+        return IntStream.of(indexes).mapToDouble(source::get);
     }
 
     @Override
@@ -389,7 +528,7 @@ public class DVectorMap extends AbstractDVector {
         double[] copy = new double[indexes.length];
         int pos = 0;
         for (int i : indexes) {
-            copy[pos++] = source.get(indexes[i]);
+            copy[pos++] = source.get(i);
         }
         return VarDouble.wrapArray(copy.length, copy);
     }

@@ -21,6 +21,8 @@
 
 package rapaio.data.unique;
 
+import java.util.HashMap;
+
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -29,8 +31,6 @@ import rapaio.printer.Format;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.DoubleOpenHashSet;
 import rapaio.util.collection.IntArrays;
-
-import java.util.HashMap;
 
 /**
  * Unique value feature for double values.

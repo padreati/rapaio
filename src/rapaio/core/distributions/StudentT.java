@@ -21,11 +21,13 @@
 
 package rapaio.core.distributions;
 
-import rapaio.printer.Format;
+import static rapaio.math.MathTools.betaIncReg;
+import static rapaio.math.MathTools.invBetaIncReg;
+import static rapaio.math.MathTools.lnGamma;
 
 import java.io.Serial;
 
-import static rapaio.math.MathTools.*;
+import rapaio.printer.Format;
 
 /**
  * Student's T distribution, or T distribution.

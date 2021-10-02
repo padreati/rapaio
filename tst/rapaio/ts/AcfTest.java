@@ -21,11 +21,13 @@
 
 package rapaio.ts;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.data.VarDouble;
 
-import static org.junit.jupiter.api.Assertions.*;
+import rapaio.data.VarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/29/17.
@@ -86,13 +88,11 @@ public class AcfTest {
     @Test
     void basicTest() {
         Acf acf1 = Acf.from(ts1, ts1.size());
-        acf1.printSummary();
         for (int i = 0; i < acf1.correlation().size(); i++) {
             assertTrue(acf1.correlation().isMissing(i));
         }
 
         Acf acf2 = Acf.from(ts2, ts2.size());
-        acf2.printSummary();
         for (int i = 0; i < acf2.correlation().size(); i++) {
             assertEquals(corr2.getDouble(i), acf2.correlation().getDouble(i), TOL);
         }
@@ -101,7 +101,6 @@ public class AcfTest {
         }
 
         Acf acf3 = Acf.from(ts3, ts3.size());
-        acf3.printSummary();
         for (int i = 0; i < acf3.correlation().size(); i++) {
             assertEquals(cov3.getDouble(i), acf3.covariance().getDouble(i), TOL);
         }

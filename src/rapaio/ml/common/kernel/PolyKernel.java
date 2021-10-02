@@ -21,13 +21,13 @@
 
 package rapaio.ml.common.kernel;
 
-import rapaio.data.Frame;
-import rapaio.math.MathTools;
-import rapaio.math.linear.DVector;
+import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 
-import static rapaio.printer.Format.floatFlex;
+import rapaio.data.Frame;
+import rapaio.math.MathTools;
+import rapaio.math.linear.DVector;
 
 /**
  * The Polynomial kernel is a non-stationary kernel. Polynomial kernels

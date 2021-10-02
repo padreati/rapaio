@@ -21,14 +21,16 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.MType;
-import rapaio.math.linear.base.AbstractDMatrix;
-import rapaio.util.function.Double2DoubleFunction;
-
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
+
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.MType;
+import rapaio.math.linear.base.AbstractDMatrix;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
+import rapaio.util.function.Double2DoubleFunction;
 
 /**
  * A stripe matrix is a matrix which stores the value as arrays of arrays.
@@ -90,13 +92,22 @@ public abstract class DMatrixStripe extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix apply(Double2DoubleFunction fun) {
-        for (int i = 0; i < values.length; i++) {
-            for (int j = 0; j < values[i].length; j++) {
-                values[i][j] = fun.apply(values[i][j]);
+    public DMatrix apply(Double2DoubleFunction fun, AlgebraOption<?>... opts) {
+        double[][] ref = values;
+        if (AlgebraOptions.from(opts).isCopy()) {
+            ref = new double[values.length][];
+            for (int i = 0; i < ref.length; i++) {
+                ref[i] = new double[values[i].length];
             }
         }
-        return this;
+        for (int i = 0; i < ref.length; i++) {
+            for (int j = 0; j < ref[i].length; j++) {
+                ref[i][j] = fun.apply(values[i][j]);
+            }
+        }
+        return type == MType.RSTRIPE ?
+                new DMatrixStripeR(rowCount, colCount, ref) :
+                new DMatrixStripeC(rowCount, colCount, ref);
     }
 
     @Override

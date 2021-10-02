@@ -21,13 +21,13 @@
 
 package rapaio.data;
 
-import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
-
 import java.io.Serial;
 import java.time.Instant;
 import java.util.List;
+
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * A variable which wraps rows from another variable. The row selection

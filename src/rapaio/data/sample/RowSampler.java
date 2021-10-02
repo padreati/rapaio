@@ -21,11 +21,11 @@
 
 package rapaio.data.sample;
 
+import java.io.Serializable;
+
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-
-import java.io.Serializable;
 
 /**
  * Interface which defines a function which produces a data frame with a sample

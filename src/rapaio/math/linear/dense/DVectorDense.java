@@ -21,18 +21,20 @@
 
 package rapaio.math.linear.dense;
 
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.function.BiFunction;
+import java.util.stream.DoubleStream;
+
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.MType;
 import rapaio.math.linear.VType;
 import rapaio.math.linear.base.AbstractDVector;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.stream.DoubleStream;
 
 public class DVectorDense extends AbstractDVector {
 
@@ -53,12 +55,33 @@ public class DVectorDense extends AbstractDVector {
     }
 
     @Override
+    public VType innerType() {
+        return VType.DENSE;
+    }
+
+    @Override
     public int size() {
         return size;
     }
 
     public double[] elements() {
         return values;
+    }
+
+    @Override
+    public DVector map(int[] indexes, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = DoubleArrays.copyByIndex(values, indexes);
+            return new DVectorDense(copy.length, copy);
+        } else {
+            return new DVectorMap(this, indexes);
+        }
+    }
+
+    public DVectorDense copy() {
+        double[] copy = new double[size];
+        System.arraycopy(values, 0, copy, 0, size);
+        return new DVectorDense(size, copy);
     }
 
     @Override
@@ -77,19 +100,186 @@ public class DVectorDense extends AbstractDVector {
     }
 
     @Override
-    public DVectorDense mapCopy(int... indexes) {
-        double[] copy = new double[indexes.length];
-        int pos = 0;
-        for (int i : indexes) {
-            copy[pos++] = values[i];
+    public DVectorDense add(double x, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[size];
+            DoubleArrays.addTo(values, 0, x, copy, 0, copy.length);
+            return DVector.wrap(copy);
         }
-        return new DVectorDense(copy.length, copy);
+        DoubleArrays.add(values, 0, x, size);
+        return this;
     }
 
-    public DVectorDense copy() {
-        double[] copy = new double[size];
-        System.arraycopy(values, 0, copy, 0, size);
-        return new DVectorDense(size, copy);
+    @Override
+    public DVectorDense add(DVector b, AlgebraOption<?>... opts) {
+        checkConformance(b);
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[size];
+            if (b instanceof DVectorDense bd) {
+                DoubleArrays.addTo(values, 0, bd.values, 0, copy, 0, size);
+            } else {
+                for (int i = 0; i < size; i++) {
+                    copy[i] = values[i] + b.get(i);
+                }
+            }
+            return DVector.wrap(copy);
+        }
+        if (b instanceof DVectorDense bd) {
+            DoubleArrays.add(values, 0, bd.values, 0, size);
+            return this;
+        }
+        for (int i = 0; i < size; i++) {
+            values[i] += b.get(i);
+        }
+        return this;
+    }
+
+    @Override
+    public DVector sub(double x, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[size];
+            DoubleArrays.subTo(values, 0, x, copy, 0, copy.length);
+            return DVector.wrap(copy);
+        }
+        DoubleArrays.sub(values, 0, x, size);
+        return this;
+    }
+
+    @Override
+    public DVectorDense sub(DVector b, AlgebraOption<?>... opts) {
+        checkConformance(b);
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[size];
+            if (b instanceof DVectorDense bd) {
+                DoubleArrays.subTo(values, 0, bd.values, 0, copy, 0, size);
+            } else {
+                for (int i = 0; i < size; i++) {
+                    copy[i] = values[i] - b.get(i);
+                }
+            }
+            return DVector.wrap(copy);
+        }
+        if (b instanceof DVectorDense bd) {
+            DoubleArrays.sub(values, 0, bd.values, 0, size);
+            return this;
+        }
+        for (int i = 0; i < size; i++) {
+            values[i] -= b.get(i);
+        }
+        return this;
+    }
+
+    @Override
+    public DVector mult(double x, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[size];
+            DoubleArrays.multTo(values, 0, x, copy, 0, copy.length);
+            return DVector.wrap(copy);
+        }
+        DoubleArrays.mult(values, 0, x, size);
+        return this;
+    }
+
+    @Override
+    public DVector mult(DVector b, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[size];
+            if (b instanceof DVectorDense bd) {
+                DoubleArrays.multTo(values, 0, bd.values, 0, copy, 0, size);
+            } else {
+                for (int i = 0; i < size; i++) {
+                    copy[i] = values[i] - b.get(i);
+                }
+            }
+            return DVector.wrap(copy);
+        }
+        checkConformance(b);
+        if (b instanceof DVectorDense bd) {
+            DoubleArrays.mult(values, 0, bd.values, 0, size);
+            return this;
+        }
+        for (int i = 0; i < size; i++) {
+            values[i] *= b.get(i);
+        }
+        return this;
+    }
+
+    @Override
+    public DVector div(double x, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[size];
+            DoubleArrays.divTo(values, 0, x, copy, 0, copy.length);
+            return DVector.wrap(copy);
+        }
+        DoubleArrays.div(values, 0, x, size);
+        return this;
+    }
+
+    @Override
+    public DVector div(DVector b, AlgebraOption<?>... opts) {
+        checkConformance(b);
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[size];
+            if (b instanceof DVectorDense bd) {
+                DoubleArrays.divTo(values, 0, bd.values, 0, copy, 0, size);
+            } else {
+                for (int i = 0; i < size; i++) {
+                    copy[i] = values[i] - b.get(i);
+                }
+            }
+            return DVector.wrap(copy);
+        }
+        if (b instanceof DVectorDense bd) {
+            DoubleArrays.div(values, 0, bd.values, 0, size);
+            return this;
+        }
+        for (int i = 0; i < size; i++) {
+            values[i] /= b.get(i);
+        }
+        return this;
+    }
+
+    @Override
+    public DVector xpay(double a, DVector y, AlgebraOption<?>... opts) {
+        checkConformance(y);
+        if (AlgebraOptions.from(opts).isCopy()) {
+            if (y instanceof DVectorDense yd) {
+                double[] copy = new double[size];
+                DoubleArrays.xpayTo(values, a, yd.values, copy, 0, size);
+                return new DVectorDense(copy.length, copy);
+            }
+            double[] copy = new double[size];
+            for (int i = 0; i < size(); i++) {
+                copy[i] = values[i] + a * y.get(i);
+            }
+            return new DVectorDense(copy.length, copy);
+        }
+        if (y instanceof DVectorDense yd) {
+            DoubleArrays.xpay(values, a, yd.values, 0, size);
+            return this;
+        }
+        for (int i = 0; i < size; i++) {
+            values[i] += a * y.get(i);
+        }
+        return this;
+    }
+
+    @Override
+    public double dot(DVector b) {
+        checkConformance(b);
+        if (b instanceof DVectorDense) {
+            double s = 0;
+            double[] bvalues = ((DVectorDense) b).elements();
+            for (int i = 0; i < size; i++) {
+                s = Math.fma(values[i], bvalues[i], s);
+            }
+            return s;
+        }
+        double s = 0;
+        for (int i = 0; i < size; i++) {
+            s = Math.fma(values[i], b.get(i), s);
+        }
+        return s;
     }
 
     @Override
@@ -121,129 +311,54 @@ public class DVectorDense extends AbstractDVector {
     }
 
     @Override
-    public DVectorDense add(double x) {
-        DoubleArrays.add(values, 0, x, size);
-        return this;
-    }
-
-    @Override
-    public DVectorDense add(DVector b) {
-        checkConformance(b);
-        if (b.isDense()) {
-            DoubleArrays.add(values, 0, b.asDense().values, 0, size);
-            return this;
+    public double dotBilinearDiag(DVector m, DVector y) {
+        if (m.size() != size() || m.size() != y.size()) {
+            throw new IllegalArgumentException("Bilinear diagonal vector is not conform for multiplication.");
         }
-        for (int i = 0; i < size; i++) {
-            values[i] += b.get(i);
-        }
-        return this;
-    }
-
-    @Override
-    public DVector sub(double x) {
-        DoubleArrays.sub(values, 0, x, size);
-        return this;
-    }
-
-    @Override
-    public DVectorDense sub(DVector b) {
-        checkConformance(b);
-        if (b instanceof DVectorDense) {
-            DoubleArrays.sub(values, 0, b.asDense().values, 0, size);
-            return this;
-        }
-        for (int i = 0; i < size; i++) {
-            values[i] -= b.get(i);
-        }
-        return this;
-    }
-
-    @Override
-    public DVector mult(double scalar) {
-        DoubleArrays.mult(values, 0, scalar, size);
-        return this;
-    }
-
-    @Override
-    public DVector mult(DVector b) {
-        checkConformance(b);
-        if (b instanceof DVectorDense) {
-            DoubleArrays.mult(values, 0, b.asDense().values, 0, size);
-            return this;
-        }
-        for (int i = 0; i < size; i++) {
-            values[i] *= b.get(i);
-        }
-        return this;
-    }
-
-    @Override
-    public DVector div(double scalar) {
-        DoubleArrays.div(values, 0, scalar, size);
-        return this;
-    }
-
-    @Override
-    public DVector div(DVector b) {
-        checkConformance(b);
-        if (b instanceof DVectorDense) {
-            DoubleArrays.div(values, 0, b.asDense().values, 0, size);
-            return this;
-        }
-        for (int i = 0; i < size; i++) {
-            values[i] /= b.get(i);
-        }
-        return this;
-    }
-
-    @Override
-    public DVector axpyCopy(double a, DVector y) {
-        checkConformance(y);
-        if (y instanceof DVectorDense) {
-            double[] copy = new double[size];
-            DoubleArrays.axpyTo(a, values, y.asDense().values, copy, 0, size);
-            return new DVectorDense(copy.length, copy);
-        }
-        double[] copy = new double[size];
+        double sum = 0.0;
         for (int i = 0; i < size(); i++) {
-            copy[i] = a * values[i] + y.get(i);
+            sum += values[i] * m.get(i) * y.get(i);
         }
-        return new DVectorDense(copy.length, copy);
+        return sum;
     }
 
     @Override
-    public double dot(DVector b) {
-        checkConformance(b);
-        if (b instanceof DVectorDense) {
-            double s = 0;
-            double[] bvalues = ((DVectorDense) b).elements();
-            for (int i = 0; i < size; i++) {
-                s = Math.fma(values[i], bvalues[i], s);
-            }
-            return s;
+    public double dotBilinearDiag(DMatrix m) {
+        if (m.rowCount() != size() || m.colCount() != size()) {
+            throw new IllegalArgumentException("Bilinear matrix is not conform for multiplication.");
         }
-        double s = 0;
-        for (int i = 0; i < size; i++) {
-            s = Math.fma(values[i], b.get(i), s);
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            sum += values[i] * m.get(i, i) * values[i];
         }
-        return s;
+        return sum;
     }
 
     @Override
-    public DMatrix diagDot(MType type, DMatrix m) {
-        if (size() != m.rowCount()) {
-            throw new IllegalArgumentException("Matrix not conform for multiplication.");
+    public double dotBilinearDiag(DMatrix m, DVector y) {
+        if (m.rowCount() != size() || m.colCount() != y.size()) {
+            throw new IllegalArgumentException("Bilinear matrix is not conform for multiplication.");
         }
-        DMatrix result = DMatrix.fill(size(), m.colCount(), 0);
-        for (int i = 0; i < m.rowCount(); i++) {
-            for (int j = 0; j < m.colCount(); j++) {
-                result.set(i, j, m.get(i, j) * values[i]);
-            }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            sum += values[i] * m.get(i, i) * y.get(i);
         }
-        return result;
+        return sum;
     }
 
-    public double norm(double p) {
+    @Override
+    public double dotBilinearDiag(DVector m) {
+        if (m.size() != size() || m.size() != size()) {
+            throw new IllegalArgumentException("Bilinear diagonal vector is not conform for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            sum += values[i] * m.get(i) * values[i];
+        }
+        return sum;
+    }
+
+    public double pnorm(double p) {
         if (p <= 0) {
             return size;
         }
@@ -339,9 +454,28 @@ public class DVectorDense extends AbstractDVector {
     }
 
     @Override
-    public DVector apply(Double2DoubleFunction f) {
+    public DVector apply(Double2DoubleFunction f, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = DoubleArrays.newFrom(values, 0, size, f);
+            return DVector.wrap(copy);
+        }
         for (int i = 0; i < size; i++) {
             values[i] = f.applyAsDouble(values[i]);
+        }
+        return this;
+    }
+
+    @Override
+    public DVector apply(BiFunction<Integer, Double, Double> f, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[size];
+            for (int i = 0; i < size; i++) {
+                copy[i] = f.apply(i, copy[i]);
+            }
+            return DVector.wrap(copy);
+        }
+        for (int i = 0; i < size; i++) {
+            values[i] = f.apply(i, values[i]);
         }
         return this;
     }

@@ -21,10 +21,10 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
-import rapaio.core.tools.DensityVector;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import rapaio.core.tools.DensityVector;
 
 /**
  * Base class for a rule in one rule algorithm

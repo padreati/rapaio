@@ -21,10 +21,10 @@
 
 package rapaio.data.group;
 
+import java.util.List;
+
 import rapaio.data.Group;
 import rapaio.data.Var;
-
-import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/18.

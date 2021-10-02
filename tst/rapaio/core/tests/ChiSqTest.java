@@ -21,13 +21,14 @@
 
 package rapaio.core.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.math.linear.DMatrix;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ChiSqTest {
 
@@ -50,14 +51,12 @@ public class ChiSqTest {
         }
 
         ChiSqGoodnessOfFit test1 = ChiSqGoodnessOfFit.from(x1, VarDouble.wrap(0.045, 0.795, 0.085, 0.075));
-        test1.printSummary();
 
         assertEquals(3.0, test1.df(), 1e-20);
         assertEquals(0.10744287054977643, test1.getChiValue(), 1e-20);
         assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
 
         test1 = ChiSqGoodnessOfFit.from(VarDouble.copy(11, 189, 19, 17), VarDouble.wrap(0.045, 0.795, 0.085, 0.075));
-        test1.printSummary();
 
         assertEquals(3.0, test1.df(), 1e-20);
         assertEquals(0.10744287054977643, test1.getChiValue(), 1e-20);
@@ -71,7 +70,6 @@ public class ChiSqTest {
             x2.addLabel("Female");
         }
         ChiSqGoodnessOfFit test2 = ChiSqGoodnessOfFit.from(x2, VarDouble.wrap(0.5, 0.5));
-        test2.printSummary();
 
         assertEquals(1, test2.df());
         assertEquals(0.64, test2.getChiValue(), 1e-20);

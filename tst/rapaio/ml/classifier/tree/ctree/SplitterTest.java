@@ -21,8 +21,14 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -30,10 +36,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.filter.VApply;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests splitters implementations for CTree
@@ -103,8 +105,6 @@ public class SplitterTest {
     @Test
     void testToRandom() {
         Pair<List<Frame>, List<Var>> pairs = Splitter.Random.performSplit(df, w, c.groupPredicates());
-
-        df.printHead();
 
         assertEquals(2, pairs.v1.size());
         assertEquals(2, pairs.v2.size());

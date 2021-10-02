@@ -21,12 +21,13 @@
 
 package rapaio.math.optimization.scalar;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.util.function.Double2DoubleFunction;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/26/21.

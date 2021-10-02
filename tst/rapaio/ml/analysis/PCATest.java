@@ -22,8 +22,14 @@
 package rapaio.ml.analysis;
 
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
@@ -32,8 +38,6 @@ import rapaio.io.Csv;
 import rapaio.math.linear.DMatrix;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.eval.metric.Confusion;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Principal component analysis decomposition test
@@ -60,7 +64,7 @@ public class PCATest {
         pca.fit(df);
 
         assertArrayEquals(new double[]{1.67100943, 0.83832597, 0.68195393},
-                pca.getValues().asDense().elements(), TOL);
+                pca.getValues().valueStream().toArray(), TOL);
 
         double[][] eigenvectors = new double[][]{
                 {-0.49210223, -0.64670286, 0.58276136},
@@ -126,20 +130,22 @@ public class PCATest {
         PCA pca = PCA.newModel().fit(df);
 
         assertEquals("PCA{}", pca.toString());
-        assertEquals("PCA decomposition\n" +
-                "=================\n" +
-                "input shape: rows=40, vars=3\n" +
-                "eigen values:\n" +
-                "[0] 1.6710094305325662 \n" +
-                "[1] 0.8383259734162226 \n" +
-                "[2] 0.6819539303101686 \n" +
-                "\n" +
-                "Eigen vectors\n" +
-                "                   [0]                 [1]                  [2] \n" +
-                "[0] 0.4921022293062838 -0.6467028606590822 -0.582761362761075   \n" +
-                "[1] 0.4792790249461415 -0.3575693744632702  0.8015209034657932  \n" +
-                "[2] 0.726723477093221   0.6737355211515162 -0.13399043018153664 \n" +
-                "\n", pca.toSummary());
+        assertEquals("""
+                PCA decomposition
+                =================
+                input shape: rows=40, vars=3
+                eigen values:
+                [0] 1.6710094305325662\s
+                [1] 0.8383259734162226\s
+                [2] 0.6819539303101686\s
+
+                Eigen vectors
+                                   [0]                 [1]                  [2]\s
+                [0] 0.4921022293062838 -0.6467028606590822 -0.582761362761075  \s
+                [1] 0.4792790249461415 -0.3575693744632702  0.8015209034657932 \s
+                [2] 0.726723477093221   0.6737355211515162 -0.13399043018153664\s
+
+                """, pca.toSummary());
         assertEquals(pca.toSummary(), pca.toContent());
         assertEquals(pca.toSummary(), pca.toFullContent());
     }

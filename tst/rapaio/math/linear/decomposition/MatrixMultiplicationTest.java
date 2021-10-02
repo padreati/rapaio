@@ -21,16 +21,18 @@
 
 package rapaio.math.linear.decomposition;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
-
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 public class MatrixMultiplicationTest {

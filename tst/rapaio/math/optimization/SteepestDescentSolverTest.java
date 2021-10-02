@@ -23,24 +23,15 @@ package rapaio.math.optimization;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.graphics.Plotter.color;
-import static rapaio.graphics.Plotter.fill;
-import static rapaio.graphics.Plotter.lines;
-import static rapaio.graphics.Plotter.points;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
-import rapaio.data.VarDouble;
-import rapaio.graphics.Plotter;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LearningRateLineSearch;
-import rapaio.sys.WS;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/31/21.

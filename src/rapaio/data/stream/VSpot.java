@@ -21,11 +21,11 @@
 
 package rapaio.data.stream;
 
-import rapaio.data.Var;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+
+import rapaio.data.Var;
 
 /**
  * A variable spot is a reference to an observation from a variable and is used in the context of streams.

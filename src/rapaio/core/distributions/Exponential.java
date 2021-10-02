@@ -21,9 +21,9 @@
 
 package rapaio.core.distributions;
 
-import rapaio.printer.Format;
-
 import java.io.Serial;
+
+import rapaio.printer.Format;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/20.

@@ -21,10 +21,10 @@
 
 package rapaio.data.filter;
 
+import java.io.Serializable;
+
 import rapaio.data.Var;
 import rapaio.printer.Printable;
-
-import java.io.Serializable;
 
 /**
  * This defines a filter for variables.

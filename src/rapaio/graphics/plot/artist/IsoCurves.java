@@ -21,14 +21,15 @@
 
 package rapaio.graphics.plot.artist;
 
-import rapaio.core.tools.GridData;
-import rapaio.data.Var;
-import rapaio.graphics.opt.ColorGradient;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.Axis;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Composite;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -37,7 +38,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Math.*;
+import rapaio.core.tools.GridData;
+import rapaio.data.Var;
+import rapaio.graphics.opt.ColorGradient;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.Axis;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/20/15.

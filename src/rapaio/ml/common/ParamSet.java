@@ -21,19 +21,17 @@
 
 package rapaio.ml.common;
 
-import rapaio.ml.regression.RegressionModel;
-import rapaio.printer.Format;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import rapaio.ml.regression.RegressionModel;
+import rapaio.printer.Format;
 
 /**
  * Base class for any algorithm which wants to handle its parameters via {@link Param}.

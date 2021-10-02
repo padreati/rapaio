@@ -21,6 +21,13 @@
 
 package rapaio.math.linear.base;
 
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
@@ -28,15 +35,13 @@ import rapaio.math.linear.MType;
 import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.math.linear.decomposition.SVDecomposition;
 import rapaio.math.linear.dense.DMatrixMap;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.function.Double2DoubleFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
@@ -56,12 +61,16 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DVector mapRow(final int row) {
-        return mapRowCopy(row);
+    public DVector map(int index, int axis, AlgebraOption<?>... opts) {
+        return switch (axis) {
+            case 0 -> mapRow(index);
+            case 1 -> mapCol(index);
+            default -> throw new IllegalArgumentException("Valid axis value must be specified.");
+        };
     }
 
     @Override
-    public DVector mapRowCopy(final int row) {
+    public DVector mapRow(final int row, AlgebraOption<?>... opts) {
         DVector v = DVector.zeros(colCount());
         for (int j = 0; j < colCount(); j++) {
             v.set(j, get(row, j));
@@ -70,82 +79,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix mapRows(final int... indexes) {
-        return new DMatrixMap(this, true, indexes);
-    }
-
-    @Override
-    public DMatrix mapRowsCopy(final int... rows) {
-        DMatrix copy = DMatrix.empty(rows.length, colCount());
-        for (int i = 0; i < rows.length; i++) {
-            for (int j = 0; j < colCount(); j++) {
-                copy.set(i, j, get(rows[i], j));
-            }
-        }
-        return copy;
-    }
-
-    @Override
-    public DMatrix rangeRows(final int start, final int end) {
-        int[] rows = new int[end - start];
-        for (int i = start; i < end; i++) {
-            rows[i - start] = i;
-        }
-        return new DMatrixMap(this, true, rows);
-    }
-
-    @Override
-    public DMatrix rangeRowsCopy(int start, int end) {
-        DMatrix copy = DMatrix.empty(MType.RSTRIPE, end - start, colCount());
-        for (int i = start; i < end; i++) {
-            for (int j = 0; j < colCount(); j++) {
-                copy.set(i - start, j, get(i, j));
-            }
-        }
-        return copy;
-    }
-
-    @Override
-    public DMatrix removeRows(int... indexes) {
-        Set<Integer> rem = Arrays.stream(indexes).boxed()
-                .filter(v -> v >= 0)
-                .filter(v -> v < rowCount())
-                .collect(Collectors.toSet());
-        int[] rows = new int[rowCount() - rem.size()];
-        int pos = 0;
-        for (int i = 0; i < rowCount(); i++) {
-            if (rem.contains(i)) {
-                continue;
-            }
-            rows[pos++] = i;
-        }
-        return new DMatrixMap(this, true, rows);
-    }
-
-    @Override
-    public DMatrix removeRowsCopy(int... indexes) {
-        Set<Integer> rem = Arrays.stream(indexes).boxed()
-                .filter(v -> v >= 0)
-                .filter(v -> v < rowCount())
-                .collect(Collectors.toSet());
-        int[] rows = new int[rowCount() - rem.size()];
-        int pos = 0;
-        for (int i = 0; i < rowCount(); i++) {
-            if (rem.contains(i)) {
-                continue;
-            }
-            rows[pos++] = i;
-        }
-        return mapRowsCopy(rows);
-    }
-
-    @Override
-    public DVector mapCol(int col) {
-        return mapColCopy(col);
-    }
-
-    @Override
-    public DVector mapColCopy(int col) {
+    public DVector mapCol(int col, AlgebraOption<?>... opts) {
         DVector v = DVector.zeros(rowCount());
         for (int j = 0; j < rowCount(); j++) {
             v.set(j, get(j, col));
@@ -154,84 +88,213 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix mapCols(int... indexes) {
+    public DMatrix map(int[] indexes, int axis, AlgebraOption<?>... opts) {
+        return switch (axis) {
+            case 0 -> mapRows(indexes, opts);
+            case 1 -> mapCols(indexes, opts);
+            default -> throw new IllegalArgumentException("Valid axis value must be specified.");
+        };
+    }
+
+    public DMatrix mapRows(final int[] indexes, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            DMatrix copy = DMatrix.empty(indexes.length, colCount());
+            for (int i = 0; i < indexes.length; i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    copy.set(i, j, get(indexes[i], j));
+                }
+            }
+            return copy;
+        }
+        return new DMatrixMap(this, true, indexes);
+    }
+
+    public DMatrix mapCols(int[] indexes, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            DMatrix copy = DMatrix.empty(rowCount(), indexes.length);
+            for (int i = 0; i < rowCount(); i++) {
+                for (int j = 0; j < indexes.length; j++) {
+                    copy.set(i, j, get(i, indexes[j]));
+                }
+            }
+            return copy;
+        }
         return new DMatrixMap(this, false, indexes);
     }
 
     @Override
-    public DMatrix mapColsCopy(int... cols) {
-        DMatrix copy = DMatrix.empty(MType.RSTRIPE, rowCount(), cols.length);
+    public DMatrix range(int start, int end, int axis, AlgebraOption<?>... opts) {
+        return switch (axis) {
+            case 0 -> rangeRows(start, end, opts);
+            case 1 -> rangeCols(start, end, opts);
+            default -> throw new IllegalArgumentException("Valid axis values must be specified.");
+        };
+    }
+
+    public DMatrix rangeRows(final int start, final int end, AlgebraOption<?>... opts) {
+        return mapRows(IntArrays.newSeq(start, end), opts);
+    }
+
+    public DMatrix rangeCols(int start, int end, AlgebraOption<?>... opts) {
+        int[] cols = IntArrays.newSeq(start, end);
+        return mapCols(cols, opts);
+    }
+
+    @Override
+    public DMatrix remove(int[] indexes, int axis, AlgebraOption<?>... opts) {
+        return switch (axis) {
+            case 0 -> removeRows(indexes, opts);
+            case 1 -> removeCols(indexes, opts);
+            default -> throw new IllegalArgumentException("Valid axis values must be specified.");
+        };
+    }
+
+    public DMatrix removeRows(int[] indexes, AlgebraOption<?>... opts) {
+        Set<Integer> rem = Arrays.stream(indexes).boxed()
+                .filter(v -> v >= 0)
+                .filter(v -> v < rowCount())
+                .collect(Collectors.toSet());
+        int[] rows = new int[rowCount() - rem.size()];
+        int pos = 0;
         for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < cols.length; j++) {
-                copy.set(i, j, get(i, cols[j]));
+            if (rem.contains(i)) {
+                continue;
             }
+            rows[pos++] = i;
         }
-        return copy;
+        return mapRows(rows, opts);
     }
 
-    @Override
-    public DMatrix rangeCols(int start, int end) {
-        int[] cols = new int[end - start];
-        for (int i = start; i < end; i++) {
-            cols[i - start] = i;
-        }
-        return new DMatrixMap(this, false, cols);
-    }
-
-    @Override
-    public DMatrix rangeColsCopy(int start, int end) {
-        int[] cols = new int[end - start];
-        for (int i = start; i < end; i++) {
-            cols[i - start] = i;
-        }
-        return mapColsCopy(cols);
-    }
-
-    @Override
-    public DMatrix removeCols(int... indexes) {
+    public DMatrix removeCols(int[] indexes, AlgebraOption<?>... opts) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
         int[] cols = new int[colCount() - rem.size()];
         int pos = 0;
         for (int i = 0; i < colCount(); i++) {
-            if (rem.contains(i))
+            if (rem.contains(i)) {
                 continue;
+            }
             cols[pos++] = i;
         }
-        return new DMatrixMap(this, false, cols);
+        return mapCols(cols, opts);
     }
 
     @Override
-    public DMatrix removeColsCopy(int... indexes) {
-        Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
-        int[] cols = new int[colCount() - rem.size()];
-        int pos = 0;
-        for (int i = 0; i < colCount(); i++) {
-            if (rem.contains(i))
-                continue;
-            cols[pos++] = i;
-        }
-        return mapColsCopy(cols);
-    }
-
-    @Override
-    public DMatrix add(double x) {
+    public DMatrix add(double x, AlgebraOption<?>... opts) {
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) + x);
+                ref.set(i, j, get(i, j) + x);
+            }
+        }
+        return ref;
+    }
+
+    @Override
+    public DMatrix add(DVector v, int axis, AlgebraOption<?>... opts) {
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
+        if (axis == 0) {
+            if (v.size() != ref.colCount()) {
+                throw new IllegalArgumentException("Vector has different size then the number of columns.");
+            }
+            for (int i = 0; i < ref.rowCount(); i++) {
+                for (int j = 0; j < ref.colCount(); j++) {
+                    ref.set(i, j, get(i, j) + v.get(j));
+                }
+            }
+        } else {
+            if (v.size() != ref.rowCount()) {
+                throw new IllegalArgumentException("Vector has different size than the number of rows.");
+            }
+            for (int i = 0; i < ref.rowCount(); i++) {
+                for (int j = 0; j < ref.colCount(); j++) {
+                    ref.set(i, j, get(i, j) + v.get(i));
+                }
+            }
+        }
+        return ref;
+    }
+
+    @Override
+    public DMatrix add(DMatrix b, AlgebraOption<?>... opts) {
+        checkMatrixSameSize(b);
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
+        for (int i = 0; i < ref.rowCount(); i++) {
+            for (int j = 0; j < ref.colCount(); j++) {
+                ref.set(i, j, get(i, j) + b.get(i, j));
+            }
+        }
+        return ref;
+    }
+
+    @Override
+    public DMatrix sub(double x, AlgebraOption<?>... opts) {
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                ref.set(i, j, get(i, j) - x);
+            }
+        }
+        return ref;
+    }
+
+    @Override
+    public DMatrix sub(DVector v, int axis, AlgebraOption<?>... opts) {
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
+        if (axis == 0) {
+            if (v.size() != ref.colCount()) {
+                throw new IllegalArgumentException("Vector has different size then the number of columns.");
+            }
+            for (int i = 0; i < ref.rowCount(); i++) {
+                for (int j = 0; j < ref.colCount(); j++) {
+                    ref.set(i, j, get(i, j) - v.get(j));
+                }
+            }
+        } else {
+            if (v.size() != ref.rowCount()) {
+                throw new IllegalArgumentException("Vector has different size than the number of rows.");
+            }
+            for (int i = 0; i < ref.rowCount(); i++) {
+                for (int j = 0; j < ref.colCount(); j++) {
+                    ref.set(i, j, get(i, j) - v.get(i));
+                }
+            }
+        }
+        return ref;
+    }
+
+    @Override
+    public DMatrix sub(DMatrix b, AlgebraOption<?>... opts) {
+        checkMatrixSameSize(b);
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                ref.set(i, j, get(i, j) - b.get(i, j));
             }
         }
         return this;
     }
 
     @Override
-    public DMatrix add(DVector v, int axis) {
+    public DMatrix mult(double x, AlgebraOption<?>... opts) {
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                ref.set(i, j, get(i, j) * x);
+            }
+        }
+        return ref;
+    }
+
+    @Override
+    public DMatrix mult(DVector v, int axis, AlgebraOption<?>... opts) {
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
         if (axis == 0) {
             if (v.size() != colCount()) {
                 throw new IllegalArgumentException("Vector has different size then the number of columns.");
             }
             for (int i = 0; i < rowCount(); i++) {
                 for (int j = 0; j < colCount(); j++) {
-                    inc(i, j, v.get(j));
+                    ref.set(i, j, get(i, j) * v.get(j));
                 }
             }
         } else {
@@ -240,121 +303,39 @@ public abstract class AbstractDMatrix implements DMatrix {
             }
             for (int i = 0; i < rowCount(); i++) {
                 for (int j = 0; j < colCount(); j++) {
-                    inc(i, j, v.get(i));
+                    ref.set(i, j, get(i, j) * v.get(i));
                 }
             }
         }
-        return this;
+        return ref;
     }
 
     @Override
-    public DMatrix add(DMatrix b) {
+    public DMatrix mult(DMatrix b, AlgebraOption<?>... opts) {
         checkMatrixSameSize(b);
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) + b.get(i, j));
+                ref.set(i, j, get(i, j) * b.get(i, j));
             }
         }
-        return this;
+        return ref;
     }
 
     @Override
-    public DMatrix sub(double x) {
-        return add(-x);
-    }
-
-    @Override
-    public DMatrix sub(DVector v, int axis) {
-        if (axis == 0) {
-            if (v.size() != colCount()) {
-                throw new IllegalArgumentException("Vector has different size then the number of columns.");
-            }
-            for (int i = 0; i < rowCount(); i++) {
-                for (int j = 0; j < colCount(); j++) {
-                    inc(i, j, -v.get(j));
-                }
-            }
-        } else {
-            if (v.size() != rowCount()) {
-                throw new IllegalArgumentException("Vector has different size than the number of rows.");
-            }
-            for (int i = 0; i < rowCount(); i++) {
-                for (int j = 0; j < colCount(); j++) {
-                    inc(i, j, -v.get(i));
-                }
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public DMatrix sub(DMatrix b) {
-        checkMatrixSameSize(b);
+    public DMatrix div(double x, AlgebraOption<?>... opts) {
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) - b.get(i, j));
+                ref.set(i, j, get(i, j) / x);
             }
         }
-        return this;
+        return ref;
     }
 
     @Override
-    public DMatrix mult(double x) {
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) * x);
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public DMatrix mult(DVector v, int axis) {
-        if (axis == 0) {
-            if (v.size() != colCount()) {
-                throw new IllegalArgumentException("Vector has different size then the number of columns.");
-            }
-            for (int i = 0; i < rowCount(); i++) {
-                for (int j = 0; j < colCount(); j++) {
-                    set(i, j, get(i, j) * v.get(j));
-                }
-            }
-        } else {
-            if (v.size() != rowCount()) {
-                throw new IllegalArgumentException("Vector has different size than the number of rows.");
-            }
-            for (int i = 0; i < rowCount(); i++) {
-                for (int j = 0; j < colCount(); j++) {
-                    set(i, j, get(i, j) * v.get(i));
-                }
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public DMatrix mult(DMatrix b) {
-        checkMatrixSameSize(b);
-        IntStream.range(0, rowCount()).parallel().forEach(i -> {
-            for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) * b.get(i, j));
-            }
-        });
-        return this;
-    }
-
-    @Override
-    public DMatrix div(double x) {
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) / x);
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public DMatrix div(DVector v, int axis) {
+    public DMatrix div(DVector v, int axis, AlgebraOption<?>... opts) {
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
         if (axis == 0) {
             if (v.size() != colCount()) {
                 throw new IllegalArgumentException("Vector has different size then the number of columns.");
@@ -374,18 +355,19 @@ public abstract class AbstractDMatrix implements DMatrix {
                 }
             }
         }
-        return this;
+        return ref;
     }
 
     @Override
-    public DMatrix div(DMatrix b) {
+    public DMatrix div(DMatrix b, AlgebraOption<?>... opts) {
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
         checkMatrixSameSize(b);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) / b.get(i, j));
+                ref.set(i, j, get(i, j) / b.get(i, j));
             }
         }
-        return this;
+        return ref;
     }
 
     @Override
@@ -406,36 +388,6 @@ public abstract class AbstractDMatrix implements DMatrix {
                             rowCount(), colCount(), b.size(), 1));
         }
         return MatrixMultiplication.ikjParallel(this, b);
-    }
-
-    @Override
-    public DMatrix dotDiag(DVector v) {
-        if (colCount() != v.size()) {
-            throw new IllegalArgumentException("Matrix and diagonal vector are " +
-                    "not compatible for multiplication.");
-        }
-        DMatrix result = DMatrix.empty(rowCount(), colCount());
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                result.set(i, j, get(i, j) * v.get(j));
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public DMatrix dotDiagT(DVector v) {
-        if (rowCount() != v.size()) {
-            throw new IllegalArgumentException("Matrix and diagonal vector are " +
-                    "not compatible for multiplication.");
-        }
-        DMatrix result = DMatrix.empty(rowCount(), colCount());
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                result.set(i, j, get(i, j) * v.get(i));
-            }
-        }
-        return result;
     }
 
     /**
@@ -488,8 +440,9 @@ public abstract class AbstractDMatrix implements DMatrix {
         }
         for (int k = 0; k < rowCount(); k++) {
             double[] row = new double[colCount()];
-            for (int i = 0; i < colCount(); i++)
+            for (int i = 0; i < colCount(); i++) {
                 row[i] = get(k, i) - mean[i];
+            }
             for (int i = 0; i < row.length; i++) {
                 for (int j = 0; j < row.length; j++) {
                     scatter.set(i, j, scatter.get(i, j) + row[i] * row[j]);
@@ -661,6 +614,45 @@ public abstract class AbstractDMatrix implements DMatrix {
             }
         }
         return max;
+    }
+
+    @Override
+    public DMatrix apply(Double2DoubleFunction fun, AlgebraOption<?>... opts) {
+        DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
+        for (int i = 0; i < ref.rowCount(); i++) {
+            for (int j = 0; j < ref.colCount(); j++) {
+                ref.set(i, j, fun.apply(get(i, j)));
+            }
+        }
+        return ref;
+    }
+
+    @Override
+    public DMatrix t(AlgebraOption<?>... opts) {
+        DMatrix t = DMatrix.empty(colCount(), rowCount());
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                t.set(j, i, get(i, j));
+            }
+        }
+        return t;
+    }
+
+    @Override
+    public DoubleStream valueStream() {
+        return IntStream.range(0, rowCount() * colCount())
+                .mapToDouble(i -> get(Math.floorDiv(i, colCount()), Math.floorMod(i, colCount())));
+    }
+
+    @Override
+    public DMatrix copy() {
+        DMatrix copy = DMatrix.empty(rowCount(), colCount());
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                copy.set(i, j, get(i, j));
+            }
+        }
+        return copy;
     }
 
     @Override

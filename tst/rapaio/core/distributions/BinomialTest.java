@@ -21,13 +21,15 @@
 
 package rapaio.core.distributions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.io.Csv;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for binomial distribution

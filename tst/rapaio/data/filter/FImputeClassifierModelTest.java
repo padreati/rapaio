@@ -21,16 +21,17 @@
 
 package rapaio.data.filter;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.ml.classifier.rule.OneRule;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/28/19.

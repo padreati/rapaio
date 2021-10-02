@@ -21,12 +21,12 @@
 
 package rapaio.math.linear;
 
-import rapaio.printer.Printable;
-import rapaio.printer.opt.POption;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
+
+import rapaio.printer.Printable;
+import rapaio.printer.opt.POption;
 
 /**
  * A shape describes the dimensions of a tensor in a generic sense. This includes vectors, arrays and multi-dimensional

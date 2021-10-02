@@ -22,16 +22,22 @@
 package rapaio.data;
 
 
-import org.junit.jupiter.api.Test;
-import rapaio.data.filter.VRefSort;
-import rapaio.data.filter.VSort;
-import rapaio.io.Csv;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.data.RowComparators.doubleComparator;
+import static rapaio.data.RowComparators.integerComparator;
+import static rapaio.data.RowComparators.labelComparator;
 
 import java.io.IOException;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.data.RowComparators.*;
+import org.junit.jupiter.api.Test;
+
+import rapaio.data.filter.VRefSort;
+import rapaio.data.filter.VSort;
+import rapaio.io.Csv;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

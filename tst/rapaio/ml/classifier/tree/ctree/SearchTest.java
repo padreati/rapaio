@@ -22,8 +22,12 @@
 package rapaio.ml.classifier.tree.ctree;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -32,8 +36,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.tree.CTree;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

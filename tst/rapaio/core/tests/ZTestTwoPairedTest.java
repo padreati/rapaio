@@ -21,12 +21,13 @@
 
 package rapaio.core.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
@@ -49,7 +50,6 @@ public class ZTestTwoPairedTest {
         assertEquals(0.05, z1.getSl(), TOL);
         assertEquals(HTest.Alternative.TWO_TAILS, z1.getAlt());
 
-        z1.printSummary();
         assertEquals(1.75, z1.getSampleMean(), TOL);
         assertEquals(-1.4142135623730951, z1.getZScore(), TOL);
         assertEquals(0.15729920705028522, z1.pValue(), TOL);
@@ -58,8 +58,6 @@ public class ZTestTwoPairedTest {
         assertEquals(0.05, z1.getSl(), TOL);
 
         ZTestTwoPaired z2 = ZTestTwoPaired.test(x, VarDouble.copy(Double.NaN, Double.NaN), 2, 0.5, 0.05, HTest.Alternative.LESS_THAN);
-        z2.printSummary();
-
         assertEquals(Double.NaN, z2.getSampleMean(), TOL);
         assertEquals(Double.NaN, z2.getZScore(), TOL);
         assertEquals(Double.NaN, z2.pValue(), TOL);
@@ -68,7 +66,6 @@ public class ZTestTwoPairedTest {
         assertEquals(0.05, z2.getSl(), TOL);
 
         ZTestTwoPaired z3 = ZTestTwoPaired.test(x, y, 2, 0.5, 0.05, HTest.Alternative.GREATER_THAN);
-        z3.printSummary();
         assertEquals(1.75, z3.getSampleMean(), TOL);
         assertEquals(-1.4142135623730951, z3.getZScore(), TOL);
         assertEquals(0.9213503964748574, z3.pValue(), TOL);
@@ -77,7 +74,6 @@ public class ZTestTwoPairedTest {
         assertEquals(0.05, z3.getSl(), TOL);
 
         ZTestTwoPaired z4 = ZTestTwoPaired.test(x, y, 2, 0.5, 0.05, HTest.Alternative.LESS_THAN);
-        z4.printSummary();
         assertEquals(1.75, z4.getSampleMean(), TOL);
         assertEquals(-1.4142135623730951, z4.getZScore(), TOL);
         assertEquals(0.07864960352514261, z4.pValue(), TOL);

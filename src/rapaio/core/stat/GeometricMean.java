@@ -21,12 +21,12 @@
 
 package rapaio.core.stat;
 
+import static rapaio.printer.Format.floatFlex;
+
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import static rapaio.printer.Format.floatFlex;
 
 /**
  * Core tool which computes geometric mean for a given numerical variable.

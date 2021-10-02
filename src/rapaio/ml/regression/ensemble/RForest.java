@@ -21,23 +21,6 @@
 
 package rapaio.ml.regression.ensemble;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarType;
-import rapaio.data.sample.RowSampler;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.common.Param;
-import rapaio.ml.common.ValueParam;
-import rapaio.ml.common.VarSelector;
-import rapaio.ml.regression.RegressionModel;
-import rapaio.ml.regression.DefaultHookInfo;
-import rapaio.ml.regression.RegressionResult;
-import rapaio.ml.regression.tree.RTree;
-import rapaio.ml.regression.tree.rtree.Splitter;
-import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -52,6 +35,23 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarType;
+import rapaio.data.sample.RowSampler;
+import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.Param;
+import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.VarSelector;
+import rapaio.ml.regression.DefaultHookInfo;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.RegressionResult;
+import rapaio.ml.regression.tree.RTree;
+import rapaio.ml.regression.tree.rtree.Splitter;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.

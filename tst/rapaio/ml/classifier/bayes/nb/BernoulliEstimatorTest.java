@@ -21,7 +21,13 @@
 
 package rapaio.ml.classifier.bayes.nb;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarBinary;
@@ -29,10 +35,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/24/20.

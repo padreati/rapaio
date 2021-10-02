@@ -21,7 +21,7 @@
 
 package rapaio.graphics.opt;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/10/15.

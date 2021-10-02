@@ -21,13 +21,13 @@
 
 package rapaio.sys;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
 import rapaio.graphics.Figure;
 import rapaio.image.ImageTools;
 import rapaio.printer.Printer;
 import rapaio.printer.standard.StandardPrinter;
-
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 /**
  * Working session tool. This class contains a printer instance and can be used as a single

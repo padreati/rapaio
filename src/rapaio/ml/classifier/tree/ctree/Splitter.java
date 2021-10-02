@@ -21,6 +21,13 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
+import static java.util.stream.Collectors.toList;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -28,13 +35,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.

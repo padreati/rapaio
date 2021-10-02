@@ -21,6 +21,19 @@
 
 package rapaio.ml.regression.rvm;
 
+import static rapaio.math.linear.Algebra.copy;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.core.distributions.Distribution;
@@ -45,17 +58,6 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
-
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/21.
@@ -120,7 +122,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                     factories[pp++] = new Factory(
                             String.format("RBF sigma:%s, index: %d", Format.floatFlex(sigmas.getDouble(i)), jj),
                             jj,
-                            x.mapRowCopy(jj),
+                            x.mapRow(jj, copy()),
                             () -> DVector.from(x.rowCount(), r -> kernel.compute(x.mapRow(jj), x.mapRow(r))),
                             vector -> kernel.compute(vector, x.mapRow(jj))
                     );
@@ -166,7 +168,8 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             DVector activeIndexes,
             DVector alpha,
             DVector theta
-    ) {}
+    ) {
+    }
 
     @Serial
     private static final long serialVersionUID = 9165148257709665706L;
@@ -548,11 +551,11 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 }
             }
             indexes = newIndex;
-            alpha = alpha.mapCopy(keep);
+            alpha = alpha.map(keep, copy());
 
             phi = phi.mapCols(keep).copy();
             phi_t_phi = phi_t_phi.mapCols(keep).mapRows(keep).copy();
-            phi_t_y = phi_t_y.mapCopy(keep);
+            phi_t_y = phi_t_y.map(keep, copy());
 
             DMatrix t = phi_t_phi.copy().mult(beta);
             for (int i = 0; i < t.rowCount(); i++) {
@@ -733,13 +736,13 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 m_sigma_inv.inc(i, i, alpha.get(indexes[i]));
             }
             sigma = QRDecomposition.from(m_sigma_inv).solve(DMatrix.identity(indexes.length));
-            m = sigma.dot(phi_dot_y.mapCopy(indexes)).mult(beta);
+            m = sigma.dot(phi_dot_y.map(indexes, copy())).mult(beta);
         }
 
         void computeSQ() {
             for (int i = 0; i < fcount; i++) {
-                DVector left = phi_hat.mapCol(i).mapCopy(indexes);
-                DVector right = phi_dot_y.mapCopy(indexes);
+                DVector left = phi_hat.mapCol(i).map(indexes, copy());
+                DVector right = phi_dot_y.map(indexes, copy());
                 ss[i] = beta * phi_hat.get(i, i) - beta * beta * left.dotBilinear(sigma);
                 qq[i] = beta * phi_dot_y.get(i) - beta * beta * left.dotBilinear(sigma, right);
             }
@@ -770,7 +773,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                     DMatrix.wrap(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
             parent.m = m.copy();
             parent.sigma = sigma.copy();
-            parent.alpha = alpha.mapCopy(indexes);
+            parent.alpha = alpha.map(indexes, copy());
             parent.beta = beta;
             parent.converged = convergent;
             parent.iterations = iterations;
@@ -826,7 +829,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 }
                 DVector activeIndexes = DVector.from(active.size(), i -> active.get(i).index);
                 parent.runningHook.get().accept(new RHInfo(parent, 0, a,
-                        activeIndexes, alpha.copy(), q.copy().apply(x -> x*x).sub(s)));
+                        activeIndexes, alpha.copy(), q.copy().apply(x -> x * x).sub(s)));
             }
 
             DVector old_alpha = alpha.copy();
@@ -844,7 +847,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                     }
                     DVector activeIndexes = DVector.from(active.size(), i -> active.get(i).index);
                     parent.runningHook.get().accept(new RHInfo(parent, it, a,
-                            activeIndexes, alpha.copy(), q.copy().apply(x -> x*x).sub(s).apply(Math::log1p)));
+                            activeIndexes, alpha.copy(), q.copy().apply(x -> x * x).sub(s).apply(Math::log1p)));
                 }
 
                 if (testConvergence(old_alpha)) {
@@ -1113,7 +1116,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
             // adjust phiHat
 
-            phiHat = phiHat.removeRows(pos).removeCols(pos).copy();
+            phiHat = phiHat.removeRows(new int[] {pos}).removeCols(new int[] {pos}, copy());
         }
 
         private boolean testConvergence(DVector old_alpha) {
@@ -1147,7 +1150,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                     .toArray(DVector[]::new));
             parent.m = m.copy();
             parent.sigma = sigma.copy();
-            parent.alpha = alpha.mapCopy(parent.featureIndexes);
+            parent.alpha = alpha.map(parent.featureIndexes, copy());
             parent.beta = beta;
             parent.converged = convergent;
             parent.iterations = iterations;

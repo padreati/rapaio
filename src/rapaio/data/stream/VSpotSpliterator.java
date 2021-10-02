@@ -21,10 +21,10 @@
 
 package rapaio.data.stream;
 
-import rapaio.data.Var;
-
 import java.util.Spliterators;
 import java.util.function.Consumer;
+
+import rapaio.data.Var;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/18.

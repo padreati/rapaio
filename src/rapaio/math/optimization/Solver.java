@@ -21,10 +21,10 @@
 
 package rapaio.math.optimization;
 
+import java.util.List;
+
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-
-import java.util.List;
 
 /**
  * An optimization algorithm for finding local minimum of a function. Any maximization problem can be casted as maximization without

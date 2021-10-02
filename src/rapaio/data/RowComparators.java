@@ -21,12 +21,12 @@
 
 package rapaio.data;
 
-import rapaio.util.IntComparator;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
+
+import rapaio.util.IntComparator;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

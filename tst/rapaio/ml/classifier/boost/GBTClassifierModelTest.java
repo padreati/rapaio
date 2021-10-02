@@ -21,8 +21,17 @@
 
 package rapaio.ml.classifier.boost;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import static rapaio.graphics.Plotter.fill;
+import static rapaio.graphics.Plotter.lines;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.datasets.Datasets;
@@ -31,11 +40,6 @@ import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.sys.WS;
-
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.graphics.Plotter.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.

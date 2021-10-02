@@ -21,6 +21,13 @@
 
 package rapaio.ml.eval;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Var;
 import rapaio.ml.common.ParamSet;
@@ -29,13 +36,6 @@ import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Computes cluster silhouette information based

@@ -21,10 +21,6 @@
 
 package rapaio.data;
 
-import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
-
 import java.io.Serial;
 import java.time.Instant;
 import java.util.Arrays;
@@ -36,6 +32,10 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * Variable which stores long 64-bit integer values.

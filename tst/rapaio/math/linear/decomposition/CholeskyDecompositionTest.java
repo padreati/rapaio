@@ -21,12 +21,15 @@
 
 package rapaio.math.linear.decomposition;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class CholeskyDecompositionTest {
 
@@ -79,9 +82,7 @@ public class CholeskyDecompositionTest {
                 {-0.75}
         });
         DMatrix s1 = CholeskyDecomposition.from(a1).solve(b1);
-        s1.printSummary();
         assertTrue(x1.deepEquals(s1, TOL));
-
 
         DMatrix a2 = DMatrix.wrap(new double[][]{
                 {2, 3},

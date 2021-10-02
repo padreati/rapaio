@@ -21,10 +21,11 @@
 
 package rapaio.data.filter;
 
-import org.junit.jupiter.api.Test;
-import rapaio.data.Frame;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
+
+import rapaio.data.Frame;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/18.

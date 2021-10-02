@@ -21,6 +21,10 @@
 
 package rapaio.core.correlation;
 
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -29,10 +33,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.filter.VRefSort;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * Spearman's rank correlation coefficient.

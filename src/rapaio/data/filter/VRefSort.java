@@ -21,6 +21,8 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+
 import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
@@ -28,8 +30,6 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
-
-import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.

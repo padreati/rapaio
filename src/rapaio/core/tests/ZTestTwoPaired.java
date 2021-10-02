@@ -21,14 +21,14 @@
 
 package rapaio.core.tests;
 
+import static rapaio.printer.Format.floatFlex;
+
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import static rapaio.printer.Format.floatFlex;
 
 /**
  * Two paired sample z test for testing mean of differences

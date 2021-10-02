@@ -21,16 +21,23 @@
 
 package rapaio.graphics.plot.artist;
 
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.Axis;
+import static rapaio.graphics.Plotter.HALIGN_CENTER;
+import static rapaio.graphics.Plotter.HALIGN_RIGHT;
+import static rapaio.graphics.Plotter.VALIGN_BOTTOM;
+import static rapaio.graphics.Plotter.VALIGN_CENTER;
+import static rapaio.graphics.Plotter.VALIGN_TOP;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.Serial;
 import java.util.Arrays;
 
-import static rapaio.graphics.Plotter.*;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.Axis;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/20.

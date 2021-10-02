@@ -21,6 +21,15 @@
 
 package rapaio.experiment.ml.classifier.meta;
 
+import static java.util.stream.Collectors.toList;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -33,15 +42,6 @@ import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
-
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Stacking with Binary Logistic as stacking classifier

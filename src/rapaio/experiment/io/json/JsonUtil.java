@@ -21,11 +21,6 @@
 
 package rapaio.experiment.io.json;
 
-import rapaio.experiment.io.json.stream.JsonInputFlat;
-import rapaio.experiment.io.json.stream.LzJsonOutput;
-import rapaio.experiment.io.json.tree.JsonValue;
-import rapaio.experiment.util.stream.StreamUtil;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -37,6 +32,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import rapaio.experiment.io.json.stream.JsonInputFlat;
+import rapaio.experiment.io.json.stream.LzJsonOutput;
+import rapaio.experiment.io.json.tree.JsonValue;
+import rapaio.experiment.util.stream.StreamUtil;
 
 /**
  * Utility class for manipulating json files.

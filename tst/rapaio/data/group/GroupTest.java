@@ -22,9 +22,27 @@
 package rapaio.data.group;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.data.Group.count;
+import static rapaio.data.Group.kurtosis;
+import static rapaio.data.Group.max;
+import static rapaio.data.Group.mean;
+import static rapaio.data.Group.min;
+import static rapaio.data.Group.nunique;
+import static rapaio.data.Group.skewness;
+import static rapaio.data.Group.std;
+import static rapaio.data.Group.sum;
+import static rapaio.printer.Printer.textWidth;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Group;
@@ -34,13 +52,6 @@ import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.sys.WS;
 import rapaio.util.StringBag;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.data.Group.*;
-import static rapaio.printer.Printer.textWidth;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/21/19.

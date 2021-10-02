@@ -21,7 +21,10 @@
 
 package rapaio.experiment.ml.common.predicate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
@@ -29,8 +32,6 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.stream.FSpot;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/21/17.

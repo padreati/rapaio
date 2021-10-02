@@ -21,11 +21,11 @@
 
 package rapaio.data.sample;
 
+import java.io.Serial;
+
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-
-import java.io.Serial;
 
 /**
  * Identity sampling means the sample is identical with the original set of data

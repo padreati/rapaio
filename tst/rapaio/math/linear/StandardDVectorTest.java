@@ -21,8 +21,17 @@
 
 package rapaio.math.linear;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.math.linear.Algebra.copy;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.core.distributions.Normal;
@@ -31,8 +40,6 @@ import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/9/20.
@@ -148,7 +155,7 @@ public abstract class StandardDVectorTest {
     @Test
     void mapCopyTest() {
         int[] sample = SamplingTools.sampleWOR(100, 10);
-        DVector mapCopy = x.mapCopy(sample);
+        DVector mapCopy = x.map(sample, copy());
         assertEquals(sample.length, mapCopy.size());
         for (int i = 0; i < 10; i++) {
             assertEquals(x.get(sample[i]), mapCopy.get(i), TOL);
@@ -159,10 +166,10 @@ public abstract class StandardDVectorTest {
     @Test
     void axpyCopyTest() {
         DVector ones = DVector.ones(x.size());
-        double result = x.axpyCopy(1, ones).sum();
+        double result = ones.xpay(1, x, copy()).sum();
         assertEquals(x.sum() + x.size(), result);
         DVector map = ones.map(IntArrays.newSeq(0, x.size()));
-        result = x.axpyCopy(1, map).sum();
+        result = map.xpay(1, x, copy()).sum();
         assertEquals(x.sum() + ones.size(), result);
     }
 
@@ -305,10 +312,10 @@ public abstract class StandardDVectorTest {
     @Test
     void dotBilinearTest() {
         double result = z.dotBilinear(m, z);
-        assertEquals(Math.pow(z.norm(2), 2) * 2, result);
+        assertEquals(Math.pow(z.pnorm(2), 2) * 2, result);
 
         result = z.dotBilinear(m);
-        assertEquals(Math.pow(z.norm(2), 2) * 2, result);
+        assertEquals(Math.pow(z.pnorm(2), 2) * 2, result);
 
         var ex = assertThrows(IllegalArgumentException.class, () -> z.dotBilinear(DMatrix.identity(10), z));
         assertEquals("Bilinear matrix and vector are not conform for multiplication.", ex.getMessage());
@@ -341,15 +348,15 @@ public abstract class StandardDVectorTest {
 
     @Test
     void normTest() {
-        assertEquals(100, x.norm(0), TOL);
-        assertEquals(x.copy().apply(Math::abs).sum(), x.norm(1), TOL);
-        assertEquals(Math.pow(x.copy().apply(v -> Math.pow(Math.abs(v), 1.2)).sum(), 1 / 1.2), x.norm(1.2), TOL);
-        assertEquals(x.copy().valueStream().max().orElse(Double.NaN), x.norm(Double.POSITIVE_INFINITY), TOL);
+        assertEquals(100, x.pnorm(0), TOL);
+        assertEquals(x.copy().apply(Math::abs).sum(), x.pnorm(1), TOL);
+        assertEquals(Math.pow(x.copy().apply(v -> Math.pow(Math.abs(v), 1.2)).sum(), 1 / 1.2), x.pnorm(1.2), TOL);
+        assertEquals(x.copy().valueStream().max().orElse(Double.NaN), x.pnorm(Double.POSITIVE_INFINITY), TOL);
     }
 
     @Test
     void normalizeTest() {
-        assertEquals(1, x.apply(Math::abs).normalize(1).sum(), TOL);
+        assertEquals(1, x.apply(Math::abs).pnormalize(1).sum(), TOL);
     }
 
     @Test

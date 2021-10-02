@@ -21,13 +21,13 @@
 
 package rapaio.data;
 
+import java.io.Serial;
+import java.util.List;
+
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.sys.WS;
-
-import java.io.Serial;
-import java.util.List;
 
 /**
  * Base abstract class for a frame, which provides behavior for the utility

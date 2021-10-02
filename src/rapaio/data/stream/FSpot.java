@@ -21,12 +21,12 @@
 
 package rapaio.data.stream;
 
-import rapaio.data.Frame;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+
+import rapaio.data.Frame;
 
 /**
  * Frame spot is a reference to an observation from a frame and usually is used in context of streams

@@ -21,13 +21,13 @@
 
 package rapaio.core.distributions.empirical;
 
-import rapaio.core.stat.Variance;
-import rapaio.data.Var;
-import rapaio.data.filter.VSort;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
+
+import rapaio.core.stat.Variance;
+import rapaio.data.Var;
+import rapaio.data.filter.VSort;
 
 /**
  * Kernel density estimator.

@@ -21,13 +21,15 @@
 
 package rapaio.math.optimization.linesearch;
 
+import static rapaio.math.linear.Algebra.copy;
+
+import java.io.Serial;
+
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
-
-import java.io.Serial;
 
 /**
  * Backtracking strategy for line search.
@@ -67,7 +69,7 @@ public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implement
         double xbeta = beta.get();
 
         double t = t0;
-        while (f.apply(p.axpyCopy(t, x)) > fx + xalpha * t * gxp) {
+        while (f.apply(x.xpay(t, p, copy())) > fx + xalpha * t * gxp) {
             t *= xbeta;
         }
         return t;

@@ -21,14 +21,14 @@
 
 package rapaio.data;
 
-import rapaio.math.linear.DMatrix;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import rapaio.math.linear.DMatrix;
 
 /**
  * A frame which is not mapped, its values are contained in vectors.

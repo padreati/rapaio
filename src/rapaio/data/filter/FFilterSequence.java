@@ -21,12 +21,12 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.Frame;
-
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+
+import rapaio.data.Frame;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/20.

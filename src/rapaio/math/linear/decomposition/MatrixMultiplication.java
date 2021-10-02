@@ -22,10 +22,10 @@
 
 package rapaio.math.linear.decomposition;
 
+import java.util.stream.IntStream;
+
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-
-import java.util.stream.IntStream;
 
 /**
  * This class offers different algorithms for matrix multiplication.
@@ -170,6 +170,9 @@ public class MatrixMultiplication {
     }
 
     public static DMatrix copyParallel(DMatrix A, DMatrix B) {
+        if(A.colCount()!=B.rowCount()) {
+            throw new IllegalArgumentException("Matrices are not conformant for multiplication.");
+        }
         DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
         DVector[] as = new DVector[C.rowCount()];
         DVector[] bs = new DVector[C.colCount()];
@@ -179,12 +182,9 @@ public class MatrixMultiplication {
         for (int i = 0; i < C.colCount(); i++) {
             bs[i] = B.mapCol(i);
         }
-        int len = Math.floorDiv(C.rowCount(), 16);
-        IntStream.range(0, len + 1).parallel().forEach(s -> {
-            for (int i = s * 16; i < Math.min((s + 1) * 16, C.rowCount()); i++) {
-                for (int j = 0; j < C.colCount(); j++) {
-                    C.set(i, j, as[i].dot(bs[j]));
-                }
+        IntStream.range(0, C.rowCount()).parallel().forEach(i -> {
+            for (int j = 0; j < C.colCount(); j++) {
+                C.set(i, j, as[i].dot(bs[j]));
             }
         });
         return C;

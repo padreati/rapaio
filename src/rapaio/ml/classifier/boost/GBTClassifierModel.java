@@ -21,6 +21,13 @@
 
 package rapaio.ml.classifier.boost;
 
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
@@ -29,7 +36,6 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.classifier.ClassifierRunHook;
 import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
@@ -39,13 +45,6 @@ import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.

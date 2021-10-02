@@ -21,6 +21,10 @@
 
 package rapaio.ml.regression.simple;
 
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.List;
+
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -29,16 +33,12 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.DefaultHookInfo;
+import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Simple regression which predicts with the median value of the target columns.

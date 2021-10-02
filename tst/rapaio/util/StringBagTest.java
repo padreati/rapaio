@@ -21,10 +21,7 @@
 
 package rapaio.util;
 
-import org.junit.jupiter.api.Test;
-import rapaio.data.Mapping;
-import rapaio.data.VarRange;
-import rapaio.datasets.Datasets;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +31,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import rapaio.data.Mapping;
+import rapaio.data.VarRange;
+import rapaio.datasets.Datasets;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/19.

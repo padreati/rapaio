@@ -21,13 +21,17 @@
 
 package rapaio.graphics.plot.artist;
 
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Composite;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.io.Serial;
+
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/5/16.

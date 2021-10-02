@@ -21,6 +21,18 @@
 
 package rapaio.graphics.plot.artist;
 
+import static java.lang.Math.floor;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.io.Serial;
+import java.util.stream.DoubleStream;
+
 import rapaio.core.correlation.CorrPearson;
 import rapaio.core.correlation.CorrSpearman;
 import rapaio.core.tools.DistanceMatrix;
@@ -31,14 +43,6 @@ import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
 import rapaio.printer.Format;
-
-import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.io.Serial;
-import java.util.stream.DoubleStream;
-
-import static java.lang.Math.*;
 
 /**
  * Correlograms are artists which helps visualize data in correlation matrices.

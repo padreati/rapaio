@@ -21,13 +21,13 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
 
 /**
  * Applies a random noise from a given distribution to a numeric vector.

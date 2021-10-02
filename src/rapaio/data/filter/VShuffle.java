@@ -21,14 +21,14 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
-
-import java.io.Serial;
 
 /**
  * Filter which shuffles observations from a given variable. The new variable is

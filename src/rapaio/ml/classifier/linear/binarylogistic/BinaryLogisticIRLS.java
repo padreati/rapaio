@@ -21,18 +21,20 @@
 
 package rapaio.ml.classifier.linear.binarylogistic;
 
+import static java.lang.Math.exp;
+
+import static rapaio.math.linear.Algebra.copy;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
+
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
-
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.Math.exp;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
@@ -152,9 +154,9 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
         CholeskyDecomposition chol = CholeskyDecomposition.from(mA);
         if (chol.isSPD()) {
             // if we have a symmetric positive definite matrix we solve it with Cholesky
-            return chol.solve(b).mapCol(0).copy();
+            return chol.solve(b).map(0, 1, copy());
         }
         // otherwise we fall in QR decomposition
-        return QRDecomposition.from(mA).solve(b).mapCol(0).copy();
+        return QRDecomposition.from(mA).solve(b).map(0, 1, copy());
     }
 }

@@ -21,9 +21,7 @@
 
 package rapaio.util.collection;
 
-import rapaio.core.RandomSource;
-import rapaio.util.IntIterable;
-import rapaio.util.IntIterator;
+import static rapaio.util.hash.Murmur3.murmur3A;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -31,7 +29,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.IntStream;
 
-import static rapaio.util.hash.Murmur3.murmur3A;
+import rapaio.core.RandomSource;
+import rapaio.util.IntIterable;
+import rapaio.util.IntIterator;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.

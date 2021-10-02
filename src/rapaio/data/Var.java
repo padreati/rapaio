@@ -21,13 +21,6 @@
 
 package rapaio.data;
 
-import rapaio.data.filter.VFilter;
-import rapaio.data.ops.DVarOp;
-import rapaio.data.stream.VSpot;
-import rapaio.data.stream.VSpots;
-import rapaio.printer.Printable;
-import rapaio.util.IntComparator;
-
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
@@ -37,6 +30,13 @@ import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
+
+import rapaio.data.filter.VFilter;
+import rapaio.data.ops.DVarOp;
+import rapaio.data.stream.VSpot;
+import rapaio.data.stream.VSpots;
+import rapaio.printer.Printable;
+import rapaio.util.IntComparator;
 
 /**
  * Random access list of observed values (observations) of a random variable (a vector with sample values).

@@ -21,17 +21,17 @@
 
 package rapaio.data.unique;
 
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.VarInt;
-import rapaio.util.collection.IntArrays;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import rapaio.data.Mapping;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.util.collection.IntArrays;
 
 /**
  * Unique value feature for label values.

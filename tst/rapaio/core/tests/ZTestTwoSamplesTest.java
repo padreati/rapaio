@@ -21,12 +21,13 @@
 
 package rapaio.core.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
@@ -41,7 +42,6 @@ public class ZTestTwoSamplesTest {
         Var y = VarDouble.copy(4.5, 5.4, 6.1, 6.1, 5.4, 5., 4.1, 5.5);
 
         ZTestTwoSamples z1 = ZTestTwoSamples.test(x, y, 2, 0.5, 0.5, 0.05, HTest.Alternative.TWO_TAILS);
-        z1.printSummary();
         assertEquals(1.7556818181818183, z1.getSampleMean(), TOL);
         assertEquals(7.0181818181818185, z1.getXSampleMean(), TOL);
         assertEquals(5.2625, z1.getYSampleMean(), TOL);
@@ -53,7 +53,6 @@ public class ZTestTwoSamplesTest {
 
 
         z1 = ZTestTwoSamples.test(Mean.of(x).value(), x.size(), Mean.of(y).value(), y.size(), 2, 0.5, 0.5, 0.05, HTest.Alternative.TWO_TAILS);
-        z1.printSummary();
         assertEquals(1.7556818181818183, z1.getSampleMean(), TOL);
         assertEquals(7.0181818181818185, z1.getXSampleMean(), TOL);
         assertEquals(5.2625, z1.getYSampleMean(), TOL);
@@ -64,7 +63,6 @@ public class ZTestTwoSamplesTest {
         assertEquals(2.211040435576059, z1.ciHigh(), TOL);
 
         ZTestTwoSamples z2 = ZTestTwoSamples.test(x, y, 0, 0.5, 0.6, 0.10, HTest.Alternative.TWO_TAILS);
-        z2.printSummary();
 
         assertEquals(6.7462746482071205, z2.getZScore(), TOL);
         assertEquals(1.5169976386175676E-11, z2.pValue(), TOL);
@@ -72,7 +70,6 @@ public class ZTestTwoSamplesTest {
         assertEquals(2.1837461584287112, z2.ciHigh(), TOL);
 
         ZTestTwoSamples z3 = ZTestTwoSamples.test(x, VarDouble.empty(), 0, 0.5, 0.5);
-        z3.printSummary();
 
         assertEquals(Double.NaN, z3.getZScore(), TOL);
         assertEquals(Double.NaN, z3.pValue(), TOL);
@@ -80,7 +77,6 @@ public class ZTestTwoSamplesTest {
         assertEquals(Double.NaN, z3.ciHigh(), TOL);
 
         ZTestTwoSamples z4 = ZTestTwoSamples.test(x, y, 2, 0.5, 0.5, 0.05, HTest.Alternative.GREATER_THAN);
-        z2.printSummary();
         assertEquals(-1.051599374295714, z4.getZScore(), TOL);
         assertEquals(0.8535083025071536, z4.pValue(), TOL);
         assertEquals(1.3003232007875778, z4.ciLow(), TOL);
@@ -88,11 +84,9 @@ public class ZTestTwoSamplesTest {
 
 
         ZTestTwoSamples z5 = ZTestTwoSamples.test(x, y, 2, 0.5, 0.5, 0.05, HTest.Alternative.LESS_THAN);
-        z1.printSummary();
         assertEquals(-1.051599374295714, z5.getZScore(), TOL);
         assertEquals(0.1464916974928464, z5.pValue(), TOL);
         assertEquals(1.3003232007875778, z5.ciLow(), TOL);
         assertEquals(2.211040435576059, z5.ciHigh(), TOL);
     }
-
 }

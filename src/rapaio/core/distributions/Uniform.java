@@ -21,9 +21,9 @@
 
 package rapaio.core.distributions;
 
-import java.io.Serial;
-
 import static rapaio.printer.Format.floatFlex;
+
+import java.io.Serial;
 
 /**
  * Continuous uniform distribution

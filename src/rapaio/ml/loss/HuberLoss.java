@@ -21,13 +21,13 @@
 
 package rapaio.ml.loss;
 
-import rapaio.core.stat.Quantiles;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
+import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 
-import static rapaio.printer.Format.floatFlex;
+import rapaio.core.stat.Quantiles;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/17.

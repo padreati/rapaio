@@ -21,8 +21,15 @@
 
 package rapaio.ml.classifier.rule;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.printer.Printer.textWidth;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -32,9 +39,6 @@ import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.rule.onerule.HolteBinning;
 import rapaio.sys.WS;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.printer.Printer.textWidth;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>

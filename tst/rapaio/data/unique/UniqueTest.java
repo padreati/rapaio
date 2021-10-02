@@ -22,8 +22,14 @@
 package rapaio.data.unique;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.DUniform;
 import rapaio.data.Unique;
@@ -34,8 +40,6 @@ import rapaio.data.VarInt;
 import rapaio.data.VarLong;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.VRefSort;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.

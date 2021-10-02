@@ -21,16 +21,18 @@
 
 package rapaio.core.correlation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for pearson correlation

@@ -21,10 +21,10 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
-
-import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.

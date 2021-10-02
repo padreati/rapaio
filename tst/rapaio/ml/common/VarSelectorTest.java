@@ -21,8 +21,15 @@
 
 package rapaio.ml.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Collections;
+import java.util.HashMap;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
 import rapaio.data.Frame;
@@ -30,11 +37,6 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.math.linear.DVector;
-
-import java.util.Collections;
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>

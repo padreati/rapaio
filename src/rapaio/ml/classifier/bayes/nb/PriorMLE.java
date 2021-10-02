@@ -21,15 +21,15 @@
 
 package rapaio.ml.classifier.bayes.nb;
 
-import rapaio.core.tools.DensityVector;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.printer.Format;
-
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import rapaio.core.tools.DensityVector;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.printer.Format;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/4/20.

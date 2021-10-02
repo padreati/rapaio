@@ -21,13 +21,6 @@
 
 package rapaio.ml.classifier.bayes.nb;
 
-import rapaio.core.distributions.Poisson;
-import rapaio.core.tools.DensityVector;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarRange;
-import rapaio.printer.Format;
-
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +28,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import rapaio.core.distributions.Poisson;
+import rapaio.core.tools.DensityVector;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.printer.Format;
 
 /**
  * Poisson event based estimator for Naive Bayes. This estimator fits a Poisson

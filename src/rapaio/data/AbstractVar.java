@@ -21,6 +21,11 @@
 
 package rapaio.data;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.ops.DVarOp;
@@ -30,11 +35,6 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serial;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

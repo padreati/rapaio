@@ -21,13 +21,13 @@
 
 package rapaio.ml.common;
 
-import rapaio.core.SamplingTools;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Stream;
+
+import rapaio.core.SamplingTools;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>

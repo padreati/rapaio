@@ -21,13 +21,16 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.RandomSource;
-import rapaio.printer.Format;
+import static java.lang.Math.exp;
+import static java.lang.Math.log;
+
+import static rapaio.math.MathTools.incompleteGamma;
+import static rapaio.math.MathTools.lnGamma;
 
 import java.io.Serial;
 
-import static java.lang.Math.*;
-import static rapaio.math.MathTools.*;
+import rapaio.core.RandomSource;
+import rapaio.printer.Format;
 
 /**
  * ChiSquare distribution.

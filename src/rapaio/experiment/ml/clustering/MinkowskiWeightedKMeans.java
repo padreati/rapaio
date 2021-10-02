@@ -21,6 +21,14 @@
 
 package rapaio.experiment.ml.clustering;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
+
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
@@ -41,14 +49,6 @@ import rapaio.printer.opt.POption;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
 import rapaio.util.collection.IntOpenHashSet;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/17.

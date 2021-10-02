@@ -21,16 +21,18 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
+import static rapaio.graphics.Plotter.HALIGN_LEFT;
+import static rapaio.graphics.Plotter.VALIGN_TOP;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import static rapaio.graphics.Plotter.*;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
 
 /**
  * Graphical aspect options.

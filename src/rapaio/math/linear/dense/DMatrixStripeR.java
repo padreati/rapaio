@@ -21,13 +21,16 @@
 
 package rapaio.math.linear.dense;
 
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;
-
-import java.io.Serial;
-import java.util.stream.IntStream;
 
 /**
  * Dense matrix with values in double floating point precision.
@@ -71,30 +74,28 @@ public class DMatrixStripeR extends DMatrixStripe {
     }
 
     @Override
-    public DVector mapRow(final int row) {
-        return new DVectorDense(values[row].length, values[row]);
+    public DVector mapRow(final int row, AlgebraOption<?>... opts) {
+        double[] ref = values[row];
+        if (AlgebraOptions.from(opts).isCopy()) {
+            ref = Arrays.copyOf(values[row], values[row].length);
+        }
+        return new DVectorDense(ref.length, ref);
     }
 
     @Override
-    public DMatrix mapRows(int... indexes) {
+    public DMatrix mapRows(int[] indexes, AlgebraOption<?>... opts) {
         if (indexes.length == 0) {
             throw new IllegalArgumentException("Cannot map rows with empty indexes.");
         }
         double[][] wrap = new double[indexes.length][colCount];
         for (int i = 0; i < indexes.length; i++) {
-            wrap[i] = values[indexes[i]];
-        }
-        return new DMatrixStripeR(indexes.length, colCount, wrap);
-    }
-
-    @Override
-    public DMatrix add(double x) {
-        for (double[] row : values) {
-            for (int i = 0; i < row.length; i++) {
-                row[i] += x;
+            if (AlgebraOptions.from(opts).isCopy()) {
+                wrap[i] = Arrays.copyOf(values[indexes[i]], values[indexes[i]].length);
+            } else {
+                wrap[i] = values[indexes[i]];
             }
         }
-        return this;
+        return new DMatrixStripeR(indexes.length, colCount, wrap);
     }
 
     @Override
@@ -102,44 +103,25 @@ public class DMatrixStripeR extends DMatrixStripe {
         double[] varray = (b instanceof DVectorDense) ? ((DVectorDense) b).elements() : b.valueStream().toArray();
         double[] c = DoubleArrays.newFill(rowCount, 0);
         IntStream.range(0, rowCount).parallel().forEach(i -> {
-                double sum = 0;
-                for (int j = 0; j < values[i].length; j++) {
-                    sum += values[i][j] * varray[j];
-                }
-                c[i] = sum;
+            double sum = 0;
+            for (int j = 0; j < values[i].length; j++) {
+                sum += values[i][j] * varray[j];
+            }
+            c[i] = sum;
         });
         return new DVectorDense(c.length, c);
     }
 
     @Override
-    public DMatrix dotDiag(DVector v) {
-        if (v instanceof DVectorDense) {
-            var array = v.asDense().elements();
-            var len = v.size();
-            for (int i = 0; i < rowCount; i++) {
-                DoubleArrays.mult(values[i], 0, array, 0, len);
+    public DMatrix t(AlgebraOption<?>... opts) {
+        double[][] ref = values;
+        if (AlgebraOptions.from(opts).isCopy()) {
+            ref = new double[values.length][];
+            for (int i = 0; i < values.length; i++) {
+                ref[i] = Arrays.copyOf(values[i], values[i].length);
             }
-            return this;
         }
-        return super.dotDiag(v);
-    }
-
-    @Override
-    public DMatrix dotDiagT(DVector v) {
-        if (v.isDense()) {
-            var array = v.asDense().elements();
-            var len = v.size();
-            for (int i = 0; i < rowCount; i++) {
-                DoubleArrays.mult(values[i], 0, array[i], colCount);
-            }
-            return this;
-        }
-        return super.dotDiagT(v);
-    }
-
-    @Override
-    public DMatrix t() {
-        return new DMatrixStripeC(colCount, rowCount, values);
+        return new DMatrixStripeC(colCount, rowCount, ref);
     }
 
     @Override

@@ -21,6 +21,10 @@
 
 package rapaio.math.linear;
 
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.stream.DoubleStream;
+
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
@@ -32,14 +36,11 @@ import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.math.linear.dense.DMatrixStripeC;
 import rapaio.math.linear.dense.DMatrixStripeR;
 import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.util.NotImplementedException;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
-
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.stream.DoubleStream;
 
 /**
  * Dense matrix with double precision floating point values
@@ -48,14 +49,37 @@ import java.util.stream.DoubleStream;
  */
 public interface DMatrix extends Serializable, Printable {
 
+    /**
+     * Default storage type for a matrix. This storage type is used when no matrix storage type
+     * is specified as parameter and there are multiple choices available for a given
+     * operation.
+     *
+     * @return default storage type for a matrix
+     */
     static MType defaultMType() {
         return MType.RDENSE;
     }
 
+    /**
+     * Creates a matrix with given {@code rows} and {@code cols} filled with values {@code 0}.
+     *
+     * @param rows number of rows
+     * @param cols number of columns
+     * @return new empty matrix with default storage type
+     */
     static DMatrix empty(int rows, int cols) {
         return empty(defaultMType(), rows, cols);
     }
 
+    /**
+     * Creates a matrix with given {@code rows} and {@code cols} filled with values {@code 0}
+     * with a storage type specified as a parameter.
+     *
+     * @param type matrix storage type
+     * @param rows number of rows
+     * @param cols number of columns
+     * @return new empty matrix with given storage type
+     */
     static DMatrix empty(MType type, int rows, int cols) {
         return switch (type) {
             case RDENSE -> new DMatrixDenseR(rows, cols);
@@ -66,8 +90,16 @@ public interface DMatrix extends Serializable, Printable {
         };
     }
 
+    /**
+     * Creates an identity matrix with default storage type.
+     * An identity matrix is a square matrix with {@code 0} values everywhere
+     * except on the main diagonal where it is filled with {@code 1}
+     *
+     * @param n number of rows and columns of the square matrix
+     * @return identity matrix of order n
+     */
     static DMatrix identity(int n) {
-        return identity(MType.RSTRIPE, n);
+        return identity(defaultMType(), n);
     }
 
     /**
@@ -87,29 +119,45 @@ public interface DMatrix extends Serializable, Printable {
         return m;
     }
 
+    static DMatrix diagonal(DVector v) {
+        return diagonal(defaultMType(), v);
+    }
+
+    static DMatrix diagonal(MType type, DVector v) {
+        DMatrix m = DMatrix.identity(type, v.size());
+        for (int i = 0; i < v.size(); i++) {
+            m.set(i, i, v.get(i));
+        }
+        return m;
+    }
+
+    /**
+     * Builds a new matrix filled with a given value and with default storage type.
+     *
+     * @param rows number of rows
+     * @param cols number of columns
+     * @param fill fill value for all matrix cells
+     * @return new matrix filled with value
+     */
     static DMatrix fill(int rows, int cols, double fill) {
         return fill(defaultMType(), rows, cols, fill);
     }
 
     /**
-     * Builds a new matrix filled with a given value.
+     * Builds a new matrix filled with a given value and with specified storage type.
      *
      * @param type matrix implementation storage type
      * @param rows number of rows
      * @param cols number of columns
-     * @param fill value which fills all cells of the matrix
+     * @param fill fill value for all matrix cells
      * @return new matrix filled with value
      */
     static DMatrix fill(MType type, int rows, int cols, double fill) {
         DMatrix m = empty(type, rows, cols);
         switch (type) {
-            case RDENSE, CDENSE -> {
-                double[] velements = ((DMatrixDense) m).getElements();
-                Arrays.fill(velements, fill);
-            }
+            case RDENSE, CDENSE -> Arrays.fill(((DMatrixDense) m).getElements(), fill);
             case RSTRIPE, CSTRIPE -> {
-                double[][] elements = ((DMatrixStripe) m).getElements();
-                for (double[] v : elements) {
+                for (double[] v : ((DMatrixStripe) m).getElements()) {
                     Arrays.fill(v, fill);
                 }
             }
@@ -118,12 +166,24 @@ public interface DMatrix extends Serializable, Printable {
         return m;
     }
 
+    /**
+     * Builds a new matrix filled with values computed by a given function
+     * which receives as parameter the row and column of each element and
+     * is stored in default storage format.
+     *
+     * @param rows number of rows
+     * @param cols number of columns
+     * @param fun  lambda function which computes a value given row and column positions
+     * @return new matrix filled with value
+     */
     static DMatrix fill(int rows, int cols, IntInt2DoubleBiFunction fun) {
         return fill(defaultMType(), rows, cols, fun);
     }
 
     /**
-     * Builds a new matrix filled with a given value
+     * Builds a new matrix filled with values computed by a given function
+     * which receives as parameter the row and column of each element and
+     * is stored in specified storage format.
      *
      * @param type matrix implementation storage type
      * @param rows number of rows
@@ -141,26 +201,86 @@ public interface DMatrix extends Serializable, Printable {
         return m;
     }
 
+    /**
+     * Build a matrix with values generated by a standard normal distribution and
+     * is stored in the default storage format.
+     *
+     * @param rows number of rows
+     * @param cols number of columns
+     * @return matrix filled with random values
+     */
     static DMatrix random(int rows, int cols) {
         return random(defaultMType(), rows, cols, Normal.std());
     }
 
+    /**
+     * Build a matrix with values generated by a standard normal distribution and
+     * is stored in the specified storage format.
+     *
+     * @param type matrix storage type
+     * @param rows number of rows
+     * @param cols number of columns
+     * @return matrix filled with random values
+     */
     static DMatrix random(MType type, int rows, int cols) {
         return random(type, rows, cols, Normal.std());
     }
 
+    /**
+     * Build a matrix with values generated by a distribution given as parameter and
+     * is stored in the specified storage format.
+     *
+     * @param type matrix storage type
+     * @param rows number of rows
+     * @param cols number of columns
+     * @return matrix filled with random values
+     */
     static DMatrix random(MType type, int rows, int cols, Distribution distribution) {
         return fill(type, rows, cols, (r, c) -> distribution.sampleNext());
     }
 
+    /**
+     * Builds a matrix which wraps an array of arrays of values with leaf arrays as rows.
+     *
+     * @param values array of arrays of values
+     * @return matrix which wrap the values by rows
+     */
     static DMatrix wrap(double[][] values) {
-        return wrap(MType.RSTRIPE, true, values);
+        return wrap(true, values);
     }
 
+    /**
+     * Builds a matrix which wraps an array of arrays of values.
+     * Because we have an array of arrays the only storage types allowed are {@link MType#CSTRIPE} and
+     * {@link MType#RSTRIPE}. The matrix storage type is chosen by {@code byRows} parameter value.
+     * If {@code byRows} is {@code true} then the leaf arrays are interpreted as rows of values and
+     * {@link MType#RSTRIPE} storage matrix is chosen. If the value is {@code false} then the leaf array
+     * is interpreted as columns and {@link MType#CSTRIPE} storage type is chosen.
+     *
+     * @param byRows true if we have an array of rows, false if we have an array of columns
+     * @param values array of arrays of values
+     * @return matrix which wrap the values
+     */
     static DMatrix wrap(boolean byRows, double[][] values) {
-        return wrap(byRows ? MType.RSTRIPE : MType.CSTRIPE, byRows, values);
+        if (byRows) {
+            return new DMatrixStripeR(values.length, values[0].length, values);
+        } else {
+            return new DMatrixStripeC(values[0].length, values.length, values);
+        }
     }
 
+    /**
+     * Builds a matrix which wraps an array vectors.
+     * Because we have an array of vectors the only storage types allowed are {@link MType#CSTRIPE} and
+     * {@link MType#RSTRIPE}. The matrix storage type is chosen by {@code byRows} parameter value.
+     * If {@code byRows} is {@code true} then the vectors are interpreted as rows of values and
+     * {@link MType#RSTRIPE} storage matrix is chosen. If the value is {@code false} then the vectors
+     * are interpreted as columns and {@link MType#CSTRIPE} storage type is chosen.
+     *
+     * @param byRows  true if we have an array of rows, false if we have an array of columns
+     * @param vectors array of arrays of values
+     * @return matrix which wrap the values
+     */
     static DMatrix wrap(boolean byRows, DVector[] vectors) {
         int len = Integer.MAX_VALUE;
         double[][] values = new double[vectors.length][];
@@ -175,47 +295,82 @@ public interface DMatrix extends Serializable, Printable {
         return wrap(byRows, values);
     }
 
-    static DMatrix wrap(MType type, boolean byRows, double[][] values) {
-        if (byRows && type == MType.RSTRIPE) {
-            return new DMatrixStripeR(values.length, values[0].length, values);
-        }
-        if (!byRows && type == MType.CSTRIPE) {
-            return new DMatrixStripeC(values[0].length, values.length, values);
-        }
-        throw new IllegalArgumentException();
-    }
-
+    /**
+     * Builds a matrix which wraps an array of values by rows.
+     *
+     * @param values array of arrays of values
+     * @return matrix which wrap the values
+     */
     static DMatrix wrap(int rows, int cols, double[] values) {
-        return wrap(MType.RDENSE, rows, cols, values);
+        return wrap(true, rows, cols, values);
     }
 
+    /**
+     * Builds a matrix which wraps an array of values. Because we have an array of values, the only storage types allowed
+     * are {@link MType#CDENSE} and {@link MType#RDENSE}. The matrix storage type is chosen by {@code byRows} parameter value.
+     * If {@code byRows} is {@code true} then the array is interpreted as rows values first and
+     * {@link MType#RDENSE} storage matrix is chosen. If the value is {@code false} then the array
+     * is interpreted as column values first and {@link MType#CDENSE} storage type is chosen.
+     *
+     * @param byRows true if we have an array of rows, false if we have an array of columns
+     * @param values array of arrays of values
+     * @return matrix which wrap the values
+     */
     static DMatrix wrap(boolean byRows, int rows, int cols, double[] values) {
-        return wrap(byRows ? MType.RDENSE : MType.CDENSE, rows, cols, values);
-    }
-
-    static DMatrix wrap(MType type, int rows, int cols, double[] values) {
-        if (type == MType.RDENSE) {
+        if (byRows) {
             return new DMatrixDenseR(rows, cols, values);
-        }
-        if (type == MType.CDENSE) {
+        } else {
             return new DMatrixDenseC(rows, cols, values);
         }
-        throw new IllegalArgumentException();
     }
 
+    /**
+     * Copy values from an array of arrays into a matrix. Matrix storage type is the default type and values
+     * are row oriented.
+     *
+     * @param values array of arrays of values
+     * @return matrix which hold a range of data
+     */
     static DMatrix copy(double[][] values) {
         return copy(defaultMType(), true, 0, values.length, 0, values[0].length, values);
     }
 
+    /**
+     * Copy values from an array of arrays into a matrix. Matrix storage type and row/column
+     * orientation are given as parameter.
+     * <p>
+     * The only storage matrix not allowed is {@link MType#MAP} since this matrix storage is not direct.
+     *
+     * @param type   matrix storage type
+     * @param byRows if true values are row oriented, if false values are column oriented
+     * @param values array of arrays of values
+     * @return matrix which hold a range of data
+     */
     static DMatrix copy(MType type, boolean byRows, double[][] values) {
         return copy(type, byRows, 0, byRows ? values.length : values[0].length, 0, byRows ? values[0].length : values.length, values);
     }
 
-    static DMatrix copy(MType type, boolean byRows, int rows, int cols, double[][] values) {
-        return copy(type, byRows, 0, rows, 0, cols, values);
-    }
-
+    /**
+     * Copy values from an array of arrays into a matrix. Matrix storage type and row/column
+     * orientation are given as parameter.
+     * <p>
+     * This is the most customizable way to transfer values from an array of arrays into a matrix.
+     * The only storage matrix not allowed is {@link MType#MAP} since this matrix storage is not direct.
+     * It allows creating of a matrix from a rectangular range of values.
+     *
+     * @param type     matrix storage type
+     * @param byRows   if true values are row oriented, if false values are column oriented
+     * @param rowStart starting row inclusive
+     * @param rowEnd   end row exclusive
+     * @param colStart column row inclusive
+     * @param colEnd   column end exclusive
+     * @param values   array of arrays of values
+     * @return matrix which hold a range of data
+     */
     static DMatrix copy(MType type, boolean byRows, int rowStart, int rowEnd, int colStart, int colEnd, double[][] values) {
+        if (type == MType.MAP) {
+            throw new IllegalArgumentException("Matrix type not allowed.");
+        }
         int rows = rowEnd - rowStart;
         int cols = colEnd - colStart;
         DMatrix m = empty(type, rows, cols);
@@ -235,15 +390,74 @@ public interface DMatrix extends Serializable, Printable {
         return m;
     }
 
+    /**
+     * Copies values from an array into a matrix with default row orientation and default storage type {@link MType#RDENSE}.
+     * <p>
+     * The layout of data is described by {@code inputRows} and {@code columnRows} and this is the same size
+     * for the resulted matrix.
+     *
+     * @param inputRows number of rows for data layout
+     * @param inputCols number of columns for data layout
+     * @param values    array of values
+     * @return matrix with a range of values copied from original array
+     */
     static DMatrix copy(int inputRows, int inputCols, double... values) {
         return copy(defaultMType(), true, inputRows, inputCols, 0, inputRows, 0, inputCols, values);
     }
 
+    /**
+     * Copies values from an array into a matrix.
+     * <p>
+     * All matrix storage types are allowed with the exeption of {@link MType#MAP} since that is an indirect
+     * storage type.
+     * <p>
+     * The layout of data is described by {@code inputRows} and {@code columnRows}.
+     * The row or column orientation is determined by {@code byRows} parameter. If {@code byRows} is true,
+     * the values from the array are interpreted as containing rows one after another. If {@code byRows} is
+     * false then the interpretation is that the array contains columns one after another.
+     * <p>
+     * The method creates an array of values of the same size as input data layout.
+     *
+     * @param type      matrix storage type
+     * @param byRows    value orientation: true if row oriented, false if column oriented
+     * @param inputRows number of rows for data layout
+     * @param inputCols number of columns for data layout
+     * @param values    array of values
+     * @return matrix with a range of values copied from original array
+     */
     static DMatrix copy(MType type, boolean byRows, int inputRows, int inputCols, double[] values) {
         return copy(type, byRows, inputRows, inputCols, 0, inputRows, 0, inputCols, values);
     }
 
-    static DMatrix copy(MType type, boolean byRows, int inputRows, int inputCols, int rowStart, int rowEnd, int colStart, int colEnd,
+    /**
+     * Copies values from an array into a matrix.
+     * <p>
+     * This is the most customizable way to copy values from a contiguous arrays into a matrix.
+     * <p>
+     * All matrix storage types are allowed with the exeption of {@link MType#MAP} since that is an indirect
+     * storage type.
+     * <p>
+     * The layout of data is described by {@code inputRows} and {@code columnRows}.
+     * The row or column orientation is determined by {@code byRows} parameter. If {@code byRows} is true,
+     * the values from the array are interpreted as containing rows one after another. If {@code byRows} is
+     * false then the interpretation is that the array contains columns one after another.
+     * <p>
+     * The method allows creation of an array using a contiguous range of rows and columns described by
+     * parameters.
+     *
+     * @param type      matrix storage type
+     * @param byRows    value orientation: true if row oriented, false if column oriented
+     * @param inputRows number of rows for data layout
+     * @param inputCols number of columns for data layout
+     * @param rowStart  row start inclusive
+     * @param rowEnd    row end exclusive
+     * @param colStart  column start inclusive
+     * @param colEnd    column end exclusive
+     * @param values    array of values
+     * @return matrix with a range of values copied from original array
+     */
+    static DMatrix copy(MType type, boolean byRows, int inputRows, int inputCols,
+            int rowStart, int rowEnd, int colStart, int colEnd,
             double[] values) {
         int rows = rowEnd - rowStart;
         int cols = colEnd - colStart;
@@ -265,10 +479,25 @@ public interface DMatrix extends Serializable, Printable {
         return m;
     }
 
+    /**
+     * Copies data from a data frame using the default data storage frame.
+     * Data is collected from frame using {@link Frame#getDouble(int, int)} calls.
+     *
+     * @param df data frame
+     * @return matrix with collected values
+     */
     static DMatrix copy(Frame df) {
         return copy(defaultMType(), df);
     }
 
+    /**
+     * Copies data from a data frame using the specified data storage frame.
+     * Data is collected from frame using {@link Frame#getDouble(int, int)} calls.
+     *
+     * @param type matrix storage type
+     * @param df   data frame
+     * @return matrix with collected values
+     */
     static DMatrix copy(MType type, Frame df) {
         int rows = df.rowCount();
         int cols = df.varCount();
@@ -281,10 +510,25 @@ public interface DMatrix extends Serializable, Printable {
         return m;
     }
 
+    /**
+     * Copies data from a list of variables using the default data storage frame.
+     * Data is collected from frame using {@link Frame#getDouble(int, int)} calls.
+     *
+     * @param vars array of variables
+     * @return matrix with collected values
+     */
     static DMatrix copy(Var... vars) {
         return copy(defaultMType(), vars);
     }
 
+    /**
+     * Copies data from a list of variables using the specified data storage frame.
+     * Data is collected from frame using {@link Frame#getDouble(int, int)} calls.
+     *
+     * @param type matrix storage type
+     * @param vars array of variables
+     * @return matrix with collected values
+     */
     static DMatrix copy(MType type, Var... vars) {
         int rows = vars[0].size();
         int cols = vars.length;
@@ -302,6 +546,13 @@ public interface DMatrix extends Serializable, Printable {
      */
     MType type();
 
+    /**
+     * If the matrix is an indirect storage type this returns
+     * the source matrix storage type. Otherwise, it returns the
+     * same value as {@link #type()}.
+     *
+     * @return inner matrix storage type
+     */
     MType innerType();
 
     /**
@@ -342,178 +593,96 @@ public interface DMatrix extends Serializable, Printable {
     void inc(final int row, final int col, final double value);
 
     /**
-     * Returns a vector build from values of a row in
-     * the original matrix. Depending on implementation,
-     * the vector can be a view over the original data.
-     * If one wants a copy of a row as a vector than
-     * she must call {@link #mapRowCopy(int)}.
+     * Returns a vector build from values of an axis from the original matrix.
+     * <p>
+     * The axis legal values are: 0 row axis, 1 column axis.
+     * <p>
+     * Depending on implementation, the vector can be a view over the original data.
+     * To enforce a new copy add option {@link Algebra#copy()} as parameter.
      *
-     * @param row row index
+     * @param index index of the selected row/column
+     * @param axis  0 for rows, 1 for columns
      * @return result vector reference
      */
-    DVector mapRow(final int row);
+    DVector map(final int index, int axis, AlgebraOption<?>... opts);
+
+    default DVector mapRow(final int index, AlgebraOption<?>... opts) {
+        return map(index, 0, opts);
+    }
+
+    default DVector mapCol(final int index, AlgebraOption<?>... opts) {
+        return map(index, 1, opts);
+    }
 
     /**
-     * Returns a vector build from values of a row
-     * in original matrix. The vector contains a copy of
-     * the original values.
+     * Creates a new matrix which contains only the rows/columns
+     * specified by given indexes.
+     * <p>
+     * The axis legal values are: 0 row axis, 1 column axis.
+     * <p>
+     * Depending on implementation, the vector can be a view over the original data.
+     * To enforce a new copy add option {@link Algebra#copy()} as parameter.
      *
-     * @param row row index
-     * @return result vector reference
-     */
-    DVector mapRowCopy(final int row);
-
-    /**
-     * Creates a new matrix which contains only the rows
-     * specified by given indexes. Depending on the implementation
-     * the new matrix can be a view on the original data. If one
-     * wants a copied matrix, she must call {@link #mapRowsCopy(int...)}
-     *
-     * @param rows row indexes
+     * @param indexes row indexes
+     * @param axis    0 for rows, 1 for columns
      * @return result matrix reference
      */
-    DMatrix mapRows(int... rows);
+    DMatrix map(int[] indexes, int axis, AlgebraOption<?>... opts);
+
+    default DMatrix mapRows(int[] indexes, AlgebraOption<?>... opts) {
+        return map(indexes, 0, opts);
+    }
+
+    default DMatrix mapCols(int[] indexes, AlgebraOption<?>... opts) {
+        return map(indexes, 1, opts);
+    }
 
     /**
-     * Creates a new matrix which contains only the rows
-     * specified by given indexes. The new matrix is a copy
-     * over the original data.
-     *
-     * @param rows row indexes
-     * @return result matrix reference
-     */
-    DMatrix mapRowsCopy(int... rows);
-
-    /**
-     * Creates a new matrix which contains only rows with
+     * Creates a new matrix which contains only rows/columns with
      * indices in the given range starting from {@param start} inclusive
-     * and ending at {@param end} exclusive. Depending on the implementation
-     * the new matrix can be a view. To obtain a copy method
-     * {@link #rangeRowsCopy(int, int)} must be called.
+     * and ending at {@param end} exclusive.
+     * <p>
+     * The axis legal values are: 0 row axis, 1 column axis.
+     * <p>
+     * Depending on the implementation
+     * the new matrix can be a view. To obtain a new matrix copy
+     * one has to add {@link Algebra#copy()} parameter.
      *
      * @param start start row index (inclusive)
      * @param end   end row index (exclusive)
      * @return result matrix reference
      */
-    DMatrix rangeRows(int start, int end);
+    DMatrix range(int start, int end, int axis, AlgebraOption<?>... opts);
+
+    default DMatrix rangeRows(int start, int end, AlgebraOption<?>... opts) {
+        return range(start, end, 0, opts);
+    }
+
+    default DMatrix rangeCols(int start, int end, AlgebraOption<?>... opts) {
+        return range(start, end, 1, opts);
+    }
 
     /**
-     * Creates a new matrix which contains only rows with
-     * indices in the given range starting from {@param start} inclusive
-     * and ending at {@param end} exclusive. The new matrix contains a
-     * copy of the data.
-     *
-     * @param start start row index (inclusive)
-     * @param end   end row index (exclusive)
-     * @return result matrix reference
-     */
-    DMatrix rangeRowsCopy(int start, int end);
-
-    /**
-     * Builds a new matrix having all columns and all the rows not specified by given indexes.
+     * Builds a new matrix having all rows/columns not specified by given indexes.
+     * <p>
+     * The axis legal values are: 0 row axis, 1 column axis.
+     * <p>
      * Depending on the implementation this can be a view over the original matrix.
-     * To obtain a new copy of the data method {@link #removeRowsCopy(int...)} must be called.
+     * To obtain a new copy of the data method {@link Algebra#copy()} must be added as parameter.
      *
-     * @param rows rows which will be removed
-     * @return new mapped matrix containing all rows not specified by indexes
+     * @param indexes rows/columns to be removed
+     * @param axis    0 for rows, 1 for columns
+     * @return new mapped matrix containing all rows/columns not specified by indexes
      */
-    DMatrix removeRows(int... rows);
+    DMatrix remove(int[] indexes, int axis, AlgebraOption<?>... opts);
 
-    /**
-     * Builds a new matrix having all columns and all the rows not specified by given indexes.
-     * containg a copy of the original data.
-     *
-     * @param indexes rows which will be removed
-     * @return new mapped matrix containing all rows not specified by indexes
-     */
-    DMatrix removeRowsCopy(int... indexes);
+    default DMatrix removeRows(int[] indexes, AlgebraOption<?>... opts) {
+        return remove(indexes, 0, opts);
+    }
 
-    /**
-     * Returns a vector build from values of a column in
-     * the original matrix. Depending on implementation,
-     * the vector can be a view over the original array.
-     * If one wants a copy of a column as a vector than
-     * she must call {@link #mapColCopy(int)}.
-     *
-     * @param col column index
-     * @return result vector reference
-     */
-    DVector mapCol(final int col);
-
-    /**
-     * Returns a vector build from values of a column
-     * in original matrix. The vector contains a copy of
-     * the original values.
-     *
-     * @param col column index
-     * @return result vector reference
-     */
-    DVector mapColCopy(final int col);
-
-    /**
-     * Creates a new matrix which contains only the cols
-     * specified by given indexes. Depending on the implementation
-     * the new matrix can be a view on the original data. If one
-     * wants a copied matrix, she must call {@link #mapColsCopy(int...)}
-     *
-     * @param indexes column indexes
-     * @return result matrix reference
-     */
-    DMatrix mapCols(int... indexes);
-
-    /**
-     * Creates a new matrix which contains only the cols
-     * specified by given indexes. The new matrix is a copy
-     * over the original data.
-     *
-     * @param cols column indexes
-     * @return result matrix reference
-     */
-    DMatrix mapColsCopy(int... cols);
-
-    /**
-     * Creates a new matrix which contains only cols with
-     * indices in the given range starting from {@param start} inclusive
-     * and ending at {@param end} exclusive. Depending on the implementation
-     * the new matrix can be a view. To obtain a copy method
-     * {@link #rangeColsCopy(int, int)} must be called.
-     *
-     * @param start start column index (inclusive)
-     * @param end   end column index (exclusive)
-     * @return result matrix reference
-     */
-    DMatrix rangeCols(int start, int end);
-
-    /**
-     * Creates a new matrix which contains only columns with
-     * indices in the given range starting from {@param start} inclusive
-     * and ending at {@param end} exclusive. The new matrix contains a
-     * copy of the data.
-     *
-     * @param start start column index (inclusive)
-     * @param end   end column index (exclusive)
-     * @return result matrix reference
-     */
-    DMatrix rangeColsCopy(int start, int end);
-
-    /**
-     * Builds a new matrix having all columns not specified by given indexes.
-     * Depending on the implementation this can be a view over the original matrix.
-     * To obtain a new copy of the data method {@link #removeColsCopy(int...)} must be called.
-     *
-     * @param cols columns which will be removed
-     * @return new mapped matrix containing all rows not specified by indexes
-     */
-    DMatrix removeCols(int... cols);
-
-    /**
-     * Builds a new matrix having all columns not specified by given indexes.
-     * containg a copy of the original data.
-     *
-     * @param cols columns which will be removed
-     * @return new mapped matrix containing all rows not specified by indexes
-     */
-    DMatrix removeColsCopy(int... cols);
+    default DMatrix removeCols(int[] indexes, AlgebraOption<?>... opts) {
+        return remove(indexes, 1, opts);
+    }
 
     /**
      * Adds a scalar value to all elements of a matrix. If possible,
@@ -522,16 +691,16 @@ public interface DMatrix extends Serializable, Printable {
      * @param x value to be added
      * @return instance of the result matrix
      */
-    DMatrix add(double x);
+    DMatrix add(double x, AlgebraOption<?>... opts);
 
     /**
-     * Add vector values to all rows (axis 0) or vectors (axis 1).
+     * Add vector values each row/column of the matrix.
      *
      * @param x    vector to be added
-     * @param axis axis addition
+     * @param axis 0 for rows, 1 for columns
      * @return same matrix with added values
      */
-    DMatrix add(DVector x, int axis);
+    DMatrix add(DVector x, int axis, AlgebraOption<?>... opts);
 
     /**
      * Adds element wise values from given matrix. If possible,
@@ -540,7 +709,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param b matrix with elements to be added
      * @return instance of the result matrix
      */
-    DMatrix add(DMatrix b);
+    DMatrix add(DMatrix b, AlgebraOption<?>... opts);
 
     /**
      * Subtract a scalar value to all elements of a matrix. If possible,
@@ -549,16 +718,16 @@ public interface DMatrix extends Serializable, Printable {
      * @param x value to be substracted
      * @return instance of the result matrix
      */
-    DMatrix sub(double x);
+    DMatrix sub(double x, AlgebraOption<?>... opts);
 
     /**
      * Subtract vector values to all rows (axis 0) or vectors (axis 1).
      *
      * @param x    vector to be added
-     * @param axis axis addition
+     * @param axis 0 for rows, 1 for columns
      * @return same matrix with added values
      */
-    DMatrix sub(DVector x, int axis);
+    DMatrix sub(DVector x, int axis, AlgebraOption<?>... opts);
 
     /**
      * Subtracts element wise values from given matrix. If possible,
@@ -567,7 +736,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param b matrix with elements to be substracted
      * @return instance of the result matrix
      */
-    DMatrix sub(DMatrix b);
+    DMatrix sub(DMatrix b, AlgebraOption<?>... opts);
 
     /**
      * Multiply a scalar value to all elements of a matrix. If possible,
@@ -576,16 +745,16 @@ public interface DMatrix extends Serializable, Printable {
      * @param x value to be multiplied with
      * @return instance of the result matrix
      */
-    DMatrix mult(double x);
+    DMatrix mult(double x, AlgebraOption<?>... opts);
 
     /**
      * Multiply vector values to all rows (axis 0) or columns (axis 1).
      *
      * @param x    vector to be added
-     * @param axis axis addition
+     * @param axis 0 for rows, 1 for columns
      * @return same matrix with added values
      */
-    DMatrix mult(DVector x, int axis);
+    DMatrix mult(DVector x, int axis, AlgebraOption<?>... opts);
 
     /**
      * Multiplies element wise values from given matrix. If possible,
@@ -594,7 +763,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param b matrix with elements to be multiplied with
      * @return instance of the result matrix
      */
-    DMatrix mult(DMatrix b);
+    DMatrix mult(DMatrix b, AlgebraOption<?>... opts);
 
     /**
      * Divide a scalar value from all elements of a matrix. If possible,
@@ -603,7 +772,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param x divisor value
      * @return instance of the result matrix
      */
-    DMatrix div(double x);
+    DMatrix div(double x, AlgebraOption<?>... opts);
 
     /**
      * Divide all rows (axis 0) or columns (axis 1) by elements of the given vector
@@ -612,7 +781,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param axis axis addition
      * @return same matrix with added values
      */
-    DMatrix div(DVector x, int axis);
+    DMatrix div(DVector x, int axis, AlgebraOption<?>... opts);
 
     /**
      * Divides element wise values from given matrix. If possible,
@@ -621,7 +790,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param b matrix with division elements
      * @return instance of the result matrix
      */
-    DMatrix div(DMatrix b);
+    DMatrix div(DMatrix b, AlgebraOption<?>... opts);
 
     /**
      * Apply the given function to all elements of the matrix.
@@ -629,7 +798,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param fun function to be applied
      * @return same instance matrix
      */
-    DMatrix apply(Double2DoubleFunction fun);
+    DMatrix apply(Double2DoubleFunction fun, AlgebraOption<?>... opts);
 
     /**
      * Computes matrix vector multiplication.
@@ -638,28 +807,6 @@ public interface DMatrix extends Serializable, Printable {
      * @return result vector
      */
     DVector dot(DVector b);
-
-    /**
-     * Compute matrix multiplication between the current
-     * matrix and the diagonal matrix obtained from the given vector.
-     * <p>
-     * A * I(v)
-     *
-     * @param v diagonal vector
-     * @return result matrix
-     */
-    DMatrix dotDiag(DVector v);
-
-    /**
-     * Compute matrix multiplication between the current
-     * matrix and the diagonal matrix obtained from the given vector.
-     * <p>
-     * I(v) * A
-     *
-     * @param v diagonal vector
-     * @return result matrix
-     */
-    DMatrix dotDiagT(DVector v);
 
     /**
      * Computes matrix - matrix multiplication.
@@ -691,7 +838,7 @@ public interface DMatrix extends Serializable, Printable {
      *
      * @return new transposed matrix
      */
-    DMatrix t();
+    DMatrix t(AlgebraOption<?>... opts);
 
     /**
      * Vector with values from main diagonal

@@ -21,12 +21,11 @@
 
 package rapaio.ml.eval.metric;
 
-import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
-import rapaio.data.VarDouble;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+import rapaio.data.VarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
@@ -34,19 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class GiniTest {
 
     private static final double TOL = 1e-6;
-
-    @Test
-    void testSmoke() {
-
-        VarDouble x = VarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9);
-        VarDouble y = VarDouble.copy(1, 4, 7, 2, 9, 3, 8, 5, 6);
-
-        double eval = Gini.from(x, y).normalizedGini();
-        System.out.println(eval);
-
-        System.out.println(Gini.from(x, x).normalizedGini());
-        System.out.println(Gini.from(y, x).normalizedGini());
-    }
 
     /**
      * This test is documented from here:
@@ -83,20 +69,5 @@ public class GiniTest {
                 VarDouble.wrap(1, 2, 5, 4, 3)
         );
         assertEquals(-0.821428571428572, gini.normalizedGini(), TOL);
-
-        RandomSource.setSeed(1234);
-        VarDouble x = Normal.std().sample(100);
-        VarDouble y = Normal.std().sample(100);
-
-        /*
-        This does not work, and I do not understand why.
-         */
-        /*
-        Gini gini1 = Gini.from(x, y, NumVar.fill(x.rowCount(), 1));
-        Gini gini2 = Gini.from(x, y);
-
-        assertEquals(gini1.gini(), gini2.gini(), TOL);
-        assertEquals(gini1.normalizedGini(), gini2.normalizedGini(), TOL);
-        */
     }
 }

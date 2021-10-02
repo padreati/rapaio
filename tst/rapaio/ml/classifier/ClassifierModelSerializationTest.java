@@ -21,7 +21,13 @@
 
 package rapaio.ml.classifier;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -35,11 +41,6 @@ import rapaio.ml.classifier.bayes.nb.KernelEstimator;
 import rapaio.ml.classifier.rule.OneRule;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.metric.Confusion;
-
-import java.io.File;
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ClassifierModelSerializationTest {
 
@@ -62,7 +63,6 @@ public class ClassifierModelSerializationTest {
     @SuppressWarnings("unchecked")
     private <T extends ClassifierModel> void testModel(T model, Frame df, Var varModel, Var varData, Var varAcc) throws IOException, ClassNotFoundException {
         model.fit(df, "class");
-        model.printSummary();
 
         File tmp = File.createTempFile("model-", "ser");
         JavaIO.storeToFile(model, tmp);
@@ -72,7 +72,6 @@ public class ClassifierModelSerializationTest {
         var modelFit = model.predict(df);
         var shaddowFit = shaddow.predict(df);
 
-        modelFit.printSummary();
         assertEquals(modelFit.toSummary(), shaddowFit.toSummary());
 
         varData.addLabel("iris");

@@ -21,16 +21,16 @@
 
 package rapaio.ml.loss;
 
+import static rapaio.util.collection.DoubleArrays.sum;
+
+import java.io.Serial;
+
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.ml.regression.tree.RTreeLoss;
 import rapaio.ml.regression.tree.rtree.SearchPayload;
-
-import java.io.Serial;
-
-import static rapaio.util.collection.DoubleArrays.sum;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.

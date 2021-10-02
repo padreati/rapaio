@@ -21,9 +21,9 @@
 
 package rapaio.ml.common.kernel.cache;
 
-import rapaio.data.Frame;
-
 import java.io.Serializable;
+
+import rapaio.data.Frame;
 
 /**
  * Defines operations available on a kernel cache.

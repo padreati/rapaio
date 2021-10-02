@@ -21,6 +21,10 @@
 
 package rapaio.graphics;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.image.BufferedImage;
+
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.tools.DistanceMatrix;
@@ -77,9 +81,6 @@ import rapaio.math.linear.DMatrix;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public final class Plotter {
 

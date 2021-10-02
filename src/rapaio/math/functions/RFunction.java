@@ -21,9 +21,9 @@
 
 package rapaio.math.functions;
 
-import rapaio.math.linear.DVector;
-
 import java.io.Serializable;
+
+import rapaio.math.linear.DVector;
 
 /**
  * Interface which describes an n-dimensional real valued function.

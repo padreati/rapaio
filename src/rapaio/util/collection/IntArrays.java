@@ -21,10 +21,6 @@
 
 package rapaio.util.collection;
 
-import rapaio.util.IntComparator;
-import rapaio.util.IntIterator;
-import rapaio.util.function.Int2IntFunction;
-
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -37,6 +33,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
+
+import rapaio.util.IntComparator;
+import rapaio.util.IntIterator;
+import rapaio.util.function.Int2IntFunction;
 
 /**
  * A class providing static methods and objects that do useful things with

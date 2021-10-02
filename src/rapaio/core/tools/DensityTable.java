@@ -21,6 +21,14 @@
 
 package rapaio.core.tools;
 
+import static rapaio.math.MathTools.log2;
+import static rapaio.util.collection.DoubleArrays.nanSum;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Var;
@@ -29,14 +37,6 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-
-import static rapaio.math.MathTools.log2;
-import static rapaio.util.collection.DoubleArrays.nanSum;
 
 /**
  * Distribution table.

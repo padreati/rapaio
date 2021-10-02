@@ -21,14 +21,14 @@
 
 package rapaio.data.group.function;
 
+import java.util.List;
+
 import rapaio.core.stat.OnlineStat;
 import rapaio.data.Frame;
 import rapaio.data.Group;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-
-import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.

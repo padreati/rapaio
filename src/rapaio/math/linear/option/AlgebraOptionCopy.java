@@ -19,11 +19,23 @@
  *
  */
 
-package rapaio.math.linear.decomposition;
+package rapaio.math.linear.option;
 
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.EigenPair;
+public class AlgebraOptionCopy implements AlgebraOption<Boolean> {
 
-public abstract class EigenDecompStrategy {
-    public abstract EigenPair getEigenDecomp(DMatrix s, int maxRuns, double tol);
+    private final boolean copy;
+
+    public AlgebraOptionCopy(boolean copy) {
+        this.copy = copy;
+    }
+
+    @Override
+    public void bind(AlgebraOptions opts) {
+        opts.setCopy(this);
+    }
+
+    @Override
+    public Boolean apply(AlgebraOptions opts) {
+        return copy;
+    }
 }

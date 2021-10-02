@@ -21,14 +21,15 @@
 
 package rapaio.data;
 
-import org.junit.jupiter.api.Test;
-import rapaio.datasets.Datasets;
-import rapaio.io.JavaIO;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+
+import rapaio.datasets.Datasets;
+import rapaio.io.JavaIO;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/15.

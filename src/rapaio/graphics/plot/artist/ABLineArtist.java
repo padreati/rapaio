@@ -21,16 +21,19 @@
 
 package rapaio.graphics.plot.artist;
 
+import static rapaio.graphics.Plotter.color;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
+import java.awt.geom.Line2D;
+import java.io.Serial;
+
 import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-
-import java.awt.*;
-import java.awt.geom.Line2D;
-import java.io.Serial;
-
-import static rapaio.graphics.Plotter.color;
 
 /**
  * Artist which draws a line of the form y = f(x) = a*x + b

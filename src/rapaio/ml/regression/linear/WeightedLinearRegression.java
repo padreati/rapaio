@@ -21,6 +21,8 @@
 
 package rapaio.ml.regression.linear;
 
+import java.io.Serial;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
@@ -28,8 +30,6 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
-
-import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/20.
@@ -71,8 +71,8 @@ public class WeightedLinearRegression extends BaseLinearRegressionModel<Weighted
     protected boolean coreFit(Frame df, Var weights) {
         var w = DVector.from(weights);
         w.apply(Math::sqrt);
-        DMatrix X = DMatrix.copy(df.mapVars(inputNames())).dotDiagT(w);
-        DMatrix Y = DMatrix.copy(df.mapVars(targetNames())).dotDiagT(w);
+        DMatrix X = DMatrix.copy(df.mapVars(inputNames())).mult(w, 1);
+        DMatrix Y = DMatrix.copy(df.mapVars(targetNames())).mult(w, 1);
         beta = QRDecomposition.from(X).solve(Y);
         return true;
     }

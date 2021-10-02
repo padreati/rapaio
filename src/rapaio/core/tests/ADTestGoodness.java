@@ -21,6 +21,12 @@
 
 package rapaio.core.tests;
 
+import static java.lang.Math.exp;
+import static java.lang.Math.sqrt;
+
+import static rapaio.printer.Format.floatFlex;
+import static rapaio.printer.Format.pValueStars;
+
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
@@ -29,9 +35,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.filter.VRefSort;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import static java.lang.Math.*;
-import static rapaio.printer.Format.*;
 
 /**
  * Hypothesis test which assess if a given samples belongs to a normal distribution.

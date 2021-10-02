@@ -21,11 +21,11 @@
 
 package rapaio.ml.common.kernel;
 
+import java.io.Serial;
+
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
-
-import java.io.Serial;
 
 /**
  * The Wave kernel (Zhang et al, 2004) comes from Wavelet theory and is given as:

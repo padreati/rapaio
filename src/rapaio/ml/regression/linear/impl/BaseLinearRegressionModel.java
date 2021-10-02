@@ -21,6 +21,11 @@
 
 package rapaio.ml.regression.linear.impl;
 
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
 import rapaio.data.Frame;
 import rapaio.data.VarType;
 import rapaio.data.filter.FIntercept;
@@ -28,17 +33,12 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
-import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.DefaultHookInfo;
+import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.linear.LinearRegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
@@ -58,11 +58,11 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
     protected DMatrix beta;
 
     public DVector firstCoefficients() {
-        return beta.mapCol(0);
+        return beta.map(0, 1);
     }
 
     public DVector getCoefficients(int targetIndex) {
-        return beta.mapCol(targetIndex);
+        return beta.map(targetIndex, 1);
     }
 
     public DMatrix getAllCoefficients() {
@@ -140,7 +140,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
             String targetName = targetNames[i];
             sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
             sb.append("> Coefficients: \n");
-            DVector coeff = beta.mapCol(i);
+            DVector coeff = beta.map(i, 1);
 
             TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
             tt.textCenter(0, 0, "Name");

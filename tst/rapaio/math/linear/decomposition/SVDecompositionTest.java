@@ -21,13 +21,16 @@
 
 package rapaio.math.linear.decomposition;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.math.linear.DMatrix;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class SVDecompositionTest {
 

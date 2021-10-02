@@ -21,11 +21,11 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.math.linear.DVector;
-import rapaio.util.Pair;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import rapaio.math.linear.DVector;
+import rapaio.util.Pair;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
@@ -89,7 +89,7 @@ class L1Updater implements Updater {
             i += 1;
         }
 
-        return Pair.from(brzWeights, brzWeights.norm(1) * regParam);
+        return Pair.from(brzWeights, brzWeights.pnorm(1) * regParam);
     }
 }
 
@@ -112,7 +112,7 @@ class SquaredL2Updater implements Updater {
         DVector brzWeights = weightsOld.copy();
         brzWeights.sub(brzWeights.copy().mult(thisIterStepSize * regParam));
         brzWeights.add(gradient.copy().mult(-thisIterStepSize));
-        double norm = brzWeights.norm(2.0);
+        double norm = brzWeights.pnorm(2.0);
 
         return Pair.from(brzWeights, 0.5 * regParam * norm * norm);
     }

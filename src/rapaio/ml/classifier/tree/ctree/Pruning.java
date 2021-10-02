@@ -21,15 +21,15 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
+import java.io.Serializable;
+import java.util.HashMap;
+
 import rapaio.data.Frame;
 import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.util.DoublePair;
 import rapaio.util.collection.IntArrayList;
 import rapaio.util.collection.IntOpenHashSet;
-
-import java.io.Serializable;
-import java.util.HashMap;
 
 /**
  * Pruning techniques

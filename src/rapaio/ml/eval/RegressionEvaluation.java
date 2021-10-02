@@ -21,6 +21,17 @@
 
 package rapaio.ml.eval;
 
+import java.io.Serial;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.common.ListParam;
@@ -32,17 +43,6 @@ import rapaio.ml.eval.split.Split;
 import rapaio.ml.eval.split.SplitStrategy;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
-
-import java.io.Serial;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/6/19.

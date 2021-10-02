@@ -21,7 +21,11 @@
 
 package rapaio.math.linear.dense;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
@@ -30,8 +34,6 @@ import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.MType;
 import rapaio.math.linear.StandardDMatrixTest;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class DMatrixStripeCTest extends StandardDMatrixTest {
 

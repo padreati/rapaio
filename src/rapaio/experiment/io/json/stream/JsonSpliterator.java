@@ -21,8 +21,6 @@
 
 package rapaio.experiment.io.json.stream;
 
-import rapaio.experiment.io.json.tree.JsonValue;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,6 +33,8 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
+
+import rapaio.experiment.io.json.tree.JsonValue;
 
 /**
  * JsonSpliterator

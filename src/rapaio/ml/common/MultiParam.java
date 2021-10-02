@@ -21,12 +21,12 @@
 
 package rapaio.ml.common;
 
-import rapaio.util.function.SFunction;
-
 import java.io.Serial;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+
+import rapaio.util.function.SFunction;
 
 /**
  * This implementation models a parameter which is a map of keys and values.

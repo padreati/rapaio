@@ -21,6 +21,9 @@
 
 package rapaio.ml.classifier.rule;
 
+import java.io.Serial;
+import java.util.List;
+
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -31,9 +34,6 @@ import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.util.List;
 
 /**
  * ZeroR classification algorithm.

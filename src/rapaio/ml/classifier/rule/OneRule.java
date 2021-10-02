@@ -21,6 +21,12 @@
 
 package rapaio.ml.classifier.rule;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Logger;
+
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -38,12 +44,6 @@ import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

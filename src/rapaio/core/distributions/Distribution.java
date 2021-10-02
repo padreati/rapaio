@@ -21,10 +21,10 @@
 
 package rapaio.core.distributions;
 
+import java.io.Serializable;
+
 import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
-
-import java.io.Serializable;
 
 /**
  * Interface which models all types of uni-variate statistical distributions.

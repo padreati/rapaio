@@ -20,15 +20,15 @@
  */
 package rapaio.util.collection;
 
-import rapaio.util.IntComparator;
-import rapaio.util.IntIterator;
-
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.RandomAccess;
+
+import rapaio.util.IntComparator;
+import rapaio.util.IntIterator;
 
 public class IntArrayList implements RandomAccess, Cloneable, java.io.Serializable {
 

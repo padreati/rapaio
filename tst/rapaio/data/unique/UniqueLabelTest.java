@@ -21,19 +21,22 @@
 
 package rapaio.data.unique;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.printer.Printer.textWidth;
+
+import java.util.Arrays;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Unique;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.stream.VSpot;
 import rapaio.sys.WS;
-
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.printer.Printer.textWidth;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.

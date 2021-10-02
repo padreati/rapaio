@@ -21,14 +21,17 @@
 
 package rapaio.ml.regression.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VToDouble;
 import rapaio.datasets.Datasets;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for simple regression algorithms

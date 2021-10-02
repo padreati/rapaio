@@ -21,6 +21,23 @@
 
 package rapaio.graphics.plot.artist;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+
+import static rapaio.graphics.Plotter.color;
+
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -33,17 +50,6 @@ import rapaio.graphics.opt.GOptionPch;
 import rapaio.graphics.opt.PchPalette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-
-import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.stream.Collectors.*;
-import static rapaio.graphics.Plotter.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

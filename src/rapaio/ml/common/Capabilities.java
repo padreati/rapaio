@@ -21,14 +21,14 @@
 
 package rapaio.ml.common;
 
+import static java.util.stream.Collectors.joining;
+
+import java.util.List;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-
-import java.util.List;
-
-import static java.util.stream.Collectors.joining;
 
 /**
  * Capabilities describes what a machine learning algorithm can predict and predict.

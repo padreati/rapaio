@@ -21,14 +21,19 @@
 
 package rapaio.data;
 
-import org.junit.jupiter.api.Test;
-import rapaio.data.filter.FRefSort;
-import rapaio.datasets.Datasets;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import rapaio.data.filter.FRefSort;
+import rapaio.datasets.Datasets;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

@@ -21,6 +21,8 @@
 
 package rapaio.math.linear.base;
 
+import java.io.Serial;
+
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
@@ -28,9 +30,6 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.util.function.BiFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
@@ -45,71 +44,6 @@ public abstract class AbstractDVector implements DVector {
             throw new IllegalArgumentException(
                     String.format("Vectors are not conform for operation: [%d] vs [%d]", size(), vector.size()));
         }
-    }
-
-    @Override
-    public double dotBilinearDiag(DMatrix m, DVector y) {
-        if (m.rowCount() != size() || m.colCount() != y.size()) {
-            throw new IllegalArgumentException("Bilinear matrix is not conform for multiplication.");
-        }
-        double sum = 0.0;
-        for (int i = 0; i < size(); i++) {
-            sum += get(i) * m.get(i, i) * y.get(i);
-        }
-        return sum;
-    }
-
-    @Override
-    public double dotBilinearDiag(DVector m, DVector y) {
-        if (m.size() != size() || m.size() != y.size()) {
-            throw new IllegalArgumentException("Bilinear diagonal vector is not conform for multiplication.");
-        }
-        double sum = 0.0;
-        for (int i = 0; i < size(); i++) {
-            sum += get(i) * m.get(i) * y.get(i);
-        }
-        return sum;
-    }
-
-    @Override
-    public double dotBilinearDiag(DMatrix m) {
-        if (m.rowCount() != size() || m.colCount() != size()) {
-            throw new IllegalArgumentException("Bilinear matrix is not conform for multiplication.");
-        }
-        double sum = 0.0;
-        for (int i = 0; i < size(); i++) {
-            double xi = get(i);
-            sum += xi * m.get(i, i) * xi;
-        }
-        return sum;
-    }
-
-    @Override
-    public double dotBilinearDiag(DVector m) {
-        if (m.size() != size() || m.size() != size()) {
-            throw new IllegalArgumentException("Bilinear diagonal vector is not conform for multiplication.");
-        }
-        double sum = 0.0;
-        for (int i = 0; i < size(); i++) {
-            double xi = get(i);
-            sum += xi * m.get(i) * xi;
-        }
-        return sum;
-    }
-
-    public DVector normalize(double p) {
-        double norm = norm(p);
-        if (norm != 0.0)
-            mult(1.0 / norm);
-        return this;
-    }
-
-    @Override
-    public AbstractDVector apply(BiFunction<Integer, Double, Double> f) {
-        for (int i = 0; i < size(); i++) {
-            set(i, f.apply(i, get(i)));
-        }
-        return this;
     }
 
     @Override

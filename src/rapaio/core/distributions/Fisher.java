@@ -21,12 +21,16 @@
 
 package rapaio.core.distributions;
 
-import rapaio.printer.Format;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
+
+import static rapaio.math.MathTools.beta;
+import static rapaio.math.MathTools.betaIncReg;
+import static rapaio.math.MathTools.invBetaIncReg;
 
 import java.io.Serial;
 
-import static java.lang.Math.*;
-import static rapaio.math.MathTools.*;
+import rapaio.printer.Format;
 
 /**
  * F distribution, also known as Fisher-Snedecor distribution.

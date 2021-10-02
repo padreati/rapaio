@@ -21,16 +21,19 @@
 
 package rapaio.data.filter;
 
-import org.junit.jupiter.api.Test;
-import rapaio.data.VarRange;
-import rapaio.data.VarType;
-import rapaio.datasets.Datasets;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
+import rapaio.datasets.Datasets;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/20.

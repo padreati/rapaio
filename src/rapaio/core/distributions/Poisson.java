@@ -21,10 +21,10 @@
 
 package rapaio.core.distributions;
 
+import java.io.Serial;
+
 import rapaio.math.MathTools;
 import rapaio.printer.Format;
-
-import java.io.Serial;
 
 /**
  * Discrete probability distribution which expresses the probability of a

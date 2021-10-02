@@ -21,15 +21,17 @@
 
 package rapaio.ml.regression.linear;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DVector;
-
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
@@ -41,7 +43,7 @@ public class RidgeRegressionResultTest {
     private Frame df;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         df = Datasets.loadISLAdvertising().removeVars("ID");
     }
 
@@ -151,7 +153,6 @@ public class RidgeRegressionResultTest {
     void testPredictionWithOutIntercept() {
         RidgeRegressionModel model = RidgeRegressionModel.newModel(10, Centering.MEAN, Scaling.SD).intercept.set(false).fit(df, "Sales");
         var result = model.predict(df);
-        model.printSummary();
         DVector beta_hat = result.getBetaHat().mapCol(0);
         assertEquals(3, beta_hat.size());
 

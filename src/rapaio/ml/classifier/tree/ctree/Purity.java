@@ -21,12 +21,12 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
-import rapaio.core.tests.ChiSqIndependence;
-import rapaio.core.tools.DensityTable;
+import static rapaio.util.collection.DoubleArrays.nanSum;
 
 import java.io.Serializable;
 
-import static rapaio.util.collection.DoubleArrays.nanSum;
+import rapaio.core.tests.ChiSqIndependence;
+import rapaio.core.tools.DensityTable;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.

@@ -21,7 +21,10 @@
 
 package rapaio.ml.eval.metric;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
@@ -30,8 +33,6 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.linear.LinearRegressionModel;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/17.
@@ -60,9 +61,6 @@ public class RMSETest {
     void irisTest() {
 
         Frame df = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
-
-        df.printSummary();
-
         String[] targets = new String[]{"sepal-length", "sepal-width", "petal-length"};
 
         LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);

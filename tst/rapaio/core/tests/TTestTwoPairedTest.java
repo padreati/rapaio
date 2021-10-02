@@ -21,10 +21,12 @@
 
 package rapaio.core.tests;
 
-import org.junit.jupiter.api.Test;
-import rapaio.data.VarDouble;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import rapaio.data.VarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/8/16.
@@ -40,7 +42,6 @@ public class TTestTwoPairedTest {
         VarDouble y = VarDouble.copy(22, 25, 17, 24, 16, 29, 20, 23, 19, 20, 15, 15, 18, 26, 18, 24, 18, 25, 19, 16);
 
         TTestTwoPaired t1 = TTestTwoPaired.test(y, x, 0);
-        t1.printSummary();
 
         assertEquals(0, t1.getMu(), TOL);
         assertEquals(2.8372521918222215, t1.getSd(), TOL);

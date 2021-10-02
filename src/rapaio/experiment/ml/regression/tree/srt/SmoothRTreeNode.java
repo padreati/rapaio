@@ -21,14 +21,14 @@
 
 package rapaio.experiment.ml.regression.tree.srt;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.regression.tree.SmoothRTree;
 import rapaio.ml.common.VarSelector;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.

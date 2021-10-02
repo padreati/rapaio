@@ -21,6 +21,11 @@
 
 package rapaio.ml.regression.simple;
 
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
@@ -28,16 +33,11 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
-import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.DefaultHookInfo;
+import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * A trivial regression which predicts using random

@@ -21,15 +21,20 @@
 
 package rapaio.data;
 
-import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.stat.Sum;
-import rapaio.sys.WS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.printer.Printer.textWidth;
 
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.printer.Printer.textWidth;
+import org.junit.jupiter.api.Test;
+
+import rapaio.core.RandomSource;
+import rapaio.core.stat.Sum;
+import rapaio.sys.WS;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

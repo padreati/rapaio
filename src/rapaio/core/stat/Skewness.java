@@ -21,12 +21,12 @@
 
 package rapaio.core.stat;
 
+import static rapaio.printer.Format.floatFlex;
+
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import static rapaio.printer.Format.floatFlex;
 
 /**
  * Computes sample skewness. Formulas for sample skewness are taken from wikipedia page

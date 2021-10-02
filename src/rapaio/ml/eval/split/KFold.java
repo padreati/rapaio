@@ -21,14 +21,14 @@
 
 package rapaio.ml.eval.split;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.util.collection.IntArrays;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.

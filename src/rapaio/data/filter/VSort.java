@@ -21,11 +21,11 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.

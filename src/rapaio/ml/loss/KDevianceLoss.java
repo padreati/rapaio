@@ -21,10 +21,10 @@
 
 package rapaio.ml.loss;
 
+import java.io.Serial;
+
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-
-import java.io.Serial;
 
 /**
  * Deviance loss function. The formula for deviance loss is -sum_{k=1}^{K} y_k log(p_k(x))

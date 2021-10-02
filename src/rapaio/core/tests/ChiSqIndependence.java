@@ -21,6 +21,10 @@
 
 package rapaio.core.tests;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Var;
@@ -28,10 +32,6 @@ import rapaio.math.linear.DMatrix;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Pearson Chi Square independence test.

@@ -21,6 +21,11 @@
 
 package rapaio.ml.eval.metric;
 
+import static rapaio.printer.Format.floatFlex;
+
+import java.io.Serial;
+import java.io.Serializable;
+
 import rapaio.data.Frame;
 import rapaio.data.RowComparators;
 import rapaio.data.SolidFrame;
@@ -30,11 +35,6 @@ import rapaio.data.filter.VRefSort;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.io.Serializable;
-
-import static rapaio.printer.Format.floatFlex;
 
 
 /**

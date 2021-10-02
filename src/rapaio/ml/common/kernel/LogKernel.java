@@ -21,11 +21,11 @@
 
 package rapaio.ml.common.kernel;
 
+import java.io.Serial;
+
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
-
-import java.io.Serial;
 
 /**
  * Log Kernel

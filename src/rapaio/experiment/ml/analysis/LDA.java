@@ -21,6 +21,13 @@
 
 package rapaio.experiment.ml.analysis;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.logging.Logger;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -36,13 +43,6 @@ import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.logging.Logger;
 
 /**
  * Linear discriminant analysis
@@ -154,10 +154,10 @@ public class LDA implements Printable {
 //        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
 
         // use decomp of sbe
-        DMatrix sbplus = Linear.pdPower(sb, 0.5, maxRuns, tol);
-        DMatrix sbminus = Linear.pdPower(sb, -0.5, maxRuns, tol);
+        DMatrix sbplus = Linear.pdPower(sb, 0.5);
+        DMatrix sbminus = Linear.pdPower(sb, -0.5);
 
-        EigenPair p = Linear.eigenDecomp(sbplus.dot(swi).dot(sbplus), maxRuns, tol);
+        EigenPair p = Linear.eigenDecomp(sbplus.dot(swi).dot(sbplus));
 
         logger.fine("compute eigenvalues");
         eigenValues = p.values();

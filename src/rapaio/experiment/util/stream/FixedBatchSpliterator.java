@@ -21,11 +21,11 @@
 
 package rapaio.experiment.util.stream;
 
+import static java.util.stream.StreamSupport.stream;
+
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static java.util.stream.StreamSupport.stream;
 
 @Deprecated
 public class FixedBatchSpliterator<T> extends FixedBatchSpliteratorBase<T> {

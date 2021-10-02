@@ -21,12 +21,10 @@
 
 package rapaio.ml.classifier.bayes.nb;
 
-import rapaio.core.tools.DensityVector;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarRange;
-import rapaio.math.linear.DVector;
-import rapaio.printer.Format;
+import static java.lang.Math.exp;
+import static java.lang.Math.log;
+
+import static rapaio.math.MathTools.lnGamma;
 
 import java.io.Serial;
 import java.util.Arrays;
@@ -37,8 +35,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.lang.Math.*;
-import static rapaio.math.MathTools.lnGamma;
+import rapaio.core.tools.DensityVector;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.math.linear.DVector;
+import rapaio.printer.Format;
 
 /**
  * Naive Bayes Multinomial estimator allows one to model two or more variables

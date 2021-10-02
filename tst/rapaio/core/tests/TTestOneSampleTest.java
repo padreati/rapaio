@@ -21,12 +21,13 @@
 
 package rapaio.core.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TTestOneSampleTest {
 
@@ -35,11 +36,8 @@ public class TTestOneSampleTest {
     @Test
     void baseTest() {
         VarDouble x = VarDouble.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5);
-        Mean.of(x).printSummary();
-        Variance.of(x).printSummary();
 
         TTestOneSample t1 = TTestOneSample.test(x, 4.7);
-        t1.printSummary();
 
         assertEquals(4.7, t1.getMu(), TOL);
         assertEquals(0.05, t1.getSl(), TOL);
@@ -116,7 +114,5 @@ public class TTestOneSampleTest {
         assertEquals(Double.NaN, t5.pValue(), TOL);
         assertEquals(Double.NaN, t5.ciLow(), TOL);
         assertEquals(Double.NaN, t5.ciHigh(), TOL);
-
-
     }
 }

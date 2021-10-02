@@ -21,10 +21,10 @@
 
 package rapaio.experiment.io.json.ml;
 
+import java.util.function.BiConsumer;
+
 import rapaio.data.Var;
 import rapaio.experiment.io.json.tree.JsonValue;
-
-import java.util.function.BiConsumer;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/10/15.

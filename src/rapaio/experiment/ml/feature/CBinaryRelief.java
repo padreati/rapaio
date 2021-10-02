@@ -21,6 +21,11 @@
 
 package rapaio.experiment.ml.feature;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
@@ -32,11 +37,6 @@ import rapaio.experiment.ml.feature.relief.ReliefDistanceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefImportance;
 import rapaio.math.linear.DMatrix;
 import rapaio.util.collection.IntArrays;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 /**
  * ReliefF algorithm for feature selection.

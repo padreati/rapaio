@@ -21,7 +21,11 @@
 
 package rapaio.ml.classifier.bayes.nb;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -30,8 +34,6 @@ import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.filter.FOneHotEncoding;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/2/20.

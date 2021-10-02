@@ -21,14 +21,6 @@
 
 package rapaio.experiment.mc;
 
-import rapaio.core.RandomSource;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-import rapaio.printer.Printable;
-import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
-import rapaio.sys.WS;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +28,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import rapaio.core.RandomSource;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
+import rapaio.sys.WS;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -114,9 +114,9 @@ public class MarkovChain implements Printable {
         }
 
         // normalization
-        p.normalize(1);
+        p.pnormalize(1);
         for (int i = 0; i < m.rowCount(); i++) {
-            m.mapRow(i).normalize(1);
+            m.mapRow(i).pnormalize(1);
         }
     }
 

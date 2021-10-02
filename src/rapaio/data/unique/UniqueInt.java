@@ -21,13 +21,13 @@
 
 package rapaio.data.unique;
 
+import java.util.HashMap;
+
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.IntOpenHashSet;
-
-import java.util.HashMap;
 
 /**
  * Unique value feature for integer values.

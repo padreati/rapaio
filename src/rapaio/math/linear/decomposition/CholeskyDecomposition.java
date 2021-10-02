@@ -22,11 +22,10 @@
 package rapaio.math.linear.decomposition;
 
 
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.MType;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import rapaio.math.linear.DMatrix;
 
 /**
  * Cholesky Decomposition.
@@ -89,8 +88,9 @@ public class CholeskyDecomposition implements Serializable {
                 }
             }
             d = A.get(j, j) - d;
-            if (d <= 0.0)
+            if (d <= 0.0) {
                 isspd = false;
+            }
             l[j][j] = Math.sqrt(Math.max(d, 0.0));
             for (int k = j + 1; k < n; k++) {
                 l[j][k] = 0.0;
@@ -160,7 +160,7 @@ public class CholeskyDecomposition implements Serializable {
      * @return L triangular factor
      */
     public DMatrix getL() {
-        return DMatrix.wrap(MType.RSTRIPE, true, l);
+        return DMatrix.wrap(true, l);
     }
 
     /**

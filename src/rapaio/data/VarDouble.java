@@ -22,12 +22,6 @@
 package rapaio.data;
 
 
-import rapaio.data.ops.DVarOp;
-import rapaio.data.ops.DoubleDVarOp;
-import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -45,6 +39,12 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+
+import rapaio.data.ops.DVarOp;
+import rapaio.data.ops.DoubleDVarOp;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * Builds a numeric double variable. Double variables stores data as double values

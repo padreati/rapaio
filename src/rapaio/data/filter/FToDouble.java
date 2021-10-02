@@ -21,15 +21,15 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarRange;
-
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarRange;
 
 /**
  * Convert to numeric double values all the selected variables which are nominal.

@@ -21,8 +21,14 @@
 
 package rapaio.util.collection;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.HashMap;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.core.stat.Mean;
@@ -31,11 +37,6 @@ import rapaio.core.tests.TTestTwoSamples;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.sys.WS;
-
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/21.
@@ -102,16 +103,13 @@ public class Int2IntOpenHashMapTest {
             assertEquals(hashMap.size(), openMap.size());
         }
 
-        WS.println("HashMap time statistics:");
         var m1 = Mean.of(timeHash);
         var v1 = Variance.of(timeHash);
 
-        WS.println("IntOpenHashMap time statistics:");
         var m2 = Mean.of(timeOpen);
         var v2 = Variance.of(timeOpen);
 
-        TTestTwoSamples.test(m1.value(), TIMES - SKIP, m2.value(), TIMES - SKIP, 0, v1.sdValue(), v2.sdValue())
-                .printSummary();
+        TTestTwoSamples.test(m1.value(), TIMES - SKIP, m2.value(), TIMES - SKIP, 0, v1.sdValue(), v2.sdValue());
 
     }
 

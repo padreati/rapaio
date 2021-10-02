@@ -21,15 +21,15 @@
 
 package rapaio.util;
 
-import rapaio.data.Frame;
-import rapaio.data.VarRange;
-import rapaio.data.stream.FSpot;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import rapaio.data.Frame;
+import rapaio.data.VarRange;
+import rapaio.data.stream.FSpot;
 
 /**
  * Utility collection which holds a map of string to strings and implements

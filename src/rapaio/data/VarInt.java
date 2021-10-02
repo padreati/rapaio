@@ -21,14 +21,6 @@
 
 package rapaio.data;
 
-import rapaio.core.RandomSource;
-import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
-import rapaio.util.IntIterator;
-import rapaio.util.collection.IntArrays;
-import rapaio.util.function.Int2IntFunction;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -45,6 +37,14 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.IntStream;
+
+import rapaio.core.RandomSource;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
+import rapaio.util.IntIterator;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.function.Int2IntFunction;
 
 /**
  * Builds a numeric variable which stores values as 32-bit integers. There are two general usage scenarios:

@@ -21,12 +21,7 @@
 
 package rapaio.data;
 
-import rapaio.data.filter.FFilter;
-import rapaio.data.filter.FRefSort;
-import rapaio.data.stream.FSpot;
-import rapaio.data.stream.FSpots;
-import rapaio.printer.Printable;
-import rapaio.util.IntComparator;
+import static java.util.stream.Collectors.toList;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -37,7 +32,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
+import rapaio.data.filter.FFilter;
+import rapaio.data.filter.FRefSort;
+import rapaio.data.stream.FSpot;
+import rapaio.data.stream.FSpots;
+import rapaio.printer.Printable;
+import rapaio.util.IntComparator;
 
 /**
  * Random access list of observed values for multiple variables.

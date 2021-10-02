@@ -21,11 +21,11 @@
 
 package rapaio.ml.loss;
 
+import java.io.Serializable;
+
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.ml.common.ParametricEquals;
-
-import java.io.Serializable;
 
 /**
  * Regression loss / objective function.

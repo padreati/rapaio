@@ -21,14 +21,15 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import rapaio.core.tests.ChiSqIndependence;
-import rapaio.core.tools.DensityTable;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import rapaio.core.tests.ChiSqIndependence;
+import rapaio.core.tools.DensityTable;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/20.

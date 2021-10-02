@@ -21,6 +21,13 @@
 
 package rapaio.ml.classifier.svm;
 
+import static rapaio.printer.Format.floatFlex;
+
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -36,13 +43,6 @@ import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.PolyKernel;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.List;
-
-import static rapaio.printer.Format.floatFlex;
 
 
 /**

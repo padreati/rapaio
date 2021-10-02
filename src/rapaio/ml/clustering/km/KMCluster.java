@@ -21,6 +21,13 @@
 
 package rapaio.ml.clustering.km;
 
+import java.io.Serial;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.IntStream;
+
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
@@ -40,13 +47,6 @@ import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
-
-import java.io.Serial;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.IntStream;
 
 /**
  * KMeans clustering algorithm

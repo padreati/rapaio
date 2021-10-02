@@ -22,13 +22,6 @@
 package rapaio.util.collection;
 
 
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.VectorSpecies;
-import rapaio.util.DoubleComparator;
-import rapaio.util.DoubleIterator;
-import rapaio.util.function.Double2DoubleFunction;
-import rapaio.util.function.Int2DoubleFunction;
-
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -40,6 +33,11 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import rapaio.util.DoubleComparator;
+import rapaio.util.DoubleIterator;
+import rapaio.util.function.Double2DoubleFunction;
+import rapaio.util.function.Int2DoubleFunction;
 
 /**
  * Utility class to handle the manipulation of arrays of double 64 floating point values.
@@ -133,15 +131,31 @@ public final class DoubleArrays {
         };
     }
 
-    public static void add(double[] a, int aStart, double s, int len) {
-        for (int i = aStart; i < len + aStart; i++) {
-            a[i] += s;
+    public static double[] copyByIndex(double[] src, int[] indexes) {
+        double[] copy = new double[indexes.length];
+        for (int i = 0; i < indexes.length; i++) {
+            copy[i] = src[indexes[i]];
+        }
+        return copy;
+    }
+
+    /**
+     * Add a scalar value to an array
+     *
+     * @param to    destination where the scalar will be added
+     * @param toOff destination offset
+     * @param s     scalar value to be added
+     * @param len   length
+     */
+    public static void add(double[] to, int toOff, double s, int len) {
+        for (int i = toOff; i < len + toOff; i++) {
+            to[i] += s;
         }
     }
 
-    public static void addTo(double[] a, int aStart, double s, double[] to, int toStart, int len) {
+    public static void addTo(double[] x, int xOff, double s, double[] to, int toOff, int len) {
         for (int i = 0; i < len; i++) {
-            to[toStart++] = a[aStart++] + s;
+            to[toOff++] = x[xOff++] + s;
         }
     }
 
@@ -229,9 +243,15 @@ public final class DoubleArrays {
         }
     }
 
-    public static void axpyTo(double a, double[] x, double[] y, double[] to, int start, int len) {
+    public static void xpay(double[] x, double a, double[] y, int start, int len) {
         for (int i = start; i < len; i++) {
-            to[i] = a * x[i] + y[i];
+            x[i] = x[i] + a * y[i];
+        }
+    }
+
+    public static void xpayTo(double[] x, double a, double[] y, double[] to, int start, int len) {
+        for (int i = start; i < start + len; i++) {
+            to[i] = x[i] + a * y[i];
         }
     }
 
@@ -457,7 +477,9 @@ public final class DoubleArrays {
      * the first {@code length} entries of {@code array}.
      */
     public static double[] trim(final double[] array, final int length) {
-        if (length >= array.length) return array;
+        if (length >= array.length) {
+            return array;
+        }
         final double[] t =
                 length == 0 ? EMPTY_ARRAY : new double[length];
         System.arraycopy(array, 0, t, 0, length);
@@ -488,7 +510,9 @@ public final class DoubleArrays {
      * @throws IllegalArgumentException if the two argument arrays are not of the same length.
      */
     public static void ensureSameLength(final double[] a, final double[] b) {
-        if (a.length != b.length) throw new IllegalArgumentException("Array size mismatch: " + a.length + " != " + b.length);
+        if (a.length != b.length) {
+            throw new IllegalArgumentException("Array size mismatch: " + a.length + " != " + b.length);
+        }
     }
 
     private static final int QUICKSORT_NO_REC = 16;
@@ -518,7 +542,9 @@ public final class DoubleArrays {
      * @param n the number of elements to exchange starting at {@code a} and {@code b}.
      */
     public static void swap(final double[] x, int a, int b, final int n) {
-        for (int i = 0; i < n; i++, a++, b++) swap(x, a, b);
+        for (int i = 0; i < n; i++, a++, b++) {
+            swap(x, a, b);
+        }
     }
 
     private static int med3(final double[] x, final int a, final int b, final int c, DoubleComparator comp) {
@@ -533,7 +559,11 @@ public final class DoubleArrays {
     private static void selectionSort(final double[] a, final int from, final int to, final DoubleComparator comp) {
         for (int i = from; i < to - 1; i++) {
             int m = i;
-            for (int j = i + 1; j < to; j++) if (comp.compare(a[j], a[m]) < 0) m = j;
+            for (int j = i + 1; j < to; j++) {
+                if (comp.compare(a[j], a[m]) < 0) {
+                    m = j;
+                }
+            }
             if (m != i) {
                 final double u = a[i];
                 a[i] = a[m];
@@ -597,14 +627,20 @@ public final class DoubleArrays {
         while (true) {
             int comparison;
             while (b <= c && (comparison = comp.compare(x[b], v)) <= 0) {
-                if (comparison == 0) swap(x, a++, b);
+                if (comparison == 0) {
+                    swap(x, a++, b);
+                }
                 b++;
             }
             while (c >= b && (comparison = comp.compare(x[c], v)) >= 0) {
-                if (comparison == 0) swap(x, c, d--);
+                if (comparison == 0) {
+                    swap(x, c, d--);
+                }
                 c--;
             }
-            if (b > c) break;
+            if (b > c) {
+                break;
+            }
             swap(x, b++, c--);
         }
         // Swap partition elements back to middle
@@ -614,8 +650,12 @@ public final class DoubleArrays {
         s = Math.min(d - c, to - d - 1);
         swap(x, b, to - s, s);
         // Recursively sort non-partition-elements
-        if ((s = b - a) > 1) quickSort(x, from, from + s, comp);
-        if ((s = d - c) > 1) quickSort(x, to - s, to, comp);
+        if ((s = b - a) > 1) {
+            quickSort(x, from, from + s, comp);
+        }
+        if ((s = d - c) > 1) {
+            quickSort(x, to - s, to, comp);
+        }
     }
 
     /**
@@ -674,14 +714,20 @@ public final class DoubleArrays {
             while (true) {
                 int comparison;
                 while (b <= c && (comparison = comp.compare(x[b], v)) <= 0) {
-                    if (comparison == 0) swap(x, a++, b);
+                    if (comparison == 0) {
+                        swap(x, a++, b);
+                    }
                     b++;
                 }
                 while (c >= b && (comparison = comp.compare(x[c], v)) >= 0) {
-                    if (comparison == 0) swap(x, c, d--);
+                    if (comparison == 0) {
+                        swap(x, c, d--);
+                    }
                     c--;
                 }
-                if (b > c) break;
+                if (b > c) {
+                    break;
+                }
                 swap(x, b++, c--);
             }
             // Swap partition elements back to middle
@@ -693,10 +739,13 @@ public final class DoubleArrays {
             // Recursively sort non-partition-elements
             s = b - a;
             t = d - c;
-            if (s > 1 && t > 1)
+            if (s > 1 && t > 1) {
                 invokeAll(new ForkJoinQuickSortComp(x, from, from + s, comp), new ForkJoinQuickSortComp(x, to - t, to, comp));
-            else if (s > 1) invokeAll(new ForkJoinQuickSortComp(x, from, from + s, comp));
-            else invokeAll(new ForkJoinQuickSortComp(x, to - t, to, comp));
+            } else if (s > 1) {
+                invokeAll(new ForkJoinQuickSortComp(x, from, from + s, comp));
+            } else {
+                invokeAll(new ForkJoinQuickSortComp(x, to - t, to, comp));
+            }
         }
     }
 
@@ -717,8 +766,9 @@ public final class DoubleArrays {
      * @param comp the comparator to determine the sorting order.
      */
     public static void parallelQuickSort(final double[] x, final int from, final int to, final DoubleComparator comp) {
-        if (to - from < PARALLEL_QUICKSORT_NO_FORK) quickSort(x, from, to, comp);
-        else {
+        if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
+            quickSort(x, from, to, comp);
+        } else {
             final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
             pool.invoke(new ForkJoinQuickSortComp(x, from, to, comp));
             pool.shutdown();
@@ -755,7 +805,11 @@ public final class DoubleArrays {
     private static void selectionSort(final double[] a, final int from, final int to) {
         for (int i = from; i < to - 1; i++) {
             int m = i;
-            for (int j = i + 1; j < to; j++) if ((Double.compare((a[j]), (a[m])) < 0)) m = j;
+            for (int j = i + 1; j < to; j++) {
+                if ((Double.compare((a[j]), (a[m])) < 0)) {
+                    m = j;
+                }
+            }
             if (m != i) {
                 final double u = a[i];
                 a[i] = a[m];
@@ -818,14 +872,20 @@ public final class DoubleArrays {
         while (true) {
             int comparison;
             while (b <= c && (comparison = (Double.compare((x[b]), (v)))) <= 0) {
-                if (comparison == 0) swap(x, a++, b);
+                if (comparison == 0) {
+                    swap(x, a++, b);
+                }
                 b++;
             }
             while (c >= b && (comparison = (Double.compare((x[c]), (v)))) >= 0) {
-                if (comparison == 0) swap(x, c, d--);
+                if (comparison == 0) {
+                    swap(x, c, d--);
+                }
                 c--;
             }
-            if (b > c) break;
+            if (b > c) {
+                break;
+            }
             swap(x, b++, c--);
         }
         // Swap partition elements back to middle
@@ -835,8 +895,12 @@ public final class DoubleArrays {
         s = Math.min(d - c, to - d - 1);
         swap(x, b, to - s, s);
         // Recursively sort non-partition-elements
-        if ((s = b - a) > 1) quickSort(x, from, from + s);
-        if ((s = d - c) > 1) quickSort(x, to - s, to);
+        if ((s = b - a) > 1) {
+            quickSort(x, from, from + s);
+        }
+        if ((s = d - c) > 1) {
+            quickSort(x, to - s, to);
+        }
     }
 
     /**
@@ -892,14 +956,20 @@ public final class DoubleArrays {
             while (true) {
                 int comparison;
                 while (b <= c && (comparison = (Double.compare((x[b]), (v)))) <= 0) {
-                    if (comparison == 0) swap(x, a++, b);
+                    if (comparison == 0) {
+                        swap(x, a++, b);
+                    }
                     b++;
                 }
                 while (c >= b && (comparison = (Double.compare((x[c]), (v)))) >= 0) {
-                    if (comparison == 0) swap(x, c, d--);
+                    if (comparison == 0) {
+                        swap(x, c, d--);
+                    }
                     c--;
                 }
-                if (b > c) break;
+                if (b > c) {
+                    break;
+                }
                 swap(x, b++, c--);
             }
             // Swap partition elements back to middle
@@ -911,9 +981,13 @@ public final class DoubleArrays {
             // Recursively sort non-partition-elements
             s = b - a;
             t = d - c;
-            if (s > 1 && t > 1) invokeAll(new ForkJoinQuickSort(x, from, from + s), new ForkJoinQuickSort(x, to - t, to));
-            else if (s > 1) invokeAll(new ForkJoinQuickSort(x, from, from + s));
-            else invokeAll(new ForkJoinQuickSort(x, to - t, to));
+            if (s > 1 && t > 1) {
+                invokeAll(new ForkJoinQuickSort(x, from, from + s), new ForkJoinQuickSort(x, to - t, to));
+            } else if (s > 1) {
+                invokeAll(new ForkJoinQuickSort(x, from, from + s));
+            } else {
+                invokeAll(new ForkJoinQuickSort(x, to - t, to));
+            }
         }
     }
 
@@ -932,8 +1006,9 @@ public final class DoubleArrays {
      * @param to   the index of the last element (exclusive) to be sorted.
      */
     public static void parallelQuickSort(final double[] x, final int from, final int to) {
-        if (to - from < PARALLEL_QUICKSORT_NO_FORK) quickSort(x, from, to);
-        else {
+        if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
+            quickSort(x, from, to);
+        } else {
             final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
             pool.invoke(new ForkJoinQuickSort(x, from, to));
             pool.shutdown();
@@ -1027,14 +1102,20 @@ public final class DoubleArrays {
         while (true) {
             int comparison;
             while (b <= c && (comparison = (Double.compare((x[perm[b]]), (v)))) <= 0) {
-                if (comparison == 0) IntArrays.swap(perm, a++, b);
+                if (comparison == 0) {
+                    IntArrays.swap(perm, a++, b);
+                }
                 b++;
             }
             while (c >= b && (comparison = (Double.compare((x[perm[c]]), (v)))) >= 0) {
-                if (comparison == 0) IntArrays.swap(perm, c, d--);
+                if (comparison == 0) {
+                    IntArrays.swap(perm, c, d--);
+                }
                 c--;
             }
-            if (b > c) break;
+            if (b > c) {
+                break;
+            }
             IntArrays.swap(perm, b++, c--);
         }
         // Swap partition elements back to middle
@@ -1044,8 +1125,12 @@ public final class DoubleArrays {
         s = Math.min(d - c, to - d - 1);
         IntArrays.swap(perm, b, to - s, s);
         // Recursively sort non-partition-elements
-        if ((s = b - a) > 1) quickSortIndirect(perm, x, from, from + s);
-        if ((s = d - c) > 1) quickSortIndirect(perm, x, to - s, to);
+        if ((s = b - a) > 1) {
+            quickSortIndirect(perm, x, from, from + s);
+        }
+        if ((s = d - c) > 1) {
+            quickSortIndirect(perm, x, to - s, to);
+        }
     }
 
     /**
@@ -1107,14 +1192,20 @@ public final class DoubleArrays {
             while (true) {
                 int comparison;
                 while (b <= c && (comparison = (Double.compare((x[perm[b]]), (v)))) <= 0) {
-                    if (comparison == 0) IntArrays.swap(perm, a++, b);
+                    if (comparison == 0) {
+                        IntArrays.swap(perm, a++, b);
+                    }
                     b++;
                 }
                 while (c >= b && (comparison = (Double.compare((x[perm[c]]), (v)))) >= 0) {
-                    if (comparison == 0) IntArrays.swap(perm, c, d--);
+                    if (comparison == 0) {
+                        IntArrays.swap(perm, c, d--);
+                    }
                     c--;
                 }
-                if (b > c) break;
+                if (b > c) {
+                    break;
+                }
                 IntArrays.swap(perm, b++, c--);
             }
             // Swap partition elements back to middle
@@ -1126,10 +1217,13 @@ public final class DoubleArrays {
             // Recursively sort non-partition-elements
             s = b - a;
             t = d - c;
-            if (s > 1 && t > 1)
+            if (s > 1 && t > 1) {
                 invokeAll(new ForkJoinQuickSortIndirect(perm, x, from, from + s), new ForkJoinQuickSortIndirect(perm, x, to - t, to));
-            else if (s > 1) invokeAll(new ForkJoinQuickSortIndirect(perm, x, from, from + s));
-            else invokeAll(new ForkJoinQuickSortIndirect(perm, x, to - t, to));
+            } else if (s > 1) {
+                invokeAll(new ForkJoinQuickSortIndirect(perm, x, from, from + s));
+            } else {
+                invokeAll(new ForkJoinQuickSortIndirect(perm, x, to - t, to));
+            }
         }
     }
 
@@ -1153,8 +1247,9 @@ public final class DoubleArrays {
      * @param to   the index of the last element (exclusive) to be sorted.
      */
     public static void parallelQuickSortIndirect(final int[] perm, final double[] x, final int from, final int to) {
-        if (to - from < PARALLEL_QUICKSORT_NO_FORK) quickSortIndirect(perm, x, from, to);
-        else {
+        if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
+            quickSortIndirect(perm, x, from, to);
+        } else {
             final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
             pool.invoke(new ForkJoinQuickSortIndirect(perm, x, from, to));
             pool.shutdown();
@@ -1206,11 +1301,15 @@ public final class DoubleArrays {
         int curr = from;
         for (int i = from + 1; i < to; i++) {
             if (x[perm[i]] != x[perm[curr]]) {
-                if (i - curr > 1) IntArrays.parallelQuickSort(perm, curr, i);
+                if (i - curr > 1) {
+                    IntArrays.parallelQuickSort(perm, curr, i);
+                }
                 curr = i;
             }
         }
-        if (to - curr > 1) IntArrays.parallelQuickSort(perm, curr, to);
+        if (to - curr > 1) {
+            IntArrays.parallelQuickSort(perm, curr, to);
+        }
     }
 
     /**
@@ -1255,14 +1354,19 @@ public final class DoubleArrays {
     }
 
     private static void swap(final double[] x, final double[] y, int a, int b, final int n) {
-        for (int i = 0; i < n; i++, a++, b++) swap(x, y, a, b);
+        for (int i = 0; i < n; i++, a++, b++) {
+            swap(x, y, a, b);
+        }
     }
 
     private static void selectionSort(final double[] a, final double[] b, final int from, final int to) {
         for (int i = from; i < to - 1; i++) {
             int m = i, u;
-            for (int j = i + 1; j < to; j++)
-                if ((u = (Double.compare((a[j]), (a[m])))) < 0 || u == 0 && (Double.compare((b[j]), (b[m])) < 0)) m = j;
+            for (int j = i + 1; j < to; j++) {
+                if ((u = (Double.compare((a[j]), (a[m])))) < 0 || u == 0 && (Double.compare((b[j]), (b[m])) < 0)) {
+                    m = j;
+                }
+            }
             if (m != i) {
                 double t = a[i];
                 a[i] = a[m];
@@ -1316,14 +1420,20 @@ public final class DoubleArrays {
         while (true) {
             int comparison, t;
             while (b <= c && (comparison = (t = (Double.compare((x[b]), (v)))) == 0 ? (Double.compare((y[b]), (w))) : t) <= 0) {
-                if (comparison == 0) swap(x, y, a++, b);
+                if (comparison == 0) {
+                    swap(x, y, a++, b);
+                }
                 b++;
             }
             while (c >= b && (comparison = (t = (Double.compare((x[c]), (v)))) == 0 ? (Double.compare((y[c]), (w))) : t) >= 0) {
-                if (comparison == 0) swap(x, y, c, d--);
+                if (comparison == 0) {
+                    swap(x, y, c, d--);
+                }
                 c--;
             }
-            if (b > c) break;
+            if (b > c) {
+                break;
+            }
             swap(x, y, b++, c--);
         }
         // Swap partition elements back to middle
@@ -1333,8 +1443,12 @@ public final class DoubleArrays {
         s = Math.min(d - c, to - d - 1);
         swap(x, y, b, to - s, s);
         // Recursively sort non-partition-elements
-        if ((s = b - a) > 1) quickSort(x, y, from, from + s);
-        if ((s = d - c) > 1) quickSort(x, y, to - s, to);
+        if ((s = b - a) > 1) {
+            quickSort(x, y, from, from + s);
+        }
+        if ((s = d - c) > 1) {
+            quickSort(x, y, to - s, to);
+        }
     }
 
     /**
@@ -1395,14 +1509,20 @@ public final class DoubleArrays {
             while (true) {
                 int comparison, t;
                 while (b <= c && (comparison = (t = (Double.compare((x[b]), (v)))) == 0 ? (Double.compare((y[b]), (w))) : t) <= 0) {
-                    if (comparison == 0) swap(x, y, a++, b);
+                    if (comparison == 0) {
+                        swap(x, y, a++, b);
+                    }
                     b++;
                 }
                 while (c >= b && (comparison = (t = (Double.compare((x[c]), (v)))) == 0 ? (Double.compare((y[c]), (w))) : t) >= 0) {
-                    if (comparison == 0) swap(x, y, c, d--);
+                    if (comparison == 0) {
+                        swap(x, y, c, d--);
+                    }
                     c--;
                 }
-                if (b > c) break;
+                if (b > c) {
+                    break;
+                }
                 swap(x, y, b++, c--);
             }
             // Swap partition elements back to middle
@@ -1414,9 +1534,13 @@ public final class DoubleArrays {
             s = b - a;
             t = d - c;
             // Recursively sort non-partition-elements
-            if (s > 1 && t > 1) invokeAll(new ForkJoinQuickSort2(x, y, from, from + s), new ForkJoinQuickSort2(x, y, to - t, to));
-            else if (s > 1) invokeAll(new ForkJoinQuickSort2(x, y, from, from + s));
-            else invokeAll(new ForkJoinQuickSort2(x, y, to - t, to));
+            if (s > 1 && t > 1) {
+                invokeAll(new ForkJoinQuickSort2(x, y, from, from + s), new ForkJoinQuickSort2(x, y, to - t, to));
+            } else if (s > 1) {
+                invokeAll(new ForkJoinQuickSort2(x, y, from, from + s));
+            } else {
+                invokeAll(new ForkJoinQuickSort2(x, y, to - t, to));
+            }
         }
     }
 
@@ -1442,7 +1566,9 @@ public final class DoubleArrays {
      * @param to   the index of the last element (exclusive) to be sorted.
      */
     public static void parallelQuickSort(final double[] x, final double[] y, final int from, final int to) {
-        if (to - from < PARALLEL_QUICKSORT_NO_FORK) quickSort(x, y, from, to);
+        if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
+            quickSort(x, y, from, to);
+        }
         final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
         pool.invoke(new ForkJoinQuickSort2(x, y, from, to));
         pool.shutdown();
@@ -1565,8 +1691,11 @@ public final class DoubleArrays {
         }
         // Merge sorted halves (now in supp) into a
         for (int i = from, p = from, q = mid; i < to; i++) {
-            if (q >= to || p < mid && (Double.compare((supp[p]), (supp[q])) <= 0)) a[i] = supp[p++];
-            else a[i] = supp[q++];
+            if (q >= to || p < mid && (Double.compare((supp[p]), (supp[q])) <= 0)) {
+                a[i] = supp[p++];
+            } else {
+                a[i] = supp[q++];
+            }
         }
     }
 
@@ -1629,8 +1758,11 @@ public final class DoubleArrays {
         }
         // Merge sorted halves (now in supp) into a
         for (int i = from, p = from, q = mid; i < to; i++) {
-            if (q >= to || p < mid && comp.compare(supp[p], supp[q]) <= 0) a[i] = supp[p++];
-            else a[i] = supp[q++];
+            if (q >= to || p < mid && comp.compare(supp[p], supp[q]) <= 0) {
+                a[i] = supp[p++];
+            } else {
+                a[i] = supp[q++];
+            }
         }
     }
 
@@ -1763,9 +1895,13 @@ public final class DoubleArrays {
         while (from <= to) {
             final int mid = (from + to) >>> 1;
             midVal = a[mid];
-            if (midVal < key) from = mid + 1;
-            else if (midVal > key) to = mid - 1;
-            else return mid;
+            if (midVal < key) {
+                from = mid + 1;
+            } else if (midVal > key) {
+                to = mid - 1;
+            } else {
+                return mid;
+            }
         }
         return -(from + 1);
     }
@@ -1820,9 +1956,13 @@ public final class DoubleArrays {
             final int mid = (from + to) >>> 1;
             midVal = a[mid];
             final int cmp = c.compare(midVal, key);
-            if (cmp < 0) from = mid + 1;
-            else if (cmp > 0) to = mid - 1;
-            else return mid; // key found
+            if (cmp < 0) {
+                from = mid + 1;
+            } else if (cmp > 0) {
+                to = mid - 1;
+            } else {
+                return mid; // key found
+            }
         }
         return -(from + 1);
     }
@@ -1929,13 +2069,18 @@ public final class DoubleArrays {
             final int length = lengthStack[stackPos];
             final int level = levelStack[stackPos];
             final int signMask = level % DIGITS_PER_ELEMENT == 0 ? 1 << DIGIT_BITS - 1 : 0;
-            final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT) * DIGIT_BITS; // This is the shift that extract the right byte from a key
+            final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT)
+                    * DIGIT_BITS; // This is the shift that extract the right byte from a key
             // Count keys.
-            for (int i = first + length; i-- != first; ) count[(int) (fixDouble(a[i]) >>> shift & DIGIT_MASK ^ signMask)]++;
+            for (int i = first + length; i-- != first; ) {
+                count[(int) (fixDouble(a[i]) >>> shift & DIGIT_MASK ^ signMask)]++;
+            }
             // Compute cumulative distribution
             int lastUsed = -1;
             for (int i = 0, p = first; i < 1 << DIGIT_BITS; i++) {
-                if (count[i] != 0) lastUsed = i;
+                if (count[i] != 0) {
+                    lastUsed = i;
+                }
                 pos[i] = (p += count[i]);
             }
             final int end = first + length - count[lastUsed];
@@ -1953,8 +2098,9 @@ public final class DoubleArrays {
                     a[i] = t;
                 }
                 if (level < maxLevel && count[c] > 1) {
-                    if (count[c] < RADIXSORT_NO_REC) quickSort(a, i, i + count[c]);
-                    else {
+                    if (count[c] < RADIXSORT_NO_REC) {
+                        quickSort(a, i, i + count[c]);
+                    } else {
                         offsetStack[stackPos] = i;
                         lengthStack[stackPos] = count[c];
                         levelStack[stackPos++] = level + 1;
@@ -1967,7 +2113,7 @@ public final class DoubleArrays {
     protected record Segment(int offset, int length, int level) {
     }
 
-    protected static final Segment POISON_PILL = new Segment(-1, -1, -1);
+    private static final Segment POISON_PILL = new Segment(-1, -1, -1);
 
     /**
      * Sorts the specified range of an array using parallel radix sort.
@@ -1993,25 +2139,36 @@ public final class DoubleArrays {
         final int numberOfThreads = Runtime.getRuntime().availableProcessors();
         final ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads, Executors.defaultThreadFactory());
         final ExecutorCompletionService<Void> executorCompletionService = new ExecutorCompletionService<>(executorService);
-        for (int j = numberOfThreads; j-- != 0; )
+        for (int j = numberOfThreads; j-- != 0; ) {
             executorCompletionService.submit(() -> {
                 final int[] count = new int[1 << DIGIT_BITS];
                 final int[] pos = new int[1 << DIGIT_BITS];
                 for (; ; ) {
-                    if (queueSize.get() == 0) for (int i = numberOfThreads; i-- != 0; ) queue.add(POISON_PILL);
+                    if (queueSize.get() == 0) {
+                        for (int i = numberOfThreads; i-- != 0; ) {
+                            queue.add(POISON_PILL);
+                        }
+                    }
                     final Segment segment = queue.take();
-                    if (segment == POISON_PILL) return null;
+                    if (segment == POISON_PILL) {
+                        return null;
+                    }
                     final int first = segment.offset;
                     final int length = segment.length;
                     final int level = segment.level;
                     final int signMask = level % DIGITS_PER_ELEMENT == 0 ? 1 << DIGIT_BITS - 1 : 0;
-                    final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT) * DIGIT_BITS; // This is the shift that extract the right byte from a key
+                    final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT)
+                            * DIGIT_BITS; // This is the shift that extract the right byte from a key
                     // Count keys.
-                    for (int i = first + length; i-- != first; ) count[(int) (fixDouble(a[i]) >>> shift & DIGIT_MASK ^ signMask)]++;
+                    for (int i = first + length; i-- != first; ) {
+                        count[(int) (fixDouble(a[i]) >>> shift & DIGIT_MASK ^ signMask)]++;
+                    }
                     // Compute cumulative distribution
                     int lastUsed = -1;
                     for (int i = 0, p = first; i < 1 << DIGIT_BITS; i++) {
-                        if (count[i] != 0) lastUsed = i;
+                        if (count[i] != 0) {
+                            lastUsed = i;
+                        }
                         pos[i] = (p += count[i]);
                     }
                     final int end = first + length - count[lastUsed];
@@ -2029,8 +2186,9 @@ public final class DoubleArrays {
                             a[i] = t;
                         }
                         if (level < maxLevel && count[c] > 1) {
-                            if (count[c] < PARALLEL_RADIXSORT_NO_FORK) quickSort(a, i, i + count[c]);
-                            else {
+                            if (count[c] < PARALLEL_RADIXSORT_NO_FORK) {
+                                quickSort(a, i, i + count[c]);
+                            } else {
                                 queueSize.incrementAndGet();
                                 queue.add(new Segment(i, count[c], level + 1));
                             }
@@ -2039,15 +2197,19 @@ public final class DoubleArrays {
                     queueSize.decrementAndGet();
                 }
             });
+        }
         Throwable problem = null;
-        for (int i = numberOfThreads; i-- != 0; )
+        for (int i = numberOfThreads; i-- != 0; ) {
             try {
                 executorCompletionService.take().get();
             } catch (Exception e) {
                 problem = e.getCause(); // We keep only the last one. They will be logged anyway.
             }
+        }
         executorService.shutdown();
-        if (problem != null) throw (problem instanceof RuntimeException) ? (RuntimeException) problem : new RuntimeException(problem);
+        if (problem != null) {
+            throw (problem instanceof RuntimeException) ? (RuntimeException) problem : new RuntimeException(problem);
+        }
     }
 
     /**
@@ -2126,23 +2288,30 @@ public final class DoubleArrays {
             final int length = lengthStack[stackPos];
             final int level = levelStack[stackPos];
             final int signMask = level % DIGITS_PER_ELEMENT == 0 ? 1 << DIGIT_BITS - 1 : 0;
-            final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT) * DIGIT_BITS; // This is the shift that extract the right byte from a key
+            final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT)
+                    * DIGIT_BITS; // This is the shift that extract the right byte from a key
             // Count keys.
-            for (int i = first + length; i-- != first; ) count[(int) (fixDouble(a[perm[i]]) >>> shift & DIGIT_MASK ^ signMask)]++;
+            for (int i = first + length; i-- != first; ) {
+                count[(int) (fixDouble(a[perm[i]]) >>> shift & DIGIT_MASK ^ signMask)]++;
+            }
             // Compute cumulative distribution
             int lastUsed = -1;
             for (int i = 0, p = stable ? 0 : first; i < 1 << DIGIT_BITS; i++) {
-                if (count[i] != 0) lastUsed = i;
+                if (count[i] != 0) {
+                    lastUsed = i;
+                }
                 pos[i] = (p += count[i]);
             }
             if (stable) {
-                for (int i = first + length; i-- != first; )
+                for (int i = first + length; i-- != first; ) {
                     support[--pos[(int) (fixDouble(a[perm[i]]) >>> shift & DIGIT_MASK ^ signMask)]] = perm[i];
+                }
                 System.arraycopy(support, 0, perm, first, length);
                 for (int i = 0, p = first; i <= lastUsed; i++) {
                     if (level < maxLevel && count[i] > 1) {
-                        if (count[i] < RADIXSORT_NO_REC) insertionSortIndirect(perm, a, p, p + count[i]);
-                        else {
+                        if (count[i] < RADIXSORT_NO_REC) {
+                            insertionSortIndirect(perm, a, p, p + count[i]);
+                        } else {
                             offsetStack[stackPos] = p;
                             lengthStack[stackPos] = count[i];
                             levelStack[stackPos++] = level + 1;
@@ -2167,8 +2336,9 @@ public final class DoubleArrays {
                         perm[i] = t;
                     }
                     if (level < maxLevel && count[c] > 1) {
-                        if (count[c] < RADIXSORT_NO_REC) insertionSortIndirect(perm, a, i, i + count[c]);
-                        else {
+                        if (count[c] < RADIXSORT_NO_REC) {
+                            insertionSortIndirect(perm, a, i, i + count[c]);
+                        } else {
                             offsetStack[stackPos] = i;
                             lengthStack[stackPos] = count[c];
                             levelStack[stackPos++] = level + 1;
@@ -2210,35 +2380,48 @@ public final class DoubleArrays {
         final ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads, Executors.defaultThreadFactory());
         final ExecutorCompletionService<Void> executorCompletionService = new ExecutorCompletionService<>(executorService);
         final int[] support = stable ? new int[perm.length] : null;
-        for (int j = numberOfThreads; j-- != 0; )
+        for (int j = numberOfThreads; j-- != 0; ) {
             executorCompletionService.submit(() -> {
                 final int[] count = new int[1 << DIGIT_BITS];
                 final int[] pos = new int[1 << DIGIT_BITS];
                 for (; ; ) {
-                    if (queueSize.get() == 0) for (int i = numberOfThreads; i-- != 0; ) queue.add(POISON_PILL);
+                    if (queueSize.get() == 0) {
+                        for (int i = numberOfThreads; i-- != 0; ) {
+                            queue.add(POISON_PILL);
+                        }
+                    }
                     final Segment segment = queue.take();
-                    if (segment == POISON_PILL) return null;
+                    if (segment == POISON_PILL) {
+                        return null;
+                    }
                     final int first = segment.offset;
                     final int length = segment.length;
                     final int level = segment.level;
                     final int signMask = level % DIGITS_PER_ELEMENT == 0 ? 1 << DIGIT_BITS - 1 : 0;
-                    final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT) * DIGIT_BITS; // This is the shift that extract the right byte from a key
+                    final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT)
+                            * DIGIT_BITS; // This is the shift that extract the right byte from a key
                     // Count keys.
-                    for (int i = first + length; i-- != first; ) count[(int) (fixDouble(a[perm[i]]) >>> shift & DIGIT_MASK ^ signMask)]++;
+                    for (int i = first + length; i-- != first; ) {
+                        count[(int) (fixDouble(a[perm[i]]) >>> shift & DIGIT_MASK ^ signMask)]++;
+                    }
                     // Compute cumulative distribution
                     int lastUsed = -1;
                     for (int i = 0, p = first; i < 1 << DIGIT_BITS; i++) {
-                        if (count[i] != 0) lastUsed = i;
+                        if (count[i] != 0) {
+                            lastUsed = i;
+                        }
                         pos[i] = (p += count[i]);
                     }
                     if (stable) {
-                        for (int i = first + length; i-- != first; )
+                        for (int i = first + length; i-- != first; ) {
                             support[--pos[(int) (fixDouble(a[perm[i]]) >>> shift & DIGIT_MASK ^ signMask)]] = perm[i];
+                        }
                         System.arraycopy(support, first, perm, first, length);
                         for (int i = 0, p = first; i <= lastUsed; i++) {
                             if (level < maxLevel && count[i] > 1) {
-                                if (count[i] < PARALLEL_RADIXSORT_NO_FORK) radixSortIndirect(perm, a, p, p + count[i], stable);
-                                else {
+                                if (count[i] < PARALLEL_RADIXSORT_NO_FORK) {
+                                    radixSortIndirect(perm, a, p, p + count[i], stable);
+                                } else {
                                     queueSize.incrementAndGet();
                                     queue.add(new Segment(p, count[i], level + 1));
                                 }
@@ -2262,8 +2445,9 @@ public final class DoubleArrays {
                                 perm[i] = t;
                             }
                             if (level < maxLevel && count[c] > 1) {
-                                if (count[c] < PARALLEL_RADIXSORT_NO_FORK) radixSortIndirect(perm, a, i, i + count[c], stable);
-                                else {
+                                if (count[c] < PARALLEL_RADIXSORT_NO_FORK) {
+                                    radixSortIndirect(perm, a, i, i + count[c], stable);
+                                } else {
                                     queueSize.incrementAndGet();
                                     queue.add(new Segment(i, count[c], level + 1));
                                 }
@@ -2273,15 +2457,19 @@ public final class DoubleArrays {
                     queueSize.decrementAndGet();
                 }
             });
+        }
         Throwable problem = null;
-        for (int i = numberOfThreads; i-- != 0; )
+        for (int i = numberOfThreads; i-- != 0; ) {
             try {
                 executorCompletionService.take().get();
             } catch (Exception e) {
                 problem = e.getCause(); // We keep only the last one. They will be logged anyway.
             }
+        }
         executorService.shutdown();
-        if (problem != null) throw (problem instanceof RuntimeException) ? (RuntimeException) problem : new RuntimeException(problem);
+        if (problem != null) {
+            throw (problem instanceof RuntimeException) ? (RuntimeException) problem : new RuntimeException(problem);
+        }
     }
 
     /**
@@ -2359,13 +2547,18 @@ public final class DoubleArrays {
             final int level = levelStack[stackPos];
             final int signMask = level % DIGITS_PER_ELEMENT == 0 ? 1 << DIGIT_BITS - 1 : 0;
             final double[] k = level < DIGITS_PER_ELEMENT ? a : b; // This is the key array
-            final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT) * DIGIT_BITS; // This is the shift that extract the right byte from a key
+            final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT)
+                    * DIGIT_BITS; // This is the shift that extract the right byte from a key
             // Count keys.
-            for (int i = first + length; i-- != first; ) count[(int) (fixDouble(k[i]) >>> shift & DIGIT_MASK ^ signMask)]++;
+            for (int i = first + length; i-- != first; ) {
+                count[(int) (fixDouble(k[i]) >>> shift & DIGIT_MASK ^ signMask)]++;
+            }
             // Compute cumulative distribution
             int lastUsed = -1;
             for (int i = 0, p = first; i < 1 << DIGIT_BITS; i++) {
-                if (count[i] != 0) lastUsed = i;
+                if (count[i] != 0) {
+                    lastUsed = i;
+                }
                 pos[i] = (p += count[i]);
             }
             final int end = first + length - count[lastUsed];
@@ -2388,8 +2581,9 @@ public final class DoubleArrays {
                     b[i] = u;
                 }
                 if (level < maxLevel && count[c] > 1) {
-                    if (count[c] < RADIXSORT_NO_REC) selectionSort(a, b, i, i + count[c]);
-                    else {
+                    if (count[c] < RADIXSORT_NO_REC) {
+                        selectionSort(a, b, i, i + count[c]);
+                    } else {
                         offsetStack[stackPos] = i;
                         lengthStack[stackPos] = count[c];
                         levelStack[stackPos++] = level + 1;
@@ -2422,7 +2616,9 @@ public final class DoubleArrays {
             return;
         }
         final int layers = 2;
-        if (a.length != b.length) throw new IllegalArgumentException("Array size mismatch.");
+        if (a.length != b.length) {
+            throw new IllegalArgumentException("Array size mismatch.");
+        }
         final int maxLevel = DIGITS_PER_ELEMENT * layers - 1;
         final LinkedBlockingQueue<Segment> queue = new LinkedBlockingQueue<>();
         queue.add(new Segment(from, to - from, 0));
@@ -2430,15 +2626,20 @@ public final class DoubleArrays {
         final int numberOfThreads = Runtime.getRuntime().availableProcessors();
         final ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads, Executors.defaultThreadFactory());
         final ExecutorCompletionService<Void> executorCompletionService = new ExecutorCompletionService<>(executorService);
-        for (int j = numberOfThreads; j-- != 0; )
+        for (int j = numberOfThreads; j-- != 0; ) {
             executorCompletionService.submit(() -> {
                 final int[] count = new int[1 << DIGIT_BITS];
                 final int[] pos = new int[1 << DIGIT_BITS];
                 for (; ; ) {
-                    if (queueSize.get() == 0) for (int i = numberOfThreads; i-- != 0; )
-                        queue.add(POISON_PILL);
+                    if (queueSize.get() == 0) {
+                        for (int i = numberOfThreads; i-- != 0; ) {
+                            queue.add(POISON_PILL);
+                        }
+                    }
                     final Segment segment = queue.take();
-                    if (segment == POISON_PILL) return null;
+                    if (segment == POISON_PILL) {
+                        return null;
+                    }
                     final int first = segment.offset;
                     final int length = segment.length;
                     final int level = segment.level;
@@ -2446,12 +2647,15 @@ public final class DoubleArrays {
                     final double[] k = level < DIGITS_PER_ELEMENT ? a : b; // This is the key array
                     final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT) * DIGIT_BITS;
                     // Count keys.
-                    for (int i = first + length; i-- != first; )
+                    for (int i = first + length; i-- != first; ) {
                         count[(int) (fixDouble(k[i]) >>> shift & DIGIT_MASK ^ signMask)]++;
+                    }
                     // Compute cumulative distribution
                     int lastUsed = -1;
                     for (int i = 0, p = first; i < 1 << DIGIT_BITS; i++) {
-                        if (count[i] != 0) lastUsed = i;
+                        if (count[i] != 0) {
+                            lastUsed = i;
+                        }
                         pos[i] = (p += count[i]);
                     }
                     final int end = first + length - count[lastUsed];
@@ -2473,8 +2677,9 @@ public final class DoubleArrays {
                             b[i] = u;
                         }
                         if (level < maxLevel && count[c] > 1) {
-                            if (count[c] < PARALLEL_RADIXSORT_NO_FORK) quickSort(a, b, i, i + count[c]);
-                            else {
+                            if (count[c] < PARALLEL_RADIXSORT_NO_FORK) {
+                                quickSort(a, b, i, i + count[c]);
+                            } else {
                                 queueSize.incrementAndGet();
                                 queue.add(new Segment(i, count[c], level + 1));
                             }
@@ -2483,15 +2688,19 @@ public final class DoubleArrays {
                     queueSize.decrementAndGet();
                 }
             });
+        }
         Throwable problem = null;
-        for (int i = numberOfThreads; i-- != 0; )
+        for (int i = numberOfThreads; i-- != 0; ) {
             try {
                 executorCompletionService.take().get();
             } catch (Exception e) {
                 problem = e.getCause(); // We keep only the last one. They will be logged anyway.
             }
+        }
         executorService.shutdown();
-        if (problem != null) throw (problem instanceof RuntimeException) ? (RuntimeException) problem : new RuntimeException(problem);
+        if (problem != null) {
+            throw (problem instanceof RuntimeException) ? (RuntimeException) problem : new RuntimeException(problem);
+        }
     }
 
     /**
@@ -2518,7 +2727,9 @@ public final class DoubleArrays {
         for (int i = from; ++i < to; ) {
             int t = perm[i];
             int j = i;
-            for (int u = perm[j - 1]; (Double.compare((a[t]), (a[u])) < 0) || (Double.compare((a[t]), (a[u])) == 0) && (Double.compare((b[t]), (b[u])) < 0); u = perm[--j - 1]) {
+            for (int u = perm[j - 1];
+                 (Double.compare((a[t]), (a[u])) < 0) || (Double.compare((a[t]), (a[u])) == 0) && (Double.compare((b[t]), (b[u])) < 0);
+                 u = perm[--j - 1]) {
                 perm[j] = u;
                 if (from == j - 1) {
                     --j;
@@ -2572,7 +2783,8 @@ public final class DoubleArrays {
      * @param to     the index of the last element of {@code perm} (exclusive) to be permuted.
      * @param stable whether the sorting algorithm should be stable.
      */
-    public static void radixSortIndirect(final int[] perm, final double[] a, final double[] b, final int from, final int to, final boolean stable) {
+    public static void radixSortIndirect(final int[] perm, final double[] a, final double[] b, final int from, final int to,
+            final boolean stable) {
         if (to - from < RADIXSORT_NO_REC) {
             insertionSortIndirect(perm, a, b, from, to);
             return;
@@ -2596,23 +2808,30 @@ public final class DoubleArrays {
             final int level = levelStack[stackPos];
             final int signMask = level % DIGITS_PER_ELEMENT == 0 ? 1 << DIGIT_BITS - 1 : 0;
             final double[] k = level < DIGITS_PER_ELEMENT ? a : b; // This is the key array
-            final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT) * DIGIT_BITS; // This is the shift that extract the right byte from a key
+            final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT)
+                    * DIGIT_BITS; // This is the shift that extract the right byte from a key
             // Count keys.
-            for (int i = first + length; i-- != first; ) count[(int) (fixDouble(k[perm[i]]) >>> shift & DIGIT_MASK ^ signMask)]++;
+            for (int i = first + length; i-- != first; ) {
+                count[(int) (fixDouble(k[perm[i]]) >>> shift & DIGIT_MASK ^ signMask)]++;
+            }
             // Compute cumulative distribution
             int lastUsed = -1;
             for (int i = 0, p = stable ? 0 : first; i < 1 << DIGIT_BITS; i++) {
-                if (count[i] != 0) lastUsed = i;
+                if (count[i] != 0) {
+                    lastUsed = i;
+                }
                 pos[i] = (p += count[i]);
             }
             if (stable) {
-                for (int i = first + length; i-- != first; )
+                for (int i = first + length; i-- != first; ) {
                     support[--pos[(int) (fixDouble(k[perm[i]]) >>> shift & DIGIT_MASK ^ signMask)]] = perm[i];
+                }
                 System.arraycopy(support, 0, perm, first, length);
                 for (int i = 0, p = first; i < 1 << DIGIT_BITS; i++) {
                     if (level < maxLevel && count[i] > 1) {
-                        if (count[i] < RADIXSORT_NO_REC) insertionSortIndirect(perm, a, b, p, p + count[i]);
-                        else {
+                        if (count[i] < RADIXSORT_NO_REC) {
+                            insertionSortIndirect(perm, a, b, p, p + count[i]);
+                        } else {
                             offsetStack[stackPos] = p;
                             lengthStack[stackPos] = count[i];
                             levelStack[stackPos++] = level + 1;
@@ -2637,8 +2856,9 @@ public final class DoubleArrays {
                         perm[i] = t;
                     }
                     if (level < maxLevel && count[c] > 1) {
-                        if (count[c] < RADIXSORT_NO_REC) insertionSortIndirect(perm, a, b, i, i + count[c]);
-                        else {
+                        if (count[c] < RADIXSORT_NO_REC) {
+                            insertionSortIndirect(perm, a, b, i, i + count[c]);
+                        } else {
                             offsetStack[stackPos] = i;
                             lengthStack[stackPos] = count[c];
                             levelStack[stackPos++] = level + 1;
@@ -2659,7 +2879,9 @@ public final class DoubleArrays {
                     if (a[p][j] < a[p][m]) {
                         m = j;
                         break;
-                    } else if (a[p][j] > a[p][m]) break;
+                    } else if (a[p][j] > a[p][m]) {
+                        break;
+                    }
                 }
             }
             if (m != i) {
@@ -2709,9 +2931,11 @@ public final class DoubleArrays {
         }
         final int layers = a.length;
         final int maxLevel = DIGITS_PER_ELEMENT * layers - 1;
-        for (int p = layers, l = a[0].length; p-- != 0; )
-            if (a[p].length != l)
+        for (int p = layers, l = a[0].length; p-- != 0; ) {
+            if (a[p].length != l) {
                 throw new IllegalArgumentException("The array of index " + p + " has not the same length of the array of index 0.");
+            }
+        }
         final int stackSize = ((1 << DIGIT_BITS) - 1) * (layers * DIGITS_PER_ELEMENT - 1) + 1;
         int stackPos = 0;
         final int[] offsetStack = new int[stackSize];
@@ -2729,19 +2953,26 @@ public final class DoubleArrays {
             final int level = levelStack[stackPos];
             final int signMask = level % DIGITS_PER_ELEMENT == 0 ? 1 << DIGIT_BITS - 1 : 0;
             final double[] k = a[level / DIGITS_PER_ELEMENT]; // This is the key array
-            final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT) * DIGIT_BITS; // This is the shift that extract the right byte from a key
+            final int shift = (DIGITS_PER_ELEMENT - 1 - level % DIGITS_PER_ELEMENT)
+                    * DIGIT_BITS; // This is the shift that extract the right byte from a key
             // Count keys.
-            for (int i = first + length; i-- != first; ) count[(int) (fixDouble(k[i]) >>> shift & DIGIT_MASK ^ signMask)]++;
+            for (int i = first + length; i-- != first; ) {
+                count[(int) (fixDouble(k[i]) >>> shift & DIGIT_MASK ^ signMask)]++;
+            }
             // Compute cumulative distribution
             int lastUsed = -1;
             for (int i = 0, p = first; i < 1 << DIGIT_BITS; i++) {
-                if (count[i] != 0) lastUsed = i;
+                if (count[i] != 0) {
+                    lastUsed = i;
+                }
                 pos[i] = (p += count[i]);
             }
             final int end = first + length - count[lastUsed];
             // i moves through the start of each block
             for (int i = first, c, d; i <= end; i += count[c], count[c] = 0) {
-                for (int p = layers; p-- != 0; ) t[p] = a[p][i];
+                for (int p = layers; p-- != 0; ) {
+                    t[p] = a[p][i];
+                }
                 c = (int) (fixDouble(k[i]) >>> shift & DIGIT_MASK ^ signMask);
                 if (i < end) { // When all slots are OK, the last slot is necessarily OK.
                     while ((d = --pos[c]) > i) {
@@ -2752,11 +2983,14 @@ public final class DoubleArrays {
                             a[p][d] = u;
                         }
                     }
-                    for (int p = layers; p-- != 0; ) a[p][i] = t[p];
+                    for (int p = layers; p-- != 0; ) {
+                        a[p][i] = t[p];
+                    }
                 }
                 if (level < maxLevel && count[c] > 1) {
-                    if (count[c] < RADIXSORT_NO_REC) selectionSort(a, i, i + count[c], level + 1);
-                    else {
+                    if (count[c] < RADIXSORT_NO_REC) {
+                        selectionSort(a, i, i + count[c], level + 1);
+                    } else {
                         offsetStack[stackPos] = i;
                         lengthStack[stackPos] = count[c];
                         levelStack[stackPos++] = level + 1;

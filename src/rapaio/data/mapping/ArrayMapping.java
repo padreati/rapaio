@@ -21,16 +21,16 @@
 
 package rapaio.data.mapping;
 
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Mapping;
 import rapaio.util.IntIterator;
 import rapaio.util.collection.IntArrayList;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Int2IntFunction;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/27/18.

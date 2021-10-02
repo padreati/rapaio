@@ -21,12 +21,14 @@
 
 package rapaio.data.filter;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class VApplyTest {
 

@@ -21,6 +21,10 @@
 
 package rapaio.datasets;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -36,10 +40,6 @@ import rapaio.io.Csv;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.classifier.ensemble.CForest;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

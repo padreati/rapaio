@@ -21,8 +21,14 @@
 
 package rapaio.data.sample;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.stream.DoubleStream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
@@ -30,10 +36,6 @@ import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-
-import java.util.stream.DoubleStream;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for row sampling tools

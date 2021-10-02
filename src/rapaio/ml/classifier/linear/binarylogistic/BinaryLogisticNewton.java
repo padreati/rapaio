@@ -21,18 +21,18 @@
 
 package rapaio.ml.classifier.linear.binarylogistic;
 
+import static java.lang.Math.exp;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
+
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
-
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.Math.exp;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.

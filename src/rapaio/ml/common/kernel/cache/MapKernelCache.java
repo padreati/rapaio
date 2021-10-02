@@ -21,11 +21,11 @@
 
 package rapaio.ml.common.kernel.cache;
 
-import rapaio.data.Frame;
-
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
+
+import rapaio.data.Frame;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.

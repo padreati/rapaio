@@ -21,14 +21,14 @@
 
 package rapaio.ml.common.kernel;
 
+import java.io.Serial;
+import java.util.Arrays;
+
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.cache.KernelCache;
 import rapaio.ml.common.kernel.cache.MapKernelCache;
 import rapaio.ml.common.kernel.cache.SolidKernelCache;
-
-import java.io.Serial;
-import java.util.Arrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.

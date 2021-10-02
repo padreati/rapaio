@@ -21,10 +21,10 @@
 
 package rapaio.ml.eval.metric;
 
+import java.io.Serializable;
+
 import rapaio.data.Var;
 import rapaio.ml.regression.RegressionResult;
-
-import java.io.Serializable;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/15/20.

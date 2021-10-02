@@ -21,10 +21,10 @@
 
 package rapaio.math;
 
-import rapaio.core.distributions.Normal;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import rapaio.core.distributions.Normal;
 
 /**
  * Utility class which simplifies access to common java math utilities and also

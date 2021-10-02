@@ -23,13 +23,10 @@ package rapaio.core.tools;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.util.function.IntInt2DoubleBiFunction;
-import rapaio.util.function.SBiFunction;
 
 /**
  * Holds a matrix with distances between instances for a given metric.

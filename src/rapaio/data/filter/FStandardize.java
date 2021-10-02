@@ -21,12 +21,12 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.Frame;
-import rapaio.data.VarRange;
-
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
+
+import rapaio.data.Frame;
+import rapaio.data.VarRange;
 
 /**
  * Transform numeric variables into standardized values.

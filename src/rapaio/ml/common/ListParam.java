@@ -21,12 +21,12 @@
 
 package rapaio.ml.common;
 
-import rapaio.util.function.SBiFunction;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import rapaio.util.function.SBiFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/7/20.

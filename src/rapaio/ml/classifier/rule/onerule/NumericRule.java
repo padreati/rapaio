@@ -21,11 +21,11 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
-import rapaio.core.tools.DensityVector;
+import static rapaio.printer.Format.floatFlexLong;
 
 import java.io.Serial;
 
-import static rapaio.printer.Format.floatFlexLong;
+import rapaio.core.tools.DensityVector;
 
 /**
  * Rule for one rule model for numeric variables

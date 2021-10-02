@@ -21,15 +21,15 @@
 
 package rapaio.printer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.data.VarType;
 import rapaio.printer.opt.POption;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Helper tool to build text in tabular format.

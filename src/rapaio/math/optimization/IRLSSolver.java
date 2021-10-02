@@ -21,6 +21,15 @@
 
 package rapaio.math.optimization;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.pow;
+
+import static rapaio.math.linear.Algebra.copy;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
+
 import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
@@ -28,12 +37,6 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
-
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.Math.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/17.
@@ -208,26 +211,36 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
             for (int it = 0; it < maxIt; it++) {
                 // error vector
                 DVector e = A.dot(x).sub(b);
-                errors.addDouble(e.norm(p));
+                errors.addDouble(e.pnorm(p));
 
                 // error weights for IRLS
-                DVector w = e.apply(v -> (p == 1) ? 1 / Math.max(1e-10, abs(v)) : pow(abs(v), (p - 2) / 2));
+                DVector w = e.apply(v -> (p == 1) ? 1 / Math.max(tol, abs(v)) : pow(abs(v), (p - 2) / 2));
                 // normalize weight vector
                 w.div(w.sum());
                 // square w
                 w.mult(w);
                 // weighted L2 solution
-                DMatrix w2a = w.diagDot(A);
+
+                DMatrix w2a = A.mult(w, 1, copy());
                 DMatrix A1 = w2a.t().dot(A);
                 DVector b1 = w2a.t().dot(b);
 
-                x = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
+                try {
+                    x = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
+                }catch (RuntimeException ignored) {
+                    converged=false;
+                    break;
+                }
                 solutions.add(x);
 
                 // break if the improvement is then tolerance
-                if (it > 0 && Math.abs(errors.getDouble(errors.size() - 2) - e.norm(p)) < tol) {
-                    converged = true;
-                    break;
+                if (it > 0) {
+                    double previousError = errors.getDouble(errors.size() - 2);
+                    double currentError = errors.getDouble(errors.size() - 1);
+                    if (Math.abs(previousError - currentError) < tol) {
+                        converged = true;
+                        break;
+                    }
                 }
             }
             solution = x;
@@ -262,7 +275,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                 // normalize weight vector
                 w.div(w.sum());
                 // weighted L2 solution
-                DMatrix w2a = w.diagDot(A);
+                DMatrix w2a = A.mult(w, 1, copy());
                 DMatrix A1 = w2a.t().dot(A);
                 DVector b1 = w2a.t().dot(b);
                 DVector x1 = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
@@ -279,7 +292,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                     nn = 2;
                 }
                 solutions.add(x);
-                errors.addDouble(e.norm(nn));
+                errors.addDouble(e.pnorm(nn));
                 // break if the improvement is less then tolerance
                 if (it > 0 && Math.abs(errors.getDouble(errors.size() - 2) - errors.getDouble(errors.size() - 1)) < tol) {
                     converged = true;

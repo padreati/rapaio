@@ -21,8 +21,13 @@
 
 package rapaio.ml.regression.tree.rtree;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -30,10 +35,6 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SplitterTest {
 

@@ -21,13 +21,13 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
-import rapaio.core.tools.DensityVector;
-import rapaio.experiment.ml.common.predicate.RowPredicate;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import rapaio.core.tools.DensityVector;
+import rapaio.experiment.ml.common.predicate.RowPredicate;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/12/20.

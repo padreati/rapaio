@@ -21,6 +21,14 @@
 
 package rapaio.graphics.plot.artist;
 
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Composite;
+import java.awt.Graphics2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.io.Serial;
+
 import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.distributions.empirical.KFuncGaussian;
@@ -29,11 +37,6 @@ import rapaio.data.VarDouble;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-
-import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
-import java.io.Serial;
 
 /**
  * Artist which draws a KDE density estimator function.

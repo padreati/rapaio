@@ -21,10 +21,10 @@
 
 package rapaio.core.correlation;
 
+import java.io.Serializable;
+
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.printer.Printable;
-
-import java.io.Serializable;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/12/17.

@@ -21,9 +21,6 @@
 
 package rapaio.experiment.io.json;
 
-import rapaio.experiment.io.json.stream.JsonSpliterator;
-import rapaio.experiment.io.json.tree.JsonValue;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -40,6 +37,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import rapaio.experiment.io.json.stream.JsonSpliterator;
+import rapaio.experiment.io.json.tree.JsonValue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/20/15.

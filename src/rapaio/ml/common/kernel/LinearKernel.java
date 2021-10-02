@@ -21,11 +21,11 @@
 
 package rapaio.ml.common.kernel;
 
+import java.io.Serial;
+
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
-
-import java.io.Serial;
 
 /**
  * The Linear kernel is the simplest kernel function. It is given by the inner product <x,y> plus an optional constant c.

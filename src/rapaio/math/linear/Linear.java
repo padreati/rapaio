@@ -22,8 +22,7 @@
 package rapaio.math.linear;
 
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
-import rapaio.math.linear.decomposition.EigenDecompStatistics;
-import rapaio.math.linear.decomposition.EigenDecompStrategy;
+import rapaio.math.linear.decomposition.EigenDecomposition;
 
 /**
  * Linear algebra tool bag class.
@@ -64,15 +63,30 @@ public final class Linear {
         return X;
     }
 
-    public static EigenPair eigenDecomp(DMatrix s, int maxRuns, double tol) {
+    public static EigenPair eigenDecomp(DMatrix s) {
 
-        EigenDecompStrategy eigenDecompStrategy = new EigenDecompStatistics();
+        int n = s.colCount();
+        EigenDecomposition evd = EigenDecomposition.from(s);
 
-        return eigenDecompStrategy.getEigenDecomp(s, maxRuns, tol);
+        double[] _values = evd.getRealEigenvalues();
+        DMatrix _vectors = evd.getV();
+
+        DVector values = DVector.zeros(n);
+        DMatrix vectors = DMatrix.empty(n, n);
+
+        for (int i = 0; i < values.size(); i++) {
+            values.set(values.size() - i - 1, _values[i]);
+        }
+        for (int i = 0; i < vectors.rowCount(); i++) {
+            for (int j = 0; j < vectors.colCount(); j++) {
+                vectors.set(i, vectors.colCount() - j - 1, _vectors.get(i, j));
+            }
+        }
+        return EigenPair.from(values, vectors);
     }
 
-    public static DMatrix pdPower(DMatrix s, double power, int maxRuns, double tol) {
-        EigenPair eigenPair = eigenDecomp(s, maxRuns, tol);
+    public static DMatrix pdPower(DMatrix s, double power) {
+        EigenPair eigenPair = eigenDecomp(s);
         DMatrix U = eigenPair.vectors();
         DMatrix lambda = eigenPair.expandedValues();
         for (int i = 0; i < lambda.rowCount(); i++) {

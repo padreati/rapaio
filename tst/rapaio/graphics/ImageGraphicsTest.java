@@ -21,6 +21,49 @@
 
 package rapaio.graphics;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.graphics.Plotter.HALIGN_CENTER;
+import static rapaio.graphics.Plotter.HALIGN_LEFT;
+import static rapaio.graphics.Plotter.HALIGN_RIGHT;
+import static rapaio.graphics.Plotter.VALIGN_CENTER;
+import static rapaio.graphics.Plotter.alpha;
+import static rapaio.graphics.Plotter.barplot;
+import static rapaio.graphics.Plotter.bins;
+import static rapaio.graphics.Plotter.boxplot;
+import static rapaio.graphics.Plotter.color;
+import static rapaio.graphics.Plotter.corrGram;
+import static rapaio.graphics.Plotter.densityLine;
+import static rapaio.graphics.Plotter.fill;
+import static rapaio.graphics.Plotter.font;
+import static rapaio.graphics.Plotter.funLine;
+import static rapaio.graphics.Plotter.gridLayer;
+import static rapaio.graphics.Plotter.hAlign;
+import static rapaio.graphics.Plotter.heights;
+import static rapaio.graphics.Plotter.hist;
+import static rapaio.graphics.Plotter.hist2d;
+import static rapaio.graphics.Plotter.horizontal;
+import static rapaio.graphics.Plotter.lines;
+import static rapaio.graphics.Plotter.lwd;
+import static rapaio.graphics.Plotter.pch;
+import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.Plotter.points;
+import static rapaio.graphics.Plotter.qqplot;
+import static rapaio.graphics.Plotter.rocCurve;
+import static rapaio.graphics.Plotter.silhouette;
+import static rapaio.graphics.Plotter.sort;
+import static rapaio.graphics.Plotter.stacked;
+import static rapaio.graphics.Plotter.sz;
+import static rapaio.graphics.Plotter.top;
+import static rapaio.graphics.Plotter.vAlign;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,16 +94,6 @@ import rapaio.ml.clustering.km.KMClusterResult;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.sys.WS;
-
-import javax.imageio.ImageIO;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static rapaio.graphics.Plotter.*;
 
 /**
  * Test some graphics by maintaining some previously generated images.
@@ -287,7 +320,6 @@ public class ImageGraphicsTest {
             return Math.sqrt(sum);
         });
         ClusterSilhouette silhouette = ClusterSilhouette.from(assignment, dm, false).compute();
-        silhouette.printFullContent();
 
         assertTest(silhouette(silhouette, horizontal(true)), "silhouette-test");
     }

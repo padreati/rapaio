@@ -21,15 +21,15 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
-
-import java.io.Serial;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Adds an intercept column: a numeric column with all values equal with 1.0,

@@ -27,6 +27,8 @@ import java.util.stream.IntStream;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArraysV;
 
 public class DMatrixDenseR extends DMatrixDense {
@@ -55,8 +57,12 @@ public class DMatrixDenseR extends DMatrixDense {
     }
 
     @Override
-    public DMatrix t() {
-        return new DMatrixDenseC(colCount, rowCount, values);
+    public DMatrix t(AlgebraOption<?>... opts) {
+        double[] ref = values;
+        if (AlgebraOptions.from(opts).isCopy()) {
+            ref = Arrays.copyOf(values, rowCount * colCount);
+        }
+        return new DMatrixDenseC(colCount, rowCount, ref);
     }
 
     @Override

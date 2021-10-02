@@ -21,12 +21,12 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.Var;
-import rapaio.util.function.SFunction;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.Serial;
 import java.util.Arrays;
+
+import rapaio.data.Var;
+import rapaio.util.function.SFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.

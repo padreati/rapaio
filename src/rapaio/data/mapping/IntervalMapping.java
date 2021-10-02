@@ -21,13 +21,13 @@
 
 package rapaio.data.mapping;
 
-import rapaio.data.Mapping;
-import rapaio.util.IntIterator;
-import rapaio.util.collection.IntArrays;
-
 import java.io.Serial;
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
+
+import rapaio.data.Mapping;
+import rapaio.util.IntIterator;
+import rapaio.util.collection.IntArrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/27/18.

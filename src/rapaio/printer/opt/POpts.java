@@ -21,12 +21,12 @@
 
 package rapaio.printer.opt;
 
-import rapaio.printer.Format;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+
+import rapaio.printer.Format;
 
 /**
  * Printing options.
@@ -50,16 +50,16 @@ public class POpts implements Serializable {
         this.parent = parent;
     }
 
-    private POpts parent;
+    public POpts() {
+        this(defaults);
+    }
+
+    private final POpts parent;
     private POptionTextWidth textWidth;
     private POtpionFloatFormat floatFormat;
 
     public POpts getParent() {
         return parent;
-    }
-
-    public void setParent(POpts parent) {
-        this.parent = parent;
     }
 
     public POpts bind(POption<?>... options) {

@@ -21,13 +21,13 @@
 
 package rapaio.data.group.function;
 
+import java.util.List;
+
 import rapaio.data.Frame;
 import rapaio.data.Group;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-
-import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.

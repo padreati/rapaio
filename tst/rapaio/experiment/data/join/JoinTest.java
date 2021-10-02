@@ -21,8 +21,12 @@
 
 package rapaio.experiment.data.join;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
@@ -30,8 +34,6 @@ import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.filter.FRefSort;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 /**

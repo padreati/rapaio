@@ -21,6 +21,9 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+import java.util.function.Function;
+
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.stream.VSpot;
@@ -28,9 +31,6 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
-
-import java.io.Serial;
-import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.

@@ -21,12 +21,14 @@
 
 package rapaio.math.linear.dense;
 
+import java.io.Serial;
+
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;
-
-import java.io.Serial;
 
 /**
  * Dense matrix with values in double floating point precision.
@@ -55,15 +57,22 @@ public class DMatrixStripeC extends DMatrixStripe {
     }
 
     @Override
-    public DVector mapCol(int col) {
+    public DVector mapCol(int col, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            DVector.wrap(DoubleArrays.copy(values[col], 0, values[col].length));
+        }
         return DVector.wrapArray(rowCount, values[col]);
     }
 
     @Override
-    public DMatrix mapCols(int... indexes) {
-        double[][] array = new double[indexes.length][rowCount];
+    public DMatrix mapCols(int[] indexes, AlgebraOption<?>... opts) {
+        double[][] array = new double[indexes.length][];
         for (int i = 0; i < indexes.length; i++) {
-            array[i] = values[indexes[i]];
+            if (AlgebraOptions.from(opts).isCopy()) {
+                array[i] = DoubleArrays.copy(values[indexes[i]], 0, values[indexes[i]].length);
+            } else {
+                array[i] = values[indexes[i]];
+            }
         }
         return new DMatrixStripeC(rowCount, indexes.length, array);
     }
@@ -83,19 +92,19 @@ public class DMatrixStripeC extends DMatrixStripe {
         values[col][row] += value;
     }
 
-    @Override
-    public DMatrix add(double x) {
-        for (double[] col : values) {
-            for (int i = 0; i < col.length; i++) {
-                col[i] += x;
-            }
-        }
-        return this;
-    }
+//    @Override
+//    public DMatrix add(double x) {
+//        for (double[] col : values) {
+//            for (int i = 0; i < col.length; i++) {
+//                col[i] += x;
+//            }
+//        }
+//        return this;
+//    }
 
     @Override
     public DVector dot(DVector b) {
-        double[] array = (b instanceof DVectorDense) ? ((DVectorDense)b).elements() : b.valueStream().toArray();
+        double[] array = (b instanceof DVectorDense) ? ((DVectorDense) b).elements() : b.valueStream().toArray();
         double[] c = DoubleArrays.newFill(rowCount, 0);
         for (int i = 0; i < colCount; i++) {
             for (int j = 0; j < c.length; j++) {
@@ -105,36 +114,10 @@ public class DMatrixStripeC extends DMatrixStripe {
         return new DVectorDense(c.length, c);
     }
 
-    @Override
-    public DMatrix dotDiag(DVector v) {
-        if (v instanceof DVectorDense) {
-            var array = v.asDense().elements();
-            var len = v.size();
-            for (int i = 0; i < colCount; i++) {
-                DoubleArrays.mult(values[i], 0, array[i], rowCount);
-            }
-            return this;
-        }
-        return super.dotDiag(v);
-    }
-
-    @Override
-    public DMatrix dotDiagT(DVector v) {
-        if (v.isDense()) {
-            var array = v.asDense().elements();
-            var len = v.size();
-            for (int i = 0; i < rowCount; i++) {
-                DoubleArrays.mult(values[i], 0, array[i], colCount);
-            }
-            return this;
-        }
-        return super.dotDiagT(v);
-    }
-
-    @Override
-    public DMatrix t() {
-        return new DMatrixStripeR(colCount, rowCount, values);
-    }
+//    @Override
+//    public DMatrix t() {
+//        return new DMatrixStripeR(colCount, rowCount, values);
+//    }
 
     @Override
     public DMatrixStripeC copy() {

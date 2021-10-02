@@ -21,11 +21,11 @@
 
 package rapaio.core.distributions.empirical;
 
+import java.io.Serializable;
+
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serializable;
 
 /**
  * Kernel function used in kernel density estimator

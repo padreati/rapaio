@@ -21,6 +21,15 @@
 
 package rapaio.graphics.plot;
 
+import java.awt.BasicStroke;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
+
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.tools.GridData;
@@ -56,12 +65,6 @@ import rapaio.math.linear.DMatrix;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

@@ -21,8 +21,43 @@
 
 package rapaio.util.collection;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.util.collection.DoubleArrays.add;
+import static rapaio.util.collection.DoubleArrays.addTo;
+import static rapaio.util.collection.DoubleArrays.copy;
+import static rapaio.util.collection.DoubleArrays.div;
+import static rapaio.util.collection.DoubleArrays.divTo;
+import static rapaio.util.collection.DoubleArrays.ensureCapacity;
+import static rapaio.util.collection.DoubleArrays.forceCapacity;
+import static rapaio.util.collection.DoubleArrays.grow;
+import static rapaio.util.collection.DoubleArrays.mean;
+import static rapaio.util.collection.DoubleArrays.mult;
+import static rapaio.util.collection.DoubleArrays.multTo;
+import static rapaio.util.collection.DoubleArrays.nanCount;
+import static rapaio.util.collection.DoubleArrays.nanMean;
+import static rapaio.util.collection.DoubleArrays.nanSum;
+import static rapaio.util.collection.DoubleArrays.nanVariance;
+import static rapaio.util.collection.DoubleArrays.newFill;
+import static rapaio.util.collection.DoubleArrays.newFrom;
+import static rapaio.util.collection.DoubleArrays.newSeq;
+import static rapaio.util.collection.DoubleArrays.sub;
+import static rapaio.util.collection.DoubleArrays.subTo;
+import static rapaio.util.collection.DoubleArrays.sum;
+import static rapaio.util.collection.DoubleArrays.trim;
+import static rapaio.util.collection.DoubleArrays.variance;
+
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Variance;
@@ -30,14 +65,6 @@ import rapaio.data.VarDouble;
 import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleComparators;
 import rapaio.util.DoubleIterator;
-
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.util.collection.DoubleArrays.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/18/19.

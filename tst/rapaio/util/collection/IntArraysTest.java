@@ -21,20 +21,30 @@
 
 package rapaio.util.collection;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
-import rapaio.util.IntComparator;
-import rapaio.util.IntComparators;
-import rapaio.util.IntIterator;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.util.collection.IntArrays.ensureCapacity;
+import static rapaio.util.collection.IntArrays.forceCapacity;
+import static rapaio.util.collection.IntArrays.grow;
+import static rapaio.util.collection.IntArrays.newFill;
+import static rapaio.util.collection.IntArrays.newSeq;
+import static rapaio.util.collection.IntArrays.trim;
 
 import java.util.NoSuchElementException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.util.collection.IntArrays.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import rapaio.core.RandomSource;
+import rapaio.util.IntComparator;
+import rapaio.util.IntComparators;
+import rapaio.util.IntIterator;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.

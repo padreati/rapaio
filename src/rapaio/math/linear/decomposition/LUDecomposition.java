@@ -21,15 +21,15 @@
 
 package rapaio.math.linear.decomposition;
 
-import rapaio.math.linear.DMatrix;
-import rapaio.printer.Printable;
-import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
+
+import rapaio.math.linear.DMatrix;
+import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * LU Decomposition.

@@ -21,13 +21,13 @@
 
 package rapaio.ml.regression.tree.rtree;
 
-import rapaio.experiment.ml.common.predicate.RowPredicate;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import rapaio.experiment.ml.common.predicate.RowPredicate;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/1/17.

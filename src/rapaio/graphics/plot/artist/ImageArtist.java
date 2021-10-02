@@ -21,16 +21,16 @@
 
 package rapaio.graphics.plot.artist;
 
+import static rapaio.graphics.Plotter.position;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.Serial;
+
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.Position;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.Serial;
-
-import static rapaio.graphics.Plotter.position;
 
 /**
  * Artist which displays an image.

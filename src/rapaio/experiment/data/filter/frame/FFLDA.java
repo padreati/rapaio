@@ -21,15 +21,15 @@
 
 package rapaio.experiment.data.filter.frame;
 
+import java.io.Serial;
+import java.util.function.BiFunction;
+
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.data.filter.AbstractFFilter;
 import rapaio.experiment.ml.analysis.LDA;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-
-import java.io.Serial;
-import java.util.function.BiFunction;
 
 public class FFLDA extends AbstractFFilter {
 

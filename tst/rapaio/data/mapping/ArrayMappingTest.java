@@ -21,12 +21,14 @@
 
 package rapaio.data.mapping;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Mapping;
 import rapaio.data.VarInt;
 import rapaio.util.IntIterator;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/26/18.

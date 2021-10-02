@@ -21,14 +21,14 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2IntFunction;
-
-import java.io.Serial;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Apply a given consumer function over each spot of the variable.

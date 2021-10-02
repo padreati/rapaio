@@ -21,16 +21,16 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.BoundFrame;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarRange;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarRange;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/30/19.

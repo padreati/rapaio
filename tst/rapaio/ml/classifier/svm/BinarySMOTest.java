@@ -22,8 +22,16 @@
 package rapaio.ml.classifier.svm;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
@@ -53,12 +61,6 @@ import rapaio.ml.eval.ClassifierEvaluation;
 import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.eval.split.StratifiedKFold;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for binary smo

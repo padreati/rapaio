@@ -21,10 +21,10 @@
 
 package rapaio.math.linear.decomposition;
 
-import rapaio.math.linear.DMatrix;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import rapaio.math.linear.DMatrix;
 
 /**
  * Eigenvalues and eigenvectors of a squared real matrix.

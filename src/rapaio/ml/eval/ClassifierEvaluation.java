@@ -21,6 +21,15 @@
 
 package rapaio.ml.eval;
 
+import java.io.Serial;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.ClassifierModel;
@@ -35,15 +44,6 @@ import rapaio.ml.eval.split.Split;
 import rapaio.ml.eval.split.SplitStrategy;
 import rapaio.ml.eval.split.StratifiedKFold;
 import rapaio.sys.WS;
-
-import java.io.Serial;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Classifier evaluation tool.

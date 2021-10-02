@@ -21,19 +21,21 @@
 
 package rapaio.math.linear;
 
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.linear.dense.DVectorMap;
-import rapaio.printer.Printable;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.function.Double2DoubleFunction;
-import rapaio.util.function.Int2DoubleFunction;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
+
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Normal;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.printer.Printable;
+import rapaio.util.collection.DoubleArrays;
+import rapaio.util.function.Double2DoubleFunction;
+import rapaio.util.function.Int2DoubleFunction;
 
 /**
  * Vector of values in double floating precision.
@@ -118,19 +120,7 @@ public interface DVector extends Serializable, Printable {
      * @param v source variable
      * @return new dense vector with values takes from variable v
      */
-    static DVector from(Var v) {
-        return from(VType.DENSE, v);
-    }
-
-    /**
-     * Builds a new real dense vector of size equal with row count,
-     * filled with values from variable. The variable can have any type,
-     * the values are taken by using {@link Var#getDouble(int)} calls.
-     *
-     * @param v given variable
-     * @return new real dense vector
-     */
-    static DVectorDense from(VType type, Var v) {
+    static DVectorDense from(Var v) {
         if (v instanceof VarDouble vd) {
             double[] array = vd.elements();
             return wrapArray(vd.size(), array);
@@ -143,13 +133,39 @@ public interface DVector extends Serializable, Printable {
     }
 
     /**
-     * Builds a new real dense vector which is a solid copy
-     * of the given source vector.
+     * Build a dense vector with random values drawn from a standard normal
+     * distribution.
+     *
+     * @param size size of the vector
+     * @return dense vector with random values
+     */
+    static DVectorDense random(int size) {
+        return random(size, Normal.std());
+    }
+
+    /**
+     * Builds a random vector with random values drawn from the distribution
+     * given as parameter.
+     *
+     * @param size         size of the vector
+     * @param distribution distribution which generates the values
+     * @return dense vector with random values
+     */
+    static DVectorDense random(int size, Distribution distribution) {
+        double[] array = new double[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = distribution.sampleNext();
+        }
+        return wrapArray(array.length, array);
+    }
+
+    /**
+     * Builds a new real dense vector which is a solid copy of the given source vector.
      *
      * @param source source vector
      * @return new real dense vector which is a copy of the source vector
      */
-    static DVector copy(DVector source) {
+    static DVectorDense copy(DVector source) {
         double[] copy = new double[source.size()];
         for (int i = 0; i < copy.length; i++) {
             copy[i] = source.get(i);
@@ -157,7 +173,7 @@ public interface DVector extends Serializable, Printable {
         return wrapArray(copy.length, copy);
     }
 
-    static DVector wrap(double... values) {
+    static DVectorDense wrap(double... values) {
         return wrapArray(values.length, values);
     }
 
@@ -173,20 +189,16 @@ public interface DVector extends Serializable, Printable {
         return new DVectorDense(size, values);
     }
 
+    /**
+     * Builds a vector with values computed by a function given as parameter,
+     * where the input values of the function starts at {@code 0} and ends at {@code len - 1}
+     *
+     * @param len length of the vector
+     * @param fun generating function
+     * @return dense vector with computed values
+     */
     static DVector from(int len, Int2DoubleFunction fun) {
         return wrapArray(len, DoubleArrays.newFrom(0, len, fun));
-    }
-
-    static DVector from(VType type, int len, Int2DoubleFunction fun) {
-        return wrapArray(len, DoubleArrays.newFrom(0, len, fun));
-    }
-
-    default boolean isDense() {
-        return this instanceof DVectorDense;
-    }
-
-    default DVectorDense asDense() {
-        return (DVectorDense) this;
     }
 
     /**
@@ -197,27 +209,25 @@ public interface DVector extends Serializable, Printable {
     VType type();
 
     /**
+     * If this is an indirect vector it returns the source vector, otherwise it returns
+     * the same value as {@link #type()}.
+     *
+     * @return inner vector type
+     */
+    VType innerType();
+
+    /**
      * @return number of elements from the vector
      */
     int size();
 
     /**
-     * Creates a new vector map which wrap values from specified indexes
+     * Creates a new vector map which map values from specified indexes
      *
      * @param indexes of the values to keep
      * @return map instance vector
      */
-    default DVectorMap map(int... indexes) {
-        return new DVectorMap(this, indexes);
-    }
-
-    /**
-     * Creates a new vector copy retaining only the values from specified indexes
-     *
-     * @param indexes of the values to keep
-     * @return reduced instance vector
-     */
-    DVectorDense mapCopy(int... indexes);
+    DVector map(int[] indexes, AlgebraOption<?>... opts);
 
     /**
      * Creates a new copy of the vector.
@@ -262,13 +272,13 @@ public interface DVector extends Serializable, Printable {
      * @param x value to be incremented with
      * @return same object
      */
-    DVector add(double x);
+    DVector add(double x, AlgebraOption<?>... opts);
 
     /**
-     * Adds to to all positions values from the
-     * corresponding positions of the vector B.
+     * Adds to all positions values from the
+     * corresponding positions of the vector y.
      * The resulted vectors will have values:
-     * this[i] <- this[i] + B[i].
+     * this[i] <- this[i] + y[i].
      * <p>
      * Vectors must be conformant for addition, which means
      * that they have to have the same size.
@@ -276,7 +286,7 @@ public interface DVector extends Serializable, Printable {
      * @param y vector which contains values used for increment operation
      * @return same object
      */
-    DVector add(DVector y);
+    DVector add(DVector y, AlgebraOption<?>... opts);
 
     /**
      * Subtracts from all elements the value of x, it is
@@ -286,7 +296,7 @@ public interface DVector extends Serializable, Printable {
      * @param x value to be decremented with
      * @return same object
      */
-    DVector sub(double x);
+    DVector sub(double x, AlgebraOption<?>... opts);
 
     /**
      * Subtracts from all positions values from the corresponding positions of the vector {@code b}.
@@ -297,7 +307,7 @@ public interface DVector extends Serializable, Printable {
      * @param y vector which contains values used for increment operation
      * @return same object
      */
-    DVector sub(DVector y);
+    DVector sub(DVector y, AlgebraOption<?>... opts);
 
     /**
      * Scalar multiplication. All the values from vector
@@ -306,7 +316,7 @@ public interface DVector extends Serializable, Printable {
      * @param scalar scaar value
      * @return the same object
      */
-    DVector mult(double scalar);
+    DVector mult(double scalar, AlgebraOption<?>... opts);
 
     /**
      * Element wise multiplication between two vectors.
@@ -314,7 +324,7 @@ public interface DVector extends Serializable, Printable {
      * @param y factor vector
      * @return element wise multiplication result vector
      */
-    DVector mult(DVector y);
+    DVector mult(DVector y, AlgebraOption<?>... opts);
 
     /**
      * Scalar division. All values from vector will be divided by scalar value.
@@ -322,7 +332,7 @@ public interface DVector extends Serializable, Printable {
      * @param scalar value
      * @return reference to original vector
      */
-    DVector div(double scalar);
+    DVector div(double scalar, AlgebraOption<?>... opts);
 
     /**
      * Element wise division between two vectors.
@@ -330,19 +340,19 @@ public interface DVector extends Serializable, Printable {
      * @param y factor vector
      * @return element wise division result vector
      */
-    DVector div(DVector y);
+    DVector div(DVector y, AlgebraOption<?>... opts);
 
     /**
-     * Creates a new {@link DVector} which contains the result of {@code a*this+y},
+     * Creates a new {@link DVector} which contains the result of {@code this + a * y},
      * where {@code a} is a double scalar and {@code this} and {@code y} are conformant
-     * double vectors. The {@code this} vector in expresion is the vector on which
+     * double vectors. The {@code this} vector in expression is the vector on which
      * the operation is called.
      *
      * @param a scalar
-     * @param y vector added to the result
-     * @return new vector which contains the result of {@code a*this+y}
+     * @param y vector
+     * @return new vector which contains the result of {@code this[i] <- this[i] + a * y[i]}
      */
-    DVector axpyCopy(double a, DVector y);
+    DVector xpay(double a, DVector y, AlgebraOption<?>... opts);
 
     /**
      * Dot product between two vectors is equal to the sum of the
@@ -354,30 +364,6 @@ public interface DVector extends Serializable, Printable {
      * @return same vector object
      */
     double dot(DVector y);
-
-    /**
-     * Computes dot product between diag(this) and a given matrix. {@code diag(this) dot m}.
-     * This vector have to have {@link #size()} equal with {@code m.rowCount()}.
-     * The result is a new matrix of size {@code this.sizze() x m.col.count}
-     *
-     * @param type type of the new matrix
-     * @param m    matrix parameter
-     * @return new matrix which is the result of dot product
-     */
-    DMatrix diagDot(MType type, DMatrix m);
-
-    /**
-     * Computes dot product between diag(this) and a given matrix. {@code diag(this) dot m}.
-     * This vector have to have {@link #size()} equal with {@code m.rowCount()}.
-     * The result is a new matrix of size {@code this.sizze() x m.col.count}
-     * and type {@code RDENSE}.
-     *
-     * @param m matrix parameter
-     * @return new matrix which is the result of dot product
-     */
-    default DMatrix diagDot(DMatrix m) {
-        return diagDot(MType.RSTRIPE, m);
-    }
 
     /**
      * Computes bilinear dot product through a matrix {@code x^t m y}. Matrix {@code m} have to be conformat for multiplication.
@@ -448,7 +434,7 @@ public interface DVector extends Serializable, Printable {
      * @param p the order of the norm
      * @return computed p norm value
      */
-    double norm(double p);
+    double pnorm(double p);
 
     /**
      * Divides all the values by the given p norm. Thus, after normalization
@@ -462,7 +448,10 @@ public interface DVector extends Serializable, Printable {
      * @param p order of the p norm used at normalization.
      * @return normalized vector
      */
-    DVector normalize(double p);
+    default DVector pnormalize(double p, AlgebraOption<?>... opts) {
+        double pnorm = pnorm(p);
+        return div(pnorm, opts);
+    }
 
     /**
      * Computes the sum of all elements in vector. If there is
@@ -548,19 +537,45 @@ public interface DVector extends Serializable, Printable {
      */
     double nanvariance();
 
-    DVector apply(Double2DoubleFunction f);
+    /**
+     * Apply a double to double function on all the values from the vector.
+     * If a new copy of the result is needed use {@link Algebra#copy()} parameter.
+     *
+     * @param f    double to double function
+     * @param opts linear algebra options
+     * @return result vector
+     */
+    DVector apply(Double2DoubleFunction f, AlgebraOption<?>... opts);
 
-    DVector apply(BiFunction<Integer, Double, Double> f);
+    /**
+     * Apply an (integer,double) to double function on all the values from the vector.
+     * The integer value is the position of the value in the vector.
+     * <p>
+     * If a new copy of the result is needed use {@link Algebra#copy()} parameter.
+     *
+     * @param f    (int,double) to double function
+     * @param opts linear algebra options
+     * @return result vector
+     */
+    DVector apply(BiFunction<Integer, Double, Double> f, AlgebraOption<?>... opts);
 
+    /**
+     * A vector is also a matrix, but for implementation reasons the objects are not the same. This method
+     * creates a new copy of the vector in the form of a matrix with {@code n} rows and {@code 1} column.
+     * <p>
+     * The matrix storage type is the default one given by {@link DMatrix#defaultMType()}.
+     *
+     * @return a matrix corresponding with the current vector
+     */
     default DMatrix asMatrix() {
-        return asMatrix(MType.CSTRIPE);
+        return asMatrix(DMatrix.defaultMType());
     }
 
     /**
-     * A vector is also a matrix, but for implementation
-     * reasons the objects are not the same. This method
-     * creates a new copy of the vector in the form of a matrix
-     * with n rows and 1 column.
+     * A vector is also a matrix, but for implementation reasons the objects are not the same. This method
+     * creates a new copy of the vector in the form of a matrix with {@code n} rows and {@code 1} column.
+     * <p>
+     * The matrix storage type is given as parameter.
      *
      * @return a matrix corresponding with the current vector
      */
@@ -573,11 +588,34 @@ public interface DVector extends Serializable, Printable {
      */
     DoubleStream valueStream();
 
+    /**
+     * Creates a VarDouble variable by wrapping the values if possible (if the vector storage type is
+     * a direct one). If a new copy of the data is needed use {@link Algebra#copy()} parameter.
+     *
+     * @return new double variable instance
+     */
     VarDouble asVarDouble();
 
+    /**
+     * Compares the values between the vector given as parameter and the current one.
+     * Since we work with doubles, the comparison of two values returns true if their
+     * absolute difference is less than a default tolerance threshold value of {@code 1e-12}.
+     *
+     * @param v comparison vector
+     * @return true if the size and values are equal, false otherwise
+     */
     default boolean deepEquals(DVector v) {
         return deepEquals(v, 1e-12);
     }
 
+    /**
+     * Compares the values between the vector given as parameter and the current one.
+     * Since we work with doubles, the comparison of two values returns true if their
+     * absolute difference is less than a tolerance value {@code eps}.
+     *
+     * @param v   comparison vector
+     * @param eps tolerance threshold for the absolute difference between values
+     * @return true if the size and values are equal, false otherwise
+     */
     boolean deepEquals(DVector v, double eps);
 }

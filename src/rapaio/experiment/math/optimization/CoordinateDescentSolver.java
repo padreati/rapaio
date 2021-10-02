@@ -21,6 +21,13 @@
 
 package rapaio.experiment.math.optimization;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.signum;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
+
 import rapaio.data.VarDouble;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
@@ -30,12 +37,6 @@ import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
-
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.Math.*;
 
 /**
  * Steepest descent for L1 norm
@@ -91,7 +92,7 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
             DVector deltaX = DVector.fill(d1fx.size(), 0);
             deltaX.set(index, -signum(d1fx.get(index)));
 
-            if (abs(deltaX.norm(2)) < tol.get()) {
+            if (abs(deltaX.pnorm(2)) < tol.get()) {
                 converged = true;
                 break;
             }

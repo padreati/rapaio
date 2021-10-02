@@ -21,17 +21,17 @@
 
 package rapaio.data.index;
 
-import rapaio.data.Frame;
-import rapaio.data.Index;
-import rapaio.data.Var;
-import rapaio.data.VarNominal;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import rapaio.data.Frame;
+import rapaio.data.Index;
+import rapaio.data.Var;
+import rapaio.data.VarNominal;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/20.

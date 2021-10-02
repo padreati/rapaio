@@ -21,15 +21,13 @@
 
 package rapaio.math.linear.dense;
 
+import java.io.Serial;
+
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
 import rapaio.math.linear.base.AbstractDMatrix;
-import rapaio.util.function.Double2DoubleFunction;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.stream.DoubleStream;
+import rapaio.math.linear.option.AlgebraOption;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
@@ -97,7 +95,16 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DVector mapCol(int i) {
+    public DVector map(int index, int axis, AlgebraOption<?>... opts) {
+        return switch (axis) {
+            case 0 -> mapRow(index, opts);
+            case 1 -> mapCol(index, opts);
+            default -> throw new IllegalArgumentException("Axis value is invalid.");
+        };
+    }
+
+    @Override
+    public DVector mapCol(int i, AlgebraOption<?>... opts) {
         DVector v = DVector.zeros(rowIndexes.length);
         for (int j = 0; j < rowIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[j], colIndexes[i]));
@@ -106,57 +113,11 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DVector mapRow(int i) {
+    public DVector mapRow(int i, AlgebraOption<?>... opts) {
         DVector v = DVector.zeros(colIndexes.length);
         for (int j = 0; j < colIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[i], colIndexes[j]));
         }
         return v;
-    }
-
-    @Override
-    public DMatrix apply(Double2DoubleFunction fun) {
-        for (int row : rowIndexes) {
-            for (int col : colIndexes) {
-                ref.set(row, col, fun.applyAsDouble(ref.get(row, col)));
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public DMatrix t() {
-        DMatrix copy = DMatrix.empty(colIndexes.length, rowIndexes.length);
-        for (int i = 0; i < rowIndexes.length; i++) {
-            for (int j = 0; j < colIndexes.length; j++) {
-                copy.set(j, i, ref.get(rowIndexes[i], colIndexes[j]));
-            }
-        }
-        return copy;
-    }
-
-    @Override
-    public DoubleStream valueStream() {
-        return Arrays.stream(rowIndexes)
-                .boxed()
-                .flatMap(r -> Arrays.stream(colIndexes).boxed().map(c -> rapaio.util.Pair.from(r, c)))
-                .mapToDouble(p -> ref.get(p.v1, p.v2));
-    }
-
-    @Override
-    public DMatrix copy() {
-        DMatrix r = ref;
-        while (r.type() == MType.MAP) {
-            if (r instanceof DMatrixMap mm) {
-                r = mm.ref;
-            }
-        }
-        DMatrix copy = DMatrix.empty(r.type(), rowIndexes.length, colIndexes.length);
-        for (int i = 0; i < rowIndexes.length; i++) {
-            for (int j = 0; j < colIndexes.length; j++) {
-                copy.set(i, j, ref.get(rowIndexes[i], colIndexes[j]));
-            }
-        }
-        return copy;
     }
 }

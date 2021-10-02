@@ -21,13 +21,14 @@
 
 package rapaio.image;
 
-import org.junit.jupiter.api.Test;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.stream.IntStream;
+
+import javax.imageio.ImageIO;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/10/21.

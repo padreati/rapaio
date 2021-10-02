@@ -22,11 +22,19 @@
 package rapaio.math;
 
 
-import org.junit.jupiter.api.Test;
+import static java.lang.Math.rint;
+import static java.lang.Math.sqrt;
 
-import static java.lang.Math.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static rapaio.math.MathTools.*;
+
+import static rapaio.math.MathTools.beta;
+import static rapaio.math.MathTools.betaIncReg;
+import static rapaio.math.MathTools.incompleteGamma;
+import static rapaio.math.MathTools.invBetaIncReg;
+import static rapaio.math.MathTools.lnGamma;
+import static rapaio.math.MathTools.logBinomial;
+
+import org.junit.jupiter.api.Test;
 
 public class MathToolsTest {
 

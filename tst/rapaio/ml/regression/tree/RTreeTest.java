@@ -21,6 +21,15 @@
 
 package rapaio.ml.regression.tree;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,13 +53,6 @@ import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.rtree.Search;
 import rapaio.ml.regression.tree.rtree.Splitter;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for regression decision trees

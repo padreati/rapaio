@@ -21,10 +21,10 @@
 
 package rapaio.math.functions;
 
+import java.io.Serializable;
+
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-
-import java.io.Serializable;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.

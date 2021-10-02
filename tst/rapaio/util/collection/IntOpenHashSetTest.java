@@ -21,22 +21,25 @@
 
 package rapaio.util.collection;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.core.tests.TTestTwoSamples;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
-import rapaio.sys.WS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import rapaio.core.RandomSource;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.core.tests.TTestTwoSamples;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/23/21.
@@ -86,16 +89,13 @@ public class IntOpenHashSetTest {
             assertEquals(hashSet.size(), openSet.size());
         }
 
-        WS.println("HashSet time statistics:");
         var m1 = Mean.of(timeHash);
         var v1 = Variance.of(timeHash);
 
-        WS.println("IntOpenHashSet time statistics:");
         var m2 = Mean.of(timeOpen);
         var v2 = Variance.of(timeOpen);
 
-        TTestTwoSamples.test(m1.value(), TIMES - SKIP, m2.value(), TIMES - SKIP, 0, v1.sdValue(), v2.sdValue())
-                .printSummary();
+        TTestTwoSamples.test(m1.value(), TIMES - SKIP, m2.value(), TIMES - SKIP, 0, v1.sdValue(), v2.sdValue());
 
     }
 

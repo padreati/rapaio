@@ -21,13 +21,13 @@
 
 package rapaio.math.linear.decomposition;
 
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.MType;
+import static java.lang.StrictMath.hypot;
 
 import java.io.Serial;
 
-import static java.lang.StrictMath.hypot;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.MType;
 
 /**
  * Singular Value Decomposition.
@@ -576,6 +576,7 @@ public class SVDecomposition implements java.io.Serializable {
     public DMatrix pinv() {
         DVector sv = DVector.wrap(getSingularValues()).copy();
         sv.apply(v -> 1 / v);
-        return getV().dotDiag(sv).dot(getU().t());
+        // CHECK
+        return getV().mult(sv, 0).dot(getU().t());
     }
 }

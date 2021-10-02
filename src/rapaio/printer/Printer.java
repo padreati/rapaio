@@ -21,13 +21,13 @@
 
 package rapaio.printer;
 
+import java.text.DecimalFormat;
+
 import rapaio.graphics.Figure;
 import rapaio.printer.opt.POption;
 import rapaio.printer.opt.POptionTextWidth;
 import rapaio.printer.opt.POpts;
 import rapaio.printer.opt.POtpionFloatFormat;
-
-import java.text.DecimalFormat;
 
 /**
  * Interface for the printing system. The printing system is the device responsible with

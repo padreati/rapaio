@@ -22,11 +22,12 @@
 package rapaio.ts;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.data.VarDouble;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import rapaio.data.VarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/17.
@@ -77,13 +78,11 @@ public class PacfTest {
     void basicTest() {
 
         Pacf pacf2 = Pacf.from(ts2, ts2.size() - 1);
-        pacf2.printSummary();
         for (int i = 0; i < pacf2.values().size(); i++) {
             assertEquals(ref2.getDouble(i), pacf2.values().getDouble(i), TOL);
         }
 
         Pacf pacf3 = Pacf.from(ts3, ts3.size() - 1);
-        pacf3.printSummary();
         for (int i = 0; i < pacf3.values().size(); i++) {
             assertEquals(ref3.getDouble(i), pacf3.values().getDouble(i), TOL, "err at i=" + i);
         }

@@ -21,7 +21,16 @@
 
 package rapaio.ml.classifier.bayes;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -34,13 +43,6 @@ import rapaio.ml.classifier.bayes.nb.Estimator;
 import rapaio.ml.classifier.bayes.nb.GaussianEstimator;
 import rapaio.ml.classifier.bayes.nb.KernelEstimator;
 import rapaio.ml.classifier.bayes.nb.PriorUniform;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 /**

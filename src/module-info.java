@@ -41,6 +41,7 @@ open module rapaio {
     exports rapaio.math;
     exports rapaio.math.functions;
     exports rapaio.math.linear;
+    exports rapaio.math.linear.option;
     exports rapaio.math.linear.base;
     exports rapaio.math.linear.dense;
     exports rapaio.math.linear.decomposition;

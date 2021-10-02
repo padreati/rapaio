@@ -21,11 +21,11 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.graphics.opt.GOptions;
-
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.io.Serial;
 import java.io.Serializable;
+
+import rapaio.graphics.opt.GOptions;
 
 /**
  * @author Aurelian Tutuianu

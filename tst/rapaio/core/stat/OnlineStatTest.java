@@ -21,15 +21,16 @@
 
 package rapaio.core.stat;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>

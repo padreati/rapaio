@@ -21,19 +21,23 @@
 
 package rapaio.io;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarType;
-import rapaio.datasets.Datasets;
-import rapaio.util.IntRule;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.datasets.Datasets;
+import rapaio.util.IntRule;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -219,7 +223,6 @@ public class CsvTest {
                 .types.add(VarType.DOUBLE, "sepal-length")
                 .types.add(VarType.NOMINAL, "petal-width", "sepal-length")
                 .read(Datasets.class, "iris-r.csv");
-        t1.printSummary();
 
         VarType[] types = new VarType[]{VarType.NOMINAL, VarType.DOUBLE, VarType.DOUBLE, VarType.NOMINAL, VarType.NOMINAL};
         assertArrayEquals(types, t1.varStream().map(Var::type).toArray());

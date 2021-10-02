@@ -21,11 +21,11 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.Var;
-
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
+
+import rapaio.data.Var;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/20.

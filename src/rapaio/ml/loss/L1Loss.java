@@ -21,11 +21,11 @@
 
 package rapaio.ml.loss;
 
+import java.io.Serial;
+
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-
-import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/17.

@@ -21,6 +21,12 @@
 
 package rapaio.ml.classifier.linear;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -34,13 +40,6 @@ import rapaio.ml.classifier.linear.binarylogistic.BinaryLogisticIRLS;
 import rapaio.ml.classifier.linear.binarylogistic.BinaryLogisticNewton;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
-import rapaio.printer.Printable;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.

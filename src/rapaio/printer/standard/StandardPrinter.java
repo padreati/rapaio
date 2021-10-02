@@ -21,16 +21,19 @@
 
 package rapaio.printer.standard;
 
-import rapaio.graphics.Figure;
-import rapaio.printer.AbstractPrinter;
-import rapaio.printer.local.FigurePanel;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.io.Console;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+
+import rapaio.graphics.Figure;
+import rapaio.printer.AbstractPrinter;
+import rapaio.printer.local.FigurePanel;
 
 /**
  * @author tutuianu

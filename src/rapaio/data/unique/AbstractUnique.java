@@ -21,6 +21,8 @@
 
 package rapaio.data.unique;
 
+import java.util.HashMap;
+
 import rapaio.data.Mapping;
 import rapaio.data.Unique;
 import rapaio.data.VarInt;
@@ -29,8 +31,6 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
-
-import java.util.HashMap;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/23/18.

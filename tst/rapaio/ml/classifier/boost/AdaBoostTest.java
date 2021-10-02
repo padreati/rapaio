@@ -21,14 +21,16 @@
 
 package rapaio.ml.classifier.boost;
 
-import org.junit.jupiter.api.Test;
-import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.common.VarSelector;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import rapaio.datasets.Datasets;
+import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.common.VarSelector;
 
 public class AdaBoostTest {
 

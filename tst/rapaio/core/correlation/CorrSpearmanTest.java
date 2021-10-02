@@ -21,8 +21,14 @@
 
 package rapaio.core.correlation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import static rapaio.printer.Printer.textWidth;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.tools.DistanceMatrix;
@@ -31,9 +37,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
 import rapaio.sys.WS;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.printer.Printer.textWidth;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

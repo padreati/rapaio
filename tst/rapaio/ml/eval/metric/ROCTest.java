@@ -21,14 +21,15 @@
 
 package rapaio.ml.eval.metric;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test for roc utility.

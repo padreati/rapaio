@@ -21,6 +21,20 @@
 
 package rapaio.graphics.plot.artist;
 
+import static rapaio.graphics.Plotter.SORT_ASC;
+import static rapaio.graphics.Plotter.SORT_DESC;
+import static rapaio.graphics.Plotter.SORT_NONE;
+import static rapaio.graphics.Plotter.fill;
+
+import java.awt.Graphics2D;
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
@@ -31,17 +45,6 @@ import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.util.collection.IntArrays;
-
-import java.awt.*;
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static rapaio.graphics.Plotter.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

@@ -21,9 +21,9 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.RandomSource;
-
 import java.io.Serial;
+
+import rapaio.core.RandomSource;
 
 /**
  * Bernoulli distribution

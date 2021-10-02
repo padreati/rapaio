@@ -21,11 +21,18 @@
 
 package rapaio.math.linear;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.math.linear.Algebra.copy;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import rapaio.core.RandomSource;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/14/20.
@@ -53,7 +60,7 @@ public abstract class StandardDMatrixTest {
     void testMapRow() {
         DMatrix m = generateSequential(10, 11);
         DVector vector1 = m.mapRow(3);
-        DVector vector2 = m.mapRowCopy(3);
+        DVector vector2 = m.mapRow(3, copy());
         for (int i = 0; i < vector1.size(); i++) {
             assertEquals(33.0 + i, vector1.get(i), TOL);
             assertEquals(33.0 + i, vector2.get(i), TOL);
@@ -64,8 +71,8 @@ public abstract class StandardDMatrixTest {
     void testMapRows() {
         DMatrix m = generateSequential(10, 11);
 
-        DMatrix view = m.mapRows(3, 4);
-        DMatrix copy = m.mapRowsCopy(3, 4);
+        DMatrix view = m.mapRows(new int[] {3, 4});
+        DMatrix copy = m.mapRows(new int[] {3, 4}, copy());
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -86,7 +93,7 @@ public abstract class StandardDMatrixTest {
         DMatrix m = generateSequential(10, 11);
 
         DMatrix view = m.rangeRows(3, 5);
-        DMatrix copy = m.rangeRowsCopy(3, 5);
+        DMatrix copy = m.rangeRows(3, 5, copy());
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -106,8 +113,8 @@ public abstract class StandardDMatrixTest {
     void testRemoveRows() {
         DMatrix m = generateSequential(10, 11);
 
-        DMatrix view = m.removeRows(0, 1, 2, 4, 6, 7, 8, 9, 10);
-        DMatrix copy = m.removeRowsCopy(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DMatrix view = m.removeRows(new int[] {0, 1, 2, 4, 6, 7, 8, 9, 10});
+        DMatrix copy = m.removeRows(new int[] {0, 1, 2, 4, 6, 7, 8, 9, 10}, copy());
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -127,7 +134,7 @@ public abstract class StandardDMatrixTest {
     void testMapCol() {
         DMatrix m = generateSequential(10, 11);
         DVector vector1 = m.mapCol(3);
-        DVector vector2 = m.mapColCopy(3);
+        DVector vector2 = m.mapCol(3, copy());
         for (int i = 0; i < vector1.size(); i++) {
             assertEquals(3.0 + i * 11, vector1.get(i), TOL);
             assertEquals(3.0 + i * 11, vector2.get(i), TOL);
@@ -138,8 +145,8 @@ public abstract class StandardDMatrixTest {
     void testMapCols() {
         DMatrix m = generateSequential(10, 11);
 
-        DMatrix view = m.mapCols(3, 4);
-        DMatrix copy = m.mapColsCopy(3, 4);
+        DMatrix view = m.mapCols(new int[] {3, 4});
+        DMatrix copy = m.mapCols(new int[] {3, 4}, copy());
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -160,7 +167,7 @@ public abstract class StandardDMatrixTest {
         DMatrix m = generateSequential(10, 11);
 
         DMatrix view = m.rangeCols(3, 5);
-        DMatrix copy = m.rangeColsCopy(3, 5);
+        DMatrix copy = m.rangeCols(3, 5, copy());
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -180,8 +187,8 @@ public abstract class StandardDMatrixTest {
     void testRemoveCols() {
         DMatrix m = generateSequential(10, 11);
 
-        DMatrix view = m.removeCols(0, 1, 2, 4, 6, 7, 8, 9, 10);
-        DMatrix copy = m.removeColsCopy(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DMatrix view = m.removeCols(new int[] {0, 1, 2, 4, 6, 7, 8, 9, 10});
+        DMatrix copy = m.removeCols(new int[] {0, 1, 2, 4, 6, 7, 8, 9, 10}, copy());
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -337,7 +344,8 @@ public abstract class StandardDMatrixTest {
             }
         }
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> generateSequential(10, 10).div(generateSequential(9, 9)));
+        IllegalArgumentException ex =
+                assertThrows(IllegalArgumentException.class, () -> generateSequential(10, 10).div(generateSequential(9, 9)));
         assertEquals("Matrices are not conform with this operation.", ex.getMessage());
     }
 
@@ -387,7 +395,7 @@ public abstract class StandardDMatrixTest {
         var m = generateFill(10, 3, 1);
         var v1 = DVector.wrap(1, 2, 3);
 
-        var d = DMatrix.wrap(new double[][]{
+        var d = DMatrix.wrap(new double[][] {
                 {1, 0, 0},
                 {0, 2, 0},
                 {0, 0, 3}
@@ -395,7 +403,7 @@ public abstract class StandardDMatrixTest {
         var r1 = m.copy().dot(d);
 
 
-        assertTrue(r1.deepEquals(m.copy().dotDiag(v1)));
+        assertTrue(r1.deepEquals(m.copy().mult(v1, 0)));
     }
 
     @Test
@@ -438,7 +446,7 @@ public abstract class StandardDMatrixTest {
         assertEquals(1, generateFill(10, 10, 1).rank());
         assertEquals(2, generateSequential(7, 3).rank());
         assertEquals(1, generateSequential(2, 1).rank());
-        assertEquals(3, generateCopy(new double[][]{
+        assertEquals(3, generateCopy(new double[][] {
                 {1, 1, 1},
                 {1, 2, 4},
                 {3, 2, 1}
@@ -447,39 +455,39 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void maxValues() {
-        var m = generateCopy(new double[][]{
+        var m = generateCopy(new double[][] {
                 {1, 2, 3, 4},
                 {5, 6, 7, 8}
         });
         var max0 = m.amax(0);
-        assertArrayEquals(new double[]{5, 6, 7, 8}, m.amax(0).asVarDouble().stream().mapToDouble().toArray());
-        assertArrayEquals(new double[]{4, 8}, m.amax(1).asVarDouble().stream().mapToDouble().toArray());
+        assertArrayEquals(new double[] {5, 6, 7, 8}, m.amax(0).asVarDouble().stream().mapToDouble().toArray());
+        assertArrayEquals(new double[] {4, 8}, m.amax(1).asVarDouble().stream().mapToDouble().toArray());
 
-        assertArrayEquals(new double[]{1, 2, 3, 4}, m.amin(0).asVarDouble().stream().mapToDouble().toArray());
-        assertArrayEquals(new double[]{1, 5}, m.amin(1).asVarDouble().stream().mapToDouble().toArray());
+        assertArrayEquals(new double[] {1, 2, 3, 4}, m.amin(0).asVarDouble().stream().mapToDouble().toArray());
+        assertArrayEquals(new double[] {1, 5}, m.amin(1).asVarDouble().stream().mapToDouble().toArray());
     }
 
     @Test
     void testArgMaxArgMin() {
-        double[][] m = new double[][]{
+        double[][] m = new double[][] {
                 {1, -1, 2},
                 {2, 1, 1},
                 {1, 2, 2},
                 {2, 2, 1}
         };
 
-        assertArrayEquals(new int[]{1, 2, 0}, generateCopy(m).argmax(0));
-        assertArrayEquals(new int[]{2, 0, 1, 0}, generateCopy(m).argmax(1));
+        assertArrayEquals(new int[] {1, 2, 0}, generateCopy(m).argmax(0));
+        assertArrayEquals(new int[] {2, 0, 1, 0}, generateCopy(m).argmax(1));
 
-        assertArrayEquals(new int[]{0, 0, 1}, generateCopy(m).argmin(0));
-        assertArrayEquals(new int[]{1, 1, 0, 2}, generateCopy(m).argmin(1));
+        assertArrayEquals(new int[] {0, 0, 1}, generateCopy(m).argmin(0));
+        assertArrayEquals(new int[] {1, 1, 0, 2}, generateCopy(m).argmin(1));
     }
 
     @Test
     void deepEqualsTest() {
         DMatrix m1 = generateIdentity(2);
 
-        DMatrix m2 = DMatrix.wrap( true, new double[][]{{1, 0}, {0, 1}});
+        DMatrix m2 = DMatrix.wrap(true, new double[][] {{1, 0}, {0, 1}});
         DMatrix m3 = DMatrix.identity(2);
 
         assertTrue(m1.deepEquals(m2));
@@ -497,11 +505,11 @@ public abstract class StandardDMatrixTest {
         assertFalse(m4.deepEquals(m1));
         assertFalse(m5.deepEquals(m1));
 
-        m1 = generateCopy(new double[][]{
+        m1 = generateCopy(new double[][] {
                 {1, 1, 2},
                 {1, 2, 4}
         });
-        m2 = generateCopy(new double[][]{
+        m2 = generateCopy(new double[][] {
                 {1d + 0x1.0p-47, 1, 2},
                 {1, 2, 4}
         });
@@ -527,20 +535,26 @@ public abstract class StandardDMatrixTest {
                 " [ 0 0 1 ], \n" +
                 "]}", id3.toString());
 
-        assertEquals("                           [0]                        [1]                        [2] \n" +
-                "[0] 1.0000000149011612         0.000000014901161193847656 0.000000014901161193847656 \n" +
-                "[1] 0.000000014901161193847656 1.0000000149011612         0.000000014901161193847656 \n" +
-                "[2] 0.000000014901161193847656 0.000000014901161193847656 1.0000000149011612         \n", id3.toSummary());
+        assertEquals("""
+                                           [0]                        [1]                        [2]\s
+                [0] 1.0000000149011612         0.000000014901161193847656 0.000000014901161193847656\s
+                [1] 0.000000014901161193847656 1.0000000149011612         0.000000014901161193847656\s
+                [2] 0.000000014901161193847656 0.000000014901161193847656 1.0000000149011612        \s
+                """, id3.toSummary());
 
-        assertEquals("                           [0]                        [1]                        [2] \n" +
-                "[0] 1.0000000149011612         0.000000014901161193847656 0.000000014901161193847656 \n" +
-                "[1] 0.000000014901161193847656 1.0000000149011612         0.000000014901161193847656 \n" +
-                "[2] 0.000000014901161193847656 0.000000014901161193847656 1.0000000149011612         \n", id3.toContent());
+        assertEquals("""
+                                           [0]                        [1]                        [2]\s
+                [0] 1.0000000149011612         0.000000014901161193847656 0.000000014901161193847656\s
+                [1] 0.000000014901161193847656 1.0000000149011612         0.000000014901161193847656\s
+                [2] 0.000000014901161193847656 0.000000014901161193847656 1.0000000149011612        \s
+                """, id3.toContent());
 
-        assertEquals("                           [0]                        [1]                        [2] \n" +
-                "[0] 1.0000000149011612         0.000000014901161193847656 0.000000014901161193847656 \n" +
-                "[1] 0.000000014901161193847656 1.0000000149011612         0.000000014901161193847656 \n" +
-                "[2] 0.000000014901161193847656 0.000000014901161193847656 1.0000000149011612         \n", id3.toFullContent());
+        assertEquals("""
+                                           [0]                        [1]                        [2]\s
+                [0] 1.0000000149011612         0.000000014901161193847656 0.000000014901161193847656\s
+                [1] 0.000000014901161193847656 1.0000000149011612         0.000000014901161193847656\s
+                [2] 0.000000014901161193847656 0.000000014901161193847656 1.0000000149011612        \s
+                """, id3.toFullContent());
 
 
         var id25 = generateIdentity(25);
@@ -574,86 +588,91 @@ public abstract class StandardDMatrixTest {
                 " [ .. .. .. .. .. .. .. .. .. .. .. ], \n" +
                 "]}", id25.toString());
 
-        assertEquals("     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] ... [23] [24] \n" +
-                        " [0]  1   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [1]  0   1   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [2]  0   0   1   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [3]  0   0   0   1   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [4]  0   0   0   0   1   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [5]  0   0   0   0   0   1   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [6]  0   0   0   0   0   0   1   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [7]  0   0   0   0   0   0   0   1   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [8]  0   0   0   0   0   0   0   0   1   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [9]  0   0   0   0   0   0   0   0   0   1   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        "[10]  0   0   0   0   0   0   0   0   0   0   1    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        "[11]  0   0   0   0   0   0   0   0   0   0   0    1    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        "[12]  0   0   0   0   0   0   0   0   0   0   0    0    1    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        "[13]  0   0   0   0   0   0   0   0   0   0   0    0    0    1    0    0    0    0    0    0   ...  0    0   \n" +
-                        "[14]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    1    0    0    0    0    0   ...  0    0   \n" +
-                        "[15]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    1    0    0    0    0   ...  0    0   \n" +
-                        "[16]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    1    0    0    0   ...  0    0   \n" +
-                        "[17]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    1    0    0   ...  0    0   \n" +
-                        "[18]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    1    0   ...  0    0   \n" +
-                        "[19]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    1   ...  0    0   \n" +
-                        "...  ... ... ... ... ... ... ... ... ... ... ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ... ...  ...  \n" +
-                        "[23]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  1    0   \n" +
-                        "[24]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    1   \n",
+        assertEquals("""
+                             [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] ... [23] [24]\s
+                         [0]  1   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [1]  0   1   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [2]  0   0   1   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [3]  0   0   0   1   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [4]  0   0   0   0   1   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [5]  0   0   0   0   0   1   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [6]  0   0   0   0   0   0   1   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [7]  0   0   0   0   0   0   0   1   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [8]  0   0   0   0   0   0   0   0   1   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [9]  0   0   0   0   0   0   0   0   0   1   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                        [10]  0   0   0   0   0   0   0   0   0   0   1    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                        [11]  0   0   0   0   0   0   0   0   0   0   0    1    0    0    0    0    0    0    0    0   ...  0    0  \s
+                        [12]  0   0   0   0   0   0   0   0   0   0   0    0    1    0    0    0    0    0    0    0   ...  0    0  \s
+                        [13]  0   0   0   0   0   0   0   0   0   0   0    0    0    1    0    0    0    0    0    0   ...  0    0  \s
+                        [14]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    1    0    0    0    0    0   ...  0    0  \s
+                        [15]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    1    0    0    0    0   ...  0    0  \s
+                        [16]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    1    0    0    0   ...  0    0  \s
+                        [17]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    1    0    0   ...  0    0  \s
+                        [18]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    1    0   ...  0    0  \s
+                        [19]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    1   ...  0    0  \s
+                        ...  ... ... ... ... ... ... ... ... ... ... ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ... ...  ... \s
+                        [23]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  1    0  \s
+                        [24]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    1  \s
+                        """,
                 id25.toSummary());
 
-        assertEquals("     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] ... [23] [24] \n" +
-                        " [0]  1   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [1]  0   1   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [2]  0   0   1   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [3]  0   0   0   1   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [4]  0   0   0   0   1   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [5]  0   0   0   0   0   1   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [6]  0   0   0   0   0   0   1   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [7]  0   0   0   0   0   0   0   1   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [8]  0   0   0   0   0   0   0   0   1   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        " [9]  0   0   0   0   0   0   0   0   0   1   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        "[10]  0   0   0   0   0   0   0   0   0   0   1    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        "[11]  0   0   0   0   0   0   0   0   0   0   0    1    0    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        "[12]  0   0   0   0   0   0   0   0   0   0   0    0    1    0    0    0    0    0    0    0   ...  0    0   \n" +
-                        "[13]  0   0   0   0   0   0   0   0   0   0   0    0    0    1    0    0    0    0    0    0   ...  0    0   \n" +
-                        "[14]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    1    0    0    0    0    0   ...  0    0   \n" +
-                        "[15]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    1    0    0    0    0   ...  0    0   \n" +
-                        "[16]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    1    0    0    0   ...  0    0   \n" +
-                        "[17]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    1    0    0   ...  0    0   \n" +
-                        "[18]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    1    0   ...  0    0   \n" +
-                        "[19]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    1   ...  0    0   \n" +
-                        "...  ... ... ... ... ... ... ... ... ... ... ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ... ...  ...  \n" +
-                        "[23]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  1    0   \n" +
-                        "[24]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    1   \n",
+        assertEquals("""
+                             [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] ... [23] [24]\s
+                         [0]  1   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [1]  0   1   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [2]  0   0   1   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [3]  0   0   0   1   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [4]  0   0   0   0   1   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [5]  0   0   0   0   0   1   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [6]  0   0   0   0   0   0   1   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [7]  0   0   0   0   0   0   0   1   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [8]  0   0   0   0   0   0   0   0   1   0   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                         [9]  0   0   0   0   0   0   0   0   0   1   0    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                        [10]  0   0   0   0   0   0   0   0   0   0   1    0    0    0    0    0    0    0    0    0   ...  0    0  \s
+                        [11]  0   0   0   0   0   0   0   0   0   0   0    1    0    0    0    0    0    0    0    0   ...  0    0  \s
+                        [12]  0   0   0   0   0   0   0   0   0   0   0    0    1    0    0    0    0    0    0    0   ...  0    0  \s
+                        [13]  0   0   0   0   0   0   0   0   0   0   0    0    0    1    0    0    0    0    0    0   ...  0    0  \s
+                        [14]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    1    0    0    0    0    0   ...  0    0  \s
+                        [15]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    1    0    0    0    0   ...  0    0  \s
+                        [16]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    1    0    0    0   ...  0    0  \s
+                        [17]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    1    0    0   ...  0    0  \s
+                        [18]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    1    0   ...  0    0  \s
+                        [19]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    1   ...  0    0  \s
+                        ...  ... ... ... ... ... ... ... ... ... ... ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ... ...  ... \s
+                        [23]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  1    0  \s
+                        [24]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    1  \s
+                        """,
                 id25.toContent());
 
-        assertEquals("     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] [20] [21] [22] [23] [24] \n" +
-                        " [0]  1   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        " [1]  0   1   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        " [2]  0   0   1   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        " [3]  0   0   0   1   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        " [4]  0   0   0   0   1   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        " [5]  0   0   0   0   0   1   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        " [6]  0   0   0   0   0   0   1   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        " [7]  0   0   0   0   0   0   0   1   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        " [8]  0   0   0   0   0   0   0   0   1   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        " [9]  0   0   0   0   0   0   0   0   0   1   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        "[10]  0   0   0   0   0   0   0   0   0   0   1    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        "[11]  0   0   0   0   0   0   0   0   0   0   0    1    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        "[12]  0   0   0   0   0   0   0   0   0   0   0    0    1    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        "[13]  0   0   0   0   0   0   0   0   0   0   0    0    0    1    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                        "[14]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    1    0    0    0    0    0    0    0    0    0    0   \n" +
-                        "[15]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    1    0    0    0    0    0    0    0    0    0   \n" +
-                        "[16]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    1    0    0    0    0    0    0    0    0   \n" +
-                        "[17]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    1    0    0    0    0    0    0    0   \n" +
-                        "[18]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    1    0    0    0    0    0    0   \n" +
-                        "[19]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    1    0    0    0    0    0   \n" +
-                        "[20]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    1    0    0    0    0   \n" +
-                        "[21]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    1    0    0    0   \n" +
-                        "[22]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    1    0    0   \n" +
-                        "[23]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    1    0   \n" +
-                        "[24]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    1   \n",
+        assertEquals(
+                """
+                             [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] [20] [21] [22] [23] [24]\s
+                         [0]  1   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                         [1]  0   1   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                         [2]  0   0   1   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                         [3]  0   0   0   1   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                         [4]  0   0   0   0   1   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                         [5]  0   0   0   0   0   1   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                         [6]  0   0   0   0   0   0   1   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                         [7]  0   0   0   0   0   0   0   1   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                         [8]  0   0   0   0   0   0   0   0   1   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                         [9]  0   0   0   0   0   0   0   0   0   1   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                        [10]  0   0   0   0   0   0   0   0   0   0   1    0    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                        [11]  0   0   0   0   0   0   0   0   0   0   0    1    0    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                        [12]  0   0   0   0   0   0   0   0   0   0   0    0    1    0    0    0    0    0    0    0    0    0    0    0    0  \s
+                        [13]  0   0   0   0   0   0   0   0   0   0   0    0    0    1    0    0    0    0    0    0    0    0    0    0    0  \s
+                        [14]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    1    0    0    0    0    0    0    0    0    0    0  \s
+                        [15]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    1    0    0    0    0    0    0    0    0    0  \s
+                        [16]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    1    0    0    0    0    0    0    0    0  \s
+                        [17]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    1    0    0    0    0    0    0    0  \s
+                        [18]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    1    0    0    0    0    0    0  \s
+                        [19]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    1    0    0    0    0    0  \s
+                        [20]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    1    0    0    0    0  \s
+                        [21]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    1    0    0    0  \s
+                        [22]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    1    0    0  \s
+                        [23]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    1    0  \s
+                        [24]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    1  \s
+                        """,
                 id25.toFullContent());
-
-
     }
 }

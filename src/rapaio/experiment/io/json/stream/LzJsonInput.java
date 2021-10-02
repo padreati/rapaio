@@ -21,18 +21,18 @@
 
 package rapaio.experiment.io.json.stream;
 
-import rapaio.experiment.io.json.tree.JsonArray;
-import rapaio.experiment.io.json.tree.JsonNumber;
-import rapaio.experiment.io.json.tree.JsonObject;
-import rapaio.experiment.io.json.tree.JsonString;
-import rapaio.experiment.io.json.tree.JsonValue;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+
+import rapaio.experiment.io.json.tree.JsonArray;
+import rapaio.experiment.io.json.tree.JsonNumber;
+import rapaio.experiment.io.json.tree.JsonObject;
+import rapaio.experiment.io.json.tree.JsonString;
+import rapaio.experiment.io.json.tree.JsonValue;
 
 /**
  * Utility class able to produce json values from an input stream formatted as lzjson.

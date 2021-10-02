@@ -21,10 +21,10 @@
 
 package rapaio.image;
 
-import rapaio.graphics.Figure;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
@@ -38,6 +38,10 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+
+import javax.imageio.ImageIO;
+
+import rapaio.graphics.Figure;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

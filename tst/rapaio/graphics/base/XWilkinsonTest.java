@@ -21,14 +21,15 @@
 
 package rapaio.graphics.base;
 
-import org.junit.jupiter.api.Test;
-import rapaio.sys.WS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalTime;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import rapaio.sys.WS;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
@@ -55,7 +56,7 @@ public class XWilkinsonTest {
         Locale.setDefault(defaultLocale);
     }
 
-    @Test
+//    @Test
     void baseTest() {
         XWilkinson x = XWilkinson.base10(XWilkinson.DEEFAULT_EPS);
 
@@ -63,25 +64,25 @@ public class XWilkinsonTest {
 
         // First examples taken from the paper pg 6, Fig 4
         x.loose = true;
-        System.out.println(x.search(-98.0, 18.0, 3).toString());
+//        System.out.println(x.search(-98.0, 18.0, 3).toString());
         x.loose = false;
-        System.out.println(x.search(-98.0, 18.0, 3).toString());
+//        System.out.println(x.search(-98.0, 18.0, 3).toString());
 
-        System.out.println();
+//        System.out.println();
 
         x.loose = true;
-        System.out.println(x.search(-1.0, 200.0, 3).toString());
+//        System.out.println(x.search(-1.0, 200.0, 3).toString());
         x.loose = false;
-        System.out.println(x.search(-1.0, 200.0, 3).toString());
+//        System.out.println(x.search(-1.0, 200.0, 3).toString());
 
-        System.out.println();
+//        System.out.println();
 
         x.loose = true;
-        System.out.println(x.search(119.0, 178.0, 3).toString());
+//        System.out.println(x.search(119.0, 178.0, 3).toString());
         x.loose = false;
-        System.out.println(x.search(119.0, 178.0, 3).toString());
+//        System.out.println(x.search(119.0, 178.0, 3).toString());
 
-        System.out.println();
+//        System.out.println();
 
         x.loose = true;
         System.out.println(x.search(-31.0, 27.0, 4).toString());

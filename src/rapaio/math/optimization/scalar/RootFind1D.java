@@ -21,13 +21,12 @@
 
 package rapaio.math.optimization.scalar;
 
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
-import rapaio.util.NotImplementedException;
-import rapaio.util.function.Double2DoubleFunction;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
+import rapaio.util.function.Double2DoubleFunction;
 
 /**
  * Models a root finding algorithm for a single dimensional function

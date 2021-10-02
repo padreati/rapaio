@@ -21,15 +21,15 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.data.stream.FSpot;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2IntFunction;
-
-import java.io.Serial;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Update a double variable by changing it's value using a function.

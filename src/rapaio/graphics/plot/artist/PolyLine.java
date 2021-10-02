@@ -21,12 +21,15 @@
 
 package rapaio.graphics.plot.artist;
 
-import rapaio.data.Var;
-import rapaio.graphics.opt.GOption;
-
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Composite;
+import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 import java.io.Serial;
+
+import rapaio.data.Var;
+import rapaio.graphics.opt.GOption;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/26/20.

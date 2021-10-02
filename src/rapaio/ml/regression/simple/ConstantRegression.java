@@ -21,21 +21,21 @@
 
 package rapaio.ml.regression.simple;
 
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.List;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
-import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.DefaultHookInfo;
+import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

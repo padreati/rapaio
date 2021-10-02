@@ -21,7 +21,10 @@
 
 package rapaio.data.filter;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Gamma;
 import rapaio.core.stat.Mean;
@@ -29,8 +32,6 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/18.

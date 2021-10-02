@@ -21,14 +21,14 @@
 
 package rapaio.image;
 
-import rapaio.core.stat.Quantiles;
-import rapaio.data.VarDouble;
-import rapaio.math.linear.DMatrix;
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
-import rapaio.sys.Experimental;
-import rapaio.util.DoubleComparators;
-import rapaio.util.function.Double2DoubleFunction;
+import static java.lang.Math.abs;
+import static java.lang.Math.cos;
+import static java.lang.Math.floor;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+
+import static rapaio.math.MathTools.HALF_PI;
+import static rapaio.math.MathTools.PI;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -38,9 +38,14 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import static java.lang.Math.*;
-import static rapaio.math.MathTools.PI;
-import static rapaio.math.MathTools.*;
+import rapaio.core.stat.Quantiles;
+import rapaio.data.VarDouble;
+import rapaio.math.linear.DMatrix;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
+import rapaio.sys.Experimental;
+import rapaio.util.DoubleComparators;
+import rapaio.util.function.Double2DoubleFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/21.

@@ -21,11 +21,6 @@
 
 package rapaio.data.stream;
 
-import rapaio.data.MappedVar;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.VarInt;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
@@ -49,6 +44,11 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import rapaio.data.MappedVar;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
 
 /**
  * Stream of variable spots which enrich the standard java streams with some specific

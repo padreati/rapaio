@@ -21,16 +21,18 @@
 
 package rapaio.ml.clustering.km;
 
-import rapaio.core.RandomSource;
-import rapaio.core.SamplingTools;
-import rapaio.math.linear.DMatrix;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import static rapaio.math.linear.Algebra.copy;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import rapaio.core.RandomSource;
+import rapaio.core.SamplingTools;
+import rapaio.math.linear.DMatrix;
+import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.IntArrays;
 
 /**
  * Function which produces initial centroids for KMeans algorithm
@@ -41,7 +43,7 @@ public enum KMClusterInit implements Serializable {
 
     Forgy {
         public DMatrix init(KMCluster.Method space, DMatrix m, int k) {
-            return m.mapRows(SamplingTools.sampleWOR(m.rowCount(), k)).copy();
+            return m.mapRows(SamplingTools.sampleWOR(m.rowCount(), k), copy());
         }
     },
     PlusPlus {
@@ -77,7 +79,7 @@ public enum KMClusterInit implements Serializable {
                 ids.add(next);
             }
 
-            return m.mapRows(centroids).copy();
+            return m.mapRows(centroids, copy());
         }
     };
 

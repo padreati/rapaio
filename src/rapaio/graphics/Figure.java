@@ -21,7 +21,8 @@
 
 package rapaio.graphics;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.io.Serializable;
 
 /**

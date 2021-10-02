@@ -21,14 +21,17 @@
 
 package rapaio.core.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TTestTwoSamplesTest {
 
@@ -57,7 +60,6 @@ public class TTestTwoSamplesTest {
         Var y = VarDouble.copy(7, 3, 5, 6, 6, 10).name("y");
 
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
-        t1.printSummary();
 
         assertEquals(x.size(), t1.getXSampleSize(), TOL);
         assertEquals(Mean.of(x).value(), t1.getXSampleMean(), TOL);
@@ -81,7 +83,6 @@ public class TTestTwoSamplesTest {
         assertEquals(-2.205946204209553, t1.ciLow(), TOL);
 
         TTestTwoSamples t2 = TTestTwoSamples.test(x, y, 2, 0.1, HTest.Alternative.LESS_THAN);
-        t2.printSummary();
 
         assertEquals(2, t2.getMu(), TOL);
         assertEquals(0.1, t2.getSl(), TOL);
@@ -101,7 +102,6 @@ public class TTestTwoSamplesTest {
         Var y = VarDouble.copy(7, 3, 5, 6, 6, 10).name("y");
 
         TTestTwoSamples t1 = TTestTwoSamples.welchTest(x, y, 0);
-        t1.printSummary();
 
         assertEquals(x.size(), t1.getXSampleSize(), TOL);
         assertEquals(Mean.of(x).value(), t1.getXSampleMean(), TOL);

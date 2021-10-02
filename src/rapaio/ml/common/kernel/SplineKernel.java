@@ -21,10 +21,10 @@
 
 package rapaio.ml.common.kernel;
 
+import java.io.Serial;
+
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
-
-import java.io.Serial;
 
 /**
  * The Spline kernel is given as a piece-wise cubic polynomial, as derived in the works by Gunn (1998).

@@ -21,13 +21,13 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+
 import rapaio.core.stat.GeometricMean;
 import rapaio.data.Var;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
 
 /**
  * Filter to create monotonic power transformations

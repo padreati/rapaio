@@ -21,6 +21,14 @@
 
 package rapaio.data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 import rapaio.data.group.GroupFun;
 import rapaio.data.group.function.GroupFunCount;
 import rapaio.data.group.function.GroupFunKurtosis;
@@ -36,14 +44,6 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.Int2IntOpenHashMap;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * GroupBy index structure which indexes rows from a data frame using unique

@@ -21,9 +21,9 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.Var;
-
 import java.io.Serial;
+
+import rapaio.data.Var;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.

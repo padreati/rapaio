@@ -21,6 +21,9 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+import java.util.stream.IntStream;
+
 import rapaio.core.SamplingTools;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
@@ -28,9 +31,6 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarRange;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-
-import java.io.Serial;
-import java.util.stream.IntStream;
 
 /**
  * Builds a random projection of some give numeric features.
@@ -104,7 +104,7 @@ public class FRandomProjection extends AbstractFFilter {
             for (int i = 0; i < v.size(); i++) {
                 v.set(i, norm.sampleNext() / Math.sqrt(k));
             }
-            v.normalize(2);
+            v.pnormalize(2);
             return v;
         };
     }
@@ -131,7 +131,7 @@ public class FRandomProjection extends AbstractFFilter {
                 }
                 v.set(i, sqrt);
             }
-            return v.normalize(2);
+            return v.pnormalize(2);
         };
     }
 }

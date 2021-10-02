@@ -21,10 +21,10 @@
 
 package rapaio.ml.common.kernel;
 
+import java.io.Serializable;
+
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
-
-import java.io.Serializable;
 
 /**
  * Kernel function interface

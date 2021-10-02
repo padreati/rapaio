@@ -21,13 +21,18 @@
 
 package rapaio.math.optimization.linesearch;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.math.linear.Algebra.copy;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/31/21.
@@ -53,7 +58,7 @@ public class BacktrackLineSearchTest {
             DVector p = df.apply(x0).mult(-1);
             double t = BacktrackLineSearch.newSearch().search(f, df, x0, p);
             double fx0 = f.apply(x0);
-            double fx1 = f.apply(p.axpyCopy(t, x0));
+            double fx1 = f.apply(x0.xpay(t, p, copy()));
             assertTrue(fx0 >= fx1);
             assertEquals(0.7, t);
         }
@@ -72,7 +77,7 @@ public class BacktrackLineSearchTest {
             DVector p = df.apply(x0).mult(-1);
             double alpha = BacktrackLineSearch.newSearch().search(f, df, x0, p, 100_000.0);
             double fx0 = f.apply(x0);
-            double fx1 = f.apply(p.axpyCopy(alpha, x0));
+            double fx1 = f.apply(x0.xpay(alpha, p, copy()));
             assertTrue(fx0 >= fx1);
         }
     }

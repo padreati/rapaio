@@ -21,10 +21,6 @@
 
 package rapaio.data;
 
-import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -34,6 +30,10 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.function.Function;
+
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * Numerical variable which store only 1,0 and missing values. This is a storage-optimized version of a

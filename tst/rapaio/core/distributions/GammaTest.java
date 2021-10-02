@@ -21,20 +21,25 @@
 
 package rapaio.core.distributions;
 
+import static java.lang.Math.sqrt;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.tests.KSTestOneSample;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.io.Csv;
-
-import java.io.IOException;
-
-import static java.lang.Math.sqrt;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class GammaTest {
 

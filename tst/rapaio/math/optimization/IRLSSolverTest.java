@@ -21,8 +21,13 @@
 
 package rapaio.math.optimization;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.text.MessageFormat;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
@@ -31,10 +36,6 @@ import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.QRDecomposition;
-
-import java.text.MessageFormat;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/21.
@@ -65,9 +66,9 @@ public class IRLSSolverTest {
             double k = kk[i];
 
             IRLSSolver m0 = IRLSSolver.newMinimizer().method.set(IRLSSolver.Method.IRLS0M).m.set(A).b.set(b).p.set(p).k.set(k)
-                    .maxIt.set(500).eps.set(1e-20).compute();
+                    .maxIt.set(500).eps.set(1e-10).compute();
             IRLSSolver m1 = IRLSSolver.newMinimizer().method.set(IRLSSolver.Method.IRLS1M).m.set(A).b.set(b).p.set(p).k.set(k)
-                    .maxIt.set(500).eps.set(1e-20).compute();
+                    .maxIt.set(500).eps.set(1e-10).compute();
 //            WS.draw(lines(m0.errors(), color('r')).lines(m1.errors(), color('g')));
             assertTrue(m0.errors().getDouble(m0.errors().size() - 1) >= m1.errors().getDouble(m1.errors().size() - 1),
                     MessageFormat.format("error at p={0}, k={1}, sol.m0={2}", p, k, m0.solution().toString()));

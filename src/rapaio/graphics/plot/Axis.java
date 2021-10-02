@@ -21,8 +21,6 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.graphics.base.XWilkinson;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import rapaio.graphics.base.XWilkinson;
 
 /**
  * @author padreati

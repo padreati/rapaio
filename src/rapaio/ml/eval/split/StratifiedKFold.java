@@ -21,14 +21,14 @@
 
 package rapaio.ml.eval.split;
 
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.

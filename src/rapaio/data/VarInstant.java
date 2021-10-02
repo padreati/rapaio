@@ -21,17 +21,17 @@
 
 package rapaio.data;
 
-import rapaio.data.format.InstantFormatter;
-import rapaio.data.format.InstantParser;
-import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
-
 import java.io.Serial;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+
+import rapaio.data.format.InstantFormatter;
+import rapaio.data.format.InstantParser;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * Variable which contains time instants truncated to milliseconds.

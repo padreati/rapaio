@@ -21,11 +21,6 @@
 
 package rapaio.data;
 
-import rapaio.data.mapping.ArrayMapping;
-import rapaio.data.mapping.IntervalMapping;
-import rapaio.util.IntIterator;
-import rapaio.util.function.Int2IntFunction;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,6 +30,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.IntStream;
+
+import rapaio.data.mapping.ArrayMapping;
+import rapaio.data.mapping.IntervalMapping;
+import rapaio.util.IntIterator;
+import rapaio.util.function.Int2IntFunction;
 
 /**
  * A mapping is a collection of row numbers used to build a mapped frame as a

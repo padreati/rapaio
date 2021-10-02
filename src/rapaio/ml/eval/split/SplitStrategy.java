@@ -21,10 +21,10 @@
 
 package rapaio.ml.eval.split;
 
+import java.util.List;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
-
-import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.

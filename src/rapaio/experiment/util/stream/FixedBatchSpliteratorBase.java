@@ -21,11 +21,11 @@
 
 package rapaio.experiment.util.stream;
 
+import static java.util.Spliterators.spliterator;
+
 import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-
-import static java.util.Spliterators.spliterator;
 
 @Deprecated
 public abstract class FixedBatchSpliteratorBase<T> implements Spliterator<T> {

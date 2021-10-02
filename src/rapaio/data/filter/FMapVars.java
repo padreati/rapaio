@@ -21,10 +21,10 @@
 
 package rapaio.data.filter;
 
+import java.io.Serial;
+
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
-
-import java.io.Serial;
 
 /**
  * Filter to map vars from a data frame.

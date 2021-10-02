@@ -21,11 +21,11 @@
 
 package rapaio.ml.common.kernel;
 
+import java.io.Serial;
+
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
-
-import java.io.Serial;
 
 /**
  * The Multiquadric kernel can be used in the same situations as the Rational Quadratic kernel.

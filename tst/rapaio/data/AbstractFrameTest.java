@@ -21,10 +21,11 @@
 
 package rapaio.data;
 
-import org.junit.jupiter.api.Test;
-import rapaio.datasets.Datasets;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+import rapaio.datasets.Datasets;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.

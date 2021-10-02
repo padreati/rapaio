@@ -21,15 +21,15 @@
 
 package rapaio.data.sample;
 
-import rapaio.core.SamplingTools;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
+import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 import java.util.Objects;
 
-import static rapaio.printer.Format.floatFlex;
+import rapaio.core.SamplingTools;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
 
 /**
  * Implements bootstrap row sampling (sampling with replacement)

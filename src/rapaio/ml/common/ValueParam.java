@@ -21,10 +21,10 @@
 
 package rapaio.ml.common;
 
-import rapaio.util.function.SFunction;
-
 import java.io.Serial;
 import java.util.Objects;
+
+import rapaio.util.function.SFunction;
 
 /**
  * This implementation models a parameter which has a single value of given generic type {@link T}.

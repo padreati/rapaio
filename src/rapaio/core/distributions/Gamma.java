@@ -21,13 +21,13 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.RandomSource;
-import rapaio.math.MathTools;
-import rapaio.printer.Format;
+import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 
-import static rapaio.printer.Format.floatFlex;
+import rapaio.core.RandomSource;
+import rapaio.math.MathTools;
+import rapaio.printer.Format;
 
 /**
  * Gamma distribution;

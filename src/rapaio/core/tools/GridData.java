@@ -21,6 +21,10 @@
 
 package rapaio.core.tools;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.function.BiFunction;
+
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
@@ -30,10 +34,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.function.BiFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/22/15.

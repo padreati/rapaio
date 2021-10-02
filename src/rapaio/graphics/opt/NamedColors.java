@@ -21,7 +21,7 @@
 
 package rapaio.graphics.opt;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.HashMap;
 
 /**

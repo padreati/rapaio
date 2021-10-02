@@ -21,14 +21,14 @@
 
 package rapaio.experiment.io.json.ml;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.experiment.io.json.tree.JsonValue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Utility class used to extract features from a JsonValue steam.

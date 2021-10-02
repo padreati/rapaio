@@ -21,12 +21,13 @@
 
 package rapaio.core.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
@@ -43,7 +44,6 @@ public class ZTestOneSampleTest {
         Var x = VarDouble.copy(65, 78, 88, 55, 48, 95, 66, 57, 79, 81);
 
         ZTestOneSample z1 = ZTestOneSample.test(x, mu, sd);
-        z1.printSummary();
 
         assertEquals(x.size(), z1.getSampleSize());
         assertEquals(HTest.Alternative.TWO_TAILS, z1.getAlt());
@@ -58,7 +58,6 @@ public class ZTestOneSampleTest {
         assertEquals(0.05, z1.getSl(), TOL);
 
         z1 = ZTestOneSample.test(71.2, x.size(), mu, sd);
-        z1.printSummary();
         assertEquals(71.2, z1.getSampleMean(), TOL);
         assertEquals(-0.6675919504799908, z1.getZScore(), TOL);
         assertEquals(0.5043940973335608, z1.pValue(), TOL);
@@ -68,7 +67,6 @@ public class ZTestOneSampleTest {
 
 
         z1 = ZTestOneSample.test(71.2, x.size(), mu, sd, 0.05, HTest.Alternative.TWO_TAILS);
-        z1.printSummary();
         assertEquals(71.2, z1.getSampleMean(), TOL);
         assertEquals(-0.6675919504799908, z1.getZScore(), TOL);
         assertEquals(0.5043940973335608, z1.pValue(), TOL);
@@ -78,7 +76,6 @@ public class ZTestOneSampleTest {
 
 
         ZTestOneSample z2 = ZTestOneSample.test(x, mu, sd, 0.05, HTest.Alternative.LESS_THAN);
-        z2.printSummary();
         assertEquals(71.2, z2.getSampleMean(), TOL);
         assertEquals(-0.6675919504799908, z2.getZScore(), TOL);
         assertEquals(0.2521970486667804, z2.pValue(), TOL);
@@ -88,7 +85,6 @@ public class ZTestOneSampleTest {
 
 
         ZTestOneSample z3 = ZTestOneSample.test(x, mu, sd, 0.01, HTest.Alternative.GREATER_THAN);
-        z3.printSummary();
         assertEquals(71.2, z3.getSampleMean(), TOL);
         assertEquals(-0.6675919504799908, z3.getZScore(), TOL);
         assertEquals(0.7478029513332196, z3.pValue(), TOL);
@@ -97,7 +93,6 @@ public class ZTestOneSampleTest {
         assertEquals(0.01, z3.getSl(), TOL);
 
         ZTestOneSample z4 = ZTestOneSample.test(VarDouble.copy(Double.NaN, Double.NaN), 0, 1);
-        z4.printSummary();
 
         assertEquals(Double.NaN, z4.getSampleMean(), TOL);
         assertEquals(Double.NaN, z4.getZScore(), TOL);

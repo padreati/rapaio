@@ -21,10 +21,10 @@
 
 package rapaio.core.distributions.empirical;
 
+import java.io.Serial;
+
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

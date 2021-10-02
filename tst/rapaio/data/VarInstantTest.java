@@ -21,11 +21,11 @@
 
 package rapaio.data;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
-import rapaio.data.format.InstantFormatter;
-import rapaio.data.format.InstantParser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.printer.Printer.textWidth;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -33,8 +33,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.printer.Printer.textWidth;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import rapaio.core.RandomSource;
+import rapaio.data.format.InstantFormatter;
+import rapaio.data.format.InstantParser;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/10/20.

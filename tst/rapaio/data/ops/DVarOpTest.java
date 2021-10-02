@@ -21,17 +21,22 @@
 
 package rapaio.data.ops;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.DataTestingTools.generateRandomBinaryVariable;
+import static rapaio.DataTestingTools.generateRandomDoubleVariable;
+import static rapaio.DataTestingTools.generateRandomIntVariable;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.DataTestingTools.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/11/19.

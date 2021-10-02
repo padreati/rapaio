@@ -21,11 +21,6 @@
 
 package rapaio.data;
 
-import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
-import rapaio.util.function.SFunction;
-
 import java.io.Serial;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -33,6 +28,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
+import rapaio.util.function.SFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

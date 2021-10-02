@@ -21,17 +21,22 @@
 
 package rapaio.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.data.RowComparators.doubleComparator;
+import static rapaio.data.RowComparators.labelComparator;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.data.filter.FRefSort;
 import rapaio.io.Csv;
 import rapaio.util.IntComparator;
-
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.data.RowComparators.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

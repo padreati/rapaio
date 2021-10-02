@@ -21,12 +21,12 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
+import static rapaio.printer.Format.floatFlexLong;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import static rapaio.printer.Format.floatFlexLong;
 
 /**
  * Set of rules for one rule algorithm, one rule algorithm builds all possible rule sets and

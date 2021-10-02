@@ -21,6 +21,12 @@
 
 package rapaio.ml.classifier;
 
+import java.io.Serial;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
@@ -29,13 +35,6 @@ import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.eval.metric.ClassifierMetric;
 import rapaio.printer.Format;
-import rapaio.util.function.SBiConsumer;
-
-import java.io.Serial;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * Utility class for following progress while fitting a classifier during runs.

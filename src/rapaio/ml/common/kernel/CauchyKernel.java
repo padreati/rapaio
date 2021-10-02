@@ -21,11 +21,11 @@
 
 package rapaio.ml.common.kernel;
 
+import java.io.Serial;
+
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
-
-import java.io.Serial;
 
 /**
  * The Cauchy kernel comes from the Cauchy distribution (Basak, 2008).

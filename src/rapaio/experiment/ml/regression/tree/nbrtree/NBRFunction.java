@@ -21,6 +21,9 @@
 
 package rapaio.experiment.ml.regression.tree.nbrtree;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import rapaio.core.SamplingTools;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
@@ -34,9 +37,6 @@ import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.linear.LinearRegressionModel;
 import rapaio.ml.regression.linear.LinearRegressionResult;
 import rapaio.ml.regression.simple.L2Regression;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/23/19.

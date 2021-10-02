@@ -29,6 +29,9 @@ import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
+import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.DoubleArraysV;
 
 public class DMatrixDenseC extends DMatrixDense {
@@ -90,8 +93,12 @@ public class DMatrixDenseC extends DMatrixDense {
     }
 
     @Override
-    public DMatrix t() {
-        return new DMatrixDenseR(colCount, rowCount, values);
+    public DMatrix t(AlgebraOption<?>...opts) {
+        double[] ref = values;
+        if(AlgebraOptions.from(opts).isCopy()) {
+            ref = DoubleArrays.copy(values, 0, rowCount*colCount);
+        }
+        return new DMatrixDenseR(colCount, rowCount, ref);
     }
 
     @Override

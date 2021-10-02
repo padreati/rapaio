@@ -21,7 +21,8 @@
 
 package rapaio.experiment.io.json;
 
-import rapaio.experiment.io.json.tree.JsonValue;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.*;
+import rapaio.experiment.io.json.tree.JsonValue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/15.

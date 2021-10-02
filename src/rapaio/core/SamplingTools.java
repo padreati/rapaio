@@ -21,16 +21,16 @@
 
 package rapaio.core;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.util.IntIterator;
 import rapaio.util.collection.IntArrays;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

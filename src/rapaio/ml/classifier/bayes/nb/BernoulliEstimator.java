@@ -21,18 +21,18 @@
 
 package rapaio.ml.classifier.bayes.nb;
 
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.printer.Format;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Binomial pmf estimator.

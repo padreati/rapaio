@@ -21,8 +21,8 @@
 
 package rapaio.image;
 
-import org.junit.jupiter.api.Test;
-import rapaio.math.linear.DMatrix;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -33,7 +33,9 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import rapaio.math.linear.DMatrix;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/17/21.

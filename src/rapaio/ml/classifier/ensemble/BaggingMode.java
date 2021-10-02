@@ -21,13 +21,13 @@
 
 package rapaio.ml.classifier.ensemble;
 
+import java.io.Serializable;
+import java.util.List;
+
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.VarNominal;
 import rapaio.ml.classifier.ClassifierResult;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * Describes and implements how a class is obtained from ensemble results.

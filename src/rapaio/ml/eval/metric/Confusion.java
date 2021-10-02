@@ -21,6 +21,11 @@
 
 package rapaio.ml.eval.metric;
 
+import static rapaio.printer.Format.floatFlex;
+
+import java.util.List;
+import java.util.Set;
+
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.math.linear.DMatrix;
@@ -29,11 +34,6 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-
-import java.util.List;
-import java.util.Set;
-
-import static rapaio.printer.Format.floatFlex;
 
 /**
  * Confusion matrix utility.

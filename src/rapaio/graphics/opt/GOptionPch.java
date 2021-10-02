@@ -21,10 +21,10 @@
 
 package rapaio.graphics.opt;
 
+import java.io.Serial;
+
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-
-import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.

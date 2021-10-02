@@ -21,6 +21,10 @@
 
 package rapaio.experiment.data;
 
+import java.io.Serial;
+import java.util.HashMap;
+import java.util.List;
+
 import rapaio.data.AbstractFrame;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
@@ -34,10 +38,6 @@ import rapaio.data.VarLong;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-
-import java.io.Serial;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * This frame is similar with bound frame, but obtained from a join operation on matching variable values,

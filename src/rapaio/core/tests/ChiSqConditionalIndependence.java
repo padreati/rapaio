@@ -21,6 +21,8 @@
 
 package rapaio.core.tests;
 
+import java.util.List;
+
 import rapaio.core.distributions.ChiSquare;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
@@ -28,8 +30,6 @@ import rapaio.data.Var;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.util.List;
 
 /**
  * Chi-square test for conditional independence of categorical variables.

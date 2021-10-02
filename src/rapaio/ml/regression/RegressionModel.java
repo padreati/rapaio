@@ -21,6 +21,16 @@
 
 package rapaio.ml.regression;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -32,16 +42,6 @@ import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.printer.TextTable;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Abstract class needed to implement prerequisites for all regression algorithms.

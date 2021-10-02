@@ -21,7 +21,13 @@
 
 package rapaio.ml.regression.linear;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.BoundFrame;
@@ -31,10 +37,6 @@ import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for linear regression.

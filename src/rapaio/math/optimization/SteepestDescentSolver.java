@@ -21,6 +21,12 @@
 
 package rapaio.math.optimization;
 
+import static java.lang.Math.abs;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
+
 import rapaio.data.VarDouble;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
@@ -29,12 +35,6 @@ import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
-
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.Math.abs;
 
 /**
  * Implements the gradient descend optimization algorithm. Gradient descent is an optimization
@@ -83,7 +83,7 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
         solutions.add(sol.copy());
         for (int i = 0; i < maxIt.get(); i++) {
             DVector p = d1f.get().apply(sol).mult(-1);
-            double error = p.norm(2);
+            double error = p.pnorm(2);
             errors.addDouble(error);
             if (abs(error) < tol.get()) {
                 converged = true;

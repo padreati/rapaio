@@ -22,10 +22,11 @@
 package rapaio.data;
 
 
-import org.junit.jupiter.api.Test;
-import rapaio.core.stat.Mean;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+import rapaio.core.stat.Mean;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.

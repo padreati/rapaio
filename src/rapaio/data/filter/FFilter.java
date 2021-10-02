@@ -21,9 +21,9 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.Frame;
-
 import java.io.Serializable;
+
+import rapaio.data.Frame;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.

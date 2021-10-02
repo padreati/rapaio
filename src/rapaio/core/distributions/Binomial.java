@@ -21,12 +21,18 @@
 
 package rapaio.core.distributions;
 
-import rapaio.printer.Format;
+import static java.lang.Math.floor;
+import static java.lang.Math.log;
+import static java.lang.Math.rint;
+import static java.lang.Math.sqrt;
+
+import static rapaio.math.MathTools.DBL_EPSILON;
+import static rapaio.math.MathTools.betaIncReg;
+import static rapaio.math.MathTools.logBinomial;
 
 import java.io.Serial;
 
-import static java.lang.Math.*;
-import static rapaio.math.MathTools.*;
+import rapaio.printer.Format;
 
 /**
  * Binomial distribution.

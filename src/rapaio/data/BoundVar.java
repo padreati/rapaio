@@ -21,10 +21,6 @@
 
 package rapaio.data;
 
-import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
-
 import java.io.Serial;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -32,6 +28,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * A bound variable is a variable which is obtained by binding observations

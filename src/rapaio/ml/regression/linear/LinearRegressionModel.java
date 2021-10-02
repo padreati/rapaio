@@ -21,14 +21,14 @@
 
 package rapaio.ml.regression.linear;
 
+import java.io.Serial;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
-
-import java.io.Serial;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

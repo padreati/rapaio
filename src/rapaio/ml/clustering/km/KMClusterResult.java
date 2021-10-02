@@ -21,6 +21,9 @@
 
 package rapaio.ml.clustering.km;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
@@ -33,9 +36,6 @@ import rapaio.ml.clustering.ClusteringResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/2/20.

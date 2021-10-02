@@ -21,11 +21,11 @@
 
 package rapaio.core.distributions.empirical;
 
+import java.io.Serial;
+
 import rapaio.core.distributions.Normal;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
 
 /**
  * GaussianPdf kernel function

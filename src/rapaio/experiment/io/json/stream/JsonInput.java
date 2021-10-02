@@ -21,10 +21,10 @@
 
 package rapaio.experiment.io.json.stream;
 
-import rapaio.experiment.io.json.tree.JsonValue;
-
 import java.io.Closeable;
 import java.io.IOException;
+
+import rapaio.experiment.io.json.tree.JsonValue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/12/15.

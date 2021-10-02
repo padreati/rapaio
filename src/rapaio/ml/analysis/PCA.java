@@ -21,6 +21,12 @@
 
 package rapaio.ml.analysis;
 
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Logger;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -37,12 +43,6 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
@@ -115,14 +115,14 @@ public class PCA extends ParamSet<PCA> implements Printable {
         DMatrix s = x.scatter();
 
         logger.fine("compute eigenvalues");
-        EigenPair ep = Linear.eigenDecomp(s, maxRuns.get(), eps.get());
+        EigenPair ep = Linear.eigenDecomp(s);
         eigenValues = ep.values().div(x.rowCount() - 1);
         eigenVectors = ep.vectors();
 
         logger.fine("sort eigen values and vectors");
 
         int[] mapping = IntArrays.newSeq(0, eigenValues.size());
-        DoubleArrays.quickSortIndirect(mapping, eigenValues.asDense().elements(), 0, eigenValues.size());
+        DoubleArrays.quickSortIndirect(mapping, eigenValues.valueStream().toArray(), 0, eigenValues.size());
         IntArrays.reverse(mapping);
 
         eigenValues = eigenValues.asMatrix().mapRows(mapping).mapCol(0).copy();

@@ -22,17 +22,22 @@
 package rapaio.data;
 
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.stat.Mean;
-import rapaio.sys.WS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.printer.Printer.textWidth;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.printer.Printer.textWidth;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import rapaio.core.RandomSource;
+import rapaio.core.stat.Mean;
+import rapaio.sys.WS;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -80,7 +85,6 @@ public class VarBinaryTest {
     @Test
     public void testNumericStats() {
         VarBinary b = VarBinary.copy(1, 1, 0, 0, 1, 0, 1, 1);
-        b.printSummary();
         assertEquals(0.625, Mean.of(b).value(), 10e-10);
     }
 

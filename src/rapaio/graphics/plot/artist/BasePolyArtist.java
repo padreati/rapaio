@@ -21,13 +21,13 @@
 
 package rapaio.graphics.plot.artist;
 
+import java.awt.Graphics2D;
+import java.io.Serial;
+
 import rapaio.data.Var;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-
-import java.awt.*;
-import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/20.

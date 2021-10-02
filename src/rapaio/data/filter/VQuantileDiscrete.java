@@ -21,13 +21,6 @@
 
 package rapaio.data.filter;
 
-import rapaio.core.stat.Quantiles;
-import rapaio.data.Var;
-import rapaio.data.VarNominal;
-import rapaio.printer.Format;
-import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +28,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+
+import rapaio.core.stat.Quantiles;
+import rapaio.data.Var;
+import rapaio.data.VarNominal;
+import rapaio.printer.Format;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * Make a numerical variable a nominal one with intervals specified by quantiles.

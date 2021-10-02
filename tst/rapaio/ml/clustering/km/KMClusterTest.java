@@ -21,6 +21,12 @@
 
 package rapaio.ml.clustering.km;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.function.BiFunction;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,10 +38,6 @@ import rapaio.data.VarInt;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.function.BiFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/1/20.
@@ -198,8 +200,8 @@ public class KMClusterTest {
         // on the other hand the centroids are close, small normed distance
         for (int i = 0; i < 2; i++) {
             double cdist = dist.apply(kmeansC.mapRow(i), kmediansC.mapRow(i));
-            cdist /= Math.sqrt(kmeansC.mapRow(i).norm(2));
-            cdist /= Math.sqrt(kmediansC.mapRow(i).norm(2));
+            cdist /= Math.sqrt(kmeansC.mapRow(i).pnorm(2));
+            cdist /= Math.sqrt(kmediansC.mapRow(i).pnorm(2));
             assertTrue(cdist < 0.02);
         }
     }

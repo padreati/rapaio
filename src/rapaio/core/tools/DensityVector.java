@@ -21,14 +21,7 @@
 
 package rapaio.core.tools;
 
-import rapaio.core.RandomSource;
-import rapaio.data.Index;
-import rapaio.data.Var;
-import rapaio.data.index.IndexLabel;
-import rapaio.printer.Printable;
-import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import static java.lang.Math.pow;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -39,7 +32,14 @@ import java.util.function.DoublePredicate;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
-import static java.lang.Math.pow;
+import rapaio.core.RandomSource;
+import rapaio.data.Index;
+import rapaio.data.Var;
+import rapaio.data.index.IndexLabel;
+import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * Nominal distribution vector.

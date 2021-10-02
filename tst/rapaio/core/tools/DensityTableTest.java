@@ -22,18 +22,19 @@
 package rapaio.core.tools;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
-
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -133,7 +134,6 @@ public class DensityTableTest {
         df.rvar("outlook").setMissing(5);
 
         var id = DensityTable.fromLevelCounts(false, df.rvar("outlook"), df.rvar("class"));
-        id.printSummary();
 
         assertEquals(0.747, id.splitByRowAverageEntropy(), 1e-3);
         assertEquals(0.214, id.splitByRowInfoGain(), 1e-3);

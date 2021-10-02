@@ -21,15 +21,15 @@
 
 package rapaio.core.stat;
 
+import static rapaio.printer.Format.floatFlex;
+
+import java.util.Arrays;
+
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.DoubleArrays;
-
-import java.util.Arrays;
-
-import static rapaio.printer.Format.floatFlex;
 
 
 /**

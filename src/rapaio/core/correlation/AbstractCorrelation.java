@@ -21,15 +21,15 @@
 
 package rapaio.core.correlation;
 
+import java.io.Serial;
+import java.util.Arrays;
+
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Var;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-
-import java.io.Serial;
-import java.util.Arrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/4/19.
@@ -81,7 +81,7 @@ public abstract class AbstractCorrelation implements Correlation {
                 sb.append("...");
                 break;
             }
-            sb.append("[");
+            sb.append('[');
             for (int j = 0; j < d.names().length; j++) {
                 if (pos >= 0) {
                     sb.append(Format.floatFlex(d.get(i, j)));

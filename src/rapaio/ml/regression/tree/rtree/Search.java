@@ -21,17 +21,17 @@
 
 package rapaio.ml.regression.tree.rtree;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
 import rapaio.core.RandomSource;
 import rapaio.core.stat.WeightedOnlineStat;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.ml.regression.tree.RTree;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.IntStream;
 
 /**
  * Computes the selection of the best candidate node for a given test and target

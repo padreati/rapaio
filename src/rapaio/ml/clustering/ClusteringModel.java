@@ -21,6 +21,12 @@
 
 package rapaio.ml.clustering;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -29,12 +35,6 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/31/20.

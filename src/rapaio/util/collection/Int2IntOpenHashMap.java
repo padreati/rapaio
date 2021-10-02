@@ -21,7 +21,7 @@
 
 package rapaio.util.collection;
 
-import rapaio.core.RandomSource;
+import static rapaio.util.hash.Murmur3.murmur3A;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static rapaio.util.hash.Murmur3.murmur3A;
+import rapaio.core.RandomSource;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.

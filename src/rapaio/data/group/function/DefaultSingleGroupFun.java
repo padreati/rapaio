@@ -21,6 +21,10 @@
 
 package rapaio.data.group.function;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import rapaio.data.Frame;
 import rapaio.data.Group;
 import rapaio.data.Mapping;
@@ -28,10 +32,6 @@ import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/20/19.

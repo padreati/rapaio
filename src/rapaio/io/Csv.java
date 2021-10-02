@@ -21,17 +21,6 @@
 
 package rapaio.io;
 
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarString;
-import rapaio.data.VarType;
-import rapaio.ml.common.ListParam;
-import rapaio.ml.common.MultiListParam;
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
-import rapaio.util.IntRule;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -52,6 +41,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.zip.GZIPInputStream;
+
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarString;
+import rapaio.data.VarType;
+import rapaio.ml.common.ListParam;
+import rapaio.ml.common.MultiListParam;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
+import rapaio.util.IntRule;
 
 /**
  * CSV file reader and writer utility.

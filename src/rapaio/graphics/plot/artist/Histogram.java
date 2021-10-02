@@ -21,6 +21,16 @@
 
 package rapaio.graphics.plot.artist;
 
+import static rapaio.graphics.Plotter.bins;
+
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.io.Serial;
+
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.graphics.opt.GOption;
@@ -29,12 +39,6 @@ import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.MathTools;
-
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.io.Serial;
-
-import static rapaio.graphics.Plotter.bins;
 
 /**
  * Plot component which allows one to add a histogram to a plot.

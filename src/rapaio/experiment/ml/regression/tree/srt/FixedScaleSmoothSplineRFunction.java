@@ -21,6 +21,10 @@
 
 package rapaio.experiment.ml.regression.tree.srt;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import rapaio.core.SamplingTools;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
@@ -31,10 +35,6 @@ import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.linear.LinearRegressionModel;
 import rapaio.ml.regression.linear.LinearRegressionResult;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/20/19.
@@ -120,7 +120,7 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
 
                 try {
                     lm.fit(bf, y.name());
-                    if (lm.firstCoefficients().norm(2) > 10_000) {
+                    if (lm.firstCoefficients().pnorm(2) > 10_000) {
                         continue;
                     }
                 } catch (RuntimeException ex) {

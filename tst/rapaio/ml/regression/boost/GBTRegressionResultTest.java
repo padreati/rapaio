@@ -21,8 +21,12 @@
 
 package rapaio.ml.regression.boost;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -30,10 +34,6 @@ import rapaio.datasets.Datasets;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.ml.regression.tree.rtree.Splitter;
-
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/20.

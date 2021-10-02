@@ -21,13 +21,13 @@
 
 package rapaio.core.tests;
 
+import static rapaio.printer.Format.floatFlex;
+
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-
-import static rapaio.printer.Format.floatFlex;
 
 /**
  * one sample z test

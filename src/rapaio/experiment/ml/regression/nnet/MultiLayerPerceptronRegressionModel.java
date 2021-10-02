@@ -21,23 +21,23 @@
 
 package rapaio.experiment.ml.regression.nnet;
 
-import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarType;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.RegressionModel;
-import rapaio.ml.regression.DefaultHookInfo;
-import rapaio.ml.regression.RegressionResult;
-import rapaio.printer.Printable;
-import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 
-import static rapaio.printer.Format.floatFlex;
+import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.ml.common.Capabilities;
+import rapaio.ml.regression.DefaultHookInfo;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.RegressionResult;
+import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

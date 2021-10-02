@@ -21,11 +21,11 @@
 
 package rapaio.experiment.ml.common.predicate;
 
-import rapaio.data.Frame;
-import rapaio.printer.Format;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import rapaio.data.Frame;
+import rapaio.printer.Format;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/21/17.

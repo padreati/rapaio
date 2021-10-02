@@ -21,10 +21,6 @@
 
 package rapaio.data.stream;
 
-import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -50,6 +46,10 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
 
 /**
  * Stream of frame spots.

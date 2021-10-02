@@ -21,6 +21,19 @@
 
 package rapaio.ml.regression.tree;
 
+import static rapaio.printer.Format.floatFlex;
+
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Sum;
 import rapaio.core.stat.WeightedMean;
@@ -37,7 +50,6 @@ import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
-import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.DefaultHookInfo;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.rtree.Candidate;
@@ -47,19 +59,6 @@ import rapaio.ml.regression.tree.rtree.Splitter;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.DoublePair;
-
-import java.io.Serial;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static rapaio.printer.Format.floatFlex;
 
 /**
  * Implements a regression decision tree.

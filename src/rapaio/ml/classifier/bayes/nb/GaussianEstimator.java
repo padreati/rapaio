@@ -21,14 +21,6 @@
 
 package rapaio.ml.classifier.bayes.nb;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Normal;
-import rapaio.core.stat.OnlineStat;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarRange;
-import rapaio.data.VarType;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +29,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Normal;
+import rapaio.core.stat.OnlineStat;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 
 /**
  * Naive Bayes Gaussian estimator uses the Normal distribution to model

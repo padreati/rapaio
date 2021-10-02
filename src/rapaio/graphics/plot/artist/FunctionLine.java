@@ -21,18 +21,21 @@
 
 package rapaio.graphics.plot.artist;
 
+import static rapaio.graphics.Plotter.points;
+
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Composite;
+import java.awt.Graphics2D;
+import java.awt.geom.Line2D;
+import java.io.Serial;
+
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.util.function.Double2DoubleFunction;
-
-import java.awt.*;
-import java.awt.geom.Line2D;
-import java.io.Serial;
-
-import static rapaio.graphics.Plotter.points;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

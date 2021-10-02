@@ -21,16 +21,16 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.Frame;
-import rapaio.data.VarRange;
-import rapaio.data.VarType;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import rapaio.data.Frame;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 
 /**
  * Transform a given frame by removing all the variables

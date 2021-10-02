@@ -21,10 +21,10 @@
 
 package rapaio.ml.classifier.bayes.nb;
 
+import java.io.Serializable;
+
 import rapaio.data.Frame;
 import rapaio.data.Var;
-
-import java.io.Serializable;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.

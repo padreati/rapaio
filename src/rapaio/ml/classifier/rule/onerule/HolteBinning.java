@@ -21,13 +21,13 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
+import java.io.Serial;
+
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.rule.OneRule;
 import rapaio.util.collection.IntArrays;
-
-import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/30/20.

@@ -21,11 +21,11 @@
 
 package rapaio.math.linear.decomposition;
 
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 
 /**
  * QR Decomposition.

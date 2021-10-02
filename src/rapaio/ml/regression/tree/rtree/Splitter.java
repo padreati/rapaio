@@ -21,18 +21,18 @@
 
 package rapaio.ml.regression.tree.rtree;
 
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.mapping.ArrayMapping;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
-
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Regression Tree Splitter. At learning time for each node, multiple
