@@ -109,7 +109,7 @@ public interface DVector extends Serializable, Printable {
         if (type == VType.DENSE) {
             return new DVectorDense(n, DoubleArrays.newFill(n, fill));
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Vector type is not allowed.");
     }
 
     /**

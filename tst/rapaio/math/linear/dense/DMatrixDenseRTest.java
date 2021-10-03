@@ -119,19 +119,19 @@ public class DMatrixDenseRTest extends StandardDMatrixTest {
             }
         }
 
-        double[] values = new double[]{
+        double[] values = new double[] {
                 1, 2, 3, 4,
                 5, 6, 7, 8,
                 9, 10, 11, 12
         };
-        DMatrix copy3 = DMatrix.copy(MType.RDENSE, true, 3, 4, values);
+        DMatrix copy3 = DMatrix.copy(MType.RDENSE, 3, 4, true, values);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(values[i * 4 + j], copy3.get(i, j), TOL);
             }
         }
 
-        double[][] m = new double[][]{
+        double[][] m = new double[][] {
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12}
@@ -143,8 +143,9 @@ public class DMatrixDenseRTest extends StandardDMatrixTest {
             }
         }
 
-        DMatrix copy5 = DMatrix.copy(MType.RDENSE, true, 1, 3, 1, 4, m);
-        assertTrue(copy5.deepEquals(DMatrix.wrap(new double[][]{{6, 7, 8}, {10, 11, 12}})));
+        DMatrix copy5 = DMatrix.copy(MType.RDENSE, 1, 3, 1, 4, true, m);
+        assertTrue(copy5.deepEquals(DMatrix.wrap(2, 3, true,
+                6, 7, 8, 10, 11, 12)));
 
         DMatrix copy6 = DMatrix.random(MType.RDENSE, 2, 2);
         assertEquals(4, copy6.valueStream().filter(Double::isFinite).filter(v -> v != 0).count());

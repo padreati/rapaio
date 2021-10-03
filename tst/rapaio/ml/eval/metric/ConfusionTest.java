@@ -52,10 +52,10 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrix.wrap(true, new double[][]{
-                {2, 1, 1},
-                {0, 1, 1},
-                {0, 1, 4}});
+        DMatrix frequency = DMatrix.wrap(3, 3, true,
+                2, 1, 1,
+                0, 1, 1,
+                0, 1, 4);
 
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mult(1 / 11.0).deepEquals(cm.probabilityMatrix()));
@@ -87,7 +87,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrix.wrap(new double[][]{{2, 2}, {1, 2}});
+        DMatrix frequency = DMatrix.wrap(2, 2, true, 2, 2, 1, 2);
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mult(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
@@ -117,7 +117,8 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrix.wrap(new double[][]{{2, 2}, {1, 2}});
+        DMatrix frequency = DMatrix.wrap(2, 2, true,
+                2, 2, 1, 2);
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mult(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 

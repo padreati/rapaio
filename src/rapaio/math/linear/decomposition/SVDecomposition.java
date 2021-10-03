@@ -27,7 +27,6 @@ import java.io.Serial;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.MType;
 
 /**
  * Singular Value Decomposition.
@@ -496,7 +495,7 @@ public class SVDecomposition implements java.io.Serializable {
     }
 
     public DMatrix getU() {
-        return DMatrix.copy(MType.RSTRIPE, true, 0, rowCount, 0, Math.min(rowCount + 1, colCount), u);
+        return DMatrix.copy(DMatrix.defaultMType(), 0, rowCount, 0, Math.min(rowCount + 1, colCount), true, u);
     }
 
     /**
@@ -505,7 +504,7 @@ public class SVDecomposition implements java.io.Serializable {
      * @return RV
      */
     public DMatrix getV() {
-        return DMatrix.copy(MType.RSTRIPE, true, v);
+        return DMatrix.copy(DMatrix.defaultMType(), true, v);
     }
 
     /**

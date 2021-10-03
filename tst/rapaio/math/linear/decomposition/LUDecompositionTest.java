@@ -69,45 +69,42 @@ public class LUDecompositionTest {
     @Test
     void solveTest() {
 
-        DMatrix a1 = DMatrix.wrap(new double[][]{
-                {3, 2, -1},
-                {2, -2, 4},
-                {-1, 0.5, -1}
-        });
-        DMatrix b1 = DMatrix.wrap(new double[][]{
-                {1},
-                {-2},
-                {0}
-        });
-        DMatrix x1 = DMatrix.wrap(new double[][]{
-                {1},
-                {-2},
-                {-2}
-        });
+        DMatrix a1 = DMatrix.wrap(3, 3, true,
+                3, 2, -1,
+                2, -2, 4,
+                -1, 0.5, -1
+        );
+        DMatrix b1 = DMatrix.wrap(3, 1, true,
+                1,
+                -2,
+                0
+        );
+        DMatrix x1 = DMatrix.wrap(3, 1, true,
+                1,
+                -2,
+                -2
+        );
         assertTrue(x1.deepEquals(LUDecomposition.from(a1).solve(b1), TOL));
 
 
-        DMatrix a2 = DMatrix.wrap(new double[][]{
-                {2, 3},
-                {4, 9},
-        });
-        DMatrix b2 = DMatrix.wrap(new double[][]{
-                {6},
-                {15},
-        });
-        DMatrix x2 = DMatrix.wrap(new double[][]{
-                {1.5},
-                {1},
-        });
+        DMatrix a2 = DMatrix.wrap(2, 2, true,
+                2, 3,
+                4, 9
+        );
+        DMatrix b2 = DMatrix.wrap(2, 1, true,
+                6,
+                15
+        );
+        DMatrix x2 = DMatrix.wrap(2, 1, true, 1.5, 1);
         assertTrue(x2.deepEquals(LUDecomposition.from(a2).solve(b2), TOL));
     }
 
     @Test
     void determinantTest() {
-        DMatrix a = DMatrix.wrap(new double[][]{
-                {1, 2},
-                {3, 4}
-        });
+        DMatrix a = DMatrix.wrap(2, 2, true,
+                1, 2,
+                3, 4
+        );
         assertEquals(-2, LUDecomposition.from(a).det(), TOL);
     }
 

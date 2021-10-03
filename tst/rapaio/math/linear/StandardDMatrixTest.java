@@ -362,7 +362,7 @@ public abstract class StandardDMatrixTest {
         var m = generateSequential(10, 10);
         var copy = m.copy();
         m.apply(x -> x - 10).apply(x -> x + 10);
-        assertTrue(m.deepEquals(m));
+        assertTrue(m.deepEquals(copy));
     }
 
     @Test
@@ -395,11 +395,11 @@ public abstract class StandardDMatrixTest {
         var m = generateFill(10, 3, 1);
         var v1 = DVector.wrap(1, 2, 3);
 
-        var d = DMatrix.wrap(new double[][] {
-                {1, 0, 0},
-                {0, 2, 0},
-                {0, 0, 3}
-        });
+        var d = DMatrix.wrap(3, 3, true,
+                1, 0, 0,
+                0, 2, 0,
+                0, 0, 3
+        );
         var r1 = m.copy().dot(d);
 
 
@@ -459,12 +459,11 @@ public abstract class StandardDMatrixTest {
                 {1, 2, 3, 4},
                 {5, 6, 7, 8}
         });
-        var max0 = m.amax(0);
-        assertArrayEquals(new double[] {5, 6, 7, 8}, m.amax(0).asVarDouble().stream().mapToDouble().toArray());
-        assertArrayEquals(new double[] {4, 8}, m.amax(1).asVarDouble().stream().mapToDouble().toArray());
+        assertArrayEquals(new double[] {5, 6, 7, 8}, m.amax(0).valueStream().toArray());
+        assertArrayEquals(new double[] {4, 8}, m.amax(1).valueStream().toArray());
 
-        assertArrayEquals(new double[] {1, 2, 3, 4}, m.amin(0).asVarDouble().stream().mapToDouble().toArray());
-        assertArrayEquals(new double[] {1, 5}, m.amin(1).asVarDouble().stream().mapToDouble().toArray());
+        assertArrayEquals(new double[] {1, 2, 3, 4}, m.amin(0).valueStream().toArray());
+        assertArrayEquals(new double[] {1, 5}, m.amin(1).valueStream().toArray());
     }
 
     @Test
@@ -487,7 +486,7 @@ public abstract class StandardDMatrixTest {
     void deepEqualsTest() {
         DMatrix m1 = generateIdentity(2);
 
-        DMatrix m2 = DMatrix.wrap(true, new double[][] {{1, 0}, {0, 1}});
+        DMatrix m2 = DMatrix.wrap(2, 2, true, 1, 0, 0, 1);
         DMatrix m3 = DMatrix.identity(2);
 
         assertTrue(m1.deepEquals(m2));

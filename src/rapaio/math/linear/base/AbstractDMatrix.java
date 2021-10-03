@@ -433,7 +433,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix scatter() {
-        DMatrix scatter = DMatrix.empty(MType.RSTRIPE, colCount(), colCount());
+        DMatrix scatter = DMatrix.empty(DMatrix.defaultMType(), colCount(), colCount());
         double[] mean = new double[colCount()];
         for (int i = 0; i < colCount(); i++) {
             mean[i] = mapCol(i).mean();

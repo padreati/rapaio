@@ -21,11 +21,16 @@
 
 package rapaio.math.linear;
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/21.
- */
-public enum MType {
-    RDENSE,
-    CDENSE,
-    MAP
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+public class DVectorTest {
+
+    @Test
+    void validateFill() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> DVector.fill(VType.MAP, 10, 10));
+        assertEquals("Vector type is not allowed.", ex.getMessage());
+    }
 }

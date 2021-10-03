@@ -160,7 +160,7 @@ public class CholeskyDecomposition implements Serializable {
      * @return L triangular factor
      */
     public DMatrix getL() {
-        return DMatrix.wrap(true, l);
+        return DMatrix.copy(true, l);
     }
 
     /**

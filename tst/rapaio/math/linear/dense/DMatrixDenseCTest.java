@@ -125,7 +125,7 @@ public class DMatrixDenseCTest extends StandardDMatrixTest {
                 5, 6, 7, 8,
                 9, 10, 11, 12
         };
-        DMatrix copy3 = DMatrix.copy(MType.CDENSE, true, 3, 4, values);
+        DMatrix copy3 = DMatrix.copy(MType.CDENSE, 3, 4, true, values);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(values[i * 4 + j], copy3.get(i, j), TOL);
@@ -144,8 +144,8 @@ public class DMatrixDenseCTest extends StandardDMatrixTest {
             }
         }
 
-        DMatrix copy5 = DMatrix.copy(MType.CDENSE, true, 1, 3, 1, 4, m);
-        assertTrue(copy5.deepEquals(DMatrix.copy(MType.CSTRIPE, true, new double[][]{{6, 7, 8}, {10, 11, 12}})));
+        DMatrix copy5 = DMatrix.copy(MType.CDENSE, 1, 3, 1, 4, true, m);
+        assertTrue(copy5.deepEquals(DMatrix.copy(true, new double[][]{{6, 7, 8}, {10, 11, 12}})));
 
         DMatrix copy6 = DMatrix.random(MType.CDENSE, 2, 2);
         assertEquals(4, copy6.valueStream().filter(Double::isFinite).filter(v -> v != 0).count());

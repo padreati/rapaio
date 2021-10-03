@@ -33,7 +33,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.MType;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -203,11 +202,11 @@ public class SolidFrameTest {
 
     @Test
     void testMatrixBuilders() {
-        DMatrix rm = DMatrix.copy(MType.RSTRIPE, true, 3, 3, new double[]{
+        DMatrix rm = DMatrix.copy(3, 3, true,
                 1, 2, 3,
                 2, 3, 4,
                 3, 4, 5
-        });
+        );
         Frame fm = SolidFrame.matrix(rm, "a", "b", "c");
 
         for (int i = 0; i < 3; i++) {
@@ -236,11 +235,11 @@ public class SolidFrameTest {
 
     @Test
     void testAddClearRows() {
-        DMatrix rm = DMatrix.copy(MType.RSTRIPE, true, 3, 3, new double[]{
+        DMatrix rm = DMatrix.copy(3, 3, true,
                 1, 2, 3,
                 2, 3, 4,
                 3, 4, 5
-        });
+        );
         Frame fm = SolidFrame.matrix(rm, "a", "b", "c");
         fm.addRows(3);
 

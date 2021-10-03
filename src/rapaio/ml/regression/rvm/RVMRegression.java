@@ -44,7 +44,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.MType;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.LUDecomposition;
 import rapaio.math.linear.decomposition.QRDecomposition;
@@ -312,7 +311,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
      * @return matrix of features
      */
     private DMatrix buildInput(Frame df) {
-        return DMatrix.copy(MType.RSTRIPE, df.mapVars(inputNames));
+        return DMatrix.copy(df.mapVars(inputNames));
     }
 
     protected DVector buildTarget(Frame df) {
@@ -434,7 +433,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             for (int i = 0; i < parent.factories.size(); i++) {
                 vectors[i] = parent.factories.get(i).trainingFeature.get();
             }
-            return DMatrix.wrap(false, vectors);
+            return DMatrix.copy(false, vectors);
         }
 
         protected boolean testConvergence(DVector oldAlpha, DVector alpha) {
@@ -580,7 +579,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             parent.featureIndexes = indexes;
             parent.trainingIndexes = IntStream.of(indexes).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
             parent.relevanceVectors =
-                    DMatrix.wrap(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
+                    DMatrix.copy(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
             parent.m = m.copy();
             parent.sigma = sigma.copy();
             parent.alpha = alpha.copy();
@@ -770,7 +769,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             parent.featureIndexes = indexes;
             parent.trainingIndexes = IntStream.of(indexes).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
             parent.relevanceVectors =
-                    DMatrix.wrap(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
+                    DMatrix.copy(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
             parent.m = m.copy();
             parent.sigma = sigma.copy();
             parent.alpha = alpha.map(indexes, copy());
@@ -906,7 +905,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             alpha.set(bestIndex, phiiDotPhii.get(bestIndex) / (bestProjection - 1.0 / beta));
 
             // initial phi_hat, dimension 1x1 with value computed already in artifacts
-            phiHat = DMatrix.fill(MType.RSTRIPE, 1, 1, phiiDotPhii.get(bestIndex));
+            phiHat = DMatrix.fill(1, 1, phiiDotPhii.get(bestIndex));
         }
 
         private void computeSigmaAndMu() {
@@ -1144,7 +1143,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             parent.featureIndexes = active.stream().mapToInt(a -> a.index).toArray();
             parent.trainingIndexes =
                     active.stream().mapToInt(a -> a.index).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
-            parent.relevanceVectors = DMatrix.wrap(true, active
+            parent.relevanceVectors = DMatrix.copy(true, active
                     .stream().mapToInt(a -> a.index)
                     .mapToObj(i -> parent.factories.get(i).phii)
                     .toArray(DVector[]::new));

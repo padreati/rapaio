@@ -66,36 +66,36 @@ public class CholeskyDecompositionTest {
 
     @Test
     void testSystem() {
-        DMatrix a1 = DMatrix.wrap(new double[][]{
-                {2, -1, 0},
-                {-1, 2, -1},
-                {0, -1, 2}
-        });
-        DMatrix b1 = DMatrix.wrap(new double[][]{
-                {1},
-                {-2},
-                {0}
-        });
-        DMatrix x1 = DMatrix.wrap(new double[][]{
-                {-0.25},
-                {-1.5},
-                {-0.75}
-        });
+        DMatrix a1 = DMatrix.wrap(3, 3, true,
+                2, -1, 0,
+                -1, 2, -1,
+                0, -1, 2
+        );
+        DMatrix b1 = DMatrix.wrap(3, 1, true,
+                1,
+                -2,
+                0
+        );
+        DMatrix x1 = DMatrix.wrap(3, 1, true,
+                -0.25,
+                -1.5,
+                -0.75
+        );
         DMatrix s1 = CholeskyDecomposition.from(a1).solve(b1);
         assertTrue(x1.deepEquals(s1, TOL));
 
-        DMatrix a2 = DMatrix.wrap(new double[][]{
-                {2, 3},
-                {3, 9},
-        });
-        DMatrix b2 = DMatrix.wrap(new double[][]{
-                {6},
-                {15},
-        });
-        DMatrix x2 = DMatrix.wrap(new double[][]{
-                {1},
-                {1.33333333333333333333333333333333},
-        });
+        DMatrix a2 = DMatrix.wrap(2, 2, true,
+                2, 3,
+                3, 9
+        );
+        DMatrix b2 = DMatrix.wrap(2, 1, true,
+                6,
+                15
+        );
+        DMatrix x2 = DMatrix.wrap(2, 1, true,
+                1,
+                1.33333333333333333333333333333333
+        );
         DMatrix s2 = LUDecomposition.from(a2).solve(b2);
         assertTrue(x2.deepEquals(s2, TOL));
     }

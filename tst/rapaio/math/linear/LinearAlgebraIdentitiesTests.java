@@ -34,7 +34,7 @@ import rapaio.util.collection.IntArrays;
 public class LinearAlgebraIdentitiesTests {
 
     private static final MType[] mTypes = new MType[] {
-            MType.RDENSE, MType.CDENSE, MType.RSTRIPE, MType.CSTRIPE, MType.MAP
+            MType.RDENSE, MType.CDENSE, MType.MAP
     };
 
     private static final VType[] vTypes = new VType[] {

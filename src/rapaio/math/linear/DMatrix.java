@@ -32,10 +32,6 @@ import rapaio.data.Var;
 import rapaio.math.linear.dense.DMatrixDense;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
-import rapaio.math.linear.dense.DMatrixStripe;
-import rapaio.math.linear.dense.DMatrixStripeC;
-import rapaio.math.linear.dense.DMatrixStripeR;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.util.NotImplementedException;
@@ -84,8 +80,6 @@ public interface DMatrix extends Serializable, Printable {
         return switch (type) {
             case RDENSE -> new DMatrixDenseR(rows, cols);
             case CDENSE -> new DMatrixDenseC(rows, cols);
-            case RSTRIPE -> new DMatrixStripeR(rows, cols);
-            case CSTRIPE -> new DMatrixStripeC(rows, cols);
             default -> throw new NotImplementedException();
         };
     }
@@ -156,11 +150,6 @@ public interface DMatrix extends Serializable, Printable {
         DMatrix m = empty(type, rows, cols);
         switch (type) {
             case RDENSE, CDENSE -> Arrays.fill(((DMatrixDense) m).getElements(), fill);
-            case RSTRIPE, CSTRIPE -> {
-                for (double[] v : ((DMatrixStripe) m).getElements()) {
-                    Arrays.fill(v, fill);
-                }
-            }
             default -> throw new NotImplementedException();
         }
         return m;
@@ -240,72 +229,6 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     /**
-     * Builds a matrix which wraps an array of arrays of values with leaf arrays as rows.
-     *
-     * @param values array of arrays of values
-     * @return matrix which wrap the values by rows
-     */
-    static DMatrix wrap(double[][] values) {
-        return wrap(true, values);
-    }
-
-    /**
-     * Builds a matrix which wraps an array of arrays of values.
-     * Because we have an array of arrays the only storage types allowed are {@link MType#CSTRIPE} and
-     * {@link MType#RSTRIPE}. The matrix storage type is chosen by {@code byRows} parameter value.
-     * If {@code byRows} is {@code true} then the leaf arrays are interpreted as rows of values and
-     * {@link MType#RSTRIPE} storage matrix is chosen. If the value is {@code false} then the leaf array
-     * is interpreted as columns and {@link MType#CSTRIPE} storage type is chosen.
-     *
-     * @param byRows true if we have an array of rows, false if we have an array of columns
-     * @param values array of arrays of values
-     * @return matrix which wrap the values
-     */
-    static DMatrix wrap(boolean byRows, double[][] values) {
-        if (byRows) {
-            return new DMatrixStripeR(values.length, values[0].length, values);
-        } else {
-            return new DMatrixStripeC(values[0].length, values.length, values);
-        }
-    }
-
-    /**
-     * Builds a matrix which wraps an array vectors.
-     * Because we have an array of vectors the only storage types allowed are {@link MType#CSTRIPE} and
-     * {@link MType#RSTRIPE}. The matrix storage type is chosen by {@code byRows} parameter value.
-     * If {@code byRows} is {@code true} then the vectors are interpreted as rows of values and
-     * {@link MType#RSTRIPE} storage matrix is chosen. If the value is {@code false} then the vectors
-     * are interpreted as columns and {@link MType#CSTRIPE} storage type is chosen.
-     *
-     * @param byRows  true if we have an array of rows, false if we have an array of columns
-     * @param vectors array of arrays of values
-     * @return matrix which wrap the values
-     */
-    static DMatrix wrap(boolean byRows, DVector[] vectors) {
-        int len = Integer.MAX_VALUE;
-        double[][] values = new double[vectors.length][];
-        for (int i = 0; i < vectors.length; i++) {
-            len = Math.min(len, vectors[i].size());
-            if (vectors[i] instanceof DVectorDense dv) {
-                values[i] = dv.elements();
-            } else {
-                values[i] = vectors[i].valueStream().toArray();
-            }
-        }
-        return wrap(byRows, values);
-    }
-
-    /**
-     * Builds a matrix which wraps an array of values by rows.
-     *
-     * @param values array of arrays of values
-     * @return matrix which wrap the values
-     */
-    static DMatrix wrap(int rows, int cols, double[] values) {
-        return wrap(true, rows, cols, values);
-    }
-
-    /**
      * Builds a matrix which wraps an array of values. Because we have an array of values, the only storage types allowed
      * are {@link MType#CDENSE} and {@link MType#RDENSE}. The matrix storage type is chosen by {@code byRows} parameter value.
      * If {@code byRows} is {@code true} then the array is interpreted as rows values first and
@@ -316,7 +239,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param values array of arrays of values
      * @return matrix which wrap the values
      */
-    static DMatrix wrap(boolean byRows, int rows, int cols, double[] values) {
+    static DMatrix wrap(int rows, int cols, boolean byRows, double... values) {
         if (byRows) {
             return new DMatrixDenseR(rows, cols, values);
         } else {
@@ -332,7 +255,19 @@ public interface DMatrix extends Serializable, Printable {
      * @return matrix which hold a range of data
      */
     static DMatrix copy(double[][] values) {
-        return copy(defaultMType(), true, 0, values.length, 0, values[0].length, values);
+        return copy(defaultMType(), 0, values.length, 0, values[0].length, true, values);
+    }
+
+    /**
+     * Copy values from an array of arrays into a matrix. Matrix storage type is the default type and values
+     * are row or column oriented depending on the value of {@code byRows}.
+     *
+     * @param byRows true means row first orientation, otherwise column first orientation
+     * @param values array of arrays of values
+     * @return matrix which hold a range of data
+     */
+    static DMatrix copy(boolean byRows, double[][] values) {
+        return copy(defaultMType(), 0, values.length, 0, values[0].length, byRows, values);
     }
 
     /**
@@ -347,7 +282,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return matrix which hold a range of data
      */
     static DMatrix copy(MType type, boolean byRows, double[][] values) {
-        return copy(type, byRows, 0, byRows ? values.length : values[0].length, 0, byRows ? values[0].length : values.length, values);
+        return copy(type, 0, byRows ? values.length : values[0].length, 0, byRows ? values[0].length : values.length, byRows, values);
     }
 
     /**
@@ -367,7 +302,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param values   array of arrays of values
      * @return matrix which hold a range of data
      */
-    static DMatrix copy(MType type, boolean byRows, int rowStart, int rowEnd, int colStart, int colEnd, double[][] values) {
+    static DMatrix copy(MType type, int rowStart, int rowEnd, int colStart, int colEnd, boolean byRows, double[][] values) {
         if (type == MType.MAP) {
             throw new IllegalArgumentException("Matrix type not allowed.");
         }
@@ -402,7 +337,11 @@ public interface DMatrix extends Serializable, Printable {
      * @return matrix with a range of values copied from original array
      */
     static DMatrix copy(int inputRows, int inputCols, double... values) {
-        return copy(defaultMType(), true, inputRows, inputCols, 0, inputRows, 0, inputCols, values);
+        return copy(defaultMType(), inputRows, inputCols, 0, inputRows, 0, inputCols, true, values);
+    }
+
+    static DMatrix copy(int inputRows, int inputCols, boolean byRows, double... values) {
+        return copy(defaultMType(), inputRows, inputCols, 0, inputRows, 0, inputCols, byRows, values);
     }
 
     /**
@@ -425,8 +364,8 @@ public interface DMatrix extends Serializable, Printable {
      * @param values    array of values
      * @return matrix with a range of values copied from original array
      */
-    static DMatrix copy(MType type, boolean byRows, int inputRows, int inputCols, double[] values) {
-        return copy(type, byRows, inputRows, inputCols, 0, inputRows, 0, inputCols, values);
+    static DMatrix copy(MType type, int inputRows, int inputCols, boolean byRows, double... values) {
+        return copy(type, inputRows, inputCols, 0, inputRows, 0, inputCols, byRows, values);
     }
 
     /**
@@ -456,9 +395,9 @@ public interface DMatrix extends Serializable, Printable {
      * @param values    array of values
      * @return matrix with a range of values copied from original array
      */
-    static DMatrix copy(MType type, boolean byRows, int inputRows, int inputCols,
-            int rowStart, int rowEnd, int colStart, int colEnd,
-            double[] values) {
+    static DMatrix copy(MType type, int inputRows, int inputCols,
+            int rowStart, int rowEnd, int colStart, int colEnd, boolean byRows,
+            double... values) {
         int rows = rowEnd - rowStart;
         int cols = colEnd - colStart;
         DMatrix m = empty(type, rows, cols);
@@ -539,6 +478,36 @@ public interface DMatrix extends Serializable, Printable {
             }
         }
         return m;
+    }
+
+    static DMatrix copy(boolean byRows, DVector... vectors) {
+        MType type = byRows ? MType.RDENSE : MType.CDENSE;
+        return copy(type, byRows, vectors);
+    }
+
+    static DMatrix copy(MType type, boolean byRows, DVector... vectors) {
+        // TODO: can be improved but it needs better operation on vectors: store values in an external array
+        int vlen = Arrays.stream(vectors).mapToInt(DVector::size).min().orElse(0);
+        if (vlen == 0) {
+            throw new IllegalArgumentException("Minimum length of a vector is 0 which is invalid.");
+        }
+        DMatrix copy;
+        if (byRows) {
+            copy = DMatrix.empty(type, vectors.length, vlen);
+            for (int i = 0; i < vectors.length; i++) {
+                for (int j = 0; j < vlen; j++) {
+                    copy.set(i, j, vectors[i].get(j));
+                }
+            }
+        } else {
+            copy = DMatrix.empty(type, vlen, vectors.length);
+            for (int i = 0; i < vlen; i++) {
+                for (int j = 0; j < vectors.length; j++) {
+                    copy.set(i, j, vectors[j].get(i));
+                }
+            }
+        }
+        return copy;
     }
 
     /**

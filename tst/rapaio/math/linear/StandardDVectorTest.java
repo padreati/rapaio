@@ -62,7 +62,7 @@ public abstract class StandardDVectorTest {
         values = DoubleArrays.newFrom(0, 100, row -> normal.sampleNext());
         x = generateWrap(values);
         z = generateFill(100, 10);
-        m = DMatrix.identity(MType.RSTRIPE, 100).mult(2);
+        m = DMatrix.identity(100).mult(2);
     }
 
     public abstract VType type();
@@ -418,7 +418,7 @@ public abstract class StandardDVectorTest {
     void asMatrixTest() {
 
         var v1 = generateWrap(new double[]{1, 3, 9});
-        var m1 = DMatrix.wrap(new double[][]{{1}, {3}, {9}});
+        var m1 = DMatrix.wrap(3, 1, true, 1, 3, 9);
 
         assertTrue(m1.deepEquals(v1.asMatrix()));
     }
@@ -440,34 +440,40 @@ public abstract class StandardDVectorTest {
     @Test
     void testPrintable() {
         assertEquals(className() + "{size:10, values:[2,2,2,2,2,2,2,2,2,2]}", generateFill(10, 2).toString());
-        assertEquals("[0] 2 [4] 2 [8] 2 \n" +
-                "[1] 2 [5] 2 [9] 2 \n" +
-                "[2] 2 [6] 2 \n" +
-                "[3] 2 [7] 2 \n", generateFill(10, 2).toContent());
+        assertEquals("""
+                [0] 2 [4] 2 [8] 2\s
+                [1] 2 [5] 2 [9] 2\s
+                [2] 2 [6] 2\s
+                [3] 2 [7] 2\s
+                """, generateFill(10, 2).toContent());
         assertEquals(generateFill(10, 2).toContent(), generateFill(10, 2).toFullContent());
         assertEquals(generateFill(10, 2).toContent(), generateFill(10, 2).toSummary());
 
         assertEquals(className() + "{size:30, values:[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,...]}", generateFill(30, 2).toString());
-        assertEquals(" [0]  2   [6]  2  [12]  2  [18]  2  \n" +
-                " [1]  2   [7]  2  [13]  2  [19]  2  \n" +
-                " [2]  2   [8]  2  [14]  2  ...  ... \n" +
-                " [3]  2   [9]  2  [15]  2  [28]  2  \n" +
-                " [4]  2  [10]  2  [16]  2  [29]  2  \n" +
-                " [5]  2  [11]  2  [17]  2  \n", generateFill(30, 2).toContent());
-        assertEquals(" [0] 2  [6] 2 [12] 2 [18] 2 [24] 2 \n" +
-                " [1] 2  [7] 2 [13] 2 [19] 2 [25] 2 \n" +
-                " [2] 2  [8] 2 [14] 2 [20] 2 [26] 2 \n" +
-                " [3] 2  [9] 2 [15] 2 [21] 2 [27] 2 \n" +
-                " [4] 2 [10] 2 [16] 2 [22] 2 [28] 2 \n" +
-                " [5] 2 [11] 2 [17] 2 [23] 2 [29] 2 \n", generateFill(30, 2).toFullContent());
-        assertEquals(" [0]  2   [6]  2  [12]  2  [18]  2  \n" +
-                " [1]  2   [7]  2  [13]  2  [19]  2  \n" +
-                " [2]  2   [8]  2  [14]  2  ...  ... \n" +
-                " [3]  2   [9]  2  [15]  2  [28]  2  \n" +
-                " [4]  2  [10]  2  [16]  2  [29]  2  \n" +
-                " [5]  2  [11]  2  [17]  2  \n", generateFill(30, 2).toSummary());
-
-
+        assertEquals("""
+                 [0]  2   [6]  2  [12]  2  [18]  2 \s
+                 [1]  2   [7]  2  [13]  2  [19]  2 \s
+                 [2]  2   [8]  2  [14]  2  ...  ...\s
+                 [3]  2   [9]  2  [15]  2  [28]  2 \s
+                 [4]  2  [10]  2  [16]  2  [29]  2 \s
+                 [5]  2  [11]  2  [17]  2 \s
+                """, generateFill(30, 2).toContent());
+        assertEquals("""
+                 [0] 2  [6] 2 [12] 2 [18] 2 [24] 2\s
+                 [1] 2  [7] 2 [13] 2 [19] 2 [25] 2\s
+                 [2] 2  [8] 2 [14] 2 [20] 2 [26] 2\s
+                 [3] 2  [9] 2 [15] 2 [21] 2 [27] 2\s
+                 [4] 2 [10] 2 [16] 2 [22] 2 [28] 2\s
+                 [5] 2 [11] 2 [17] 2 [23] 2 [29] 2\s
+                """, generateFill(30, 2).toFullContent());
+        assertEquals("""
+                 [0]  2   [6]  2  [12]  2  [18]  2 \s
+                 [1]  2   [7]  2  [13]  2  [19]  2 \s
+                 [2]  2   [8]  2  [14]  2  ...  ...\s
+                 [3]  2   [9]  2  [15]  2  [28]  2 \s
+                 [4]  2  [10]  2  [16]  2  [29]  2 \s
+                 [5]  2  [11]  2  [17]  2 \s
+                """, generateFill(30, 2).toSummary());
     }
 
     @Test
