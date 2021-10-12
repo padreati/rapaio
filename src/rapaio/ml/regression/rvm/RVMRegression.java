@@ -487,7 +487,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 } catch (IllegalArgumentException ignored) {
                     sigma = QRDecomposition.from(t).solve(DMatrix.identity(t.rowCount()));
                 }
-                m = sigma.dot(phi_t_y).mult(beta);
+                m = sigma.dot(phi_t_y).mul(beta);
 
                 // compute alpha and beta
 
@@ -567,7 +567,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 sigma = QRDecomposition.from(t).solve(DMatrix.identity(t.rowCount()));
             }
 
-            m = sigma.dot(phi_t_y).mult(beta);
+            m = sigma.dot(phi_t_y).mul(beta);
         }
 
         private void initializeAlphaBeta() {
@@ -735,7 +735,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 m_sigma_inv.inc(i, i, alpha.get(indexes[i]));
             }
             sigma = QRDecomposition.from(m_sigma_inv).solve(DMatrix.identity(indexes.length));
-            m = sigma.dot(phi_dot_y.map(indexes, copy())).mult(beta);
+            m = sigma.dot(phi_dot_y.map(indexes, copy())).mul(beta);
         }
 
         void computeSQ() {
@@ -915,7 +915,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 m_sigma_inv.inc(i, i, alpha.get(active.get(i).index));
             }
             sigma = CholeskyDecomposition.from(m_sigma_inv).solve(DMatrix.identity(active.size()));
-            m = sigma.dot(computePhiDotY().mult(beta));
+            m = sigma.dot(computePhiDotY().mul(beta));
         }
 
         private DVector computePhiiDotPhi(int i) {

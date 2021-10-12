@@ -49,7 +49,7 @@ public class SteepestDescentSolverTest {
     void smokeTest() {
 
         RFunction f = v -> v.dotBilinearDiag(DVector.wrap(1, 3));
-        RDerivative d1f = v -> v.copy().mult(DVector.wrap(2, 6));
+        RDerivative d1f = v -> v.copy().mul(DVector.wrap(2, 6));
 
         SteepestDescentSolver solver1 = SteepestDescentSolver
                 .newSolver()

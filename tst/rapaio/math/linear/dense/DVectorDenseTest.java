@@ -21,13 +21,14 @@
 
 package rapaio.math.linear.dense;
 
+import java.util.Arrays;
+
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.StandardDVectorTest;
 import rapaio.math.linear.VType;
+import rapaio.util.collection.DoubleArrays;
 
 public class DVectorDenseTest extends StandardDVectorTest {
-
-    private static final double TOL = 1e-15;
 
     @Override
     public VType type() {
@@ -36,12 +37,21 @@ public class DVectorDenseTest extends StandardDVectorTest {
 
     @Override
     public DVector generateFill(int size, double fill) {
-        return DVector.fill(size, fill);
+        return new DVectorDense(10, size, DoubleArrays.newFill(10 + size, fill));
     }
 
     @Override
-    public DVector generateWrap(double[] values) {
-        return DVector.wrap(values);
+    public DVector generateSeq(int end) {
+        double[] base = new double[10 + end];
+        for (int i = 0; i < end; i++) {
+            base[10 + i] = i;
+        }
+        return new DVectorDense(10, end, base);
+    }
+
+    @Override
+    public DVector generateCopy(double[] values) {
+        return new DVectorDense(0, values.length, Arrays.copyOf(values, values.length));
     }
 
     @Override

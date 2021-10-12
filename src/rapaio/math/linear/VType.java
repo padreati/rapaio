@@ -26,5 +26,6 @@ package rapaio.math.linear;
  */
 public enum VType {
     DENSE,
+    STRIDE,
     MAP
 }

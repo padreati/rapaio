@@ -163,7 +163,7 @@ public class MultinomialEstimator extends AbstractEstimator {
         densityMap = new HashMap<>();
         countDensities.forEach((level, density) -> {
             // add normalized densities to prediction map
-            densityMap.put(level, DVector.wrapArray(density.index().size(), density.normalize().streamValues().toArray()));
+            densityMap.put(level, DVector.wrapArray(0, density.index().size(), density.normalize().streamValues().toArray()));
         });
 
         return false;

@@ -31,6 +31,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorStride;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.util.collection.DoubleArrays;
@@ -107,7 +108,10 @@ public interface DVector extends Serializable, Printable {
      */
     static DVector fill(VType type, int n, double fill) {
         if (type == VType.DENSE) {
-            return new DVectorDense(n, DoubleArrays.newFill(n, fill));
+            return new DVectorDense(0, n, DoubleArrays.newFill(n, fill));
+        }
+        if(type == VType.STRIDE) {
+            return new DVectorStride(0, n, 1, DoubleArrays.newFill(n, fill));
         }
         throw new IllegalArgumentException("Vector type is not allowed.");
     }
@@ -123,13 +127,13 @@ public interface DVector extends Serializable, Printable {
     static DVectorDense from(Var v) {
         if (v instanceof VarDouble vd) {
             double[] array = vd.elements();
-            return wrapArray(vd.size(), array);
+            return wrapArray(0, vd.size(), array);
         }
         double[] values = new double[v.size()];
         for (int i = 0; i < values.length; i++) {
             values[i] = v.getDouble(i);
         }
-        return wrapArray(values.length, values);
+        return wrapArray(0, values.length, values);
     }
 
     /**
@@ -156,7 +160,7 @@ public interface DVector extends Serializable, Printable {
         for (int i = 0; i < size; i++) {
             array[i] = distribution.sampleNext();
         }
-        return wrapArray(array.length, array);
+        return wrapArray(0, array.length, array);
     }
 
     /**
@@ -170,11 +174,11 @@ public interface DVector extends Serializable, Printable {
         for (int i = 0; i < copy.length; i++) {
             copy[i] = source.get(i);
         }
-        return wrapArray(copy.length, copy);
+        return wrapArray(0, copy.length, copy);
     }
 
     static DVectorDense wrap(double... values) {
-        return wrapArray(values.length, values);
+        return wrapArray(0, values.length, values);
     }
 
     /**
@@ -184,9 +188,9 @@ public interface DVector extends Serializable, Printable {
      * @param values referenced array of values
      * @return new real dense vector
      */
-    static DVectorDense wrapArray(int size, double[] values) {
+    static DVectorDense wrapArray(int offset, int size, double[] values) {
         Objects.requireNonNull(values);
-        return new DVectorDense(size, values);
+        return new DVectorDense(offset, size, values);
     }
 
     /**
@@ -198,7 +202,7 @@ public interface DVector extends Serializable, Printable {
      * @return dense vector with computed values
      */
     static DVector from(int len, Int2DoubleFunction fun) {
-        return wrapArray(len, DoubleArrays.newFrom(0, len, fun));
+        return wrapArray(0, len, DoubleArrays.newFrom(0, len, fun));
     }
 
     /**
@@ -313,10 +317,10 @@ public interface DVector extends Serializable, Printable {
      * Scalar multiplication. All the values from vector
      * will be multiplied with the given scalar
      *
-     * @param scalar scaar value
+     * @param x scalar value
      * @return the same object
      */
-    DVector mult(double scalar, AlgebraOption<?>... opts);
+    DVector mul(double x, AlgebraOption<?>... opts);
 
     /**
      * Element wise multiplication between two vectors.
@@ -324,15 +328,15 @@ public interface DVector extends Serializable, Printable {
      * @param y factor vector
      * @return element wise multiplication result vector
      */
-    DVector mult(DVector y, AlgebraOption<?>... opts);
+    DVector mul(DVector y, AlgebraOption<?>... opts);
 
     /**
      * Scalar division. All values from vector will be divided by scalar value.
      *
-     * @param scalar value
+     * @param x value
      * @return reference to original vector
      */
-    DVector div(double scalar, AlgebraOption<?>... opts);
+    DVector div(double x, AlgebraOption<?>... opts);
 
     /**
      * Element wise division between two vectors.
@@ -352,7 +356,7 @@ public interface DVector extends Serializable, Printable {
      * @param y vector
      * @return new vector which contains the result of {@code this[i] <- this[i] + a * y[i]}
      */
-    DVector xpay(double a, DVector y, AlgebraOption<?>... opts);
+    DVector addMul(double a, DVector y, AlgebraOption<?>... opts);
 
     /**
      * Dot product between two vectors is equal to the sum of the
@@ -449,8 +453,7 @@ public interface DVector extends Serializable, Printable {
      * @return normalized vector
      */
     default DVector pnormalize(double p, AlgebraOption<?>... opts) {
-        double pnorm = pnorm(p);
-        return div(pnorm, opts);
+        return div(pnorm(p), opts);
     }
 
     /**

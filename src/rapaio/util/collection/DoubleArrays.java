@@ -22,6 +22,8 @@
 package rapaio.util.collection;
 
 
+import static jdk.incubator.vector.VectorOperators.ADD;
+
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -33,7 +35,11 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.DoubleStream;
 
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorOperators;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleIterator;
 import rapaio.util.function.Double2DoubleFunction;
@@ -46,17 +52,20 @@ import rapaio.util.function.Int2DoubleFunction;
  */
 public final class DoubleArrays {
 
+    private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
+    private static final int SPECIES_LEN = SPECIES.length();
+
     /**
      * Creates a double array filled with a given value
      *
-     * @param size      size of the array
-     * @param fillValue value to fill the array
+     * @param size size of the array
+     * @param fill value to fill the array
      * @return new array instance
      */
-    public static double[] newFill(int size, double fillValue) {
+    public static double[] newFill(int size, double fill) {
         double[] array = new double[size];
-        if (fillValue != 0) {
-            Arrays.fill(array, fillValue);
+        if (fill != 0) {
+            Arrays.fill(array, fill);
         }
         return array;
     }
@@ -142,32 +151,46 @@ public final class DoubleArrays {
     /**
      * Add a scalar value to an array
      *
-     * @param to    destination where the scalar will be added
-     * @param toOff destination offset
-     * @param s     scalar value to be added
-     * @param len   length
+     * @param t    destination where the scalar will be added
+     * @param tOff destination offset
+     * @param s    scalar value to be added
+     * @param len  length
      */
-    public static void add(double[] to, int toOff, double s, int len) {
-        for (int i = toOff; i < len + toOff; i++) {
-            to[i] += s;
+    public static void add(double[] t, int tOff, double s, int len) {
+        int bound = SPECIES.loopBound(len) + tOff;
+        int i = tOff;
+        var sv = DoubleVector.broadcast(SPECIES, s);
+        for (; i < bound; i += SPECIES_LEN) {
+            var tv = DoubleVector.fromArray(SPECIES, t, i);
+            tv.add(sv).intoArray(t, i);
+        }
+        for (; i < len + tOff; i++) {
+            t[i] += s;
         }
     }
 
     public static void addTo(double[] x, int xOff, double s, double[] to, int toOff, int len) {
-        for (int i = 0; i < len; i++) {
-            to[toOff++] = x[xOff++] + s;
+        int bound = SPECIES.loopBound(len);
+        int i = 0;
+        var sv = DoubleVector.broadcast(SPECIES, s);
+        for (; i < bound; i += SPECIES_LEN) {
+            var tv = DoubleVector.fromArray(SPECIES, x, xOff + i);
+            tv.add(sv).intoArray(to, toOff + i);
+        }
+        for (; i < toOff + len; i++) {
+            to[toOff + i] = x[xOff + i] + s;
         }
     }
 
-    public static void add(double[] a, int aStart, double[] b, int bStart, int len) {
+    public static void add(double[] x, int xOff, double[] y, int yOff, int len) {
         for (int i = 0; i < len; i++) {
-            a[aStart++] += b[bStart++];
+            x[xOff++] += y[yOff++];
         }
     }
 
-    public static void addTo(double[] a, int aStart, double[] b, int bStart, double[] to, int toStart, int len) {
+    public static void addTo(double[] x, int xOff, double[] y, int yOff, double[] t, int tOff, int len) {
         for (int i = 0; i < len; i++) {
-            to[toStart++] = a[aStart++] + b[bStart++];
+            t[tOff++] = x[xOff++] + y[yOff++];
         }
     }
 
@@ -243,16 +266,44 @@ public final class DoubleArrays {
         }
     }
 
-    public static void xpay(double[] x, double a, double[] y, int start, int len) {
-        for (int i = start; i < len; i++) {
-            x[i] = x[i] + a * y[i];
+    /**
+     * Add multiple of a vector. The equation of the operation is x <- x + a * y
+     *
+     * @param x
+     * @param xOff
+     * @param a
+     * @param y
+     * @param yOff
+     * @param len
+     */
+    public static void addMul(double[] x, int xOff, double a, double[] y, int yOff, int len) {
+        for (int i = 0; i < len; i++) {
+            x[xOff + i] += a * y[yOff + i];
         }
     }
 
-    public static void xpayTo(double[] x, double a, double[] y, double[] to, int start, int len) {
-        for (int i = start; i < start + len; i++) {
-            to[i] = x[i] + a * y[i];
+    public static void addMulTo(double[] x, int xOff, double a, double[] y, int yOff, double[] to, int toOff, int len) {
+        for (int i = 0; i < len; i++) {
+            to[toOff + i] = x[xOff + i] + a * y[yOff + i];
         }
+    }
+
+    public static double dotSum(double[] x, int xOff, double[] y, int yOff, int len) {
+        int loopBound = SPECIES.loopBound(len) + xOff;
+        int i = xOff;
+        int delta = yOff - xOff;
+        var vsum = DoubleVector.zero(SPECIES);
+        for (; i < loopBound; i += SPECIES_LEN) {
+            var vx = DoubleVector.fromArray(SPECIES, x, i);
+            var vy = DoubleVector.fromArray(SPECIES, y, i + delta);
+            vsum = vx.fma(vy, vsum);
+        }
+        double sum = vsum.reduceLanes(ADD);
+        int xLen = len + xOff;
+        for (; i < xLen; i++) {
+            sum += x[i] * y[i + delta];
+        }
+        return sum;
     }
 
     public static double sum(double[] a, int start, int len) {
@@ -272,6 +323,25 @@ public final class DoubleArrays {
             sum += a[i];
         }
         return sum;
+    }
+
+    public static double prod(double[] a, int start, int len) {
+        double prod = 1;
+        for (int i = start; i < len + start; i++) {
+            prod *= a[i];
+        }
+        return prod;
+    }
+
+    public static double nanProd(double[] a, int start, int len) {
+        double prod = 1;
+        for (int i = start; i < len + start; i++) {
+            if (Double.isNaN(a[i])) {
+                continue;
+            }
+            prod *= a[i];
+        }
+        return prod;
     }
 
     public static int nanCount(double[] a, int start, int len) {

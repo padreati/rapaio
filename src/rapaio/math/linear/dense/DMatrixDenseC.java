@@ -24,19 +24,14 @@ package rapaio.math.linear.dense;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.DoubleArraysV;
 
 public class DMatrixDenseC extends DMatrixDense {
-
-    private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
 
     public DMatrixDenseC(int rows, int cols) {
         this(rows, cols, new double[rows * cols]);
@@ -62,6 +57,15 @@ public class DMatrixDenseC extends DMatrixDense {
     }
 
     @Override
+    public DVector mapCol(int col, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = DoubleArrays.copy(values, col * rowCount, rowCount);
+            return DVector.wrap(copy);
+        }
+        return new DVectorDense(col * rowCount, rowCount, values);
+    }
+
+    @Override
     public DVector dot(DVector b) {
         if (colCount != b.size()) {
             throw new IllegalArgumentException(
@@ -79,24 +83,23 @@ public class DMatrixDenseC extends DMatrixDense {
         stream.forEach(s -> {
             double[] slice = new double[rowCount];
             for (int j = s * SLICE_SIZE; j < Math.min(colCount, (s + 1) * SLICE_SIZE); j++) {
-                DoubleArraysV.accAXPY(slice, values,  j * rowCount, rowCount, b.get(j));
+                DoubleArrays.addMul(slice, 0, b.get(j), values, j * rowCount, rowCount);
             }
             cslices[s] = slice;
         });
 
         double[] c = new double[rowCount];
-        for (var cslice : cslices) {
-            DoubleArraysV.add(cslice, c);
+        for (var s : cslices) {
+            DoubleArrays.add(c, 0, s, 0, rowCount);
         }
-
-        return new DVectorDense(c.length, c);
+        return new DVectorDense(0, c.length, c);
     }
 
     @Override
-    public DMatrix t(AlgebraOption<?>...opts) {
+    public DMatrix t(AlgebraOption<?>... opts) {
         double[] ref = values;
-        if(AlgebraOptions.from(opts).isCopy()) {
-            ref = DoubleArrays.copy(values, 0, rowCount*colCount);
+        if (AlgebraOptions.from(opts).isCopy()) {
+            ref = DoubleArrays.copy(values, 0, rowCount * colCount);
         }
         return new DMatrixDenseR(colCount, rowCount, ref);
     }

@@ -85,7 +85,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
             solutions.add(sol.copy());
             DVector d1f_x = d1f.get().apply(sol);
             DMatrix d2f_x = d2f.get().apply(sol);
-            DVector d1f_x_n = d1f_x.copy().mult(-1);
+            DVector d1f_x_n = d1f_x.copy().mul(-1);
 
             DVector delta_x;
 
@@ -109,7 +109,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
             }
 
             double t = lineSearch.get().search(f.get(), d1f.get(), x0.get(), delta_x);
-            sol.add(delta_x.mult(t));
+            sol.add(delta_x.mul(t));
         }
         return this;
     }

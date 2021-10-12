@@ -38,7 +38,7 @@ public class LinearAlgebraIdentitiesTests {
     };
 
     private static final VType[] vTypes = new VType[] {
-            VType.DENSE, VType.MAP
+            VType.DENSE, VType.STRIDE, VType.MAP
     };
 
     @BeforeEach
@@ -68,9 +68,9 @@ public class LinearAlgebraIdentitiesTests {
         // A*C+B*C = (A+B)*C
 
         for (MType type1 : mTypes) {
-            var a = randomMatrix(type1, 1000, 80);
+            var a = randomMatrix(type1, 400, 80);
             for (MType type2 : mTypes) {
-                var b = randomMatrix(type2, 1000, 80);
+                var b = randomMatrix(type2, 400, 80);
                 for (MType type3 : mTypes) {
                     var c = randomMatrix(type3, 80, 120);
                     assertTrue(a.dot(c).add(b.dot(c)).deepEquals(a.copy().add(b).dot(c)));
@@ -103,9 +103,9 @@ public class LinearAlgebraIdentitiesTests {
         // A*v + B*v = (A+B)*v
 
         for (MType mType1 : mTypes) {
-            var a = randomMatrix(mType1, 1000, 80);
+            var a = randomMatrix(mType1, 400, 80);
             for (MType mType2 : mTypes) {
-                var b = randomMatrix(mType2, 1000, 80);
+                var b = randomMatrix(mType2, 400, 80);
                 for(VType vType : vTypes) {
                     var v = randomVector(vType, 80);
                     var v1 = a.dot(v).add(b.dot(v));
@@ -123,9 +123,9 @@ public class LinearAlgebraIdentitiesTests {
         // A'*diag(w)*A = (A'*diag(w)*A)'
 
         for (MType mType1 : mTypes) {
-            var a = randomMatrix(mType1, 1000, 80);
+            var a = randomMatrix(mType1, 400, 80);
                 for(VType vType : vTypes) {
-                    var v = randomVector(vType, 1000);
+                    var v = randomVector(vType, 400);
 
                     var x1 = a.mult(v, 1, copy()).t().dot(a);
                     var x2 = a.t().mult(v, 0, copy()).dot(a);

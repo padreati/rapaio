@@ -29,7 +29,7 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
-import rapaio.util.collection.DoubleArraysV;
+import rapaio.util.collection.DoubleArrays;
 
 public class DMatrixDenseR extends DMatrixDense {
 
@@ -79,7 +79,7 @@ public class DMatrixDenseR extends DMatrixDense {
         }
 
         // obtain the vector array of elements either as a reference or as a copy
-        double[] vector = (b instanceof DVectorDense) ? ((DVectorDense) b).elements() : b.valueStream().toArray();
+        double[] vector = b.valueStream().toArray();
 
         // allocate memory for the result vector
         double[] c = new double[rowCount];
@@ -93,9 +93,9 @@ public class DMatrixDenseR extends DMatrixDense {
         }
         stream.forEach(s -> {
             for (int i = s * sliceSize; i < Math.min(rowCount, (s + 1) * sliceSize); i++) {
-                c[i] = DoubleArraysV.dotSum(values, i * colCount, vector, 0, colCount);
+                c[i] = DoubleArrays.dotSum(values, i * colCount, vector, 0, colCount);
             }
         });
-        return new DVectorDense(c.length, c);
+        return new DVectorDense(0, c.length, c);
     }
 }

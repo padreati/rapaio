@@ -218,7 +218,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                 // normalize weight vector
                 w.div(w.sum());
                 // square w
-                w.mult(w);
+                w.mul(w);
                 // weighted L2 solution
 
                 DMatrix w2a = A.mult(w, 1, copy());
@@ -284,7 +284,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                 double nn;
                 if (p > 2) {
                     // partial update for p>2
-                    x = x1.mult(q).add(x.mult(1 - q));
+                    x = x1.mul(q).add(x.mul(1 - q));
                     nn = p;
                 } else {
                     // no partial update for p<=2

@@ -183,14 +183,25 @@ public class TTestOneSample implements HTest {
 
         StudentT dist = StudentT.of(sampleSize - 1);
 
-        switch (alt) {
-            case GREATER_THAN -> pValue = 1 - dist.cdf(this.t);
-            case LESS_THAN -> pValue = dist.cdf(this.t);
-            default -> pValue = dist.cdf(-Math.abs(this.t)) * 2;
-        }
+        var t = StudentT.of(sampleSize - 1, sampleMean, sampleSd / Math.sqrt(sampleSize));
 
-        ciLow = StudentT.of(sampleSize - 1, sampleMean, sampleSd / Math.sqrt(sampleSize)).quantile(sl / 2);
-        ciHigh = StudentT.of(sampleSize - 1, sampleMean, sampleSd / Math.sqrt(sampleSize)).quantile(1 - sl / 2);
+        switch (alt) {
+            case GREATER_THAN -> {
+                pValue = 1 - dist.cdf(this.t);
+                ciLow = t.quantile(sl);
+                ciHigh = Double.POSITIVE_INFINITY;
+            }
+            case LESS_THAN -> {
+                pValue = dist.cdf(this.t);
+                ciLow = Double.NEGATIVE_INFINITY;
+                ciHigh = t.quantile(1 - sl);
+            }
+            default -> {
+                pValue = dist.cdf(-Math.abs(this.t)) * 2;
+                ciLow = t.quantile(sl / 2);
+                ciHigh = t.quantile(1 - sl / 2);
+            }
+        }
     }
 
     @Override

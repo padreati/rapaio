@@ -82,7 +82,7 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
         sol = x0.get().copy();
         solutions.add(sol.copy());
         for (int i = 0; i < maxIt.get(); i++) {
-            DVector p = d1f.get().apply(sol).mult(-1);
+            DVector p = d1f.get().apply(sol).mul(-1);
             double error = p.pnorm(2);
             errors.addDouble(error);
             if (abs(error) < tol.get()) {
@@ -90,7 +90,7 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
                 break;
             }
             double t = lineSearch.get().search(f.get(), d1f.get(), sol, p);
-            sol = sol.copy().add(p.mult(t));
+            sol = sol.copy().add(p.mul(t));
             solutions.add(sol.copy());
         }
         return this;

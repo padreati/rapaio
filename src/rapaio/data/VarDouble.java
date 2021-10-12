@@ -154,10 +154,10 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param values wrapped array of doubles
      * @return new instance of numeric variable
      */
-    public static VarDouble wrapArray(int rows, double... values) {
+    public static VarDouble wrapArray(int size, double... values) {
         VarDouble numeric = new VarDouble(0, 0, 0);
         numeric.data = values;
-        numeric.rows = rows;
+        numeric.rows = size;
         return numeric;
     }
 

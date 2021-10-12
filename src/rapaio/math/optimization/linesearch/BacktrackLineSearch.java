@@ -69,7 +69,7 @@ public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implement
         double xbeta = beta.get();
 
         double t = t0;
-        while (f.apply(x.xpay(t, p, copy())) > fx + xalpha * t * gxp) {
+        while (f.apply(x.addMul(t, p, copy())) > fx + xalpha * t * gxp) {
             t *= xbeta;
         }
         return t;

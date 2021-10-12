@@ -97,7 +97,7 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
                 break;
             }
             double t = lineSearch.get().search(f.get(), d1f.get(), x0.get(), deltaX);
-            sol.add(deltaX.mult(t));
+            sol.add(deltaX.mul(t));
         }
         return this;
     }

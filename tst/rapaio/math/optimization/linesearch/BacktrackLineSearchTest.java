@@ -50,15 +50,15 @@ public class BacktrackLineSearchTest {
         // here we test f(x) = x^2
         // after calculations for steepest descent alpha have a constant value
         RFunction f = (DVector x) -> x.get(0) * x.get(0);
-        RDerivative df = (DVector x) -> x.copy().mult(2.0);
+        RDerivative df = (DVector x) -> x.copy().mul(2.0);
 
         for (int i = 0; i < 1_000; i++) {
             double next = (RandomSource.nextDouble() - 0.5) * 100;
             DVector x0 = DVector.wrap(next);
-            DVector p = df.apply(x0).mult(-1);
+            DVector p = df.apply(x0).mul(-1);
             double t = BacktrackLineSearch.newSearch().search(f, df, x0, p);
             double fx0 = f.apply(x0);
-            double fx1 = f.apply(x0.xpay(t, p, copy()));
+            double fx1 = f.apply(x0.addMul(t, p, copy()));
             assertTrue(fx0 >= fx1);
             assertEquals(0.7, t);
         }
@@ -74,10 +74,10 @@ public class BacktrackLineSearchTest {
         for (int i = 0; i < 1_000; i++) {
             double next = (RandomSource.nextDouble() - 0.5);
             DVector x0 = DVector.wrap(next);
-            DVector p = df.apply(x0).mult(-1);
+            DVector p = df.apply(x0).mul(-1);
             double alpha = BacktrackLineSearch.newSearch().search(f, df, x0, p, 100_000.0);
             double fx0 = f.apply(x0);
-            double fx1 = f.apply(x0.xpay(alpha, p, copy()));
+            double fx1 = f.apply(x0.addMul(alpha, p, copy()));
             assertTrue(fx0 >= fx1);
         }
     }
@@ -104,7 +104,7 @@ public class BacktrackLineSearchTest {
                     .alpha.set(test.alpha)
                     .beta.set(test.beta)
                     .search(test.f, test.d1f, test.x0, test.d, test.t);
-            DVector x1 = test.x0.copy().add(test.d.mult(alpha));
+            DVector x1 = test.x0.copy().add(test.d.mul(alpha));
             assertTrue(x1.deepEquals(test.x1));
         }
 

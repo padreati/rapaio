@@ -24,43 +24,35 @@ package rapaio.math.linear.dense;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.StandardDVectorTest;
 import rapaio.math.linear.VType;
-import rapaio.util.collection.IntArrays;
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/21.
- */
-public class DVectorMapTest extends StandardDVectorTest {
+public class DVectorStrideTest extends StandardDVectorTest {
 
     @Override
     public VType type() {
-        return VType.MAP;
+        return VType.STRIDE;
     }
 
     @Override
-    public DVector generateFill(int size, double fill) {
-        DVector source = DVector.fill(size, fill);
-        return source.map(IntArrays.newSeq(0, source.size()));
+    public DVector generateCopy(double[] values) {
+        return new DVectorStride(0, values.length, 1, values);
     }
 
     @Override
     public DVector generateSeq(int end) {
         double[] base = new double[3 + end * 2];
-        int[] indexes = new int[end];
         for (int i = 0; i < end; i++) {
-            indexes[i] = 3 + i * 2;
             base[3 + i * 2] = i;
         }
-        return new DVectorMap(DVector.wrap(base), indexes);
+        return new DVectorStride(3, end, 2, base);
     }
 
     @Override
-    public DVector generateCopy(double[] values) {
-        DVector source = DVector.wrap(values);
-        return new DVectorMap(source, IntArrays.newSeq(0, source.size()));
+    public DVector generateFill(int size, double fill) {
+        return DVector.fill(VType.STRIDE, size, fill);
     }
 
     @Override
     public String className() {
-        return "DVectorMap";
+        return "DVectorStride";
     }
 }

@@ -81,8 +81,8 @@ public class TTestOneSampleTest {
         assertEquals(Variance.of(x).sdValue(), t3.getSampleSd(), TOL);
         assertEquals(3.0397368307141313, t3.getT(), TOL);
         assertEquals(0.0031143368712397423, t3.pValue(), TOL);
-        assertEquals(4.830175143575739, t3.ciLow(), TOL);
-        assertEquals(5.169824856424261, t3.ciHigh(), TOL);
+        assertEquals(4.869410944346031, t3.ciLow(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, t3.ciHigh(), TOL);
 
         TTestOneSample t4 = TTestOneSample.test(Mean.of(x).value(), x.size(), Variance.of(x).sdValue(), 4.7, 0.1, HTest.Alternative.LESS_THAN);
         assertEquals(4.7, t4.getMu(), TOL);
@@ -96,8 +96,8 @@ public class TTestOneSampleTest {
         assertEquals(Variance.of(x).sdValue(), t4.getSampleSd(), TOL);
         assertEquals(3.0397368307141313, t4.getT(), TOL);
         assertEquals(0.9968856631287603, t4.pValue(), TOL);
-        assertEquals(4.830175143575739, t4.ciLow(), TOL);
-        assertEquals(5.169824856424261, t4.ciHigh(), TOL);
+        assertEquals(Double.NEGATIVE_INFINITY, t4.ciLow(), TOL);
+        assertEquals(5.130589055653969, t4.ciHigh(), TOL);
 
 
         TTestOneSample t5 = TTestOneSample.test(VarDouble.empty(), 4.7, 0.05, HTest.Alternative.TWO_TAILS);
