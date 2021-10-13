@@ -21,6 +21,8 @@
 
 package rapaio.core.distributions;
 
+import static rapaio.math.MathTools.*;
+
 import java.io.Serial;
 import java.util.Arrays;
 
@@ -105,8 +107,8 @@ public class Hypergeometric implements Distribution {
             throw new IllegalArgumentException("x should be an integer since the hypergeometric" +
                     " repartition is a discrete repartion.");
         }
-        int xx = (int) Math.rint(x);
-        if (Math.abs(xx - x) > 1e-30)
+        int xx = (int) rint(x);
+        if (abs(xx - x) > 1e-30)
             return 0.0;
         if ((xx > m) || (xx > k) || (xx < k - n))
             return 0.0;
@@ -145,7 +147,7 @@ public class Hypergeometric implements Distribution {
             }
         }
         for (int i = 0; i < m + n + 1; i++) {
-            int min = Math.min(up[i], down[i]);
+            int min = min(up[i], down[i]);
             if (min > 0) {
                 up[i] -= min;
                 down[i] -= min;
@@ -168,7 +170,7 @@ public class Hypergeometric implements Distribution {
             if (posUp > m + n) {
                 while (posDown < m + n + 1) {
                     if (down[posDown] > 0)
-                        prod /= Math.pow(posDown, down[posDown]);
+                        prod /= pow(posDown, down[posDown]);
                     posDown++;
                 }
                 break;
@@ -176,7 +178,7 @@ public class Hypergeometric implements Distribution {
             if (posDown > m + n) {
                 while (posUp < m + n + 1) {
                     if (up[posUp] > 0)
-                        prod *= Math.pow(posUp, up[posUp]);
+                        prod *= pow(posUp, up[posUp]);
                     posUp++;
                 }
                 break;
@@ -232,12 +234,12 @@ public class Hypergeometric implements Distribution {
     }
 
     @Override
-    public double min() {
+    public double minValue() {
         return 0;
     }
 
     @Override
-    public double max() {
+    public double maxValue() {
         return m;
     }
 
@@ -248,7 +250,7 @@ public class Hypergeometric implements Distribution {
 
     @Override
     public double mode() {
-        return Math.floor((double) (k + 1) * (m + 1) / (n + m + 2));
+        return floor((double) (k + 1) * (m + 1) / (n + m + 2));
     }
 
     /*
@@ -258,12 +260,12 @@ public class Hypergeometric implements Distribution {
      */
     @Override
     public double var() {
-        return (n * m * k * (n + m - k)) / (Math.pow((n + m), 2) * (n + m - 1));
+        return (n * m * k * (n + m - k)) / (pow((n + m), 2) * (n + m - 1));
     }
 
     @Override
     public double skewness() {
-        return Math.sqrt((double) (n + m - 1) / (n * m * k * (n + m - k)));
+        return sqrt((double) (n + m - 1) / (n * m * k * (n + m - k)));
     }
 
     /*

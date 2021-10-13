@@ -21,11 +21,7 @@
 
 package rapaio.core.distributions;
 
-import static java.lang.Math.exp;
-import static java.lang.Math.log;
-
-import static rapaio.math.MathTools.incompleteGamma;
-import static rapaio.math.MathTools.lnGamma;
+import static rapaio.math.MathTools.*;
 
 import java.io.Serial;
 
@@ -55,9 +51,9 @@ public final class ChiSquare implements Distribution {
             throw new IllegalArgumentException("degrees of freedom parameter must have value greater than zero");
         }
         this.df = df;
-        this.b = Math.sqrt(df - 1.0);
+        this.b = sqrt(df - 1.0);
         double vm1 = -0.6065306597 * (1.0 - 0.25 / (b * b + 1.0));
-        this.vm = Math.max(-b, vm1);
+        this.vm = max(-b, vm1);
         this.vd = 0.6065306597 * (0.7071067812 + b) / (0.5 + b) - vm;
     }
 
@@ -104,7 +100,7 @@ public final class ChiSquare implements Distribution {
             } else {
                 high = mid;
             }
-            if (Math.abs(p - v) < 1e-14) {
+            if (abs(p - v) < 1e-14) {
                 break;
             }
         }
@@ -112,12 +108,12 @@ public final class ChiSquare implements Distribution {
     }
 
     @Override
-    public double min() {
+    public double minValue() {
         return 0;
     }
 
     @Override
-    public double max() {
+    public double maxValue() {
         return Double.POSITIVE_INFINITY;
     }
 
@@ -128,7 +124,7 @@ public final class ChiSquare implements Distribution {
 
     @Override
     public double mode() {
-        return Math.max(0, df - 2);
+        return max(0, df - 2);
     }
 
     @Override
@@ -138,7 +134,7 @@ public final class ChiSquare implements Distribution {
 
     @Override
     public double skewness() {
-        return Math.sqrt(8 / df);
+        return sqrt(8 / df);
     }
 
     @Override
@@ -178,7 +174,7 @@ public final class ChiSquare implements Distribution {
                     return (z * z);
                 if (zz > (1.036961043 / u + 1.4))
                     continue;
-                if (2.0 * Math.log(u) < (-zz * 0.5))
+                if (2.0 * log(u) < (-zz * 0.5))
                     return (z * z);
             }
         } else {
@@ -196,7 +192,7 @@ public final class ChiSquare implements Distribution {
                     return ((z + b) * (z + b));
                 if (zz > (1.036961043 / u + 1.4))
                     continue;
-                if (2.0 * Math.log(u) < (Math.log(1.0 + z / b) * b * b - zz * 0.5 - z * b))
+                if (2.0 * log(u) < (log(1.0 + z / b) * b * b - zz * 0.5 - z * b))
                     return ((z + b) * (z + b));
             }
         }

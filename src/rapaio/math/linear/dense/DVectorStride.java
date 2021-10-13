@@ -28,8 +28,6 @@ import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.VType;
 import rapaio.math.linear.base.AbstractDVector;
-import rapaio.math.linear.option.AlgebraOption;
-import rapaio.math.linear.option.AlgebraOptions;
 
 public class DVectorStride extends AbstractDVector {
 

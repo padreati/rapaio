@@ -91,8 +91,8 @@ public class ChiSquareTest {
 
         assertEquals("ChiSq(df=1)", c.name());
         assertFalse(c.discrete());
-        assertEquals(0, c.min(), TOL);
-        assertEquals(Double.POSITIVE_INFINITY, c.max(), TOL);
+        assertEquals(0, c.minValue(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, c.maxValue(), TOL);
         assertEquals(1, c.mean(), TOL);
         assertEquals(2, c.var(), TOL);
         assertEquals(0, c.mode(), TOL);

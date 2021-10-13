@@ -21,12 +21,7 @@
 
 package rapaio.core.distributions;
 
-import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
-
-import static rapaio.math.MathTools.beta;
-import static rapaio.math.MathTools.betaIncReg;
-import static rapaio.math.MathTools.invBetaIncReg;
+import static rapaio.math.MathTools.*;
 
 import java.io.Serial;
 
@@ -76,12 +71,12 @@ public record Fisher(double df1, double df2) implements Distribution {
     }
 
     @Override
-    public double min() {
+    public double minValue() {
         return 0;
     }
 
     @Override
-    public double max() {
+    public double maxValue() {
         return Double.POSITIVE_INFINITY;
     }
 

@@ -21,9 +21,7 @@
 
 package rapaio.graphics.base;
 
-import static rapaio.math.MathTools.floorMod;
-import static rapaio.math.MathTools.round;
-import static rapaio.math.MathTools.significantDigits;
+import static rapaio.math.MathTools.*;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;

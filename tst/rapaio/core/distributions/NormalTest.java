@@ -89,8 +89,8 @@ public class NormalTest {
     @Test
     void testOtherAspects() {
         Normal normal = Normal.std();
-        assertEquals(Double.NEGATIVE_INFINITY, normal.min(), TOL);
-        assertEquals(Double.POSITIVE_INFINITY, normal.max(), TOL);
+        assertEquals(Double.NEGATIVE_INFINITY, normal.minValue(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, normal.maxValue(), TOL);
         assertEquals(0, normal.mean(), TOL);
         assertEquals(0, normal.mode(), TOL);
         assertEquals(1, normal.var(), TOL);

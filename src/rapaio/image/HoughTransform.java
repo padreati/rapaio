@@ -27,8 +27,7 @@ import static java.lang.Math.floor;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 
-import static rapaio.math.MathTools.HALF_PI;
-import static rapaio.math.MathTools.PI;
+import static rapaio.math.MathTools.*;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;

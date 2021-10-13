@@ -21,20 +21,11 @@
 
 package rapaio.experiment.core.test;
 
-import static rapaio.graphics.Plotter.color;
-import static rapaio.graphics.Plotter.lwd;
-import static rapaio.graphics.Plotter.plot;
-import static rapaio.graphics.Plotter.points;
-import static rapaio.graphics.Plotter.sz;
-
-import java.util.ArrayList;
-import java.util.List;
+import static rapaio.graphics.Plotter.*;
 
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
-import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Plot;
-import rapaio.math.linear.DVector;
 import rapaio.sys.WS;
 
 public class BinomialWilson {

@@ -64,8 +64,8 @@ public class BinomialTest {
 
         Binomial b = Binomial.of(0.2, 120);
         assertTrue(b.discrete());
-        assertEquals(0, b.min(), TOL);
-        assertEquals(120, b.max(), TOL);
+        assertEquals(0, b.minValue(), TOL);
+        assertEquals(120, b.maxValue(), TOL);
         assertEquals(24, b.mean(), TOL);
         assertEquals(24, b.mode(), TOL);
         assertEquals(19.2, b.var(), TOL);

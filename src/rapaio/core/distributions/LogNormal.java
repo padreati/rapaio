@@ -24,25 +24,26 @@ package rapaio.core.distributions;
 import static rapaio.math.MathTools.*;
 import static rapaio.printer.Format.floatFlex;
 
-import java.io.Serial;
+public class LogNormal implements Distribution {
 
-/**
- * Continuous uniform distribution
- *
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
- */
-public record Uniform(double a, double b) implements Distribution {
-
-    public static Uniform of(double a, double b) {
-        return new Uniform(a, b);
+    public static LogNormal of(double mu, double sigma) {
+        return new LogNormal(mu, sigma);
     }
 
-    @Serial
-    private static final long serialVersionUID = -6077483164719205038L;
+    private final double mu;
+    private final double sigma;
+
+    private final double sigma_square;
+
+    private LogNormal(double mu, double sigma) {
+        this.mu = mu;
+        this.sigma = sigma;
+        this.sigma_square = sigma * sigma;
+    }
 
     @Override
     public String name() {
-        return "Uniform(a=" + floatFlex(a) + ",b=" + floatFlex(b) + ")";
+        return "LogNormal(mu=" + floatFlex(mu) + ", sigma=" + floatFlex(sigma) + ")";
     }
 
     @Override
@@ -52,71 +53,66 @@ public record Uniform(double a, double b) implements Distribution {
 
     @Override
     public double pdf(double x) {
-        if (x < a || x > b) {
-            return 0;
-        }
-        if (a == b) {
-            return 1;
-        }
-        return 1 / (b - a);
+        return exp(-pow(log(x) - mu, 2) / (2 * sigma_square)) / (x * sigma * sqrt(DOUBLE_PI));
     }
 
     @Override
     public double cdf(double x) {
-        if (x < a) {
-            return 0;
-        }
-        if (x > b) {
-            return 1;
-        }
-        return (x - a) / (b - a);
+        return (1 + erf((log(x) - mu) / (sigma * SQRT_2))) / 2;
     }
 
     @Override
     public double quantile(double p) {
-        if (p < 0 || p > 1) {
-            throw new IllegalArgumentException("probability value should lie in [0,1] interval");
-        }
-        return a + p * (b - a);
+        return exp(mu + SQRT_2 * sigma * inverf(2 * p - 1));
     }
 
     @Override
     public double minValue() {
-        return a;
-    }
-
-    @Override
-    public double maxValue() {
-        return b;
-    }
-
-    @Override
-    public double mean() {
-        return a + (b - a) / 2.0;
-    }
-
-    @Override
-    public double mode() {
-        return mean();
-    }
-
-    @Override
-    public double var() {
-        return pow(b - a, 2) / 12.0;
-    }
-
-    @Override
-    public double skewness() {
         return 0;
     }
 
     @Override
+    public double maxValue() {
+        return Double.POSITIVE_INFINITY;
+    }
+
+    @Override
+    public double sampleNext() {
+        return exp(Normal.of(mu, sigma).sampleNext());
+    }
+
+    @Override
+    public double mean() {
+        return exp(mu + sigma_square / 2);
+    }
+
+    @Override
+    public double mode() {
+        return exp(mu - sigma_square);
+    }
+
+    @Override
+    public double median() {
+        return exp(mu);
+    }
+
+    @Override
+    public double var() {
+        return exp(2 * mu + sigma_square) * (exp(sigma_square) - 1);
+    }
+
+    @Override
+    public double skewness() {
+        return (exp(sigma_square) + 2) * sqrt(sigma_square - 1);
+    }
+
+    @Override
     public double kurtosis() {
-        return -6.0 / 5.0;
+        return exp(4 * sigma_square) + 2 * exp(3 * sigma_square) + 3 * exp(2 * sigma_square) - 6;
     }
 
     @Override
     public double entropy() {
-        return log(b - a);
+        return log2(sigma * exp(mu + 0.5) * sqrt(2 * PI));
     }
 }

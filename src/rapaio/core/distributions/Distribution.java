@@ -21,6 +21,8 @@
 
 package rapaio.core.distributions;
 
+import static rapaio.math.MathTools.*;
+
 import java.io.Serializable;
 
 import rapaio.core.RandomSource;
@@ -75,14 +77,14 @@ public interface Distribution extends Serializable {
      *
      * @return minimum value, might be -Inf
      */
-    double min();
+    double minValue();
 
     /**
      * Maximum value for which pdf is defined
      *
      * @return maximum value, might be Inf
      */
-    double max();
+    double maxValue();
 
     /**
      * Generates a random value from this distribution
@@ -135,7 +137,7 @@ public interface Distribution extends Serializable {
      * @return standard deviation of the distribution
      */
     default double sd() {
-        return Math.sqrt(var());
+        return sqrt(var());
     }
 
     /**

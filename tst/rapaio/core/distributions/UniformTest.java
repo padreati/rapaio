@@ -41,8 +41,8 @@ public class UniformTest {
         assertFalse(u.discrete());
         assertEquals(0, u.a(), TOL);
         assertEquals(10, u.b(), TOL);
-        assertEquals(0, u.min(), TOL);
-        assertEquals(10, u.max(), TOL);
+        assertEquals(0, u.minValue(), TOL);
+        assertEquals(10, u.maxValue(), TOL);
         assertEquals(5, u.mean(), TOL);
         assertEquals(5, u.mode(), TOL);
         assertEquals(8.333333333333334, u.var(), TOL);

@@ -21,11 +21,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.HALIGN_CENTER;
-import static rapaio.graphics.Plotter.HALIGN_RIGHT;
-import static rapaio.graphics.Plotter.VALIGN_BOTTOM;
-import static rapaio.graphics.Plotter.VALIGN_CENTER;
-import static rapaio.graphics.Plotter.VALIGN_TOP;
+import static rapaio.graphics.Plotter.*;
 
 import java.awt.Font;
 import java.awt.FontMetrics;

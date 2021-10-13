@@ -21,6 +21,8 @@
 
 package rapaio.core.correlation;
 
+import static rapaio.math.MathTools.*;
+
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -74,7 +76,7 @@ public class CorrPearson extends AbstractCorrelation {
     private double compute(Var x, Var y) {
 
         double sum = 0;
-        int len = Math.min(x.size(), y.size());
+        int len = min(x.size(), y.size());
 
         Mapping map = Mapping.wrap(IntStream.range(0, len)
                 .filter(i -> !(x.isMissing(i) || y.isMissing(i)))

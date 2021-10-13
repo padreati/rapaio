@@ -21,12 +21,12 @@
 
 package rapaio.core.distributions;
 
+import static rapaio.math.MathTools.*;
 import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 
 import rapaio.core.RandomSource;
-import rapaio.math.MathTools;
 import rapaio.printer.Format;
 
 /**
@@ -122,8 +122,8 @@ public record Gamma(double alpha, double beta) implements Distribution {
             return 0.0;
         }
         if (alpha == 1.0)
-            return Math.exp(-x / beta) / beta;
-        return Math.exp((alpha - 1.0) * Math.log(x / beta) - x / beta - MathTools.lnGamma(alpha)) / beta;
+            return exp(-x / beta) / beta;
+        return exp((alpha - 1.0) * log(x / beta) - x / beta - lnGamma(alpha)) / beta;
     }
 
     /**
@@ -132,7 +132,7 @@ public record Gamma(double alpha, double beta) implements Distribution {
     public double cdf(double x) {
         if (x < 0.0)
             return 0.0;
-        return MathTools.incompleteGamma(alpha, x / beta);
+        return incompleteGamma(alpha, x / beta);
     }
 
     @Override
@@ -157,7 +157,7 @@ public record Gamma(double alpha, double beta) implements Distribution {
         while (true) {
             double mid = (low + up) / 2;
             double cdf_mid = cdf(mid);
-            double err = Math.abs(up - low);
+            double err = abs(up - low);
             if (err <= 1e-20)
                 return up;
             if (cdf_mid < p) {
@@ -173,12 +173,12 @@ public record Gamma(double alpha, double beta) implements Distribution {
     }
 
     @Override
-    public double min() {
+    public double minValue() {
         return 0;
     }
 
     @Override
-    public double max() {
+    public double maxValue() {
         return Double.POSITIVE_INFINITY;
     }
 
@@ -241,13 +241,13 @@ public record Gamma(double alpha, double beta) implements Distribution {
                 p = b * RandomSource.nextDouble();
                 if (p <= 1.0) {
                     // Step 2. Case gds <= 1
-                    gds = Math.exp(Math.log(p) / a);
-                    if (Math.log(RandomSource.nextDouble()) <= -gds)
+                    gds = exp(Math.log(p) / a);
+                    if (log(RandomSource.nextDouble()) <= -gds)
                         return (gds / beta1);
                 } else {
                     // Step 3. Case gds > 1
-                    gds = -Math.log((b - p) / a);
-                    if (Math.log(RandomSource.nextDouble()) <= ((a - 1.0) * Math.log(gds)))
+                    gds = -log((b - p) / a);
+                    if (log(RandomSource.nextDouble()) <= ((a - 1.0) * log(gds)))
                         return (gds / beta1);
                 }
             }
@@ -255,7 +255,7 @@ public record Gamma(double alpha, double beta) implements Distribution {
             // CASE B: Acceptance complement algorithm gd (gaussian distribution, box muller transformation)
             // Step 1. Preparations
             ss = a - 0.5;
-            s = Math.sqrt(ss);
+            s = sqrt(ss);
             d = 5.656854249 - 12.0 * s;
             // Step 2. Normal deviate
             do {
@@ -263,7 +263,7 @@ public record Gamma(double alpha, double beta) implements Distribution {
                 v2 = 2.0 * RandomSource.nextDouble() - 1.0;
                 v12 = v1 * v1 + v2 * v2;
             } while (v12 > 1.0);
-            t = v1 * Math.sqrt(-2.0 * Math.log(v12) / v12);
+            t = v1 * sqrt(-2.0 * log(v12) / v12);
             x = s + 0.5 * t;
             gds = x * x;
             if (t >= 0.0)
@@ -296,8 +296,8 @@ public record Gamma(double alpha, double beta) implements Distribution {
             }
             if (x > 0.0) { // Step 5. Calculation of q
                 v = t / (s + s); // Step 6.
-                if (Math.abs(v) > 0.25) {
-                    q = q0 - s * t + 0.25 * t * t + (ss + ss) * Math.log(1.0 + v);
+                if (abs(v) > 0.25) {
+                    q = q0 - s * t + 0.25 * t * t + (ss + ss) * log(1.0 + v);
                 } else {
                     q = q0
                             + 0.5
@@ -306,21 +306,21 @@ public record Gamma(double alpha, double beta) implements Distribution {
                             * ((((((((a9 * v + a8) * v + a7) * v + a6) * v + a5) * v + a4) * v + a3) * v + a2) * v + a1)
                             * v;
                 } // Step 7. Quotient acceptance
-                if (Math.log(1.0 - u) <= q)
+                if (log(1.0 - u) <= q)
                     return (gds / beta1);
             }
 
             for (; ; ) { // Step 8. Double exponential deviate t
                 do {
-                    e = -Math.log(RandomSource.nextDouble());
+                    e = -log(RandomSource.nextDouble());
                     u = RandomSource.nextDouble();
                     u = u + u - 1.0;
                     sign_u = (u > 0) ? 1.0 : -1.0;
                     t = b + (e * si) * sign_u;
                 } while (t <= -0.71874483771719); // Step 9. Rejection of t
                 v = t / (s + s); // Step 10. New q(t)
-                if (Math.abs(v) > 0.25) {
-                    q = q0 - s * t + 0.25 * t * t + (ss + ss) * Math.log(1.0 + v);
+                if (abs(v) > 0.25) {
+                    q = q0 - s * t + 0.25 * t * t + (ss + ss) * log(1.0 + v);
                 } else {
                     q = q0
                             + 0.5
@@ -332,11 +332,11 @@ public record Gamma(double alpha, double beta) implements Distribution {
                 if (q <= 0.0)
                     continue; // Step 11.
                 if (q > 0.5) {
-                    w = Math.exp(q) - 1.0;
+                    w = exp(q) - 1.0;
                 } else {
                     w = ((((((e7 * q + e6) * q + e5) * q + e4) * q + e3) * q + e2) * q + e1) * q;
                 } // Step 12. Hat acceptance
-                if (c * u * sign_u <= w * Math.exp(e - 0.5 * t * t)) {
+                if (c * u * sign_u <= w * exp(e - 0.5 * t * t)) {
                     x = s + 0.5 * t;
                     return (x * x / beta1);
                 }
@@ -361,7 +361,7 @@ public record Gamma(double alpha, double beta) implements Distribution {
 
     @Override
     public double skewness() {
-        return 2 / Math.sqrt(beta);
+        return 2 / sqrt(beta);
     }
 
     @Override

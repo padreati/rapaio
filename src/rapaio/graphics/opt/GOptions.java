@@ -21,8 +21,7 @@
 
 package rapaio.graphics.opt;
 
-import static rapaio.graphics.Plotter.HALIGN_LEFT;
-import static rapaio.graphics.Plotter.VALIGN_TOP;
+import static rapaio.graphics.Plotter.*;
 
 import java.awt.Color;
 import java.awt.Font;

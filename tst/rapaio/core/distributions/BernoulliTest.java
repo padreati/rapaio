@@ -84,8 +84,8 @@ public class BernoulliTest {
         assertEquals(1, b90.quantile(1), TOL);
         assertEquals(1, b90.quantile(1.1), TOL);
 
-        assertEquals(0, b90.min(), TOL);
-        assertEquals(1, b90.max(), TOL);
+        assertEquals(0, b90.minValue(), TOL);
+        assertEquals(1, b90.maxValue(), TOL);
         assertEquals(0.9, b90.mean(), TOL);
         assertEquals(0, b10.mode(), TOL);
         assertEquals(1, b90.mode(), TOL);

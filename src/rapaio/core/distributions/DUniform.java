@@ -21,6 +21,8 @@
 
 package rapaio.core.distributions;
 
+import static rapaio.math.MathTools.*;
+
 import java.io.Serial;
 
 /**
@@ -65,7 +67,7 @@ public class DUniform implements Distribution {
 
     @Override
     public double pdf(double x) {
-        double rint = Math.rint(x);
+        double rint = rint(x);
         if (Double.isFinite(x) && x == rint) {
             if (x < a || x > b) {
                 return 0;
@@ -83,7 +85,7 @@ public class DUniform implements Distribution {
         if (x > b) {
             return 1;
         }
-        return (Math.floor(x) - a + 1) / n;
+        return (floor(x) - a + 1) / n;
     }
 
     @Override
@@ -96,18 +98,18 @@ public class DUniform implements Distribution {
         }
         double v = a + p * n;
         int vi = (int) v;
-        if (Math.abs(v - Math.floor(v)) < Double.MIN_VALUE)
+        if (abs(v - floor(v)) < Double.MIN_VALUE)
             return vi - 1;
         return vi;
     }
 
     @Override
-    public double min() {
+    public double minValue() {
         return a;
     }
 
     @Override
-    public double max() {
+    public double maxValue() {
         return b;
     }
 
@@ -139,6 +141,6 @@ public class DUniform implements Distribution {
 
     @Override
     public double entropy() {
-        return Math.log(n);
+        return log(n);
     }
 }

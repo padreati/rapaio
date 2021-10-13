@@ -21,7 +21,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.bins;
+import static rapaio.graphics.Plotter.*;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;

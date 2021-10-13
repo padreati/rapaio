@@ -167,8 +167,8 @@ public class StudentTTest {
         assertEquals(2, t.mean(), TOL);
         assertEquals(2, t.mode(), TOL);
         assertEquals(11.25, t.var(), TOL);
-        assertEquals(Double.NEGATIVE_INFINITY, t.min(), TOL);
-        assertEquals(Double.POSITIVE_INFINITY, t.max(), TOL);
+        assertEquals(Double.NEGATIVE_INFINITY, t.minValue(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, t.maxValue(), TOL);
         assertEquals(0, t.skewness(), TOL);
         assertEquals(1, t.kurtosis(), TOL);
 

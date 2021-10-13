@@ -21,6 +21,7 @@
 
 package rapaio.core.tools;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 
 import java.io.Serial;
@@ -375,7 +376,7 @@ public class DensityVector<T> implements Printable, Serializable {
                 return false;
         }
         for (int i = 0; i < values.length; i++) {
-            if (Math.abs(values[i] - o.values[i]) > 1e-30) {
+            if (abs(values[i] - o.values[i]) > 1e-30) {
                 return false;
             }
         }

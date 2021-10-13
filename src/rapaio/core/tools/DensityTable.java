@@ -21,7 +21,7 @@
 
 package rapaio.core.tools;
 
-import static rapaio.math.MathTools.log2;
+import static rapaio.math.MathTools.*;
 import static rapaio.util.collection.DoubleArrays.nanSum;
 
 import java.io.Serial;
@@ -74,7 +74,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         var rowIndex = IndexLabel.fromVarLevels(withMissing, rowVar);
         var colIndex = IndexLabel.fromVarLevels(withMissing, colVar);
         var dt = new DensityTable<>(rowIndex, colIndex);
-        for (int i = 0; i < Math.min(rowVar.size(), colVar.size()); i++) {
+        for (int i = 0; i < min(rowVar.size(), colVar.size()); i++) {
             if (rowIndex.containsValue(rowVar, i) && colIndex.containsValue(colVar, i)) {
                 dt.increment(rowIndex.getIndex(rowVar, i), colIndex.getIndex(colVar, i), 1);
             }
@@ -95,7 +95,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         var rowIndex = IndexLabel.fromVarLevels(withMissing, rowVar);
         var colIndex = IndexLabel.fromVarLevels(withMissing, colVar);
         var dt = new DensityTable<>(rowIndex, colIndex);
-        for (int i = 0; i < Math.min(rowVar.size(), colVar.size()); i++) {
+        for (int i = 0; i < min(rowVar.size(), colVar.size()); i++) {
             if (rowIndex.containsValue(rowVar, i) && colIndex.containsValue(colVar, i)) {
                 dt.increment(rowIndex.getIndex(rowVar, i), colIndex.getIndex(colVar, i), weights.getDouble(i));
             }
@@ -145,7 +145,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         var colIndex = IndexLabel.fromVarLevels(withMissing, colVar);
         var dt = new DensityTable<>(rowIndex, colIndex);
 
-        for (int i = 0; i < Math.min(rowVar.size(), colVar.size()); i++) {
+        for (int i = 0; i < min(rowVar.size(), colVar.size()); i++) {
             int rowId = rowVar.getLabel(i).equals(rowLevel) ? 0 : 1;
             if (withMissing) {
                 if (rowVar.isMissing(i)) {
@@ -409,7 +409,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
 
         double gini = 1.0;
         for (double straightTotal : straightTotals) {
-            gini -= Math.pow(straightTotal / total, 2);
+            gini -= pow(straightTotal / total, 2);
         }
 
         for (int i = 0; i < splitByTotals.length; i++) {
@@ -417,7 +417,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
             for (int j = 0; j < straightTotals.length; j++) {
                 if (splitByTotals[i] > 0) {
                     var value = splitByRows ? values[i][j] : values[j][i];
-                    gini_k -= Math.pow(value / splitByTotals[i], 2);
+                    gini_k -= pow(value / splitByTotals[i], 2);
                 }
             }
             gini -= gini_k * splitByTotals[i] / total;

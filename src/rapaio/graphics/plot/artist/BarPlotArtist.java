@@ -21,10 +21,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.SORT_ASC;
-import static rapaio.graphics.Plotter.SORT_DESC;
-import static rapaio.graphics.Plotter.SORT_NONE;
-import static rapaio.graphics.Plotter.fill;
+import static rapaio.graphics.Plotter.*;
 
 import java.awt.Graphics2D;
 import java.io.Serial;

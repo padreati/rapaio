@@ -21,6 +21,8 @@
 
 package rapaio.core.distributions;
 
+import static rapaio.math.MathTools.*;
+
 import java.io.Serial;
 
 import rapaio.core.RandomSource;
@@ -81,12 +83,12 @@ public final class Bernoulli implements Distribution {
     }
 
     @Override
-    public double min() {
+    public double minValue() {
         return 0;
     }
 
     @Override
-    public double max() {
+    public double maxValue() {
         return 1;
     }
 
@@ -107,7 +109,7 @@ public final class Bernoulli implements Distribution {
 
     @Override
     public double skewness() {
-        return 1 / Math.sqrt((1 - prob) * prob);
+        return 1 / sqrt((1 - prob) * prob);
     }
 
     @Override
@@ -118,7 +120,7 @@ public final class Bernoulli implements Distribution {
 
     @Override
     public double entropy() {
-        return -prob * Math.log(prob) - (1 - prob) * Math.log(1 - prob);
+        return -prob * log(prob) - (1 - prob) * log(1 - prob);
     }
 
     @Override

@@ -58,8 +58,8 @@ public class HypergeometricTest {
         assertEquals(1, hg1.cdf(Double.POSITIVE_INFINITY), TOL);
         assertEquals(1, hg1.cdf(32), TOL);
 
-        assertEquals(0, hg1.min(), TOL);
-        assertEquals(20, hg1.max(), TOL);
+        assertEquals(0, hg1.minValue(), TOL);
+        assertEquals(20, hg1.maxValue(), TOL);
         assertEquals(15, hg1.mean(), TOL);
         assertEquals(15, hg1.mode(), TOL);
         assertEquals(1.9230769230769231, hg1.var(), TOL);

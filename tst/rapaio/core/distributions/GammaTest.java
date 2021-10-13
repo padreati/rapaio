@@ -94,8 +94,8 @@ public class GammaTest {
 
         assertFalse(g.discrete());
         assertEquals("Gamma(alpha=0.5, beta=0.5)", g.name());
-        assertEquals(0, g.min(), TOL);
-        assertEquals(Double.POSITIVE_INFINITY, g.max(), TOL);
+        assertEquals(0, g.minValue(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, g.maxValue(), TOL);
         assertEquals(Double.NaN, g.pdf(-1), TOL);
         assertEquals(0, g.cdf(-1), TOL);
         assertEquals(Double.NaN, g.mode(), TOL);

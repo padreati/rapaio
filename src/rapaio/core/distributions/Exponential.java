@@ -21,6 +21,8 @@
 
 package rapaio.core.distributions;
 
+import static rapaio.math.MathTools.*;
+
 import java.io.Serial;
 
 import rapaio.printer.Format;
@@ -52,7 +54,7 @@ public record Exponential(double lambda) implements Distribution {
         if (x < 0) {
             return 0;
         }
-        return lambda * Math.exp(-lambda * x);
+        return lambda * exp(-lambda * x);
     }
 
     @Override
@@ -60,7 +62,7 @@ public record Exponential(double lambda) implements Distribution {
         if (x < 0) {
             return 0;
         }
-        return 1 - Math.exp(-lambda * x);
+        return 1 - exp(-lambda * x);
     }
 
     @Override
@@ -71,16 +73,16 @@ public record Exponential(double lambda) implements Distribution {
         if (p == 1) {
             return Double.POSITIVE_INFINITY;
         }
-        return -Math.log(1 - p) / lambda;
+        return -log(1 - p) / lambda;
     }
 
     @Override
-    public double min() {
+    public double minValue() {
         return 0;
     }
 
     @Override
-    public double max() {
+    public double maxValue() {
         return Double.POSITIVE_INFINITY;
     }
 
@@ -96,7 +98,7 @@ public record Exponential(double lambda) implements Distribution {
 
     @Override
     public double median() {
-        return Math.log(2) / lambda;
+        return LN_2 / lambda;
     }
 
     @Override
@@ -116,6 +118,6 @@ public record Exponential(double lambda) implements Distribution {
 
     @Override
     public double entropy() {
-        return 1 - Math.log(lambda);
+        return 1 - log(lambda);
     }
 }

@@ -61,8 +61,8 @@ public class PoissonTest {
         assertEquals(0, pois1.cdf(-1), TOL);
         assertEquals(Double.POSITIVE_INFINITY, pois1.quantile(1), TOL);
 
-        assertEquals(0, pois1.min(), TOL);
-        assertEquals(Double.POSITIVE_INFINITY, pois1.max(), TOL);
+        assertEquals(0, pois1.minValue(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, pois1.maxValue(), TOL);
         assertEquals(1, pois1.mean(), TOL);
         assertEquals(1, pois1.mode(), TOL);
         assertEquals(1, pois1.var(), TOL);

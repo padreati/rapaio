@@ -21,6 +21,7 @@
 
 package rapaio.core.distributions;
 
+import static rapaio.math.MathTools.*;
 import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
@@ -85,7 +86,7 @@ public class Normal implements Distribution {
 
     @Override
     public double pdf(double x) {
-        return 1 / Math.sqrt(2 * Math.PI * var) * Math.exp(-Math.pow(x - mu, 2) / (2 * var));
+        return 1 / sqrt(2 * PI * var) * exp(-pow(x - mu, 2) / (2 * var));
     }
 
     @Override
@@ -121,7 +122,7 @@ public class Normal implements Distribution {
         double result;
 
         if (0 < p && p < p_low) {
-            double q = Math.sqrt(-2 * Math.log(p));
+            double q = sqrt(-2 * log(p));
             result = (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5])
                     / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
         } else if (p_low <= p && p <= p_high) {
@@ -131,7 +132,7 @@ public class Normal implements Distribution {
                     / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
         } else//upper region
         {
-            double q = Math.sqrt(-2 * Math.log(1 - p));
+            double q = sqrt(-2 * log(1 - p));
             result = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5])
                     / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
         }
@@ -139,10 +140,10 @@ public class Normal implements Distribution {
         //Refining step
 
         double e = cdf(result, 0, 1) - p;
-        double u = e * Math.sqrt(2 * Math.PI) * Math.exp(result * result / 2);
+        double u = e * sqrt(2 * PI) * exp(result * result / 2);
         result = result - u / (1 + result * u / 2);
 
-        return result * Math.sqrt(var) + mu;
+        return result * sqrt(var) + mu;
 
     }
 
@@ -153,7 +154,7 @@ public class Normal implements Distribution {
          * densities for some z score
          */
         double s = x, t = 0, b = x, q = x * x, i = 1;
-        while (Math.abs(s - t) > 0) {
+        while (abs(s - t) > 0) {
             s = (t = s) + (b *= q / (i += 2));
         }
         if (s == Double.NEGATIVE_INFINITY) {
@@ -162,16 +163,16 @@ public class Normal implements Distribution {
         if (s == Double.POSITIVE_INFINITY) {
             return 1;
         }
-        return 0.5 + s * Math.exp(-.5 * q - 0.91893853320467274178);
+        return 0.5 + s * exp(-.5 * q - 0.91893853320467274178);
     }
 
     @Override
-    public double min() {
+    public double minValue() {
         return Double.NEGATIVE_INFINITY;
     }
 
     @Override
-    public double max() {
+    public double maxValue() {
         return Double.POSITIVE_INFINITY;
     }
 
@@ -202,6 +203,6 @@ public class Normal implements Distribution {
 
     @Override
     public double entropy() {
-        return Math.log(2 * Math.PI * Math.E * var);
+        return log(2 * PI * E * var);
     }
 }

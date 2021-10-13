@@ -24,8 +24,7 @@ package rapaio.ml.classifier.boost;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import static rapaio.graphics.Plotter.fill;
-import static rapaio.graphics.Plotter.lines;
+import static rapaio.graphics.Plotter.*;
 
 import java.io.IOException;
 

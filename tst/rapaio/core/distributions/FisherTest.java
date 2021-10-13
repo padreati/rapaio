@@ -41,8 +41,8 @@ public class FisherTest {
 
         assertFalse(f.discrete());
         assertEquals("Fisher(4,7)", f.name());
-        assertEquals(0, f.min(), TOL);
-        assertEquals(Double.POSITIVE_INFINITY, f.max(), TOL);
+        assertEquals(0, f.minValue(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, f.maxValue(), TOL);
         assertEquals(1.4, f.mean(), TOL);
         assertEquals(.7, f.mode(), TOL);
         assertEquals(2.94, f.var(), TOL);

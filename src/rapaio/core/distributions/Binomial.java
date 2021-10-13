@@ -21,14 +21,7 @@
 
 package rapaio.core.distributions;
 
-import static java.lang.Math.floor;
-import static java.lang.Math.log;
-import static java.lang.Math.rint;
-import static java.lang.Math.sqrt;
-
-import static rapaio.math.MathTools.DBL_EPSILON;
-import static rapaio.math.MathTools.betaIncReg;
-import static rapaio.math.MathTools.logBinomial;
+import static rapaio.math.MathTools.*;
 
 import java.io.Serial;
 
@@ -75,9 +68,9 @@ public final class Binomial implements Distribution {
 
     @Override
     public double pdf(double x) {
-        if (x < min() || x > max()) return 0;
-        if (Math.abs(Math.rint(x) - x) < 1e-12)
-            return Math.exp(logBinomial(x, n, p));
+        if (x < minValue() || x > maxValue()) return 0;
+        if (abs(rint(x) - x) < 1e-12)
+            return exp(logBinomial(x, n, p));
         return 0.0;
     }
 
@@ -138,7 +131,7 @@ public final class Binomial implements Distribution {
         do {
             oldincr = incr;
             y = doSearch(y, zp, probability, incr);
-            incr = Math.max(1, floor(incr / 100));
+            incr = max(1, floor(incr / 100));
         } while (oldincr > 1 && incr > n * 1e-20);
         return y;
     }
@@ -150,12 +143,12 @@ public final class Binomial implements Distribution {
                 double newz = cdf(y - incr);
                 if (y == 0 || newz < probability)
                     return y;
-                y = Math.max(0, y - incr);
+                y = max(0, y - incr);
                 z[0] = newz;
             }
         } else {        /* search to the right */
             while (true) {
-                y = Math.min(y + incr, n);
+                y = min(y + incr, n);
                 if (y == n || (z[0] = cdf(y)) >= probability)
                     return y;
             }
@@ -163,12 +156,12 @@ public final class Binomial implements Distribution {
     }
 
     @Override
-    public double min() {
+    public double minValue() {
         return 0;
     }
 
     @Override
-    public double max() {
+    public double maxValue() {
         return n;
     }
 
@@ -213,6 +206,6 @@ public final class Binomial implements Distribution {
      */
     @Override
     public double entropy() {
-        return log(2 * Math.PI * Math.E * n * p * (1 - p)) / (2.0 * Math.log(2));
+        return log(2 * PI * Math.E * n * p * (1 - p)) / (2.0 * log(2));
     }
 }

@@ -21,9 +21,7 @@
 
 package rapaio.core.distributions;
 
-import static rapaio.math.MathTools.betaIncReg;
-import static rapaio.math.MathTools.invBetaIncReg;
-import static rapaio.math.MathTools.lnGamma;
+import static rapaio.math.MathTools.*;
 
 import java.io.Serial;
 
@@ -76,13 +74,13 @@ public final class StudentT implements Distribution {
 
     @Override
     public double pdf(double t) {
-        return Math.exp(lnGamma((df + 1) / 2) - lnGamma(df / 2) - Math.log(df * Math.PI) / 2 - Math.log(sigma)
-                - (df + 1) / 2 * Math.log(1 + Math.pow((t - mu) / sigma, 2) / df));
+        return exp(lnGamma((df + 1) / 2) - lnGamma(df / 2) - log(df * PI) / 2 - log(sigma)
+                - (df + 1) / 2 * log(1 + pow((t - mu) / sigma, 2) / df));
     }
 
     @Override
     public double cdf(double t) {
-        double x = df / (df + Math.pow((t - mu) / sigma, 2));
+        double x = df / (df + pow((t - mu) / sigma, 2));
         double p = betaIncReg(x, df / 2, 0.5) / 2;
         if (t > mu) {
             return 1 - p;
@@ -99,8 +97,8 @@ public final class StudentT implements Distribution {
         if (p + 1e-20 >= 0.5 && p - 1e-20 <= 0.5) {
             return mu;
         }
-        double x = invBetaIncReg(2 * Math.min(p, 1 - p), df / 2, 0.5);
-        x = sigma * Math.sqrt(df * (1 - x) / x);
+        double x = invBetaIncReg(2 * min(p, 1 - p), df / 2, 0.5);
+        x = sigma * sqrt(df * (1 - x) / x);
         if (p >= 0.5) {
             return mu + x;
         } else {
@@ -109,12 +107,12 @@ public final class StudentT implements Distribution {
     }
 
     @Override
-    public double min() {
+    public double minValue() {
         return Double.NEGATIVE_INFINITY;
     }
 
     @Override
-    public double max() {
+    public double maxValue() {
         return Double.POSITIVE_INFINITY;
     }
 

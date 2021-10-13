@@ -42,8 +42,8 @@ public class DUniformTest {
         assertEquals(1, du.a(), TOL);
         assertEquals(6, du.b(), TOL);
         assertEquals(3.5, du.mean(), TOL);
-        assertEquals(1, du.min(), TOL);
-        assertEquals(6, du.max(), TOL);
+        assertEquals(1, du.minValue(), TOL);
+        assertEquals(6, du.maxValue(), TOL);
         assertEquals(Double.NaN, du.mode(), TOL);
         assertEquals(2.9166666666666665, du.var(), TOL);
         assertEquals(0, du.skewness(), TOL);

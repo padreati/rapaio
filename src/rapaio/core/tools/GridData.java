@@ -21,6 +21,8 @@
 
 package rapaio.core.tools;
 
+import static rapaio.math.MathTools.*;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.function.BiFunction;
@@ -52,8 +54,8 @@ public class GridData implements Serializable {
         double yMax = Maximum.of(df.rvar(yName)).value();
 
         if (margin > 0) {
-            double xDelta = Math.abs(xMax - xMin);
-            double yDelta = Math.abs(yMax - yMin);
+            double xDelta = abs(xMax - xMin);
+            double yDelta = abs(yMax - yMin);
 
             xMin -= margin * xDelta;
             xMax += margin * xDelta;

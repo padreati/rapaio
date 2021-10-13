@@ -24,7 +24,7 @@ package rapaio.ml.classifier.bayes.nb;
 import static java.lang.Math.exp;
 import static java.lang.Math.log;
 
-import static rapaio.math.MathTools.lnGamma;
+import static rapaio.math.MathTools.*;
 
 import java.io.Serial;
 import java.util.Arrays;

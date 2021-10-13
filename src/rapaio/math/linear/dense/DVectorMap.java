@@ -22,18 +22,15 @@
 package rapaio.math.linear.dense;
 
 import java.io.Serial;
-import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.VType;
 import rapaio.math.linear.base.AbstractDVector;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
-import rapaio.util.function.Double2DoubleFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/21.

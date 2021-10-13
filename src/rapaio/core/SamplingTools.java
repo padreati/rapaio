@@ -21,6 +21,8 @@
 
 package rapaio.core;
 
+import static rapaio.math.MathTools.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -160,7 +162,7 @@ public final class SamplingTools {
         // fill heap base
         for (int i = 0; i < sampleSize; i++) {
             heap[i + len / 2] = i;
-            k[i] = Math.pow(RandomSource.nextDouble(), 1. / freq[i]);
+            k[i] = pow(RandomSource.nextDouble(), 1. / freq[i]);
             result[i] = i;
         }
 
@@ -185,7 +187,7 @@ public final class SamplingTools {
         int pos = sampleSize;
         while (pos < freq.length) {
             double r = RandomSource.nextDouble();
-            double xw = Math.log(r) / Math.log(k[heap[1]]);
+            double xw = log(r) / log(k[heap[1]]);
 
             double acc = 0;
             while (pos < freq.length) {
@@ -199,9 +201,9 @@ public final class SamplingTools {
             if (pos == freq.length) break;
 
             // min replaced with the new selected value
-            double tw = Math.pow(k[heap[1]], freq[pos]);
+            double tw = pow(k[heap[1]], freq[pos]);
             double r2 = RandomSource.nextDouble() * (1. - tw) + tw;
-            double ki = Math.pow(r2, 1 / freq[pos]);
+            double ki = pow(r2, 1 / freq[pos]);
 
             k[heap[1]] = ki;
             result[heap[1]] = pos++;

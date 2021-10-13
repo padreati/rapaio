@@ -21,9 +21,10 @@
 
 package rapaio.core.distributions;
 
+import static rapaio.math.MathTools.*;
+
 import java.io.Serial;
 
-import rapaio.math.MathTools;
 import rapaio.printer.Format;
 
 /**
@@ -65,17 +66,17 @@ public record Poisson(double lambda) implements Distribution {
     public double pdf(double x) {
         if (x < 0)
             return 0.0;
-        double xx = Math.rint(x);
+        double xx = rint(x);
         if (xx != x)
             return 0;
-        return MathTools.pdfPois(x, lambda);
+        return pdfPois(x, lambda);
     }
 
     @Override
     public double cdf(double x) {
         if (x < 0)
             return 0.0;
-        return MathTools.incompleteGammaComplement(Math.floor(x + 1), lambda);
+        return incompleteGammaComplement(floor(x + 1), lambda);
     }
 
     @Override
@@ -97,7 +98,7 @@ public record Poisson(double lambda) implements Distribution {
             cdf_up = cdf(up);
         }
         while (true) {
-            int mid = Math.floorDiv(low + up, 2);
+            int mid = floorDiv(low + up, 2);
             if (mid == low)
                 return up;
             double cdf_mid = cdf(mid);
@@ -110,12 +111,12 @@ public record Poisson(double lambda) implements Distribution {
     }
 
     @Override
-    public double min() {
+    public double minValue() {
         return 0;
     }
 
     @Override
-    public double max() {
+    public double maxValue() {
         return Double.POSITIVE_INFINITY;
     }
 
@@ -126,7 +127,7 @@ public record Poisson(double lambda) implements Distribution {
 
     @Override
     public double mode() {
-        return Math.floor(lambda);
+        return floor(lambda);
     }
 
     @Override
@@ -136,7 +137,7 @@ public record Poisson(double lambda) implements Distribution {
 
     @Override
     public double skewness() {
-        return 1.0 / Math.sqrt(lambda);
+        return 1.0 / sqrt(lambda);
     }
 
     @Override
