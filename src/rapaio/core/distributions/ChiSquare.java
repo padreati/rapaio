@@ -78,7 +78,7 @@ public final class ChiSquare implements Distribution {
     public double cdf(double x) {
         if (x < 0.0)
             return 0.0;
-        return incompleteGamma(df / 2.0, x / 2.0);
+        return incGamma(df / 2.0, x / 2.0);
     }
 
     @Override

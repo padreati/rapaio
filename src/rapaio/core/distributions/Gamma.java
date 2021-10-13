@@ -68,10 +68,7 @@ import rapaio.printer.Format;
  * <p>
  * J.H. Ahrens, U. Dieter (1974): Computer methods for sampling from gamma,
  * beta, Poisson and binomial distributions, Computing 12, 223-246.
- * <p>
- * and
- * <p>
- * J.H. Ahrens, U. Dieter (1982): Generating gamma variates by a modified
+ * and J.H. Ahrens, U. Dieter (1982): Generating gamma variates by a modified
  * rejection technique, Communications of the ACM 25, 47-54.
  *
  * @author wolfgang.hoschek@cern.ch
@@ -132,7 +129,7 @@ public record Gamma(double alpha, double beta) implements Distribution {
     public double cdf(double x) {
         if (x < 0.0)
             return 0.0;
-        return incompleteGamma(alpha, x / beta);
+        return incGamma(alpha, x / beta);
     }
 
     @Override
@@ -187,14 +184,15 @@ public record Gamma(double alpha, double beta) implements Distribution {
         /* **********************************************************************
          * * Gamma Distribution - Acceptance Rejection combined with Acceptance Complement * *
          * ***************************************************************** *
-         * FUNCTION: - gds samples a random number from the standard * gamma
-         * distribution with parameter a > 0. * Acceptance Rejection gs for a <
-         * 1 , * Acceptance Complement gd for a >= 1 . * REFERENCES: - J.H.
-         * Ahrens, U. Dieter (1974): Computer methods for sampling from gamma,
+         * FUNCTION: - gds samples a random number from the standard
+         * gamma distribution with parameter a > 0.
+         * Acceptance Rejection gs for a < 1 ,
+         * Acceptance Complement gd for a >= 1 .
+         * REFERENCES: - J.H. Ahrens, U. Dieter (1974): Computer methods for sampling from gamma,
          * beta, Poisson and binomial distributions, Computing 12, 223-246. *
          * - J.H. Ahrens, U. Dieter (1982): Generating gamma variates by a
          * modified rejection technique, Communications of the ACM 25, 47-54.
-         * * SUBPROGRAMS: - drand(seed) ... (0,1)-Uniform generator with
+         * SUBPROGRAMS: - drand(seed) ... (0,1)-Uniform generator with
          * unsigned long integer *seed * - NORMAL(seed) ... Normal generator
          * N(0,1). * *
          **********************************************************************/

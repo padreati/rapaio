@@ -53,8 +53,8 @@ public class MathToolsTest {
 
         assertEquals(0.3632574910905676, invBetaIncReg(0.3, 2, 2), tol);
 
-        assertEquals(0.9999999567157739, incompleteGamma(2, 20), tol);
-        assertEquals(0.4081672865401445, incompleteGamma(2, 1.4), tol);
+        assertEquals(0.9999999567157739, incGamma(2, 20), tol);
+        assertEquals(0.4081672865401445, incGamma(2, 1.4), tol);
 
         assertEquals(-1.537159819202354, logBinomial(3, 10, 0.4), tol);
         assertEquals(0.5, beta(1, 2), tol);

@@ -34,42 +34,24 @@ import rapaio.core.distributions.Normal;
  */
 public class MathTools {
 
-    /**
-     * sqrt(2)
-     */
+     // sqrt(2)
     public static final double SQRT_2 =
             1.41421356237309504880168872420969807856967187537694807317667973799073247846210703885038753432764157273501384623091229702;
-
-    /**
-     * 1/sqrt(2)
-     */
+     // 1/sqrt(2)
     public static final double INV_SQRT_2 =
             0.70710678118654752440084436210484903928483593768847403658833986899536623923105351942519376716382078636750692311545614851;
-    /**
-     * sqrt(32)
-     */
-    public static final double SQRT_32 =
-            5.65685424949238019520675489683879231427868750150779229270671895196292991384842815540155013731056629094005538492364918809;
-
-    /**
-     * ln(2)
-     */
+     // ln(2)
     public static final double LN_2 =
             0.69314718055994530941723212145817656807550013436025525412068000949339362196969471560586332699641868754200148102057068573;
-
-    /**
-     * ln(10)
-     */
+     // ln(10)
     public static final double LN_10 =
             2.30258509299404568401799145468436420760110148862877297603332790096757260967735248023599720508959829834196778404228624863;
-
-    /**
-     * log_10(2)
-     */
+    // log_10(2)
     public static final double LOG10_2 =
             0.30102999566398119521373889472449302676818988146210854131042746112710818927442450948692725211818617204068447719143099537;
 
-    public static final double E = Math.E;
+    public static final double E =
+            2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992;
 
     public static final double PI =
             3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664;
@@ -80,33 +62,35 @@ public class MathTools {
     public static final double LN_PI =
             1.14472988584940017414342735135305871164729481291531157151362307147213776988482607978362327027548970770200981222869798915;
 
-    /* 1/pi */
+    // 1/pi
     public static final double INV_PI =
             0.31830988618379067153776752674502872406891929148091289749533468811779359526845307018022760553250617191214568545351591607;
 
-    /* pi/2 */
+    // pi/2
     public static final double HALF_PI =
             1.57079632679489661923132169163975144209858469968755291048747229615390820314310449931401741267105853399107404325664115332;
 
     public static final double LN_2PI =
             1.83787706640934548356065947281123527972279494727556682563430308096553139185452079538948659727190839524401129324926867489;
 
-    /* sqrt(pi),  1/sqrt(2pi),  sqrt(2/pi) : */
+    // sqrt(pi)
     public static final double SQRT_PI =
             1.77245385090551602729816748334114518279754945612238712821380778985291128459103218137495065673854466541622682362428257066;
+    // 1/sqrt(2pi)
     public static final double INV_SQRT_2PI =
             0.39894228040143267793994605993438186847585863116493465766592582967065792589930183850125233390730693643030255886263518268;
+    // sqrt(2/pi)
     public static final double M_SQRT_2dPI =
             0.79788456080286535587989211986876373695171726232986931533185165934131585179860367700250466781461387286060511772527036537;
 
-    /* log(sqrt(pi)) = log(pi)/2 : */
+    // ln(sqrt(pi)) = ln(pi)/2
     public static final double LN_SQRT_PI =
             0.57236494292470008707171367567652935582364740645765578575681153573606888494241303989181163513774485385100490611434899457;
-    /* log(sqrt(2*pi)) = log(2*pi)/2 : */
+    // ln(sqrt(2*pi)) = ln(2*pi)/2
     public static final double LN_SQRT_2PI =
             0.91893853320467274178032973640561763986139747363778341281715154048276569592726039769474329863595419762200564662463433744;
-    /* log(sqrt(pi/2)) = log(pi/2)/2 : */
-    public static final double HALF_LN_SQRT_HALF_PI =
+    // log(sqrt(pi/2)) = log(pi/2)/2
+    public static final double LN_SQRT_HALF_PI =
             0.22579135264472743236309761494744107178589733927752815869647153098937207395756568208887997163953551008000416560406365171;
 
     /* constants taken from float.h for gcc 2.90.29 for Linux 2.0 i386  */
@@ -117,7 +101,7 @@ public class MathTools {
     public static final double DBL_EPSILON = 2.2204460492503131e-16;
     public static final double DBL_MIN = 2.22507385850720138309e-308;
     public static final double DBL_MAX = 1.797693134862315708145e+308;
-    public static final double SQRT_DBL_EPSILON = Math.sqrt(DBL_EPSILON);
+    public static final double SQRT_DBL_EPSILON = sqrt(DBL_EPSILON);
 
     /*
      * machine constants
@@ -214,7 +198,7 @@ public class MathTools {
     /**
      * 1/2 * log(2 &#960;).
      */
-    private static final double HALF_LOG_2_PI = 0.5 * LN_2PI;
+    private static final double HALF_LN_2PI = 0.5 * LN_2PI;
     /**
      * exact Stirling expansion error for certain values.
      */
@@ -294,8 +278,8 @@ public class MathTools {
      *
      * The method lgamma() is adapted from FDLIBM 5.3
      * (http://www.netlib.org/fdlibm/), which comes with this copyright notice:
-     * ==================================================== Copyright (C) 1993
-     * by Sun Microsystems, Inc. All rights reserved.
+     * ====================================================
+     * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
      *
      * Developed at SunSoft, a Sun Microsystems, Inc. business. Permission to
      * use, copy, modify, and distribute this software is freely granted,
@@ -325,10 +309,8 @@ public class MathTools {
         if ((ix | lx) == 0 || hx < 0) {
             return Double.NaN;
         }
-        if (ix < 0x3b900000) {    /*
-         * |x|<2**-70, return -log(|x|)
-         */
-
+        if (ix < 0x3b900000) {
+            /* |x|<2**-70, return -log(|x|) */
             return -Math.log(x);
         }
 
@@ -686,7 +668,7 @@ public class MathTools {
      * @param a the parameter of the gamma distribution.
      * @param x the integration end point.
      */
-    static public double incompleteGamma(double a, double x) throws ArithmeticException {
+    static public double incGamma(double a, double x) throws ArithmeticException {
 
         double ans, ax, c, r;
 
@@ -695,7 +677,7 @@ public class MathTools {
         }
 
         if (x > 1.0 && x > a) {
-            return 1.0 - incompleteGammaComplement(a, x);
+            return 1.0 - incGammaC(a, x);
         }
 
         /* Compute x**a * exp(-x) / gamma(a) */
@@ -726,7 +708,7 @@ public class MathTools {
      * @param a the parameter of the gamma distribution.
      * @param x the integration start point.
      */
-    static public double incompleteGammaComplement(double a, double x) throws ArithmeticException {
+    static public double incGammaC(double a, double x) throws ArithmeticException {
         final double big = 4.503599627370496e15;
 
         double ans, ax, c, yc, r, t, y, z;
@@ -737,7 +719,7 @@ public class MathTools {
         }
 
         if (x < 1.0 || x < a) {
-            return 1.0 - incompleteGamma(a, x);
+            return 1.0 - incGamma(a, x);
         }
 
         ax = a * Math.log(x) - x - lnGamma(a);
@@ -807,7 +789,7 @@ public class MathTools {
         if (z < 15.0) {
             double z2 = 2.0 * z;
             if (Math.abs(Math.floor(z2) - z2) > 0) {
-                ret = lnGamma(z + 1.0) - (z + 0.5) * Math.log(z) + z - HALF_LOG_2_PI;
+                ret = lnGamma(z + 1.0) - (z + 0.5) * Math.log(z) + z - HALF_LN_2PI;
             } else {
                 ret = EXACT_STIRLING_ERRORS[(int) z2];
             }
@@ -984,7 +966,7 @@ public class MathTools {
      * @return true if equals, false otherwise
      */
     public static boolean eq(double a, double b) {
-        return (a - b < SMALL_ERR) && (b - a < SMALL_ERR);
+        return eq(a, b, SMALL_ERR);
     }
 
     public static boolean eq(double a, double b, double err) {

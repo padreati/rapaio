@@ -76,7 +76,7 @@ public record Poisson(double lambda) implements Distribution {
     public double cdf(double x) {
         if (x < 0)
             return 0.0;
-        return incompleteGammaComplement(floor(x + 1), lambda);
+        return incGammaC(floor(x + 1), lambda);
     }
 
     @Override
