@@ -41,16 +41,13 @@ public class MultiParam<K, T, S extends ParamSet<S>> implements Param<Map<K, T>,
     private final TreeMap<K, T> defaultValue;
     private final TreeMap<K, T> valueMap;
     private final String name;
-    private final String description;
     private final SFunction<Map<K, T>, Boolean> validator;
 
-    public MultiParam(S params, Map<K, T> defaultValue, String name, String description,
-                      SFunction<Map<K, T>, Boolean> validator) {
+    public MultiParam(S params, Map<K, T> defaultValue, String name, SFunction<Map<K, T>, Boolean> validator) {
         this.params = params;
         this.defaultValue = new TreeMap<>(defaultValue);
         this.valueMap = new TreeMap<>(defaultValue);
         this.name = name;
-        this.description = description;
         this.validator = validator;
 
         params.registerParameter(this);
@@ -130,11 +127,6 @@ public class MultiParam<K, T, S extends ParamSet<S>> implements Param<Map<K, T>,
     @Override
     public String name() {
         return name;
-    }
-
-    @Override
-    public String description() {
-        return description;
     }
 
     @Override

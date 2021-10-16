@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
@@ -42,6 +43,11 @@ import rapaio.data.filter.VStandardize;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class VarTest {
+
+    @BeforeEach
+    void beforeEach() {
+        RandomSource.setSeed(42);
+    }
 
     @Test
     void testDictionary() {

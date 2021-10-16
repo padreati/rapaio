@@ -43,16 +43,14 @@ public class MultiListParam<K, T, S extends ParamSet<S>> implements Param<Map<K,
     private final TreeMap<K, List<T>> defaultValue;
     private final TreeMap<K, List<T>> valueMap;
     private final String name;
-    private final String description;
     private final SFunction<Map<K, List<T>>, Boolean> validator;
 
-    public MultiListParam(S params, Map<K, List<T>> defaultValue, String name, String description,
+    public MultiListParam(S params, Map<K, List<T>> defaultValue, String name,
                           SFunction<Map<K, List<T>>, Boolean> validator) {
         this.params = params;
         this.defaultValue = new TreeMap<>(defaultValue);
         this.valueMap = new TreeMap<>(defaultValue);
         this.name = name;
-        this.description = description;
         this.validator = validator;
 
         params.registerParameter(this);
@@ -145,11 +143,6 @@ public class MultiListParam<K, T, S extends ParamSet<S>> implements Param<Map<K,
     @Override
     public String name() {
         return name;
-    }
-
-    @Override
-    public String description() {
-        return description;
     }
 
     @Override

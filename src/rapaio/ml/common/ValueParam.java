@@ -38,20 +38,18 @@ public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
     protected final S params;
     protected final T defaultValue;
     protected final String name;
-    protected final String description;
     protected T value;
     protected final SFunction<T, Boolean> validator;
 
-    public ValueParam(S params, T defaultValue, String name, String description) {
-        this(params, defaultValue, name, description, Objects::nonNull);
+    public ValueParam(S params, T defaultValue, String name) {
+        this(params, defaultValue, name, Objects::nonNull);
     }
 
-    public ValueParam(S params, T defaultValue, String name, String description, SFunction<T, Boolean> validator) {
+    public ValueParam(S params, T defaultValue, String name, SFunction<T, Boolean> validator) {
         this.params = params;
         this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.name = name;
-        this.description = description;
         this.validator = validator;
 
         params.registerParameter(this);
@@ -97,11 +95,6 @@ public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
     @Override
     public String name() {
         return name;
-    }
-
-    @Override
-    public String description() {
-        return description;
     }
 
     @Override

@@ -44,23 +44,29 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
     @Serial
     private static final long serialVersionUID = -1351523770434554322L;
 
-    public final ValueParam<Double, BinaryLogisticIRLS> eps = new ValueParam<>(this,
-            1e-20, "eps", "eps");
+    /**
+     * Threshold value used to assess convergence of a solution
+     */
+    public final ValueParam<Double, BinaryLogisticIRLS> eps = new ValueParam<>(this, 1e-20, "eps");
 
-    public final ValueParam<Integer, BinaryLogisticIRLS> maxIter = new ValueParam<>(this,
-            10, "maxIter", "maxIter");
+    /**
+     * Maximum number of iterations
+     */
+    public final ValueParam<Integer, BinaryLogisticIRLS> maxIter = new ValueParam<>(this, 10, "maxIter");
 
-    public final ValueParam<Double, BinaryLogisticIRLS> lambda = new ValueParam<>(this,
-            0.0, "lambda", "lambda");
+    /**
+     * L2 regularization penalty
+     */
+    public final ValueParam<Double, BinaryLogisticIRLS> lambda = new ValueParam<>(this, 0.0, "lambda");
 
-    public final ValueParam<DMatrix, BinaryLogisticIRLS> x = new ValueParam<>(this,
-            null, "x", "initial value");
+    public final ValueParam<DMatrix, BinaryLogisticIRLS> x = new ValueParam<>(this, null, "x");
 
-    public final ValueParam<DVector, BinaryLogisticIRLS> y = new ValueParam<>(this,
-            null, "y", "y");
+    public final ValueParam<DVector, BinaryLogisticIRLS> y = new ValueParam<>(this, null, "y");
 
-    public final ValueParam<DVector, BinaryLogisticIRLS> w0 = new ValueParam<>(this,
-            null, "w0", "w0");
+    /**
+     * Initial weights
+     */
+    public final ValueParam<DVector, BinaryLogisticIRLS> w0 = new ValueParam<>(this,null, "w0");
 
     public record Result(List<Double> nlls, List<DVector> ws, boolean converged) {
 

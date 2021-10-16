@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.tree;
+package rapaio.ml.supervised.boost;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;

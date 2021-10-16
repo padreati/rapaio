@@ -50,12 +50,16 @@ public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implement
     // 0.1 (which corresponds to a very crude search) and 0.8 (which corresponds to a less crude search)
     public static final double DEFAULT_BETA = 0.7;
 
+    /**
+     * Alpha parameter which corresponds to how much gain is is enough for a good fit.
+     */
     public final ValueParam<Double, BacktrackLineSearch> alpha = new ValueParam<>(this,
-            DEFAULT_ALPHA, "alpha", "Alpha parameter which corresponds to how much gain is is enough for a good fit.",
-            value -> Double.isFinite(value) && value > 0 && value < 0.5);
+            DEFAULT_ALPHA, "alpha", v -> Double.isFinite(v) && v > 0 && v < 0.5);
+    /**
+     * Beta parameter which corresponds with the backtrack shrinking factor for each search iteration.
+     */
     public final ValueParam<Double, BacktrackLineSearch> beta = new ValueParam<>(this,
-            DEFAULT_BETA, "beta", "Beta parameter which corresponds with the backtrack shrinking factor for " +
-            "each search iteration.", value -> Double.isFinite(value) && value > 0 && value < 1);
+            DEFAULT_BETA, "beta", value -> Double.isFinite(value) && value > 0 && value < 1);
 
     private BacktrackLineSearch() {
     }

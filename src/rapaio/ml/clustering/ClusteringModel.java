@@ -35,6 +35,7 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
+import rapaio.util.function.SConsumer;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/31/20.
@@ -51,15 +52,13 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
      * the runs represents the number of sub-models.
      */
     @SuppressWarnings("unchecked")
-    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1_000,
-            "runs",
-            "Number of iterations for iterative iterations or number of sub ensembles.",
-            x -> x > 0
-    );
+    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1_000, "runs", x -> x > 0);
 
+    /**
+     * Running hook
+     */
     @SuppressWarnings("unchecked")
-    public final ValueParam<Consumer<H>, M> runningHook = new ValueParam<>((M) this, (Consumer<H> & Serializable) h -> {},
-            "runningHook", "Running hook");
+    public final ValueParam<SConsumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {},"runningHook");
 
     protected String[] inputNames;
     protected VarType[] inputTypes;

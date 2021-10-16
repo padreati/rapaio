@@ -70,12 +70,12 @@ open module rapaio {
     exports rapaio.ml.supervised.linear.impl;
     exports rapaio.ml.supervised.bayes;
     exports rapaio.ml.supervised.bayes.nb;
+    exports rapaio.ml.supervised.boost;
     exports rapaio.ml.supervised.svm;
     exports rapaio.ml.supervised.rule;
     exports rapaio.ml.supervised.rule.onerule;
     exports rapaio.ml.supervised.tree;
     exports rapaio.ml.supervised.tree.ctree;
-    exports rapaio.ml.supervised.boost;
     exports rapaio.ml.supervised.ensemble;
     exports rapaio.ml.supervised.simple;
     exports rapaio.ml.supervised.tree.rtree;

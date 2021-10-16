@@ -37,6 +37,7 @@ import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.supervised.RegressionHookInfo;
 import rapaio.ml.supervised.RegressionResult;
+import rapaio.ml.supervised.boost.GBTRtree;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 

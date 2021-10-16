@@ -73,26 +73,40 @@ public class ClassifierEvaluation extends ParamSet<ClassifierEvaluation> {
                 .metrics.set(metrics);
     }
 
-    public final ValueParam<ClassifierModel, ClassifierEvaluation> model = new ValueParam<>(this,
-            null, "model", "Classification model.");
+    /**
+     * Classification model.
+     */
+    public final ValueParam<ClassifierModel<?, ?, ?>, ClassifierEvaluation> model = new ValueParam<>(this, null, "model");
 
-    public final ValueParam<Frame, ClassifierEvaluation> data = new ValueParam<>(this,
-            null, "df", "Data frame");
+    /**
+     * Data frame
+     */
+    public final ValueParam<Frame, ClassifierEvaluation> data = new ValueParam<>(this, null, "df");
 
-    public final ValueParam<Var, ClassifierEvaluation> weights = new ValueParam<>(this,
-            null, "weights", "Weights");
+    /**
+     * Instance weights
+     */
+    public final ValueParam<Var, ClassifierEvaluation> weights = new ValueParam<>(this,null, "weights");
 
-    public final ValueParam<String, ClassifierEvaluation> targetName = new ValueParam<>(this,
-            null, "target", "Target variable name");
+    /**
+     * Target variable name
+     */
+    public final ValueParam<String, ClassifierEvaluation> targetName = new ValueParam<>(this,null, "target");
 
-    public final ValueParam<SplitStrategy, ClassifierEvaluation> splitStrategy = new ValueParam<>(this,
-            new KFold(10), "splitStrategy", "Split strategy used to obtain train and validation data sets.");
+    /**
+     * Split strategy used to obtain train and validation data sets.
+     */
+    public final ValueParam<SplitStrategy, ClassifierEvaluation> splitStrategy = new ValueParam<>(this,new KFold(10), "splitStrategy");
 
-    public final ValueParam<Integer, ClassifierEvaluation> threads = new ValueParam<>(this,
-            1, "threads", "Number of threads used for evaluation.");
+    /**
+     * Number of threads used for evaluation.
+     */
+    public final ValueParam<Integer, ClassifierEvaluation> threads = new ValueParam<>(this,1, "threads");
 
-    public final ListParam<ClassifierMetric, ClassifierEvaluation> metrics = new ListParam<>(this,
-            List.of(Accuracy.newMetric()), "metrics", "Metrics used at evaluation time.", (in, out) -> true);
+    /**
+     * Metrics used at evaluation time.
+     */
+    public final ListParam<ClassifierMetric, ClassifierEvaluation> metrics = new ListParam<>(this,List.of(Accuracy.newMetric()), "metrics", (in, out) -> true);
 
     public ClassifierEvaluationResult run() {
         ExecutorService executorService = Executors.newFixedThreadPool(threads.get());

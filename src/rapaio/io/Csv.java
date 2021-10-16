@@ -70,7 +70,8 @@ public class Csv extends ParamSet<Csv> {
         return new Csv();
     }
 
-    private static final VarType[] DEFAULT_TYPES = new VarType[]{VarType.BINARY, VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING};
+    private static final VarType[] DEFAULT_TYPES =
+            new VarType[] {VarType.BINARY, VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING};
 
     private Csv() {
     }
@@ -79,54 +80,74 @@ public class Csv extends ParamSet<Csv> {
      * Configures white space trimming for field values. If the white space trimming is enabled,
      * the field values are trimmed at start and end of white char values.
      */
-    public final ValueParam<Boolean, Csv> stripSpaces = new ValueParam<>(this, true,
-            "trimSpaces", "If true the original value from file is stripped");
+    public final ValueParam<Boolean, Csv> stripSpaces = new ValueParam<>(this, true, "stripSpaces");
+
     /**
-     * Configure the Csv utility to consider a header or not. If the {@code hasHeader} parameter
-     * is true the header feature is on, otherwise not.
+     * Specifies if the first row is considered header which describes column names.
      */
-    public final ValueParam<Boolean, Csv> header = new ValueParam<>(this, true,
-            "header", "Specifies if the first row contains column names");
-    public final ValueParam<Boolean, Csv> quotes = new ValueParam<>(this, false,
-            "quotes", "Specifies if the values are quoted, trimmed at read and added at write");
+    public final ValueParam<Boolean, Csv> header = new ValueParam<>(this, true, "header");
+
     /**
-     * Configures field character separator.
+     * Specifies if the values are quoted. If enabled quote characters are trimmed at read and added at write time.
      */
-    public final ValueParam<Character, Csv> separatorChar = new ValueParam<>(this, ',',
-            "separatorChar", "Character used to separate row values");
+    public final ValueParam<Boolean, Csv> quotes = new ValueParam<>(this, false, "quotes");
+
     /**
-     * If double quotes (\") character is used to enclose the field values.
-     * If this feature is turned on, the values are discarded of eventual first and last characters
-     * if those characters are double quotes. This is useful if the separator char is used inside
-     * string field values, for example.
+     * Character used to separate field values.
      */
-    public final ValueParam<Character, Csv> escapeChar = new ValueParam<>(this, '\"',
-            "escapeChar", "Escape character");
-    public final MultiListParam<VarType, String, Csv> types = new MultiListParam<>(this, new HashMap<>(),
-            "types", "Specific type fields which overrides the automatic detection", Objects::nonNull);
-    public final ListParam<String, Csv> naValues = new ListParam<>(this, Arrays.asList("?", "", " ", "na", "N/A", "NaN"),
-            "naValues", "Values identified as missing value placeholders", (in, out) -> true);
-    public final ListParam<VarType, Csv> defaultTypes = new ListParam<>(this, List.of(VarType.BINARY, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING),
-            "defaultTypes", "List of default types to be tried at automatic detection", (in, out) -> true);
+    public final ValueParam<Character, Csv> separatorChar = new ValueParam<>(this, ',', "separatorChar");
+
     /**
-     * Specifies the first row number to be collected from csv file. By default this value is 0,
+     * Escape character used. If this feature is turned on, the escape chars are discarded ar read time.
+     * This is useful if the separator char is used inside string field values, for example.
+     */
+    public final ValueParam<Character, Csv> escapeChar = new ValueParam<>(this, '\"', "escapeChar");
+
+    /**
+     * Specific type fields which overrides the automatic type field detection
+     */
+    public final MultiListParam<VarType, String, Csv> types = new MultiListParam<>(this, new HashMap<>(), "types", Objects::nonNull);
+
+    /**
+     * Values used to identify a missing value placeholders.
+     */
+    public final ListParam<String, Csv> naValues =
+            new ListParam<>(this, Arrays.asList("?", "", " ", "na", "N/A", "NaN"), "naValues", (in, out) -> true);
+
+    /**
+     * List of automated field types to be tried in the given order during automatic field type detection
+     */
+    public final ListParam<VarType, Csv> defaultTypes =
+            new ListParam<>(this, List.of(VarType.BINARY, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING), "defaultTypes",
+                    (in, out) -> true);
+    /**
+     * Specifies the first row number to be collected from csv file. By default, this value is 0,
      * which means it will collect starting from the first row. If the value is greater than 0
      * it will skip the first {@code startRow-1} rows.
      */
-    public final ValueParam<Integer, Csv> startRow = new ValueParam<>(this, 0,
-            "startRow", "Start row of the row intervals to be read");
+    public final ValueParam<Integer, Csv> startRow = new ValueParam<>(this, 0, "startRow");
+
     /**
-     * Specifies the last row number to be collected from csv file. By default this is value
+     * Specifies the last row number to be collected from csv file. By default, this is value
      * is {@code Integer.MAX_VALUE}, which means all rows from file.
      */
-    public final ValueParam<Integer, Csv> endRow = new ValueParam<>(this, Integer.MAX_VALUE,
-            "endRow", "Last row from row intervals to be read");
-    public final ValueParam<IntRule, Csv> skipRows = new ValueParam<>(this, IntRule.all().negate(),
-            "skipRows", "Skip rows predicate used to filter rows to be read");
-    public final ValueParam<IntRule, Csv> skipCols = new ValueParam<>(this, row -> false,
-            "skipCols", "Skip rows predicate used to filter columns to be read");
-    public final ValueParam<Frame, Csv> template = new ValueParam<>(this, null,
-            "template", "Optional frame templated used to define variable names and type for reading", obj -> true);
+    public final ValueParam<Integer, Csv> endRow = new ValueParam<>(this, Integer.MAX_VALUE, "endRow");
+
+    /**
+     * Skip rows predicate used to filter rows to be read. All row indexes matched by this predicate will not be read.
+     */
+    public final ValueParam<IntRule, Csv> skipRows = new ValueParam<>(this, IntRule.all().negate(), "skipRows");
+
+    /**
+     * Skip columns predicate used to filter columns to be read. All column indexes matched by this predicate will not be read.
+     */
+    public final ValueParam<IntRule, Csv> skipCols = new ValueParam<>(this, row -> false, "skipCols");
+
+    /**
+     * Optional frame templated used to define variable names and type for reading. This overrides auto detection of field names and
+     * field types.
+     */
+    public final ValueParam<Frame, Csv> template = new ValueParam<>(this, null, "template", obj -> true);
 
     public Frame read(File file) {
         try {
@@ -242,7 +263,9 @@ public class Csv extends ParamSet<Csv> {
                     rows++;
                     continue;
                 }
-                if (rows == endRow.get()) break;
+                if (rows == endRow.get()) {
+                    break;
+                }
                 List<String> row = parseLine(line);
                 rows++;
                 int len = Math.max(row.size(), names.size());
@@ -480,7 +503,9 @@ public class Csv extends ParamSet<Csv> {
                     // find current default type position
                     int pos = 0;
                     for (int i = 0; i < parent.defaultTypes.get().size(); i++) {
-                        if (!parent.defaultTypes.get().get(i).equals(var.type())) continue;
+                        if (!parent.defaultTypes.get().get(i).equals(var.type())) {
+                            continue;
+                        }
                         pos = i + 1;
                         break;
                     }
@@ -489,10 +514,12 @@ public class Csv extends ParamSet<Csv> {
                     for (int i = pos; i < parent.defaultTypes.get().size(); i++) {
                         try {
                             var = parent.defaultTypes.get().get(i).newInstance();
-                            if (text != null && text.size() > 0)
+                            if (text != null && text.size() > 0) {
                                 text.stream().forEach(s -> var.addLabel(s.getLabel()));
-                            if (i == parent.defaultTypes.get().size() - 1)
+                            }
+                            if (i == parent.defaultTypes.get().size() - 1) {
                                 text = null;
+                            }
                             break;
                         } catch (Exception th) {
                             if (i == parent.defaultTypes.get().size() - 1) {

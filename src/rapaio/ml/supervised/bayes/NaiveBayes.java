@@ -65,13 +65,16 @@ public class NaiveBayes extends ClassifierModel<NaiveBayes, ClassifierResult, Cl
 
     // algorithm parameters
 
-    public final ValueParam<Prior, NaiveBayes> prior = new ValueParam<>(this, new PriorMLE(),
-            "prior",
-            "Prior maximum likelihood estimator used");
+    /**
+     * rior maximum likelihood estimator
+     */
+    public final ValueParam<Prior, NaiveBayes> prior = new ValueParam<>(this, new PriorMLE(), "prior");
 
+    /**
+     * Naive base estimators
+     */
     public final ListParam<Estimator, NaiveBayes> estimators = new ListParam<>(this, List.of(),
             "estimators",
-            "Naive base estimators",
             (existentValues, newValues) -> {
                 Set<String> varNames = new HashSet<>();
                 for (Estimator e : existentValues) {

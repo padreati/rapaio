@@ -48,19 +48,13 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
     @Serial
     private static final long serialVersionUID = 6285470727505415422L;
 
-    public final ValueParam<Double, CoordinateDescentSolver> tol = new ValueParam<>(this, 1e-10,
-            "tol", "Tolerance on errors for determining convergence");
-    public final ValueParam<Integer, CoordinateDescentSolver> maxIt = new ValueParam<>(this, 100,
-            "maxIt", "Maximum number of iterations");
-    public final ValueParam<LineSearch, CoordinateDescentSolver> lineSearch = new ValueParam<>(this,
-            BacktrackLineSearch.newSearch(), "lineSearch", "Line search algorithm");
-
-    public final ValueParam<RFunction, CoordinateDescentSolver> f = new ValueParam<>(this,
-            null, "f", "function to be optimized");
-    public final ValueParam<RDerivative, CoordinateDescentSolver> d1f = new ValueParam<>(this,
-            null, "d1f", "function's derivative");
-    public final ValueParam<DVector, CoordinateDescentSolver> x0 = new ValueParam<>(this,
-            null, "x0", "initial value");
+    public final ValueParam<Double, CoordinateDescentSolver> tol = new ValueParam<>(this, 1e-10, "tol");
+    public final ValueParam<Integer, CoordinateDescentSolver> maxIt = new ValueParam<>(this, 100, "maxIt");
+    public final ValueParam<LineSearch, CoordinateDescentSolver> lineSearch =
+            new ValueParam<>(this, BacktrackLineSearch.newSearch(), "lineSearch");
+    public final ValueParam<RFunction, CoordinateDescentSolver> f = new ValueParam<>(this, null, "f");
+    public final ValueParam<RDerivative, CoordinateDescentSolver> d1f = new ValueParam<>(this, null, "d1f");
+    public final ValueParam<DVector, CoordinateDescentSolver> x0 = new ValueParam<>(this, null, "x0");
 
     private DVector sol;
 
@@ -104,9 +98,7 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("solution: ").append(sol.toString()).append("\n");
-        return sb.toString();
+        return "solution: " + sol.toString() + "\n";
     }
 
     public List<DVector> solutions() {

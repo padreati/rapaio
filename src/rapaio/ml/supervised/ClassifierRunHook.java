@@ -35,38 +35,39 @@ import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.eval.metric.ClassifierMetric;
 import rapaio.printer.Format;
+import rapaio.util.function.SConsumer;
 
 /**
  * Utility class for following progress while fitting a classifier during runs.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/20.
  */
-public class ClassifierRunHook extends ParamSet<ClassifierRunHook> implements Consumer<ClassifierHookInfo> {
+public class ClassifierRunHook extends ParamSet<ClassifierRunHook> implements SConsumer<ClassifierHookInfo> {
 
     @Serial
     private static final long serialVersionUID = 7165160125378670196L;
 
     private final static List<ClassifierMetric> DEFAULT_METRICS = List.of();
 
-    public final ValueParam<Integer, ClassifierRunHook> skipStep = new ValueParam<>(this, 5,
-            "skipStep",
-            "Skip step",
-            Objects::nonNull);
+    /**
+     * Skip step
+     */
+    public final ValueParam<Integer, ClassifierRunHook> skipStep = new ValueParam<>(this, 5, "skipStep", Objects::nonNull);
 
-    public final ValueParam<Frame, ClassifierRunHook> train = new ValueParam<>(this, null,
-            "train",
-            "Train data set",
-            x -> true);
+    /**
+     * Train data set
+     */
+    public final ValueParam<Frame, ClassifierRunHook> train = new ValueParam<>(this, null, "train", x -> true);
 
-    public final ValueParam<Frame, ClassifierRunHook> test = new ValueParam<>(this, null,
-            "test",
-            "Test data set",
-            x -> true);
+    /**
+     * Test data set
+     */
+    public final ValueParam<Frame, ClassifierRunHook> test = new ValueParam<>(this, null, "test", x -> true);
 
-    public final ListParam<ClassifierMetric, ClassifierRunHook> metrics = new ListParam<>(this, List.of(),
-            "metrics",
-            "Metrics",
-            (m1, m2) -> true);
+    /**
+     * Metrics used to measure performance
+     */
+    public final ListParam<ClassifierMetric, ClassifierRunHook> metrics = new ListParam<>(this, List.of(), "metrics", (m1, m2) -> true);
 
     private final VarInt runs = VarInt.empty().name("runs");
     private final LinkedHashMap<String, VarDouble> trainScores = new LinkedHashMap<>();

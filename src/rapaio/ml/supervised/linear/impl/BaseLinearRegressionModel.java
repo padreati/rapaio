@@ -50,10 +50,10 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
     @Serial
     private static final long serialVersionUID = -3722395862627404126L;
 
-    public final ValueParam<Boolean, M> intercept = new ValueParam<>((M) this, true,
-            "intercept",
-            "Configures the model to add an intercept term or not",
-            Objects::nonNull);
+    /**
+     * Configures the model to add an intercept term or not
+     */
+    public final ValueParam<Boolean, M> intercept = new ValueParam<>((M) this, true, "intercept", Objects::nonNull);
 
     protected DMatrix beta;
 

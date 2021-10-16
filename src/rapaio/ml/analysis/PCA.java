@@ -57,16 +57,25 @@ public class PCA extends ParamSet<PCA> implements Printable {
     private static final long serialVersionUID = 6441166473576114983L;
     private static final Logger logger = Logger.getLogger(PCA.class.getName());
 
-    public final ValueParam<Double, PCA> eps = new ValueParam<>(this, 1e-100,
-            "eps", "Fitting tolerance");
-    public final ValueParam<Integer, PCA> maxRuns = new ValueParam<>(this, 2_000,
-            "maxRuns", "Maximum number of iterations for fitting procedure", m -> m != null && m > 0);
+    /**
+     * Value used to assess the convergence of a solution
+     */
+    public final ValueParam<Double, PCA> eps = new ValueParam<>(this, 1e-100, "eps");
 
-    public final ValueParam<Boolean, PCA> center = new ValueParam<>(this, true,
-            "scaling", "Flag which specifies if input scaling is applied.");
+    /**
+     * Maximum number of iterations for fitting procedure
+     */
+    public final ValueParam<Integer, PCA> maxRuns = new ValueParam<>(this, 2_000, "maxRuns", m -> m != null && m > 0);
 
-    public final ValueParam<Boolean, PCA> standardize = new ValueParam<>(this, false,
-            "standardize", "Divide input by computed sample standard deviation.");
+    /**
+     * Flag which specifies if input scaling is applied.
+     */
+    public final ValueParam<Boolean, PCA> center = new ValueParam<>(this, true, "scaling");
+
+    /**
+     * Divide input by computed sample standard deviation.
+     */
+    public final ValueParam<Boolean, PCA> standardize = new ValueParam<>(this, false, "standardize");
 
     private int inputRows;
     private int inputVars;

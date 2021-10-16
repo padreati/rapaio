@@ -57,7 +57,5 @@ public interface Param<T, S extends ParamSet<S>> extends Serializable {
 
     String name();
 
-    String description();
-
     boolean validate(T value);
 }

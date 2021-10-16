@@ -27,6 +27,7 @@ import java.io.Serial;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Set;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
@@ -66,28 +67,42 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, Clas
     @Serial
     private static final long serialVersionUID = 1208515184777030598L;
 
-    public final ValueParam<Kernel, BinarySMO> kernel = new ValueParam<>(this, new PolyKernel(1),
-            "kernel", "Kernel which maps inputs to feature space");
+    /**
+     * Kernel which maps inputs to feature space
+     */
+    public final ValueParam<Kernel, BinarySMO> kernel = new ValueParam<>(this, new PolyKernel(1), "kernel");
 
+    /**
+     * Maximum number of iterations
+     */
     public final ValueParam<Integer, BinarySMO> maxRuns = new ValueParam<>(this, 1_000,
-            "maxRuns", "Maximum number of iterations", x -> x != null && x > 0);
+            "maxRuns", x -> x != null && x > 0);
 
-    public final ValueParam<Double, BinarySMO> c = new ValueParam<>(this, 1.0,
-            "c", "Complexity parameter", Double::isFinite);
+    /**
+     * Complexity parameter
+     */
+    public final ValueParam<Double, BinarySMO> c = new ValueParam<>(this, 1.0, "c", Double::isFinite);
 
-    public final ValueParam<Double, BinarySMO> eps = new ValueParam<>(this, 1e-12,
-            "eps", "Tolerance threshold used to measure progress and considering numerical convergence.",
-            Double::isFinite);
+    /**
+     * Tolerance threshold used to measure progress and considering numerical convergence.
+     */
+    public final ValueParam<Double, BinarySMO> eps = new ValueParam<>(this, 1e-12, "eps", Double::isFinite);
 
-    public final ValueParam<String, BinarySMO> firstLabel = new ValueParam<>(this, "?",
-            "firstLabel", "First target label.");
+    /**
+     * First target label.
+     */
+    public final ValueParam<String, BinarySMO> firstLabel = new ValueParam<>(this, "?", "firstLabel");
 
-    public final ValueParam<String, BinarySMO> secondLabel = new ValueParam<>(this, "?",
-            "secondLabel", "Second target label, used when oneVsAll is false");
+    /**
+     * Second target label, used when oneVsAll is false
+     */
+    public final ValueParam<String, BinarySMO> secondLabel = new ValueParam<>(this, "?", "secondLabel");
 
+    /**
+     * Solver for problem with valid values: Keerthi1 and Keerthi2
+     */
     public final ValueParam<String, BinarySMO> solver = new ValueParam<>(this, "Keerthi2",
-            "solver", "Solver for problem with valid values: Keerthi1 and Keerthi2",
-            x -> "Keerthi1".equals(x) || "Keerthi2".equals(x));
+            "solver", x -> Set.of("Keerthi1", "Keerthi2").contains(x));
 
     private static final double eps_delta = 1e-200;
 
@@ -193,8 +208,9 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, Clas
                 int offset = RandomSource.nextInt(train.rowCount());
                 for (int i = offset; i < train.rowCount() + offset; i++) {
                     int pos = i;
-                    if (pos >= train.rowCount())
+                    if (pos >= train.rowCount()) {
                         pos -= train.rowCount();
+                    }
                     if (examineExample(s, pos)) {
                         numChanged++;
                     }
@@ -208,8 +224,9 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, Clas
                     for (int i = offset; i < train.rowCount() + offset; i++) {
 
                         int pos = i;
-                        if (pos >= train.rowCount())
+                        if (pos >= train.rowCount()) {
                             pos -= train.rowCount();
+                        }
 
                         if (alpha[pos] > 0 && alpha[pos] < c.get() * weights.getDouble(pos)) {
                             if (examineExample(s, pos)) {
@@ -733,9 +750,11 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, Clas
             // format because the classifier has been built
             for (int i = 0; i < sparseWeights.length; i++) {
                 if (printed > 0) {
-                    if (sparseWeights[i] >= 0)
+                    if (sparseWeights[i] >= 0) {
                         sb.append(" + ");
-                    else sb.append(" - ");
+                    } else {
+                        sb.append(" - ");
+                    }
                 } else {
                     sb.append("   ");
                 }

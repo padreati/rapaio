@@ -46,6 +46,7 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.util.function.SConsumer;
 import rapaio.util.function.SFunction;
 
 /**
@@ -60,10 +61,10 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     @Serial
     private static final long serialVersionUID = -6866948033065091047L;
 
-    public final ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
-            "rowSampler",
-            "Method used to sample rows.",
-            Objects::nonNull);
+    /**
+     * Method used to sample rows.
+     */
+    public final ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(), "rowSampler", Objects::nonNull);
 
     /**
      * Number of threads for execution pool size. Negative values are considered
@@ -71,42 +72,30 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
      * no pooling and positive values means pooling with a specified
      * value.
      */
-    public final ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, 0,
-            "poolSize",
-            "Number of threads in execution pool to be used for fitting the model.",
-            x -> true);
+    public final ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, 0, "poolSize", x -> true);
+
     /**
      * Specifies the runs / rounds of learning.
      * For various models composed of multiple sub-models
-     * the runs represents often the number of sub-models.
+     * the runs often represent the number of sub-models.
      * <p>
      * For example for CForest the number of runs is used to specify
      * the number of decision trees to be built.
      */
-    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1,
-            "runs",
-            "Number of iterations for iterative iterations or number of sub ensembles.",
-            x -> x > 0
+    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1, "runs", x -> x > 0
     );
 
     /**
      * Lambda call hook called after each sub-component or iteration at training time.
      */
-    public final ValueParam<Consumer<H>, M> runningHook = new ValueParam<>((M) this, (Consumer<H> & Serializable) h -> {},
-            "runningHook",
-            "Hook executed at each iteration.",
-            Objects::nonNull
-    );
+    public final ValueParam<SConsumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {}, "runningHook", Objects::nonNull);
+
     /**
      * Lambda call hook which can be used to implement a criteria used to stop running
      * an iterative procedure. If the call hook returns false, the iterative procedure is
      * stopped, if true it continues until the algorithm stops itself.
      */
-    public ValueParam<SFunction<H, Boolean>, M> stoppingHook = new ValueParam<>((M) this,
-            h -> false,
-            "stopHook",
-            "Hook queried at each iteration if execution should continue or not.",
-            Objects::nonNull);
+    public ValueParam<SFunction<H, Boolean>, M> stoppingHook = new ValueParam<>((M) this, h -> false, "stoppingHook", Objects::nonNull);
 
     // learning artifacts
 

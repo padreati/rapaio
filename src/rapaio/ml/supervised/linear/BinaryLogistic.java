@@ -57,16 +57,12 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
      * Defines the scaling value of the intercept, by default being 1. If the configured value
      * for the intercept is 0, than no intercept is added to the input features.
      */
-    public final ValueParam<Double, BinaryLogistic> intercept = new ValueParam<>(this, 1.0,
-            "intercept",
-            "Value of the intercept column, if zero than no intercept will be added to regression.");
+    public final ValueParam<Double, BinaryLogistic> intercept = new ValueParam<>(this, 1.0, "intercept");
 
     /**
      * Initialization method is used to give initial weights at the first iteration.
      */
-    public final ValueParam<Initialize, BinaryLogistic> init = new ValueParam<>(this, Initialize.EXPECTED_LOG_VAR,
-            "init",
-            "Initialization method used at first iteration of the algorithm.");
+    public final ValueParam<Initialize, BinaryLogistic> init = new ValueParam<>(this, Initialize.EXPECTED_LOG_VAR, "init");
     /**
      * Gets the nominal level used in one vs all strategy. If the target variable
      * is a nominal variable with more than 2 levels (ignoring missing value level),
@@ -74,27 +70,27 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
      * problem by considering this specified target level as the positive case, and
      * all the other levels as the negative case.
      */
-    public final ValueParam<String, BinaryLogistic> nominalLevel = new ValueParam<>(this, "",
-            "nominalLevel",
-            "Nominal level used in one vs all strategy. If the target variable is a nominal variable with more than 2 levels " +
-                    "(ignoring missing value level) then the logistic regression is transformed into a binary classification problem" +
-                    " by considering this specified target level as the positive case, and all the other levels as the negative case.");
+    public final ValueParam<String, BinaryLogistic> nominalLevel = new ValueParam<>(this, "", "nominalLevel");
 
-    public final ValueParam<Method, BinaryLogistic> solver = new ValueParam<>(this, Method.IRLS,
-            "solver",
-            "Solver used to fit binary logistic regression.");
+    /**
+     * Solver used to fit binary logistic regression.
+     */
+    public final ValueParam<Method, BinaryLogistic> solver = new ValueParam<>(this, Method.IRLS, "solver");
 
-    public final ValueParam<Double, BinaryLogistic> l1Factor = new ValueParam<>(this, 0.0,
-            "l1factor",
-            "L1 regularization factor");
+    /**
+     * L1 regularization factor
+     */
+    public final ValueParam<Double, BinaryLogistic> l1Factor = new ValueParam<>(this, 0.0, "l1factor");
 
-    public final ValueParam<Double, BinaryLogistic> l2Factor = new ValueParam<>(this, 0.0,
-            "l2factor",
-            "L2 regularization factor");
+    /**
+     * L2 regularization factor
+     */
+    public final ValueParam<Double, BinaryLogistic> l2Factor = new ValueParam<>(this, 0.0, "l2factor");
 
-    public final ValueParam<Double, BinaryLogistic> eps = new ValueParam<>(this, 1e-10,
-            "eps",
-            "Tolerance threshold used to signal when fit iterative procedure converged");
+    /**
+     * Tolerance threshold used to signal when fit iterative procedure converged
+     */
+    public final ValueParam<Double, BinaryLogistic> eps = new ValueParam<>(this, 1e-10, "eps");
 
     // learning artifacts
 

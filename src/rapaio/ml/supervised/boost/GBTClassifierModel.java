@@ -58,21 +58,21 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
     @Serial
     private static final long serialVersionUID = -2979235364091072967L;
 
-    public final ValueParam<Double, GBTClassifierModel> shrinkage = new ValueParam<>(this, 1.0,
-            "shrinkage",
-            "Shrinkage factor",
-            Double::isFinite);
+    /**
+     * Shrinkage regularization value
+     */
+    public final ValueParam<Double, GBTClassifierModel> shrinkage = new ValueParam<>(this, 1.0, "shrinkage", Double::isFinite);
 
-    public final ValueParam<Boolean, GBTClassifierModel> debug = new ValueParam<>(this, false,
-            "debug",
-            "debug");
+    /**
+     * Enable debug console output during learning
+     */
+    public final ValueParam<Boolean, GBTClassifierModel> debug = new ValueParam<>(this, false, "debug");
 
+    /**
+     * Weak tree model
+     */
     public final ValueParam<RTree, GBTClassifierModel> model = new ValueParam<>(this,
-            RTree.newCART().maxDepth.set(2).minCount.set(5).loss.set(new L2Loss()),
-            "model",
-            "Model");
-
-    // learning artifacts
+            RTree.newCART().maxDepth.set(2).minCount.set(5).loss.set(new L2Loss()), "model");
 
     private int K;
     private DMatrix f;

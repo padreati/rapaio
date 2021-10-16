@@ -76,25 +76,38 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, Classifi
     @Serial
     private static final long serialVersionUID = -145958939373105497L;
 
-    public final ValueParam<Boolean, CForest> oob = new ValueParam<>(this, false,
-            "oob", "Performs out of the bag computations.");
+    /**
+     * Performs out of the bag computations.
+     */
+    public final ValueParam<Boolean, CForest> oob = new ValueParam<>(this, false,"oob");
 
-    public final ValueParam<Boolean, CForest> viFreq = new ValueParam<>(this, false,
-            "freqVI", "Performs frequency variable importance computations");
+    /**
+     * Performs frequency variable importance computations
+     */
+    public final ValueParam<Boolean, CForest> viFreq = new ValueParam<>(this, false,"freqVI");
 
-    public final ValueParam<Boolean, CForest> viGain = new ValueParam<>(this, false,
-            "gainVI", "Performs gain variable importance computations");
+    /**
+     * Performs gain variable importance computations
+     */
+    public final ValueParam<Boolean, CForest> viGain = new ValueParam<>(this, false,"gainVI");
 
-    public final ValueParam<Boolean, CForest> viPerm = new ValueParam<>(this, false,
-            "viPerm", "Perform permutation variable importance computations");
+    /**
+     * Perform permutation variable importance computations
+     */
+    public final ValueParam<Boolean, CForest> viPerm = new ValueParam<>(this, false,"viPerm");
 
+    /**
+     * Model archetype used in ensemble
+     */
     public final ValueParam<CTree, CForest> model = new ValueParam<>(this, CTree.newCART()
             .varSelector.set(VarSelector.auto())
             .rowSampler.set(RowSampler.bootstrap()),
-            "model", "Model archetype used in ensemble");
+            "model");
 
-    public final ValueParam<BaggingMode, CForest> baggingMode = new ValueParam<>(this, BaggingMode.DISTRIBUTION,
-            "bagging", "Bagging mode used to average the results");
+    /**
+     * Bagging mode used to average the results
+     */
+    public final ValueParam<BaggingMode, CForest> baggingMode = new ValueParam<>(this, BaggingMode.DISTRIBUTION,"bagging");
 
     // learning artifacts
     private List<ClassifierModel<?, ?, ?>> predictors = new ArrayList<>();

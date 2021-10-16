@@ -58,10 +58,11 @@ public class RandomValueRegression extends RegressionModel<RandomValueRegression
         return new RandomValueRegression().distribution.set(distribution);
     }
 
-    public final ValueParam<Distribution, RandomValueRegression> distribution = new ValueParam<>(this, Uniform.of(0, 1),
-            "distribution",
-            "Distribution used to generate prediction",
-            Objects::nonNull);
+    /**
+     * Distribution used to generate prediction
+     */
+    public final ValueParam<Distribution, RandomValueRegression> distribution =
+            new ValueParam<>(this, Uniform.of(0, 1), "distribution", Objects::nonNull);
 
     @Override
     public RandomValueRegression newInstance() {

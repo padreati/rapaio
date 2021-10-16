@@ -56,28 +56,46 @@ public class RegressionEvaluation extends ParamSet<RegressionEvaluation> {
     @Serial
     private static final long serialVersionUID = 8317463072268958015L;
 
-    public final ValueParam<RegressionModel, RegressionEvaluation> model = new ValueParam<>(this,
-            null, "model", "Regression model.");
-    public final ValueParam<Frame, RegressionEvaluation> df = new ValueParam<>(this,
-            null, "df", "Data set.");
+    /**
+     * Regression model.
+     */
+    public final ValueParam<RegressionModel<?, ?, ?>, RegressionEvaluation> model = new ValueParam<>(this, null, "model");
 
-    public final ValueParam<Var, RegressionEvaluation> weights = new ValueParam<>(this,
-            null, "weights", "Weights");
+    /**
+     * Data set.
+     */
+    public final ValueParam<Frame, RegressionEvaluation> df = new ValueParam<>(this, null, "df");
 
-    public final ValueParam<String, RegressionEvaluation> targetName = new ValueParam<>(this,
-            null, "target", "Target variable name");
+    /**
+     * Instance weights
+     */
+    public final ValueParam<Var, RegressionEvaluation> weights = new ValueParam<>(this, null, "weights");
 
-    public final ValueParam<SplitStrategy, RegressionEvaluation> splitStrategy = new ValueParam<>(this,
-            new KFold(10), "splitStrategy", "Strategy used to build training and testing data sets.");
+    /**
+     * Target variable name
+     */
+    public final ValueParam<String, RegressionEvaluation> targetName = new ValueParam<>(this, null, "target");
 
+    /**
+     * Strategy used to build training and testing data sets.
+     */
+    public final ValueParam<SplitStrategy, RegressionEvaluation> splitStrategy = new ValueParam<>(this, new KFold(10), "splitStrategy");
+
+    /**
+     * Number of threads used at evaluation
+     */
     public final ValueParam<Integer, RegressionEvaluation> threads = new ValueParam<>(this,
-            Runtime.getRuntime().availableProcessors() - 1, "threads", "Number of threads used at evaluation");
+            Runtime.getRuntime().availableProcessors() - 1, "threads");
 
-    public final ListParam<RegressionMetric, RegressionEvaluation> metrics = new ListParam<>(this,
-            List.of(), "metrics", "Metrics used at evaluation.", (in, out) -> true);
+    /**
+     * Metrics used at evaluation.
+     */
+    public final ListParam<RegressionMetric, RegressionEvaluation> metrics = new ListParam<>(this, List.of(), "metrics", (in, out) -> true);
 
-    public final ValueParam<Boolean, RegressionEvaluation> debug = new ValueParam<>(this,
-            false, "debug", "If evaluation is used in debug mode or not.");
+    /**
+     * If evaluation is used in debug mode or not.
+     */
+    public final ValueParam<Boolean, RegressionEvaluation> debug = new ValueParam<>(this, false, "debug");
 
     private RegressionEvaluation() {
     }

@@ -173,12 +173,30 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, Defau
     @Serial
     private static final long serialVersionUID = -1046184364541391871L;
 
-    public final ValueParam<Integer, KMCluster> k = new ValueParam<>(this, null, "k", "number of clusters", Objects::nonNull);
-    public final ValueParam<Integer, KMCluster> nstart = new ValueParam<>(this, 1, "nstart", "Number of restarts", n -> n != null && n > 0);
-    public final ValueParam<KMClusterInit, KMCluster> init =
-            new ValueParam<>(this, KMClusterInit.Forgy, "init", "Initialization algorithm");
-    public final ValueParam<Method, KMCluster> method = new ValueParam<>(this, null, "method", "method: kmeans, kmedians", Objects::nonNull);
-    public final ValueParam<Double, KMCluster> eps = new ValueParam<>(this, 1e-20, "eps", "Tolerance for convergence measures");
+    /**
+     * number of clusters
+     */
+    public final ValueParam<Integer, KMCluster> k = new ValueParam<>(this, null, "k", Objects::nonNull);
+
+    /**
+     * Number of restarts
+     */
+    public final ValueParam<Integer, KMCluster> nstart = new ValueParam<>(this, 1, "nstart", n -> n != null && n > 0);
+
+    /**
+     * "Initialization algorithm
+     */
+    public final ValueParam<KMClusterInit, KMCluster> init = new ValueParam<>(this, KMClusterInit.Forgy, "init");
+
+    /**
+     * method: kmeans, kmedians
+     */
+    public final ValueParam<Method, KMCluster> method = new ValueParam<>(this, null, "method", Objects::nonNull);
+
+    /**
+     * Tolerance for convergence measures
+     */
+    public final ValueParam<Double, KMCluster> eps = new ValueParam<>(this, 1e-20, "eps");
 
     // clustering artifacts
 

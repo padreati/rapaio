@@ -33,7 +33,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.experiment.ml.regression.tree.GBTRtree;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.loss.L2Loss;
@@ -60,31 +59,33 @@ public class GBTRegression extends RegressionModel<GBTRegression, RegressionResu
     @Serial
     private static final long serialVersionUID = 4559540258922653130L;
 
+    /**
+     * Shrinkage regularization coefficient
+     */
     public final ValueParam<Double, GBTRegression> shrinkage = new ValueParam<>(this, 1.0,
-            "shrinkage",
-            "Shrinkage",
-            x -> Double.isFinite(x) && x > 0 && x <= 1);
+            "shrinkage", x -> Double.isFinite(x) && x > 0 && x <= 1);
 
-    public final ValueParam<Loss, GBTRegression> loss = new ValueParam<>(this, new L2Loss(),
-            "loss",
-            "Loss function",
-            Objects::nonNull);
+    /**
+     * Loss function used
+     */
+    public final ValueParam<Loss, GBTRegression> loss = new ValueParam<>(this, new L2Loss(), "loss", Objects::nonNull);
 
+    /**
+     * First starting model
+     */
     public final ValueParam<RegressionModel<?, ?, ?>, GBTRegression> initModel = new ValueParam<>(this, L2Regression.newModel(),
-            "initModel",
-            "Initial model",
-            Objects::nonNull);
+            "initModel", Objects::nonNull);
 
+    /**
+     * Tree weak lerner model
+     */
     public final ValueParam<GBTRtree<? extends RegressionModel<?, ?, ?>, ? extends RegressionResult, RegressionHookInfo>, GBTRegression>
-            model = new ValueParam<>(this, RTree.newCART().maxDepth.set(2).minCount.set(10),
-                    "nodeModel",
-                    "Node model",
-                    Objects::nonNull);
+            model = new ValueParam<>(this, RTree.newCART().maxDepth.set(2).minCount.set(10), "nodeModel", Objects::nonNull);
 
-    public final ValueParam<Double, GBTRegression> eps = new ValueParam<>(this, 1e-10,
-            "eps",
-            "Threshold to stop growing trees if gain is not met.",
-            Double::isFinite);
+    /**
+     * Convergence threshold used to stop tree growing if the progress on loss function is less than specified
+     */
+    public final ValueParam<Double, GBTRegression> eps = new ValueParam<>(this, 1e-10,"eps",Double::isFinite);
 
     private VarDouble fitValues;
 
@@ -133,7 +134,8 @@ public class GBTRegression extends RegressionModel<GBTRegression, RegressionResu
             Var gradient = loss.get().gradient(y, fitValues).name("target");
 
             Frame xm = x.bindVars(gradient);
-            var tree = (GBTRtree<? extends RegressionModel<?, ?, ?>, ? extends RegressionResult, RegressionHookInfo>) model.get().newInstance();
+            var tree = (GBTRtree<? extends RegressionModel<?, ?, ?>, ? extends RegressionResult, RegressionHookInfo>) model.get()
+                    .newInstance();
 
             // frame sampling
 

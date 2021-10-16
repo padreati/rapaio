@@ -42,18 +42,35 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
     @Serial
     private static final long serialVersionUID = 4772367031535421893L;
 
-    public final ValueParam<Double, BinaryLogisticNewton> eps = new ValueParam<>(this,
-            1e-100, "eps", "eps");
-    public final ValueParam<Integer, BinaryLogisticNewton> maxIter = new ValueParam<>(this,
-            10, "maxIter", "maxIter");
-    public final ValueParam<Double, BinaryLogisticNewton> lambda = new ValueParam<>(this,
-            0.0, "lambda", "lambda");
-    public final ValueParam<DMatrix, BinaryLogisticNewton> x = new ValueParam<>(this,
-            null, "x", "x");
-    public final ValueParam<DVector, BinaryLogisticNewton> y = new ValueParam<>(this,
-            null, "y", "y");
-    public final ValueParam<DVector, BinaryLogisticNewton> w0 = new ValueParam<>(this,
-            null, "w0", "w0");
+    /**
+     * Tolerance threshold used to assess convergence of a solution
+     */
+    public final ValueParam<Double, BinaryLogisticNewton> eps = new ValueParam<>(this,1e-100, "eps");
+
+    /**
+     * Maximum number of iterations
+     */
+    public final ValueParam<Integer, BinaryLogisticNewton> maxIter = new ValueParam<>(this, 10, "maxIter");
+
+    /**
+     * L2 regularization penalty
+     */
+    public final ValueParam<Double, BinaryLogisticNewton> lambda = new ValueParam<>(this,0.0, "lambda");
+
+    /**
+     * Input matrix
+     */
+    public final ValueParam<DMatrix, BinaryLogisticNewton> x = new ValueParam<>(this,null, "x");
+
+    /**
+     * Target vector
+     */
+    public final ValueParam<DVector, BinaryLogisticNewton> y = new ValueParam<>(this,null, "y");
+
+    /**
+     * Initial values for weights
+     */
+    public final ValueParam<DVector, BinaryLogisticNewton> w0 = new ValueParam<>(this,null, "w0");
 
     public static record Result(DVector w, List<Double> nll, List<DVector> ws, boolean converged) {
     }

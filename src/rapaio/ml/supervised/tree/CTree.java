@@ -115,49 +115,56 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
 
     // parameter default values
 
-    public final ValueParam<Integer, CTree> minCount = new ValueParam<>(this, 1,
-            "minCount",
-            "Minimum number of instances for a node",
-            x -> x != null && x >= 1);
+    /**
+     * Minimum number of instances from a leaf node
+     */
+    public final ValueParam<Integer, CTree> minCount = new ValueParam<>(this, 1, "minCount", x -> x != null && x >= 1);
 
-    public final ValueParam<Integer, CTree> maxDepth = new ValueParam<>(this, -1,
-            "maxDepth",
-            "Maximum depth of a tree");
+    /**
+     * Maximum depth of a tree
+     */
+    public final ValueParam<Integer, CTree> maxDepth = new ValueParam<>(this, -1, "maxDepth");
 
-    public final ValueParam<Double, CTree> minGain = new ValueParam<>(this, -1000.0,
-            "minGain",
-            "Minimum gain to proceed with split into child nodes");
+    /**
+     * Minimum gain required to proceed with split instances into child nodes
+     */
+    public final ValueParam<Double, CTree> minGain = new ValueParam<>(this, -1000.0, "minGain");
 
-    public final ValueParam<VarSelector, CTree> varSelector = new ValueParam<>(this, VarSelector.all(),
-            "varSelector",
-            "Variable selection method");
+    /**
+     * Method used to select variable candidates tested during the search for a split condition
+     */
+    public final ValueParam<VarSelector, CTree> varSelector = new ValueParam<>(this, VarSelector.all(), "varSelector");
 
+    /**
+     * Definitions of the test criteria used to select best splits
+     */
     public final MultiParam<VarType, Search, CTree> testMap = new MultiParam<>(this,
             Map.of(
                     VarType.BINARY, Search.BinaryBinary,
                     VarType.INT, Search.NumericBinary,
                     VarType.DOUBLE, Search.NumericBinary,
                     VarType.NOMINAL, Search.NominalBinary),
-            "testMap",
-            "Definitions of the test criteria used to select best splits",
-            Objects::nonNull);
+            "testMap", Objects::nonNull);
 
-    public final ValueParam<Purity, CTree> purity = new ValueParam<>(this, Purity.InfoGain,
-            "purity",
-            "Purity function");
+    /**
+     * Purity function used to compute a performance measure for a split
+     */
+    public final ValueParam<Purity, CTree> purity = new ValueParam<>(this, Purity.InfoGain, "purity");
 
-    public final ValueParam<Splitter, CTree> splitter = new ValueParam<>(this, Splitter.Ignore,
-            "splitter",
-            "Splitter method");
+    /**
+     * Method used to split instances into child nodes
+     */
+    public final ValueParam<Splitter, CTree> splitter = new ValueParam<>(this, Splitter.Ignore, "splitter");
 
-    public final ValueParam<Pruning, CTree> pruning = new ValueParam<>(this, Pruning.None,
-            "prunning",
-            "Prunning method");
+    /**
+     * Pruning method
+     */
+    public final ValueParam<Pruning, CTree> pruning = new ValueParam<>(this, Pruning.None, "prunning");
 
-    public final ValueParam<Frame, CTree> pruningDf = new ValueParam<>(this, null,
-            "pruningDf",
-            "Pruning data frame",
-            x -> true);
+    /**
+     * Data frame used by pruning method as a test set
+     */
+    public final ValueParam<Frame, CTree> pruningDf = new ValueParam<>(this, null, "pruningDf", x -> true);
 
     private Node root;
 
@@ -306,19 +313,22 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
             Pair<String, DensityVector<String>> res = predictPoint(this, root, i, df);
             String label = res.v1;
             var dv = res.v2;
-            if (withClasses)
+            if (withClasses) {
                 prediction.firstClasses().setLabel(i, label);
-            if (withDensities)
+            }
+            if (withDensities) {
                 for (int j = 1; j < firstTargetLevels().size(); j++) {
                     prediction.firstDensity().setDouble(i, j, dv.get(firstTargetLevel(j)));
                 }
+            }
         }
         return prediction;
     }
 
     protected Pair<String, DensityVector<String>> predictPoint(CTree tree, Node node, int row, Frame df) {
-        if (node.leaf)
+        if (node.leaf) {
             return Pair.from(node.bestLabel, node.density.copy().normalize());
+        }
 
         for (Node child : node.children) {
             if (child.predicate.test(row, df)) {
@@ -343,8 +353,9 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
 
     private void additionalValidation(Frame df) {
         df.varStream().forEach(var -> {
-            if (testMap.get().containsKey(var.type()))
+            if (testMap.get().containsKey(var.type())) {
                 return;
+            }
             throw new IllegalArgumentException("can't predict ctree with no " +
                     "tests for given variable: " + var.name() +
                     " [" + var.type().name() + "]");
@@ -391,8 +402,9 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
         while (!queue.isEmpty()) {
             Node node = queue.pollFirst();
             nodeCount++;
-            if (node.leaf)
+            if (node.leaf) {
                 leaveCount++;
+            }
             node.children.forEach(queue::addLast);
         }
 

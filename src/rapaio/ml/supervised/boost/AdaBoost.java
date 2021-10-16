@@ -57,32 +57,28 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, Classi
     @Serial
     private static final long serialVersionUID = -9154973036108114765L;
 
-    // parameters
-
+    /**
+     * Weak learner model
+     */
     public final ValueParam<ClassifierModel<?, ?, ?>, AdaBoost> model = new ValueParam<>(this,
-            CTree.newCART().maxDepth.set(6).minCount.set(6),
-            "model",
-            "Weak learner model",
-            Objects::nonNull);
+            CTree.newCART().maxDepth.set(6).minCount.set(6), "model", Objects::nonNull);
 
-    public final ValueParam<Double, AdaBoost> eps = new ValueParam<>(this, 10e-10,
-            "eps",
-            "Threshold value used to decide convergence on fit",
-            Double::isFinite);
+    /**
+     * Threshold value used to decide convergence on fit
+     */
+    public final ValueParam<Double, AdaBoost> eps = new ValueParam<>(this, 10e-10, "eps", Double::isFinite);
 
-    public final ValueParam<Boolean, AdaBoost> stopOnError = new ValueParam<>(this, false,
-            "stopOnError",
-            "Flag to stop fitting on learning error of weak classifier");
+    /**
+     * Flag to stop fitting on learning error of weak classifier
+     */
+    public final ValueParam<Boolean, AdaBoost> stopOnError = new ValueParam<>(this, false, "stopOnError");
 
-    public final ValueParam<Double, AdaBoost> shrinkage = new ValueParam<>(this, 1.0,
-            "shrinkage",
-            "Shrinkage coefficient for regularization",
-            Double::isFinite);
-
-    // model artifacts
+    /**
+     * Shrinkage regularization coefficient
+     */
+    public final ValueParam<Double, AdaBoost> shrinkage = new ValueParam<>(this, 1.0,"shrinkage",Double::isFinite);
 
     private final List<Double> alphas = new ArrayList<>();
-
     private final List<ClassifierModel<?, ?, ?>> learners = new ArrayList<>();
 
     private AdaBoost() {

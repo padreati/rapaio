@@ -60,34 +60,34 @@ public abstract class RegressionModel<M extends RegressionModel<M, R, H>, R exte
 
     // parameters
 
-    public final ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
-            "rowSampler",
-            "Row sampler",
-            Objects::nonNull);
+    /**
+     * Row sampler
+     */
+    public final ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(), "rowSampler", Objects::nonNull);
 
-    public final ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, -1,
-            "poolSize",
-            "Number of threads in execution pool to be used for fitting the model.",
-            x -> true
+    /**
+     * Number of threads in execution pool to be used for fitting the model.
+     */
+    public final ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, -1, "poolSize", x -> true
     );
 
-    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1,
-            "runs",
-            "Number of iterations for iterative iterations or number of sub ensembles.",
-            x -> x > 0
+    /**
+     * Number of iterations for iterative iterations or number of sub ensembles.
+     */
+    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1, "runs", x -> x > 0
     );
 
-    public final ValueParam<Consumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {},
-            "runningHook",
-            "Hook executed at each iteration.",
-            Objects::nonNull
+    /**
+     * Hook executed at each iteration.
+     */
+    public final ValueParam<Consumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {}, "runningHook", Objects::nonNull
     );
 
-    public ValueParam<Function<H, Boolean>, M> stoppingHook = new ValueParam<>((M) this,
-            DEFAULT_STOPPING_HOOK,
-            "stopHook",
-            "Hook queried at each iteration if execution should continue or not.",
-            Objects::nonNull);
+    /**
+     * Hook queried at each iteration if execution should continue or not.
+     */
+    public ValueParam<Function<H, Boolean>, M> stoppingHook =
+            new ValueParam<>((M) this, DEFAULT_STOPPING_HOOK, "stopHook", Objects::nonNull);
 
     // model artifacts
 
@@ -229,7 +229,7 @@ public abstract class RegressionModel<M extends RegressionModel<M, R, H>, R exte
      * Fit a classifier on instances specified by frame, with row weights
      * equal to 1 and target as targetName.
      *
-     * @param df         data set instances
+     * @param df             data set instances
      * @param targetVarNames target variables
      */
     public M fit(Frame df, String... targetVarNames) {
@@ -244,11 +244,11 @@ public abstract class RegressionModel<M extends RegressionModel<M, R, H>, R exte
      * @param weights        instance weights
      * @param targetVarNames target variables
      */
-     public M fit(Frame df, Var weights, String... targetVarNames) {
-         FitSetup setup = prepareFit(df, weights, targetVarNames);
-         hasLearned = coreFit(setup.df, setup.w);
-         return (M) this;
-     }
+    public M fit(Frame df, Var weights, String... targetVarNames) {
+        FitSetup setup = prepareFit(df, weights, targetVarNames);
+        hasLearned = coreFit(setup.df, setup.w);
+        return (M) this;
+    }
 
     /**
      * Predict results for given data set of instances

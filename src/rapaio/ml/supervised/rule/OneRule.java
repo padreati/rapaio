@@ -60,15 +60,17 @@ public class OneRule extends ClassifierModel<OneRule, ClassifierResult, Classifi
 
     private static final Binning DEFAULT_BINNING = new HolteBinning(3);
 
-    public final ValueParam<MissingHandler, OneRule> missingHandler = new ValueParam<>(this, MissingHandler.MAJORITY,
-            "missingHandler",
-            "Method of handling missing values",
-            Objects::nonNull);
+    /**
+     * Method of handling missing values
+     */
+    public final ValueParam<MissingHandler, OneRule> missingHandler =
+            new ValueParam<>(this, MissingHandler.MAJORITY, "missingHandler", Objects::nonNull);
 
+    /**
+     * Binning method used in the algorithm.
+     */
     public final ValueParam<Binning, OneRule> binning = new ValueParam<>(this, DEFAULT_BINNING,
-            "binning",
-            "Binning method used in the algorithm.",
-            Objects::nonNull);
+            "binning",Objects::nonNull);
 
     private RuleSet bestRuleSet;
     private DensityVector<String> missingDensity;

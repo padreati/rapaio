@@ -63,14 +63,20 @@ public class ClusterSilhouette extends ParamSet<ClusterSilhouette> implements Pr
                 .similarity.set(similarity);
     }
 
-    public final ValueParam<Var, ClusterSilhouette> assignment = new ValueParam<>(this, null,
-            "cluster assignment", "Cluster assignment", Objects::nonNull);
+    /**
+     * Cluster assignment
+     */
+    public final ValueParam<Var, ClusterSilhouette> assignment = new ValueParam<>(this, null,"cluster assignment", Objects::nonNull);
 
-    public final ValueParam<DistanceMatrix, ClusterSilhouette> distanceMatrix = new ValueParam<>(this, null,
-            "distance matrix", "Distance matrix", Objects::nonNull);
+    /**
+     * Distance matrix
+     */
+    public final ValueParam<DistanceMatrix, ClusterSilhouette> distanceMatrix = new ValueParam<>(this, null,"distance matrix", Objects::nonNull);
 
-    public final ValueParam<Boolean, ClusterSilhouette> similarity = new ValueParam<>(this, null,
-            "similarity function", "Similarity function (true) or disimilarity function (false)", Objects::nonNull);
+    /**
+     * Similarity function (true) or disimilarity function (false)
+     */
+    public final ValueParam<Boolean, ClusterSilhouette> similarity = new ValueParam<>(this, null,"similarity", Objects::nonNull);
 
     // artifacts
 

@@ -49,10 +49,10 @@ public class ConstantRegression extends RegressionModel<ConstantRegression, Regr
         return new ConstantRegression().constant.set(c);
     }
 
-    public final ValueParam<Double, ConstantRegression> constant = new ValueParam<>(this, 0.0,
-            "constant",
-            "Constant value used for prediction.",
-            x -> true);
+    /**
+     * Constant value used for prediction.
+     */
+    public final ValueParam<Double, ConstantRegression> constant = new ValueParam<>(this, 0.0, "constant", x -> true);
 
     @Override
     public ConstantRegression newInstance() {

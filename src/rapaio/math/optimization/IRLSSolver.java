@@ -72,46 +72,42 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
         IRLS1M
     }
 
-    public final ValueParam<Method, IRLSSolver> method = new ValueParam<>(this, Method.IRLS1M,
-            "method", "method used to find the solution");
+    /**
+     * Method used to find the solution.
+     */
+    public final ValueParam<Method, IRLSSolver> method = new ValueParam<>(this, Method.IRLS1M, "method");
 
     /**
      * p norm of the loss function to minimize
      */
-    public final ValueParam<Double, IRLSSolver> p = new ValueParam<>(this, 2.0,
-            "p", "p norm of the loss function.");
+    public final ValueParam<Double, IRLSSolver> p = new ValueParam<>(this, 2.0, "p");
 
     /**
      * Design matrix
      */
-    public final ValueParam<DMatrix, IRLSSolver> m = new ValueParam<>(this, null,
-            "m", "design matrix");
+    public final ValueParam<DMatrix, IRLSSolver> m = new ValueParam<>(this, null, "m");
 
     /**
      * Output vector
      */
-    public final ValueParam<DVector, IRLSSolver> b = new ValueParam<>(this, null,
-            "b", "output vector");
+    public final ValueParam<DVector, IRLSSolver> b = new ValueParam<>(this, null, "b");
 
     /**
      * Maximum number of iterations
      */
-    public final ValueParam<Integer, IRLSSolver> maxIt = new ValueParam<>(this, 10,
-            "maxIt", "maximum number of iterations.");
+    public final ValueParam<Integer, IRLSSolver> maxIt = new ValueParam<>(this, 10, "maxIt");
 
     /**
      * Convergence threshold
      */
-    public final ValueParam<Double, IRLSSolver> eps = new ValueParam<>(this, 1e-12,
-            "eps", "convergence threshold");
+    public final ValueParam<Double, IRLSSolver> eps = new ValueParam<>(this, 1e-12, "eps");
 
     /**
      * Homotopy parameter.
      * For `2 < p < infinity` we have `k in [1.01, 2].
      * For `0 < p < 2` we have `k in [0.7, 0.9]`.
      */
-    public final ValueParam<Double, IRLSSolver> k = new ValueParam<>(this, 1.5,
-            "k", "Homotopy parameter");
+    public final ValueParam<Double, IRLSSolver> k = new ValueParam<>(this, 1.5, "k");
 
     private DVector solution;
     private List<DVector> solutions;
@@ -227,8 +223,8 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
 
                 try {
                     x = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
-                }catch (RuntimeException ignored) {
-                    converged=false;
+                } catch (RuntimeException ignored) {
+                    converged = false;
                     break;
                 }
                 solutions.add(x);

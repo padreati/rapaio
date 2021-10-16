@@ -59,20 +59,30 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         return new KnnRegression();
     }
 
-    public final ValueParam<Integer, KnnRegression> k = new ValueParam<>(this, 1,
-            "k", "k number of neighbours", value -> Objects.nonNull(value) && value > 0);
+    /**
+     * Number of neighbours to consider
+     */
+    public final ValueParam<Integer, KnnRegression> k = new ValueParam<>(this, 1, "k", v -> Objects.nonNull(v) && v > 0);
 
-    public final ValueParam<Distance, KnnRegression> distance = new ValueParam<>(this, new EuclideanDistance(),
-            "distance", "distance function");
+    /**
+     * Distance function used to select closest points
+     */
+    public final ValueParam<Distance, KnnRegression> distance = new ValueParam<>(this, new EuclideanDistance(),"distance");
 
-    public final ValueParam<Distance, KnnRegression> wdistance = new ValueParam<>(this, new EuclideanDistance(),
-            "weighting", "weighting distance");
+    /**
+     * Distance function used to as basis for computing weights
+     */
+    public final ValueParam<Distance, KnnRegression> wdistance = new ValueParam<>(this, new EuclideanDistance(),"wdistance");
 
-    public final ValueParam<Kernel, KnnRegression> kernel = new ValueParam<>(this, Kernel.RECTANGULAR,
-            "kernel", "kernel distance used to transform distance into similarity");
+    /**
+     * Kernel function used to transform distances computed with {@link #wdistance} into similarities.
+     */
+    public final ValueParam<Kernel, KnnRegression> kernel = new ValueParam<>(this, Kernel.RECTANGULAR,"kernel");
 
-    public final ValueParam<Double, KnnRegression> tol = new ValueParam<>(this, 1e-6,
-            "tolerance", "tolerance");
+    /**
+     * Small positive quantity used to cut normalized weight distances to avoid division by zero
+     */
+    public final ValueParam<Double, KnnRegression> eps = new ValueParam<>(this, 1e-6,"eps");
 
     private DVector[] instances;
     private DVector target;
@@ -143,8 +153,8 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         // normalize by k+1 distance
         w.apply(v -> v / wref);
         // cut values to avoid division by zero
-        w.apply(v -> min(v, 1 - tol.get()));
-        w.apply(v -> max(v, tol.get()));
+        w.apply(v -> min(v, 1 - eps.get()));
+        w.apply(v -> max(v, eps.get()));
         // transform into similarity
         w = kernel.get().transform(w, k.get());
         return w;
@@ -224,6 +234,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
                 return d.apply(v -> normal.pdf(v * qua), copy());
             }
         };
+
         public abstract DVector transform(DVector d, int k);
 
     }

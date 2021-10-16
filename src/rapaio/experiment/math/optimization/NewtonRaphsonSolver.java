@@ -50,21 +50,14 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
     @Serial
     private static final long serialVersionUID = -6600678871841923200L;
 
-    public final ValueParam<Double, NewtonRaphsonSolver> tol = new ValueParam<>(this, 1e-3,
-            "tol", "Tolerance on errors for determining convergence");
-    public final ValueParam<Integer, NewtonRaphsonSolver> maxIt = new ValueParam<>(this, 100,
-            "maxIt", "Maximum number of iterations");
-    public final ValueParam<LineSearch, NewtonRaphsonSolver> lineSearch = new ValueParam<>(this,
-            BacktrackLineSearch.newSearch(), "lineSearch", "Line search algorithm");
-
-    public final ValueParam<RFunction, NewtonRaphsonSolver> f = new ValueParam<>(this,
-            null, "f", "function to be optimized");
-    public final ValueParam<RDerivative, NewtonRaphsonSolver> d1f = new ValueParam<>(this,
-            null, "d1f", "function's derivative");
-    public final ValueParam<RHessian, NewtonRaphsonSolver> d2f = new ValueParam<>(this,
-            null, "d2f", "second derivative of the function");
-    public final ValueParam<DVector, NewtonRaphsonSolver> x0 = new ValueParam<>(this,
-            null, "x0", "initial value");
+    public final ValueParam<Double, NewtonRaphsonSolver> tol = new ValueParam<>(this, 1e-3, "tol");
+    public final ValueParam<Integer, NewtonRaphsonSolver> maxIt = new ValueParam<>(this, 100, "maxIt");
+    public final ValueParam<LineSearch, NewtonRaphsonSolver> lineSearch =
+            new ValueParam<>(this, BacktrackLineSearch.newSearch(), "lineSearch");
+    public final ValueParam<RFunction, NewtonRaphsonSolver> f = new ValueParam<>(this, null, "f");
+    public final ValueParam<RDerivative, NewtonRaphsonSolver> d1f = new ValueParam<>(this, null, "d1f");
+    public final ValueParam<RHessian, NewtonRaphsonSolver> d2f = new ValueParam<>(this, null, "d2f");
+    public final ValueParam<DVector, NewtonRaphsonSolver> x0 = new ValueParam<>(this, null, "x0");
 
     private DVector sol;
 

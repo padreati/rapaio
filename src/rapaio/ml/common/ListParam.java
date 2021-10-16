@@ -39,14 +39,12 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
     private final List<T> defaultValues;
     private final List<T> values = new ArrayList<>();
     private final String name;
-    private final String description;
     private final SBiFunction<List<T>, List<T>, Boolean> validator;
 
-    public ListParam(S params, List<T> defaultValues, String name, String description, SBiFunction<List<T>, List<T>, Boolean> validator) {
+    public ListParam(S params, List<T> defaultValues, String name, SBiFunction<List<T>, List<T>, Boolean> validator) {
         this.params = params;
         this.defaultValues = defaultValues;
         this.name = name;
-        this.description = description;
         this.validator = validator;
         set(defaultValues);
     }
@@ -123,11 +121,6 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
     @Override
     public String name() {
         return name;
-    }
-
-    @Override
-    public String description() {
-        return description;
     }
 
     @Override

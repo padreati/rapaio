@@ -21,9 +21,12 @@
 
 package rapaio.math.optimization.scalar;
 
+import static rapaio.math.MathTools.*;
+
 import java.io.Serial;
 import java.io.Serializable;
 
+import rapaio.math.MathTools;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.util.function.Double2DoubleFunction;
@@ -42,23 +45,38 @@ public class RootFind1D extends ParamSet<RootFind1D> implements Serializable {
     @Serial
     private static final long serialVersionUID = -2933255484925187026L;
 
-    public final ValueParam<Double, RootFind1D> x0 = new ValueParam<>(this,
-            Double.NaN, "a", "bracket first point if the algorithm requires brackets or an initial estimation of the root");
-    public final ValueParam<Double, RootFind1D> x1 = new ValueParam<>(this,
-            Double.NaN, "b", "bracket second point if the agorithm requires brackets or a second estimator for the root");
-    public final ValueParam<Double, RootFind1D> eps = new ValueParam<>(this,
-            1e-15, "eps", "tolerance for convergence approximation of the solution");
-    public final ValueParam<Integer, RootFind1D> maxIter = new ValueParam<>(this,
-            100_000, "maxIter", "maximum number of iterations");
-    public final ValueParam<Double, RootFind1D> k1 = new ValueParam<>(this,
-            0.1, "k1", "k1 parameter for method brent", value -> value > 0 && Double.isFinite(value));
-    public final ValueParam<Double, RootFind1D> k2 = new ValueParam<>(this,
-            2.0, "k2", "k2 parameter for method brent", value -> value >= 1.0 && value <= 1.5 + 0.5 * Math.sqrt(5));
-    public final ValueParam<Double, RootFind1D> n0 = new ValueParam<>(this,
-            1.0, "n0", "n0 parameter for method brent only", value -> value >= 0 && Double.isFinite(value));
-
-    public final ValueParam<Method, RootFind1D> method = new ValueParam<>(this,
-            Method.ITP, "method", "method usd for scalar root finding");
+    /**
+     * Bracket first point if the algorithm requires brackets or an initial estimation of the root.
+     */
+    public final ValueParam<Double, RootFind1D> x0 = new ValueParam<>(this, Double.NaN, "a");
+    /**
+     * Bracket second point if the agorithm requires brackets or a second estimator for the root
+     */
+    public final ValueParam<Double, RootFind1D> x1 = new ValueParam<>(this, Double.NaN, "b");
+    /**
+     * Tolerance for convergence approximation of the solution.
+     */
+    public final ValueParam<Double, RootFind1D> eps = new ValueParam<>(this, 1e-15, "eps");
+    /**
+     * Maximum number of iterations.
+     */
+    public final ValueParam<Integer, RootFind1D> maxIter = new ValueParam<>(this, 100_000, "maxIter");
+    /**
+     * k1 parameter for method Brent.
+     */
+    public final ValueParam<Double, RootFind1D> k1 = new ValueParam<>(this, 0.1, "k1", v -> v > 0 && Double.isFinite(v));
+    /**
+     * k2 parameter for method Brent.
+     */
+    public final ValueParam<Double, RootFind1D> k2 = new ValueParam<>(this, 2.0, "k2", v -> v >= 1.0 && v <= 1.5 + 0.5 * sqrt(5));
+    /**
+     * n0 parameter for method Brent.
+     */
+    public final ValueParam<Double, RootFind1D> n0 = new ValueParam<>(this, 1.0, "n0", v -> v >= 0 && Double.isFinite(v));
+    /**
+     * Method usd for scalar root finding
+     */
+    public final ValueParam<Method, RootFind1D> method = new ValueParam<>(this, Method.ITP, "method");
 
     private double x;
     private boolean converged;

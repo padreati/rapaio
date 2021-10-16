@@ -46,14 +46,14 @@ public class KnnRegressionTest {
                 .k.set(10)
                 .distance.set(new EuclideanDistance())
                 .wdistance.set(new EuclideanDistance())
-                .tol.set(1e-10)
+                .eps.set(1e-10)
                 .kernel.set(KnnRegression.Kernel.COS);
 
         KnnRegression m2 = m1.newInstance();
         assertEquals(10, m2.k.get());
         assertEquals(new EuclideanDistance().name(), m2.distance.get().name());
         assertEquals(new EuclideanDistance().name(), m2.wdistance.get().name());
-        assertEquals(1e-10, m2.tol.get());
+        assertEquals(1e-10, m2.eps.get());
         assertEquals(KnnRegression.Kernel.COS.name(), m2.kernel.get().name());
     }
 
@@ -65,7 +65,7 @@ public class KnnRegressionTest {
         for (KnnRegression.Kernel kernel : KnnRegression.Kernel.values()) {
             KnnRegression model = KnnRegression.newModel()
                     .k.set(1)
-                    .tol.set(1e-100)
+                    .eps.set(1e-100)
                     .kernel.set(kernel);
 
             model.fit(SolidFrame.byVars(x, y), "y");

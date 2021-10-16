@@ -53,20 +53,36 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
     @Serial
     private static final long serialVersionUID = 6935528214774334177L;
 
-    public final ValueParam<Double, SteepestDescentSolver> tol = new ValueParam<>(this,
-            1e-10, "tol", "Tolerance error admissible for accepting a convergent solution");
-    public final ValueParam<Integer, SteepestDescentSolver> maxIt = new ValueParam<>(this,
-            100_000, "maxIt", "Maximum number of iterations");
+    /**
+     * Tolerance error admissible for accepting a convergent solution.
+     */
+    public final ValueParam<Double, SteepestDescentSolver> tol = new ValueParam<>(this, 1e-10, "tol");
 
-    public final ValueParam<LineSearch, SteepestDescentSolver> lineSearch = new ValueParam<>(this,
-            BacktrackLineSearch.newSearch(), "lineSearch", "Line search algorithm");
+    /**
+     * Maximum number of iterations.
+     */
+    public final ValueParam<Integer, SteepestDescentSolver> maxIt = new ValueParam<>(this, 100_000, "maxIt");
 
-    public final ValueParam<RFunction, SteepestDescentSolver> f = new ValueParam<>(this,
-            null, "f", "function to be optimized");
-    public final ValueParam<RDerivative, SteepestDescentSolver> d1f = new ValueParam<>(this,
-            null, "d1f", "function's derivative");
-    public final ValueParam<DVector, SteepestDescentSolver> x0 = new ValueParam<>(this,
-            null, "x0", "initial value");
+    /**
+     * Line search algorithm
+     */
+    public final ValueParam<LineSearch, SteepestDescentSolver> lineSearch =
+            new ValueParam<>(this, BacktrackLineSearch.newSearch(), "lineSearch");
+
+    /**
+     * Function to be optimized.
+     */
+    public final ValueParam<RFunction, SteepestDescentSolver> f = new ValueParam<>(this, null, "f");
+
+    /**
+     * Function's derivative
+     */
+    public final ValueParam<RDerivative, SteepestDescentSolver> d1f = new ValueParam<>(this,null, "d1f");
+
+    /**
+     * Initial value
+     */
+    public final ValueParam<DVector, SteepestDescentSolver> x0 = new ValueParam<>(this,null, "x0");
 
     private DVector sol;
 

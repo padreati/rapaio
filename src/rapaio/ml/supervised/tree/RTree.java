@@ -43,7 +43,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
-import rapaio.experiment.ml.regression.tree.GBTRtree;
+import rapaio.ml.supervised.boost.GBTRtree;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.MultiParam;
 import rapaio.ml.common.ValueParam;
@@ -73,20 +73,20 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RegressionHookInfo>
     public static RTree newDecisionStump() {
         return new RTree()
                 .maxDepth.set(2)
-                .search.add(VarType.DOUBLE, Search.NumericBinary)
-                .search.add(VarType.INT, Search.NumericBinary)
-                .search.add(VarType.BINARY, Search.NumericBinary)
-                .search.add(VarType.NOMINAL, Search.NominalBinary)
+                .test.add(VarType.DOUBLE, Search.NumericBinary)
+                .test.add(VarType.INT, Search.NumericBinary)
+                .test.add(VarType.BINARY, Search.NumericBinary)
+                .test.add(VarType.NOMINAL, Search.NominalBinary)
                 .splitter.set(Splitter.Majority);
     }
 
     public static RTree newC45() {
         return new RTree()
                 .maxDepth.set(Integer.MAX_VALUE)
-                .search.add(VarType.DOUBLE, Search.NumericBinary)
-                .search.add(VarType.INT, Search.NumericBinary)
-                .search.add(VarType.BINARY, Search.NumericBinary)
-                .search.add(VarType.NOMINAL, Search.NominalFull)
+                .test.add(VarType.DOUBLE, Search.NumericBinary)
+                .test.add(VarType.INT, Search.NumericBinary)
+                .test.add(VarType.BINARY, Search.NumericBinary)
+                .test.add(VarType.NOMINAL, Search.NominalFull)
                 .splitter.set(Splitter.Random)
                 .minCount.set(2);
     }
@@ -94,10 +94,10 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RegressionHookInfo>
     public static RTree newCART() {
         return new RTree()
                 .maxDepth.set(Integer.MAX_VALUE)
-                .search.add(VarType.DOUBLE, Search.NumericBinary)
-                .search.add(VarType.INT, Search.NumericBinary)
-                .search.add(VarType.BINARY, Search.NumericBinary)
-                .search.add(VarType.NOMINAL, Search.NominalBinary)
+                .test.add(VarType.DOUBLE, Search.NumericBinary)
+                .test.add(VarType.INT, Search.NumericBinary)
+                .test.add(VarType.BINARY, Search.NumericBinary)
+                .test.add(VarType.NOMINAL, Search.NominalBinary)
                 .splitter.set(Splitter.Random)
                 .minCount.set(1);
     }
@@ -114,45 +114,45 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RegressionHookInfo>
         DEFAULT_TEST_MAP.put(VarType.STRING, Search.Ignore);
     }
 
-    public final ValueParam<Integer, RTree> minCount = new ValueParam<>(this, 1,
-            "minCount",
-            "Minimum number of observations in a final node",
-            x -> x != null && x >= 1);
+    /**
+     * Minimum number of observations in a leaf node
+     */
+    public final ValueParam<Integer, RTree> minCount = new ValueParam<>(this, 1, "minCount", x -> x != null && x >= 1);
 
-    public final ValueParam<Integer, RTree> maxDepth = new ValueParam<>(this, Integer.MAX_VALUE,
-            "maxDepth",
-            "Maximum depth of the tree",
-            x -> x != null && x > 0);
+    /**
+     * Maximum depth of the tree
+     */
+    public final ValueParam<Integer, RTree> maxDepth = new ValueParam<>(this, Integer.MAX_VALUE, "maxDepth", x -> x != null && x > 0);
 
-    public final ValueParam<Integer, RTree> maxSize = new ValueParam<>(this, Integer.MAX_VALUE,
-            "maxSize",
-            "Maximum number of nodes a tree is grown",
-            x -> x != null && x > 0);
+    /**
+     * Maximum number of nodes a tree is grown
+     */
+    public final ValueParam<Integer, RTree> maxSize = new ValueParam<>(this, Integer.MAX_VALUE, "maxSize", x -> x != null && x > 0);
 
-    public final ValueParam<Double, RTree> minScore = new ValueParam<>(this, 1e-30,
-            "minScore",
-            "Minimum quantity a split must gain to proceed further",
-            Double::isFinite);
+    /**
+     * Minimum quantity a split must gain to proceed further
+     */
+    public final ValueParam<Double, RTree> minScore = new ValueParam<>(this, 1e-30, "minScore", Double::isFinite);
 
-    public final ValueParam<Splitter, RTree> splitter = new ValueParam<>(this, Splitter.Ignore,
-            "splitter",
-            "Method used to distribute observations with missing values on test variable on splitting a node",
-            Objects::nonNull);
+    /**
+     * Method used to distribute observations with missing values on test variable on splitting a node
+     */
+    public final ValueParam<Splitter, RTree> splitter = new ValueParam<>(this, Splitter.Ignore, "splitter", Objects::nonNull);
 
-    public final ValueParam<RTreeLoss, RTree> loss = new ValueParam<>(this, new L2Loss(),
-            "loss",
-            "Loss function",
-            Objects::nonNull);
+    /**
+     * Loss function
+     */
+    public final ValueParam<RTreeLoss, RTree> loss = new ValueParam<>(this, new L2Loss(), "loss", Objects::nonNull);
 
-    public final ValueParam<VarSelector, RTree> varSelector = new ValueParam<>(this, VarSelector.all(),
-            "varSelector",
-            "Variable selection method used when selecting test variables at each node",
-            Objects::nonNull);
+    /**
+     * Variable selection method used to obtain test variables at each node
+     */
+    public final ValueParam<VarSelector, RTree> varSelector = new ValueParam<>(this, VarSelector.all(), "varSelector", Objects::nonNull);
 
-    public final MultiParam<VarType, Search, RTree> search = new MultiParam<>(this, DEFAULT_TEST_MAP,
-            "testMap",
-            "Map with test method for each variable type",
-            Objects::nonNull);
+    /**
+     * Map with test method for each variable type
+     */
+    public final MultiParam<VarType, Search, RTree> test = new MultiParam<>(this, DEFAULT_TEST_MAP, "testMap", Objects::nonNull);
 
     // tree root node
 
@@ -258,7 +258,7 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RegressionHookInfo>
         }
 
         List<Candidate> candidates = stream
-                .map(testCol -> search.get(df.type(testCol))
+                .map(testCol -> test.get(df.type(testCol))
                         .computeCandidate(this, df, weights, testCol, firstTargetName())
                         .orElse(null))
                 .filter(Objects::nonNull)
@@ -295,15 +295,17 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RegressionHookInfo>
     private DoublePair predict(int row, Frame df, Node node) {
 
         // if we are at a leaf node we simply return what we found there
-        if (node.leaf)
+        if (node.leaf) {
             return DoublePair.of(node.value, node.weight);
+        }
 
         // if is an interior node, we check to see if there is a child
         // which can handle the instance
-        for (Node child : node.children)
+        for (Node child : node.children) {
             if (child.predicate.test(row, df)) {
                 return predict(row, df, child);
             }
+        }
 
         // so is a missing value for the current test feature
 
@@ -352,7 +354,9 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RegressionHookInfo>
 
         sb.append(floatFlex(node.value));
         sb.append(" (").append(floatFlex(node.weight)).append(") ");
-        if (node.leaf) sb.append(" *");
+        if (node.leaf) {
+            sb.append(" *");
+        }
         sb.append("\n");
 
 //        children

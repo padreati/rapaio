@@ -59,13 +59,15 @@ public class HoughTransform extends ParamSet<HoughTransform> {
     @Serial
     private static final long serialVersionUID = -7943372791156217527L;
 
-    public final ValueParam<Integer, HoughTransform> thetaSize = new ValueParam<>(this,
-            180, "thetaSize", "Number of values to evaluate theta in Hough Space distributed" +
-            " equally in range 0 to 180.");
-
-    public final ValueParam<Integer, HoughTransform> rhoSize = new ValueParam<>(this,
-            100, "rhoSize", "Number of values to evaluate distance (rho) to normal in Hough Space " +
-            "distributed equally in range [-d, d], where d is the biggest diagonal of the image.");
+    /**
+     * Number of values to evaluate theta in Hough Space distributed equally in range 0 to 180.
+     */
+    public final ValueParam<Integer, HoughTransform> thetaSize = new ValueParam<>(this, 180, "thetaSize");
+    /**
+     * Number of values to evaluate distance (rho) to normal in Hough Space distributed equally in range [-d, d],
+     * where d is the biggest diagonal of the image.
+     */
+    public final ValueParam<Integer, HoughTransform> rhoSize = new ValueParam<>(this, 100, "rhoSize");
 
     private double width;
     private double height;

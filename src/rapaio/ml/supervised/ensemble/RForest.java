@@ -84,14 +84,15 @@ public class RForest extends RegressionModel<RForest, RegressionResult, Regressi
     @Serial
     private static final long serialVersionUID = -3926256335736143438L;
 
+    /**
+     * Weak learner model
+     */
     public final Param<RegressionModel<?, ?, ?>, RForest> model = new ValueParam<>(this,
             RTree.newCART()
                     .varSelector.set(VarSelector.auto())
                     .splitter.set(Splitter.Random)
                     .minCount.set(1),
-            "model",
-            "Weak learner model",
-            Objects::nonNull);
+            "model", Objects::nonNull);
 
     private final List<RegressionModel<?, ?, ?>> regressions = new ArrayList<>();
 

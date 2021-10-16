@@ -76,12 +76,12 @@ public class RTreeTest {
         RTree rt1 = RTree.newCART()
                 .maxDepth.set(2)
                 .maxSize.set(10)
-                .search.add(VarType.BINARY, Search.Ignore)
-                .search.add(VarType.INT, Search.Ignore)
-                .search.add(VarType.LONG, Search.Ignore)
-                .search.add(VarType.DOUBLE, Search.Ignore)
-                .search.add(VarType.NOMINAL, Search.Ignore)
-                .search.add(VarType.STRING, Search.Ignore)
+                .test.add(VarType.BINARY, Search.Ignore)
+                .test.add(VarType.INT, Search.Ignore)
+                .test.add(VarType.LONG, Search.Ignore)
+                .test.add(VarType.DOUBLE, Search.Ignore)
+                .test.add(VarType.NOMINAL, Search.Ignore)
+                .test.add(VarType.STRING, Search.Ignore)
                 .loss.set(new L2Loss())
                 .splitter.set(Splitter.Ignore)
                 .varSelector.set(VarSelector.auto())
@@ -96,7 +96,7 @@ public class RTreeTest {
 
         assertEquals(2, rt2.maxDepth.get());
         assertEquals(10, rt2.maxSize.get());
-        assertEquals(rt1.search.get(), rt2.search.get());
+        assertEquals(rt1.test.get(), rt2.test.get());
         assertEquals("L2", rt2.loss.get().name());
         assertEquals("Ignore", rt2.splitter.get().name());
         assertEquals("VarSelector[AUTO]", rt2.varSelector.get().name());
@@ -114,7 +114,7 @@ public class RTreeTest {
                 "varSelector=VarSelector[AUTO]}", rt2.fullName());
 
         Map<VarType, Search> emptyMap = new HashMap<>();
-        assertEquals(emptyMap, RTree.newDecisionStump().search.set(emptyMap).search.get());
+        assertEquals(emptyMap, RTree.newDecisionStump().test.set(emptyMap).test.get());
     }
 
     @Test

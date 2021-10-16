@@ -53,20 +53,21 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
     @Serial
     private static final long serialVersionUID = 6868244273014714128L;
 
-    public final ValueParam<Double, RidgeRegressionModel> lambda = new ValueParam<>(this, 1.0,
-            "lambda",
-            "Coefficient of the ridge penalry term.",
-            Double::isFinite);
+    /**
+     * Coefficient of the ridge penalty term (L2 regularization).
+     */
+    public final ValueParam<Double, RidgeRegressionModel> lambda = new ValueParam<>(this, 1.0, "lambda", Double::isFinite);
 
-    public final ValueParam<Centering, RidgeRegressionModel> centering = new ValueParam<>(this, Centering.MEAN,
-            "centering",
-            "Type of variable centering",
-            Objects::nonNull);
+    /**
+     * Type of variable centering
+     */
+    public final ValueParam<Centering, RidgeRegressionModel> centering =
+            new ValueParam<>(this, Centering.MEAN, "centering", Objects::nonNull);
 
-    public final ValueParam<Scaling, RidgeRegressionModel> scaling = new ValueParam<>(this, Scaling.SD,
-            "scaling",
-            "Type if the variable scaling.",
-            Objects::nonNull);
+    /**
+     * Type of variable scaling
+     */
+    public final ValueParam<Scaling, RidgeRegressionModel> scaling = new ValueParam<>(this, Scaling.SD, "scaling", Objects::nonNull);
 
     private Map<String, Double> inputMean;
     private Map<String, Double> inputScale;
@@ -183,7 +184,8 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
                                 continue;
                             }
                             int offset = k >= interceptIndex ? 1 : 0;
-                            interceptValue -= scaledBeta.get(k - offset, i) * targetScale * inputMean.get(inputNames[k]) / inputScale.get(inputNames[k]);
+                            interceptValue -= scaledBeta.get(k - offset, i) * targetScale * inputMean.get(inputNames[k]) / inputScale.get(
+                                    inputNames[k]);
                         }
                         beta.set(j, i, interceptValue);
                     } else {

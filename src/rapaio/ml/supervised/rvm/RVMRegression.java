@@ -73,7 +73,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         ONLINE_PRUNING
     }
 
-    private record Factory(
+    public static record Factory(
             String key,
             int index,
             DVector phii,
@@ -173,25 +173,37 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
     @Serial
     private static final long serialVersionUID = 9165148257709665706L;
 
+    /**
+     * Feature factory providers. Those providers are used to produce features learned by RVM model
+     */
     public ListParam<FactoryProvider, RVMRegression> providers = new ListParam<>(this,
-            List.of(new InterceptProvider(), new RBFProvider(VarDouble.wrap(1), 1)),
-            "providers", "Feature factory providers",
-            (fp1, fp2) -> true);
+            List.of(new InterceptProvider(), new RBFProvider(VarDouble.wrap(1), 1)), "providers", (fp1, fp2) -> true);
 
+    /**
+     * Method used to fit model
+     */
     public ValueParam<Method, RVMRegression> method = new ValueParam<>(this, Method.EVIDENCE_APPROXIMATION,
-            "method", "Method used to fit the model.");
+            "method");
 
-    public ValueParam<Double, RVMRegression> fitThreshold = new ValueParam<>(this, 1e-10,
-            "fitThreshold", "Fit threshold used in convergence criteria.");
+    /**
+     * Fit threshold used in convergence criteria.
+     */
+    public ValueParam<Double, RVMRegression> fitThreshold = new ValueParam<>(this, 1e-10, "fitThreshold");
 
-    public ValueParam<Double, RVMRegression> alphaThreshold = new ValueParam<>(this, 1e9,
-            "alphaThreshold", "Fit threshold for setting an alpha weight's prior to infinity.");
+    /**
+     * Fit threshold for setting an alpha weight's prior to infinity.
+     */
+    public ValueParam<Double, RVMRegression> alphaThreshold = new ValueParam<>(this, 1e9, "alphaThreshold");
 
-    public ValueParam<Integer, RVMRegression> maxIter = new ValueParam<>(this, 10_000,
-            "maxIter", "Max number of iterations");
+    /**
+     * Max number of iterations
+     */
+    public ValueParam<Integer, RVMRegression> maxIter = new ValueParam<>(this, 10_000, "maxIter");
 
-    public ValueParam<Integer, RVMRegression> maxFailures = new ValueParam<>(this, 10_000,
-            "maxFailures", "Maximum number of failures for a feature, before it is pruned.");
+    /**
+     * Maximum number of failures for a feature, before it is pruned.
+     */
+    public ValueParam<Integer, RVMRegression> maxFailures = new ValueParam<>(this, 10_000, "maxFailures");
 
     private int[] featureIndexes;
     private int[] trainingIndexes;
@@ -1170,15 +1182,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             }
         }
 
-        private static final class ActiveFeature {
-
-            final int index;
-            final DVector vector;
-
-            public ActiveFeature(int index, DVector vector) {
-                this.index = index;
-                this.vector = vector;
-            }
+        private record ActiveFeature(int index, DVector vector) {
         }
     }
 }
