@@ -24,7 +24,7 @@ package rapaio.ml.eval.metric;
 import java.io.Serializable;
 
 import rapaio.data.Var;
-import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.supervised.ClassifierResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.

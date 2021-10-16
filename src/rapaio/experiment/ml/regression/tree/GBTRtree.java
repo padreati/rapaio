@@ -24,8 +24,8 @@ package rapaio.experiment.ml.regression.tree;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.loss.Loss;
-import rapaio.ml.regression.RegressionModel;
-import rapaio.ml.regression.RegressionResult;
+import rapaio.ml.supervised.RegressionModel;
+import rapaio.ml.supervised.RegressionResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/21/19.

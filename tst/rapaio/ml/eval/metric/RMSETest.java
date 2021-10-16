@@ -32,7 +32,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
-import rapaio.ml.regression.linear.LinearRegressionModel;
+import rapaio.ml.supervised.linear.LinearRegressionModel;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/17.

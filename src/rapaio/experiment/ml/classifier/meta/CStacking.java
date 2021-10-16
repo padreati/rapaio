@@ -36,11 +36,11 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.ml.classifier.ClassifierModel;
-import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.classifier.DefaultHookInfo;
-import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.supervised.ClassifierHookInfo;
+import rapaio.ml.supervised.ClassifierModel;
+import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.supervised.ensemble.CForest;
 import rapaio.printer.Printable;
 
 /**
@@ -48,7 +48,7 @@ import rapaio.printer.Printable;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
-public class CStacking extends ClassifierModel<CStacking, ClassifierResult, DefaultHookInfo> implements Printable {
+public class CStacking extends ClassifierModel<CStacking, ClassifierResult, ClassifierHookInfo> implements Printable {
 
     @Serial
     private static final long serialVersionUID = -9087871586729573030L;

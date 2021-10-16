@@ -24,7 +24,7 @@ package rapaio.ml.eval.metric;
 import java.io.Serial;
 
 import rapaio.data.Var;
-import rapaio.ml.regression.RegressionResult;
+import rapaio.ml.supervised.RegressionResult;
 
 /**
  * Regression evaluation tool which enables one to compute

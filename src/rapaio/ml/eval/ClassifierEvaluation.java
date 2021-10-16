@@ -32,8 +32,6 @@ import java.util.concurrent.Future;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.ml.classifier.ClassifierModel;
-import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.ListParam;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
@@ -43,6 +41,8 @@ import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.Split;
 import rapaio.ml.eval.split.SplitStrategy;
 import rapaio.ml.eval.split.StratifiedKFold;
+import rapaio.ml.supervised.ClassifierModel;
+import rapaio.ml.supervised.ClassifierResult;
 import rapaio.sys.WS;
 
 /**

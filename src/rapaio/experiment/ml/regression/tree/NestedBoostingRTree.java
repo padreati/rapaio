@@ -34,8 +34,8 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
-import rapaio.ml.regression.DefaultHookInfo;
-import rapaio.ml.regression.RegressionResult;
+import rapaio.ml.supervised.RegressionHookInfo;
+import rapaio.ml.supervised.RegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
@@ -43,7 +43,7 @@ import rapaio.printer.opt.POption;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/19.
  */
 public class NestedBoostingRTree
-        extends GBTRtree<NestedBoostingRTree, RegressionResult, DefaultHookInfo> {
+        extends GBTRtree<NestedBoostingRTree, RegressionResult, RegressionHookInfo> {
 
     @Serial
     private static final long serialVersionUID = 1864784340491461993L;

@@ -31,7 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
-import rapaio.ml.classifier.rule.OneRule;
+import rapaio.ml.supervised.rule.OneRule;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/28/19.

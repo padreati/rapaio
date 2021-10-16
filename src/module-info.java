@@ -64,28 +64,22 @@ open module rapaio {
     exports rapaio.ml.clustering;
     exports rapaio.ml.clustering.km;
 
-    exports rapaio.ml.classifier;
-    exports rapaio.ml.classifier.linear;
-    exports rapaio.ml.classifier.linear.binarylogistic;
-    exports rapaio.ml.classifier.bayes;
-    exports rapaio.ml.classifier.bayes.nb;
-    exports rapaio.ml.classifier.svm;
-    exports rapaio.ml.classifier.rule;
-    exports rapaio.ml.classifier.rule.onerule;
-    exports rapaio.ml.classifier.tree;
-    exports rapaio.ml.classifier.tree.ctree;
-    exports rapaio.ml.classifier.boost;
-    exports rapaio.ml.classifier.ensemble;
-
-    exports rapaio.ml.regression;
-    exports rapaio.ml.regression.linear;
-    exports rapaio.ml.regression.linear.impl;
-    exports rapaio.ml.regression.simple;
-    exports rapaio.ml.regression.tree;
-    exports rapaio.ml.regression.tree.rtree;
-    exports rapaio.ml.regression.boost;
-    exports rapaio.ml.regression.rvm;
-    exports rapaio.ml.regression.ensemble;
+    exports rapaio.ml.supervised;
+    exports rapaio.ml.supervised.linear;
+    exports rapaio.ml.supervised.linear.binarylogistic;
+    exports rapaio.ml.supervised.linear.impl;
+    exports rapaio.ml.supervised.bayes;
+    exports rapaio.ml.supervised.bayes.nb;
+    exports rapaio.ml.supervised.svm;
+    exports rapaio.ml.supervised.rule;
+    exports rapaio.ml.supervised.rule.onerule;
+    exports rapaio.ml.supervised.tree;
+    exports rapaio.ml.supervised.tree.ctree;
+    exports rapaio.ml.supervised.boost;
+    exports rapaio.ml.supervised.ensemble;
+    exports rapaio.ml.supervised.simple;
+    exports rapaio.ml.supervised.tree.rtree;
+    exports rapaio.ml.supervised.rvm;
 
     exports rapaio.printer;
     exports rapaio.printer.opt;

@@ -32,9 +32,9 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.DefaultHookInfo;
-import rapaio.ml.regression.RegressionModel;
-import rapaio.ml.regression.RegressionResult;
+import rapaio.ml.supervised.RegressionHookInfo;
+import rapaio.ml.supervised.RegressionModel;
+import rapaio.ml.supervised.RegressionResult;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -44,7 +44,7 @@ import rapaio.printer.opt.POption;
  */
 @Deprecated
 public class MultiLayerPerceptronRegressionModel
-        extends RegressionModel<MultiLayerPerceptronRegressionModel, RegressionResult, DefaultHookInfo>
+        extends RegressionModel<MultiLayerPerceptronRegressionModel, RegressionResult, RegressionHookInfo>
         implements Printable {
 
     @Serial

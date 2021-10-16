@@ -37,9 +37,9 @@ import rapaio.data.VarNominal;
 import rapaio.data.VarType;
 import rapaio.io.ArffPersistence;
 import rapaio.io.Csv;
-import rapaio.ml.classifier.ClassifierModel;
-import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.classifier.ensemble.CForest;
+import rapaio.ml.supervised.ClassifierModel;
+import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.supervised.ensemble.CForest;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

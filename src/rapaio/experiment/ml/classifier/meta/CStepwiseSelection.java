@@ -35,11 +35,11 @@ import java.util.stream.Collectors;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
-import rapaio.ml.classifier.ClassifierModel;
-import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.classifier.DefaultHookInfo;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.eval.metric.Confusion;
+import rapaio.ml.supervised.ClassifierHookInfo;
+import rapaio.ml.supervised.ClassifierModel;
+import rapaio.ml.supervised.ClassifierResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
@@ -48,7 +48,7 @@ import rapaio.sys.WS;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/15.
  */
 public class CStepwiseSelection
-        extends ClassifierModel<CStepwiseSelection, ClassifierResult, DefaultHookInfo> implements Printable {
+        extends ClassifierModel<CStepwiseSelection, ClassifierResult, ClassifierHookInfo> implements Printable {
 
     @Serial
     private static final long serialVersionUID = 2642562123626893974L;

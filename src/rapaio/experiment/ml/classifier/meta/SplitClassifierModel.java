@@ -32,9 +32,9 @@ import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
-import rapaio.ml.classifier.ClassifierModel;
-import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.classifier.DefaultHookInfo;
+import rapaio.ml.supervised.ClassifierHookInfo;
+import rapaio.ml.supervised.ClassifierModel;
+import rapaio.ml.supervised.ClassifierResult;
 import rapaio.printer.Printable;
 
 /**
@@ -42,7 +42,7 @@ import rapaio.printer.Printable;
  */
 @Deprecated
 public class SplitClassifierModel
-        extends ClassifierModel<SplitClassifierModel, ClassifierResult, DefaultHookInfo> implements Printable {
+        extends ClassifierModel<SplitClassifierModel, ClassifierResult, ClassifierHookInfo> implements Printable {
 
     @Serial
     private static final long serialVersionUID = 3332377951136731541L;

@@ -22,7 +22,7 @@
 package rapaio.ml.common.distance;
 
 import static rapaio.math.MathTools.*;
-import static rapaio.math.linear.Algebra.copy;
+import static rapaio.math.linear.Algebra.*;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
