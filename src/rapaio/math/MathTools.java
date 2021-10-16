@@ -958,6 +958,10 @@ public class MathTools {
         return Math.rint(x);
     }
 
+    public static double cos(double radians) {
+        return Math.cos(radians);
+    }
+
     /**
      * Tests if the double values are approximately equal
      *

@@ -540,6 +540,14 @@ public interface DVector extends Serializable, Printable {
      */
     double nanvariance();
 
+    int amin();
+
+    double min();
+
+    int amax();
+
+    double max();
+
     /**
      * Apply a double to double function on all the values from the vector.
      * If a new copy of the result is needed use {@link Algebra#copy()} parameter.

@@ -42,6 +42,7 @@ import java.util.stream.Collector;
 
 import rapaio.data.ops.DVarOp;
 import rapaio.data.ops.DoubleDVarOp;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -302,8 +303,9 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         }
         this.data = new double[capacity];
         this.rows = rows;
-        if (fill != 0)
+        if (fill != 0) {
             Arrays.fill(data, 0, rows, fill);
+        }
     }
 
     public static Collector<Double, VarDouble, VarDouble> collector() {
@@ -353,8 +355,9 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         if (minCapacity > data.length) {
             int oldCapacity = data.length;
             int newCapacity = oldCapacity > 0xFFFF ? oldCapacity << 1 : oldCapacity + (oldCapacity >> 1);
-            if (newCapacity - minCapacity < 0)
+            if (newCapacity - minCapacity < 0) {
                 newCapacity = minCapacity;
+            }
             data = Arrays.copyOf(data, newCapacity);
         }
     }
@@ -551,6 +554,16 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         copy.data = Arrays.copyOf(data, rows);
         copy.rows = rows;
         return copy;
+    }
+
+    @Override
+    public DVectorDense dv() {
+        return new DVectorDense(0, rows, data);
+    }
+
+    @Override
+    public DVectorDense dvcp() {
+        return new DVectorDense(0, rows, Arrays.copyOf(data, rows));
     }
 
     @Serial

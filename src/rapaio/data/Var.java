@@ -35,6 +35,8 @@ import rapaio.data.filter.VFilter;
 import rapaio.data.ops.DVarOp;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 
@@ -343,6 +345,22 @@ public interface Var extends Serializable, Printable {
     Var copy();
 
     /**
+     * Wrap double values into a {@link DVectorDense} instance.
+     * If wrapping is not possible, a copy is created. Only {@link VarDouble}
+     * allows wrapping of values.
+     *
+     * @return new wrapping DVector
+     */
+    DVectorDense dv();
+
+    /**
+     * Copy double values into a {@link DVectorDense} instance.
+     *
+     * @return a DVector which contains a copy of the values
+     */
+    DVectorDense dvcp();
+
+    /**
      * Builds a new empty instance of given size
      *
      * @param rows size of the new variable
@@ -429,12 +447,15 @@ public interface Var extends Serializable, Printable {
      * @return true if type, size and content is identical
      */
     default boolean deepEquals(Var var) {
-        if (!Objects.equals(name(), var.name()))
+        if (!Objects.equals(name(), var.name())) {
             return false;
-        if (size() != var.size())
+        }
+        if (size() != var.size()) {
             return false;
-        if (type() != var.type())
+        }
+        if (type() != var.type()) {
             return false;
+        }
 
         for (int i = 0; i < size(); i++) {
             if (isMissing(i) != var.isMissing(i)) {

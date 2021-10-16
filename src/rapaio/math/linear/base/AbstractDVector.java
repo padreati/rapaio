@@ -457,6 +457,50 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
+    public int amin() {
+        int amin = 0;
+        for (int i = 1; i < size(); i++) {
+            if (get(amin) > get(i)) {
+                amin = i;
+            }
+        }
+        return amin;
+    }
+
+    @Override
+    public double min() {
+        double min = get(0);
+        for (int i = 0; i < size(); i++) {
+            if (min > get(i)) {
+                min = get(i);
+            }
+        }
+        return min;
+    }
+
+    @Override
+    public int amax() {
+        int amax = 0;
+        for (int i = 0; i < size(); i++) {
+            if (get(amax) < get(i)) {
+                amax = i;
+            }
+        }
+        return amax;
+    }
+
+    @Override
+    public double max() {
+        double max = get(0);
+        for (int i = 0; i < size(); i++) {
+            if (max < get(i)) {
+                max = get(i);
+            }
+        }
+        return max;
+    }
+
+    @Override
     public DVector apply(Double2DoubleFunction f, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
             double[] copy = new double[size()];
