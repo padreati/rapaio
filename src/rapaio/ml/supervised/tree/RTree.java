@@ -42,7 +42,6 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.ml.supervised.boost.GBTRtree;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.MultiParam;

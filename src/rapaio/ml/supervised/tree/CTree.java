@@ -36,7 +36,6 @@ import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.MultiParam;
 import rapaio.ml.common.ParametricEquals;

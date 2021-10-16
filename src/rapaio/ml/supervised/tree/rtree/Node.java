@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.experiment.ml.common.predicate.RowPredicate;
+import rapaio.ml.supervised.tree.RowPredicate;
 import rapaio.ml.loss.Loss;
 
 /**

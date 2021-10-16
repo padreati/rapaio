@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rapaio.core.tools.DensityVector;
-import rapaio.experiment.ml.common.predicate.RowPredicate;
+import rapaio.ml.supervised.tree.RowPredicate;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/12/20.

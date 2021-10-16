@@ -34,7 +34,7 @@ import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.experiment.ml.common.predicate.RowPredicate;
+import rapaio.ml.supervised.tree.RowPredicate;
 
 public class SplitterTest {
 

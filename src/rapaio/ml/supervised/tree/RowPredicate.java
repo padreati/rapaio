@@ -19,12 +19,13 @@
  *
  */
 
-package rapaio.experiment.ml.common.predicate;
+package rapaio.ml.supervised.tree;
 
 import java.io.Serial;
 import java.io.Serializable;
 
 import rapaio.data.Frame;
+import rapaio.data.VarNominal;
 import rapaio.printer.Format;
 
 /**
@@ -211,7 +212,7 @@ record NominalEqual(String testName, String testValue) implements RowPredicate {
     @Override
     public boolean test(int row, Frame df) {
         if (df.isMissing(row, testName))
-            return false;
+            return testValue.equals(VarNominal.MISSING_VALUE);
         return df.getLabel(row, testName).equals(testValue);
     }
 
@@ -229,7 +230,7 @@ record NominalNotEqual(String testName, String testValue) implements RowPredicat
     @Override
     public boolean test(int row, Frame df) {
         if (df.isMissing(row, testName))
-            return false;
+            return !testValue.equals(VarNominal.MISSING_VALUE);
         return !df.getLabel(row, testName).equals(testValue);
     }
 

@@ -30,7 +30,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.WeightedOnlineStat;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.experiment.ml.common.predicate.RowPredicate;
+import rapaio.ml.supervised.tree.RowPredicate;
 import rapaio.ml.supervised.tree.RTree;
 
 /**

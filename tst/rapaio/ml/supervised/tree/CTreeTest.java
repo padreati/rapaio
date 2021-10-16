@@ -33,7 +33,6 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.ml.supervised.tree.ctree.Candidate;
 import rapaio.ml.supervised.tree.ctree.Node;
 

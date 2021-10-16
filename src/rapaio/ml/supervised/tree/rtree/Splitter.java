@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.mapping.ArrayMapping;
-import rapaio.experiment.ml.common.predicate.RowPredicate;
+import rapaio.ml.supervised.tree.RowPredicate;
 
 /**
  * Regression Tree Splitter. At learning time for each node, multiple

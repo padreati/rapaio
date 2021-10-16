@@ -19,10 +19,16 @@
  *
  */
 
-package rapaio.experiment.ml.common.predicate;
+package rapaio.ml.supervised.tree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import static rapaio.ml.supervised.tree.RowPredicate.binEqual;
+import static rapaio.ml.supervised.tree.RowPredicate.binNotEqual;
+import static rapaio.ml.supervised.tree.RowPredicate.nomEqual;
+import static rapaio.ml.supervised.tree.RowPredicate.nomNotEqual;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
@@ -31,12 +37,20 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
 import rapaio.data.stream.FSpot;
+import rapaio.math.MathTools;
+import rapaio.ml.supervised.tree.RowPredicate;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/21/17.
  */
 public class RowPredicateTest {
+
+    @BeforeEach
+    void beforeEach() {
+        RandomSource.setSeed(42);
+    }
 
     private boolean test(FSpot s, RowPredicate rp) {
         return rp.test(s.row(), s.df());
@@ -45,7 +59,7 @@ public class RowPredicateTest {
     @Test
     void testNumPredicates() {
 
-        Frame df = SolidFrame.byVars(VarDouble.from(50, Math::sqrt).name("x"));
+        Frame df = SolidFrame.byVars(VarDouble.from(50, MathTools::sqrt).name("x"));
 
         // test basic numeric predicates
 
@@ -60,9 +74,6 @@ public class RowPredicateTest {
         assertEquals(34, df.stream().filter(s -> test(s, rp4)).count());
 
         // add some missing values, and test the count sum to be correct
-
-        RandomSource.setSeed(123);
-
         for (int row : SamplingTools.sampleWOR(50, 10)) {
             df.setMissing(row, "x");
         }
@@ -70,7 +81,7 @@ public class RowPredicateTest {
         assertEquals(40, df.stream().filter(s -> test(s, rp1)).count() + df.stream().filter(s -> test(s, rp3)).count());
         assertEquals(40, df.stream().filter(s -> test(s, rp2)).count() + df.stream().filter(s -> test(s, rp4)).count());
 
-        // set all missing to be sure we have 0 passes
+        // set all missing so we have 0 passes
 
         for (int i = 0; i < df.rowCount(); i++) {
             df.setMissing(i, "x");
@@ -87,6 +98,8 @@ public class RowPredicateTest {
         assertEquals("x<4", rp2.toString());
         assertEquals("x>4", rp3.toString());
         assertEquals("x>=4", rp4.toString());
+
+        assertEquals(50, df.stream().filter(s -> test(s, RowPredicate.all())).count());
     }
 
     @Test
@@ -95,7 +108,34 @@ public class RowPredicateTest {
         int[] values = SamplingTools.sampleWR(2, 100);
         SolidFrame df = SolidFrame.byVars(VarBinary.from(values.length, row -> values[row] == 1).name("x"));
 
-        assertEquals(100, df.stream().filter(s -> RowPredicate.binEqual("x", true).test(s.row(), s.df())).count()
-                + df.stream().filter(s -> RowPredicate.binEqual("x", false).test(s.row(), s.df())).count());
+        assertEquals(100, df.stream().filter(s -> binEqual("x", true).test(s.row(), s.df())).count()
+                + df.stream().filter(s -> binEqual("x", false).test(s.row(), s.df())).count());
+
+        assertEquals(100, df.stream().filter(s -> binEqual("x", true).test(s.row(), s.df())).count()
+                + df.stream().filter(s -> binNotEqual("x", true).test(s.row(), s.df())).count());
+
+        assertEquals(100, df.stream().filter(s -> binNotEqual("x", false).test(s.row(), s.df())).count()
+                + df.stream().filter(s -> binEqual("x", false).test(s.row(), s.df())).count());
+
+        assertEquals(100, df.stream().filter(s -> binNotEqual("x", false).test(s.row(), s.df())).count()
+                + df.stream().filter(s -> binNotEqual("x", true).test(s.row(), s.df())).count());
+    }
+
+    @Test
+    void testNominalPredicates() {
+        String[] levels = new String[] {"?", "a", "b", "c"};
+        VarNominal nom = VarNominal.empty(40, levels).name("x");
+        for (int i = 0; i < 40; i++) {
+            nom.setLabel(i, levels[i % 4]);
+        }
+        Frame df = SolidFrame.byVars(nom);
+        assertEquals(10, df.stream().filter(s -> nomEqual("x", levels[0]).test(s.row(), s.df())).count());
+        assertEquals(10, df.stream().filter(s -> nomEqual("x", levels[1]).test(s.row(), s.df())).count());
+        assertEquals(10, df.stream().filter(s -> nomEqual("x", levels[2]).test(s.row(), s.df())).count());
+        assertEquals(10, df.stream().filter(s -> nomEqual("x", levels[3]).test(s.row(), s.df())).count());
+        assertEquals(30, df.stream().filter(s -> nomNotEqual("x", levels[0]).test(s.row(), s.df())).count());
+        assertEquals(30, df.stream().filter(s -> nomNotEqual("x", levels[1]).test(s.row(), s.df())).count());
+        assertEquals(30, df.stream().filter(s -> nomNotEqual("x", levels[2]).test(s.row(), s.df())).count());
+        assertEquals(30, df.stream().filter(s -> nomNotEqual("x", levels[3]).test(s.row(), s.df())).count());
     }
 }

@@ -28,7 +28,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.experiment.ml.common.predicate.RowPredicate;
+import rapaio.ml.supervised.tree.RowPredicate;
 import rapaio.ml.supervised.tree.CTree;
 import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
