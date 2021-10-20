@@ -31,6 +31,7 @@ import java.util.Set;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.math.linear.DMatrix;
+import rapaio.ml.common.distance.Distance;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
@@ -42,13 +43,13 @@ import rapaio.util.collection.IntArrays;
 public enum KMClusterInit implements Serializable {
 
     Forgy {
-        public DMatrix init(KMCluster.Method space, DMatrix m, int k) {
+        public DMatrix init(Distance distance, DMatrix m, int k) {
             return m.mapRows(SamplingTools.sampleWOR(m.rowCount(), k), copy());
         }
     },
     PlusPlus {
         @Override
-        public DMatrix init(KMCluster.Method space, DMatrix m, int k) {
+        public DMatrix init(Distance distance, DMatrix m, int k) {
 
             int[] centroids = IntArrays.newFill(k, -1);
 
@@ -65,9 +66,9 @@ public enum KMClusterInit implements Serializable {
                     if (ids.contains(j)) {
                         continue;
                     }
-                    p[j] = space.distance(m.mapRow(centroids[0]), m.mapRow(j));
+                    p[j] = distance.compute(m.mapRow(centroids[0]), m.mapRow(j));
                     for (int l = 1; l < i; l++) {
-                        p[j] = Math.min(p[j], space.distance(m.mapRow(centroids[l]), m.mapRow(j)));
+                        p[j] = Math.min(p[j], distance.compute(m.mapRow(centroids[l]), m.mapRow(j)));
                     }
                 }
                 // normalize the weights
@@ -83,5 +84,5 @@ public enum KMClusterInit implements Serializable {
         }
     };
 
-    public abstract DMatrix init(KMCluster.Method space, DMatrix m, int k);
+    public abstract DMatrix init(Distance distance, DMatrix m, int k);
 }

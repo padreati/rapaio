@@ -63,7 +63,7 @@ public abstract class StandardDVectorTest {
         x = generateCopy(values);
         y = generateSeq(100);
         z = generateFill(100, 10);
-        m = DMatrix.identity(100).mult(2);
+        m = DMatrix.identity(100).mul(2);
     }
 
     public abstract VType type();

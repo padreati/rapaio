@@ -146,7 +146,7 @@ public class LDA implements Printable {
         DMatrix sb = DMatrix.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.size(); i++) {
             DMatrix cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().sub(mean.asMatrix());
-            sb.add(cm.dot(cm.t()).mult(x[i].rowCount()));
+            sb.add(cm.dot(cm.t()).mul(x[i].rowCount()));
         }
 
         // inverse sw

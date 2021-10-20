@@ -127,8 +127,8 @@ public class LinearAlgebraIdentitiesTests {
                 for(VType vType : vTypes) {
                     var v = randomVector(vType, 400);
 
-                    var x1 = a.mult(v, 1, copy()).t().dot(a);
-                    var x2 = a.t().mult(v, 0, copy()).dot(a);
+                    var x1 = a.mul(v, 1, copy()).t().dot(a);
+                    var x2 = a.t().mul(v, 0, copy()).dot(a);
                     var x3 = a.t().dot(DMatrix.diagonal(v)).dot(a);
 
                     assertTrue(x1.deepEquals(x1.t()));

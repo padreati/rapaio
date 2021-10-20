@@ -29,12 +29,14 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 import rapaio.math.MathTools;
+import rapaio.math.linear.Algebra;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
 import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.math.linear.decomposition.SVDecomposition;
 import rapaio.math.linear.dense.DMatrixMap;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Printer;
@@ -58,15 +60,6 @@ public abstract class AbstractDMatrix implements DMatrix {
         if ((rowCount() != b.rowCount()) || (colCount() != b.colCount())) {
             throw new IllegalArgumentException("Matrices are not conform with this operation.");
         }
-    }
-
-    @Override
-    public DVector map(int index, int axis, AlgebraOption<?>... opts) {
-        return switch (axis) {
-            case 0 -> mapRow(index);
-            case 1 -> mapCol(index);
-            default -> throw new IllegalArgumentException("Valid axis value must be specified.");
-        };
     }
 
     @Override
@@ -120,6 +113,23 @@ public abstract class AbstractDMatrix implements DMatrix {
             return copy;
         }
         return new DMatrixMap(this, false, indexes);
+    }
+
+    @Override
+    public DVector mapValues(int[] indexes, int axis) {
+        if (axis == 0) {
+            DVector v = DVector.zeros(rowCount());
+            for (int i = 0; i < rowCount(); i++) {
+                v.set(i, get(i, indexes[i]));
+            }
+            return v;
+        } else {
+            DVector v = DVector.zeros(colCount());
+            for (int i = 0; i < colCount(); i++) {
+                v.set(i, get(indexes[i], i));
+            }
+            return v;
+        }
     }
 
     @Override
@@ -275,7 +285,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix mult(double x, AlgebraOption<?>... opts) {
+    public DMatrix mul(double x, AlgebraOption<?>... opts) {
         DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
@@ -286,7 +296,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix mult(DVector v, int axis, AlgebraOption<?>... opts) {
+    public DMatrix mul(DVector v, int axis, AlgebraOption<?>... opts) {
         DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
         if (axis == 0) {
             if (v.size() != colCount()) {
@@ -311,7 +321,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix mult(DMatrix b, AlgebraOption<?>... opts) {
+    public DMatrix mul(DMatrix b, AlgebraOption<?>... opts) {
         checkMatrixSameSize(b);
         DMatrix ref = AlgebraOptions.from(opts).isCopy() ? DMatrix.empty(rowCount(), colCount()) : this;
         for (int i = 0; i < rowCount(); i++) {
@@ -342,7 +352,7 @@ public abstract class AbstractDMatrix implements DMatrix {
             }
             for (int i = 0; i < rowCount(); i++) {
                 for (int j = 0; j < colCount(); j++) {
-                    set(i, j, get(i, j) / v.get(j));
+                    ref.set(i, j, get(i, j) / v.get(j));
                 }
             }
         } else {
@@ -351,7 +361,7 @@ public abstract class AbstractDMatrix implements DMatrix {
             }
             for (int i = 0; i < rowCount(); i++) {
                 for (int j = 0; j < colCount(); j++) {
-                    set(i, j, get(i, j) / v.get(i));
+                    ref.set(i, j, get(i, j) / v.get(i));
                 }
             }
         }
@@ -434,18 +444,15 @@ public abstract class AbstractDMatrix implements DMatrix {
     @Override
     public DMatrix scatter() {
         DMatrix scatter = DMatrix.empty(DMatrix.defaultMType(), colCount(), colCount());
-        double[] mean = new double[colCount()];
+        DVector mean = DVector.zeros(colCount());
         for (int i = 0; i < colCount(); i++) {
-            mean[i] = mapCol(i).mean();
+            mean.set(i, mapCol(i).mean());
         }
         for (int k = 0; k < rowCount(); k++) {
-            double[] row = new double[colCount()];
-            for (int i = 0; i < colCount(); i++) {
-                row[i] = get(k, i) - mean[i];
-            }
-            for (int i = 0; i < row.length; i++) {
-                for (int j = 0; j < row.length; j++) {
-                    scatter.set(i, j, scatter.get(i, j) + row[i] * row[j]);
+            DVector row = mapRow(k, Algebra.copy()).sub(mean);
+            for (int i = 0; i < row.size(); i++) {
+                for (int j = 0; j < row.size(); j++) {
+                    scatter.inc(i, j, row.get(i) * row.get(j));
                 }
             }
         }
@@ -571,49 +578,49 @@ public abstract class AbstractDMatrix implements DMatrix {
     @Override
     public DVector amin(int axis) {
         if (axis == 0) {
-            DVector max = DVector.copy(mapRow(0));
+            DVector min = DVector.copy(mapRow(0));
             for (int i = 1; i < rowCount(); i++) {
                 for (int j = 0; j < colCount(); j++) {
-                    if (max.get(j) > get(i, j)) {
-                        max.set(j, get(i, j));
+                    if (min.get(j) > get(i, j)) {
+                        min.set(j, get(i, j));
                     }
                 }
             }
-            return max;
+            return min;
         }
-        DVector max = DVector.copy(mapCol(0));
+        DVector min = DVector.copy(mapCol(0));
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 1; j < colCount(); j++) {
-                if (max.get(i) > get(i, j)) {
-                    max.set(i, get(i, j));
+                if (min.get(i) > get(i, j)) {
+                    min.set(i, get(i, j));
                 }
             }
         }
-        return max;
+        return min;
     }
 
     @Override
     public int[] argmin(int axis) {
         if (axis == 0) {
-            int[] max = new int[colCount()];
+            int[] min = new int[colCount()];
             for (int i = 1; i < rowCount(); i++) {
                 for (int j = 0; j < colCount(); j++) {
-                    if (get(max[j], j) > get(i, j)) {
-                        max[j] = i;
+                    if (get(min[j], j) > get(i, j)) {
+                        min[j] = i;
                     }
                 }
             }
-            return max;
+            return min;
         }
-        int[] max = new int[rowCount()];
+        int[] min = new int[rowCount()];
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 1; j < colCount(); j++) {
-                if (get(i, max[i]) > get(i, j)) {
-                    max[i] = j;
+                if (get(i, min[i]) > get(i, j)) {
+                    min[i] = j;
                 }
             }
         }
-        return max;
+        return min;
     }
 
     @Override

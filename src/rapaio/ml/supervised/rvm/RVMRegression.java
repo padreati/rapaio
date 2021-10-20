@@ -489,7 +489,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             for (int it = 1; it <= parent.maxIter.get(); it++) {
 
                 // compute m and sigma
-                DMatrix t = phi_t_phi.copy().mult(beta);
+                DMatrix t = phi_t_phi.copy().mul(beta);
                 for (int i = 0; i < t.rowCount(); i++) {
                     t.inc(i, i, alpha.get(i));
                 }
@@ -568,7 +568,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             phi_t_phi = phi_t_phi.mapCols(keep).mapRows(keep).copy();
             phi_t_y = phi_t_y.map(keep, copy());
 
-            DMatrix t = phi_t_phi.copy().mult(beta);
+            DMatrix t = phi_t_phi.copy().mul(beta);
             for (int i = 0; i < t.rowCount(); i++) {
                 t.inc(i, i, alpha.get(i));
             }
@@ -742,7 +742,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         private void computeSigmaAndMu() {
 
-            DMatrix m_sigma_inv = phi_hat.mapRows(indexes).mapCols(indexes).copy().mult(beta);
+            DMatrix m_sigma_inv = phi_hat.mapRows(indexes).mapCols(indexes).copy().mul(beta);
             for (int i = 0; i < indexes.length; i++) {
                 m_sigma_inv.inc(i, i, alpha.get(indexes[i]));
             }
@@ -922,7 +922,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         private void computeSigmaAndMu() {
 
-            DMatrix m_sigma_inv = phiHat.copy().mult(beta);
+            DMatrix m_sigma_inv = phiHat.copy().mul(beta);
             for (int i = 0; i < active.size(); i++) {
                 m_sigma_inv.inc(i, i, alpha.get(active.get(i).index));
             }

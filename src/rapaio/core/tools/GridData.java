@@ -46,7 +46,8 @@ public class GridData implements Serializable {
         return fromPrediction(c, df, xName, yName, labelName, bins, 0.05);
     }
 
-    public static GridData fromPrediction(ClassifierModel c, Frame df, String xName, String yName, String labelName, int bins, double margin) {
+    public static GridData fromPrediction(ClassifierModel c, Frame df, String xName, String yName,
+            String labelName, int bins, double margin) {
 
         double xMin = Minimum.of(df.rvar(xName)).value();
         double xMax = Maximum.of(df.rvar(xName)).value();

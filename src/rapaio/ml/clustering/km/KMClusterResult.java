@@ -70,7 +70,7 @@ public class KMClusterResult extends ClusteringResult {
         Map<Integer, VarDouble> errors = new HashMap<>();
 
         for (int i = 0; i < m.rowCount(); i++) {
-            double d = model.method.get().distance(c.mapRow(assignment.getInt(i)), m.mapRow(i));
+            double d = model.method.get().distance().compute(c.mapRow(assignment.getInt(i)), m.mapRow(i));
             errors.computeIfAbsent(assignment.getInt(i), row -> VarDouble.empty()).addDouble(d * d);
             distances.addDouble(d * d);
         }

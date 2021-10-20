@@ -22,6 +22,7 @@
 package rapaio.math.linear.dense;
 
 import java.io.Serial;
+import java.util.Arrays;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
@@ -42,9 +43,21 @@ public class DMatrixMap extends AbstractDMatrix {
     private final int[] colIndexes;
 
     public DMatrixMap(DMatrix ref, boolean byRow, int... indexes) {
+        if(ref instanceof DMatrixMap mref) {
+            if(byRow) {
+                this.ref = mref.ref;
+                this.rowIndexes = Arrays.copyOf(indexes, indexes.length);
+                this.colIndexes = mref.colIndexes;
+            } else {
+                this.ref = mref.ref;
+                this.rowIndexes = mref.rowIndexes;
+                this.colIndexes = Arrays.copyOf(indexes, indexes.length);
+            }
+            return;
+        }
         if (byRow) {
             this.ref = ref;
-            this.rowIndexes = indexes;
+            this.rowIndexes = Arrays.copyOf(indexes, indexes.length);
             this.colIndexes = new int[ref.colCount()];
             for (int i = 0; i < ref.colCount(); i++) {
                 this.colIndexes[i] = i;
@@ -55,7 +68,7 @@ public class DMatrixMap extends AbstractDMatrix {
             for (int i = 0; i < ref.rowCount(); i++) {
                 this.rowIndexes[i] = i;
             }
-            this.colIndexes = indexes;
+            this.colIndexes = Arrays.copyOf(indexes, indexes.length);
         }
     }
 
@@ -90,17 +103,8 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public void inc(int row, int col, double value) {
-        ref.inc(rowIndexes[row], colIndexes[col], value);
-    }
-
-    @Override
-    public DVector map(int index, int axis, AlgebraOption<?>... opts) {
-        return switch (axis) {
-            case 0 -> mapRow(index, opts);
-            case 1 -> mapCol(index, opts);
-            default -> throw new IllegalArgumentException("Axis value is invalid.");
-        };
+    public void inc(int i, int j, double value) {
+        ref.inc(rowIndexes[i], colIndexes[j], value);
     }
 
     @Override

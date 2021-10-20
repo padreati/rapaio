@@ -289,9 +289,9 @@ public abstract class StandardDMatrixTest {
         DMatrix m1 = generateSequential(20, 10);
         DMatrix m2 = generateSequential(20, 10);
 
-        DMatrix t1 = m1.copy().mult(m2);
-        DMatrix t2 = m1.copy().mult(2);
-        DMatrix t3 = m1.mult(2).mult(m2);
+        DMatrix t1 = m1.copy().mul(m2);
+        DMatrix t2 = m1.copy().mul(2);
+        DMatrix t3 = m1.mul(2).mul(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -309,7 +309,7 @@ public abstract class StandardDMatrixTest {
         }
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> generateSequential(10, 10).mult(generateSequential(10, 9)));
+                () -> generateSequential(10, 10).mul(generateSequential(10, 9)));
         assertEquals("Matrices are not conform with this operation.", ex.getMessage());
 
     }
@@ -403,7 +403,7 @@ public abstract class StandardDMatrixTest {
         var r1 = m.copy().dot(d);
 
 
-        assertTrue(r1.deepEquals(m.copy().mult(v1, 0)));
+        assertTrue(r1.deepEquals(m.copy().mul(v1, 0)));
     }
 
     @Test

@@ -576,6 +576,6 @@ public class SVDecomposition implements java.io.Serializable {
         DVector sv = DVector.wrap(getSingularValues()).copy();
         sv.apply(v -> 1 / v);
         // CHECK
-        return getV().mult(sv, 0).dot(getU().t());
+        return getV().mul(sv, 0).dot(getU().t());
     }
 }

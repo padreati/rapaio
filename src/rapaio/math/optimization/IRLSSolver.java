@@ -217,7 +217,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                 w.mul(w);
                 // weighted L2 solution
 
-                DMatrix w2a = A.mult(w, 1, copy());
+                DMatrix w2a = A.mul(w, 1, copy());
                 DMatrix A1 = w2a.t().dot(A);
                 DVector b1 = w2a.t().dot(b);
 
@@ -271,7 +271,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                 // normalize weight vector
                 w.div(w.sum());
                 // weighted L2 solution
-                DMatrix w2a = A.mult(w, 1, copy());
+                DMatrix w2a = A.mul(w, 1, copy());
                 DMatrix A1 = w2a.t().dot(A);
                 DVector b1 = w2a.t().dot(b);
                 DVector x1 = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);

@@ -101,7 +101,10 @@ public class ABLineArtist extends Artist {
     public void paint(Graphics2D g2d) {
         g2d.setColor(options.getFill(0));
 
-        double x1, x2, y1, y2;
+        double x1;
+        double x2;
+        double y1;
+        double y2;
         if (!h && !v) {
             double xx = plot.xAxis().min();
             double yy = a * xx + b;

@@ -48,7 +48,7 @@ import rapaio.printer.opt.POption;
 public final class DensityTable<U, V> implements Printable, Serializable {
 
     /**
-     * Builds a table with given test columns and target columns
+     * Builds a table with given test columns and target columns.
      *
      * @param rowLevels labels for rows
      * @param colLevels labels for columns

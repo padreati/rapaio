@@ -33,6 +33,8 @@ import rapaio.util.collection.DoubleArrays;
 
 public class DMatrixDenseC extends DMatrixDense {
 
+    private static final int SLICE_SIZE = 1024;
+
     public DMatrixDenseC(int rows, int cols) {
         this(rows, cols, new double[rows * cols]);
     }
@@ -73,7 +75,6 @@ public class DMatrixDenseC extends DMatrixDense {
                             rowCount, colCount, b.size()));
         }
 
-        final int SLICE_SIZE = 1024;
         int slices = colCount / SLICE_SIZE;
         double[][] cslices = new double[slices + 1][];
         IntStream stream = IntStream.range(0, slices + 1);

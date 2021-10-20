@@ -165,7 +165,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
         }
 
         // solve the scaled system
-        DMatrix l = DMatrix.identity(X.colCount()).mult(lambda.get());
+        DMatrix l = DMatrix.identity(X.colCount()).mul(lambda.get());
         DMatrix A = X.t().dot(X).add(l);
         DMatrix B = X.t().dot(Y);
         DMatrix scaledBeta = QRDecomposition.from(A).solve(B);

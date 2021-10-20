@@ -110,30 +110,10 @@ public interface DVector extends Serializable, Printable {
         if (type == VType.DENSE) {
             return new DVectorDense(0, n, DoubleArrays.newFill(n, fill));
         }
-        if(type == VType.STRIDE) {
+        if (type == VType.STRIDE) {
             return new DVectorStride(0, n, 1, DoubleArrays.newFill(n, fill));
         }
         throw new IllegalArgumentException("Vector type is not allowed.");
-    }
-
-    /**
-     * Builds a dense vector filled with values from a {@link Var} variable.
-     * The variable can have any {@link Var#type()}, the values from variable
-     * being obtained using {@link Var#getDouble(int)} calls.
-     *
-     * @param v source variable
-     * @return new dense vector with values takes from variable v
-     */
-    static DVectorDense from(Var v) {
-        if (v instanceof VarDouble vd) {
-            double[] array = vd.elements();
-            return wrapArray(0, vd.size(), array);
-        }
-        double[] values = new double[v.size()];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = v.getDouble(i);
-        }
-        return wrapArray(0, values.length, values);
     }
 
     /**
@@ -194,8 +174,28 @@ public interface DVector extends Serializable, Printable {
     }
 
     /**
+     * Builds a dense vector filled with values from a {@link Var} variable.
+     * The variable can have any {@link Var#type()}, the values from variable
+     * being obtained using {@link Var#getDouble(int)} calls.
+     *
+     * @param v source variable
+     * @return new dense vector with values takes from variable v
+     */
+    static DVectorDense from(Var v) {
+        if (v instanceof VarDouble vd) {
+            double[] array = vd.elements();
+            return wrapArray(0, vd.size(), array);
+        }
+        double[] values = new double[v.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = v.getDouble(i);
+        }
+        return wrapArray(0, values.length, values);
+    }
+
+    /**
      * Builds a vector with values computed by a function given as parameter,
-     * where the input values of the function starts at {@code 0} and ends at {@code len - 1}
+     * where the input values of the function starts at {@code 0} and ends at {@code len - 1}.
      *
      * @param len length of the vector
      * @param fun generating function
@@ -206,7 +206,7 @@ public interface DVector extends Serializable, Printable {
     }
 
     /**
-     * Implementation type of the vector class
+     * Implementation type of the vector class.
      *
      * @return vector type
      */
@@ -221,12 +221,14 @@ public interface DVector extends Serializable, Printable {
     VType innerType();
 
     /**
+     * Number of elements in vector.
+     *
      * @return number of elements from the vector
      */
     int size();
 
     /**
-     * Creates a new vector map which map values from specified indexes
+     * Creates a new vector map which map values from specified indexes.
      *
      * @param indexes of the values to keep
      * @return map instance vector
@@ -250,7 +252,7 @@ public interface DVector extends Serializable, Printable {
     DVectorDense copy();
 
     /**
-     * Gets value from zero-based position index
+     * Gets value from zero-based position index.
      *
      * @param i given position
      * @return value stored at the given position
@@ -258,7 +260,7 @@ public interface DVector extends Serializable, Printable {
     double get(int i);
 
     /**
-     * Sets a value to the given position
+     * Sets a value to the given position.
      *
      * @param i     zero based index
      * @param value value to be stored
@@ -266,12 +268,12 @@ public interface DVector extends Serializable, Printable {
     void set(int i, double value);
 
     /**
-     * Increments the value at the given position
+     * Increments the value at the given position.
      */
     void inc(int i, double value);
 
     /**
-     * Adds to all elements the value of x
+     * Adds to all elements the value of x.
      *
      * @param x value to be incremented with
      * @return same object
@@ -295,7 +297,7 @@ public interface DVector extends Serializable, Printable {
     /**
      * Subtracts from all elements the value of x, it is
      * similar with calling increment with -x for all positions
-     * of the vector
+     * of the vector.
      *
      * @param x value to be decremented with
      * @return same object
@@ -389,7 +391,8 @@ public interface DVector extends Serializable, Printable {
 
     /**
      * Computes bilinear dot product through a diagonal matrix {@code x^t diag(m) y}.
-     * Matrix {@code m} have to be conform for multiplication. If the matrix is not diagonal, only the diagonal elements are used.
+     * Matrix {@code m} has to be conform for multiplication.
+     * If the matrix is not diagonal, only the diagonal elements are used.
      *
      * @param m bilinear matrix
      * @param y bilinear vector
@@ -488,7 +491,7 @@ public interface DVector extends Serializable, Printable {
     double prod();
 
     /**
-     * Product of all non missing values (Double.NaN is considered missing value).
+     * Product of all non-missing values (Double.NaN is considered missing value).
      * Note that if all elements are missing, then
      * the computed prod equals 1.
      *
@@ -497,16 +500,16 @@ public interface DVector extends Serializable, Printable {
     double nanprod();
 
     /**
-     * Compute the cumulative product of the vector elements
+     * Compute the cumulative product of the vector elements.
      *
      * @return original vector with updated values
      */
     DVector cumprod();
 
     /**
-     * Computes count of non missing values
+     * Computes count of non-missing values.
      *
-     * @return count of non missing values
+     * @return count of non-missing values
      */
     int nancount();
 
@@ -519,7 +522,7 @@ public interface DVector extends Serializable, Printable {
     double mean();
 
     /**
-     * Computes non missing (non NaN) values from the vector
+     * Computes non-missing (non NaN) values from the vector.
      *
      * @return mean of non missing values
      */
@@ -593,7 +596,7 @@ public interface DVector extends Serializable, Printable {
     DMatrix asMatrix(MType type);
 
     /**
-     * Creates a stream of values to visit all the elements of the vector
+     * Creates a stream of values to visit all the elements of the vector.
      *
      * @return a stream of values
      */

@@ -58,11 +58,11 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
     protected DMatrix beta;
 
     public DVector firstCoefficients() {
-        return beta.map(0, 1);
+        return beta.mapCol(0);
     }
 
     public DVector getCoefficients(int targetIndex) {
-        return beta.map(targetIndex, 1);
+        return beta.mapCol(targetIndex);
     }
 
     public DMatrix getAllCoefficients() {
@@ -140,7 +140,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
             String targetName = targetNames[i];
             sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
             sb.append("> Coefficients: \n");
-            DVector coeff = beta.map(i, 1);
+            DVector coeff = beta.mapCol(i);
 
             TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
             tt.textCenter(0, 0, "Name");

@@ -21,5 +21,5 @@
 
 package rapaio.ml.clustering;
 
-public record DefaultHookInfo(ClusteringModel<?, ?, ?> model, int run) {
+public record ClusteringHookInfo(ClusteringModel<?, ?, ?> model, int run) {
 }

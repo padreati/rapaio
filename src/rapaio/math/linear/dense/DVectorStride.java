@@ -69,8 +69,8 @@ public class DVectorStride extends AbstractDVector {
 
     private double[] copyArray() {
         double[] copy = new double[size];
-        for (int i = offset; i < size; i += stride) {
-            copy[i] = values[i];
+        for (int i = 0; i < size; i ++) {
+            copy[i] = values[offset + stride * i];
         }
         return copy;
     }

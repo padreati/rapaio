@@ -103,7 +103,7 @@ public class LinearRegressionResult extends RegressionResult {
 
                 int degrees = res.size() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
-                DVector coeff = beta_hat.map(i, 1);
+                DVector coeff = beta_hat.mapCol(i);
 
                 Frame features = df;
                 Set<String> availableFeatures = new HashSet<>(Arrays.asList(df.varNames()));

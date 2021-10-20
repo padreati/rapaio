@@ -52,7 +52,7 @@ import rapaio.printer.opt.POption;
 public class DensityVector<T> implements Printable, Serializable {
 
     /**
-     * Builds a distribution vector with given levels
+     * Builds a distribution vector with given levels.
      *
      * @param values used to name values
      * @return new empty distribution vector

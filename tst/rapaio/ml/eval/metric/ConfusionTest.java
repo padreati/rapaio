@@ -58,7 +58,7 @@ public class ConfusionTest {
                 0, 1, 4);
 
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
-        assertTrue(frequency.copy().mult(1 / 11.0).deepEquals(cm.probabilityMatrix()));
+        assertTrue(frequency.copy().mul(1 / 11.0).deepEquals(cm.probabilityMatrix()));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class ConfusionTest {
 
         DMatrix frequency = DMatrix.wrap(2, 2, true, 2, 2, 1, 2);
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
-        assertTrue(frequency.copy().mult(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
+        assertTrue(frequency.copy().mul(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
         assertEquals(0.5714285714285714, cm.accuracy(), TOL);
         assertEquals(0.4285714285714286, cm.error(), TOL);
@@ -120,7 +120,7 @@ public class ConfusionTest {
         DMatrix frequency = DMatrix.wrap(2, 2, true,
                 2, 2, 1, 2);
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
-        assertTrue(frequency.copy().mult(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
+        assertTrue(frequency.copy().mul(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
         assertEquals(0.5714285714285714, cm.accuracy(), TOL);
         assertEquals(0.4285714285714286, cm.error(), TOL);

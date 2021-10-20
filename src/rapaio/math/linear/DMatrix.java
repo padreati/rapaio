@@ -562,26 +562,26 @@ public interface DMatrix extends Serializable, Printable {
     void inc(final int row, final int col, final double value);
 
     /**
-     * Returns a vector build from values of an axis from the original matrix.
-     * <p>
-     * The axis legal values are: 0 row axis, 1 column axis.
+     * Returns a vector build from values of the row with given index in the matrix.
      * <p>
      * Depending on implementation, the vector can be a view over the original data.
      * To enforce a new copy add option {@link Algebra#copy()} as parameter.
      *
-     * @param index index of the selected row/column
-     * @param axis  0 for rows, 1 for columns
+     * @param index index of the selected row
      * @return result vector reference
      */
-    DVector map(final int index, int axis, AlgebraOption<?>... opts);
+    DVector mapRow(final int index, AlgebraOption<?>... opts);
 
-    default DVector mapRow(final int index, AlgebraOption<?>... opts) {
-        return map(index, 0, opts);
-    }
-
-    default DVector mapCol(final int index, AlgebraOption<?>... opts) {
-        return map(index, 1, opts);
-    }
+    /**
+     * Returns a vector build from values of the column with given index in the matrix.
+     * <p>
+     * Depending on implementation, the vector can be a view over the original data.
+     * To enforce a new copy add option {@link Algebra#copy()} as parameter.
+     *
+     * @param index index of the selected column
+     * @return result vector reference
+     */
+    DVector mapCol(final int index, AlgebraOption<?>... opts);
 
     /**
      * Creates a new matrix which contains only the rows/columns
@@ -605,6 +605,17 @@ public interface DMatrix extends Serializable, Printable {
     default DMatrix mapCols(int[] indexes, AlgebraOption<?>... opts) {
         return map(indexes, 1, opts);
     }
+
+    /**
+     * Creates a new vector with the index value from each row (axis=0) or
+     * column (axis=1). The length of the index array should match the number
+     * of rows (axis=0) o columns (axis=1).
+     *
+     * @param indexes index for each element
+     * @param axis 0 for rows, 1 for columns
+     * @return vector with indexed values
+     */
+    DVector mapValues(int[] indexes, int axis);
 
     /**
      * Creates a new matrix which contains only rows/columns with
@@ -714,7 +725,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param x value to be multiplied with
      * @return instance of the result matrix
      */
-    DMatrix mult(double x, AlgebraOption<?>... opts);
+    DMatrix mul(double x, AlgebraOption<?>... opts);
 
     /**
      * Multiply vector values to all rows (axis 0) or columns (axis 1).
@@ -723,7 +734,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param axis 0 for rows, 1 for columns
      * @return same matrix with added values
      */
-    DMatrix mult(DVector x, int axis, AlgebraOption<?>... opts);
+    DMatrix mul(DVector x, int axis, AlgebraOption<?>... opts);
 
     /**
      * Multiplies element wise values from given matrix. If possible,
@@ -732,7 +743,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param b matrix with elements to be multiplied with
      * @return instance of the result matrix
      */
-    DMatrix mult(DMatrix b, AlgebraOption<?>... opts);
+    DMatrix mul(DMatrix b, AlgebraOption<?>... opts);
 
     /**
      * Divide a scalar value from all elements of a matrix. If possible,
@@ -859,7 +870,7 @@ public interface DMatrix extends Serializable, Printable {
      * will have size m and will contain in each position the minimum
      * value index from the row with that position.
      *
-     * @return vector with indexes of max value values
+     * @return vector with indexes of max values
      */
     int[] argmin(int axis);
 

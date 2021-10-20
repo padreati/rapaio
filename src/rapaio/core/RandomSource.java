@@ -44,7 +44,7 @@ public final class RandomSource implements Serializable {
     }
 
     /**
-     * Set seed of random number generator
+     * Set seed of random number generator.
      *
      * @param seed seed
      */

@@ -41,9 +41,12 @@ import rapaio.data.filter.VSort;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.clustering.ClusteringModel;
-import rapaio.ml.clustering.DefaultHookInfo;
+import rapaio.ml.clustering.ClusteringHookInfo;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.distance.Distance;
+import rapaio.ml.common.distance.EuclideanDistance;
+import rapaio.ml.common.distance.Manhattan;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
@@ -53,7 +56,7 @@ import rapaio.util.collection.IntArrays;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, DefaultHookInfo> {
+public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, ClusteringHookInfo> {
 
     public static KMCluster newKMeans() {
         return new KMCluster()
@@ -67,24 +70,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, Defau
 
     public interface Method {
 
-        /**
-         * Computes the distance between two observation vectors
-         *
-         * @param u first vector
-         * @param v second vector
-         * @return distance between vectors
-         */
-        double distance(DVector u, DVector v);
-
-        /**
-         * Computes the error contribution of the observation v
-         * when assigned to cluster with centroid c
-         *
-         * @param c cluster centroid
-         * @param v observation vector
-         * @return error contributed by this observation
-         */
-        double observationError(DVector c, DVector v);
+        Distance distance();
 
         void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment);
     }
@@ -92,23 +78,8 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, Defau
     public static Method KMeans = new Method() {
 
         @Override
-        public double distance(DVector u, DVector v) {
-            double distance = 0;
-            for (int i = 0; i < u.size(); i++) {
-                double delta = u.get(i) - v.get(i);
-                distance += delta * delta;
-            }
-            return Math.sqrt(distance);
-        }
-
-        @Override
-        public double observationError(DVector c, DVector v) {
-            double distance = 0;
-            for (int i = 0; i < c.size(); i++) {
-                double delta = c.get(i) - v.get(i);
-                distance += delta * delta;
-            }
-            return distance;
+        public Distance distance() {
+            return new EuclideanDistance();
         }
 
         public void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment) {
@@ -135,17 +106,8 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, Defau
     public static Method KMedians = new Method() {
 
         @Override
-        public double distance(DVector u, DVector v) {
-            double distance = 0;
-            for (int i = 0; i < u.size(); i++) {
-                distance += Math.abs(u.get(i) - v.get(i));
-            }
-            return distance;
-        }
-
-        @Override
-        public double observationError(DVector u, DVector v) {
-            return distance(u, v);
+        public Distance distance() {
+            return new Manhattan();
         }
 
         public void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment) {
@@ -257,7 +219,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, Defau
 
             if (runningHook != null) {
                 learned = true;
-                runningHook.get().accept(new DefaultHookInfo(this, runs.get() - rounds));
+                runningHook.get().accept(new ClusteringHookInfo(this, runs.get() - rounds));
             }
             int erc = errors.size();
             if (erc > 1 && errors.getDouble(erc - 2) - errors.getDouble(erc - 1) < eps.get()
@@ -271,14 +233,14 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, Defau
     }
 
     private DMatrix initializeClusters(DMatrix m) {
-        DMatrix bestCentroids = init.get().init(method.get(), m, k.get());
+        DMatrix bestCentroids = init.get().init(method.get().distance(), m, k.get());
         double bestError = computeInitError(m, bestCentroids);
 
         // compute initial restarts if nstart is greater than 1
         // the best restart is kept as initial centroids
 
         for (int i = 1; i < nstart.get(); i++) {
-            DMatrix nextCentroids = init.get().init(method.get(), m, k.get());
+            DMatrix nextCentroids = init.get().init(method.get().distance(), m, k.get());
             double nextError = computeInitError(m, nextCentroids);
             if (nextError < bestError) {
                 bestCentroids = nextCentroids;
@@ -293,7 +255,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, Defau
         for (int i = 0; i < m.rowCount(); i++) {
             DVector mrow = m.mapRow(i);
             int cluster = findClosestCentroid(mrow, centroids);
-            sum += method.get().observationError(centroids.mapRow(cluster), mrow);
+            sum += method.get().distance().reduced(centroids.mapRow(cluster), mrow);
         }
         return sum;
     }
@@ -304,7 +266,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, Defau
             DVector row = m.mapRow(i);
             int cluster = findClosestCentroid(row, c);
             if (withErrors) {
-                totalError += method.get().observationError(c.mapRow(cluster), row);
+                totalError += method.get().distance().reduced(c.mapRow(cluster), row);
             }
             assignment[i] = cluster;
         }
@@ -315,9 +277,9 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, Defau
 
     private int findClosestCentroid(DVector mrow, DMatrix centroids) {
         int cluster = 0;
-        double d = method.get().distance(mrow, centroids.mapRow(0));
+        double d = method.get().distance().compute(mrow, centroids.mapRow(0));
         for (int j = 1; j < centroids.rowCount(); j++) {
-            double dd = method.get().distance(mrow, centroids.mapRow(j));
+            double dd = method.get().distance().compute(mrow, centroids.mapRow(j));
             if (d > dd) {
                 d = dd;
                 cluster = j;

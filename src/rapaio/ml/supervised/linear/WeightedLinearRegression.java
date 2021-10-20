@@ -71,8 +71,8 @@ public class WeightedLinearRegression extends BaseLinearRegressionModel<Weighted
     protected boolean coreFit(Frame df, Var weights) {
         var w = DVector.from(weights);
         w.apply(Math::sqrt);
-        DMatrix X = DMatrix.copy(df.mapVars(inputNames())).mult(w, 1);
-        DMatrix Y = DMatrix.copy(df.mapVars(targetNames())).mult(w, 1);
+        DMatrix X = DMatrix.copy(df.mapVars(inputNames())).mul(w, 1);
+        DMatrix Y = DMatrix.copy(df.mapVars(targetNames())).mul(w, 1);
         beta = QRDecomposition.from(X).solve(Y);
         return true;
     }

@@ -160,9 +160,9 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
         CholeskyDecomposition chol = CholeskyDecomposition.from(mA);
         if (chol.isSPD()) {
             // if we have a symmetric positive definite matrix we solve it with Cholesky
-            return chol.solve(b).map(0, 1, copy());
+            return chol.solve(b).mapCol(0, copy());
         }
         // otherwise we fall in QR decomposition
-        return QRDecomposition.from(mA).solve(b).map(0, 1, copy());
+        return QRDecomposition.from(mA).solve(b).mapCol(0, copy());
     }
 }

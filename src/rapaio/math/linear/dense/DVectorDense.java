@@ -86,7 +86,7 @@ public class DVectorDense extends AbstractDVector {
 
     public DVectorDense copy() {
         double[] copy = new double[size];
-        System.arraycopy(values, 0, copy, 0, size);
+        System.arraycopy(values, offset, copy, 0, size);
         return new DVectorDense(0, size, copy);
     }
 

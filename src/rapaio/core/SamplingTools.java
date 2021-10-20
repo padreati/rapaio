@@ -35,7 +35,7 @@ import rapaio.util.IntIterator;
 import rapaio.util.collection.IntArrays;
 
 /**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * Sampling utilities.
  */
 public final class SamplingTools {
 
@@ -249,9 +249,9 @@ public final class SamplingTools {
      * Builds discrete random sampler without replacement
      */
     private static void makeAliasWR(double[] p, double[] prob, int[] alias) {
-        if (p.length == 0)
+        if (p.length == 0) {
             throw new IllegalArgumentException("Probability var must be nonempty.");
-
+        }
 
         int[] dq = new int[p.length];
         int smallPos = -1;
