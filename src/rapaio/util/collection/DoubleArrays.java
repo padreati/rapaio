@@ -138,10 +138,10 @@ public final class DoubleArrays {
         };
     }
 
-    public static double[] copyByIndex(double[] src, int[] indexes) {
+    public static double[] copyByIndex(double[] src, int offset, int[] indexes) {
         double[] copy = new double[indexes.length];
         for (int i = 0; i < indexes.length; i++) {
-            copy[i] = src[indexes[i]];
+            copy[i] = src[offset + indexes[i]];
         }
         return copy;
     }

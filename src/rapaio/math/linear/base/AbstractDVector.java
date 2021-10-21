@@ -283,6 +283,17 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
+    public DMatrix outer(DVector b) {
+        DMatrix m = DMatrix.empty(size(), b.size());
+        for (int i = 0; i < size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                m.set(i, j, get(i) * b.get(j));
+            }
+        }
+        return m;
+    }
+
+    @Override
     public DVector apply(BiFunction<Integer, Double, Double> f, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
             double[] copy = new double[size()];
@@ -307,6 +318,7 @@ public abstract class AbstractDVector implements DVector {
         return s;
     }
 
+    @Override
     public double pnorm(double p) {
         if (p <= 0) {
             return size();
@@ -457,7 +469,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public int amin() {
+    public int argmin() {
         int amin = 0;
         for (int i = 1; i < size(); i++) {
             if (get(amin) > get(i)) {
@@ -479,7 +491,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public int amax() {
+    public int argmax() {
         int amax = 0;
         for (int i = 0; i < size(); i++) {
             if (get(amax) < get(i)) {

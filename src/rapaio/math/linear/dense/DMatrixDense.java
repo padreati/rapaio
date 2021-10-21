@@ -30,6 +30,15 @@ import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.function.Double2DoubleFunction;
 
+/**
+ * Base class for dense matrices. It offers implementation of all API
+ * based only on primitive methods like {@link #get(int, int)}, {@link #set(int, int, double)},
+ * {@link #inc(int, int, double)}, {@link #rowCount()} and {@link #colCount()}.
+ * <p>
+ * This class allows implementation of new types of dense matrices much easier since
+ * one need only to implement primitive methods and storage. Optimized custom methods
+ * can be implemented later in an incremental fashion.
+ */
 public abstract class DMatrixDense extends AbstractDMatrix {
 
     protected final MType type;

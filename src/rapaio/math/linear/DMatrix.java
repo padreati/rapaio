@@ -584,27 +584,28 @@ public interface DMatrix extends Serializable, Printable {
     DVector mapCol(final int index, AlgebraOption<?>... opts);
 
     /**
-     * Creates a new matrix which contains only the rows/columns
+     * Creates a new matrix which contains only the rows
      * specified by given indexes.
-     * <p>
-     * The axis legal values are: 0 row axis, 1 column axis.
      * <p>
      * Depending on implementation, the vector can be a view over the original data.
      * To enforce a new copy add option {@link Algebra#copy()} as parameter.
      *
      * @param indexes row indexes
-     * @param axis    0 for rows, 1 for columns
      * @return result matrix reference
      */
-    DMatrix map(int[] indexes, int axis, AlgebraOption<?>... opts);
+    DMatrix mapRows(int[] indexes, AlgebraOption<?>... opts);
 
-    default DMatrix mapRows(int[] indexes, AlgebraOption<?>... opts) {
-        return map(indexes, 0, opts);
-    }
-
-    default DMatrix mapCols(int[] indexes, AlgebraOption<?>... opts) {
-        return map(indexes, 1, opts);
-    }
+    /**
+     * Creates a new matrix which contains only the columns
+     * specified by given indexes.
+     * <p>
+     * Depending on implementation, the vector can be a view over the original data.
+     * To enforce a new copy add option {@link Algebra#copy()} as parameter.
+     *
+     * @param indexes row indexes
+     * @return result matrix reference
+     */
+    DMatrix mapCols(int[] indexes, AlgebraOption<?>... opts);
 
     /**
      * Creates a new vector with the index value from each row (axis=0) or
@@ -618,11 +619,9 @@ public interface DMatrix extends Serializable, Printable {
     DVector mapValues(int[] indexes, int axis);
 
     /**
-     * Creates a new matrix which contains only rows/columns with
+     * Creates a new matrix which contains only rows with
      * indices in the given range starting from {@param start} inclusive
      * and ending at {@param end} exclusive.
-     * <p>
-     * The axis legal values are: 0 row axis, 1 column axis.
      * <p>
      * Depending on the implementation
      * the new matrix can be a view. To obtain a new matrix copy
@@ -632,37 +631,44 @@ public interface DMatrix extends Serializable, Printable {
      * @param end   end row index (exclusive)
      * @return result matrix reference
      */
-    DMatrix range(int start, int end, int axis, AlgebraOption<?>... opts);
-
-    default DMatrix rangeRows(int start, int end, AlgebraOption<?>... opts) {
-        return range(start, end, 0, opts);
-    }
-
-    default DMatrix rangeCols(int start, int end, AlgebraOption<?>... opts) {
-        return range(start, end, 1, opts);
-    }
+    DMatrix rangeRows(int start, int end, AlgebraOption<?>... opts);
 
     /**
-     * Builds a new matrix having all rows/columns not specified by given indexes.
+     * Creates a new matrix which contains only columns with
+     * indices in the given range starting from {@param start} inclusive
+     * and ending at {@param end} exclusive.
      * <p>
-     * The axis legal values are: 0 row axis, 1 column axis.
+     * Depending on the implementation
+     * the new matrix can be a view. To obtain a new matrix copy
+     * one has to add {@link Algebra#copy()} parameter.
+     *
+     * @param start start col index (inclusive)
+     * @param end   end col index (exclusive)
+     * @return result matrix reference
+     */
+    DMatrix rangeCols(int start, int end, AlgebraOption<?>... opts);
+
+    /**
+     * Builds a new matrix having all rows not specified by given indexes.
      * <p>
      * Depending on the implementation this can be a view over the original matrix.
      * To obtain a new copy of the data method {@link Algebra#copy()} must be added as parameter.
      *
-     * @param indexes rows/columns to be removed
-     * @param axis    0 for rows, 1 for columns
-     * @return new mapped matrix containing all rows/columns not specified by indexes
+     * @param indexes rows to be removed
+     * @return new mapped matrix containing all rows not specified by indexes
      */
-    DMatrix remove(int[] indexes, int axis, AlgebraOption<?>... opts);
+    DMatrix removeRows(int[] indexes, AlgebraOption<?>... opts);
 
-    default DMatrix removeRows(int[] indexes, AlgebraOption<?>... opts) {
-        return remove(indexes, 0, opts);
-    }
-
-    default DMatrix removeCols(int[] indexes, AlgebraOption<?>... opts) {
-        return remove(indexes, 1, opts);
-    }
+    /**
+     * Builds a new matrix having all rows not specified by given indexes.
+     * <p>
+     * Depending on the implementation this can be a view over the original matrix.
+     * To obtain a new copy of the data method {@link Algebra#copy()} must be added as parameter.
+     *
+     * @param indexes rows to be removed
+     * @return new mapped matrix containing all rows not specified by indexes
+     */
+    DMatrix removeCols(int[] indexes, AlgebraOption<?>... opts);
 
     /**
      * Adds a scalar value to all elements of a matrix. If possible,
@@ -841,7 +847,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param axis axis for which to compute maximal values
      * @return vector with result values
      */
-    DVector amax(int axis);
+    DVector max(int axis);
 
     /**
      * Builds a vector with indexes of the maximum values from rows/columns.
@@ -862,7 +868,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param axis axis for which to compute maximal values
      * @return vector with result values
      */
-    DVector amin(int axis);
+    DVector min(int axis);
 
     /**
      * Builds a vector with indexes of the minimum value index from rows/columns.
@@ -875,7 +881,7 @@ public interface DMatrix extends Serializable, Printable {
     int[] argmin(int axis);
 
     /**
-     * Computes the sum of all elements from the matrix
+     * Computes the sum of all elements from the matrix.
      *
      * @return scalar value with sum
      */

@@ -429,6 +429,8 @@ public interface DVector extends Serializable, Printable {
      */
     double dotBilinearDiag(DVector m);
 
+    DMatrix outer(DVector b);
+
     /**
      * Computes the p norm of the vector.
      * <ul>
@@ -543,12 +545,34 @@ public interface DVector extends Serializable, Printable {
      */
     double nanvariance();
 
-    int amin();
+    /**
+     * Returns the index of the element with minimum value.
+     * If there are multiple elements with the same minimum value, the first index is returned.
+     *
+     * @return index of the minimum element
+     */
+    int argmin();
 
+    /**
+     * Returns the minimum value from vector.
+     *
+     * @return minimum value from vector
+     */
     double min();
 
-    int amax();
+    /**
+     * Returns the index of the element with maximum value.
+     * If there are multiple elements with the same maximum value, the first index is returned.
+     *
+     * @return index of the maximum element
+     */
+    int argmax();
 
+    /**
+     * Returns the maximum value from vector.
+     *
+     * @return maximum value from vector
+     */
     double max();
 
     /**

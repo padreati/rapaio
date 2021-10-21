@@ -36,7 +36,6 @@ import rapaio.math.linear.MType;
 import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.math.linear.decomposition.SVDecomposition;
 import rapaio.math.linear.dense.DMatrixMap;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Printer;
@@ -81,14 +80,6 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix map(int[] indexes, int axis, AlgebraOption<?>... opts) {
-        return switch (axis) {
-            case 0 -> mapRows(indexes, opts);
-            case 1 -> mapCols(indexes, opts);
-            default -> throw new IllegalArgumentException("Valid axis value must be specified.");
-        };
-    }
-
     public DMatrix mapRows(final int[] indexes, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
             DMatrix copy = DMatrix.empty(indexes.length, colCount());
@@ -102,6 +93,7 @@ public abstract class AbstractDMatrix implements DMatrix {
         return new DMatrixMap(this, true, indexes);
     }
 
+    @Override
     public DMatrix mapCols(int[] indexes, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
             DMatrix copy = DMatrix.empty(rowCount(), indexes.length);
@@ -117,48 +109,32 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DVector mapValues(int[] indexes, int axis) {
+        DVector v = DVector.zeros(axis == 0 ? rowCount() : colCount());
         if (axis == 0) {
-            DVector v = DVector.zeros(rowCount());
             for (int i = 0; i < rowCount(); i++) {
                 v.set(i, get(i, indexes[i]));
             }
-            return v;
         } else {
-            DVector v = DVector.zeros(colCount());
             for (int i = 0; i < colCount(); i++) {
                 v.set(i, get(indexes[i], i));
             }
-            return v;
         }
+        return v;
     }
 
     @Override
-    public DMatrix range(int start, int end, int axis, AlgebraOption<?>... opts) {
-        return switch (axis) {
-            case 0 -> rangeRows(start, end, opts);
-            case 1 -> rangeCols(start, end, opts);
-            default -> throw new IllegalArgumentException("Valid axis values must be specified.");
-        };
-    }
-
     public DMatrix rangeRows(final int start, final int end, AlgebraOption<?>... opts) {
-        return mapRows(IntArrays.newSeq(start, end), opts);
+        int[] rows = IntArrays.newSeq(start, end);
+        return mapRows(rows, opts);
     }
 
+    @Override
     public DMatrix rangeCols(int start, int end, AlgebraOption<?>... opts) {
         int[] cols = IntArrays.newSeq(start, end);
         return mapCols(cols, opts);
     }
 
     @Override
-    public DMatrix remove(int[] indexes, int axis, AlgebraOption<?>... opts) {
-        return switch (axis) {
-            case 0 -> removeRows(indexes, opts);
-            case 1 -> removeCols(indexes, opts);
-            default -> throw new IllegalArgumentException("Valid axis values must be specified.");
-        };
-    }
-
     public DMatrix removeRows(int[] indexes, AlgebraOption<?>... opts) {
         Set<Integer> rem = Arrays.stream(indexes).boxed()
                 .filter(v -> v >= 0)
@@ -175,6 +151,7 @@ public abstract class AbstractDMatrix implements DMatrix {
         return mapRows(rows, opts);
     }
 
+    @Override
     public DMatrix removeCols(int[] indexes, AlgebraOption<?>... opts) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
         int[] cols = new int[colCount() - rem.size()];
@@ -381,13 +358,13 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix dot(DMatrix B) {
-        if (colCount() != B.rowCount()) {
+    public DMatrix dot(DMatrix b) {
+        if (colCount() != b.rowCount()) {
             throw new IllegalArgumentException(
                     String.format("Matrices not conformant for multiplication: (%d,%d) x (%d,%d)",
-                            rowCount(), colCount(), B.rowCount(), B.colCount()));
+                            rowCount(), colCount(), b.rowCount(), b.colCount()));
         }
-        return MatrixMultiplication.copyParallel(this, B);
+        return MatrixMultiplication.copyParallel(this, b);
     }
 
     @Override
@@ -420,7 +397,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     /**
-     * Matrix rank
+     * Computes the rank of the matrix.
      *
      * @return effective numerical rank, obtained from SVD.
      */
@@ -430,7 +407,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     /**
-     * Diagonal vector of values
+     * Builds a vector containing elements from the main diagonal.
      */
     @Override
     public DVector diag() {
@@ -528,23 +505,15 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DVector amax(int axis) {
-        if (axis == 0) {
-            DVector max = DVector.copy(mapRow(0));
-            for (int i = 1; i < rowCount(); i++) {
-                for (int j = 0; j < colCount(); j++) {
-                    if (max.get(j) < get(i, j)) {
-                        max.set(j, get(i, j));
-                    }
-                }
-            }
-            return max;
-        }
-        DVector max = DVector.copy(mapCol(0));
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 1; j < colCount(); j++) {
-                if (max.get(i) < get(i, j)) {
-                    max.set(i, get(i, j));
+    public DVector max(int axis) {
+        DVector max = axis == 0 ? mapRow(0, Algebra.copy()) : mapCol(0, Algebra.copy());
+        int i = axis == 0 ? 1 : 0;
+        for (; i < rowCount(); i++) {
+            int j = axis == 0 ? 0 : 1;
+            for (; j < colCount(); j++) {
+                int index = axis == 0 ? j : i;
+                if (max.get(index) < get(i, j)) {
+                    max.set(index, get(i, j));
                 }
             }
         }
@@ -576,23 +545,15 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DVector amin(int axis) {
-        if (axis == 0) {
-            DVector min = DVector.copy(mapRow(0));
-            for (int i = 1; i < rowCount(); i++) {
-                for (int j = 0; j < colCount(); j++) {
-                    if (min.get(j) > get(i, j)) {
-                        min.set(j, get(i, j));
-                    }
-                }
-            }
-            return min;
-        }
-        DVector min = DVector.copy(mapCol(0));
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 1; j < colCount(); j++) {
-                if (min.get(i) > get(i, j)) {
-                    min.set(i, get(i, j));
+    public DVector min(int axis) {
+        DVector min = axis == 0 ? mapRow(0, Algebra.copy()) : mapCol(0, Algebra.copy());
+        int i = axis == 0 ? 1 : 0;
+        for (; i < rowCount(); i++) {
+            int j = axis == 0 ? 0 : 1;
+            for (; j < colCount(); j++) {
+                int index = axis == 0 ? j : i;
+                if (min.get(index) > get(i, j)) {
+                    min.set(index, get(i, j));
                 }
             }
         }

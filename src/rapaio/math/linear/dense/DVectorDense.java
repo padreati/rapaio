@@ -77,7 +77,7 @@ public class DVectorDense extends AbstractDVector {
     @Override
     public DVector map(int[] indexes, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = DoubleArrays.copyByIndex(values, indexes);
+            double[] copy = DoubleArrays.copyByIndex(values, offset, indexes);
             return new DVectorDense(0, copy.length, copy);
         } else {
             return new DVectorMap(this, indexes);
@@ -363,6 +363,7 @@ public class DVectorDense extends AbstractDVector {
         return sum;
     }
 
+    @Override
     public double pnorm(double p) {
         if (p <= 0) {
             return size;
@@ -450,10 +451,10 @@ public class DVectorDense extends AbstractDVector {
     @Override
     public DVector apply(Double2DoubleFunction f, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = DoubleArrays.newFrom(values, offset, size+offset, f);
+            double[] copy = DoubleArrays.newFrom(values, offset, size + offset, f);
             return DVector.wrap(copy);
         }
-        for (int i = 0; i < size; i++) {
+        for (int i = offset; i < offset + size; i++) {
             values[i] = f.applyAsDouble(values[i]);
         }
         return this;

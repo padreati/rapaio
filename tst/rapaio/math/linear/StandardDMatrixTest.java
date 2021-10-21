@@ -459,11 +459,11 @@ public abstract class StandardDMatrixTest {
                 {1, 2, 3, 4},
                 {5, 6, 7, 8}
         });
-        assertArrayEquals(new double[] {5, 6, 7, 8}, m.amax(0).valueStream().toArray());
-        assertArrayEquals(new double[] {4, 8}, m.amax(1).valueStream().toArray());
+        assertArrayEquals(new double[] {5, 6, 7, 8}, m.max(0).valueStream().toArray());
+        assertArrayEquals(new double[] {4, 8}, m.max(1).valueStream().toArray());
 
-        assertArrayEquals(new double[] {1, 2, 3, 4}, m.amin(0).valueStream().toArray());
-        assertArrayEquals(new double[] {1, 5}, m.amin(1).valueStream().toArray());
+        assertArrayEquals(new double[] {1, 2, 3, 4}, m.min(0).valueStream().toArray());
+        assertArrayEquals(new double[] {1, 5}, m.min(1).valueStream().toArray());
     }
 
     @Test

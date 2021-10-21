@@ -33,6 +33,7 @@ import rapaio.math.linear.DVector;
  * @author Martin Thoma
  */
 public class MatrixMultiplication {
+
     public static DMatrix jama(DMatrix A, DMatrix B) {
         if (B.rowCount() != A.colCount()) {
             throw new IllegalArgumentException("Matrix inner dimensions must agree.");
@@ -85,8 +86,9 @@ public class MatrixMultiplication {
         DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int k = 0; k < A.colCount(); k++) {
-                if (A.get(i, k) == 0)
+                if (A.get(i, k) == 0) {
                     continue;
+                }
                 for (int j = 0; j < B.colCount(); j++) {
                     C.set(i, j, C.get(i, j) + A.get(i, k) * B.get(k, j));
                 }
@@ -99,8 +101,9 @@ public class MatrixMultiplication {
         DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int k = 0; k < A.colCount(); k++) {
-                if (A.get(i, k) == 0)
+                if (A.get(i, k) == 0) {
                     continue;
+                }
                 for (int j = 0; j < B.colCount(); j++) {
                     C.inc(i, j, A.get(i, k) * B.get(k, j));
                 }
@@ -133,7 +136,7 @@ public class MatrixMultiplication {
     public static DMatrix tiledAlgorithm(DMatrix A, DMatrix B) {
         DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
 
-//        Pick a tile size T = theta(sqrt(M))
+        // Pick a tile size T = theta(sqrt(M))
         int T = 1;
         while (T < Math.sqrt(A.colCount())) {
             T *= 2;
@@ -170,7 +173,7 @@ public class MatrixMultiplication {
     }
 
     public static DMatrix copyParallel(DMatrix A, DMatrix B) {
-        if(A.colCount()!=B.rowCount()) {
+        if (A.colCount() != B.rowCount()) {
             throw new IllegalArgumentException("Matrices are not conformant for multiplication.");
         }
         DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
