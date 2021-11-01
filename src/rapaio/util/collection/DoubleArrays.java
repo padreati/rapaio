@@ -37,6 +37,8 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleIterator;
@@ -54,7 +56,7 @@ public final class DoubleArrays {
     private static final int SPECIES_LEN = SPECIES.length();
 
     /**
-     * Creates a double array filled with a given value
+     * Creates a double array filled with a given value.
      *
      * @param size size of the array
      * @param fill value to fill the array
@@ -70,7 +72,7 @@ public final class DoubleArrays {
 
     /**
      * Creates a new array filled with a sequence of values starting from
-     * {@param start} (inclusive) and ending with {@param end} (exclusive)
+     * {@param start} (inclusive) and ending with {@param end} (exclusive).
      *
      * @param start sequence starting value (inclusive)
      * @param end   sequence ending value (exclusive)
@@ -119,6 +121,15 @@ public final class DoubleArrays {
         return data;
     }
 
+    /**
+     * Creates a {@link DoubleIterator} over the array with a given {@code start}
+     * and {@code length}.
+     *
+     * @param array array of values
+     * @param start position of the first value from iterator
+     * @param len   number of elements in the iterator
+     * @return duble value iterator
+     */
     public static DoubleIterator iterator(double[] array, int start, int len) {
         return new DoubleIterator() {
             private int pos = start;
@@ -147,7 +158,7 @@ public final class DoubleArrays {
     }
 
     /**
-     * Add a scalar value to an array
+     * Add a scalar value to elements of an array
      *
      * @param t    destination where the scalar will be added
      * @param tOff destination offset
@@ -216,7 +227,7 @@ public final class DoubleArrays {
         }
     }
 
-    public static void mult(double[] a, int aStart, double s, int len) {
+    public static void mul(double[] a, int aStart, double s, int len) {
         for (int i = aStart; i < len + aStart; i++) {
             a[i] *= s;
         }
@@ -228,7 +239,7 @@ public final class DoubleArrays {
         }
     }
 
-    public static void mult(double[] a, int aStart, double[] b, int bStart, int len) {
+    public static void mul(double[] a, int aStart, double[] b, int bStart, int len) {
         for (int i = 0; i < len; i++) {
             a[aStart++] *= b[bStart++];
         }
@@ -275,7 +286,15 @@ public final class DoubleArrays {
      * @param len
      */
     public static void addMul(double[] x, int xOff, double a, double[] y, int yOff, int len) {
-        for (int i = 0; i < len; i++) {
+        int bound = SPECIES.loopBound(len);
+        int i = 0;
+        DoubleVector av = DoubleVector.broadcast(SPECIES, a);
+        for (; i < bound; i += SPECIES_LEN) {
+            DoubleVector xv = DoubleVector.fromArray(SPECIES, x, i + xOff);
+            DoubleVector yv = DoubleVector.fromArray(SPECIES, y, i + yOff);
+            yv.fma(av, xv).intoArray(x, i + xOff);
+        }
+        for (; i < len; i++) {
             x[xOff + i] += a * y[yOff + i];
         }
     }
@@ -312,9 +331,26 @@ public final class DoubleArrays {
         return sum;
     }
 
+    /**
+     * Computes sum of all elements from array starting at position {@code start}
+     * with given {@code length).
+     *
+     * @param a     vector of values
+     * @param start first element
+     * @param len   number of elements to be summed
+     * @return sum of elements from specified range
+     */
     public static double nanSum(double[] a, int start, int len) {
-        double sum = 0;
-        for (int i = start; i < len + start; i++) {
+        int bound = SPECIES.loopBound(len);
+        int i = start;
+        DoubleVector sv = DoubleVector.broadcast(SPECIES, 0.0);
+        for (; i < bound + start; i += SPECIES_LEN) {
+            DoubleVector av = DoubleVector.fromArray(SPECIES, a, i);
+            VectorMask<Double> mask = av.test(VectorOperators.IS_FINITE);
+            sv = sv.add(av, mask);
+        }
+        double sum = sv.reduceLanes(ADD);
+        for (; i < len + start; i++) {
             if (Double.isNaN(a[i])) {
                 continue;
             }

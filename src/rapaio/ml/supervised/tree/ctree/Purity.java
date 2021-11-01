@@ -60,17 +60,20 @@ public enum Purity implements Serializable {
             // compute before split gini impurity
             double gini = 1.0;
             for (int i = 0; i < dt.colCount(); i++) {
-                gini -= Math.pow(colTotals[i] / total, 2);
+                double ratio = colTotals[i] / total;
+                gini -= ratio * ratio;
             }
 
             // compute after split gini impurity for each test level
             for (int i = 0; i < dt.rowCount(); i++) {
-                double gini_k = 1;
+                double ginik = 1;
                 for (int j = 0; j < dt.colCount(); j++) {
-                    if (rowTotals[i] > 0)
-                        gini_k -= Math.pow(dt.get(i, j) / rowTotals[i], 2);
+                    if (rowTotals[i] > 0) {
+                        double ratio = dt.get(i, j) / rowTotals[i];
+                        ginik -= ratio * ratio;
+                    }
                 }
-                gini -= gini_k * rowTotals[i] / total;
+                gini -= ginik * rowTotals[i] / total;
             }
             return gini;
         }

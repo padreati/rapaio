@@ -21,12 +21,21 @@
 
 package rapaio.ml.supervised.tree;
 
-import java.io.Serial;
 import java.io.Serializable;
+import java.util.Set;
 
 import rapaio.data.Frame;
-import rapaio.data.VarNominal;
-import rapaio.printer.Format;
+import rapaio.ml.supervised.tree.rowpredicate.All;
+import rapaio.ml.supervised.tree.rowpredicate.BinaryEqual;
+import rapaio.ml.supervised.tree.rowpredicate.BinaryNotEqual;
+import rapaio.ml.supervised.tree.rowpredicate.NominalEqual;
+import rapaio.ml.supervised.tree.rowpredicate.NominalInSet;
+import rapaio.ml.supervised.tree.rowpredicate.NominalNotEqual;
+import rapaio.ml.supervised.tree.rowpredicate.NominalNotInSet;
+import rapaio.ml.supervised.tree.rowpredicate.NumGreater;
+import rapaio.ml.supervised.tree.rowpredicate.NumGreaterEqual;
+import rapaio.ml.supervised.tree.rowpredicate.NumLess;
+import rapaio.ml.supervised.tree.rowpredicate.NumLessEqual;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/21/17.
@@ -78,164 +87,13 @@ public interface RowPredicate extends Serializable {
     static RowPredicate nomNotEqual(String testName, String testValue) {
         return new NominalNotEqual(testName, testValue);
     }
-}
 
-final class All implements RowPredicate {
-
-    @Serial
-    private static final long serialVersionUID = -3530613310623768690L;
-
-    @Override
-    public boolean test(int row, Frame df) {
-        return true;
+    static RowPredicate nomInSet(String testName, Set<String> testValues) {
+        return new NominalInSet(testName, testValues);
     }
 
-    @Override
-    public String toString() {
-        return "all";
+    static RowPredicate nomNotInSet(String testName, Set<String> testValues) {
+        return new NominalNotInSet(testName, testValues);
     }
 }
 
-record NumLessEqual(String testName, double testValue) implements RowPredicate {
-
-    @Serial
-    private static final long serialVersionUID = 8215441575970091295L;
-
-    @Override
-    public boolean test(int row, Frame df) {
-        return df.getDouble(row, testName) <= testValue;
-    }
-
-    @Override
-    public String toString() {
-        return testName + "<=" + Format.floatFlex(testValue);
-    }
-}
-
-record NumGreaterEqual(String testName, double testValue) implements RowPredicate {
-
-    @Serial
-    private static final long serialVersionUID = 8904590203760623732L;
-
-    @Override
-    public boolean test(int row, Frame df) {
-        if (df.isMissing(row, testName))
-            return false;
-        return df.getDouble(row, testName) >= testValue;
-    }
-
-    @Override
-    public String toString() {
-        return testName + ">=" + Format.floatFlex(testValue);
-    }
-}
-
-record NumLess(String testName, double testValue) implements RowPredicate {
-
-    @Serial
-    private static final long serialVersionUID = -8274469785632211359L;
-
-    @Override
-    public boolean test(int row, Frame df) {
-        if (df.isMissing(row, testName))
-            return false;
-        double value = df.getDouble(row, testName);
-        return value < testValue;
-    }
-
-    @Override
-    public String toString() {
-        return testName + "<" + Format.floatFlex(testValue);
-    }
-}
-
-record NumGreater(String testName, double testValue) implements RowPredicate {
-
-    @Serial
-    private static final long serialVersionUID = 5664720893373938432L;
-
-    @Override
-    public boolean test(int row, Frame df) {
-        if (df.isMissing(row, testName))
-            return false;
-        double value = df.getDouble(row, testName);
-        return value > testValue;
-    }
-
-    @Override
-    public String toString() {
-        return testName + ">" + Format.floatFlex(testValue);
-    }
-}
-
-record BinaryEqual(String testName, boolean testValue) implements RowPredicate {
-
-    @Serial
-    private static final long serialVersionUID = 830863153933290391L;
-
-    @Override
-    public boolean test(int row, Frame df) {
-        if (df.isMissing(row, testName))
-            return false;
-        return df.getInt(row, testName) == (testValue ? 1 : 0);
-    }
-
-    @Override
-    public String toString() {
-        return testName + "=" + (testValue ? 1 : 0);
-    }
-}
-
-record BinaryNotEqual(String testName, boolean testValue) implements RowPredicate {
-
-    @Serial
-    private static final long serialVersionUID = 830863153933290391L;
-
-    @Override
-    public boolean test(int row, Frame df) {
-        if (df.isMissing(row, testName))
-            return false;
-        return df.getInt(row, testName) != (testValue ? 1 : 0);
-    }
-
-    @Override
-    public String toString() {
-        return testName + "!=" + (testValue ? 1 : 0);
-    }
-}
-
-record NominalEqual(String testName, String testValue) implements RowPredicate {
-
-    @Serial
-    private static final long serialVersionUID = -148943086245103236L;
-
-    @Override
-    public boolean test(int row, Frame df) {
-        if (df.isMissing(row, testName))
-            return testValue.equals(VarNominal.MISSING_VALUE);
-        return df.getLabel(row, testName).equals(testValue);
-    }
-
-    @Override
-    public String toString() {
-        return testName + "='" + testValue + "'";
-    }
-}
-
-record NominalNotEqual(String testName, String testValue) implements RowPredicate {
-
-    @Serial
-    private static final long serialVersionUID = -148943086245103236L;
-
-    @Override
-    public boolean test(int row, Frame df) {
-        if (df.isMissing(row, testName))
-            return !testValue.equals(VarNominal.MISSING_VALUE);
-        return !df.getLabel(row, testName).equals(testValue);
-    }
-
-    @Override
-    public String toString() {
-        return testName + "!='" + testValue + "'";
-    }
-}

@@ -25,6 +25,7 @@ import java.io.Serial;
 import java.time.Instant;
 import java.util.List;
 
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -213,6 +214,15 @@ public class MappedVar extends AbstractVar {
     @Override
     public void clearRows() {
         mapping.clear();
+    }
+
+    @Override
+    public DVectorDense dvcp() {
+        double[] values = new double[mapping.size()];
+        for (int i = 0; i < mapping.size(); i++) {
+            values[i] = source.getDouble(mapping.get(i));
+        }
+        return new DVectorDense(0, mapping.size(), values);
     }
 
     @Override

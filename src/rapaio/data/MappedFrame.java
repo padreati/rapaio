@@ -67,8 +67,9 @@ public class MappedFrame extends AbstractFrame {
     }
 
     private MappedFrame(Frame df, Mapping mapping, List<String> columns) {
-        if (mapping == null)
+        if (mapping == null) {
             mapping = Mapping.empty();
+        }
         if (df instanceof MappedFrame mappedFrame) {
             this.source = mappedFrame.source;
             this.mapping = Mapping.from(mapping, mappedFrame.mapping::get);
@@ -110,10 +111,7 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public int varIndex(String name) {
-        if (!colReverse.containsKey(name)) {
-            return -1;
-        }
-        return colReverse.get(name);
+        return colReverse.getOrDefault(name, -1);
     }
 
     @Override

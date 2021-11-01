@@ -69,8 +69,8 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
                 .minCount.set(1)
                 .varSelector.set(VarSelector.all())
                 .splitter.set(Splitter.Ignore)
-                .testMap.add(VarType.NOMINAL, Search.NominalFull)
-                .testMap.add(VarType.DOUBLE, Search.Ignore)
+                .searchMap.add(VarType.NOMINAL, Search.NominalFull)
+                .searchMap.add(VarType.DOUBLE, Search.Ignore)
                 .purity.set(Purity.InfoGain)
                 .pruning.set(Pruning.None);
     }
@@ -81,8 +81,8 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
                 .minCount.set(1)
                 .varSelector.set(VarSelector.all())
                 .splitter.set(Splitter.Weighted)
-                .testMap.add(VarType.NOMINAL, Search.NominalFull)
-                .testMap.add(VarType.DOUBLE, Search.NumericBinary)
+                .searchMap.add(VarType.NOMINAL, Search.NominalFull)
+                .searchMap.add(VarType.DOUBLE, Search.NumericBinary)
                 .purity.set(Purity.GainRatio);
     }
 
@@ -93,8 +93,8 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
                 .varSelector.set(VarSelector.all())
                 .splitter.set(Splitter.Weighted)
                 .purity.set(Purity.GainRatio)
-                .testMap.add(VarType.NOMINAL, Search.NominalBinary)
-                .testMap.add(VarType.DOUBLE, Search.NumericBinary);
+                .searchMap.add(VarType.NOMINAL, Search.NominalBinary)
+                .searchMap.add(VarType.DOUBLE, Search.NumericBinary);
     }
 
     public static CTree newCART() {
@@ -103,65 +103,77 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
                 .minCount.set(1)
                 .varSelector.set(VarSelector.all())
                 .splitter.set(Splitter.Random)
-                .testMap.add(VarType.NOMINAL, Search.NominalBinary)
-                .testMap.add(VarType.DOUBLE, Search.NumericBinary)
-                .testMap.add(VarType.INT, Search.NumericBinary)
+                .searchMap.add(VarType.NOMINAL, Search.NominalBinary)
+                .searchMap.add(VarType.DOUBLE, Search.NumericBinary)
+                .searchMap.add(VarType.INT, Search.NumericBinary)
                 .purity.set(Purity.GiniGain);
     }
 
     @Serial
     private static final long serialVersionUID = 1203926824359387358L;
 
-    // parameter default values
-
     /**
-     * Minimum number of instances from a leaf node
+     * Minimum number of instances from a leaf node.
      */
     public final ValueParam<Integer, CTree> minCount = new ValueParam<>(this, 1, "minCount", x -> x != null && x >= 1);
 
     /**
-     * Maximum depth of a tree
+     * Tree maximum depth.
      */
     public final ValueParam<Integer, CTree> maxDepth = new ValueParam<>(this, -1, "maxDepth");
 
     /**
-     * Minimum gain required to proceed with split instances into child nodes
+     * Minimum gain required to proceed with split instances into child nodes.
      */
     public final ValueParam<Double, CTree> minGain = new ValueParam<>(this, -1000.0, "minGain");
 
     /**
-     * Method used to select variable candidates tested during the search for a split condition
+     * Method used to select variable candidates tested during the search for a split condition.
      */
     public final ValueParam<VarSelector, CTree> varSelector = new ValueParam<>(this, VarSelector.all(), "varSelector");
 
     /**
-     * Definitions of the test criteria used to select best splits
+     * Test criteria used to select best splits.
      */
-    public final MultiParam<VarType, Search, CTree> testMap = new MultiParam<>(this,
+    public final MultiParam<VarType, Search, CTree> searchMap = new MultiParam<>(this,
             Map.of(
-                    VarType.BINARY, Search.BinaryBinary,
+                    VarType.BINARY, Search.Binary,
                     VarType.INT, Search.NumericBinary,
                     VarType.DOUBLE, Search.NumericBinary,
                     VarType.NOMINAL, Search.NominalBinary),
             "testMap", Objects::nonNull);
 
     /**
-     * Purity function used to compute a performance measure for a split
+     * If is true the score of the purity function for some given test is multiplied with the
+     * ratio between the weight sum of non-missing test values and the weight sum of all test values.
+     * <p>
+     * Thus, for example if the test score for some split on some test variable have a given value,
+     * if the test variable has missing values the intuition is that it's score is not reliable.
+     * Thus enabling this configuration the computed score will be diminished linearly with the proportion
+     * of non-missing values.
+     * <p>
+     * Since this is a non-standard penalty in literature, the default value is @{code false}, but
+     * it is worth a try to be turned true.
+     */
+    public final ValueParam<Boolean, CTree> missingPenalty = new ValueParam<>(this, false, "missingPenalty");
+
+    /**
+     * Purity function used to compute a performance measure for a split.
      */
     public final ValueParam<Purity, CTree> purity = new ValueParam<>(this, Purity.InfoGain, "purity");
 
     /**
-     * Method used to split instances into child nodes
+     * Method used to split instances into child nodes.
      */
     public final ValueParam<Splitter, CTree> splitter = new ValueParam<>(this, Splitter.Ignore, "splitter");
 
     /**
-     * Pruning method
+     * Pruning method.
      */
     public final ValueParam<Pruning, CTree> pruning = new ValueParam<>(this, Pruning.None, "prunning");
 
     /**
-     * Data frame used by pruning method as a test set
+     * Data frame used by pruning method as a test set.
      */
     public final ValueParam<Frame, CTree> pruningDf = new ValueParam<>(this, null, "pruningDf", x -> true);
 
@@ -183,8 +195,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(1, 1_000_000,
-                Arrays.asList(VarType.NOMINAL, VarType.INT, VarType.DOUBLE, VarType.BINARY), true,
+        return new Capabilities(1, 1_000_000, Arrays.asList(VarType.NOMINAL, VarType.INT, VarType.DOUBLE, VarType.BINARY), true,
                 1, 1, List.of(VarType.NOMINAL), false);
     }
 
@@ -250,8 +261,8 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
             node.bestLabel = node.parent.bestLabel;
             return;
         }
-        if (node.counter.countValues(x -> x > 0) == 1 ||
-                (maxDepth.get() > 0 && node.depth > maxDepth.get()) || df.rowCount() <= minCount.get()) {
+        if (node.counter.countValues(x -> x > 0) == 1 || (maxDepth.get() > 0 && node.depth > maxDepth.get())
+                || df.rowCount() <= minCount.get()) {
             return;
         }
 
@@ -267,13 +278,10 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
             if (testCol.equals(firstTargetName())) {
                 continue;
             }
-
-            if (!(testMap.get().containsKey(df.type(testCol)))) {
-                throw new IllegalArgumentException("can't predict ctree with no " +
-                        "tests for given variable: " + testCol +
-                        " [" + df.type(testCol).name() + "]");
+            if (!(searchMap.get().containsKey(df.type(testCol)))) {
+                throw new IllegalArgumentException("No test for given variable type: " + testCol + " [" + df.type(testCol).name() + "]");
             }
-            var test = testMap.get().get(df.type(testCol));
+            var test = searchMap.get().get(df.type(testCol));
             var candidate = test.computeCandidate(
                     this, df, weights, testCol, firstTargetName(), purity.get());
             if (candidate != null) {
@@ -352,7 +360,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, ClassifierHo
 
     private void additionalValidation(Frame df) {
         df.varStream().forEach(var -> {
-            if (testMap.get().containsKey(var.type())) {
+            if (searchMap.get().containsKey(var.type())) {
                 return;
             }
             throw new IllegalArgumentException("can't predict ctree with no " +

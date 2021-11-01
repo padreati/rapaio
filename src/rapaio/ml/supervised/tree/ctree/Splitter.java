@@ -45,6 +45,7 @@ public enum Splitter implements Serializable {
      * Simply ignores the missing values, it will propagate only the instances which are accepted by a rule
      */
     Ignore {
+        @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> p) {
             List<Mapping> mappings = new ArrayList<>(p.size());
             for (int i = 0; i < p.size(); i++) {
@@ -66,6 +67,7 @@ public enum Splitter implements Serializable {
         }
     },
     Majority {
+        @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> p) {
             List<Mapping> mappings = new ArrayList<>(p.size());
             for (int i = 0; i < p.size(); i++) {
@@ -109,6 +111,7 @@ public enum Splitter implements Serializable {
      * Put instances with missing value on test variable to all branches, with diminished weights
      */
     Weighted {
+        @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> pred) {
 
             List<Mapping> mappings = new ArrayList<>();
@@ -133,8 +136,9 @@ public enum Splitter implements Serializable {
                         break;
                     }
                 }
-                if (!consumed)
+                if (!consumed) {
                     missingRows.add(row);
+                }
             }
             for (int i = 0; i < p.length; i++) {
                 p[i] /= psum;
@@ -154,9 +158,10 @@ public enum Splitter implements Serializable {
         }
     },
     /**
-     * Assign randomly to any child the instances with missing value on test variable
+     * Assign randomly to any child the instances with missing value on test variable.
      */
     Random {
+        @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> pred) {
             // first we collect the prediction category for each observation
             // and the counts from each category,
@@ -213,6 +218,4 @@ public enum Splitter implements Serializable {
      * @return a pair with a list of frames and a list of weights
      */
     public abstract Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> predicates);
-
-
 }

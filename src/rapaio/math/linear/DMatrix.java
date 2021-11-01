@@ -23,6 +23,7 @@ package rapaio.math.linear;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.stream.DoubleStream;
 
 import rapaio.core.distributions.Distribution;
@@ -918,14 +919,14 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     /**
-     * Compute the variance of all elements of the matrix
+     * Compute the variance of all elements of the matrix.
      *
      * @return variance of all elements of the matrix
      */
     double variance();
 
     /**
-     * Computes vector of variances along the given axis of the matrix
+     * Computes vector of variances along the given axis of the matrix.
      *
      * @param axis 0 for rows, 1 for columns
      * @return vector of variances computed along given axis
@@ -933,7 +934,7 @@ public interface DMatrix extends Serializable, Printable {
     DVector variance(int axis);
 
     /**
-     * Compute the standard deviation of all elements of the matrix
+     * Compute the standard deviation of all elements of the matrix.
      *
      * @return standard deviation of all elements of the matrix
      */
@@ -942,7 +943,7 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     /**
-     * Computes vector of standard deviations along the given axis of the matrix
+     * Computes vector of standard deviations along the given axis of the matrix.
      *
      * @param axis 0 for rows, 1 for columns
      * @return vector of standard deviations computed along given axis

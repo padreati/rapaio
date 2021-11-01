@@ -65,7 +65,7 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     /**
-     * Builds a distribution vector with given levels
+     * Builds a distribution vector with given levels.
      *
      * @param labels used to name values
      * @return new empty distribution vector
@@ -153,7 +153,7 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     /**
-     * Getter for the value from a given position
+     * Getter for the value from a given position.
      *
      * @param pos position of the value
      * @return value from the give position
@@ -167,7 +167,7 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     /**
-     * Updates the value from the given position {@param pos} by adding the {@param value}
+     * Updates the value from the given position {@param pos} by adding the {@param value}.
      *
      * @param pos   position of the density vector to be updated
      * @param value value to be added to given cell
@@ -182,14 +182,15 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     /**
-     * Updates the value from the given position {@param pos} by adding the {@param value}
+     * Updates the value from the given position {@param pos} by adding the {@param value}.
      *
      * @param dv     density vector which will be added
      * @param factor the factor used to multiply added density vector with
      */
     public void plus(DensityVector<T> dv, double factor) {
-        if (values.length != dv.values.length)
+        if (values.length != dv.values.length) {
             throw new IllegalArgumentException("Cannot update density vector, row count is different");
+        }
         for (int i = 0; i < values.length; i++) {
             values[i] += dv.get(i) * factor;
             total += dv.get(i) * factor;
@@ -197,7 +198,7 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     /**
-     * Setter for the value from a given position
+     * Setter for the value from a given position.
      *
      * @param pos   position of the value
      * @param value value to be set at the given position
@@ -262,7 +263,7 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     /**
-     * Normalize values from density vector to sum
+     * Normalize values from density vector to sum.
      */
     public DensityVector<T> normalize() {
         normalize(1);
@@ -270,15 +271,16 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     /**
-     * Normalize values from density vector to sum of powers
+     * Normalize values from density vector to sum of powers.
      */
     public DensityVector<T> normalize(double pow) {
         total = 0.0;
         for (double value : values) {
             total += pow(value, pow);
         }
-        if (total == 0)
+        if (total == 0) {
             return this;
+        }
         for (int i = 0; i < values.length; i++) {
             values[i] /= total;
         }
@@ -287,7 +289,7 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     /**
-     * Computes the sum of all cells
+     * Computes the sum of all cells.
      *
      * @return sum of elements
      */
@@ -349,7 +351,7 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     /**
-     * Builds a solid copy of the distribution vector
+     * Builds a solid copy of the distribution vector.
      *
      * @return a solid copy of distribution vector
      */
@@ -372,8 +374,9 @@ public class DensityVector<T> implements Printable, Serializable {
             return false;
         }
         for (int i = 0; i < index.size(); i++) {
-            if (!index.getValue(i).equals(o.index.getValue(i)))
+            if (!index.getValue(i).equals(o.index.getValue(i))) {
                 return false;
+            }
         }
         for (int i = 0; i < values.length; i++) {
             if (abs(values[i] - o.values[i]) > 1e-30) {

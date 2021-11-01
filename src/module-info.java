@@ -76,9 +76,10 @@ open module rapaio {
     exports rapaio.ml.supervised.rule.onerule;
     exports rapaio.ml.supervised.tree;
     exports rapaio.ml.supervised.tree.ctree;
+    exports rapaio.ml.supervised.tree.rtree;
+    exports rapaio.ml.supervised.tree.rowpredicate;
     exports rapaio.ml.supervised.ensemble;
     exports rapaio.ml.supervised.simple;
-    exports rapaio.ml.supervised.tree.rtree;
     exports rapaio.ml.supervised.rvm;
 
     exports rapaio.printer;

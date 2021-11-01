@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static rapaio.util.collection.DoubleArrays.add;
+import static rapaio.util.collection.DoubleArrays.addMul;
 import static rapaio.util.collection.DoubleArrays.addTo;
 import static rapaio.util.collection.DoubleArrays.copy;
 import static rapaio.util.collection.DoubleArrays.div;
@@ -35,7 +36,7 @@ import static rapaio.util.collection.DoubleArrays.ensureCapacity;
 import static rapaio.util.collection.DoubleArrays.forceCapacity;
 import static rapaio.util.collection.DoubleArrays.grow;
 import static rapaio.util.collection.DoubleArrays.mean;
-import static rapaio.util.collection.DoubleArrays.mult;
+import static rapaio.util.collection.DoubleArrays.mul;
 import static rapaio.util.collection.DoubleArrays.multTo;
 import static rapaio.util.collection.DoubleArrays.nanCount;
 import static rapaio.util.collection.DoubleArrays.nanMean;
@@ -81,10 +82,10 @@ public class DoubleArraysTest {
 
     @Test
     void buildersTest() {
-        assertArrayEquals(new double[]{10., 10., 10.}, newFill(3, 10.));
-        assertArrayEquals(new double[]{10., 11., 12.}, newSeq(10, 13));
-        assertArrayEquals(new double[]{4., 9., 16.}, newFrom(new double[]{1, 2, 3, 4, 5}, 1, 4, x -> x * x));
-        assertArrayEquals(new double[]{3., 5.}, copy(new double[]{1, 3, 5, 7}, 1, 2));
+        assertArrayEquals(new double[] {10., 10., 10.}, newFill(3, 10.));
+        assertArrayEquals(new double[] {10., 11., 12.}, newSeq(10, 13));
+        assertArrayEquals(new double[] {4., 9., 16.}, newFrom(new double[] {1, 2, 3, 4, 5}, 1, 4, x -> x * x));
+        assertArrayEquals(new double[] {3., 5.}, copy(new double[] {1, 3, 5, 7}, 1, 2));
     }
 
     private void testEqualArrays(double[] actual, double... expected) {
@@ -153,7 +154,9 @@ public class DoubleArraysTest {
 
             assertEquals(mean(array2, start, mid - start) * (mid - start) + mean(array2, mid, end - mid) * (end - mid),
                     mean(array2, start, end - start) * (end - start), TOL);
-            assertEquals(nanMean(array2, start, mid - start) * nanCount(array2, start, mid - start) + nanMean(array2, mid, end - mid) * nanCount(array2, mid, end - mid),
+            assertEquals(
+                    nanMean(array2, start, mid - start) * nanCount(array2, start, mid - start) + nanMean(array2, mid, end - mid) * nanCount(
+                            array2, mid, end - mid),
                     nanMean(array2, start, end - start) * nanCount(array2, start, end - start), TOL);
 
 
@@ -239,7 +242,7 @@ public class DoubleArraysTest {
     }
 
     @Test
-    void testDot() {
+    void testMul() {
         double[] array1 = newFrom(0, 100, row -> row);
 
         for (int i = 0; i < 100; i++) {
@@ -248,7 +251,7 @@ public class DoubleArraysTest {
             int len = end - start;
 
             double[] array2 = copy(array1, start, len);
-            mult(array2, 0, 10, len);
+            mul(array2, 0, 10, len);
             double[] array3 = new double[len];
             multTo(array1, start, 10, array3, 0, len);
 
@@ -256,15 +259,32 @@ public class DoubleArraysTest {
 
             double[] array4 = newFill(len, 10);
             double[] array5 = copy(array1, start, len);
-            mult(array5, 0, array4, 0, len);
+            DoubleArrays.mul(array5, 0, array4, 0, len);
             double[] array6 = new double[len];
             multTo(array1, start, array4, 0, array6, 0, len);
 
             double[] array7 = copy(array1, start, len);
-            mult(array7, 0, array4, 0, len);
+            DoubleArrays.mul(array7, 0, array4, 0, len);
 
             assertArrayEquals(array5, array6);
             assertArrayEquals(array5, array7);
+        }
+    }
+
+    @Test
+    void testAddMul() {
+        double[] array1 = newFrom(0, 100, row -> row);
+        double[] array2 = newFrom(0, 100, row -> 2);
+
+        for (int i = 0; i < 100; i++) {
+            int start = RandomSource.nextInt(50);
+            int end = 50 + RandomSource.nextInt(50);
+            int len = end - start;
+
+            double[] array3 = copy(array1, start, len);
+            addMul(array3, 0, 2, array2, start, len);
+
+            assertArrayEquals(DoubleArrays.newSeq(start + 4, start + len + 4), array3);
         }
     }
 

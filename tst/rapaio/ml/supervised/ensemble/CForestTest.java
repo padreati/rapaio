@@ -117,7 +117,7 @@ public class CForestTest {
                 CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}
 
                 Capabilities:
-                types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL
+                types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL,BINARY
                 counts inputs/targets: [1,1000000] / [1,1]
                 missing inputs/targets: true/false
 
@@ -137,7 +137,7 @@ public class CForestTest {
                 CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}
 
                 Capabilities:
-                types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL
+                types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL,BINARY
                 counts inputs/targets: [1,1000000] / [1,1]
                 missing inputs/targets: true/false
 
@@ -155,21 +155,21 @@ public class CForestTest {
 
                 Fitted trees:100
                 oob enabled:true
-                oob error:0.04
+                oob error:0.0533333
                 """, model.toSummary());
         assertEquals(model.toSummary(), model.toContent());
         assertEquals("""
                 CForest
                 =======
-
+                                
                 Description:
                 CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),runs=100,viPerm=true}
-
+                                
                 Capabilities:
-                types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL
+                types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL,BINARY
                 counts inputs/targets: [1,1000000] / [1,1]
                 missing inputs/targets: true/false
-
+                                
                 Model fitted: true.
                 Learned model:
                 input vars:\s
@@ -177,36 +177,36 @@ public class CForestTest {
                 1.  sepal-width : DOUBLE  |\s
                 2. petal-length : DOUBLE  |\s
                 3.  petal-width : DOUBLE  |\s
-
+                                
                 target vars:
                 > class : NOMINAL [?,setosa,versicolor,virginica]
-
-
+                                
+                                
                 Fitted trees:100
                 oob enabled:true
-                oob error:0.04
-
+                oob error:0.0533333
+                                
                 Frequency Variable Importance:
                         name      mean      sd     scaled score\s
-                [0] petal-length 164.71 82.3588226 100         \s
-                [1]  petal-width 139.03 80.1589904  84.4089612 \s
-                [2] sepal-length  78.6  85.4258495  47.7202356 \s
-                [3]  sepal-width  35.46 37.9205496  21.5287475 \s
-
+                [0]  petal-width 161.17 78.1405177 100         \s
+                [1] petal-length 155.01 83.1465173  96.1779487 \s
+                [2] sepal-length  58.05 66.9203318  36.0178693 \s
+                [3]  sepal-width  17.58 26.9448295  10.9077372 \s
+                                
                 Gain Variable Importance:
                         name        mean        sd     scaled score\s
-                [0] petal-length 39.5796441 28.6634617 100         \s
-                [1]  petal-width 33.9636502 28.1915658  85.8109035 \s
-                [2] sepal-length  9.2588583 14.0932391  23.3929801 \s
-                [3]  sepal-width  1.5107091  3.6596976   3.8168839 \s
-
+                [0]  petal-width 44.7711325 26.8683991 100         \s
+                [1] petal-length 44.4125996 27.6972606  99.1991873 \s
+                [2] sepal-length  7.3720466 12.2324536  16.4660714 \s
+                [3]  sepal-width  2.0400213  3.6450592   4.556555  \s
+                                
                 Permutation Variable Importance:
                         name        mean        sd     scaled score\s
-                [0] petal-length 39.5796441 28.6634617 100         \s
-                [1]  petal-width 33.9636502 28.1915658  85.8109035 \s
-                [2] sepal-length  9.2588583 14.0932391  23.3929801 \s
-                [3]  sepal-width  1.5107091  3.6596976   3.8168839 \s
-
+                [0]  petal-width 44.7711325 26.8683991 100         \s
+                [1] petal-length 44.4125996 27.6972606  99.1991873 \s
+                [2] sepal-length  7.3720466 12.2324536  16.4660714 \s
+                [3]  sepal-width  2.0400213  3.6450592   4.556555  \s
+                                
                 """, model.toFullContent());
     }
 }

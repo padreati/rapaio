@@ -58,7 +58,7 @@ public record Sizes(boolean absolute, double[] relativeSizes, int[] absoluteSize
                 }
             }
         }
-        DoubleArrays.mult(dimensions, 0, totalSize, dimensions.length);
+        DoubleArrays.mul(dimensions, 0, totalSize, dimensions.length);
         return dimensions;
     }
 

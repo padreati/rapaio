@@ -159,7 +159,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, Classifi
         Capabilities cc = model.get().capabilities();
         return new Capabilities(
                 cc.minInputCount(), cc.maxInputCount(), Arrays.asList(cc.inputTypes().toArray(VarType[]::new)), cc.allowMissingInputValues(),
-                1, 1, List.of(VarType.NOMINAL), false);
+                1, 1, List.of(VarType.NOMINAL, VarType.BINARY), false);
     }
 
     private Frame getVIInfo(Map<String, List<Double>> viMap) {

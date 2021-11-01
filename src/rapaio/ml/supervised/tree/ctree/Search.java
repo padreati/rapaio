@@ -22,15 +22,17 @@
 package rapaio.ml.supervised.tree.ctree;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import rapaio.core.RandomSource;
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.ml.supervised.tree.RowPredicate;
 import rapaio.ml.supervised.tree.CTree;
-import rapaio.util.IntComparator;
+import rapaio.ml.supervised.tree.RowPredicate;
+import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -51,26 +53,29 @@ public enum Search implements Serializable {
         public Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, Purity function) {
 
             int split;
-            while (true) {
+            do {
                 split = RandomSource.nextInt(df.rowCount());
-                if (df.isMissing(split, testName)) {
-                    continue;
-                }
-                break;
-            }
+            } while (df.isMissing(split, testName));
+
             double testValue = df.getDouble(split, testName);
 
             var dt = DensityTable.emptyByLabel(false, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
-            int misCount = 0;
+            int missingWeights = 0;
             for (int i = 0; i < df.rowCount(); i++) {
                 if (df.isMissing(i, testName)) {
-                    misCount++;
+                    missingWeights += w.getDouble(i);
                     continue;
                 }
                 dt.increment(df.getDouble(i, testName) <= testValue ? 0 : 1, df.getInt(i, targetName) - 1, w.getDouble(i));
             }
 
             double score = function.compute(dt);
+
+            if (c.missingPenalty.get()) {
+                double sum = w.op().nansum();
+                score = score * (sum - missingWeights) / sum;
+            }
+
             Candidate best = new Candidate(score, testName);
             best.addGroup(RowPredicate.numLessEqual(testName, testValue));
             best.addGroup(RowPredicate.numGreater(testName, testValue));
@@ -82,63 +87,61 @@ public enum Search implements Serializable {
         @Override
         public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
 
-            int testNameIndex = df.varIndex(testName);
-            int targetNameIndex = df.varIndex(targetName);
+            int testIndex = df.varIndex(testName);
+            int targetIndex = df.varIndex(targetName);
             var dt = DensityTable.emptyByLabel(false, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
 
             int[] rows = new int[df.rowCount()];
+            double missingWeight = 0;
             int len = 0;
             for (int i = 0; i < df.rowCount(); i++) {
-                if (!df.isMissing(i, testNameIndex)) {
-                    rows[len++] = i;
-                    dt.increment(1, dt.colIndex().getIndex(df, targetName, i), weights.getDouble(i));
+                if (df.isMissing(i, testIndex)) {
+                    missingWeight += weights.getDouble(i);
+                    continue;
                 }
+                rows[len++] = i;
+                dt.increment(1, dt.colIndex().getIndex(df, targetName, i), weights.getDouble(i));
             }
-            // TODO: Revise the implication of missing records
-            int misCount = df.rowCount() - len;
 
-            double[] values = new double[df.rowCount()];
-            for (int i = 0; i < df.rowCount(); i++) {
-                values[i] = df.getDouble(i, testNameIndex);
-            }
-            IntComparator comparator = (i, j) -> Double.compare(values[i], values[j]);
-            IntArrays.quickSort(rows, 0, len, comparator);
+            double[] values = df.rvar(testIndex).dv().elements();
+            IntArrays.quickSort(rows, 0, len, (i, j) -> Double.compare(values[i], values[j]));
 
-            Candidate best = null;
-            double bestScore = 0.0;
+            double bestScore = Double.NaN;
+            double bestTestValue = Double.NaN;
 
             for (int i = 0; i < len; i++) {
-                int row = rows[i];
 
-                if (df.isMissing(row, testNameIndex)) continue;
+                int index = df.getInt(rows[i], targetIndex) - 1;
 
-                int index = df.getInt(row, targetNameIndex) - 1;
-                double w = weights.getDouble(row);
-                dt.increment(1, index, -w);
+                double w = weights.getDouble(rows[i]);
                 dt.increment(0, index, +w);
+                dt.increment(1, index, -w);
 
-                if (i + 1 >= c.minCount.get() &&
-                        i < len - c.minCount.get() &&
-                        values[rows[i]] < values[rows[i + 1]]) {
-
+                if (i >= c.minCount.get() && i < len - c.minCount.get() && values[rows[i]] < values[rows[i + 1]]) {
                     double currentScore = function.compute(dt);
-                    if (best != null) {
-                        int comp = Double.compare(bestScore, currentScore);
-                        if (comp > 0) continue;
-                        if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                    if (Double.isNaN(bestScore) || bestScore < currentScore) {
+                        bestScore = currentScore;
+                        bestTestValue = (values[rows[i]] + values[rows[i + 1]]) / 2.0;
                     }
-                    best = new Candidate(bestScore, testName);
-                    double testValue = (values[rows[i]] + values[rows[i + 1]]) / 2.0;
-                    best.addGroup(RowPredicate.numLessEqual(testName, testValue));
-                    best.addGroup(RowPredicate.numGreater(testName, testValue));
-
-                    bestScore = currentScore;
                 }
             }
+
+            if (Double.isNaN(bestScore)) {
+                return null;
+            }
+
+            if (c.missingPenalty.get()) {
+                double sum = weights.op().nansum();
+                bestScore = bestScore * (sum - missingWeight) / sum;
+            }
+
+            Candidate best = new Candidate(bestScore, testName);
+            best.addGroup(RowPredicate.numLessEqual(testName, bestTestValue));
+            best.addGroup(RowPredicate.numGreater(testName, bestTestValue));
             return best;
         }
     },
-    BinaryBinary {
+    Binary {
         @Override
         public Candidate computeCandidate(
                 CTree c, Frame df, Var w, String testName, String targetName,
@@ -151,7 +154,20 @@ public enum Search implements Serializable {
                 return null;
             }
 
-            Candidate best = new Candidate(function.compute(dt), testName);
+            double score = function.compute(dt);
+
+            if (c.missingPenalty.get()) {
+                double missingWeights = 0.0;
+                for (int i = 0; i < test.size(); i++) {
+                    if (test.isMissing(i)) {
+                        missingWeights += w.getDouble(i);
+                    }
+                }
+                double sum = w.op().nansum();
+                score = score * (sum - missingWeights) / sum;
+            }
+
+            Candidate best = new Candidate(score, testName);
             best.addGroup(RowPredicate.binEqual(testName, true));
             best.addGroup(RowPredicate.binEqual(testName, false));
             return best;
@@ -165,8 +181,8 @@ public enum Search implements Serializable {
                 return null;
             }
             var dt = DensityTable.fromLevelWeights(false, df, testName, targetName, weights);
-            double value = function.compute(dt);
-            Candidate candidate = new Candidate(value, testName);
+            double score = function.compute(dt);
+            Candidate candidate = new Candidate(score, testName);
             df.levels(testName).stream().skip(1).forEach(label -> candidate.addGroup(RowPredicate.nomEqual(testName, label)));
             return candidate;
         }
@@ -175,45 +191,108 @@ public enum Search implements Serializable {
         @Override
         public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
 
-            var tableCounts = DensityTable.fromLevelCounts(false, df, testName, targetName);
-            if (!(tableCounts.hasColsWithMinimumCount(c.minCount.get(), 2))) {
-                return null;
-            }
+            var dtCounts = DensityTable.fromLevelCounts(false, df, testName, targetName);
+//            if (!(dtCounts.hasColsWithMinimumCount(c.minCount.get(), 2))) {
+//                return null;
+//            }
 
-            var tableWeights = DensityTable.fromLevelWeights(false, df, testName, targetName, weights);
-            var colTotalsWeights = tableWeights.colTotals();
+            var dtWeights = DensityTable.fromLevelWeights(false, df, testName, targetName, weights);
 
+            double[] rowCounts = dtCounts.rowTotals();
+            double totalRows = DoubleArrays.nanSum(rowCounts, 0, rowCounts.length);
 
-            double[] rowCounts = tableCounts.rowTotals();
             List<String> targetLevels = df.levels(targetName);
             targetLevels = targetLevels.subList(1, targetLevels.size());
 
             var dt = DensityTable.emptyByLabel(true, List.of("testLevel", "other"), targetLevels);
+            double bestScore = Double.NaN;
 
-            Candidate best = null;
-            double bestScore = 0.0;
-
-            for (int i = 0; i < tableWeights.rowIndex().size(); i++) {
-                if (rowCounts[i] < c.minCount.get()) {
-                    continue;
-                }
-                String testLabel = tableWeights.rowIndex().getValue(i);
-                for (int j = 0; j < targetLevels.size(); j++) {
-                    dt.increment(0, j, tableWeights.get(i, j));
-                    dt.increment(1, j, colTotalsWeights[j] - tableWeights.get(i, j));
-                }
-
-                double currentScore = function.compute(dt);
-                if (best != null) {
-                    int comp = Double.compare(bestScore, currentScore);
-                    if (comp > 0) continue;
-                    if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
-                }
-                best = new Candidate(currentScore, testName);
-                best.addGroup(RowPredicate.nomEqual(testName, testLabel));
-                best.addGroup(RowPredicate.nomNotEqual(testName, testLabel));
+            // prepare dt
+            double[] colTotals = dtWeights.colTotals();
+            for (int i = 0; i < colTotals.length; i++) {
+                dt.increment(1, i, colTotals[i]);
             }
-            return best;
+
+            if (targetLevels.size() == 2) {
+                // binary classification, an optimization can be done
+                Set<String> bestSet = null;
+
+                // sort in descending order of the first class
+                int[] levelIdx = IntArrays.newSeq(0, dtWeights.rowCount());
+                IntArrays.quickSort(levelIdx, 0, levelIdx.length, (k1, k2) -> Double.compare(dtWeights.get(k2, 0), dtWeights.get(k1, 0)));
+
+                int leftRowCounts = 0;
+
+                Set<String> testLabels = new HashSet<>();
+                for (int i : levelIdx) {
+
+                    // update test labels
+
+                    String testLabel = dtWeights.rowIndex().getValue(i);
+                    testLabels.add(testLabel);
+
+                    // update dt
+                    for (int j = 0; j < targetLevels.size(); j++) {
+                        dt.increment(0, j, dtWeights.get(i, j));
+                        dt.increment(1, j, -dtWeights.get(i, j));
+                    }
+
+                    // check conditions on min count
+                    leftRowCounts += rowCounts[i];
+                    if (leftRowCounts < c.minCount.get() || totalRows - leftRowCounts < c.minCount.get()) {
+                        continue;
+                    }
+
+                    double currentScore = function.compute(dt);
+                    if (Double.isNaN(bestScore) || bestScore < currentScore) {
+                        bestScore = currentScore;
+                        bestSet = new HashSet<>(testLabels);
+                    }
+                }
+
+                if (!Double.isNaN(bestScore)) {
+                    Candidate best = new Candidate(bestScore, testName);
+                    best.addGroup(RowPredicate.nomInSet(testName, bestSet));
+                    best.addGroup(RowPredicate.nomNotInSet(testName, bestSet));
+                    return best;
+                }
+
+            } else {
+
+                String bestTest = null;
+
+                // more than 2 target levels, we test each one separated from others
+                // o avoid 2^tests-1 pairs
+
+                for (int i = 0; i < dtWeights.rowIndex().size(); i++) {
+                    if (rowCounts[i] < c.minCount.get()) {
+                        continue;
+                    }
+
+                    for (int j = 0; j < targetLevels.size(); j++) {
+                        dt.increment(0, j, +dtWeights.get(i, j));
+                        dt.increment(1, j, -dtWeights.get(i, j));
+                    }
+                    double currentScore = function.compute(dt);
+                    for (int j = 0; j < targetLevels.size(); j++) {
+                        dt.increment(0, j, -dtWeights.get(i, j));
+                        dt.increment(1, j, +dtWeights.get(i, j));
+                    }
+
+                    if (Double.isNaN(bestScore) || bestScore < currentScore) {
+                        bestScore = currentScore;
+                        bestTest = dtWeights.rowIndex().getValue(i);
+                    }
+                }
+
+                if (!Double.isNaN(bestScore)) {
+                    Candidate best = new Candidate(bestScore, testName);
+                    best.addGroup(RowPredicate.nomEqual(testName, bestTest));
+                    best.addGroup(RowPredicate.nomNotEqual(testName, bestTest));
+                    return best;
+                }
+            }
+            return null;
         }
     };
 

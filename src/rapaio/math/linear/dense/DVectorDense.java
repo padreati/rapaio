@@ -182,7 +182,7 @@ public class DVectorDense extends AbstractDVector {
             DoubleArrays.multTo(values, offset, x, copy, 0, copy.length);
             return DVector.wrap(copy);
         }
-        DoubleArrays.mult(values, offset, x, size);
+        DoubleArrays.mul(values, offset, x, size);
         return this;
     }
 
@@ -201,7 +201,7 @@ public class DVectorDense extends AbstractDVector {
         }
         checkConformance(b);
         if (b instanceof DVectorDense bd) {
-            DoubleArrays.mult(values, offset, bd.values, bd.offset, size);
+            DoubleArrays.mul(values, offset, bd.values, bd.offset, size);
             return this;
         }
         for (int i = 0; i < size; i++) {

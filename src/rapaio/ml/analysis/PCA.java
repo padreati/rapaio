@@ -58,12 +58,12 @@ public class PCA extends ParamSet<PCA> implements Printable {
     private static final Logger logger = Logger.getLogger(PCA.class.getName());
 
     /**
-     * Value used to assess the convergence of a solution
+     * Value used to assess the convergence of a solution.
      */
     public final ValueParam<Double, PCA> eps = new ValueParam<>(this, 1e-100, "eps");
 
     /**
-     * Maximum number of iterations for fitting procedure
+     * Maximum number of iterations for fitting procedure.
      */
     public final ValueParam<Integer, PCA> maxRuns = new ValueParam<>(this, 2_000, "maxRuns", m -> m != null && m > 0);
 
@@ -151,6 +151,13 @@ public class PCA extends ParamSet<PCA> implements Printable {
         inputNames = df.varStream().map(Var::name).toArray(String[]::new);
     }
 
+    /**
+     * Transforms a given matrix into projections of the first k principal components.
+     *
+     * @param df initial data frame
+     * @param k  number of principal components used
+     * @return transformed input
+     */
     public Frame transform(Frame df, int k) {
 
         DMatrix x = DMatrix.copy(df.mapVars(inputNames));
@@ -183,15 +190,13 @@ public class PCA extends ParamSet<PCA> implements Printable {
     }
 
     public String toSummary(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("PCA decomposition\n");
-        sb.append("=================\n");
-        sb.append("input shape: rows=").append(inputRows).append(", vars=").append(inputVars).append("\n");
-        sb.append("eigen values:\n");
-        sb.append(eigenValues.toSummary(printer, options)).append("\n");
-        sb.append("Eigen vectors\n");
-        sb.append(eigenVectors.toSummary(printer, options)).append("\n");
-        return sb.toString();
+        return "PCA decomposition\n"
+                + "=================\n"
+                + "input shape: rows=" + inputRows + ", vars=" + inputVars + "\n"
+                + "eigen values:\n"
+                + eigenValues.toSummary(printer, options) + "\n"
+                + "Eigen vectors\n"
+                + eigenVectors.toSummary(printer, options) + "\n";
     }
 
     @Override

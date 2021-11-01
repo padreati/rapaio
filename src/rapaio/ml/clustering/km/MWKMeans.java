@@ -23,22 +23,15 @@ package rapaio.ml.clustering.km;
 
 import static rapaio.math.MathTools.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
 import rapaio.data.VarType;
 import rapaio.data.filter.FRefSort;
 import rapaio.math.linear.Algebra;
@@ -54,7 +47,6 @@ import rapaio.ml.common.distance.MinkowskiDistance;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.IntOpenHashSet;
 
 /**
  * Minkowsky Weighted KMeans
@@ -154,26 +146,25 @@ public class MWKMeans extends ClusteringModel<MWKMeans, ClusteringResult, Cluste
 
     @Override
     public MWKMeans coreFit(Frame df, Var w) {
+        errors = VarDouble.empty().name("errors");
 
         // initialize design matrix
         x = DMatrix.copy(df.mapVars(inputNames));
 
+        // initialize centroids
+        c = initialize();
         // initialize weights
         weights = DMatrix.fill(k.get(), inputNames.length, 1.0 / k.get());
-
-        c = initialize();
-
-        errors = VarDouble.empty().name("errors");
-
+        // assign to centroids and compute error
         assign = assignToCentroids();
-        repairEmptyClusters();
+//        repairEmptyClusters();
 
         int rounds = runs.get();
         while (rounds-- > 0) {
             recomputeCentroids();
             assignToCentroids();
             weightsUpdate(df);
-            repairEmptyClusters();
+//            repairEmptyClusters();
 
             if (runningHook != null) {
                 buildSummary(df);
@@ -216,19 +207,17 @@ public class MWKMeans extends ClusteringModel<MWKMeans, ClusteringResult, Cluste
 
     private int[] assignToCentroids() {
         int[] assignment = new int[x.rowCount()];
-        double error = 0.0;
+        double totalError = 0.0;
         for (int i = 0; i < x.rowCount(); i++) {
-            double d = Double.NaN;
-            double err = Double.NaN;
+            double error = Double.NaN;
             int cluster = -1;
             for (int j = 0; j < c.rowCount(); j++) {
-                double dd = error(x.mapRow(i), c.mapRow(j), weights.mapRow(j), p.get());
-                if (!Double.isFinite(dd)) {
+                double currentError = error(x.mapRow(i), c.mapRow(j), weights.mapRow(j), p.get());
+                if (!Double.isFinite(currentError)) {
                     continue;
                 }
-                if (Double.isNaN(d) || (dd < d)) {
-                    d = dd;
-                    err = pow(dd, 1/p.get());
+                if (Double.isNaN(error) || (currentError < error)) {
+                    error = currentError;
                     cluster = j;
                 }
             }
@@ -236,28 +225,38 @@ public class MWKMeans extends ClusteringModel<MWKMeans, ClusteringResult, Cluste
                 LOGGER.severe("Cluster could not be found during assign to centroids.");
                 throw new RuntimeException("Cluster could not be computed");
             }
-            error += err;
+            totalError += error;
             assignment[i] = cluster;
         }
-        errors.addDouble(error);
+        errors.addDouble(totalError);
         return assignment;
     }
 
-    private void recomputeCentroids() {
+    /**
+     * Computes indexes of all instances assigned to a centroid.
+     */
+    private int[] computeCentroidIndexes(int c) {
+        int len = 0;
+        for (int index : assign) {
+            if (index == c) {
+                len++;
+            }
+        }
+        int[] set = new int[len];
+        int pos = 0;
+        for (int i = 0; i < assign.length; i++) {
+            if (assign[i] == c) {
+                set[pos++] = i;
+            }
+        }
+        return set;
+    }
 
-        // TODO fix, implement optimizations
-        // we compute mean for each feature separately
-        for (int input=0; input<x.colCount(); input++) {
-            // collect values for each cluster in mean, for a given input feature
-            Var[] means = IntStream.range(0, k.get()).boxed()
-                    .map(i -> VarDouble.empty())
-                    .toArray(VarDouble[]::new);
-            for (int i = 0; i < x.rowCount(); i++) {
-                means[assign[i]].addDouble(x.get(i, input));
-            }
-            for (int i = 0; i < k.get(); i++) {
-                c.set(i, input, Mean.of(means[i]).value());
-            }
+    private void recomputeCentroids() {
+        for (int i = 0; i < k.get(); i++) {
+            int[] indexes = computeCentroidIndexes(i);
+            DMatrix xc = x.mapRows(indexes);
+
         }
     }
 
