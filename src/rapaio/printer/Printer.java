@@ -21,13 +21,9 @@
 
 package rapaio.printer;
 
-import java.text.DecimalFormat;
-
 import rapaio.graphics.Figure;
 import rapaio.printer.opt.POption;
-import rapaio.printer.opt.POptionTextWidth;
 import rapaio.printer.opt.POpts;
-import rapaio.printer.opt.POtpionFloatFormat;
 
 /**
  * Interface for the printing system. The printing system is the device responsible with
@@ -42,16 +38,8 @@ import rapaio.printer.opt.POtpionFloatFormat;
  */
 public interface Printer {
 
-    static POption<Integer> textWidth(int textWidth) {
-        return new POptionTextWidth(textWidth);
-    }
-
-    static POtpionFloatFormat floatFormat(DecimalFormat format) {
-        return new POtpionFloatFormat(format);
-    }
-
     /**
-     * Configures default graphic image shape (width and height)
+     * Configures default graphic image shape (width and height).
      *
      * @param width  image width
      * @param height image height
@@ -60,12 +48,12 @@ public interface Printer {
     Printer withGraphicShape(int width, int height);
 
     /**
-     * @return configured value for graphical image width
+     * Configured value for graphical image width.
      */
     int graphicWidth();
 
     /**
-     * @return configured value for graphical image height
+     * Configured value for graphical image height.
      */
     int graphicHeight();
 

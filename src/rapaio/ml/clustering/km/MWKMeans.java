@@ -22,43 +22,45 @@
 package rapaio.ml.clustering.km;
 
 import static rapaio.math.MathTools.*;
+import static rapaio.sys.With.copy;
 
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
+import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
 import rapaio.data.VarType;
-import rapaio.data.filter.FRefSort;
-import rapaio.math.linear.Algebra;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.clustering.ClusteringHookInfo;
 import rapaio.ml.clustering.ClusteringModel;
-import rapaio.ml.clustering.ClusteringResult;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.MinkowskiDistance;
-import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
+import rapaio.sys.With;
 
 /**
  * Minkowsky Weighted KMeans
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/17.
  */
-public class MWKMeans extends ClusteringModel<MWKMeans, ClusteringResult, ClusteringHookInfo> {
+public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, ClusteringHookInfo> {
+
+    public static MWKMeans newMWKMeans() {
+        return new MWKMeans();
+    }
 
     private static final Logger LOGGER = Logger.getLogger(MWKMeans.class.getName());
 
     /**
-     * Specifies the desired number of centroids
+     * Specifies the desired number of centroids.
      */
     public ValueParam<Integer, MWKMeans> k = new ValueParam<>(this, 2, "k");
 
@@ -68,33 +70,34 @@ public class MWKMeans extends ClusteringModel<MWKMeans, ClusteringResult, Cluste
     public ValueParam<Double, MWKMeans> p = new ValueParam<>(this, 2.0, "p", v -> Double.isFinite(v) && v >= 1);
 
     /**
-     * Number of restarts when choosing the initial centroids
+     * Number of restarts when choosing the initial centroids.
      */
     public ValueParam<Integer, MWKMeans> nstart = new ValueParam<>(this, 1, "nstart", v -> v >= 1);
 
     /**
-     * Initialization method
+     * Cluster initialization method.
      */
     public ValueParam<KMClusterInit, MWKMeans> init = new ValueParam<>(this, KMClusterInit.Forgy, "init");
 
     /**
-     * Threshold value used as a criteria for assessing convergence
+     * Subspace clustering flag. If true, a separate set of weights for each cluster will be used, otherwise
+     * a global set of weights will be used.
      */
-    public ValueParam<Double, MWKMeans> eps = new ValueParam<>(this, 1e-20, "eps");
+    public ValueParam<Boolean, MWKMeans> subspace = new ValueParam<>(this, false, "subspace clustering flag");
 
-    private Frame summary;
+    /**
+     * Threshold value used as a criteria for assessing convergence.
+     */
+    public ValueParam<Double, MWKMeans> eps = new ValueParam<>(this, 1e-10, "eps");
 
     // clustering artifacts
 
-    private DMatrix x;
     private DMatrix c;
     private DMatrix weights;
-    private int[] assign;
     private VarDouble errors;
 
-    // summary artifacts
-
-    private VarDouble summaryAllDist;
+    private MWKMeans() {
+    }
 
     @Override
     public String name() {
@@ -111,29 +114,30 @@ public class MWKMeans extends ClusteringModel<MWKMeans, ClusteringResult, Cluste
         return new Capabilities(1, Integer.MAX_VALUE, List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY), false, 0, 0, List.of(), true);
     }
 
-    private double distance(DVector x, DVector y, DVector w, double p) {
+    public double distance(DVector x, DVector y, DVector w, double p) {
         return pow(error(x, y, w, p), 1 / p);
     }
 
     private double error(DVector x, DVector y, DVector w, double p) {
-        return x.sub(y, Algebra.copy()).mul(w).apply(v -> pow(abs(v), p)).sum();
+        return x.sub(y, copy()).mul(w).apply(v -> pow(abs(v), p)).sum();
     }
 
-    private DMatrix initialize() {
+    private DMatrix initializeCentroids(DMatrix x) {
 
         Distance d = new MinkowskiDistance(p.get());
         DMatrix bestCentroids = init.get().init(d, x, k.get());
         double bestError = computeError(x, bestCentroids);
-        LOGGER.fine("Initial starting clusters done, initial computed error is: " + bestError);
+        LOGGER.fine("Initialization of centroids round 1 computed error: " + bestError);
 
         // compute initial restarts if nstart is greater than 1
         // the best restart is kept as initial centroids
 
-        LOGGER.fine("nstart > 1, searching for alternate starting points");
         if (nstart.get() > 1) {
             for (int i = 1; i < nstart.get(); i++) {
                 DMatrix nextCentroids = init.get().init(d, x, k.get());
                 double nextError = computeError(x, nextCentroids);
+                LOGGER.fine("Initialization of centroids, round %d, computed error: %f"
+                        .formatted(i + 1, nextError));
                 if (nextError < bestError) {
                     bestCentroids = nextCentroids;
                     bestError = nextError;
@@ -146,28 +150,31 @@ public class MWKMeans extends ClusteringModel<MWKMeans, ClusteringResult, Cluste
 
     @Override
     public MWKMeans coreFit(Frame df, Var w) {
+
+        weights = subspace.get()
+                ? DMatrix.fill(k.get(), inputNames.length, 1.0 / inputNames.length)
+                : DMatrix.fill(1, inputNames.length, 1.0 / inputNames.length);
+        LOGGER.finer("Initial weights: " + weights.toString());
         errors = VarDouble.empty().name("errors");
 
         // initialize design matrix
-        x = DMatrix.copy(df.mapVars(inputNames));
+        DMatrix x = DMatrix.copy(df.mapVars(inputNames));
 
         // initialize centroids
-        c = initialize();
-        // initialize weights
-        weights = DMatrix.fill(k.get(), inputNames.length, 1.0 / k.get());
-        // assign to centroids and compute error
-        assign = assignToCentroids();
-//        repairEmptyClusters();
+        c = initializeCentroids(x);
+
+        // assign instances to centroids and compute error
+        int[] assign = computeAssignmentAndError(x, true);
 
         int rounds = runs.get();
         while (rounds-- > 0) {
-            recomputeCentroids();
-            assignToCentroids();
-            weightsUpdate(df);
-//            repairEmptyClusters();
+
+            weightsUpdate(x, assign);
+            LOGGER.finer("Weights: " + weights.toString());
+            recomputeCentroids(x, assign);
+            assign = computeAssignmentAndError(x, true);
 
             if (runningHook != null) {
-                buildSummary(df);
                 learned = true;
                 runningHook.get().accept(new ClusteringHookInfo(this, runs.get() - rounds));
             }
@@ -181,21 +188,25 @@ public class MWKMeans extends ClusteringModel<MWKMeans, ClusteringResult, Cluste
                 }
             }
         }
-        buildSummary(df);
         learned = true;
         return this;
     }
 
     @Override
-    public ClusteringResult corePredict(Frame df, boolean withScores) {
-        return null;
+    public MWKMeansResult corePredict(Frame df, boolean withScores) {
+
+        DMatrix x = DMatrix.copy(df.mapVars(inputNames));
+        int[] assign = computeAssignmentAndError(x, false);
+
+        return MWKMeansResult.valueOf(this, df, VarInt.wrap(assign));
     }
 
     private double computeError(DMatrix x, DMatrix centroids) {
         return IntStream.range(0, x.rowCount()).parallel().mapToDouble(j -> {
             double d = Double.NaN;
             for (int c = 0; c < centroids.rowCount(); c++) {
-                double dd = error(x.mapRow(j), centroids.mapRow(c), weights.mapRow(c), p.get());
+                DVector w = subspace.get() ? weights.mapRow(c) : weights.mapRow(0);
+                double dd = error(x.mapRow(j), centroids.mapRow(c), w, p.get());
                 d = Double.isNaN(d) ? dd : Math.min(dd, d);
             }
             if (Double.isNaN(d)) {
@@ -205,14 +216,15 @@ public class MWKMeans extends ClusteringModel<MWKMeans, ClusteringResult, Cluste
         }).sum();
     }
 
-    private int[] assignToCentroids() {
+    private int[] computeAssignmentAndError(DMatrix x, boolean withErrors) {
         int[] assignment = new int[x.rowCount()];
         double totalError = 0.0;
         for (int i = 0; i < x.rowCount(); i++) {
             double error = Double.NaN;
             int cluster = -1;
             for (int j = 0; j < c.rowCount(); j++) {
-                double currentError = error(x.mapRow(i), c.mapRow(j), weights.mapRow(j), p.get());
+                DVector w = subspace.get() ? weights.mapRow(j) : weights.mapRow(0);
+                double currentError = error(x.mapRow(i), c.mapRow(j), w, p.get());
                 if (!Double.isFinite(currentError)) {
                     continue;
                 }
@@ -228,14 +240,16 @@ public class MWKMeans extends ClusteringModel<MWKMeans, ClusteringResult, Cluste
             totalError += error;
             assignment[i] = cluster;
         }
-        errors.addDouble(totalError);
+        if (withErrors) {
+            errors.addDouble(totalError);
+        }
         return assignment;
     }
 
     /**
      * Computes indexes of all instances assigned to a centroid.
      */
-    private int[] computeCentroidIndexes(int c) {
+    private int[] computeCentroidIndexes(int c, int[] assign) {
         int len = 0;
         for (int index : assign) {
             if (index == c) {
@@ -252,224 +266,196 @@ public class MWKMeans extends ClusteringModel<MWKMeans, ClusteringResult, Cluste
         return set;
     }
 
-    private void recomputeCentroids() {
-        for (int i = 0; i < k.get(); i++) {
-            int[] indexes = computeCentroidIndexes(i);
-            DMatrix xc = x.mapRows(indexes);
-
-        }
+    double error(DVector x, double beta, double c) {
+        return x.apply(v -> pow(abs(v - c), beta), copy()).sum();
     }
 
-    private void weightsUpdate(Frame df) {
-        // TODO fix
-        DMatrix d = DMatrix.fill(k.get(), inputNames.length, 0.0);
-        for (int i = 0; i < df.rowCount(); i++) {
-            for (int j = 0; j < inputNames.length; j++) {
-                int c = assign[i];
-                double value = pow(abs(x.get(i, j) - this.c.get(c, j)), p.get());
-                d.set(c, j, d.get(c, j) + value);
+    double derivative(DVector x, double beta, double c) {
+        double value = 0;
+        for (int i = 0; i < x.size(); i++) {
+            double v = x.get(i);
+            if (x.get(i) < c) {
+                value += pow(c - v, beta - 1);
+            } else {
+                value -= pow(v - c, beta - 1);
             }
         }
-
-        // revert values
-
-        for (int i = 0; i < d.rowCount(); i++) {
-            for (int j = 0; j < d.colCount(); j++) {
-                double dist = Math.max(d.get(i, j), 1e-20);
-                d.set(i, j, Math.pow(1.0 / dist, 1.0 / (p.get() - 1)));
-            }
-        }
-
-        // compute normalizing sums
-
-        DVector rv = DVector.fill(k.get(), 0.0);
-        for (int i = 0; i < d.rowCount(); i++) {
-            double sum = 0.0;
-            for (int j = 0; j < d.colCount(); j++) {
-                sum += d.get(i, j);
-            }
-            rv.set(i, sum);
-        }
-
-        // update weights
-
-        for (int i = 0; i < weights.rowCount(); i++) {
-            for (int j = 0; j < weights.colCount(); j++) {
-                weights.set(i, j, d.get(i, j) / rv.get(i));
-            }
-        }
+        return beta * value;
     }
 
-    private void repairEmptyClusters() {
-        // check for empty clusters, if any is found then
-        // select random points to be new clusters, different than
-        // existing clusters
-
-        /*
-        int[] clusterCount = new int[c.rowCount()];
-        assign.stream().mapToInt().forEach(arrow -> clusterCount[arrow]++);
-        if (Arrays.stream(clusterCount).filter(count -> count == 0).count() > 0) {
-
-            // first find all empty clusters
-
-            IntOpenHashSet emptyCentroids = new IntOpenHashSet();
-            for (int i = 0; i < clusterCount.length; i++) {
-                if (clusterCount[i] == 0) {
-                    emptyCentroids.add(i);
-                }
+    double findLeft(DVector y, double beta, double c) {
+        int left = 0;
+        double min = error(y, beta, y.get(left));
+        for (int i = 1; i < y.size(); i++) {
+            if (y.get(i) >= c) {
+                break;
             }
-
-            // replace each empty cluster
-
-            Iterator<Integer> it = emptyCentroids.iterator();
-            while (it.hasNext()) {
-                int next = it.next();
-                while (true) {
-                    int selection = RandomSource.nextInt(df.rowCount());
-                    boolean found = true;
-
-                    // check if it does not collide with existent valid clusters
-
-                    for (int i = 0; i < c.rowCount(); i++) {
-                        if (emptyCentroids.contains(i)) {
-                            continue;
-                        }
-                        if (checkIfEqual(c, i, df, next)) {
-                            found = false;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        continue;
-                    }
-
-                    // we found a valid centroid, it will be assigned
-
-                    for (String input : inputs) {
-                        c.setDouble(next, input, df.getDouble(selection, input));
-                    }
-                    break;
-                }
-
-                // remove centroid from empty set
-
-                it.remove();
-            }
-
-            // rebuit errors and cluster assignement
-            // if empty clusters happens again, then that is it, we did our best
-            // the stopping criterion is given by a bound on error or a
-            // maximum iteration
-
-            recomputeCentroids();
-        }
-
-         */
-    }
-
-    private boolean checkIfEqual(Frame centroids, int c, Frame df, int i) {
-        /*
-        int count = 0;
-        for (String input : inputs) {
-            if (centroids.getDouble(c, input) == df.getDouble(i, input)) {
-                count++;
+            double e = error(y, beta, y.get(i));
+            if (e < min) {
+                left = i;
+                min = e;
             }
         }
-        return count == inputs.length;
-
-         */
-        return false;
+        return y.get(left);
     }
 
-    public int[] clusterAssignment() {
-        return assign;
+    double findRight(DVector y, double beta, double c) {
+        int right = y.size() - 1;
+        double min = error(y, beta, y.get(right));
+        for (int i = right - 1; i >= 0; i--) {
+            if (y.get(i) <= c) {
+                break;
+            }
+            double e = error(y, beta, y.get(i));
+            if (e < min) {
+                right = i;
+                min = e;
+            }
+        }
+        return y.get(right);
     }
 
-    public DMatrix centroids() {
+    double findMinimum(DVector y, double beta) {
+        DVector errors = y.apply(v -> error(y, beta, v), copy());
+        double c0 = y.get(errors.argmin());
+        double left = findLeft(y, beta, c0);
+        double right = findRight(y, beta, c0);
+
+        double c;
+        while (true) {
+            // perhaps this should be put as parameter
+            if (right - left <= eps.get()) {
+                c = left;
+                break;
+            }
+            double mid = left + (right - left) / 2;
+            if (mid <= left || mid >= right) {
+                // for numerical reasons we break
+                c = left;
+                break;
+            }
+            double d = derivative(y, beta, mid);
+            if (d > 0) {
+                right = mid;
+            } else {
+                left = mid;
+            }
+        }
         return c;
     }
 
-    public VarDouble runningErrors() {
-        return errors.copy();
+    private void recomputeCentroids(DMatrix x, int[] assign) {
+        for (int i = 0; i < k.get(); i++) {
+            int[] indexes = computeCentroidIndexes(i, assign);
+            DMatrix xc = x.mapRows(indexes);
+            for (int j = 0; j < x.colCount(); j++) {
+                DVector ykj = xc.mapCol(j, copy());
+                if (p.get() > 1) {
+                    c.set(i, j, findMinimum(ykj, p.get()));
+                } else {
+                    c.set(i, j, Quantiles.of(ykj.asVarDouble(), 0.5).values()[0]);
+                }
+            }
+        }
     }
 
-    public double error() {
+    private void weightsUpdate(DMatrix x, int[] assign) {
+        if (subspace.get()) {
+            subspaceWeightsUpdate(x, assign);
+        } else {
+            globalWeightsUpdate(x, assign);
+        }
+    }
+
+    private void subspaceWeightsUpdate(DMatrix x, int[] assign) {
+        DMatrix dm = c.mapRows(assign).sub(x, With.copy()).apply(v -> pow(abs(v), p.get()));
+
+        DMatrix dv = DMatrix.empty(k.get(), dm.colCount());
+        for (int i = 0; i < dm.rowCount(); i++) {
+            for (int j = 0; j < dm.colCount(); j++) {
+                dv.inc(assign[i], j, dm.get(i, j));
+            }
+        }
+        // avoid division by 0
+        dv.apply(v -> max(v, 1e-10));
+
+        double invPow = p.get() > 1 ? 1 / (p.get() - 1) : 0;
+
+        for (int i = 0; i < dv.rowCount(); i++) {
+            for (int j = 0; j < dv.colCount(); j++) {
+                double v = 0;
+                for (int l = 0; l < dv.colCount(); l++) {
+                    v += pow(dv.get(i, j) / dv.get(i, l), invPow);
+                }
+                weights.set(i, j, 1 / v);
+            }
+        }
+    }
+
+    private void globalWeightsUpdate(DMatrix x, int[] assign) {
+        DVector dv = c.mapRows(assign).sub(x, With.copy()).apply(v -> pow(abs(v), p.get())).sum(0);
+        // avoid division by 0
+        dv.apply(v -> max(v, 1e-10));
+
+        double invPow = p.get() > 1 ? 1 / (p.get() - 1) : 0;
+        for (int i = 0; i < dv.size(); i++) {
+            double v = 0;
+            for (int j = 0; j < dv.size(); j++) {
+                v += pow(dv.get(i) / dv.get(j), invPow);
+            }
+            weights.set(0, i, 1 / v);
+        }
+    }
+
+    public DMatrix getCentroidsMatrix() {
+        return c;
+    }
+
+    public DMatrix getWeightsMatrix() {
+        return weights;
+    }
+
+    public double getError() {
         return errors.size() == 0 ? Double.NaN : errors.getDouble(errors.size() - 1);
     }
 
-    private void buildSummary(Frame df) {
-        /*
-        VarInt summaryId = VarInt.seq(1, c.rowCount()).name("ID");
-        VarInt summaryCount = VarInt.fill(c.rowCount(), 0).name("count");
-        VarDouble summaryMean = VarDouble.fill(c.rowCount(), 0).name("mean");
-        VarDouble summaryVar = VarDouble.fill(c.rowCount(), 0).name("var");
-        VarDouble summaryVarP = VarDouble.fill(c.rowCount(), 0).name("var/total");
-        VarDouble summarySd = VarDouble.fill(c.rowCount(), 0).name("sd");
-
-        summaryAllDist = VarDouble.empty().name("all dist");
-
-        Map<Integer, VarDouble> errors = new HashMap<>();
-
-        for (int i = 0; i < df.rowCount(); i++) {
-            double d = distance(df, i, c, assign[i], weights).v2;
-            if (!errors.containsKey(assign.getInt(i))) {
-                errors.put(assign.getInt(i), VarDouble.empty());
-            }
-            errors.get(assign.getInt(i)).addDouble(d);
-            summaryAllDist.addDouble(d);
-        }
-        double tvar = Variance.of(summaryAllDist).value();
-        for (Map.Entry<Integer, VarDouble> e : errors.entrySet()) {
-            summaryCount.setInt(e.getKey(), e.getValue().size());
-            summaryMean.setDouble(e.getKey(), Mean.of(e.getValue()).value());
-            double v = Variance.of(e.getValue()).value();
-            summaryVar.setDouble(e.getKey(), v);
-            summaryVarP.setDouble(e.getKey(), v / tvar);
-            summarySd.setDouble(e.getKey(), Math.sqrt(v));
-        }
-
-        summary = SolidFrame.byVars(summaryId, summaryCount, summaryMean, summaryVar, summaryVarP, summarySd);
-
-         */
+    public VarDouble getErrors() {
+        return errors.copy();
     }
 
+    @Override
+    public String toString() {
+        return fullName() + ", fitted=" + hasLearned();
+    }
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
-
         StringBuilder sb = new StringBuilder();
-        sb.append("MinkowskiWeightedKMeans clustering model\n");
-        sb.append("=======================\n");
-        sb.append("\n");
-        sb.append("Parameters: \n");
-        sb.append("> K = ").append(k).append("\n");
-        sb.append("> p = ").append(p).append("\n");
-        sb.append("> init = ").append(init.name()).append("\n");
-        sb.append("> distance = Minkowski[p=").append(p).append("]\n");
-        sb.append("> eps = ").append(eps).append("\n");
-        sb.append("\n");
-
-        sb.append("Learned clusters\n");
-        sb.append("----------------\n");
-
-        if (!learned) {
-            sb.append("MinkowskyWeightedKMeans did not clustered anything yet!\n");
-        } else {
-            sb.append("Overall: \n");
-            sb.append("> count: ").append(summaryAllDist.size()).append("\n");
-            sb.append("> mean: ").append(Format.floatFlex(Mean.of(summaryAllDist).value())).append("\n");
-            sb.append("> var: ").append(Format.floatFlex(Variance.of(summaryAllDist).value())).append("\n");
-            sb.append("> sd: ").append(Format.floatFlex(Variance.of(summaryAllDist).sdValue())).append("\n");
-            sb.append("\n");
-
-            sb.append("Per cluster: \n");
-            sb.append(summary.fapply(FRefSort.by(summary.rvar("count").refComparator(false))).toFullContent(printer, options));
-            sb.append("\n");
-            sb.append("Cluster weights:\n");
-            sb.append(weights.toFullContent(printer, options));
-            sb.append("\n");
+        sb.append(fullName()).append("\n");
+        sb.append("Model fitted=").append(hasLearned()).append("\n");
+        if (learned) {
+            sb.append("Inertia:").append(getError()).append("\n");
+            sb.append("Iterations:").append(errors.size()).append("\n");
+            sb.append("Clusters:").append(c.rowCount()).append("\n");
         }
+        return sb.toString();
+    }
 
+    @Override
+    public String toContent(Printer printer, POption<?>... options) {
+        return toSummary(printer, options);
+    }
+
+    @Override
+    public String toFullContent(Printer printer, POption<?>... options) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(toSummary(printer, options));
+        if (hasLearned()) {
+            sb.append("Centroids:\n");
+            sb.append(c.toFullContent(printer, options));
+            sb.append("Weights:\n");
+            sb.append(weights.toFullContent(printer, options));
+        }
         return sb.toString();
     }
 }

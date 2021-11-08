@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.printer.Printer.textWidth;
+import static rapaio.sys.With.textWidth;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -119,19 +119,12 @@ public class OneRuleTest {
 
         Frame mushrooms = Datasets.loadMushrooms();
         var mushroomsModel = OneRule.newModel().fit(mushrooms, "classes");
-        var predictionMushrooms = mushroomsModel.predict(mushrooms, true, true);
 
         assertEquals("odor", mushroomsModel.getBestRuleSet().getVarName());
         assertEquals(0.985228951256, mushroomsModel.getBestRuleSet().getAccuracy(), TOLERANCE);
 
-
-        Frame iris = Datasets.loadIrisDataset();
-        var irisModel = OneRule.newModel().fit(iris, "class");
-        var predictionIris = irisModel.predict(iris, true, true);
-
         assertEquals("odor", mushroomsModel.getBestRuleSet().getVarName());
         assertEquals(0.985228951256, mushroomsModel.getBestRuleSet().getAccuracy(), TOLERANCE);
-
     }
 
     @Test
@@ -173,31 +166,33 @@ public class OneRuleTest {
                         "NumericRule {minValue=4.85,maxValue=Infinity,class=virginica,errors=1,total=51,accuracy=0.9803921568627451}",
                 irisModel.toString());
 
-        assertEquals("OneRule model\n" +
-                        "================\n" +
-                        "\n" +
-                        "Description:\n" +
-                        "OneRule{}\n" +
-                        "\n" +
-                        "Capabilities:\n" +
-                        "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE,LONG/NOMINAL\n" +
-                        "counts inputs/targets: [1,1000000] / [1,1]\n" +
-                        "missing inputs/targets: true/false\n" +
-                        "\n" +
-                        "Model fitted: true\n" +
-                        "input vars: \n" +
-                        "0. sepal-length : DOUBLE  | \n" +
-                        "1.  sepal-width : DOUBLE  | \n" +
-                        "2. petal-length : DOUBLE  | \n" +
-                        "3.  petal-width : DOUBLE  | \n" +
-                        "\n" +
-                        "target vars:\n" +
-                        "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
-                        "\n" +
-                        "BestRuleSet {var=petal-length, acc=0.9933333333333333}\n" +
-                        "> NumericRule {minValue=-Infinity,maxValue=2.45,class=setosa,errors=0,total=50,accuracy=1}\n" +
-                        "> NumericRule {minValue=2.45,maxValue=4.85,class=versicolor,errors=0,total=49,accuracy=1}\n" +
-                        "> NumericRule {minValue=4.85,maxValue=Infinity,class=virginica,errors=1,total=51,accuracy=0.9803921568627451}\n",
+        assertEquals("""
+                        OneRule model
+                        ================
+
+                        Description:
+                        OneRule{}
+
+                        Capabilities:
+                        types inputs/targets: BINARY,INT,NOMINAL,DOUBLE,LONG/NOMINAL
+                        counts inputs/targets: [1,1000000] / [1,1]
+                        missing inputs/targets: true/false
+
+                        Model fitted: true
+                        input vars:\s
+                        0. sepal-length : DOUBLE  |\s
+                        1.  sepal-width : DOUBLE  |\s
+                        2. petal-length : DOUBLE  |\s
+                        3.  petal-width : DOUBLE  |\s
+
+                        target vars:
+                        > class : NOMINAL [?,setosa,versicolor,virginica]
+
+                        BestRuleSet {var=petal-length, acc=0.9933333333333333}
+                        > NumericRule {minValue=-Infinity,maxValue=2.45,class=setosa,errors=0,total=50,accuracy=1}
+                        > NumericRule {minValue=2.45,maxValue=4.85,class=versicolor,errors=0,total=49,accuracy=1}
+                        > NumericRule {minValue=4.85,maxValue=Infinity,class=virginica,errors=1,total=51,accuracy=0.9803921568627451}
+                        """,
                 irisModel.toSummary());
 
         Frame mushrooms = Datasets.loadMushrooms();
@@ -207,45 +202,47 @@ public class OneRuleTest {
 
         int oldTextWidth = WS.getPrinter().getOptions().textWidth();
         WS.getPrinter().withOptions(textWidth(100));
-        assertEquals("OneRule model\n" +
-                "================\n" +
-                "\n" +
-                "Description:\n" +
-                "OneRule{}\n" +
-                "\n" +
-                "Capabilities:\n" +
-                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE,LONG/NOMINAL\n" +
-                "counts inputs/targets: [1,1000000] / [1,1]\n" +
-                "missing inputs/targets: true/false\n" +
-                "\n" +
-                "Model fitted: true\n" +
-                "input vars: \n" +
-                " 0.                cap-shape : NOMINAL  | 11. stalk-surface-above-ring : NOMINAL  | \n" +
-                " 1.              cap-surface : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  | \n" +
-                " 2.                cap-color : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  | \n" +
-                " 3.                  bruises : NOMINAL  | 14.   stalk-color-below-ring : NOMINAL  | \n" +
-                " 4.                     odor : NOMINAL  | 15.                veil-type : NOMINAL  | \n" +
-                " 5.          gill-attachment : NOMINAL  | 16.               veil-color : NOMINAL  | \n" +
-                " 6.             gill-spacing : NOMINAL  | 17.              ring-number : NOMINAL  | \n" +
-                " 7.                gill-size : NOMINAL  | 18.                ring-type : NOMINAL  | \n" +
-                " 8.               gill-color : NOMINAL  | 19.        spore-print-color : NOMINAL  | \n" +
-                " 9.              stalk-shape : NOMINAL  | 20.               population : NOMINAL  | \n" +
-                "10.               stalk-root : NOMINAL  | 21.                  habitat : NOMINAL  | \n" +
-                "\n" +
-                "target vars:\n" +
-                "> classes : NOMINAL [?,p,e]\n" +
-                "\n" +
-                "BestRuleSet {var=odor, acc=0.9852289512555391}\n" +
-                "> NominalRule {value=?, class=e, errors=0, total=0, acc=0}\n" +
-                "> NominalRule {value=p, class=p, errors=0, total=256, acc=1}\n" +
-                "> NominalRule {value=a, class=e, errors=0, total=400, acc=1}\n" +
-                "> NominalRule {value=l, class=e, errors=0, total=400, acc=1}\n" +
-                "> NominalRule {value=n, class=e, errors=120, total=3,528, acc=0.9659863945578231}\n" +
-                "> NominalRule {value=f, class=p, errors=0, total=2,160, acc=1}\n" +
-                "> NominalRule {value=c, class=p, errors=0, total=192, acc=1}\n" +
-                "> NominalRule {value=y, class=p, errors=0, total=576, acc=1}\n" +
-                "> NominalRule {value=s, class=p, errors=0, total=576, acc=1}\n" +
-                "> NominalRule {value=m, class=p, errors=0, total=36, acc=1}\n", modelMushrooms.toSummary());
+        assertEquals("""
+                OneRule model
+                ================
+
+                Description:
+                OneRule{}
+
+                Capabilities:
+                types inputs/targets: BINARY,INT,NOMINAL,DOUBLE,LONG/NOMINAL
+                counts inputs/targets: [1,1000000] / [1,1]
+                missing inputs/targets: true/false
+
+                Model fitted: true
+                input vars:\s
+                 0.                cap-shape : NOMINAL  | 11. stalk-surface-above-ring : NOMINAL  |\s
+                 1.              cap-surface : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  |\s
+                 2.                cap-color : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  |\s
+                 3.                  bruises : NOMINAL  | 14.   stalk-color-below-ring : NOMINAL  |\s
+                 4.                     odor : NOMINAL  | 15.                veil-type : NOMINAL  |\s
+                 5.          gill-attachment : NOMINAL  | 16.               veil-color : NOMINAL  |\s
+                 6.             gill-spacing : NOMINAL  | 17.              ring-number : NOMINAL  |\s
+                 7.                gill-size : NOMINAL  | 18.                ring-type : NOMINAL  |\s
+                 8.               gill-color : NOMINAL  | 19.        spore-print-color : NOMINAL  |\s
+                 9.              stalk-shape : NOMINAL  | 20.               population : NOMINAL  |\s
+                10.               stalk-root : NOMINAL  | 21.                  habitat : NOMINAL  |\s
+
+                target vars:
+                > classes : NOMINAL [?,p,e]
+
+                BestRuleSet {var=odor, acc=0.9852289512555391}
+                > NominalRule {value=?, class=e, errors=0, total=0, acc=0}
+                > NominalRule {value=p, class=p, errors=0, total=256, acc=1}
+                > NominalRule {value=a, class=e, errors=0, total=400, acc=1}
+                > NominalRule {value=l, class=e, errors=0, total=400, acc=1}
+                > NominalRule {value=n, class=e, errors=120, total=3,528, acc=0.9659863945578231}
+                > NominalRule {value=f, class=p, errors=0, total=2,160, acc=1}
+                > NominalRule {value=c, class=p, errors=0, total=192, acc=1}
+                > NominalRule {value=y, class=p, errors=0, total=576, acc=1}
+                > NominalRule {value=s, class=p, errors=0, total=576, acc=1}
+                > NominalRule {value=m, class=p, errors=0, total=36, acc=1}
+                """, modelMushrooms.toSummary());
         WS.getPrinter().withOptions(textWidth(oldTextWidth));
 
         assertEquals(modelMushrooms.toContent(), modelMushrooms.toSummary());

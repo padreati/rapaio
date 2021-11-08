@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.math.linear.Algebra.*;
+import static rapaio.sys.With.*;
 
 import java.util.stream.IntStream;
 
@@ -37,6 +37,7 @@ import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorMap;
 import rapaio.math.linear.dense.DVectorStride;
+import rapaio.sys.With;
 import rapaio.util.collection.IntArrays;
 
 public class DenseAlgebraTest {
@@ -132,7 +133,7 @@ public class DenseAlgebraTest {
             t1m(mType, m -> assertTrue(m.mapValues(m.argmin(0), 0).deepEquals(m.min(0))));
             t1m(mType, m -> assertTrue(m.mapValues(m.argmin(1), 1).deepEquals(m.min(1))));
 
-            t1m(mType, m -> assertTrue(m.apply(MathTools::sqrt, Algebra.copy()).deepEquals(m.apply(MathTools::sqrt))));
+            t1m(mType, m -> assertTrue(m.apply(MathTools::sqrt, With.copy()).deepEquals(m.apply(MathTools::sqrt))));
             t1m(mType, m -> assertTrue(m.t(copy()).t(copy()).deepEquals(m.t().t())));
             t1m(mType, m -> assertEquals(m.sum(), m.valueStream().sum()));
 

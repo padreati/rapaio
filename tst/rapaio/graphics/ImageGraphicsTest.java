@@ -24,6 +24,7 @@ package rapaio.graphics;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static rapaio.graphics.Plotter.*;
+import static rapaio.sys.With.*;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -78,7 +79,7 @@ import rapaio.sys.WS;
 public class ImageGraphicsTest {
 
     private static final boolean regenerate = false;
-    private static final String root = "/home/ati/rapaio/rapaio/tst";
+    private static final String root = "/home/ati/work/rapaio/tst";
 
     private Frame df;
 

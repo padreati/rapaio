@@ -21,7 +21,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.*;
+import static rapaio.sys.With.*;
 
 import java.awt.Graphics2D;
 import java.io.Serial;

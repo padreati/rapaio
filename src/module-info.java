@@ -50,6 +50,7 @@ open module rapaio {
     exports rapaio.math.optimization.scalar;
 
     exports rapaio.ml.common;
+    exports rapaio.ml.common.distance;
     exports rapaio.ml.common.kernel;
     exports rapaio.ml.common.kernel.cache;
 

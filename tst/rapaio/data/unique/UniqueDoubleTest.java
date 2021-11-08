@@ -24,7 +24,7 @@ package rapaio.data.unique;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.printer.Printer.textWidth;
+import static rapaio.sys.With.textWidth;
 
 import java.util.Arrays;
 

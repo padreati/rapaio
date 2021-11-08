@@ -22,7 +22,10 @@
 package rapaio.sys;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 
 import rapaio.graphics.Figure;
 import rapaio.image.ImageTools;
@@ -37,7 +40,31 @@ import rapaio.printer.standard.StandardPrinter;
  */
 public class WS {
 
+    private static final LogManager logManager = LogManager.getLogManager();
     private static Printer printer = new StandardPrinter();
+
+    public static void initLog() {
+        initLog(Level.FINEST);
+    }
+
+    public static void initLog(Level level) {
+        try {
+            logManager.readConfiguration(new ByteArrayInputStream(("""
+                    handlers = java.util.logging.ConsoleHandler
+                    config   =
+
+                    "logger".handlers           =
+                    "logger".useParentHandlers  =
+                    .level              = %s
+
+                    java.util.logging.ConsoleHandler.level     = %s
+                    java.util.logging.ConsoleHandler.filter    =
+                    java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
+                    java.util.logging.ConsoleHandler.encoding  =""".formatted(level.getName(), level.getName())).getBytes()));
+        } catch (IOException ignored) {
+            // ignored
+        }
+    }
 
     private WS() {
     }

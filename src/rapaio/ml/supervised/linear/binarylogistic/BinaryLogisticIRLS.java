@@ -23,7 +23,7 @@ package rapaio.ml.supervised.linear.binarylogistic;
 
 import static java.lang.Math.exp;
 
-import static rapaio.math.linear.Algebra.*;
+import static rapaio.sys.With.*;
 
 import java.io.Serial;
 import java.util.ArrayList;

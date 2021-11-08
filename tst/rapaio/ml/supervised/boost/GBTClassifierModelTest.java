@@ -24,21 +24,15 @@ package rapaio.ml.supervised.boost;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import static rapaio.graphics.Plotter.*;
-
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
-import rapaio.core.SamplingTools;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.eval.metric.Accuracy;
-import rapaio.ml.supervised.ClassifierRunHook;
 import rapaio.ml.supervised.tree.RTree;
-import rapaio.sys.WS;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.
@@ -48,27 +42,6 @@ public class GBTClassifierModelTest {
     @BeforeEach
     void beforeEach() {
         RandomSource.setSeed(133);
-    }
-
-    //    @Test
-    void smokeTest() throws IOException {
-
-        var spam = Datasets.loadSpamBase();
-        var split = SamplingTools.trainTestSplit(spam, null, 0.8, true, "spam");
-        var hook = new ClassifierRunHook()
-                .train.set(split.trainDf())
-                .test.set(split.testDf())
-                .skipStep.set(50)
-                .metrics.set(Accuracy.newMetric());
-        var model = GBTClassifierModel.newModel().runs.set(2000).runningHook.set(hook);
-
-
-        model.fit(spam, "spam");
-
-        var result = model.predict(spam);
-
-        WS.draw(lines(hook.getRuns(), hook.getTrainScores().get(Accuracy.ID), fill(1))
-                .lines(hook.getRuns(), hook.getTestScores().get(Accuracy.ID), fill(2)));
     }
 
     @Test

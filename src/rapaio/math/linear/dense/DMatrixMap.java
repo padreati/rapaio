@@ -29,6 +29,7 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
 import rapaio.math.linear.base.AbstractDMatrix;
 import rapaio.math.linear.option.AlgebraOption;
+import rapaio.util.collection.IntArrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
@@ -43,8 +44,8 @@ public class DMatrixMap extends AbstractDMatrix {
     private final int[] colIndexes;
 
     public DMatrixMap(DMatrix ref, boolean byRow, int... indexes) {
-        if(ref instanceof DMatrixMap mref) {
-            if(byRow) {
+        if (ref instanceof DMatrixMap mref) {
+            if (byRow) {
                 this.ref = mref.ref;
                 this.rowIndexes = Arrays.copyOf(indexes, indexes.length);
                 this.colIndexes = mref.colIndexes;
@@ -58,16 +59,10 @@ public class DMatrixMap extends AbstractDMatrix {
         if (byRow) {
             this.ref = ref;
             this.rowIndexes = Arrays.copyOf(indexes, indexes.length);
-            this.colIndexes = new int[ref.colCount()];
-            for (int i = 0; i < ref.colCount(); i++) {
-                this.colIndexes[i] = i;
-            }
+            this.colIndexes = IntArrays.newSeq(0, ref.colCount());
         } else {
             this.ref = ref;
-            this.rowIndexes = new int[ref.rowCount()];
-            for (int i = 0; i < ref.rowCount(); i++) {
-                this.rowIndexes[i] = i;
-            }
+            this.rowIndexes = IntArrays.newSeq(0, ref.rowCount());
             this.colIndexes = Arrays.copyOf(indexes, indexes.length);
         }
     }

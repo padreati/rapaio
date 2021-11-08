@@ -104,15 +104,15 @@ public class SolidFrame extends AbstractFrame {
         return SolidFrame.byVars(rows, vars);
     }
 
-    public static Frame matrix(DMatrix DMatrix, String... varNames) {
-        return matrix(DMatrix, Arrays.asList(varNames));
+    public static Frame matrix(DMatrix m, String... varNames) {
+        return matrix(m, Arrays.asList(varNames));
     }
 
-    public static Frame matrix(DMatrix DMatrix, List<String> varNames) {
-        Frame df = matrix(DMatrix.rowCount(), varNames);
-        for (int i = 0; i < DMatrix.rowCount(); i++) {
-            for (int j = 0; j < DMatrix.colCount(); j++) {
-                df.setDouble(i, j, DMatrix.get(i, j));
+    public static Frame matrix(DMatrix m, List<String> varNames) {
+        Frame df = matrix(m.rowCount(), varNames);
+        for (int i = 0; i < m.rowCount(); i++) {
+            for (int j = 0; j < m.colCount(); j++) {
+                df.setDouble(i, j, m.get(i, j));
             }
         }
         return df;
@@ -129,10 +129,12 @@ public class SolidFrame extends AbstractFrame {
 
     private SolidFrame(int rows, List<? extends Var> vars) {
         for (Var var : vars) {
-            if (var instanceof MappedVar)
+            if (var instanceof MappedVar) {
                 throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
-            if (var instanceof BoundVar)
+            }
+            if (var instanceof BoundVar) {
                 throw new IllegalArgumentException("Not allowed bounded vectors in solid frame");
+            }
         }
         this.rows = rows;
         this.vars = new Var[vars.size()];

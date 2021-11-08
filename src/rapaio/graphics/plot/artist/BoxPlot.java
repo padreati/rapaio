@@ -25,7 +25,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
-import static rapaio.graphics.Plotter.*;
+import static rapaio.sys.With.*;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;

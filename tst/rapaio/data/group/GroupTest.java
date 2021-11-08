@@ -34,7 +34,7 @@ import static rapaio.data.Group.nunique;
 import static rapaio.data.Group.skewness;
 import static rapaio.data.Group.std;
 import static rapaio.data.Group.sum;
-import static rapaio.printer.Printer.textWidth;
+import static rapaio.sys.With.textWidth;
 
 import java.util.HashMap;
 import java.util.Map;

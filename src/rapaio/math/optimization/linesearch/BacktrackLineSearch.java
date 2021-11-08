@@ -21,7 +21,7 @@
 
 package rapaio.math.optimization.linesearch;
 
-import static rapaio.math.linear.Algebra.*;
+import static rapaio.sys.With.*;
 
 import java.io.Serial;
 

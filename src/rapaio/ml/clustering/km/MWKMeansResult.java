@@ -32,6 +32,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.ml.clustering.ClusteringResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
@@ -40,23 +41,22 @@ import rapaio.printer.opt.POption;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/2/20.
  */
-public class KMClusterResult extends ClusteringResult<KMCluster> {
+public class MWKMeansResult extends ClusteringResult<MWKMeans> {
 
-    public static KMClusterResult valueOf(KMCluster model, Frame df, VarInt clusterAssignment) {
-        return new KMClusterResult(model, df, clusterAssignment);
+    public static MWKMeansResult valueOf(MWKMeans model, Frame df, VarInt assignment) {
+        return new MWKMeansResult(model, df, assignment);
     }
 
     private final Frame clusterSummary;
     private final Var distances;
 
-    private KMClusterResult(KMCluster model, Frame df, VarInt assignment) {
+    private MWKMeansResult(MWKMeans model, Frame df, VarInt assignment) {
         super(model, df, assignment);
 
         DMatrix c = model.getCentroidsMatrix();
         DMatrix m = DMatrix.copy(df);
         int ccount = c.rowCount();
 
-        Var id = VarInt.seq(1, ccount).name("ID");
         Var count = VarInt.fill(ccount, 0).name("count");
         Var mean = VarDouble.fill(ccount, 0).name("mean");
         Var variance = VarDouble.fill(ccount, 0).name("var");
@@ -68,7 +68,8 @@ public class KMClusterResult extends ClusteringResult<KMCluster> {
         Map<Integer, VarDouble> errors = new HashMap<>();
 
         for (int i = 0; i < m.rowCount(); i++) {
-            double d = model.method.get().distance().compute(c.mapRow(assignment.getInt(i)), m.mapRow(i));
+            DVector w = model.getWeightsMatrix().mapRow(model.subspace.get() ? assignment.getInt(i) : 0);
+            double d = model.distance(m.mapRow(i), c.mapRow(assignment.getInt(i)), w, model.p.get());
             errors.computeIfAbsent(assignment.getInt(i), row -> VarDouble.empty()).addDouble(d * d);
             distances.addDouble(d * d);
         }
@@ -81,7 +82,7 @@ public class KMClusterResult extends ClusteringResult<KMCluster> {
             variancePercentage.setDouble(e.getKey(), v / totalVariance);
             std.setDouble(e.getKey(), Math.sqrt(v));
         }
-        clusterSummary = SolidFrame.byVars(id, count, mean, variance, variancePercentage, std);
+        clusterSummary = SolidFrame.byVars(VarInt.seq(1, ccount).name("ID"), count, mean, variance, variancePercentage, std);
     }
 
     public Frame getClusterSummary() {
@@ -94,7 +95,7 @@ public class KMClusterResult extends ClusteringResult<KMCluster> {
 
     @Override
     public String toString() {
-        return "KMClusterResult{}";
+        return "MWKMeansResult{}";
     }
 
     @Override
@@ -105,8 +106,8 @@ public class KMClusterResult extends ClusteringResult<KMCluster> {
         sb.append("> mean: ").append(Format.floatFlex(Mean.of(distances).value())).append("\n");
         sb.append("> var: ").append(Format.floatFlex(Variance.of(distances).value())).append("\n");
         sb.append("> sd: ").append(Format.floatFlex(Variance.of(distances).sdValue())).append("\n");
-        sb.append("> inertia/error:").append(Format.floatFlex(model.getError())).append("\n");
-        sb.append("> iterations:").append(model.getErrors().size()).append("\n");
+        sb.append("> inertia/error: ").append(Format.floatFlex(model.getError())).append("\n");
+        sb.append("> iterations: ").append(model.getErrors().size()).append("\n");
         sb.append("\n");
 
         sb.append("Per cluster: \n");

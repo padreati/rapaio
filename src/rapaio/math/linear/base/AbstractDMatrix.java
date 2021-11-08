@@ -29,7 +29,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 import rapaio.math.MathTools;
-import rapaio.math.linear.Algebra;
+import rapaio.sys.With;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.MType;
@@ -258,7 +258,7 @@ public abstract class AbstractDMatrix implements DMatrix {
                 ref.set(i, j, get(i, j) - b.get(i, j));
             }
         }
-        return this;
+        return ref;
     }
 
     @Override
@@ -426,7 +426,7 @@ public abstract class AbstractDMatrix implements DMatrix {
             mean.set(i, mapCol(i).mean());
         }
         for (int k = 0; k < rowCount(); k++) {
-            DVector row = mapRow(k, Algebra.copy()).sub(mean);
+            DVector row = mapRow(k, With.copy()).sub(mean);
             for (int i = 0; i < row.size(); i++) {
                 for (int j = 0; j < row.size(); j++) {
                     scatter.inc(i, j, row.get(i) * row.get(j));
@@ -506,7 +506,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DVector max(int axis) {
-        DVector max = axis == 0 ? mapRow(0, Algebra.copy()) : mapCol(0, Algebra.copy());
+        DVector max = axis == 0 ? mapRow(0, With.copy()) : mapCol(0, With.copy());
         int i = axis == 0 ? 1 : 0;
         for (; i < rowCount(); i++) {
             int j = axis == 0 ? 0 : 1;
@@ -546,7 +546,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DVector min(int axis) {
-        DVector min = axis == 0 ? mapRow(0, Algebra.copy()) : mapCol(0, Algebra.copy());
+        DVector min = axis == 0 ? mapRow(0, With.copy()) : mapCol(0, With.copy());
         int i = axis == 0 ? 1 : 0;
         for (; i < rowCount(); i++) {
             int j = axis == 0 ? 0 : 1;

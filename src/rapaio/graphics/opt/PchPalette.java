@@ -21,13 +21,22 @@
 
 package rapaio.graphics.opt;
 
+import static rapaio.math.MathTools.*;
+
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import rapaio.graphics.plot.artist.PolyFill;
+import rapaio.math.MathTools;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -35,7 +44,6 @@ import java.util.ArrayList;
 public enum PchPalette implements Serializable {
 
     STANDARD(new StandardPchPalette());
-
 
     private final Mapping mapping;
 
@@ -60,41 +68,16 @@ final class StandardPchPalette implements Mapping {
     public StandardPchPalette() {
         pchs = new ArrayList<>();
 
-        // 0 is a circle
-        pchs.add((g2d, x, y, sz, lwd, color, fill) -> {
-            g2d.setStroke(new BasicStroke(lwd));
-            g2d.setColor(color);
-            g2d.draw(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2));
-        });
-
-        // 1 is a filled circle
-        pchs.add((g2d, x, y, sz, lwd, color, fill) -> {
-            g2d.setStroke(new BasicStroke());
-            g2d.setColor(fill);
-            g2d.fill(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2));
-        });
-
-        // 2 is a filled circle with a black surrounding
-        pchs.add((g2d, x, y, sz, lwd, color, fill) -> {
-
-            g2d.setColor(fill);
-            g2d.setStroke(new BasicStroke(1f));
-            g2d.fill(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2));
-
-            g2d.setColor(color);
-            g2d.setStroke(new BasicStroke(lwd));
-            g2d.draw(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2));
-        });
-
-        // 3 is a cross
-        pchs.add((g2d, x, y, sz, lwd, color, fill) -> {
-            g2d.setStroke(new BasicStroke(lwd));
-            g2d.setColor(fill);
-            g2d.draw(new Line2D.Double(x - sz, y - sz, x + sz, y + sz));
-            g2d.fill(new Line2D.Double(x - sz, y - sz, x + sz, y + sz));
-            g2d.draw(new Line2D.Double(x + sz, y - sz, x - sz, y + sz));
-            g2d.fill(new Line2D.Double(x + sz, y - sz, x - sz, y + sz));
-        });
+        pchs.add(Drawer.CIRCLE_WIRE);
+        pchs.add(Drawer.CIRCLE_FILL);
+        pchs.add(Drawer.CIRCLE_FULL);
+        pchs.add(Drawer.CROSS_WIRE);
+        pchs.add(Drawer.TRIANGLE_WIRE);
+        pchs.add(Drawer.TRIANGLE_FILL);
+        pchs.add(Drawer.TRIANGLE_FULL);
+        pchs.add(Drawer.SQUARE_WIRE);
+        pchs.add(Drawer.SQUARE_FILL);
+        pchs.add(Drawer.SQUARE_FULL);
     }
 
     @Override
@@ -109,7 +92,148 @@ final class StandardPchPalette implements Mapping {
     }
 }
 
-interface Drawer extends Serializable {
+enum Drawer {
 
-    void draw(Graphics2D g2d, double x, double y, double size, float lwd, Color color, Color fill);
+    CIRCLE_WIRE() {
+        @Override
+        void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
+            g2d.setStroke(new BasicStroke(lwd));
+            g2d.setColor(color);
+            g2d.draw(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2));
+        }
+    },
+    CIRCLE_FILL() {
+        @Override
+        void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
+            g2d.setStroke(new BasicStroke(1f));
+            g2d.setColor(fill);
+            g2d.fill(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2));
+        }
+    },
+    CIRCLE_FULL() {
+        @Override
+        void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
+            g2d.setColor(fill);
+            g2d.setStroke(new BasicStroke(1f));
+            g2d.fill(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2));
+
+            g2d.setColor(color);
+            g2d.setStroke(new BasicStroke(lwd));
+            g2d.draw(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2));
+        }
+    },
+    CROSS_WIRE() {
+        @Override
+        void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
+            g2d.setStroke(new BasicStroke(lwd));
+            g2d.setColor(color);
+            g2d.draw(new Line2D.Double(x - sz, y - sz, x + sz, y + sz));
+            g2d.fill(new Line2D.Double(x - sz, y - sz, x + sz, y + sz));
+            g2d.draw(new Line2D.Double(x + sz, y - sz, x - sz, y + sz));
+            g2d.fill(new Line2D.Double(x + sz, y - sz, x - sz, y + sz));
+        }
+    },
+    TRIANGLE_WIRE() {
+        @Override
+        void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
+            sz = sz * 1.2;
+            Path2D.Double path = new Path2D.Double();
+            path.moveTo(x, y - sz);
+            path.lineTo(x + sz * sqrt(3) / 2, y + sz * 2 / 3);
+            path.lineTo(x - sz * sqrt(3) / 2, y + sz * 2 / 3);
+            path.lineTo(x, y - sz);
+
+            g2d.setStroke(new BasicStroke(lwd));
+            g2d.setColor(color);
+            g2d.draw(path);
+        }
+    },
+    TRIANGLE_FILL() {
+        @Override
+        void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
+            sz = sz * 1.2;
+            Path2D.Double path = new Path2D.Double();
+            path.moveTo(x, y - sz);
+
+            path.lineTo(x + sz * sqrt(3) / 2, y + sz * 2 / 3);
+            path.lineTo(x - sz * sqrt(3) / 2, y + sz * 2 / 3);
+            path.lineTo(x, y - sz);
+
+            g2d.setStroke(new BasicStroke(1f));
+            g2d.setColor(fill);
+            g2d.fill(path);
+        }
+    },
+    TRIANGLE_FULL() {
+        @Override
+        void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
+            sz = sz * 1.2;
+            Path2D.Double path = new Path2D.Double();
+            path.moveTo(x, y - sz);
+            path.lineTo(x + sz * sqrt(3) / 2, y + sz * 2 / 3);
+            path.lineTo(x - sz * sqrt(3) / 2, y + sz * 2 / 3);
+            path.lineTo(x, y - sz);
+
+            g2d.setStroke(new BasicStroke(1f));
+            g2d.setColor(fill);
+            g2d.fill(path);
+
+            g2d.setStroke(new BasicStroke(lwd));
+            g2d.setColor(color);
+            g2d.draw(path);
+        }
+    },
+    SQUARE_WIRE() {
+        @Override
+        void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
+            Path2D.Double path = new Path2D.Double();
+            double d = sz;
+            path.moveTo(x - d, y - d);
+            path.lineTo(x + d, y - d);
+            path.lineTo(x + d, y + d);
+            path.lineTo(x - d, y + d);
+            path.lineTo(x - d, y - d);
+
+            g2d.setStroke(new BasicStroke(lwd));
+            g2d.setColor(color);
+            g2d.draw(path);
+        }
+    },
+    SQUARE_FILL() {
+        @Override
+        void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
+            Path2D.Double path = new Path2D.Double();
+            double d = sz;
+            path.moveTo(x - d, y - d);
+            path.lineTo(x + d, y - d);
+            path.lineTo(x + d, y + d);
+            path.lineTo(x - d, y + d);
+            path.lineTo(x - d, y - d);
+
+            g2d.setStroke(new BasicStroke(1f));
+            g2d.setColor(fill);
+            g2d.fill(path);
+        }
+    },
+    SQUARE_FULL() {
+        @Override
+        void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
+            Path2D.Double path = new Path2D.Double();
+            path.moveTo(x - sz, y - sz);
+            path.lineTo(x + sz, y - sz);
+            path.lineTo(x + sz, y + sz);
+            path.lineTo(x - sz, y + sz);
+            path.lineTo(x - sz, y - sz);
+
+            g2d.setStroke(new BasicStroke(1f));
+            g2d.setColor(fill);
+            g2d.fill(path);
+
+            g2d.setStroke(new BasicStroke(lwd));
+            g2d.setColor(color);
+            g2d.draw(path);
+        }
+    };
+
+    abstract void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill);
 }

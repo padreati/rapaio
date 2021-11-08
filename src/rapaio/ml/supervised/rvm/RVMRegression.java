@@ -21,7 +21,7 @@
 
 package rapaio.ml.supervised.rvm;
 
-import static rapaio.math.linear.Algebra.*;
+import static rapaio.sys.With.*;
 
 import java.io.Serial;
 import java.util.ArrayList;

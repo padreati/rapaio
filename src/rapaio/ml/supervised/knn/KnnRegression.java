@@ -22,7 +22,7 @@
 package rapaio.ml.supervised.knn;
 
 import static rapaio.math.MathTools.*;
-import static rapaio.math.linear.Algebra.*;
+import static rapaio.sys.With.*;
 
 import java.util.Arrays;
 import java.util.List;

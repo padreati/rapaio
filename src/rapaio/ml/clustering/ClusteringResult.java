@@ -28,19 +28,19 @@ import rapaio.printer.Printable;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/31/20.
  */
-public class ClusteringResult implements Printable {
+public class ClusteringResult<M extends ClusteringModel<?, ?, ?>> implements Printable {
 
-    protected final ClusteringModel<?, ?, ?> model;
+    protected final M model;
     protected final Frame df;
     protected final VarInt assignment;
 
-    public ClusteringResult(ClusteringModel<?, ?, ?> model, Frame df, VarInt assignment) {
+    public ClusteringResult(M model, Frame df, VarInt assignment) {
         this.model = model;
         this.df = df;
         this.assignment = assignment;
     }
 
-    public ClusteringModel<?, ?, ?> getModel() {
+    public M getModel() {
         return model;
     }
 

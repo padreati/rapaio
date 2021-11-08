@@ -34,6 +34,7 @@ import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorStride;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
+import rapaio.sys.With;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
@@ -577,7 +578,7 @@ public interface DVector extends Serializable, Printable {
 
     /**
      * Apply a double to double function on all the values from the vector.
-     * If a new copy of the result is needed use {@link Algebra#copy()} parameter.
+     * If a new copy of the result is needed use {@link With#copy()} parameter.
      *
      * @param f    double to double function
      * @param opts linear algebra options
@@ -589,13 +590,23 @@ public interface DVector extends Serializable, Printable {
      * Apply an (integer,double) to double function on all the values from the vector.
      * The integer value is the position of the value in the vector.
      * <p>
-     * If a new copy of the result is needed use {@link Algebra#copy()} parameter.
+     * If a new copy of the result is needed use {@link With#copy()} parameter.
      *
      * @param f    (int,double) to double function
      * @param opts linear algebra options
      * @return result vector
      */
     DVector apply(BiFunction<Integer, Double, Double> f, AlgebraOption<?>... opts);
+
+    /**
+     * Sort values from vector. If the storage type allows that, an in place
+     * sorting is executed. To create a new copy use {@link With#copy()}.
+     *
+     * @param asc ascending sort if {@code true}, descending otherwise
+     * @param opts algebra options
+     * @return same vector or a new vector with sorted values
+     */
+    DVector sortValues(boolean asc, AlgebraOption<?>... opts);
 
     /**
      * A vector is also a matrix, but for implementation reasons the objects are not the same. This method
@@ -628,7 +639,7 @@ public interface DVector extends Serializable, Printable {
 
     /**
      * Creates a VarDouble variable by wrapping the values if possible (if the vector storage type is
-     * a direct one). If a new copy of the data is needed use {@link Algebra#copy()} parameter.
+     * a direct one). If a new copy of the data is needed use {@link With#copy()} parameter.
      *
      * @return new double variable instance
      */

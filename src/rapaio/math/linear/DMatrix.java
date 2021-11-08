@@ -23,7 +23,6 @@ package rapaio.math.linear;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.function.Function;
 import java.util.stream.DoubleStream;
 
 import rapaio.core.distributions.Distribution;
@@ -35,6 +34,7 @@ import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
+import rapaio.sys.With;
 import rapaio.util.NotImplementedException;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
@@ -566,7 +566,7 @@ public interface DMatrix extends Serializable, Printable {
      * Returns a vector build from values of the row with given index in the matrix.
      * <p>
      * Depending on implementation, the vector can be a view over the original data.
-     * To enforce a new copy add option {@link Algebra#copy()} as parameter.
+     * To enforce a new copy add option {@link With#copy()} as parameter.
      *
      * @param index index of the selected row
      * @return result vector reference
@@ -577,7 +577,7 @@ public interface DMatrix extends Serializable, Printable {
      * Returns a vector build from values of the column with given index in the matrix.
      * <p>
      * Depending on implementation, the vector can be a view over the original data.
-     * To enforce a new copy add option {@link Algebra#copy()} as parameter.
+     * To enforce a new copy add option {@link With#copy()} as parameter.
      *
      * @param index index of the selected column
      * @return result vector reference
@@ -589,7 +589,7 @@ public interface DMatrix extends Serializable, Printable {
      * specified by given indexes.
      * <p>
      * Depending on implementation, the vector can be a view over the original data.
-     * To enforce a new copy add option {@link Algebra#copy()} as parameter.
+     * To enforce a new copy add option {@link With#copy()} as parameter.
      *
      * @param indexes row indexes
      * @return result matrix reference
@@ -601,7 +601,7 @@ public interface DMatrix extends Serializable, Printable {
      * specified by given indexes.
      * <p>
      * Depending on implementation, the vector can be a view over the original data.
-     * To enforce a new copy add option {@link Algebra#copy()} as parameter.
+     * To enforce a new copy add option {@link With#copy()} as parameter.
      *
      * @param indexes row indexes
      * @return result matrix reference
@@ -626,7 +626,7 @@ public interface DMatrix extends Serializable, Printable {
      * <p>
      * Depending on the implementation
      * the new matrix can be a view. To obtain a new matrix copy
-     * one has to add {@link Algebra#copy()} parameter.
+     * one has to add {@link With#copy()} parameter.
      *
      * @param start start row index (inclusive)
      * @param end   end row index (exclusive)
@@ -641,7 +641,7 @@ public interface DMatrix extends Serializable, Printable {
      * <p>
      * Depending on the implementation
      * the new matrix can be a view. To obtain a new matrix copy
-     * one has to add {@link Algebra#copy()} parameter.
+     * one has to add {@link With#copy()} parameter.
      *
      * @param start start col index (inclusive)
      * @param end   end col index (exclusive)
@@ -653,7 +653,7 @@ public interface DMatrix extends Serializable, Printable {
      * Builds a new matrix having all rows not specified by given indexes.
      * <p>
      * Depending on the implementation this can be a view over the original matrix.
-     * To obtain a new copy of the data method {@link Algebra#copy()} must be added as parameter.
+     * To obtain a new copy of the data method {@link With#copy()} must be added as parameter.
      *
      * @param indexes rows to be removed
      * @return new mapped matrix containing all rows not specified by indexes
@@ -664,7 +664,7 @@ public interface DMatrix extends Serializable, Printable {
      * Builds a new matrix having all rows not specified by given indexes.
      * <p>
      * Depending on the implementation this can be a view over the original matrix.
-     * To obtain a new copy of the data method {@link Algebra#copy()} must be added as parameter.
+     * To obtain a new copy of the data method {@link With#copy()} must be added as parameter.
      *
      * @param indexes rows to be removed
      * @return new mapped matrix containing all rows not specified by indexes
@@ -873,7 +873,7 @@ public interface DMatrix extends Serializable, Printable {
 
     /**
      * Builds a vector with indexes of the minimum value index from rows/columns.
-     * Thus if a matrix has m rows and n columns, the resulted vector
+     * If a matrix has m rows and n columns, the resulted vector
      * will have size m and will contain in each position the minimum
      * value index from the row with that position.
      *
@@ -890,9 +890,8 @@ public interface DMatrix extends Serializable, Printable {
 
     /**
      * Computes the sum of all elements on the given axis. If axis
-     * is 0 it will compute sum on rows, the resulting vector having size
-     * as the number of rows and on each position the sum of elements from
-     * that row. If the axis is 1 it will compute sums on columns.
+     * is 0 it will compute sum of rows, the resulting vector having size
+     * as the number of columns. If the axis is 1 it will compute sums of columns.
      *
      * @param axis specifies the dimension used for summing
      * @return vector of sums on the given axis

@@ -24,7 +24,7 @@ package rapaio.math.optimization;
 import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 
-import static rapaio.math.linear.Algebra.*;
+import static rapaio.sys.With.*;
 
 import java.io.Serial;
 import java.util.ArrayList;

@@ -31,6 +31,9 @@ import java.io.Serializable;
 public enum ColorPalette implements Serializable {
 
     STANDARD(new StandardColorPalette()),
+    TABLEAU11(new TableauClassic11ColorPalette()),
+    TABLEAU21(new Tableau21ColorPalette()),
+    MILLER_STONE(new MillerStonePalette()),
     GRAY(new GrayColorPalette()),
     HUE(new HueColorPalette()),
     RED_BLUE_GRADIENT(new RedBlueGradient()),
@@ -38,7 +41,6 @@ public enum ColorPalette implements Serializable {
     HUE_BLUE_RED(new HueBlueRed());
     //
     private final Mapping palette;
-    private int size;
 
     ColorPalette(Mapping palette) {
         this.palette = palette;
@@ -199,5 +201,132 @@ class RedGreenBluePalette implements ColorPalette.Mapping {
     @Override
     public int getSize() {
         return 510;
+    }
+}
+
+class TableauClassic11ColorPalette implements ColorPalette.Mapping {
+
+    @Serial
+    private static final long serialVersionUID = -7776446499900459739L;
+    private static final Color[] colors;
+
+    static {
+        colors = new Color[11];
+        colors[0] = Color.BLACK;
+        colors[1] = new Color(0xd62728);
+        colors[2] = new Color(0x1f77b4);
+        colors[3] = new Color(0x2ca02c);
+        colors[4] = new Color(0xff7f0e);
+        colors[5] = new Color(0x9467bd);
+        colors[6] = new Color(0x8c564b);
+        colors[7] = new Color(0xe377c2);
+        colors[8] = new Color(0x7f7f7f);
+        colors[9] = new Color(0xbcbd22);
+        colors[10] = new Color(0x17becf);
+    }
+
+    @Override
+    public Color getColor(int index) {
+        if (index < 0) {
+            index *= -1;
+        }
+        if (index >= colors.length) {
+            return colors[index % colors.length];
+        }
+        return colors[index];
+    }
+
+    @Override
+    public int getSize() {
+        return colors.length;
+    }
+}
+
+class Tableau21ColorPalette implements ColorPalette.Mapping {
+
+    @Serial
+    private static final long serialVersionUID = -7776446499900459739L;
+    private static final Color[] colors;
+
+    static {
+        colors = new Color[21];
+        colors[0] = Color.BLACK;
+
+        colors[1] = new Color(0xd62728);
+        colors[2] = new Color(0x2ca02c);
+        colors[3] = new Color(0x1f77b4);
+        colors[4] = new Color(0xff7f0e);
+        colors[5] = new Color(0x9467bd);
+        colors[6] = new Color(0x8c564b);
+        colors[7] = new Color(0xbcbd22);
+        colors[8] = new Color(0x17becf);
+        colors[9] = new Color(0xe377c2);
+        colors[10] = new Color(0x7f7f7f);
+        colors[11] = new Color(0xff9896);
+        colors[12] = new Color(0x98df8a);
+        colors[13] = new Color(0xaec7e8);
+        colors[14] = new Color(0xffbb78);
+        colors[15] = new Color(0xc5b0d5);
+        colors[16] = new Color(0xc49c94);
+        colors[17] = new Color(0xdbdb8d);
+        colors[18] = new Color(0xc7c7c7);
+        colors[19] = new Color(0x9edae5);
+        colors[20] = new Color(0xf7b6d2);
+    }
+
+    @Override
+    public Color getColor(int index) {
+        if (index < 0) {
+            index *= -1;
+        }
+        if (index >= colors.length) {
+            return colors[index % colors.length];
+        }
+        return colors[index];
+    }
+
+    @Override
+    public int getSize() {
+        return colors.length;
+    }
+}
+
+class MillerStonePalette implements ColorPalette.Mapping {
+
+    @Serial
+    private static final long serialVersionUID = -7776446499900459739L;
+    private static final Color[] colors;
+
+    static {
+        colors = new Color[12];
+        colors[0] = Color.BLACK;
+
+        colors[1] = new Color(0xb66353);
+        colors[2] = new Color(0x638b66);
+        colors[3] = new Color(0x4f6980);
+        colors[4] = new Color(0xf47942);
+        colors[5] = new Color(0xb9aa97);
+        colors[6] = new Color(0xbfbb60);
+        colors[7] = new Color(0x849db1);
+        colors[8] = new Color(0xd7ce9f);
+        colors[9] = new Color(0xfbb04e);
+        colors[10] = new Color(0xa2ceaa);
+        colors[11] = new Color(0x7e756d);
+    }
+
+    @Override
+    public Color getColor(int index) {
+        if (index < 0) {
+            index *= -1;
+        }
+        if (index >= colors.length) {
+            return colors[index % colors.length];
+        }
+        return colors[index];
+    }
+
+    @Override
+    public int getSize() {
+        return colors.length;
     }
 }

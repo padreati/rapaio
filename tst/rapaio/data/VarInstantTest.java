@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.printer.Printer.textWidth;
+import static rapaio.sys.With.textWidth;
 
 import java.time.Instant;
 import java.time.ZoneId;

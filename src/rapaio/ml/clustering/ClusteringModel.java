@@ -55,10 +55,10 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
     public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1_000, "runs", x -> x > 0);
 
     /**
-     * Running hook
+     * Running hook.
      */
     @SuppressWarnings("unchecked")
-    public final ValueParam<SConsumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {},"runningHook");
+    public final ValueParam<SConsumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {}, "runningHook");
 
     protected String[] inputNames;
     protected VarType[] inputTypes;
@@ -89,7 +89,7 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
     }
 
     /**
-     * Describes the clustering algorithm
+     * Describes the clustering algorithm.
      *
      * @return capabilities of the clustering algorithm
      */
@@ -98,7 +98,7 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
     }
 
     /**
-     * Returns input variable names built at learning time
+     * Returns input variable names built at learning time.
      *
      * @return input variable names
      */
@@ -107,7 +107,7 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
     }
 
     /**
-     * Shortcut method which returns input variable name at the given position
+     * Shortcut method which returns input variable name at the given position.
      *
      * @param pos given position
      * @return variable name
@@ -117,7 +117,7 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
     }
 
     /**
-     * Returns the types of input variables built at learning time
+     * Returns the types of input variables built at learning time.
      *
      * @return array of input variable types
      */
@@ -126,7 +126,7 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
     }
 
     /**
-     * Shortcut method which returns the type of the input variable at the given position
+     * Shortcut method which returns the type of the input variable at the given position.
      *
      * @param pos given position
      * @return variable type
@@ -136,15 +136,15 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
     }
 
     /**
-     * @return true if the algorithm was fitted successfully
+     * Informs  if the algorithm was fitted successfully.
      */
     public boolean hasLearned() {
         return learned;
     }
 
     /**
-     * Fit a clustering model on instances specified by frame, with row weights
-     * equal to 1 and target specified by targetNames
+     * Fit a clustering model on instances specified by frame, with instance weights
+     * equal to 1 and target specified by targetNames.
      *
      * @param df data set instances
      */
@@ -153,7 +153,7 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
     }
 
     /**
-     * Fit a clustering on instances specified by frame, with row weights and targetNames
+     * Fit a clustering on instances specified by frame, with row weights and targetNames.
      *
      * @param df      predict frame
      * @param weights instance weights
@@ -184,7 +184,7 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
         return corePredict(df, withScores);
     }
 
-    public FitSetup prepareFit(Frame df, Var weights) {
+    private FitSetup prepareFit(Frame df, Var weights) {
         List<String> inputs = Arrays.asList(df.varNames());
         this.inputNames = inputs.toArray(new String[0]);
         this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);

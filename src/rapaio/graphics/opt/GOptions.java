@@ -21,7 +21,7 @@
 
 package rapaio.graphics.opt;
 
-import static rapaio.graphics.Plotter.*;
+import static rapaio.sys.With.*;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -47,7 +47,7 @@ public class GOptions implements Serializable {
 
     static {
         defaults = new GOptions();
-        defaults.palette = new GOptionPalette(ColorPalette.STANDARD);
+        defaults.palette = new GOptionPalette(ColorPalette.TABLEAU21);
         defaults.color = new GOptionColor(Color.BLACK);
         defaults.fill = new GOptionFill(-1);
         defaults.lwd = new GOptionLwd(1.0f);

@@ -136,27 +136,27 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, Clust
     private static final long serialVersionUID = -1046184364541391871L;
 
     /**
-     * number of clusters
+     * Number of clusters.
      */
     public final ValueParam<Integer, KMCluster> k = new ValueParam<>(this, null, "k", Objects::nonNull);
 
     /**
-     * Number of restarts
+     * Number of restarts at initialization of the centroids.
      */
     public final ValueParam<Integer, KMCluster> nstart = new ValueParam<>(this, 1, "nstart", n -> n != null && n > 0);
 
     /**
-     * "Initialization algorithm
+     * Cluster initialization algorithm.
      */
     public final ValueParam<KMClusterInit, KMCluster> init = new ValueParam<>(this, KMClusterInit.Forgy, "init");
 
     /**
-     * method: kmeans, kmedians
+     * Method: kmeans, kmedians.
      */
     public final ValueParam<Method, KMCluster> method = new ValueParam<>(this, null, "method", Objects::nonNull);
 
     /**
-     * Tolerance for convergence measures
+     * Tolerance for convergence criteria.
      */
     public final ValueParam<Double, KMCluster> eps = new ValueParam<>(this, 1e-20, "eps");
 

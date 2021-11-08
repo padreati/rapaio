@@ -35,6 +35,7 @@ import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.math.linear.DMatrix;
+import rapaio.sys.With;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/19.
@@ -47,7 +48,7 @@ public class Matrix extends Artist {
 
     public Matrix(DMatrix m, GOption<?>... opts) {
         this.m = m;
-        this.options.setColor(Plotter.color(-1));
+        this.options.setColor(With.color(-1));
         this.options.bind(opts);
     }
 

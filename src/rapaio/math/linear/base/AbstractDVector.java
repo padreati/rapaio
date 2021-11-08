@@ -22,6 +22,7 @@
 package rapaio.math.linear.base;
 
 import java.io.Serial;
+import java.util.Collections;
 import java.util.function.BiFunction;
 
 import rapaio.math.linear.DMatrix;
@@ -35,6 +36,8 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.util.DoubleComparators;
+import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
@@ -525,6 +528,17 @@ public abstract class AbstractDVector implements DVector {
             set(i, f.applyAsDouble(get(i)));
         }
         return this;
+    }
+
+    @Override
+    public DVector sortValues(boolean asc, AlgebraOption<?>... opts) {
+        // be default create a copy of data since at this level is impossible to sort values in place
+        double[] ref = new double[size()];
+        for (int i = 0; i < size(); i++) {
+            ref[i] = get(i);
+        }
+        DoubleArrays.quickSort(ref, 0, ref.length, asc ? DoubleComparators.NATURAL_COMPARATOR : DoubleComparators.OPPOSITE_COMPARATOR);
+        return DVector.wrap(ref);
     }
 
     @Override

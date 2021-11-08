@@ -21,7 +21,7 @@
 
 package rapaio.ml.clustering.km;
 
-import static rapaio.math.linear.Algebra.*;
+import static rapaio.sys.With.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
