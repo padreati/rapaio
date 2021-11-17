@@ -48,7 +48,7 @@ public class Manhattan implements Distance {
         double sum = 0;
         String[] names = df1.varNames();
         for (String name : names) {
-            sum+= abs(df1.getDouble(row1, name) - df2.getDouble(row2, name));
+            sum += abs(df1.getDouble(row1, name) - df2.getDouble(row2, name));
         }
         return sum;
     }
@@ -61,5 +61,10 @@ public class Manhattan implements Distance {
     @Override
     public double reduced(Frame df1, int row1, Frame df2, int row2) {
         return compute(df1, row1, df2, row2);
+    }
+
+    @Override
+    public boolean equalOnParams(Distance d) {
+        return d instanceof Manhattan;
     }
 }

@@ -42,12 +42,12 @@ public class MinkowskiDistance implements Distance {
 
     @Override
     public double compute(DVector x, DVector y) {
-        return pow(reduced(x, y), 1/p);
+        return pow(reduced(x, y), 1 / p);
     }
 
     @Override
     public double compute(Frame df1, int row1, Frame df2, int row2) {
-        return pow(reduced(df1, row1, df2, row2), 1/p);
+        return pow(reduced(df1, row1, df2, row2), 1 / p);
     }
 
     @Override
@@ -64,5 +64,13 @@ public class MinkowskiDistance implements Distance {
             sum += pow(delta, p);
         }
         return sum;
+    }
+
+    @Override
+    public boolean equalOnParams(Distance d) {
+        if (d instanceof MinkowskiDistance md) {
+            return p == md.p;
+        }
+        return false;
     }
 }

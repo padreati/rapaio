@@ -94,7 +94,8 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
      * @return capabilities of the clustering algorithm
      */
     public Capabilities capabilities() {
-        return null;
+        return new Capabilities(1, 1_000_000, List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY), false,
+                0, 0, List.of(), true);
     }
 
     /**

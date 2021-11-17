@@ -449,6 +449,16 @@ public class DVectorDense extends AbstractDVector {
     }
 
     @Override
+    public int argmin() {
+        return DoubleArrays.argmin(values, offset, size) - offset;
+    }
+
+    @Override
+    public double min() {
+        return DoubleArrays.min(values, offset, size);
+    }
+
+    @Override
     public DVector apply(Double2DoubleFunction f, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
             double[] copy = DoubleArrays.newFrom(values, offset, size + offset, f);

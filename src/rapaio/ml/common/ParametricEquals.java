@@ -22,7 +22,7 @@
 package rapaio.ml.common;
 
 /**
- * Interface used by any object which uses parameters to describe its behavior.
+ * Interface implemented by any class used as parameter.
  * <p>
  * It introduces a method similar with equals, called {@link #equalOnParams(T)}
  * which returns true if two classes of the same type have the same parameter values,

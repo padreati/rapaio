@@ -23,6 +23,7 @@ package rapaio.ml.common.distance;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.ml.common.ParametricEquals;
 
 /**
  * Interface which describes ways to compute metric distances. The API allows
@@ -37,12 +38,12 @@ import rapaio.math.linear.DVector;
  * <p>
  * 3. distance(x,y) >= distance(x,z)+distance(y,z) - triangle inequality
  */
-public interface Distance {
+public interface Distance extends ParametricEquals<Distance> {
 
     String name();
 
     /**
-     * Compute distance between two double vectors {@link DVector}
+     * Compute distance between two double vectors {@link DVector}.
      *
      * @param x first parameter
      * @param y second parameter

@@ -59,4 +59,9 @@ public class EuclideanDistance implements Distance {
         }
         return sum;
     }
+
+    @Override
+    public boolean equalOnParams(Distance d) {
+        return d instanceof EuclideanDistance;
+    }
 }

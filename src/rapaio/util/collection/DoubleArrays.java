@@ -37,6 +37,7 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
@@ -438,12 +439,31 @@ public final class DoubleArrays {
         return (sum2 - Math.pow(sum3, 2) / completeCount) / (completeCount - 1.0);
     }
 
+    public static int argmin(double[] values, int offset, int size) {
+        int amin = offset;
+        for (int i = offset + 1; i < offset + size; i++) {
+            if (values[amin] > values[i]) {
+                amin = i;
+            }
+        }
+        return amin;
+    }
+
+    public static double min(double[] values, int offset, int size) {
+        double min = values[offset];
+        for (int i = offset + 1; i < offset + size; i++) {
+            if (min > values[i]) {
+                min = values[i];
+            }
+        }
+        return min;
+    }
+
     /**
      * Those functions were copied from fastutil but adapted for our use case.
      * The reason is to avoid importing the huge library of fastutil and
      * to have a baseline for our implementations
      */
-
     public static final double[] EMPTY_ARRAY = {};
 
     /**
@@ -622,6 +642,7 @@ public final class DoubleArrays {
     private static final int QUICKSORT_NO_REC = 16;
     private static final int PARALLEL_QUICKSORT_NO_FORK = 8192;
     private static final int QUICKSORT_MEDIAN_OF_9 = 128;
+
     private static final int MERGESORT_NO_REC = 16;
 
     /**

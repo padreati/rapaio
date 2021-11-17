@@ -66,4 +66,12 @@ public class Constant implements Distance {
     public double reduced(Frame df1, int row1, Frame df2, int row2) {
         return constant;
     }
+
+    @Override
+    public boolean equalOnParams(Distance d) {
+        if (d instanceof Constant cd) {
+            return constant == cd.constant;
+        }
+        return false;
+    }
 }
