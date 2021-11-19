@@ -23,14 +23,9 @@ package rapaio.math.linear.dense;
 
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.StandardDVectorTest;
-import rapaio.math.linear.VType;
+import rapaio.util.collection.DoubleArrays;
 
 public class DVectorStrideTest extends StandardDVectorTest {
-
-    @Override
-    public VType type() {
-        return VType.STRIDE;
-    }
 
     @Override
     public DVector generateCopy(double[] values) {
@@ -48,11 +43,11 @@ public class DVectorStrideTest extends StandardDVectorTest {
 
     @Override
     public DVector generateFill(int size, double fill) {
-        return DVector.fill(VType.STRIDE, size, fill);
+        return new DVectorStride(0, size, 1, DoubleArrays.newFill(size, fill));
     }
 
     @Override
     public String className() {
-        return "DVectorStride";
+        return DVectorStride.class.getSimpleName();
     }
 }

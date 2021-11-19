@@ -31,11 +31,9 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.linear.dense.DVectorStride;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.sys.With;
-import rapaio.util.DoubleComparator;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
@@ -54,68 +52,28 @@ public interface DVector extends Serializable, Printable {
      * @return dense vector instance
      */
     static DVector zeros(int n) {
-        return fill(VType.DENSE, n, 0);
-    }
-
-    /**
-     * Builds a new real vector of size {@param n} filled with 0.
-     *
-     * @param type implementation type of the vector
-     * @param n    the size of the vector
-     * @return vector instance
-     */
-    static DVector zeros(VType type, int n) {
-        return fill(type, n, 0);
-    }
-
-    /**
-     * Builds a new double dense vector of size {@param n} filled with 1.
-     *
-     * @param n the size of the vector
-     * @return vector instance
-     */
-    static DVector ones(int n) {
-        return fill(n, 1);
+        return fill(n, 0);
     }
 
     /**
      * Builds a new double vector of size {@param n} filled with 1.
      *
-     * @param type implementation type of the vector
      * @param n    the size of the vector
      * @return vector instance
      */
-    static DVector ones(VType type, int n) {
-        return fill(type, n, 1);
-    }
-
-    /**
-     * Builds a new real dense vector of {@code len} size, filled with {@code fill} value given as parameter.
-     *
-     * @param n    size of the vector
-     * @param fill fill value
-     * @return new real dense vector
-     */
-    static DVector fill(int n, double fill) {
-        return fill(VType.DENSE, n, fill);
+    static DVectorDense ones(int n) {
+        return fill(n, 1);
     }
 
     /**
      * Builds a new real vector of {@code len} size, filled with {@code fill} value given as parameter.
      *
-     * @param type implementation type of the vector
      * @param n    size of the vector
      * @param fill fill value
      * @return new dense vector of given type
      */
-    static DVector fill(VType type, int n, double fill) {
-        if (type == VType.DENSE) {
-            return new DVectorDense(0, n, DoubleArrays.newFill(n, fill));
-        }
-        if (type == VType.STRIDE) {
-            return new DVectorStride(0, n, 1, DoubleArrays.newFill(n, fill));
-        }
-        throw new IllegalArgumentException("Vector type is not allowed.");
+    static DVectorDense fill(int n, double fill) {
+        return new DVectorDense(0, n, DoubleArrays.newFill(n, fill));
     }
 
     /**
@@ -206,21 +164,6 @@ public interface DVector extends Serializable, Printable {
     static DVector from(int len, Int2DoubleFunction fun) {
         return wrapArray(0, len, DoubleArrays.newFrom(0, len, fun));
     }
-
-    /**
-     * Implementation type of the vector class.
-     *
-     * @return vector type
-     */
-    VType type();
-
-    /**
-     * If this is an indirect vector it returns the source vector, otherwise it returns
-     * the same value as {@link #type()}.
-     *
-     * @return inner vector type
-     */
-    VType innerType();
 
     /**
      * Number of elements in vector.

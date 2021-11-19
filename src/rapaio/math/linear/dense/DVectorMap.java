@@ -27,7 +27,6 @@ import java.util.stream.IntStream;
 
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.VType;
 import rapaio.math.linear.base.AbstractDVector;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
@@ -55,16 +54,6 @@ public class DVectorMap extends AbstractDVector {
             this.indexes = indexes;
             this.source = source;
         }
-    }
-
-    @Override
-    public VType type() {
-        return VType.MAP;
-    }
-
-    @Override
-    public VType innerType() {
-        return source.type();
     }
 
     @Override

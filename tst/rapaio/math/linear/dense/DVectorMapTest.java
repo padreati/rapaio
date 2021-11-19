@@ -23,18 +23,12 @@ package rapaio.math.linear.dense;
 
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.StandardDVectorTest;
-import rapaio.math.linear.VType;
 import rapaio.util.collection.IntArrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/21.
  */
 public class DVectorMapTest extends StandardDVectorTest {
-
-    @Override
-    public VType type() {
-        return VType.MAP;
-    }
 
     @Override
     public DVector generateFill(int size, double fill) {
@@ -61,6 +55,6 @@ public class DVectorMapTest extends StandardDVectorTest {
 
     @Override
     public String className() {
-        return "DVectorMap";
+        return DVectorMap.class.getSimpleName();
     }
 }

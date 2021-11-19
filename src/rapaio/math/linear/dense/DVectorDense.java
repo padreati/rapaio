@@ -29,7 +29,6 @@ import java.util.stream.DoubleStream;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.VType;
 import rapaio.math.linear.base.AbstractDVector;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
@@ -49,16 +48,6 @@ public class DVectorDense extends AbstractDVector {
         this.offset = offset;
         this.size = size;
         this.values = values;
-    }
-
-    @Override
-    public VType type() {
-        return VType.DENSE;
-    }
-
-    @Override
-    public VType innerType() {
-        return VType.DENSE;
     }
 
     public int offset() {

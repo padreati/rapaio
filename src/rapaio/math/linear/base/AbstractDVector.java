@@ -22,7 +22,6 @@
 package rapaio.math.linear.base;
 
 import java.io.Serial;
-import java.util.Collections;
 import java.util.function.BiFunction;
 
 import rapaio.math.linear.DMatrix;

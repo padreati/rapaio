@@ -26,7 +26,6 @@ import java.util.stream.IntStream;
 
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.VType;
 import rapaio.math.linear.base.AbstractDVector;
 
 public class DVectorStride extends AbstractDVector {
@@ -44,16 +43,6 @@ public class DVectorStride extends AbstractDVector {
         this.values = values;
     }
 
-    @Override
-    public VType type() {
-        return VType.STRIDE;
-    }
-
-    @Override
-    public VType innerType() {
-        return VType.STRIDE;
-    }
-
     public int offset() {
         return offset;
     }
@@ -69,7 +58,7 @@ public class DVectorStride extends AbstractDVector {
 
     private double[] copyArray() {
         double[] copy = new double[size];
-        for (int i = 0; i < size; i ++) {
+        for (int i = 0; i < size; i++) {
             copy[i] = values[offset + stride * i];
         }
         return copy;

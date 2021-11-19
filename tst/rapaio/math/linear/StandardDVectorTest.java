@@ -37,6 +37,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
@@ -65,8 +66,6 @@ public abstract class StandardDVectorTest {
         z = generateFill(100, 10);
         m = DMatrix.identity(100).mul(2);
     }
-
-    public abstract VType type();
 
     public abstract DVector generateCopy(double[] values);
 
@@ -152,7 +151,7 @@ public abstract class StandardDVectorTest {
 
     @Test
     void typeTest() {
-        assertEquals(type(), generateFill(10, 1).type());
+        assertEquals(className(), generateFill(10, 1).getClass().getName());
     }
 
     @Test
@@ -294,7 +293,7 @@ public abstract class StandardDVectorTest {
         var v = generateFill(10, 1);
         var copy1 = v.copy();
         assertTrue(v.deepEquals(copy1));
-        assertEquals(VType.DENSE, copy1.type());
+        assertEquals(DVectorDense.class.getName(), copy1.getClass().getName());
     }
 
     @Test

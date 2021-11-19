@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
+import rapaio.math.linear.dense.DVectorStride;
 import rapaio.util.collection.IntArrays;
 
 public class LinearAlgebraIdentitiesTests {
@@ -37,9 +38,26 @@ public class LinearAlgebraIdentitiesTests {
             MType.RDENSE, MType.CDENSE, MType.MAP
     };
 
-    private static final VType[] vTypes = new VType[] {
-            VType.DENSE, VType.STRIDE, VType.MAP
+    private static final VectorFactory[] vFactories = new VectorFactory[] {
+            DVector::random,
+            size -> {
+                int offset = 10;
+                double[] values = new double[offset + size * 2];
+                for (int i = 0; i < size; i++) {
+                    values[offset + i*2] = RandomSource.nextDouble();
+                }
+                return new DVectorStride(10, size, 2, values);
+            },
+            size -> {
+                DVector v = DVector.random(size);
+                v = v.map(IntArrays.newSeq(0, v.size()));
+                return v;
+            }
     };
+
+    interface VectorFactory {
+        DVector randomVector(int size);
+    }
 
     @BeforeEach
     void beforeEach() {
@@ -52,14 +70,6 @@ public class LinearAlgebraIdentitiesTests {
             m = m.mapRows(IntArrays.newSeq(0, m.rowCount())).mapCols(IntArrays.newSeq(0, m.colCount()));
         }
         return m;
-    }
-
-    DVector randomVector(VType type, int size) {
-        DVector v = DVector.random(size);
-        if (type == VType.MAP) {
-            v = v.map(IntArrays.newSeq(0, v.size()));
-        }
-        return v;
     }
 
     @Test
@@ -106,8 +116,8 @@ public class LinearAlgebraIdentitiesTests {
             var a = randomMatrix(mType1, 400, 80);
             for (MType mType2 : mTypes) {
                 var b = randomMatrix(mType2, 400, 80);
-                for(VType vType : vTypes) {
-                    var v = randomVector(vType, 80);
+                for (VectorFactory vf : vFactories) {
+                    var v = vf.randomVector(80);
                     var v1 = a.dot(v).add(b.dot(v));
                     var v2 = a.copy().add(b).dot(v);
                     assertTrue(v1.deepEquals(v2));
@@ -124,17 +134,17 @@ public class LinearAlgebraIdentitiesTests {
 
         for (MType mType1 : mTypes) {
             var a = randomMatrix(mType1, 400, 80);
-                for(VType vType : vTypes) {
-                    var v = randomVector(vType, 400);
+            for (VectorFactory vf : vFactories) {
+                var v = vf.randomVector(400);
 
-                    var x1 = a.mul(v, 1, copy()).t().dot(a);
-                    var x2 = a.t().mul(v, 0, copy()).dot(a);
-                    var x3 = a.t().dot(DMatrix.diagonal(v)).dot(a);
+                var x1 = a.mul(v, 1, copy()).t().dot(a);
+                var x2 = a.t().mul(v, 0, copy()).dot(a);
+                var x3 = a.t().dot(DMatrix.diagonal(v)).dot(a);
 
-                    assertTrue(x1.deepEquals(x1.t()));
-                    assertTrue(x1.deepEquals(x2));
-                    assertTrue(x1.deepEquals(x3));
-                }
+                assertTrue(x1.deepEquals(x1.t()));
+                assertTrue(x1.deepEquals(x2));
+                assertTrue(x1.deepEquals(x3));
+            }
         }
 
     }

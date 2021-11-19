@@ -26,7 +26,6 @@ import java.util.stream.DoubleStream;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.VType;
 import rapaio.math.linear.base.AbstractDVector;
 import rapaio.util.collection.DoubleArrays;
 
@@ -36,16 +35,6 @@ public class DVectorVar<T extends Var> extends AbstractDVector {
 
     public DVectorVar(T ref) {
         this.ref = ref;
-    }
-
-    @Override
-    public VType type() {
-        return VType.VAR;
-    }
-
-    @Override
-    public VType innerType() {
-        return VType.VAR;
     }
 
     @Override

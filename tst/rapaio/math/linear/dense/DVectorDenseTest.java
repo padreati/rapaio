@@ -25,15 +25,9 @@ import java.util.Arrays;
 
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.StandardDVectorTest;
-import rapaio.math.linear.VType;
 import rapaio.util.collection.DoubleArrays;
 
 public class DVectorDenseTest extends StandardDVectorTest {
-
-    @Override
-    public VType type() {
-        return VType.DENSE;
-    }
 
     @Override
     public DVector generateFill(int size, double fill) {
@@ -56,6 +50,6 @@ public class DVectorDenseTest extends StandardDVectorTest {
 
     @Override
     public String className() {
-        return "DVectorDense";
+        return DVectorDense.class.getSimpleName();
     }
 }
