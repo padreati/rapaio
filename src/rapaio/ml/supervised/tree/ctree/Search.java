@@ -192,9 +192,9 @@ public enum Search implements Serializable {
         public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
 
             var dtCounts = DensityTable.fromLevelCounts(false, df, testName, targetName);
-//            if (!(dtCounts.hasColsWithMinimumCount(c.minCount.get(), 2))) {
-//                return null;
-//            }
+            if (!(dtCounts.hasColsWithMinimumCount(c.minCount.get(), 2))) {
+                return null;
+            }
 
             var dtWeights = DensityTable.fromLevelWeights(false, df, testName, targetName, weights);
 

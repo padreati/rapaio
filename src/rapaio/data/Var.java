@@ -35,6 +35,7 @@ import rapaio.data.filter.VFilter;
 import rapaio.data.ops.DVarOp;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;

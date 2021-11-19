@@ -23,6 +23,7 @@ package rapaio.data.ops;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.math.linear.DVector;
 import rapaio.util.IntComparator;
 import rapaio.util.function.Double2DoubleFunction;
 

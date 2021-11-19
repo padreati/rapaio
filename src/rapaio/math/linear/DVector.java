@@ -35,6 +35,7 @@ import rapaio.math.linear.dense.DVectorStride;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.sys.With;
+import rapaio.util.DoubleComparator;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
@@ -602,7 +603,7 @@ public interface DVector extends Serializable, Printable {
      * Sort values from vector. If the storage type allows that, an in place
      * sorting is executed. To create a new copy use {@link With#copy()}.
      *
-     * @param asc ascending sort if {@code true}, descending otherwise
+     * @param asc  ascending sort if {@code true}, descending otherwise
      * @param opts algebra options
      * @return same vector or a new vector with sorted values
      */

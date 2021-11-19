@@ -31,7 +31,9 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.ops.DVarOp;
 import rapaio.data.ops.DefaultDVarOp;
 import rapaio.data.unique.UniqueLabel;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorVar;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -180,7 +182,13 @@ public abstract class AbstractVar implements Var {
         StringBuilder sb = new StringBuilder();
         sb.append("> summary(name: ").append(name()).append(", type: ").append(type().name()).append(")\n");
         int complete = (int) stream().complete().count();
-        sb.append("rows: ").append(size()).append(", complete: ").append(complete).append(", missing: ").append(size() - complete).append("\n");
+        sb.append("rows: ")
+                .append(size())
+                .append(", complete: ")
+                .append(complete)
+                .append(", missing: ")
+                .append(size() - complete)
+                .append("\n");
 
         TextTable tt = TextTable.empty(8, 2);
 
@@ -281,7 +289,7 @@ public abstract class AbstractVar implements Var {
     }
 
     private void fillSummaryDouble(Var v, TextTable tt, int headerColIndex, int valueColIndex) {
-        double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
+        double[] p = new double[] {0., 0.25, 0.50, 0.75, 1.00};
         double[] perc = Quantiles.of(v, p).values();
         double mean = Mean.of(v).value();
 

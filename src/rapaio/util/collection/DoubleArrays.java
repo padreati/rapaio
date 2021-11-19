@@ -22,8 +22,6 @@
 package rapaio.util.collection;
 
 
-import static jdk.incubator.vector.VectorOperators.ADD;
-
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -36,11 +34,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorMask;
-import jdk.incubator.vector.VectorOperators;
-import jdk.incubator.vector.VectorSpecies;
 import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleIterator;
 import rapaio.util.function.Double2DoubleFunction;
@@ -52,9 +45,6 @@ import rapaio.util.function.Int2DoubleFunction;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
  */
 public final class DoubleArrays {
-
-    private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
-    private static final int SPECIES_LEN = SPECIES.length();
 
     /**
      * Creates a double array filled with a given value.
@@ -129,7 +119,7 @@ public final class DoubleArrays {
      * @param array array of values
      * @param start position of the first value from iterator
      * @param len   number of elements in the iterator
-     * @return duble value iterator
+     * @return double value iterator
      */
     public static DoubleIterator iterator(double[] array, int start, int len) {
         return new DoubleIterator() {
@@ -159,7 +149,7 @@ public final class DoubleArrays {
     }
 
     /**
-     * Add a scalar value to elements of an array
+     * Adds a scalar value to elements of an array.
      *
      * @param t    destination where the scalar will be added
      * @param tOff destination offset
@@ -167,27 +157,23 @@ public final class DoubleArrays {
      * @param len  length
      */
     public static void add(double[] t, int tOff, double s, int len) {
-        int bound = SPECIES.loopBound(len) + tOff;
-        int i = tOff;
-        var sv = DoubleVector.broadcast(SPECIES, s);
-        for (; i < bound; i += SPECIES_LEN) {
-            var tv = DoubleVector.fromArray(SPECIES, t, i);
-            tv.add(sv).intoArray(t, i);
-        }
-        for (; i < len + tOff; i++) {
+        for (int i = tOff; i < len + tOff; i++) {
             t[i] += s;
         }
     }
 
+    /**
+     * Adds a scalar value to elements of an array and store the result into another array.
+     *
+     * @param x     first operand which is a vector
+     * @param xOff  offset of the first operand
+     * @param s     second operand which is a scalar value
+     * @param to    array where to store the results
+     * @param toOff offset of the array where to store results
+     * @param len   number of elements to be processed
+     */
     public static void addTo(double[] x, int xOff, double s, double[] to, int toOff, int len) {
-        int bound = SPECIES.loopBound(len);
-        int i = 0;
-        var sv = DoubleVector.broadcast(SPECIES, s);
-        for (; i < bound; i += SPECIES_LEN) {
-            var tv = DoubleVector.fromArray(SPECIES, x, xOff + i);
-            tv.add(sv).intoArray(to, toOff + i);
-        }
-        for (; i < toOff + len; i++) {
+        for (int i = 0; i < len; i++) {
             to[toOff + i] = x[xOff + i] + s;
         }
     }
@@ -287,15 +273,7 @@ public final class DoubleArrays {
      * @param len
      */
     public static void addMul(double[] x, int xOff, double a, double[] y, int yOff, int len) {
-        int bound = SPECIES.loopBound(len);
-        int i = 0;
-        DoubleVector av = DoubleVector.broadcast(SPECIES, a);
-        for (; i < bound; i += SPECIES_LEN) {
-            DoubleVector xv = DoubleVector.fromArray(SPECIES, x, i + xOff);
-            DoubleVector yv = DoubleVector.fromArray(SPECIES, y, i + yOff);
-            yv.fma(av, xv).intoArray(x, i + xOff);
-        }
-        for (; i < len; i++) {
+        for (int i = 0; i < len; i++) {
             x[xOff + i] += a * y[yOff + i];
         }
     }
@@ -307,18 +285,10 @@ public final class DoubleArrays {
     }
 
     public static double dotSum(double[] x, int xOff, double[] y, int yOff, int len) {
-        int loopBound = SPECIES.loopBound(len) + xOff;
-        int i = xOff;
         int delta = yOff - xOff;
-        var vsum = DoubleVector.zero(SPECIES);
-        for (; i < loopBound; i += SPECIES_LEN) {
-            var vx = DoubleVector.fromArray(SPECIES, x, i);
-            var vy = DoubleVector.fromArray(SPECIES, y, i + delta);
-            vsum = vx.fma(vy, vsum);
-        }
-        double sum = vsum.reduceLanes(ADD);
+        double sum = 0.0;
         int xLen = len + xOff;
-        for (; i < xLen; i++) {
+        for (int i = xOff; i < xLen; i++) {
             sum += x[i] * y[i + delta];
         }
         return sum;
@@ -342,16 +312,9 @@ public final class DoubleArrays {
      * @return sum of elements from specified range
      */
     public static double nanSum(double[] a, int start, int len) {
-        int bound = SPECIES.loopBound(len);
-        int i = start;
-        DoubleVector sv = DoubleVector.broadcast(SPECIES, 0.0);
-        for (; i < bound + start; i += SPECIES_LEN) {
-            DoubleVector av = DoubleVector.fromArray(SPECIES, a, i);
-            VectorMask<Double> mask = av.test(VectorOperators.IS_FINITE);
-            sv = sv.add(av, mask);
-        }
-        double sum = sv.reduceLanes(ADD);
-        for (; i < len + start; i++) {
+        double sum = 0;
+        int xLen = start + len;
+        for (int i = start; i < xLen; i++) {
             if (Double.isNaN(a[i])) {
                 continue;
             }
