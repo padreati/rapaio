@@ -252,8 +252,8 @@ public abstract class StandardDVectorTest {
 
     @Test
     void meanVarTest() {
-        assertEquals(Mean.of(x.asVarDouble()).value(), x.mean(), 1e-12);
-        assertEquals(Variance.of(x.asVarDouble()).value(), x.variance(), 1e-12);
+        assertEquals(Mean.of(x.dVar()).value(), x.mean(), 1e-12);
+        assertEquals(Variance.of(x.dVar()).value(), x.variance(), 1e-12);
         assertTrue(Double.isNaN(generateCopy(new double[0]).mean()));
         assertTrue(Double.isNaN(generateCopy(new double[0]).nanmean()));
         assertTrue(Double.isNaN(generateCopy(new double[0]).variance()));

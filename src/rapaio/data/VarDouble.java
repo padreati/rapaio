@@ -40,11 +40,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import rapaio.data.ops.DVarOp;
-import rapaio.data.ops.DoubleDVarOp;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.linear.dense.DVectorVar;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Printer;
@@ -548,11 +545,6 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    public DVarOp<VarDouble> op() {
-        return new DoubleDVarOp(this);
-    }
-
-    @Override
     public VarDouble copy() {
         VarDouble copy = new VarDouble(0, 0, 0).name(name());
         copy.data = Arrays.copyOf(data, rows);
@@ -561,7 +553,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    public DVector asDVector(AlgebraOption<?>... opts) {
+    public DVector dVec(AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
             double[] values = new double[size()];
             for (int i = 0; i < size(); i++) {

@@ -35,8 +35,10 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleComparators;
 import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
@@ -538,14 +540,187 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector sortValues(boolean asc, AlgebraOption<?>... opts) {
-        // be default create a copy of data since at this level is impossible to sort values in place
-        double[] ref = new double[size()];
-        for (int i = 0; i < size(); i++) {
-            ref[i] = get(i);
+    public DVector sortValues(DoubleComparator comp, AlgebraOption<?>... opts) {
+        quickSort(0, size(), comp);
+        return this;
+    }
+
+    private static final int QUICKSORT_NO_REC = 16;
+    private static final int QUICKSORT_MEDIAN_OF_9 = 128;
+
+    private int med3(final int a, final int b, final int c, DoubleComparator comp) {
+        final int ab = comp.compare(get(a), get(b));
+        final int ac = comp.compare(get(a), get(c));
+        final int bc = comp.compare(get(b), get(c));
+        return (ab < 0 ? (bc < 0 ? b : ac < 0 ? c : a) : (bc > 0 ? b : ac > 0 ? c : a));
+    }
+
+    private void selectionSort(final int from, final int to, final DoubleComparator comp) {
+        for (int i = from; i < to - 1; i++) {
+            int m = i;
+            for (int j = i + 1; j < to; j++) {
+                if (comp.compare(get(j), get(m)) < 0) {
+                    m = j;
+                }
+            }
+            if (m != i) {
+                swap(m, i);
+            }
         }
-        DoubleArrays.quickSort(ref, 0, ref.length, asc ? DoubleComparators.NATURAL_COMPARATOR : DoubleComparators.OPPOSITE_COMPARATOR);
-        return DVector.wrap(ref);
+    }
+
+    private void swap(final int a, final int b) {
+        final double t = get(a);
+        set(a, get(b));
+        set(b, t);
+    }
+
+    private void swap(int a, int b, final int n) {
+        for (int i = 0; i < n; i++, a++, b++) {
+            swap(a, b);
+        }
+    }
+
+    private void quickSort(final int from, final int to, final DoubleComparator comp) {
+        final int len = to - from;
+        // Selection sort on smallest arrays
+        if (len < QUICKSORT_NO_REC) {
+            selectionSort(from, to, comp);
+            return;
+        }
+        // Choose a partition element, v
+        int m = from + len / 2;
+        int l = from;
+        int n = to - 1;
+        if (len > QUICKSORT_MEDIAN_OF_9) { // Big arrays, pseudomedian of 9
+            int s = len / 8;
+            l = med3(l, l + s, l + 2 * s, comp);
+            m = med3(m - s, m, m + s, comp);
+            n = med3(n - 2 * s, n - s, n, comp);
+        }
+        m = med3(l, m, n, comp); // Mid-size, med of 3
+        final double v = get(m);
+        // Establish Invariant: v* (<v)* (>v)* v*
+        int a = from;
+        int b = a;
+        int c = to - 1;
+        int d = c;
+        while (true) {
+            int comparison;
+            while (b <= c && (comparison = comp.compare(get(b), v)) <= 0) {
+                if (comparison == 0) {
+                    swap(a++, b);
+                }
+                b++;
+            }
+            while (c >= b && (comparison = comp.compare(get(c), v)) >= 0) {
+                if (comparison == 0) {
+                    swap(c, d--);
+                }
+                c--;
+            }
+            if (b > c) {
+                break;
+            }
+            swap(b++, c--);
+        }
+        // Swap partition elements back to middle
+        int s = Math.min(a - from, b - a);
+        swap(from, b - s, s);
+        s = Math.min(d - c, to - d - 1);
+        swap(b, to - s, s);
+        // Recursively sort non-partition-elements
+        if ((s = b - a) > 1) {
+            quickSort(from, from + s, comp);
+        }
+        if ((s = d - c) > 1) {
+            quickSort(to - s, to, comp);
+        }
+    }
+
+    @Override
+    public void sortIndexes(DoubleComparator comp, int[] indexes) {
+        quickSortIndirect(indexes, 0, indexes.length, comp);
+    }
+
+    private void insertionSortIndirect(final int[] perm, final int from, final int to, final DoubleComparator comp) {
+        for (int i = from; ++i < to; ) {
+            int t = perm[i];
+            int j = i;
+            for (int u = perm[j - 1]; comp.compare(get(t), get(u)) < 0; u = perm[--j - 1]) {
+                perm[j] = u;
+                if (from == j - 1) {
+                    --j;
+                    break;
+                }
+            }
+            perm[j] = t;
+        }
+    }
+
+    private int med3Indirect(final int[] perm, final int a, final int b, final int c, final DoubleComparator comp) {
+        final double aa = get(perm[a]);
+        final double bb = get(perm[b]);
+        final double cc = get(perm[c]);
+        final int ab = comp.compare((aa), (bb));
+        final int ac = comp.compare((aa), (cc));
+        final int bc = comp.compare((bb), (cc));
+        return (ab < 0 ? (bc < 0 ? b : ac < 0 ? c : a) : (bc > 0 ? b : ac > 0 ? c : a));
+    }
+
+    private void quickSortIndirect(final int[] perm, final int from, final int to, final DoubleComparator comp) {
+        final int len = to - from;
+        // Selection sort on smallest arrays
+        if (len < QUICKSORT_NO_REC) {
+            insertionSortIndirect(perm, from, to, comp);
+            return;
+        }
+        // Choose a partition element, v
+        int m = from + len / 2;
+        int l = from;
+        int n = to - 1;
+        if (len > QUICKSORT_MEDIAN_OF_9) { // Big arrays, pseudomedian of 9
+            int s = len / 8;
+            l = med3Indirect(perm, l, l + s, l + 2 * s, comp);
+            m = med3Indirect(perm, m - s, m, m + s, comp);
+            n = med3Indirect(perm, n - 2 * s, n - s, n, comp);
+        }
+        m = med3Indirect(perm, l, m, n, comp); // Mid-size, med of 3
+        final double v = get(perm[m]);
+        // Establish Invariant: v* (<v)* (>v)* v*
+        int a = from, b = a, c = to - 1, d = c;
+        while (true) {
+            int comparison;
+            while (b <= c && (comparison = comp.compare(get(perm[b]), v)) <= 0) {
+                if (comparison == 0) {
+                    IntArrays.swap(perm, a++, b);
+                }
+                b++;
+            }
+            while (c >= b && (comparison = comp.compare(get(perm[c]), v)) >= 0) {
+                if (comparison == 0) {
+                    IntArrays.swap(perm, c, d--);
+                }
+                c--;
+            }
+            if (b > c) {
+                break;
+            }
+            IntArrays.swap(perm, b++, c--);
+        }
+        // Swap partition elements back to middle
+        int s;
+        s = Math.min(a - from, b - a);
+        IntArrays.swap(perm, from, b - s, s);
+        s = Math.min(d - c, to - d - 1);
+        IntArrays.swap(perm, b, to - s, s);
+        // Recursively sort non-partition-elements
+        if ((s = b - a) > 1) {
+            quickSortIndirect(perm, from, from + s, comp);
+        }
+        if ((s = d - c) > 1) {
+            quickSortIndirect(perm, to - s, to, comp);
+        }
     }
 
     @Override

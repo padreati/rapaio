@@ -113,7 +113,7 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, Classi
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
-        Var w = weights.asDVector(With.copy()).div(weights.asDVector().nansum()).asVarDouble();
+        Var w = weights.dVec(With.copy()).div(weights.dVec().nansum()).dVar();
         double k = firstTargetLevels().size() - 1;
 
         learners.clear();
@@ -145,7 +145,7 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, Classi
                 err += w.getDouble(i);
             }
         }
-        err /= w.asDVector().nansum();
+        err /= w.dVec().nansum();
         double alpha = shrinkage.get() * (Math.log((1.0 - err) / err) + Math.log(k - 1.0));
         if (stopOnError.get() && err > (1.0 - 1.0 / k) + 1e-10) {
             return false;
@@ -162,7 +162,7 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, Classi
                 w.setDouble(j, w.getDouble(j) * factor);
             }
         }
-        w.asDVector().div(w.asDVector().nansum());
+        w.dVec().div(w.dVec().nansum());
 
         return true;
     }

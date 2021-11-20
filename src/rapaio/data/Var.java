@@ -32,15 +32,14 @@ import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
 import rapaio.data.filter.VFilter;
-import rapaio.data.ops.DVarOp;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.linear.dense.DVectorVar;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
+import rapaio.util.collection.IntArrays;
 
 /**
  * Random access list of observed values (observations) of a random variable (a vector with sample values).
@@ -353,7 +352,7 @@ public interface Var extends Serializable, Printable {
      *
      * @return new wrapping DVector
      */
-    DVector asDVector(AlgebraOption<?>...opts);
+    DVector dVec(AlgebraOption<?>... opts);
 
     /**
      * Builds a new empty instance of given size
@@ -386,6 +385,29 @@ public interface Var extends Serializable, Printable {
         for (int i = 0; i < size(); i++) {
             consumer.accept(getDouble(i));
         }
+    }
+
+    default int[] rowsComplete() {
+        int len = 0;
+        for (int i = 0; i < size(); i++) {
+            if (isMissing(i)) {
+                continue;
+            }
+            len++;
+        }
+        int[] rows = new int[len];
+        int pos = 0;
+        for (int i = 0; i < size(); i++) {
+            if (isMissing(i)) {
+                continue;
+            }
+            rows[pos++] = i;
+        }
+        return rows;
+    }
+
+    default int[] rowsAll() {
+        return IntArrays.newSeq(0, size());
     }
 
     /**
@@ -432,8 +454,6 @@ public interface Var extends Serializable, Printable {
             default -> RowComparators.labelComparator(this, asc);
         };
     }
-
-    DVarOp<? extends Var> op();
 
     /**
      * Tests if two variables has identical content, it does not matter the implementation.

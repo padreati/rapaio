@@ -639,9 +639,7 @@ public final class DoubleArrays {
         final int ab = comp.compare(x[a], x[b]);
         final int ac = comp.compare(x[a], x[c]);
         final int bc = comp.compare(x[b], x[c]);
-        return (ab < 0 ?
-                (bc < 0 ? b : ac < 0 ? c : a) :
-                (bc > 0 ? b : ac > 0 ? c : a));
+        return (ab < 0 ? (bc < 0 ? b : ac < 0 ? c : a) : (bc > 0 ? b : ac > 0 ? c : a));
     }
 
     private static void selectionSort(final double[] a, final int from, final int to, final DoubleComparator comp) {
@@ -885,9 +883,7 @@ public final class DoubleArrays {
         final int ab = Double.compare(x[a], x[b]);
         final int ac = Double.compare(x[a], x[c]);
         final int bc = Double.compare(x[b], x[c]);
-        return (ab < 0 ?
-                (bc < 0 ? b : ac < 0 ? c : a) :
-                (bc > 0 ? b : ac > 0 ? c : a));
+        return (ab < 0 ? (bc < 0 ? b : ac < 0 ? c : a) : (bc > 0 ? b : ac > 0 ? c : a));
     }
 
     private static void selectionSort(final double[] a, final int from, final int to) {
@@ -1126,9 +1122,7 @@ public final class DoubleArrays {
         final int ab = (Double.compare((aa), (bb)));
         final int ac = (Double.compare((aa), (cc)));
         final int bc = (Double.compare((bb), (cc)));
-        return (ab < 0 ?
-                (bc < 0 ? b : ac < 0 ? c : a) :
-                (bc > 0 ? b : ac > 0 ? c : a));
+        return (ab < 0 ? (bc < 0 ? b : ac < 0 ? c : a) : (bc > 0 ? b : ac > 0 ? c : a));
     }
 
     private static void insertionSortIndirect(final int[] perm, final double[] a, final int from, final int to) {

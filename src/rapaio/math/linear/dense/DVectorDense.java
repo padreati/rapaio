@@ -26,12 +26,15 @@ import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
+import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.base.AbstractDVector;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
+import rapaio.util.DoubleComparator;
+import rapaio.util.DoubleComparators;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -481,17 +484,22 @@ public class DVectorDense extends AbstractDVector {
     }
 
     @Override
+    public DVector sortValues(DoubleComparator comp, AlgebraOption<?>... opts) {
+        DoubleArrays.quickSort(values, offset, offset + size, comp);
+        return this;
+    }
+
+    @Override
     public DoubleStream valueStream() {
         return Arrays.stream(values).skip(offset).limit(size);
     }
 
     @Override
-    public VarDouble asVarDouble() {
-        if (offset == 0) {
-            return VarDouble.wrapArray(size, values);
-        } else {
+    public VarDouble dVar(AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy() || offset != 0) {
             double[] copy = Arrays.copyOfRange(values, offset, size + offset);
             return VarDouble.wrapArray(size, copy);
         }
+        return VarDouble.wrapArray(size, values);
     }
 }

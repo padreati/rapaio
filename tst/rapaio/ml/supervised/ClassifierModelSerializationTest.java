@@ -56,8 +56,6 @@ public class ClassifierModelSerializationTest {
         testModel(NaiveBayes.newModel().estimators.set(KernelEstimator.forType(iris, VarType.DOUBLE)), iris, varModel, varData, varAcc);
         testModel(CTree.newC45(), iris, varModel, varData, varAcc);
         testModel(CTree.newCART(), iris, varModel, varData, varAcc);
-
-        SolidFrame.byVars(varData, varModel, varAcc).printHead();
     }
 
     @SuppressWarnings("unchecked")

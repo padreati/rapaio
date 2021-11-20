@@ -353,7 +353,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, Clusteri
                 if (p.get() > 1) {
                     c.set(i, j, findMinimum(ykj, p.get()));
                 } else {
-                    c.set(i, j, Quantiles.of(ykj.asVarDouble(), 0.5).values()[0]);
+                    c.set(i, j, Quantiles.of(ykj.dVar(), 0.5).values()[0]);
                 }
             }
         }

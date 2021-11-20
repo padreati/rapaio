@@ -28,8 +28,6 @@ import java.io.Serial;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
-import rapaio.data.ops.DVarOp;
-import rapaio.data.ops.DefaultDVarOp;
 import rapaio.data.unique.UniqueLabel;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
@@ -116,7 +114,7 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public DVector asDVector(AlgebraOption<?>... opts) {
+    public DVector dVec(AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
             double[] values = new double[size()];
             for (int i = 0; i < size(); i++) {
@@ -125,11 +123,6 @@ public abstract class AbstractVar implements Var {
             return new DVectorDense(0, size(), values);
         }
         return new DVectorVar<>(this);
-    }
-
-    @Override
-    public DVarOp<? extends AbstractVar> op() {
-        return new DefaultDVarOp<>(this);
     }
 
     @Serial

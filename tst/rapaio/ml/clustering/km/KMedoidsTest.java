@@ -271,7 +271,7 @@ public class KMedoidsTest {
         KMedoids km = KMedoids.newAlternateModel(2);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rowCount(), new Manhattan());
 
-        double[] dv = x.mapCol(0).copy().sub(x.get(4, 0)).apply(Math::abs).asVarDouble().elements();
+        double[] dv = x.mapCol(0).copy().sub(x.get(4, 0)).apply(Math::abs).dVar().elements();
 
         assertEquals(1, km.peekNextCentroid(x, Set.of(4), dv, cache));
     }

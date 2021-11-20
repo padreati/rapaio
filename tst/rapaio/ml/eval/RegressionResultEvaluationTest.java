@@ -39,9 +39,7 @@ import rapaio.ml.eval.metric.RMSE;
 import rapaio.ml.eval.metric.RegressionMetric;
 import rapaio.ml.eval.split.Split;
 import rapaio.ml.eval.split.SplitStrategy;
-import rapaio.ml.supervised.RegressionModel;
 import rapaio.ml.supervised.simple.L2Regression;
-import rapaio.sys.With;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/19.
@@ -73,10 +71,10 @@ public class RegressionResultEvaluationTest {
                 .targetName.set(targetName);
 
         Var target = df.rvar(targetName);
-        double mean = target.asDVector().nanmean();
+        double mean = target.dVec().nanmean();
         double count = target.size();
 
-        double expectedScore = Math.sqrt(target.asDVector(copy()).sub(mean).apply(x -> x * x).nansum() / count);
+        double expectedScore = Math.sqrt(target.dVec(copy()).sub(mean).apply(x -> x * x).nansum() / count);
 
         RegressionEvaluationResult result = eval.run();
         assertEquals(2, result.getTrainScores().rowCount());

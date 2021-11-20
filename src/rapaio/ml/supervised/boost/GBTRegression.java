@@ -47,7 +47,6 @@ import rapaio.ml.supervised.simple.L2Regression;
 import rapaio.ml.supervised.tree.RTree;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.sys.With;
 
 /**
  * Gradient Boosting Tree
@@ -156,7 +155,7 @@ public class GBTRegression extends RegressionModel<GBTRegression, RegressionResu
 
             // add next prediction to the predict values
             var pred = tree.predict(df, false).firstPrediction();
-            VarDouble nextFit = fitValues.asDVector(copy()).add(pred.asDVector(copy()).mul(shrinkage.get())).asVarDouble();
+            VarDouble nextFit = fitValues.dVec(copy()).add(pred.dVec(copy()).mul(shrinkage.get())).dVar();
 
             double initScore = loss.get().errorScore(y, fitValues);
             double nextScore = loss.get().errorScore(y, nextFit);
@@ -178,12 +177,12 @@ public class GBTRegression extends RegressionModel<GBTRegression, RegressionResu
     @Override
     protected RegressionResult corePredict(final Frame df, final boolean withResiduals, double[] quantiles) {
         RegressionResult result = RegressionResult.build(this, df, withResiduals, quantiles);
-        DVector prediction = result.firstPrediction().asDVector();
+        DVector prediction = result.firstPrediction().dVec();
 
         prediction.apply(v -> 0);
-        prediction.add(initModel.get().predict(df, false).firstPrediction().asDVector());
+        prediction.add(initModel.get().predict(df, false).firstPrediction().dVec());
         for (var tree : trees) {
-            prediction.add(tree.predict(df, false).firstPrediction().asDVector(copy()).mul(shrinkage.get()));
+            prediction.add(tree.predict(df, false).firstPrediction().dVec(copy()).mul(shrinkage.get()));
         }
         result.buildComplete();
         return result;

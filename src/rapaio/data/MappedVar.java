@@ -222,7 +222,7 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public DVector asDVector(AlgebraOption<?>... opts) {
+    public DVector dVec(AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
             double[] values = new double[mapping.size()];
             for (int i = 0; i < mapping.size(); i++) {

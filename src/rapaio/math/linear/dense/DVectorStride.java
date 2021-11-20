@@ -24,9 +24,12 @@ package rapaio.math.linear.dense;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
+import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.base.AbstractDVector;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
 
 public class DVectorStride extends AbstractDVector {
 
@@ -100,7 +103,7 @@ public class DVectorStride extends AbstractDVector {
     }
 
     @Override
-    public VarDouble asVarDouble() {
+    public VarDouble dVar(AlgebraOption<?>...opts) {
         return VarDouble.wrap(copyArray());
     }
 }

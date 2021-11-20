@@ -167,15 +167,4 @@ public class VarTest {
         assertFalse(VarDouble.scalar(1).deepEquals(VarDouble.scalar(2)));
         assertFalse(VarNominal.copy("a").deepEquals(VarNominal.copy("b")));
     }
-
-    @Test
-    void dvWRapTest() {
-        var v1 = VarDouble.seq(0, 10, 0.5);
-        v1.asDVector().add(1).div(2);
-        v1.printContent();
-
-        var v2 = VarDouble.seq(0, 10, 0.5).mapRows(Mapping.range(0, v1.size()));
-        v2.asDVector().add(1).div(2);
-        v2.printContent();
-    }
 }

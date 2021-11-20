@@ -27,6 +27,8 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.base.AbstractDVector;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;
 
 /**
@@ -90,10 +92,8 @@ public class DVectorVar<T extends Var> extends AbstractDVector {
     }
 
     @Override
-    public VarDouble asVarDouble() {
-        if (ref instanceof VarDouble dref) {
-            return dref;
-        }
-        return VarDouble.wrap(DoubleArrays.newFrom(0, ref.size(), ref::getDouble));
+    public VarDouble dVar(AlgebraOption<?>... opts) {
+        double[] copy = DoubleArrays.newFrom(0, size(), ref::getDouble);
+        return VarDouble.wrap(copy);
     }
 }

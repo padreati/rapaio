@@ -25,6 +25,7 @@ import java.io.Serial;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
+import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.base.AbstractDVector;
@@ -112,11 +113,11 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
-    public VarDouble asVarDouble() {
+    public VarDouble dVar(AlgebraOption<?>...opts) {
         double[] copy = new double[indexes.length];
         int pos = 0;
-        for (int i : indexes) {
-            copy[pos++] = source.get(i);
+        for (int index : indexes) {
+            copy[pos++] = source.get(index);
         }
         return VarDouble.wrapArray(copy.length, copy);
     }

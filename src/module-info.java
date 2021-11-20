@@ -21,7 +21,6 @@ open module rapaio {
     exports rapaio.data.group.function;
     exports rapaio.data.index;
     exports rapaio.data.mapping;
-    exports rapaio.data.ops;
     exports rapaio.data.sample;
     exports rapaio.data.stream;
     exports rapaio.data.unique;

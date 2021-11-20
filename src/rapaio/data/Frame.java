@@ -108,11 +108,11 @@ public interface Frame extends Serializable, Printable {
     Var rvar(String name);
 
     default DVector asDVector(int pos, AlgebraOption<?>...opts) {
-        return rvar(pos).asDVector(opts);
+        return rvar(pos).dVec(opts);
     }
 
     default DVector asDVector(String name, AlgebraOption<?>...opts) {
-        return rvar(name).asDVector(opts);
+        return rvar(name).dVec(opts);
     }
 
     /**

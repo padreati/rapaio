@@ -42,7 +42,6 @@ import rapaio.ml.supervised.ClassifierModel;
 import rapaio.ml.supervised.ClassifierResult;
 import rapaio.ml.supervised.linear.binarylogistic.BinaryLogisticIRLS;
 import rapaio.ml.supervised.linear.binarylogistic.BinaryLogisticNewton;
-import rapaio.sys.With;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
@@ -162,7 +161,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
                         .y.set(y)
                         .w0.set(w0)
                         .fit();
-                w = irlsResult.getW().asVarDouble();
+                w = irlsResult.getW().dVar();
                 iterationLoss = new ArrayList<>(irlsResult.nlls());
                 iterationWeights = new ArrayList<>(irlsResult.ws());
                 converged = irlsResult.converged();
@@ -176,7 +175,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
                         .y.set(y)
                         .w0.set(w0)
                         .fit();
-                w = newtonResult.w().asVarDouble();
+                w = newtonResult.w().dVar();
                 iterationLoss = new ArrayList<>(newtonResult.nll());
                 iterationWeights = new ArrayList<>(newtonResult.ws());
                 converged = newtonResult.converged();

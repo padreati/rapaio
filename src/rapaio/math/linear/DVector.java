@@ -34,6 +34,8 @@ import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.sys.With;
+import rapaio.util.DoubleComparator;
+import rapaio.util.DoubleComparators;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
@@ -146,7 +148,7 @@ public interface DVector extends Serializable, Printable {
      * @return new dense vector with values takes from variable v
      */
     static DVector from(Var v, AlgebraOption<?>... opts) {
-        return v.asDVector(opts);
+        return v.dVec(opts);
     }
 
     /**
@@ -549,11 +551,59 @@ public interface DVector extends Serializable, Printable {
      * Sort values from vector. If the storage type allows that, an in place
      * sorting is executed. To create a new copy use {@link With#copy()}.
      *
+     * @param opts algebra options
+     * @return same vector or a new vector with sorted values
+     */
+    default DVector sortValues(AlgebraOption<?>... opts) {
+        return sortValues(true, opts);
+    }
+
+    /**
+     * Sort values from vector in place. To create a new copy with sorted values use {@link With#copy()}.
+     *
      * @param asc  ascending sort if {@code true}, descending otherwise
      * @param opts algebra options
      * @return same vector or a new vector with sorted values
      */
-    DVector sortValues(boolean asc, AlgebraOption<?>... opts);
+    default DVector sortValues(boolean asc, AlgebraOption<?>... opts) {
+        return sortValues(asc ? DoubleComparators.NATURAL_COMPARATOR : DoubleComparators.OPPOSITE_COMPARATOR, opts);
+    }
+
+    /**
+     * Sort values from vector in place. To create a new copy with sorted values use {@link With#copy()}.
+     *
+     * @param comp double value comparator
+     * @param opts algebra options
+     * @return same vector or a new vector with sorted values
+     */
+    DVector sortValues(DoubleComparator comp, AlgebraOption<?>... opts);
+
+    /**
+     * Sort in place the integer indexes in ascending order of the double values.
+     *
+     * @param indexes indexes to be sorted
+     */
+    default void sortIndexes(int[] indexes) {
+        sortIndexes(true, indexes);
+    }
+
+    /**
+     * Sort in place the integer indexes in ascending or descending order of the double values.
+     *
+     * @param asc     ascending order if true, descending otherwise
+     * @param indexes indexes to be sorted
+     */
+    default void sortIndexes(boolean asc, int[] indexes) {
+        sortIndexes(asc ? DoubleComparators.NATURAL_COMPARATOR : DoubleComparators.OPPOSITE_COMPARATOR, indexes);
+    }
+
+    /**
+     * Sort in place the integer indexes in the order defined by given comparator over the double values
+     *
+     * @param comp    double value comparator
+     * @param indexes indexes to be sorted
+     */
+    void sortIndexes(DoubleComparator comp, int[] indexes);
 
     /**
      * A vector is also a matrix, but for implementation reasons the objects are not the same. This method
@@ -585,12 +635,12 @@ public interface DVector extends Serializable, Printable {
     DoubleStream valueStream();
 
     /**
-     * Creates a VarDouble variable by wrapping the values if possible (if the vector storage type is
-     * a direct one). If a new copy of the data is needed use {@link With#copy()} parameter.
+     * Creates a VarDouble by wrapping the values if possible (if the vector storage type is
+     * a direct one). If a new copy of the data is needed, use {@link With#copy()} parameter.
      *
      * @return new double variable instance
      */
-    VarDouble asVarDouble();
+    VarDouble dVar(AlgebraOption<?>...opts);
 
     /**
      * Compares the values between the vector given as parameter and the current one.
