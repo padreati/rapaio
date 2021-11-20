@@ -95,6 +95,12 @@ public class DVectorDense extends AbstractDVector {
     }
 
     @Override
+    public DVector fill(double value) {
+        Arrays.fill(values, offset, offset + size, value);
+        return this;
+    }
+
+    @Override
     public DVectorDense add(double x, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
             double[] copy = new double[size];

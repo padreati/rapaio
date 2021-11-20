@@ -34,6 +34,8 @@ import rapaio.data.unique.UniqueLabel;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorVar;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -114,17 +116,15 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public DVectorDense dv() {
-        return dvcp();
-    }
-
-    @Override
-    public DVectorDense dvcp() {
-        double[] values = new double[size()];
-        for (int i = 0; i < size(); i++) {
-            values[i] = getDouble(i);
+    public DVector asDVector(AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] values = new double[size()];
+            for (int i = 0; i < size(); i++) {
+                values[i] = getDouble(i);
+            }
+            return new DVectorDense(0, size(), values);
         }
-        return new DVectorDense(0, size(), values);
+        return new DVectorVar<>(this);
     }
 
     @Override

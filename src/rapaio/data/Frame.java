@@ -36,6 +36,8 @@ import rapaio.data.filter.FFilter;
 import rapaio.data.filter.FRefSort;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 
@@ -104,6 +106,14 @@ public interface Frame extends Serializable, Printable {
      * @return a var type reference
      */
     Var rvar(String name);
+
+    default DVector asDVector(int pos, AlgebraOption<?>...opts) {
+        return rvar(pos).asDVector(opts);
+    }
+
+    default DVector asDVector(String name, AlgebraOption<?>...opts) {
+        return rvar(name).asDVector(opts);
+    }
 
     /**
      * Returns the type of the given var

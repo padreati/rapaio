@@ -43,8 +43,9 @@ public class HuberLoss implements Loss {
     }
 
     public HuberLoss withAlpha(double alpha) {
-        if (alpha < 0 || alpha > 1)
+        if (alpha < 0 || alpha > 1) {
             throw new IllegalArgumentException("alpha quantile must be in interval [0, 1]");
+        }
         this.alpha = alpha;
         return this;
     }
@@ -58,7 +59,8 @@ public class HuberLoss implements Loss {
     public double scalarMinimizer(Var y) {
 
         double r_bar = Quantiles.of(y, 0.5).values()[0];
-        var abs = y.op().capply(Math::abs);
+        var abs = y.copy();
+        abs.asDVector().apply(Math::abs);
 
         // compute rho as an alpha-quantile of absolute residuals
 
@@ -155,7 +157,7 @@ public class HuberLoss implements Loss {
 
     @Override
     public double errorScore(Var y, Var y_hat) {
-        return error(y, y_hat).op().nansum();
+        return error(y, y_hat).asDVector().nansum();
     }
 
     @Override

@@ -33,6 +33,7 @@ public class DVectorStride extends AbstractDVector {
     private final int offset;
     private final int size;
     private final int stride;
+    private final int fullSize;
 
     private final double[] values;
 
@@ -41,6 +42,7 @@ public class DVectorStride extends AbstractDVector {
         this.size = size;
         this.stride = stride;
         this.values = values;
+        this.fullSize = offset + size;
     }
 
     public int offset() {
@@ -82,6 +84,14 @@ public class DVectorStride extends AbstractDVector {
     @Override
     public void inc(int i, double value) {
         values[offset + i * stride] += value;
+    }
+
+    @Override
+    public DVector fill(double value) {
+        for (int i = offset; i < fullSize; i += stride) {
+            values[i] = value;
+        }
+        return this;
     }
 
     @Override

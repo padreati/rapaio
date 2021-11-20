@@ -21,6 +21,8 @@
 
 package rapaio.ml.supervised.boost;
 
+import static rapaio.sys.With.copy;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +35,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
+import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.loss.L2Loss;
@@ -44,6 +47,7 @@ import rapaio.ml.supervised.simple.L2Regression;
 import rapaio.ml.supervised.tree.RTree;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
+import rapaio.sys.With;
 
 /**
  * Gradient Boosting Tree
@@ -85,7 +89,7 @@ public class GBTRegression extends RegressionModel<GBTRegression, RegressionResu
     /**
      * Convergence threshold used to stop tree growing if the progress on loss function is less than specified
      */
-    public final ValueParam<Double, GBTRegression> eps = new ValueParam<>(this, 1e-10,"eps",Double::isFinite);
+    public final ValueParam<Double, GBTRegression> eps = new ValueParam<>(this, 1e-10, "eps", Double::isFinite);
 
     private VarDouble fitValues;
 
@@ -152,7 +156,7 @@ public class GBTRegression extends RegressionModel<GBTRegression, RegressionResu
 
             // add next prediction to the predict values
             var pred = tree.predict(df, false).firstPrediction();
-            VarDouble nextFit = fitValues.copy().op().plus(pred.op().mult(shrinkage.get()));
+            VarDouble nextFit = fitValues.asDVector(copy()).add(pred.asDVector(copy()).mul(shrinkage.get())).asVarDouble();
 
             double initScore = loss.get().errorScore(y, fitValues);
             double nextScore = loss.get().errorScore(y, nextFit);
@@ -174,12 +178,12 @@ public class GBTRegression extends RegressionModel<GBTRegression, RegressionResu
     @Override
     protected RegressionResult corePredict(final Frame df, final boolean withResiduals, double[] quantiles) {
         RegressionResult result = RegressionResult.build(this, df, withResiduals, quantiles);
-        var prediction = result.firstPrediction();
+        DVector prediction = result.firstPrediction().asDVector();
 
-        prediction.op().fill(0);
-        prediction.op().plus(initModel.get().predict(df, false).firstPrediction());
+        prediction.apply(v -> 0);
+        prediction.add(initModel.get().predict(df, false).firstPrediction().asDVector());
         for (var tree : trees) {
-            prediction.op().plus(tree.predict(df, false).firstPrediction().op().mult(shrinkage.get()));
+            prediction.add(tree.predict(df, false).firstPrediction().asDVector(copy()).mul(shrinkage.get()));
         }
         result.buildComplete();
         return result;

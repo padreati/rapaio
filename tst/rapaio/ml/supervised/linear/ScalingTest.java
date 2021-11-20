@@ -41,7 +41,7 @@ public class ScalingTest {
         assertEquals(Scaling.SD.compute(VarDouble.seq(10)), Variance.of(VarDouble.seq(10)).biasedSdValue());
         assertEquals(Scaling.SD.compute(VarDouble.seq(100)), Variance.of(VarDouble.seq(100)).biasedSdValue());
 
-        assertEquals(Scaling.NORM.compute(VarDouble.seq(10)), Math.sqrt(VarDouble.seq(10).op().apply(x -> x * x).op().nansum()));
-        assertEquals(Scaling.NORM.compute(VarDouble.seq(100)), Math.sqrt(VarDouble.seq(100).op().apply(x -> x * x).op().nansum()));
+        assertEquals(Scaling.NORM.compute(VarDouble.seq(10)), Math.sqrt(VarDouble.seq(10).asDVector().apply(x -> x * x).nansum()));
+        assertEquals(Scaling.NORM.compute(VarDouble.seq(100)), Math.sqrt(VarDouble.seq(100).asDVector().apply(x -> x * x).nansum()));
     }
 }

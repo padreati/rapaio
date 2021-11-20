@@ -99,6 +99,14 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
+    public DVector fill(double value) {
+        for (int index : indexes) {
+            source.set(index, value);
+        }
+        return this;
+    }
+
+    @Override
     public DoubleStream valueStream() {
         return IntStream.of(indexes).mapToDouble(source::get);
     }

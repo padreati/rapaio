@@ -151,7 +151,7 @@ public abstract class StandardDVectorTest {
 
     @Test
     void typeTest() {
-        assertEquals(className(), generateFill(10, 1).getClass().getName());
+        assertEquals(className(), generateFill(10, 1).getClass().getSimpleName());
     }
 
     @Test

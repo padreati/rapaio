@@ -31,12 +31,15 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
+import rapaio.data.MappedVar;
+import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorMap;
 import rapaio.math.linear.dense.DVectorStride;
+import rapaio.math.linear.dense.DVectorVar;
 import rapaio.sys.With;
 import rapaio.util.collection.IntArrays;
 
@@ -44,6 +47,7 @@ public class DenseAlgebraTest {
 
     private static final MType[] mTypes = new MType[] {MType.RDENSE, MType.CDENSE, MType.MAP};
     private static final VectorFactory[] vectorFactories = new VectorFactory[] {
+            // dense vector
             n -> {
                 double[] values = new double[10 + n];
                 for (int i = 0; i < n; i++) {
@@ -51,6 +55,7 @@ public class DenseAlgebraTest {
                 }
                 return new DVectorDense(10, n, values);
             },
+            // stride vector
             n -> {
                 double[] values = new double[10 + 2 * n];
                 for (int i = 0; i < n; i++) {
@@ -58,6 +63,7 @@ public class DenseAlgebraTest {
                 }
                 return new DVectorStride(10, n, 2, values);
             },
+            // map vector
             n -> {
                 double[] values = new double[10 + 2 * n];
                 int[] indexes = new int[n];
@@ -66,6 +72,18 @@ public class DenseAlgebraTest {
                     indexes[i] = 10 + i * 2;
                 }
                 return new DVectorMap(new DVectorDense(0, 10 + 2 * n, values), indexes);
+            },
+            // var vector
+            n -> {
+                double[] values = new double[10 + 2 * n];
+                int[] indexes = new int[n];
+                for (int i = 0; i < n; i++) {
+                    values[10 + i * 2] = i + 1;
+                    indexes[i] = 10 + i * 2;
+                }
+                VarDouble original = VarDouble.wrap(values);
+                MappedVar mappedVar = original.mapRows(indexes);
+                return new DVectorVar<>(mappedVar);
             }
     };
 
@@ -73,6 +91,7 @@ public class DenseAlgebraTest {
         default DVector newInstance() {
             return newInstance(10);
         }
+
         DVector newInstance(int size);
     }
 

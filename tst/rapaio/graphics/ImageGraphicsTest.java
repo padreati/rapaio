@@ -369,13 +369,12 @@ public class ImageGraphicsTest {
             }
         }
 //        TODO: fix me, suspend testing until we found a reliable way to do comparison
-        var delta = s1.copy().op().minus(s2).op().apply(Math::abs);
-//        delta.printSummary();
+        var delta = s1.copy();
+        delta.asDVector().sub(s2.asDVector()).apply(Math::abs);
         double percent = 0.9;
         double threshold = 45;
         double quantile = Quantiles.of(delta, percent).values()[0];
         if (!(quantile <= threshold)) {
-//            WS.draw(hist(delta, bins(100)).xLim(5,200));
             WS.printf("Percentage: %f, quantile: %f, threshold: %f", percent, quantile, threshold);
             return false;
         }

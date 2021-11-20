@@ -25,7 +25,12 @@ import java.io.Serial;
 import java.time.Instant;
 import java.util.List;
 
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorMap;
+import rapaio.math.linear.dense.DVectorVar;
+import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -217,12 +222,18 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public DVectorDense dvcp() {
-        double[] values = new double[mapping.size()];
-        for (int i = 0; i < mapping.size(); i++) {
-            values[i] = source.getDouble(mapping.get(i));
+    public DVector asDVector(AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] values = new double[mapping.size()];
+            for (int i = 0; i < mapping.size(); i++) {
+                values[i] = source.getDouble(mapping.get(i));
+            }
+            return new DVectorDense(0, mapping.size(), values);
         }
-        return new DVectorDense(0, mapping.size(), values);
+        if (source instanceof VarDouble vd) {
+            new DVectorMap(new DVectorDense(0, vd.size(), vd.elements()), mapping.elements());
+        }
+        return new DVectorVar<>(this);
     }
 
     @Override

@@ -23,6 +23,8 @@ package rapaio.ml.eval;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import static rapaio.sys.With.copy;
+
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +41,7 @@ import rapaio.ml.eval.split.Split;
 import rapaio.ml.eval.split.SplitStrategy;
 import rapaio.ml.supervised.RegressionModel;
 import rapaio.ml.supervised.simple.L2Regression;
+import rapaio.sys.With;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/19.
@@ -58,7 +61,7 @@ public class RegressionResultEvaluationTest {
     @Test
     void testSmoke() {
         Frame df = SolidFrame.byVars(VarDouble.copy(1.0, 1.0, 1.0, 2.0).name(targetName));
-        RegressionModel model = L2Regression.newModel();
+        var model = L2Regression.newModel();
         RegressionMetric metric = RMSE.newMetric();
 
         RegressionEvaluation eval = RegressionEvaluation.newEval()
@@ -70,13 +73,10 @@ public class RegressionResultEvaluationTest {
                 .targetName.set(targetName);
 
         Var target = df.rvar(targetName);
-        double mean = target.op().nanmean();
+        double mean = target.asDVector().nanmean();
         double count = target.size();
 
-        double expectedScore = Math.sqrt(target.copy()
-                .op().minus(mean)
-                .op().apply(x -> x * x)
-                .op().nansum() / count);
+        double expectedScore = Math.sqrt(target.asDVector(copy()).sub(mean).apply(x -> x * x).nansum() / count);
 
         RegressionEvaluationResult result = eval.run();
         assertEquals(2, result.getTrainScores().rowCount());

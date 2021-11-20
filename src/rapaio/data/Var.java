@@ -37,6 +37,8 @@ import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorVar;
+import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 
@@ -351,14 +353,7 @@ public interface Var extends Serializable, Printable {
      *
      * @return new wrapping DVector
      */
-    DVectorDense dv();
-
-    /**
-     * Copy double values into a {@link DVectorDense} instance.
-     *
-     * @return a DVector which contains a copy of the values
-     */
-    DVectorDense dvcp();
+    DVector asDVector(AlgebraOption<?>...opts);
 
     /**
      * Builds a new empty instance of given size

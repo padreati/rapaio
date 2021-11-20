@@ -29,6 +29,15 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.base.AbstractDVector;
 import rapaio.util.collection.DoubleArrays;
 
+/**
+ * Wrapper class over a {@link Var} and offers basic implementations for vector operations.
+ * If the original variable is {@link VarDouble} than a better wrapper is {@link DVectorDense}.
+ * <p>
+ * Attention must be provided since operations are stored in the original variable and if
+ * that does not store doubles, than loss of precision will be involved.
+ *
+ * @param <T> type of the original variable
+ */
 public class DVectorVar<T extends Var> extends AbstractDVector {
 
     private final T ref;
@@ -61,6 +70,14 @@ public class DVectorVar<T extends Var> extends AbstractDVector {
     @Override
     public void inc(int i, double value) {
         ref.setDouble(i, ref.getDouble(i) + value);
+    }
+
+    @Override
+    public DVector fill(double value) {
+        for (int i = 0; i < ref.size(); i++) {
+            ref.setDouble(i, value);
+        }
+        return this;
     }
 
     @Override

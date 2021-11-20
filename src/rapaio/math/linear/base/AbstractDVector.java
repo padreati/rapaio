@@ -67,6 +67,14 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
+    public DVector fill(double value) {
+        for (int i = 0; i < size(); i++) {
+            set(i, value);
+        }
+        return this;
+    }
+
+    @Override
     public DVector add(double x, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
             double[] copy = new double[size()];

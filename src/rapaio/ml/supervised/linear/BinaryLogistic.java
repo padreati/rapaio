@@ -21,6 +21,8 @@
 
 package rapaio.ml.supervised.linear;
 
+import static rapaio.sys.With.copy;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import rapaio.ml.supervised.ClassifierModel;
 import rapaio.ml.supervised.ClassifierResult;
 import rapaio.ml.supervised.linear.binarylogistic.BinaryLogisticIRLS;
 import rapaio.ml.supervised.linear.binarylogistic.BinaryLogisticNewton;
+import rapaio.sys.With;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
@@ -223,15 +226,15 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
         int offset = intercept.get() == 0 ? 0 : 1;
 
-        VarDouble p = VarDouble.fill(df.rowCount(), intercept.get() * w.getDouble(0));
+        DVector p = DVector.fill(df.rowCount(), intercept.get() * w.getDouble(0));
         for (int i = 0; i < inputNames.length; i++) {
             double wvalue = w.getDouble(i + offset);
-            VarDouble z = df.rvar(inputName(i)).op().capply(v -> 1 / (1 + Math.exp(-v * wvalue)));
-            p.op().plus(z);
+            DVector z = df.asDVector(inputName(i), copy()).apply(v -> 1 / (1 + Math.exp(-v * wvalue)));
+            p.add(z);
         }
 
         for (int r = 0; r < df.rowCount(); r++) {
-            double pi = p.getDouble(r);
+            double pi = p.get(r);
             if (withClasses) {
                 cr.firstClasses().setInt(r, pi < 0.5 ? 1 : 2);
             }

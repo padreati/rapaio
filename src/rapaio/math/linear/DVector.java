@@ -58,7 +58,7 @@ public interface DVector extends Serializable, Printable {
     /**
      * Builds a new double vector of size {@param n} filled with 1.
      *
-     * @param n    the size of the vector
+     * @param n the size of the vector
      * @return vector instance
      */
     static DVectorDense ones(int n) {
@@ -134,23 +134,19 @@ public interface DVector extends Serializable, Printable {
     }
 
     /**
-     * Builds a dense vector filled with values from a {@link Var} variable.
+     * Builds a vector over values from a {@link Var} object.
      * The variable can have any {@link Var#type()}, the values from variable
      * being obtained using {@link Var#getDouble(int)} calls.
+     * <p>
+     * The obtained object is a wrapper over original {@link Var}. If a copy of the values
+     * is desired, than {@link With#copy()} parameter option must be passed and a
+     * dense vector will be created which contains a copy of the values from the vector.
      *
      * @param v source variable
      * @return new dense vector with values takes from variable v
      */
-    static DVectorDense from(Var v) {
-        if (v instanceof VarDouble vd) {
-            double[] array = vd.elements();
-            return wrapArray(0, vd.size(), array);
-        }
-        double[] values = new double[v.size()];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = v.getDouble(i);
-        }
-        return wrapArray(0, values.length, values);
+    static DVector from(Var v, AlgebraOption<?>... opts) {
+        return v.asDVector(opts);
     }
 
     /**
@@ -216,6 +212,13 @@ public interface DVector extends Serializable, Printable {
      * Increments the value at the given position.
      */
     void inc(int i, double value);
+
+    /**
+     * Set all vector values to the given value.
+     *
+     * @param value value to be set
+     */
+    DVector fill(double value);
 
     /**
      * Adds to all elements the value of x.

@@ -77,8 +77,8 @@ public class KFoldTest {
             if (!weightsSum.containsKey(split.round())) {
                 weightsSum.put(split.round(), 0.0);
             }
-            dfsSum.put(split.round(), dfsSum.get(split.round()) + split.trainDf().rvar(0).op().nansum());
-            weightsSum.put(split.round(), weightsSum.get(split.round()) + split.trainWeights().op().nansum());
+            dfsSum.put(split.round(), dfsSum.get(split.round()) + split.trainDf().rvar(0).asDVector().nansum());
+            weightsSum.put(split.round(), weightsSum.get(split.round()) + split.trainWeights().asDVector().nansum());
         }
 
         assertEquals(2, roundSum);
