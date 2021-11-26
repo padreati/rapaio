@@ -68,18 +68,18 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, Clas
     private static final long serialVersionUID = 1208515184777030598L;
 
     /**
-     * Kernel which maps inputs to feature space
+     * Kernel which maps inputs to feature space.
      */
     public final ValueParam<Kernel, BinarySMO> kernel = new ValueParam<>(this, new PolyKernel(1), "kernel");
 
     /**
-     * Maximum number of iterations
+     * Maximum number of iterations.
      */
     public final ValueParam<Integer, BinarySMO> maxRuns = new ValueParam<>(this, 1_000,
             "maxRuns", x -> x != null && x > 0);
 
     /**
-     * Complexity parameter
+     * Complexity parameter.
      */
     public final ValueParam<Double, BinarySMO> c = new ValueParam<>(this, 1.0, "c", Double::isFinite);
 

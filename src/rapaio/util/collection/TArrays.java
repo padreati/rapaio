@@ -22,6 +22,9 @@
 package rapaio.util.collection;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
+
+import rapaio.math.linear.DVector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/22/20.
@@ -30,20 +33,49 @@ public final class TArrays {
 
     public static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
-    @SuppressWarnings("unchecked")
-    public static <T> T[] copyOfRange(T[] source, int from, int to, int len, int offset) {
-        T[] copy = (T[]) Array.newInstance(source.getClass().getComponentType(), len);
-        System.arraycopy(source, from, copy, offset, to - from);
+    public static <T> T[] concat(T[]... arrays) {
+        int totalLength = 0;
+        for (T[] ts : arrays) {
+            totalLength += ts.length;
+        }
+        T[] copy = Arrays.copyOf(arrays[0], totalLength);
+        int pos = 0;
+        for (T[] array : arrays) {
+            for (T value : array) {
+                copy[pos++] = value;
+            }
+        }
         return copy;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> T[] copyValueFirst(T value, T[] source) {
-        T[] copy = (T[]) Array.newInstance(source.getClass().getComponentType(), source.length + 1);
-        System.arraycopy(source, 0, copy, 1, source.length);
-        copy[0] = value;
-        return copy;
+    public static void swap(int[] array, int i, int j) {
+        int tmp = array[i];
+        array[i] = array[j];
+        array[j] = tmp;
+    }
 
+    public static void swap(double[] array, int i, int j) {
+        double tmp = array[i];
+        array[i] = array[j];
+        array[j] = tmp;
+    }
+
+    public static void swap(byte[] array, int i, int j) {
+        byte tmp = array[i];
+        array[i] = array[j];
+        array[j] = tmp;
+    }
+
+    public static void swap(long[] array, int i, int j) {
+        long tmp = array[i];
+        array[i] = array[j];
+        array[j] = tmp;
+    }
+
+    public static void swap(DVector[] array, int i, int j) {
+        DVector tmp = array[i];
+        array[i] = array[j];
+        array[j] = tmp;
     }
 
     /**
@@ -58,10 +90,15 @@ public final class TArrays {
      * @throws ArrayIndexOutOfBoundsException if {@code from} or {@code to} are greater than {@code arrayLength} or negative.
      */
     public static void ensureFromTo(final int arrayLength, final int from, final int to) {
-        if (from < 0) throw new ArrayIndexOutOfBoundsException("Start index (" + from + ") is negative");
-        if (from > to) throw new IllegalArgumentException("Start index (" + from + ") is greater than end index (" + to + ")");
-        if (to > arrayLength)
+        if (from < 0) {
+            throw new ArrayIndexOutOfBoundsException("Start index (" + from + ") is negative");
+        }
+        if (from > to) {
+            throw new IllegalArgumentException("Start index (" + from + ") is greater than end index (" + to + ")");
+        }
+        if (to > arrayLength) {
             throw new ArrayIndexOutOfBoundsException("End index (" + to + ") is greater than array length (" + arrayLength + ")");
+        }
     }
 
     /**
@@ -76,9 +113,15 @@ public final class TArrays {
      * @throws ArrayIndexOutOfBoundsException if {@code offset} is negative or {@code offset}+{@code length} is greater than {@code arrayLength}.
      */
     public static void ensureOffsetLength(final int arrayLength, final int offset, final int length) {
-        if (offset < 0) throw new ArrayIndexOutOfBoundsException("Offset (" + offset + ") is negative");
-        if (length < 0) throw new IllegalArgumentException("Length (" + length + ") is negative");
-        if (offset + length > arrayLength)
-            throw new ArrayIndexOutOfBoundsException("Last index (" + (offset + length) + ") is greater than array length (" + arrayLength + ")");
+        if (offset < 0) {
+            throw new ArrayIndexOutOfBoundsException("Offset (" + offset + ") is negative");
+        }
+        if (length < 0) {
+            throw new IllegalArgumentException("Length (" + length + ") is negative");
+        }
+        if (offset + length > arrayLength) {
+            throw new ArrayIndexOutOfBoundsException(
+                    "Last index (" + (offset + length) + ") is greater than array length (" + arrayLength + ")");
+        }
     }
 }

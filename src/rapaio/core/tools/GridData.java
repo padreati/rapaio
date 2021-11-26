@@ -115,7 +115,7 @@ public class GridData implements Serializable {
 
     private final VarDouble values;
 
-    private GridData(Var x, Var y) {
+    public GridData(Var x, Var y) {
         this.x = x;
         this.y = y;
 

@@ -48,36 +48,43 @@ import rapaio.math.linear.DVector;
  */
 public class RBFKernel extends AbstractKernel {
 
+    public static RBFKernel fromGamma(double gamma) {
+        return new RBFKernel(gamma);
+    }
+
+    public static RBFKernel fromSigma(double sigma) {
+        double gamma = 1 / (2.0 * sigma * sigma);
+        return new RBFKernel(gamma);
+    }
+
     @Serial
     private static final long serialVersionUID = -2105174939802643460L;
 
-    private final double sigma;
-    private final double factor;
+    private final double gamma;
 
-    public RBFKernel(double sigma) {
-        this.sigma = sigma;
-        this.factor = -1.0 / (2.0 * sigma * sigma);
+    public RBFKernel(double gamma) {
+        this.gamma = gamma;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double value = deltaSumSquares(df1, row1, df2, row2);
-        return Math.exp(factor * value);
+        return Math.exp(-gamma * value);
     }
 
     @Override
     public double compute(DVector v, DVector u) {
         double value = deltaSumSquares(v, u);
-        return Math.exp(factor * value);
+        return Math.exp(-gamma * value);
     }
 
     @Override
     public Kernel newInstance() {
-        return new RBFKernel(sigma);
+        return new RBFKernel(gamma);
     }
 
     @Override
     public String name() {
-        return "RBF(sigma=" + floatFlex(sigma) + ")";
+        return "RBF(gamma=" + floatFlex(gamma) + ")";
     }
 }
