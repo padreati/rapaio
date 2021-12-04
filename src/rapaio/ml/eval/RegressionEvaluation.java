@@ -41,8 +41,8 @@ import rapaio.ml.eval.metric.RegressionMetric;
 import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.Split;
 import rapaio.ml.eval.split.SplitStrategy;
-import rapaio.ml.supervised.RegressionModel;
-import rapaio.ml.supervised.RegressionResult;
+import rapaio.ml.model.RegressionModel;
+import rapaio.ml.model.RegressionResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/6/19.

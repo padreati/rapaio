@@ -39,7 +39,7 @@ import rapaio.ml.eval.metric.RMSE;
 import rapaio.ml.eval.metric.RegressionMetric;
 import rapaio.ml.eval.split.Split;
 import rapaio.ml.eval.split.SplitStrategy;
-import rapaio.ml.supervised.simple.L2Regression;
+import rapaio.ml.model.simple.L2Regression;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/19.

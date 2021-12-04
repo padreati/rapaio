@@ -29,8 +29,8 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.ml.supervised.tree.RTreeLoss;
-import rapaio.ml.supervised.tree.rtree.SearchPayload;
+import rapaio.ml.model.tree.RTreeLoss;
+import rapaio.ml.model.tree.rtree.SearchPayload;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.

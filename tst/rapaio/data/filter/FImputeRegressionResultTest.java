@@ -33,7 +33,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
-import rapaio.ml.supervised.simple.L2Regression;
+import rapaio.ml.model.simple.L2Regression;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/28/19.

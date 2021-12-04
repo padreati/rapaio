@@ -32,7 +32,7 @@ import rapaio.experiment.ml.svm.SVMClassifier;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.RBFKernel;
-import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.model.ClassifierResult;
 
 public class IrisTest {
 

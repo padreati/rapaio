@@ -61,26 +61,25 @@ open module rapaio {
 
     exports rapaio.ml.analysis;
 
-    exports rapaio.ml.clustering;
-    exports rapaio.ml.clustering.km;
 
-    exports rapaio.ml.supervised;
-    exports rapaio.ml.supervised.linear;
-    exports rapaio.ml.supervised.linear.binarylogistic;
-    exports rapaio.ml.supervised.linear.impl;
-    exports rapaio.ml.supervised.bayes;
-    exports rapaio.ml.supervised.bayes.nb;
-    exports rapaio.ml.supervised.boost;
-    exports rapaio.ml.supervised.svm;
-    exports rapaio.ml.supervised.rule;
-    exports rapaio.ml.supervised.rule.onerule;
-    exports rapaio.ml.supervised.tree;
-    exports rapaio.ml.supervised.tree.ctree;
-    exports rapaio.ml.supervised.tree.rtree;
-    exports rapaio.ml.supervised.tree.rowpredicate;
-    exports rapaio.ml.supervised.ensemble;
-    exports rapaio.ml.supervised.simple;
-    exports rapaio.ml.supervised.rvm;
+    exports rapaio.ml.model;
+    exports rapaio.ml.model.bayes;
+    exports rapaio.ml.model.bayes.nb;
+    exports rapaio.ml.model.boost;
+    exports rapaio.ml.model.ensemble;
+    exports rapaio.ml.model.km;
+    exports rapaio.ml.model.linear;
+    exports rapaio.ml.model.linear.binarylogistic;
+    exports rapaio.ml.model.linear.impl;
+    exports rapaio.ml.model.rule;
+    exports rapaio.ml.model.rule.onerule;
+    exports rapaio.ml.model.rvm;
+    exports rapaio.ml.model.simple;
+    exports rapaio.ml.model.svm;
+    exports rapaio.ml.model.tree;
+    exports rapaio.ml.model.tree.ctree;
+    exports rapaio.ml.model.tree.rtree;
+    exports rapaio.ml.model.tree.rowpredicate;
 
     exports rapaio.printer;
     exports rapaio.printer.opt;

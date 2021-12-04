@@ -35,16 +35,16 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
-import rapaio.ml.supervised.RegressionHookInfo;
-import rapaio.ml.supervised.RegressionResult;
-import rapaio.ml.supervised.boost.GBTRtree;
+import rapaio.ml.model.RegressionResult;
+import rapaio.ml.model.RunInfo;
+import rapaio.ml.model.boost.GBTRtree;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
  */
-public class SmoothRTree extends GBTRtree<SmoothRTree, RegressionResult, RegressionHookInfo> {
+public class SmoothRTree extends GBTRtree<SmoothRTree, RegressionResult, RunInfo<SmoothRTree>> {
 
     @Serial
     private static final long serialVersionUID = 5062591010395009141L;

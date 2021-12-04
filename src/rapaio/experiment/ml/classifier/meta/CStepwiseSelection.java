@@ -37,9 +37,9 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.eval.metric.Confusion;
-import rapaio.ml.supervised.ClassifierHookInfo;
-import rapaio.ml.supervised.ClassifierModel;
-import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.model.ClassifierModel;
+import rapaio.ml.model.ClassifierResult;
+import rapaio.ml.model.RunInfo;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
@@ -48,7 +48,7 @@ import rapaio.sys.WS;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/15.
  */
 public class CStepwiseSelection
-        extends ClassifierModel<CStepwiseSelection, ClassifierResult, ClassifierHookInfo> implements Printable {
+        extends ClassifierModel<CStepwiseSelection, ClassifierResult, RunInfo<CStepwiseSelection>> implements Printable {
 
     @Serial
     private static final long serialVersionUID = 2642562123626893974L;

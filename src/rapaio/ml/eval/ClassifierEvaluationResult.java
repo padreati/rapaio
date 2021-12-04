@@ -38,7 +38,7 @@ import rapaio.data.filter.FRefSort;
 import rapaio.data.group.GroupFun;
 import rapaio.ml.eval.metric.ClassifierMetric;
 import rapaio.ml.eval.split.Split;
-import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.model.ClassifierResult;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;

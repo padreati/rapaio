@@ -63,15 +63,15 @@ import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.common.kernel.WaveletKernel;
 import rapaio.ml.eval.metric.Confusion;
-import rapaio.ml.supervised.ClassifierHookInfo;
-import rapaio.ml.supervised.ClassifierModel;
-import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.model.ClassifierModel;
+import rapaio.ml.model.ClassifierResult;
+import rapaio.ml.model.RunInfo;
 import rapaio.sys.WS;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.TArrays;
 
-public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResult, ClassifierHookInfo> {
+public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResult, RunInfo<SVMClassifier>> {
 
     private static final Logger LOGGER = Logger.getLogger(SVMClassifier.class.getName());
 
@@ -141,7 +141,7 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
     private ProblemInfo problemInfo;
 
     @Override
-    public ClassifierModel<SVMClassifier, ClassifierResult, ClassifierHookInfo> newInstance() {
+    public ClassifierModel<SVMClassifier, ClassifierResult, RunInfo<SVMClassifier>> newInstance() {
         return new SVMClassifier().copyParameterValues(this);
     }
 

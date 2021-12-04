@@ -26,8 +26,8 @@ import java.io.Serial;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
-import rapaio.ml.supervised.RegressionModel;
-import rapaio.ml.supervised.RegressionResult;
+import rapaio.ml.model.RegressionModel;
+import rapaio.ml.model.RegressionResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.

@@ -41,8 +41,8 @@ import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.Split;
 import rapaio.ml.eval.split.SplitStrategy;
 import rapaio.ml.eval.split.StratifiedKFold;
-import rapaio.ml.supervised.ClassifierModel;
-import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.model.ClassifierModel;
+import rapaio.ml.model.ClassifierResult;
 import rapaio.sys.WS;
 
 /**

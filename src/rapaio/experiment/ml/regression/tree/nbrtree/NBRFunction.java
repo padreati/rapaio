@@ -33,10 +33,10 @@ import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
-import rapaio.ml.supervised.RegressionResult;
-import rapaio.ml.supervised.linear.LinearRegressionModel;
-import rapaio.ml.supervised.linear.LinearRegressionResult;
-import rapaio.ml.supervised.simple.L2Regression;
+import rapaio.ml.model.RegressionResult;
+import rapaio.ml.model.linear.LinearRegressionModel;
+import rapaio.ml.model.linear.LinearRegressionResult;
+import rapaio.ml.model.simple.L2Regression;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/23/19.

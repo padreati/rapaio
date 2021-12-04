@@ -30,7 +30,7 @@ import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import rapaio.ml.supervised.RegressionModel;
+import rapaio.ml.model.RegressionModel;
 import rapaio.printer.Format;
 
 /**

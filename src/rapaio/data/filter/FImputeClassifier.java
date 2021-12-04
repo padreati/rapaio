@@ -26,8 +26,8 @@ import java.io.Serial;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
-import rapaio.ml.supervised.ClassifierModel;
-import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.model.ClassifierModel;
+import rapaio.ml.model.ClassifierResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.

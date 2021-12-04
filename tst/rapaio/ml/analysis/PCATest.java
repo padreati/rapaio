@@ -37,7 +37,7 @@ import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
 import rapaio.math.linear.DMatrix;
 import rapaio.ml.eval.metric.Confusion;
-import rapaio.ml.supervised.ensemble.CForest;
+import rapaio.ml.model.ensemble.CForest;
 
 /**
  * Principal component analysis decomposition test
