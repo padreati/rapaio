@@ -153,7 +153,7 @@ public class Int2IntOpenHashMapTest {
             map.put(x.getInt(i), y.getInt(i));
 
             Var values = map.values().stream().collect(VarInt.collector());
-            values.dVec().sortValues();
+            values.dv().sortValues();
             assertEquals(i + 1, values.size());
             for (int j = 0; j < values.size(); j++) {
                 assertEquals(y.getInt(i), values.getInt(i));

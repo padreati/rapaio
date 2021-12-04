@@ -156,10 +156,10 @@ public class RForest extends RegressionModel<RForest, RegressionResult, Regressi
                 .parallelStream()
                 .map(r -> r.predict(df, false).firstPrediction())
                 .collect(Collectors.toList());
-        var pred = fit.firstPrediction().dVec();
+        var pred = fit.firstPrediction().dv();
         pred.fill(0);
         for (VarDouble result : results) {
-            pred.add(result.dVec());
+            pred.add(result.dv());
         }
         pred.div(regressions.size());
         if (withResiduals) {

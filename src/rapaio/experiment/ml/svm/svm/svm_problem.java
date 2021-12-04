@@ -19,11 +19,12 @@
  *
  */
 
-package rapaio.experiment.ml.svm.libsvm;
+package rapaio.experiment.ml.svm.svm;
 
-public class svm_problem implements java.io.Serializable
-{
+import rapaio.math.linear.DVector;
+
+public class svm_problem implements java.io.Serializable {
     public int l;
     public double[] y;
-    public svm_node[][] x;
+    public DVector[] x;
 }

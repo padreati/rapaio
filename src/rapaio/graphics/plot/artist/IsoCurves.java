@@ -132,6 +132,7 @@ public class IsoCurves extends Artist {
                 }
             });
         }
+        g2d.setComposite(old);
     }
 
     @FunctionalInterface

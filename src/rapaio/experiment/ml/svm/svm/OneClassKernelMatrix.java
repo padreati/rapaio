@@ -19,9 +19,8 @@
  *
  */
 
-package rapaio.experiment.ml.svm.libsvm;
+package rapaio.experiment.ml.svm.svm;
 
-import java.lang.ref.Reference;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rapaio.util.collection.TArrays;

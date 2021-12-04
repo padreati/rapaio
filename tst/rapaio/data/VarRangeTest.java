@@ -42,7 +42,7 @@ public class VarRangeTest {
                 VarDouble.empty().name("c"),
                 VarDouble.empty().name("d"),
                 VarNominal.empty(0, "A", "B").name("x"),
-                VarNominal.empty(0, "C", "D").name("y")
+                VarNominal.empty(0, "c", "D").name("y")
         );
 
         test(VarRange.of(0, 2), df,
@@ -104,7 +104,7 @@ public class VarRangeTest {
                 VarDouble.empty().name("c"),
                 VarDouble.empty().name("d"),
                 VarNominal.empty(0, "A", "B").name("x"),
-                VarNominal.empty(0, "C", "D").name("y")
+                VarNominal.empty(0, "c", "D").name("y")
         );
 
         test(VarRange.of("0~af,a~q,q,q~a"), df, new int[0], new String[0], new String[0]);

@@ -279,7 +279,7 @@ public class MathTools {
      * The method lgamma() is adapted from FDLIBM 5.3
      * (http://www.netlib.org/fdlibm/), which comes with this copyright notice:
      * ====================================================
-     * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+     * Copyright (c) 1993 by Sun Microsystems, Inc. All rights reserved.
      *
      * Developed at SunSoft, a Sun Microsystems, Inc. business. Permission to
      * use, copy, modify, and distribute this software is freely granted,

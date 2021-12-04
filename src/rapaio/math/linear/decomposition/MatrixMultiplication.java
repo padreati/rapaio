@@ -56,7 +56,7 @@ public class MatrixMultiplication {
     }
 
     public static DMatrix ijkAlgorithm(DMatrix A, DMatrix B) {
-        // Initialize C
+        // Initialize c
         DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int j = 0; j < B.colCount(); j++) {
@@ -69,7 +69,7 @@ public class MatrixMultiplication {
     }
 
     public static DMatrix ijkParallel(DMatrix A, DMatrix B) {
-        // initialize C
+        // initialize c
         DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int j = 0; j < B.colCount(); j++) {
@@ -82,7 +82,7 @@ public class MatrixMultiplication {
     }
 
     public static DMatrix ikjAlgorithm(DMatrix A, DMatrix B) {
-        // initialize C
+        // initialize c
         DMatrix C = DMatrix.empty(A.rowCount(), B.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int k = 0; k < A.colCount(); k++) {

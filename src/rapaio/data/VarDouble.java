@@ -553,7 +553,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    public DVector dVec(AlgebraOption<?>... opts) {
+    public DVector dv(AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
             double[] values = new double[size()];
             for (int i = 0; i < size(); i++) {

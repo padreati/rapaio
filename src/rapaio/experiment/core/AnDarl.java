@@ -42,7 +42,7 @@ The function is ADinf(z)=lim_{n->infty} Pr[A_n<z]. About 15 digit accuracy.
 If you don't need that much accuracy, use the quick-and-easy adinf(z).
 ADinf uses a two-term recursion for coefficients in series for which initial values
 require the complementary normal integral, included as cPhi(z).
-Otherwise, use erfc() if your C compiler has one with adequate accuracy.
+Otherwise, use erfc() if your c compiler has one with adequate accuracy.
 */
 
     double ADf(double z, int j) { /* called by ADinf(); see article. */

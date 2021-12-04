@@ -34,8 +34,10 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.math.linear.DVector;
 import rapaio.ml.supervised.ClassifierModel;
 import rapaio.ml.supervised.ClassifierResult;
+import rapaio.util.collection.DoubleArrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/22/15.
@@ -90,7 +92,8 @@ public class GridData implements Serializable {
         return mg;
     }
 
-    public static GridData fromFunction(BiFunction<Double, Double, Double> f, double xMin, double xMax, double yMin, double yMax, int bins) {
+    public static GridData fromFunction(BiFunction<Double, Double, Double> f, double xMin, double xMax, double yMin, double yMax,
+            int bins) {
 
         VarDouble x = VarDouble.seq(xMin, xMax, (xMax - xMin) / bins);
         VarDouble y = VarDouble.seq(yMin, yMax, (yMax - yMin) / bins);
@@ -113,13 +116,13 @@ public class GridData implements Serializable {
     private final Var x;
     private final Var y;
 
-    private final VarDouble values;
+    private final DVector values;
 
     public GridData(Var x, Var y) {
         this.x = x;
         this.y = y;
 
-        this.values = VarDouble.empty(x.size() * y.size());
+        this.values = DVector.zeros(x.size() * y.size());
     }
 
     public Var getX() {
@@ -131,14 +134,26 @@ public class GridData implements Serializable {
     }
 
     public double getValue(int i, int j) {
-        return values.getDouble(i * y.size() + j);
+        return values.get(i * y.size() + j);
     }
 
     public void setValue(int i, int j, double value) {
-        values.setDouble(i * y.size() + j, value);
+        values.set(i * y.size() + j, value);
     }
 
     public double[] quantiles(double... qs) {
-        return Quantiles.of(values, qs).values();
+        return Quantiles.of(values.dVar(), qs).values();
+    }
+
+    public void fill(double fill) {
+        values.fill(fill);
+    }
+
+    public void fillNan(double fill) {
+        for (int i = 0; i < values.size(); i++) {
+            if (Double.isNaN(values.get(i))) {
+                values.set(i, fill);
+            }
+        }
     }
 }

@@ -75,7 +75,7 @@ public class LinearAlgebraIdentitiesTests {
     @Test
     void additiveAssociationTest() {
 
-        // A*C+B*C = (A+B)*C
+        // A*c+B*c = (A+B)*c
 
         for (MType type1 : mTypes) {
             var a = randomMatrix(type1, 400, 80);

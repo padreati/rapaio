@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.ml.svm.libsvm;
+package rapaio.experiment.ml.svm.svm;
 
 //
 // Solver for nu-svm classification and regression

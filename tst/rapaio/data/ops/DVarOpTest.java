@@ -56,30 +56,30 @@ public class DVarOpTest {
     void varDoubleSortedTest() {
 
         VarDouble x = VarDouble.from(100, row -> row % 4 == 0 ? Double.NaN : normal.sampleNext());
-        VarDouble apply1 = x.copy().dVec().apply(v -> v + 1).dVar();
-        VarDouble apply2 = x.dVec(copy()).apply(v -> v + 1).dVar();
-        VarDouble apply3 = x.dVec(copy()).add(1).dVar();
-        VarDouble apply4 = x.dVec(copy()).add(VarDouble.fill(100, 1).dVec()).dVar();
+        VarDouble apply1 = x.copy().dv().apply(v -> v + 1).dVar();
+        VarDouble apply2 = x.dv(copy()).apply(v -> v + 1).dVar();
+        VarDouble apply3 = x.dv(copy()).add(1).dVar();
+        VarDouble apply4 = x.dv(copy()).add(VarDouble.fill(100, 1).dv()).dVar();
 
         assertTrue(apply1.deepEquals(apply2));
         assertTrue(apply1.deepEquals(apply3));
         assertTrue(apply1.deepEquals(apply4));
 
-        double sum1 = x.dVec().nansum();
-        assertEquals(sum1, x.dVec(copy()).sortValues(true).nansum(), 1e-12);
-        assertEquals(sum1, x.dVec(copy()).sortValues(false).nanmean() * 75, 1e-12);
+        double sum1 = x.dv().nansum();
+        assertEquals(sum1, x.dv(copy()).sortValues(true).nansum(), 1e-12);
+        assertEquals(sum1, x.dv(copy()).sortValues(false).nanmean() * 75, 1e-12);
         int[] rows = x.rowsComplete();
-        x.dVec().sortIndexes(rows);
-        assertEquals(sum1, x.mapRows(rows).dVec().nansum(), TOLERANCE);
+        x.dv().sortIndexes(rows);
+        assertEquals(sum1, x.mapRows(rows).dv().nansum(), TOLERANCE);
         rows = x.rowsComplete();
-        x.dVec().sortIndexes(false, rows);
-        assertEquals(sum1, x.mapRows(rows).dVec().nansum(), TOLERANCE);
+        x.dv().sortIndexes(false, rows);
+        assertEquals(sum1, x.mapRows(rows).dv().nansum(), TOLERANCE);
         rows = x.rowsAll();
-        x.dVec().sortIndexes(rows);
-        assertEquals(sum1, x.mapRows(rows).dVec().nansum(), TOLERANCE);
+        x.dv().sortIndexes(rows);
+        assertEquals(sum1, x.mapRows(rows).dv().nansum(), TOLERANCE);
         rows = x.rowsAll();
-        x.dVec().sortIndexes(rows);
-        assertEquals(sum1, x.mapRows(rows).dVec().nansum(), TOLERANCE);
+        x.dv().sortIndexes(rows);
+        assertEquals(sum1, x.mapRows(rows).dv().nansum(), TOLERANCE);
     }
 
     @Test
@@ -87,32 +87,32 @@ public class DVarOpTest {
 
         Var x = VarInt.from(100, row -> row % 4 == 0 ? VarInt.MISSING_VALUE : RandomSource.nextInt(100));
         Var apply1 = x.copy();
-        apply1.dVec().apply(v -> v + 1);
+        apply1.dv().apply(v -> v + 1);
         Var apply3 = x.copy();
-        apply3.dVec().add(1);
+        apply3.dv().add(1);
         Var apply4 = x.copy();
-        apply4.dVec().add(VarDouble.fill(100, 1).dVec());
+        apply4.dv().add(VarDouble.fill(100, 1).dv());
 
         assertTrue(apply1.deepEquals(apply3));
         assertTrue(apply1.deepEquals(apply4));
 
-        double sum1 = x.dVec().nansum();
-        assertEquals(sum1, x.dVec(copy()).sortValues(true).nansum());
-        assertEquals(sum1, x.dVec(copy()).sortValues(false).nanmean() * 75);
+        double sum1 = x.dv().nansum();
+        assertEquals(sum1, x.dv(copy()).sortValues(true).nansum());
+        assertEquals(sum1, x.dv(copy()).sortValues(false).nanmean() * 75);
 
         int[] rows = x.rowsComplete();
-        x.dVec().sortIndexes(rows);
-        assertEquals(sum1, x.mapRows(rows).dVec().nansum(), TOLERANCE);
+        x.dv().sortIndexes(rows);
+        assertEquals(sum1, x.mapRows(rows).dv().nansum(), TOLERANCE);
         rows = x.rowsComplete();
-        x.dVec().sortIndexes(false, rows);
-        assertEquals(sum1, x.mapRows(rows).dVec().nansum(), TOLERANCE);
+        x.dv().sortIndexes(false, rows);
+        assertEquals(sum1, x.mapRows(rows).dv().nansum(), TOLERANCE);
 
         rows = x.rowsAll();
-        x.dVec().sortIndexes(rows);
-        assertEquals(sum1, x.mapRows(rows).dVec().nansum(), TOLERANCE);
+        x.dv().sortIndexes(rows);
+        assertEquals(sum1, x.mapRows(rows).dv().nansum(), TOLERANCE);
         rows = x.rowsAll();
-        x.dVec().sortIndexes(false, rows);
-        assertEquals(sum1, x.mapRows(rows).dVec().nansum(), TOLERANCE);
+        x.dv().sortIndexes(false, rows);
+        assertEquals(sum1, x.mapRows(rows).dv().nansum(), TOLERANCE);
     }
 
     @Test
@@ -124,55 +124,55 @@ public class DVarOpTest {
         VarBinary x4 = generateRandomBinaryVariable(10_000, 0.9);
 
         Var p1 = VarDouble.from(x1.size(), row -> x1.getDouble(row) + x2.getDouble(row));
-        assertTrue(p1.deepEquals(x1.copy().dVec().add(x2.dVec()).dVar()));
+        assertTrue(p1.deepEquals(x1.copy().dv().add(x2.dv()).dVar()));
 
         Var p2 = VarDouble.from(x1.size(), row -> x1.getDouble(row) + x3.getDouble(row));
-        assertTrue(p2.deepEquals(x1.copy().dVec().add(x3.dVec()).dVar()));
+        assertTrue(p2.deepEquals(x1.copy().dv().add(x3.dv()).dVar()));
 
         Var p3 = VarDouble.from(x1.size(), row -> x1.getDouble(row) + Math.PI);
-        assertTrue(p3.deepEquals(x1.copy().dVec().add(Math.PI).dVar()));
+        assertTrue(p3.deepEquals(x1.copy().dv().add(Math.PI).dVar()));
 
         Var p4 = VarDouble.from(x1.size(), row -> x1.getDouble(row) + x4.getDouble(row));
-        assertTrue(p4.deepEquals(x1.copy().dVec().add(x4.dVec()).dVar()));
+        assertTrue(p4.deepEquals(x1.copy().dv().add(x4.dv()).dVar()));
 
 
         Var m1 = VarDouble.from(x1.size(), row -> x1.getDouble(row) - x2.getDouble(row));
-        assertTrue(m1.deepEquals(x1.copy().dVec().sub(x2.dVec()).dVar()));
+        assertTrue(m1.deepEquals(x1.copy().dv().sub(x2.dv()).dVar()));
 
         Var m2 = VarDouble.from(x1.size(), row -> x1.getDouble(row) - x3.getDouble(row));
-        assertTrue(m2.deepEquals(x1.copy().dVec().sub(x3.dVec()).dVar()));
+        assertTrue(m2.deepEquals(x1.copy().dv().sub(x3.dv()).dVar()));
 
         Var m3 = VarDouble.from(x1.size(), row -> x1.getDouble(row) - Math.PI);
-        assertTrue(m3.deepEquals(x1.copy().dVec().sub(Math.PI).dVar()));
+        assertTrue(m3.deepEquals(x1.copy().dv().sub(Math.PI).dVar()));
 
         Var m4 = VarDouble.from(x1.size(), row -> x1.getDouble(row) - x4.getDouble(row));
-        assertTrue(m4.deepEquals(x1.copy().dVec().sub(x4.dVec()).dVar()));
+        assertTrue(m4.deepEquals(x1.copy().dv().sub(x4.dv()).dVar()));
 
 
         Var t1 = VarDouble.from(x1.size(), row -> x1.getDouble(row) * x2.getDouble(row));
-        assertTrue(t1.deepEquals(x1.copy().dVec().mul(x2.dVec()).dVar()));
+        assertTrue(t1.deepEquals(x1.copy().dv().mul(x2.dv()).dVar()));
 
         Var t2 = VarDouble.from(x1.size(), row -> x1.getDouble(row) * x3.getDouble(row));
-        assertTrue(t2.deepEquals(x1.copy().dVec().mul(x3.dVec()).dVar()));
+        assertTrue(t2.deepEquals(x1.copy().dv().mul(x3.dv()).dVar()));
 
         Var t3 = VarDouble.from(x1.size(), row -> x1.getDouble(row) * Math.PI);
-        assertTrue(t3.deepEquals(x1.copy().dVec().mul(Math.PI).dVar()));
+        assertTrue(t3.deepEquals(x1.copy().dv().mul(Math.PI).dVar()));
 
         Var t4 = VarDouble.from(x1.size(), row -> x1.getDouble(row) * x4.getDouble(row));
-        assertTrue(t4.deepEquals(x1.copy().dVec().mul(x4.dVec()).dVar()));
+        assertTrue(t4.deepEquals(x1.copy().dv().mul(x4.dv()).dVar()));
 
 
         Var d1 = VarDouble.from(x1.size(), row -> x1.getDouble(row) / x2.getDouble(row));
-        assertTrue(d1.deepEquals(x1.copy().dVec().div(x2.dVec()).dVar()));
+        assertTrue(d1.deepEquals(x1.copy().dv().div(x2.dv()).dVar()));
 
         Var d2 = VarDouble.from(x1.size(), row -> x1.getDouble(row) / x3.getDouble(row));
-        assertTrue(d2.deepEquals(x1.copy().dVec().div(x3.dVec()).dVar()));
+        assertTrue(d2.deepEquals(x1.copy().dv().div(x3.dv()).dVar()));
 
         Var d3 = VarDouble.from(x1.size(), row -> x1.getDouble(row) / Math.PI);
-        assertTrue(d3.deepEquals(x1.copy().dVec().div(Math.PI).dVar()));
+        assertTrue(d3.deepEquals(x1.copy().dv().div(Math.PI).dVar()));
 
         Var d4 = VarDouble.from(x1.size(), row -> x1.getDouble(row) / x4.getDouble(row));
-        assertTrue(d4.deepEquals(x1.copy().dVec().div(x4.dVec()).dVar()));
+        assertTrue(d4.deepEquals(x1.copy().dv().div(x4.dv()).dVar()));
     }
 
 
@@ -191,7 +191,7 @@ public class DVarOpTest {
             return x1.getInt(row) + x2.getInt(row);
         });
         var tp1 = x1.copy();
-        tp1.dVec().add(x2.dVec());
+        tp1.dv().add(x2.dv());
         assertTrue(p1.deepEquals(tp1));
 
         Var p2 = VarInt.from(x1.size(), row -> {
@@ -201,7 +201,7 @@ public class DVarOpTest {
             return x1.getInt(row) + x3.getInt(row);
         });
         var tp2 = x1.copy();
-        tp2.dVec().add(x3.dVec());
+        tp2.dv().add(x3.dv());
         assertTrue(p2.deepEquals(tp2));
 
         Var p3 = VarInt.from(x1.size(), row -> {
@@ -211,7 +211,7 @@ public class DVarOpTest {
             return x1.getInt(row) + 17;
         });
         var tp3 = x1.copy();
-        tp3.dVec().add(17);
+        tp3.dv().add(17);
         assertTrue(p3.deepEquals(tp3));
 
         Var p4 = VarInt.from(x1.size(), row -> {
@@ -221,7 +221,7 @@ public class DVarOpTest {
             return x1.getInt(row) + x4.getInt(row);
         });
         var tp4 = x1.copy();
-        tp4.dVec().add(x4.dVec());
+        tp4.dv().add(x4.dv());
         assertTrue(p4.deepEquals(tp4));
 
         Var m1 = VarInt.from(x1.size(), row -> {
@@ -231,7 +231,7 @@ public class DVarOpTest {
             return x1.getInt(row) - x2.getInt(row);
         });
         var tm1 = x1.copy();
-        tm1.dVec().sub(x2.dVec());
+        tm1.dv().sub(x2.dv());
         assertTrue(m1.deepEquals(tm1));
 
         Var m2 = VarInt.from(x1.size(), row -> {
@@ -241,7 +241,7 @@ public class DVarOpTest {
             return x1.getInt(row) - x3.getInt(row);
         });
         var tm2 = x1.copy();
-        tm2.dVec().sub(x3.dVec());
+        tm2.dv().sub(x3.dv());
         assertTrue(m2.deepEquals(tm2));
 
         Var m3 = VarInt.from(x1.size(), row -> {
@@ -251,7 +251,7 @@ public class DVarOpTest {
             return x1.getInt(row) - 17;
         });
         var tm3 = x1.copy();
-        tm3.dVec().sub(17);
+        tm3.dv().sub(17);
         assertTrue(m3.deepEquals(tm3));
 
         Var m4 = VarInt.from(x1.size(), row -> {
@@ -261,7 +261,7 @@ public class DVarOpTest {
             return x1.getInt(row) - x4.getInt(row);
         });
         var tm4 = x1.copy();
-        tm4.dVec().sub(x4.dVec());
+        tm4.dv().sub(x4.dv());
         assertTrue(m4.deepEquals(tm4));
 
 
@@ -272,7 +272,7 @@ public class DVarOpTest {
             return x1.getInt(row) * x2.getInt(row);
         });
         var tt1 = x1.copy();
-        tt1.dVec().mul(x2.dVec());
+        tt1.dv().mul(x2.dv());
         assertTrue(t1.deepEquals(tt1));
 
         Var t2 = VarInt.from(x1.size(), row -> {
@@ -282,7 +282,7 @@ public class DVarOpTest {
             return (int) Math.rint(x1.getInt(row) * x3.getDouble(row));
         });
         var tt2 = x1.copy();
-        tt2.dVec().mul(x3.dVec());
+        tt2.dv().mul(x3.dv());
         assertTrue(t2.deepEquals(tt2));
 
         Var t3 = VarInt.from(x1.size(), row -> {
@@ -292,7 +292,7 @@ public class DVarOpTest {
             return x1.getInt(row) * 17;
         });
         var tt3 = x1.copy();
-        tt3.dVec().mul(17);
+        tt3.dv().mul(17);
         assertTrue(t3.deepEquals(tt3));
 
         Var t4 = VarInt.from(x1.size(), row -> {
@@ -302,7 +302,7 @@ public class DVarOpTest {
             return x1.getInt(row) * x4.getInt(row);
         });
         var tt4 = x1.copy();
-        tt4.dVec().mul(x4.dVec());
+        tt4.dv().mul(x4.dv());
         assertTrue(t4.deepEquals(tt4));
 
 
@@ -313,7 +313,7 @@ public class DVarOpTest {
             return (int) Math.rint(x1.getInt(row) / x2.getDouble(row));
         });
         var td1 = x1.copy();
-        td1.dVec().div(x2.dVec());
+        td1.dv().div(x2.dv());
         assertTrue(d1.deepEquals(td1));
 
         Var d2 = VarInt.from(x1.size(), row -> {
@@ -323,7 +323,7 @@ public class DVarOpTest {
             return (int) Math.rint(x1.getInt(row) / x3.getDouble(row));
         });
         var td2 = x1.copy();
-        td2.dVec().div(x3.dVec());
+        td2.dv().div(x3.dv());
         assertTrue(d2.deepEquals(td2));
 
         Var d3 = VarInt.from(x1.size(), row -> {
@@ -333,7 +333,7 @@ public class DVarOpTest {
             return (int) Math.rint(x1.getInt(row) / 17.);
         });
         var td3 = x1.copy();
-        td3.dVec().div(17);
+        td3.dv().div(17);
         assertTrue(d3.deepEquals(td3));
     }
 

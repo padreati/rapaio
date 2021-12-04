@@ -41,7 +41,7 @@ import rapaio.ml.common.ValueParam;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/17.
  * <p>
- * Implemented using as reference: "Iterative Reweighted Least Squares  - C. Sidney Burrus"
+ * Implemented using as reference: "Iterative Reweighted Least Squares  - c. Sidney Burrus"
  */
 public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
 
@@ -191,7 +191,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
     }
 
     /**
-     * Implements algorithm m0 from "Iterative Reweighted Least Squares  - C. Sidney Burrus"
+     * Implements algorithm m0 from "Iterative Reweighted Least Squares  - c. Sidney Burrus"
      */
     private static class IRLS0M extends MethodImpl {
 
@@ -245,7 +245,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
     }
 
     /**
-     * Implements algorithm m0 from "Iterative Reweighted Least Squares  - C. Sidney Burrus"
+     * Implements algorithm m0 from "Iterative Reweighted Least Squares  - c. Sidney Burrus"
      */
     private static class IRLS1M extends MethodImpl {
 

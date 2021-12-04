@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.ml.svm.libsvm;
+package rapaio.experiment.ml.svm.svm;
 
 import java.util.Random;
 
@@ -29,7 +29,7 @@ public class Svm {
     //
     // construct and solve various formulations
     //
-    public static final Random rand = new Random();
+    public static Random rand = new Random();
 
     public static void info(String s) {
         System.out.print(s);
@@ -101,7 +101,7 @@ public class Svm {
                 alpha, 1.0, 1.0, param.eps, si, param.shrinking);
         double r = si.r;
 
-        Svm.info("C = " + 1 / r + "\n");
+        Svm.info("c = " + 1 / r + "\n");
 
         for (i = 0; i < l; i++) {
             alpha[i] *= y[i] / r;
@@ -260,7 +260,7 @@ public class Svm {
     }
 
     // Platt's binary SVM Probablistic Output: an improvement from Lin et al.
-    private static void sigmoid_train(int l, double[] dec_values, double[] labels, double[] probAB) {
+    public static void sigmoid_train(int l, double[] dec_values, double[] labels, double[] probAB) {
         double A, B;
         double prior1 = 0, prior0 = 0;
         int i;
@@ -446,6 +446,7 @@ public class Svm {
 
     // Cross-validation decision values for probability estimates
     public static void svm_binary_svc_probability(svm_problem prob, svm_parameter param, double Cp, double Cn, double[] probAB) {
+        rand = new Random(42);
         int i;
         int nr_fold = 5;
         int[] perm = new int[prob.l];
@@ -718,7 +719,7 @@ public class Svm {
                 x[i] = prob.x[perm[i]];
             }
 
-            // calculate weighted C
+            // calculate weighted c
 
             double[] weighted_C = new double[nr_class];
             for (i = 0; i < nr_class; i++) {
@@ -773,6 +774,7 @@ public class Svm {
                         svm_binary_svc_probability(sub_prob, param, weighted_C[i], weighted_C[j], probAB);
                         probA[p] = probAB[0];
                         probB[p] = probAB[1];
+                        System.out.println("classes: %d,%d , prob: %f,%f\n".formatted(i, j, probAB[0], probAB[1]));
                     }
 
                     f[p] = svm_train_one(sub_prob, param, weighted_C[i], weighted_C[j]);
@@ -1170,7 +1172,7 @@ public class Svm {
             return "unknown svm type";
         }
 
-        // cache_size,eps,C,nu,p,shrinking
+        // cache_size,eps,c,nu,p,shrinking
 
         if (param.cache_size <= 0) {
             return "cache_size <= 0";
@@ -1184,7 +1186,7 @@ public class Svm {
                 svm_type == svm_parameter.EPSILON_SVR ||
                 svm_type == svm_parameter.NU_SVR) {
             if (param.C <= 0) {
-                return "C <= 0";
+                return "c <= 0";
             }
         }
 

@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.ml.svm.libsvm;
+package rapaio.experiment.ml.svm.svm;
 
 import rapaio.util.collection.TArrays;
 

@@ -80,44 +80,48 @@ public class ChiSqTest {
     void testIndependence() {
 
         ChiSqIndependence test1 = ChiSqIndependence.from(DMatrix.copy(2, 2, 38, 11, 14, 51), true);
-        assertEquals("> ChiSqIndependence\n" +
-                "\n" +
-                "Pearson's Chi-squared test with Yates' continuity correction\n" +
-                "\n" +
-                "X-squared = 33.1119728, df = 1, p-value =   8.70e-09\n" +
-                "\n" +
-                "Observed data:\n" +
-                "      C1 C2 total \n" +
-                "   R1 38 11   49  \n" +
-                "   R2 14 51   65  \n" +
-                "total 52 62  114  \n" +
-                "\n" +
-                "Expected data:\n" +
-                "              C1         C2 total \n" +
-                "   R1 22.3508772 26.6491228   49  \n" +
-                "   R2 29.6491228 35.3508772   65  \n" +
-                "total 52         62          114  \n" +
-                "\n", test1.toSummary());
+        assertEquals("""
+                > ChiSqIndependence
+
+                Pearson's Chi-squared test with Yates' continuity correction
+
+                X-squared = 33.1119728, df = 1, p-value =   8.70e-09
+
+                Observed data:
+                      C1 C2 total\s
+                   R1 38 11   49 \s
+                   R2 14 51   65 \s
+                total 52 62  114 \s
+
+                Expected data:
+                              C1         C2 total\s
+                   R1 22.3508772 26.6491228   49 \s
+                   R2 29.6491228 35.3508772   65 \s
+                total 52         62          114 \s
+
+                """, test1.toSummary());
 
         ChiSqIndependence test2 = ChiSqIndependence.from(DMatrix.copy(2, 2, 38, 11, 14, 51), false);
-        assertEquals("> ChiSqIndependence\n" +
-                "\n" +
-                "Pearson's Chi-squared test\n" +
-                "\n" +
-                "X-squared = 35.3337785, df = 1, p-value =   2.78e-09\n" +
-                "\n" +
-                "Observed data:\n" +
-                "      C1 C2 total \n" +
-                "   R1 38 11   49  \n" +
-                "   R2 14 51   65  \n" +
-                "total 52 62  114  \n" +
-                "\n" +
-                "Expected data:\n" +
-                "              C1         C2 total \n" +
-                "   R1 22.3508772 26.6491228   49  \n" +
-                "   R2 29.6491228 35.3508772   65  \n" +
-                "total 52         62          114  \n" +
-                "\n", test2.toSummary());
+        assertEquals("""
+                > ChiSqIndependence
+
+                Pearson's Chi-squared test
+
+                X-squared = 35.3337785, df = 1, p-value =   2.78e-09
+
+                Observed data:
+                      C1 C2 total\s
+                   R1 38 11   49 \s
+                   R2 14 51   65 \s
+                total 52 62  114 \s
+
+                Expected data:
+                              C1         C2 total\s
+                   R1 22.3508772 26.6491228   49 \s
+                   R2 29.6491228 35.3508772   65 \s
+                total 52         62          114 \s
+
+                """, test2.toSummary());
     }
 
     @Test

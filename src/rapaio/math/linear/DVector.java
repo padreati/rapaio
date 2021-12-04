@@ -148,7 +148,7 @@ public interface DVector extends Serializable, Printable {
      * @return new dense vector with values takes from variable v
      */
     static DVector from(Var v, AlgebraOption<?>... opts) {
-        return v.dVec(opts);
+        return v.dv(opts);
     }
 
     /**

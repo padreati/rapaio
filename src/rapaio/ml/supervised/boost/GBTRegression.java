@@ -155,7 +155,7 @@ public class GBTRegression extends RegressionModel<GBTRegression, RegressionResu
 
             // add next prediction to the predict values
             var pred = tree.predict(df, false).firstPrediction();
-            VarDouble nextFit = fitValues.dVec(copy()).add(pred.dVec(copy()).mul(shrinkage.get())).dVar();
+            VarDouble nextFit = fitValues.dv(copy()).add(pred.dv(copy()).mul(shrinkage.get())).dVar();
 
             double initScore = loss.get().errorScore(y, fitValues);
             double nextScore = loss.get().errorScore(y, nextFit);
@@ -177,12 +177,12 @@ public class GBTRegression extends RegressionModel<GBTRegression, RegressionResu
     @Override
     protected RegressionResult corePredict(final Frame df, final boolean withResiduals, double[] quantiles) {
         RegressionResult result = RegressionResult.build(this, df, withResiduals, quantiles);
-        DVector prediction = result.firstPrediction().dVec();
+        DVector prediction = result.firstPrediction().dv();
 
         prediction.apply(v -> 0);
-        prediction.add(initModel.get().predict(df, false).firstPrediction().dVec());
+        prediction.add(initModel.get().predict(df, false).firstPrediction().dv());
         for (var tree : trees) {
-            prediction.add(tree.predict(df, false).firstPrediction().dVec(copy()).mul(shrinkage.get()));
+            prediction.add(tree.predict(df, false).firstPrediction().dv(copy()).mul(shrinkage.get()));
         }
         result.buildComplete();
         return result;

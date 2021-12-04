@@ -65,7 +65,7 @@ import java.io.Serial;
  * 	alg     limited memory BFGS method
  * 	by      J. Nocedal
  * 	contact nocedal@eecs.nwu.edu
- * 	ref     D. C. Liu and J. Nocedal, ``On the limited memory BFGS method for
+ * 	ref     D. c. Liu and J. Nocedal, ``On the limited memory BFGS method for
  * 	,       large scale optimization methods'' Mathematical Programming 45
  * 	,       (1989), pp. 503-528.
  * 	,       (Postscript file of this paper is available via anonymous ftp

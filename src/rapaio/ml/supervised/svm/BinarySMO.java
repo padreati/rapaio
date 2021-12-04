@@ -142,10 +142,10 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, Clas
         double[] fCache; // The current set of errors for all non-bound examples.
 
         /* The five different sets used by the algorithm. */
-        BitSet I0; // i: 0 < alpha[i] < C
+        BitSet I0; // i: 0 < alpha[i] < c
         BitSet I1; // i: classes[i] = 1, alpha[i] = 0
-        BitSet I2; // i: classes[i] = -1, alpha[i] =C
-        BitSet I3; // i: classes[i] = 1, alpha[i] = C
+        BitSet I2; // i: classes[i] = -1, alpha[i] =c
+        BitSet I3; // i: classes[i] = 1, alpha[i] = c
         BitSet I4; // i: classes[i] = -1, alpha[i] = 0
     }
 

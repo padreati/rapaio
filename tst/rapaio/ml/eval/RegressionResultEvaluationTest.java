@@ -71,10 +71,10 @@ public class RegressionResultEvaluationTest {
                 .targetName.set(targetName);
 
         Var target = df.rvar(targetName);
-        double mean = target.dVec().nanmean();
+        double mean = target.dv().nanmean();
         double count = target.size();
 
-        double expectedScore = Math.sqrt(target.dVec(copy()).sub(mean).apply(x -> x * x).nansum() / count);
+        double expectedScore = Math.sqrt(target.dv(copy()).sub(mean).apply(x -> x * x).nansum() / count);
 
         RegressionEvaluationResult result = eval.run();
         assertEquals(2, result.getTrainScores().rowCount());

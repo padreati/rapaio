@@ -49,7 +49,7 @@ public class WeightedOnlineStatTest {
         VarDouble w = VarDouble.from(x.size(), row -> unif.sampleNext());
 
         // normalize w
-        w.dVec().mul(1.0 / w.dVec().nansum());
+        w.dv().mul(1.0 / w.dv().nansum());
 
         WeightedOnlineStat left = WeightedOnlineStat.empty();
         for (int i = 0; i < x.size(); i++) {
@@ -74,7 +74,7 @@ public class WeightedOnlineStatTest {
         VarDouble w = VarDouble.fill(100, 1);
 
         VarDouble wnorm = w.copy();
-        wnorm.dVec().mul(1.0 / wnorm.dVec().nansum());
+        wnorm.dv().mul(1.0 / wnorm.dv().nansum());
 
         WeightedOnlineStat wstat = WeightedOnlineStat.empty();
         WeightedOnlineStat wnstat = WeightedOnlineStat.empty();

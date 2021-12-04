@@ -21,9 +21,7 @@
 
 package rapaio.experiment.ml.svm.libsvm;
 
-public class svm_problem implements java.io.Serializable
+public interface svm_print_interface
 {
-    public int l;
-    public double[] y;
-    public svm_node[][] x;
+    public void print(String s);
 }

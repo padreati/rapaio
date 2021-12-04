@@ -42,6 +42,10 @@ public interface ColorGradient {
         return new HueGradient(0, 256, p);
     }
 
+    static ColorGradient newMonoHueGradient(float hue, float minSat, float maxSat, float brightness, double... p) {
+        return new MonoHueGradient(hue, minSat, maxSat, brightness, p);
+    }
+
     static ColorGradient newHueGradient(int from, int to, double[] p) {
         return new HueGradient(from, to, p);
     }
@@ -86,6 +90,24 @@ public interface ColorGradient {
                     colors[i] = new Color(Color.HSBtoRGB(
                             (float) ((from - p[i] * Math.abs(to - from)) / 360.0), 1f, 1f));
                 }
+            }
+        }
+
+        @Override
+        public Color[] getColors() {
+            return colors;
+        }
+    }
+
+    class MonoHueGradient implements ColorGradient {
+
+        private final Color[] colors;
+
+        public MonoHueGradient(float hue, float minSat, float maxSat, float brightness, double... p) {
+            colors = new Color[p.length];
+            for (int i = 0; i < p.length; i++) {
+                float sat = (float) (minSat + (maxSat - minSat) * p[i]);
+                colors[i] = new Color(Color.HSBtoRGB(hue, sat, brightness));
             }
         }
 

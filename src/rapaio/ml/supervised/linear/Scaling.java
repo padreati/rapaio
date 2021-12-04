@@ -44,7 +44,7 @@ public enum Scaling {
     NORM {
         @Override
         public double compute(Var x) {
-            return Math.sqrt(x.dVec(With.copy()).apply(a -> a * a).nansum());
+            return Math.sqrt(x.dv(With.copy()).apply(a -> a * a).nansum());
         }
     };
 

@@ -352,7 +352,7 @@ public interface Var extends Serializable, Printable {
      *
      * @return new wrapping DVector
      */
-    DVector dVec(AlgebraOption<?>... opts);
+    DVector dv(AlgebraOption<?>... opts);
 
     /**
      * Builds a new empty instance of given size

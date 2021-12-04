@@ -61,10 +61,10 @@ import rapaio.printer.Format;
  * <A HREF="http://wwwinfo.cern.ch/asd/lhc++/clhep/manual/RefGuide/Random/RandGamma.html">RandGamma</A>
  * used in
  * <A HREF="http://wwwinfo.cern.ch/asd/lhc++/clhep">CLHEP 1.4.0</A>
- * (C++). CLHEP's implementation, in turn, is based on <tt>gds.c</tt>
+ * (c++). CLHEP's implementation, in turn, is based on <tt>gds.c</tt>
  * from the
- * <A HREF="http://www.cis.tu-graz.ac.at/stat/stadl/random.html">C-RAND / WIN-RAND</A>
- * library. C-RAND's implementation, in turn, is based upon
+ * <A HREF="http://www.cis.tu-graz.ac.at/stat/stadl/random.html">c-RAND / WIN-RAND</A>
+ * library. c-RAND's implementation, in turn, is based upon
  * <p>
  * J.H. Ahrens, U. Dieter (1974): Computer methods for sampling from gamma,
  * beta, Poisson and binomial distributions, Computing 12, 223-246.
