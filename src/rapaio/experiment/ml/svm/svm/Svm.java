@@ -22,19 +22,15 @@
 package rapaio.experiment.ml.svm.svm;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 import rapaio.math.linear.DVector;
 
 public class Svm {
-    //
-    // construct and solve various formulations
-    //
-    public static Random rand = new Random();
 
-    public static void info(String s) {
-        System.out.print(s);
-        System.out.flush();
-    }
+    private static final Logger LOGGER = Logger.getLogger(Svm.class.getName());
+
+    public static Random rand = new Random();
 
     private static void solve_c_svc(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si, double Cp, double Cn) {
         int l = prob.l;
@@ -48,13 +44,13 @@ public class Svm {
         }
 
         Solver s = new Solver();
-        s.Solve(l, new SvcKernelMatrix(prob, param, y), minus_ones, y,
+        s.solve(l, new SvcKernelMatrix(prob.l, prob.x, param.kernel, param.cache_size, y), minus_ones, y,
                 alpha, Cp, Cn, param.eps, si, param.shrinking);
 
         double sumAlpha = DVector.wrap(alpha).sum();
 
         if (Cp == Cn) {
-            Svm.info("nu = " + sumAlpha / (Cp * prob.l) + "\n");
+            LOGGER.info("nu = " + sumAlpha / (Cp * prob.l) + "\n");
         }
 
         for (int i = 0; i < l; i++) {
@@ -96,12 +92,12 @@ public class Svm {
             zeros[i] = 0;
         }
 
-        Solver_NU s = new Solver_NU();
-        s.Solve(l, new SvcKernelMatrix(prob, param, y), zeros, y,
+        SolverNU s = new SolverNU();
+        s.solve(l, new SvcKernelMatrix(prob.l, prob.x, param.kernel, param.cache_size, y), zeros, y,
                 alpha, 1.0, 1.0, param.eps, si, param.shrinking);
         double r = si.r;
 
-        Svm.info("c = " + 1 / r + "\n");
+        LOGGER.info("c = " + 1 / r + "\n");
 
         for (i = 0; i < l; i++) {
             alpha[i] *= y[i] / r;
@@ -137,7 +133,7 @@ public class Svm {
         }
 
         Solver s = new Solver();
-        s.Solve(l, new OneClassKernelMatrix(prob, param), zeros, ones,
+        s.solve(l, new OneClassKernelMatrix(prob, param), zeros, ones,
                 alpha, 1.0, 1.0, param.eps, si, param.shrinking);
     }
 
@@ -159,7 +155,7 @@ public class Svm {
         }
 
         Solver s = new Solver();
-        s.Solve(2 * l, new SvrKernelMatrix(prob, param), linear_term, y,
+        s.solve(2 * l, new SvrKernelMatrix(prob.l, prob.x, param.kernel, param.cache_size), linear_term, y,
                 alpha2, param.C, param.C, param.eps, si, param.shrinking);
 
         double sum_alpha = 0;
@@ -167,7 +163,7 @@ public class Svm {
             alpha[i] = alpha2[i] - alpha2[i + l];
             sum_alpha += Math.abs(alpha[i]);
         }
-        Svm.info("nu = " + sum_alpha / (param.C * l) + "\n");
+        LOGGER.info("nu = " + sum_alpha / (param.C * l) + "\n");
     }
 
     private static void solve_nu_svr(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si) {
@@ -190,11 +186,11 @@ public class Svm {
             y[i + l] = -1;
         }
 
-        Solver_NU s = new Solver_NU();
-        s.Solve(2 * l, new SvrKernelMatrix(prob, param), linear_term, y,
+        SolverNU s = new SolverNU();
+        s.solve(2 * l, new SvrKernelMatrix(prob.l, prob.x, param.kernel, param.cache_size), linear_term, y,
                 alpha2, C, C, param.eps, si, param.shrinking);
 
-        Svm.info("epsilon = " + (-si.r) + "\n");
+        LOGGER.info("epsilon = " + (-si.r) + "\n");
 
         for (i = 0; i < l; i++) {
             alpha[i] = alpha2[i] - alpha2[i + l];
@@ -204,12 +200,12 @@ public class Svm {
     //
     // decision_function
     //
-    static class decision_function {
+    static class Decision {
         double[] alpha;
         double rho;
     }
 
-    public static decision_function svm_train_one(svm_problem prob, svm_parameter param, double Cp, double Cn) {
+    public static Decision svm_train_one(svm_problem prob, svm_parameter param, double Cp, double Cn) {
         double[] alpha = new double[prob.l];
         Solver.SolutionInfo si = new Solver.SolutionInfo();
         switch (param.svm_type) {
@@ -230,7 +226,7 @@ public class Svm {
                 break;
         }
 
-        Svm.info("obj = " + si.obj + ", rho = " + si.rho + "\n");
+        LOGGER.info("obj = " + si.obj + ", rho = " + si.rho + "\n");
 
         // output SVs
 
@@ -251,9 +247,9 @@ public class Svm {
             }
         }
 
-        Svm.info("nSV = " + nSV + ", nBSV = " + nBSV + "\n");
+        LOGGER.info("nSV = " + nSV + ", nBSV = " + nBSV + "\n");
 
-        decision_function f = new decision_function();
+        Decision f = new Decision();
         f.alpha = alpha;
         f.rho = si.rho;
         return f;
@@ -366,13 +362,13 @@ public class Svm {
             }
 
             if (stepsize < min_step) {
-                Svm.info("Line search fails in two-class probability estimates\n");
+                LOGGER.info("Line search fails in two-class probability estimates\n");
                 break;
             }
         }
 
         if (iter >= max_iter) {
-            Svm.info("Reaching maximal iterations in two-class probability estimates\n");
+            LOGGER.info("Reaching maximal iterations in two-class probability estimates\n");
         }
         probAB[0] = A;
         probAB[1] = B;
@@ -440,7 +436,7 @@ public class Svm {
             }
         }
         if (iter >= max_iter) {
-            Svm.info("Exceeds max_iter in multiclass_prob\n");
+            LOGGER.info("Exceeds max_iter in multiclass_prob\n");
         }
     }
 
@@ -556,7 +552,7 @@ public class Svm {
             }
         }
         mae /= (prob.l - count);
-        Svm.info("Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma="
+        LOGGER.info("Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma="
                 + mae + "\n");
         return mae;
     }
@@ -669,7 +665,7 @@ public class Svm {
                 model.probA[0] = svm_svr_probability(prob, param);
             }
 
-            decision_function f = svm_train_one(prob, param, 0, 0);
+            Decision f = svm_train_one(prob, param, 0, 0);
             model.rho = new double[1];
             model.rho[0] = f.rho;
 
@@ -710,7 +706,7 @@ public class Svm {
             int[] count = tmp_count[0];
 
             if (nr_class == 1) {
-                Svm.info("WARNING: training data in only one class. See README for details.\n");
+                LOGGER.info("WARNING: training data in only one class. See README for details.\n");
             }
 
             DVector[] x = new DVector[l];
@@ -742,7 +738,7 @@ public class Svm {
             // train k*(k-1)/2 models
 
             boolean[] nonzero = new boolean[l];
-            decision_function[] f = new decision_function[nr_class * (nr_class - 1) / 2];
+            Decision[] f = new Decision[nr_class * (nr_class - 1) / 2];
 
             double[] probA = null, probB = null;
             if (param.probability == 1) {
@@ -774,7 +770,6 @@ public class Svm {
                         svm_binary_svc_probability(sub_prob, param, weighted_C[i], weighted_C[j], probAB);
                         probA[p] = probAB[0];
                         probB[p] = probAB[1];
-                        System.out.println("classes: %d,%d , prob: %f,%f\n".formatted(i, j, probAB[0], probAB[1]));
                     }
 
                     f[p] = svm_train_one(sub_prob, param, weighted_C[i], weighted_C[j]);
@@ -833,7 +828,7 @@ public class Svm {
                 nz_count[i] = nSV;
             }
 
-            Svm.info("Total nSV = " + total_sv + "\n");
+            LOGGER.info("Total nSV = " + total_sv + "\n");
 
             model.l = total_sv;
             model.SV = new DVector[total_sv];
@@ -1173,51 +1168,6 @@ public class Svm {
         }
 
         // cache_size,eps,c,nu,p,shrinking
-
-        if (param.cache_size <= 0) {
-            return "cache_size <= 0";
-        }
-
-        if (param.eps <= 0) {
-            return "eps <= 0";
-        }
-
-        if (svm_type == svm_parameter.C_SVC ||
-                svm_type == svm_parameter.EPSILON_SVR ||
-                svm_type == svm_parameter.NU_SVR) {
-            if (param.C <= 0) {
-                return "c <= 0";
-            }
-        }
-
-        if (svm_type == svm_parameter.NU_SVC ||
-                svm_type == svm_parameter.ONE_CLASS ||
-                svm_type == svm_parameter.NU_SVR) {
-            if (param.nu <= 0 || param.nu > 1) {
-                return "nu <= 0 or nu > 1";
-            }
-        }
-
-        if (svm_type == svm_parameter.EPSILON_SVR) {
-            if (param.p < 0) {
-                return "p < 0";
-            }
-        }
-
-        if (param.shrinking != 0 &&
-                param.shrinking != 1) {
-            return "shrinking != 0 and shrinking != 1";
-        }
-
-        if (param.probability != 0 &&
-                param.probability != 1) {
-            return "probability != 0 and probability != 1";
-        }
-
-        if (param.probability == 1 &&
-                svm_type == svm_parameter.ONE_CLASS) {
-            return "one-class SVM probability output not supported yet";
-        }
 
         // check whether nu-svc is feasible
 

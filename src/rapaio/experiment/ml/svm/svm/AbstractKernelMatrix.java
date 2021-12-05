@@ -21,6 +21,8 @@
 
 package rapaio.experiment.ml.svm.svm;
 
+import java.util.Arrays;
+
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
@@ -33,16 +35,16 @@ public abstract class AbstractKernelMatrix {
     // svm_parameter
     private final Kernel kernel;
 
-    abstract float[] get_Q(int column, int len);
+    abstract double[] getQD();
 
-    abstract double[] get_QD();
-
-    void swap_index(int i, int j) {
+    void swapIndex(int i, int j) {
         TArrays.swap(x, i, j);
         if (x_square != null) {
             TArrays.swap(x_square, i, j);
         }
     }
+
+    abstract float[] getQ(int column, int len);
 
     private static double powi(double base, int times) {
         double tmp = base, ret = 1.0;
@@ -60,8 +62,8 @@ public abstract class AbstractKernelMatrix {
         return kernel.compute(x[i], x[j]);
     }
 
-    AbstractKernelMatrix(int l, DVector[] x_, svm_parameter param) {
-        this.kernel = param.kernel;
+    AbstractKernelMatrix(int l, DVector[] x_, Kernel kernel) {
+        this.kernel = kernel;
 
         x = x_.clone();
 

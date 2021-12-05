@@ -21,47 +21,50 @@
 
 package rapaio.experiment.ml.svm.svm;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Arrays;
 
+import rapaio.math.linear.DVector;
+import rapaio.ml.common.kernel.Kernel;
+import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
 
-//
-// Q matrices for various formulations
-//
-public class SvcKernelMatrix extends AbstractKernelMatrix {
+/**
+ * Q matrix for C formulation.
+ */
+class SvcKernelMatrix extends AbstractKernelMatrix {
     private final byte[] y;
     private final Cache cache;
-    private final double[] QD;
+    private final double[] qd;
 
-    public SvcKernelMatrix(svm_problem prob, svm_parameter param, byte[] y_) {
-        super(prob.l, prob.x, param);
-        y = (byte[]) y_.clone();
-        cache = new Cache(prob.l, (long) (param.cache_size * (1 << 20)));
-        QD = new double[prob.l];
-        for (int i = 0; i < prob.l; i++) {
-            QD[i] = kernel_function(i, i);
+    public SvcKernelMatrix(int l, DVector[] xs, Kernel kernel, long cacheSize, byte[] y) {
+        super(l, xs, kernel);
+        this.y = Arrays.copyOf(y, y.length);
+        this.cache = new Cache(l, cacheSize * (1 << 20));
+        this.qd = new double[l];
+        for (int i = 0; i < l; i++) {
+            this.qd[i] = kernel_function(i, i);
         }
     }
 
-    float[] get_Q(int i, int len) {
-        AtomicReference<float[]> data = new AtomicReference<>();
-        int start, j;
-        if ((start = cache.getData(i, data, len)) < len) {
-            for (j = start; j < len; j++) {
+    float[] getQ(int i, int len) {
+        Reference<float[]> data = new Reference<>();
+        int start = cache.getData(i, data, len);
+        if (start < len) {
+            for (int j = start; j < len; j++) {
                 data.get()[j] = (float) (y[i] * y[j] * kernel_function(i, j));
             }
         }
         return data.get();
     }
 
-    double[] get_QD() {
-        return QD;
+    double[] getQD() {
+        return qd;
     }
 
-    void swap_index(int i, int j) {
-        cache.swap_index(i, j);
-        super.swap_index(i, j);
+    void swapIndex(int i, int j) {
+        cache.swapIndex(i, j);
+        super.swapIndex(i, j);
         TArrays.swap(y, i, j);
-        TArrays.swap(QD, i, j);
+        TArrays.swap(qd, i, j);
     }
 }

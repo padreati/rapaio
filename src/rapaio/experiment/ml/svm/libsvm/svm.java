@@ -2110,7 +2110,6 @@ public class svm {
                         svm_binary_svc_probability(sub_prob, param, weighted_C[i], weighted_C[j], probAB);
                         probA[p] = probAB[0];
                         probB[p] = probAB[1];
-                        System.out.println("classes: %d,%d , prob: %f,%f\n".formatted(i, j, probAB[0], probAB[1]));
                     }
 
                     f[p] = svm_train_one(sub_prob, param, weighted_C[i], weighted_C[j]);

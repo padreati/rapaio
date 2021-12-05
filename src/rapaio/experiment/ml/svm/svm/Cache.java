@@ -21,15 +21,10 @@
 
 package rapaio.experiment.ml.svm.svm;
 
-//
-// Kernel Cache
-//
-// l is the number of total data items
-// size is the cache size limit in bytes
-//
-
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicReference;
+
+import rapaio.util.Reference;
+import rapaio.util.collection.TArrays;
 
 /**
  * Kernel cache.
@@ -46,16 +41,12 @@ public class Cache {
     private long size;
 
     private static final class Entry {
-        Entry prev;
-        Entry next;
-        float[] data;
+        private Entry prev;
+        private Entry next;
+        private float[] data;
 
         public int len() {
             return data == null ? 0 : data.length;
-        }
-
-        public boolean nonEmpty() {
-            return data != null;
         }
 
         public boolean isEmpty() {
@@ -64,7 +55,7 @@ public class Cache {
     }
 
     private final Entry[] entries;
-    private Entry lruEntry;
+    private final Entry lruEntry;
 
     Cache(int l, long size) {
         this.l = l;
@@ -97,10 +88,12 @@ public class Cache {
         h.next.prev = h;
     }
 
-    // request data [0,len)
-    // return some position p where [p,len) need to be filled
-    // (p >= len if nothing needs to be filled)
-    public int getData(int index, AtomicReference<float[]> data, int len) {
+    /**
+     * Request data as a vector of length len. If the cached vector is not completely cached it returns
+     * the position until it is computed, starting from 0. The other positions will be filled by
+     * the caller and the values will remain in cache since data is passed as reference.
+     */
+    public int getData(int index, Reference<float[]> data, int len) {
         Entry h = entries[index];
 
         lruUnlink(h);
@@ -126,12 +119,12 @@ public class Cache {
         return oldLen;
     }
 
-    public void swap_index(int i, int j) {
+    void swapIndex(int i, int j) {
         if (i == j) {
             return;
         }
         if (i > j) {
-            swap_index(j, i);
+            swapIndex(j, i);
             return;
         }
 
@@ -148,9 +141,7 @@ public class Cache {
         for (Entry h = lruEntry.next; h != lruEntry; h = h.next) {
             if (h.len() > i) {
                 if (h.len() > j) {
-                    float tmp = h.data[i];
-                    h.data[i] = h.data[j];
-                    h.data[j] = tmp;
+                    TArrays.swap(h.data, i, j);
                 } else {
                     // give up
                     lruUnlink(h);

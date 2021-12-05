@@ -36,33 +36,6 @@ import rapaio.ml.model.ClassifierResult;
 
 public class IrisTest {
 
-    /*
-    "-s svm_type : set type of SVM (default 0)\n"
-            + "	0 -- C-SVC		(multi-class classification)\n"
-            + "	1 -- nu-SVC		(multi-class classification)\n"
-            + "	2 -- one-class SVM\n"
-            + "	3 -- epsilon-SVR	(regression)\n"
-            + "	4 -- nu-SVR		(regression)\n"
-            + "-t kernel_type : set type of kernel function (default 2)\n"
-            + "	0 -- linear: u'*v\n"
-            + "	1 -- polynomial: (gamma*u'*v + coef0)^degree\n"
-            + "	2 -- radial basis function: exp(-gamma*|u-v|^2)\n"
-            + "	3 -- sigmoid: tanh(gamma*u'*v + coef0)\n"
-            + "	4 -- precomputed kernel (kernel values in training_set_file)\n"
-            + "-d degree : set degree in kernel function (default 3)\n"
-            + "-g gamma : set gamma in kernel function (default 1/num_features)\n"
-            + "-r coef0 : set coef0 in kernel function (default 0)\n"
-            + "-c cost : set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1)\n"
-            + "-n nu : set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5)\n"
-            + "-p epsilon : set the epsilon in loss function of epsilon-SVR (default 0.1)\n"
-            + "-m cachesize : set cache memory size in MB (default 100)\n"
-            + "-e epsilon : set tolerance of termination criterion (default 0.001)\n"
-            + "-h shrinking : whether to use the shrinking heuristics, 0 or 1 (default 1)\n"
-            + "-b probability_estimates : whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)\n"
-            + "-wi weight : set the parameter C of class i to weight*C, for C-SVC (default 1)\n"
-            + "-v n : n-fold cross validation mode\n"
-            + "-q : quiet mode (no outputs)\n"
-     */
     public static void main(String[] args) throws IOException {
         Frame iris = Datasets.loadIrisDataset();
 
@@ -72,15 +45,18 @@ public class IrisTest {
         for (int i = 0; i < xs.rowCount(); i++) {
             ys.set(i, target.getInt(i) - 1);
         }
+
+        // classification, probability
+
+        // libsvm
+
         svm_train t = new svm_train();
         boolean prob = true;
         String[] argv = new String[] {"-s", "0", "-t", "2", "-g", "0.7", "-c", "10", "-b", prob ? "1" : "0"};
         svm_model model = t.run(xs, ys, argv);
-
-
         svm_predict.Prediction pred = svm_predict.predict(model, xs, prob ? 1 : 0);
 
-        System.out.println(pred);
+        // rapaio
 
         SVMClassifier c = new SVMClassifier()
                 .type.set(SVMClassifier.SvmType.C_SVC)
@@ -89,12 +65,14 @@ public class IrisTest {
                 .kernel.set(new RBFKernel(0.7));
 
         ClassifierResult cpred = c.fit(iris, "class").predict(iris);
-        DMatrix cdensity = DMatrix.copy(cpred.firstDensity());
-
-        pred.density().printContent();
-        cdensity = cdensity.removeCols(new int[]{0});
-        cdensity.printContent();
+        DMatrix cdensity = DMatrix.copy(cpred.firstDensity()).removeCols(new int[] {0});
 
         System.out.println("Densities are the same: " + pred.density().deepEquals(cdensity, 1e-12));
+
+        if (!pred.density().deepEquals(cdensity, 1e-12)) {
+            pred.density().printContent();
+            cdensity.printContent();
+        }
+
     }
 }

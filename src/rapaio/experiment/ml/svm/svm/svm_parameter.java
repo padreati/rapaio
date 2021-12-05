@@ -36,7 +36,7 @@ public class svm_parameter implements Cloneable, java.io.Serializable {
     public Kernel kernel;
 
     // these are for training only
-    public double cache_size; // in MB
+    public long cache_size; // in MB
     public double eps;    // stopping criteria
     public double C;    // for C_SVC, EPSILON_SVR and NU_SVR
     public int nr_weight;        // for C_SVC

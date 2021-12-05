@@ -21,6 +21,8 @@
 
 package rapaio.experiment.ml.svm.svm;
 
+import java.util.logging.Logger;
+
 import rapaio.util.collection.TArrays;
 
 /**
@@ -43,6 +45,8 @@ import rapaio.util.collection.TArrays;
  * solution will be put in \alpha, objective value will be put in obj
  */
 public class Solver {
+    private static final Logger LOGGER = Logger.getLogger(Solver.class.getName());
+
     int active_size;
     byte[] y;
     double[] G;        // gradient of objective function
@@ -100,7 +104,7 @@ public class Solver {
     }
 
     void swap_index(int i, int j) {
-        Q.swap_index(i, j);
+        Q.swapIndex(i, j);
         TArrays.swap(y, i, j);
         TArrays.swap(G, i, j);
         TArrays.swap(alpha_status, i, j);
@@ -131,12 +135,12 @@ public class Solver {
         }
 
         if (2 * nr_free < active_size) {
-            Svm.info("\nWARNING: using -h 0 may be faster\n");
+            LOGGER.info("\nWARNING: using -h 0 may be faster\n");
         }
 
         if (nr_free * l > 2 * active_size * (l - active_size)) {
             for (i = active_size; i < l; i++) {
-                float[] Q_i = Q.get_Q(i, active_size);
+                float[] Q_i = Q.getQ(i, active_size);
                 for (j = 0; j < active_size; j++) {
                     if (is_free(j)) {
                         G[i] += alpha[j] * Q_i[j];
@@ -146,7 +150,7 @@ public class Solver {
         } else {
             for (i = 0; i < active_size; i++) {
                 if (is_free(i)) {
-                    float[] Q_i = Q.get_Q(i, l);
+                    float[] Q_i = Q.getQ(i, l);
                     double alpha_i = alpha[i];
                     for (j = active_size; j < l; j++) {
                         G[j] += alpha_i * Q_i[j];
@@ -180,7 +184,7 @@ public class Solver {
         }
         for (int i = 0; i < trainingSize; i++) {
             if (!is_lower_bound(i)) {
-                float[] Q_i = Q.get_Q(i, trainingSize);
+                float[] Q_i = Q.getQ(i, trainingSize);
                 double alpha_i = alpha[i];
                 int j;
                 for (j = 0; j < trainingSize; j++) {
@@ -198,11 +202,11 @@ public class Solver {
     record WorkingSet(int i, int j) {
     }
 
-    public void Solve(int trainingSize, AbstractKernelMatrix Q, double[] p_, byte[] y_,
+    public void solve(int trainingSize, AbstractKernelMatrix Q, double[] p_, byte[] y_,
             double[] alpha_, double Cp, double Cn, double eps, SolutionInfo si, int shrinking) {
         this.l = trainingSize;
         this.Q = Q;
-        QD = Q.get_QD();
+        QD = Q.getQD();
         p = p_.clone();
         y = y_.clone();
         alpha = alpha_.clone();
@@ -234,7 +238,7 @@ public class Solver {
                 if (shrinking != 0) {
                     do_shrinking();
                 }
-                Svm.info(".");
+                LOGGER.info(".");
             }
 
             WorkingSet ws = select_working_set();
@@ -243,7 +247,7 @@ public class Solver {
                 reconstruct_gradient();
                 // reset active set size and check
                 active_size = trainingSize;
-                Svm.info("*");
+                LOGGER.info("*");
                 ws = select_working_set();
                 if (ws == null) {
                     break;
@@ -259,8 +263,8 @@ public class Solver {
 
             // update alpha[i] and alpha[j], handle bounds carefully
 
-            float[] Q_i = Q.get_Q(i, active_size);
-            float[] Q_j = Q.get_Q(j, active_size);
+            float[] Q_i = Q.getQ(i, active_size);
+            float[] Q_j = Q.getQ(j, active_size);
 
             double C_i = get_C(i);
             double C_j = get_C(j);
@@ -345,39 +349,36 @@ public class Solver {
 
             // update alpha_status and G_bar
 
-            {
-                boolean ui = is_upper_bound(i);
-                boolean uj = is_upper_bound(j);
-                update_alpha_status(i);
-                update_alpha_status(j);
-                int k;
-                if (ui != is_upper_bound(i)) {
-                    Q_i = Q.get_Q(i, trainingSize);
-                    if (ui) {
-                        for (k = 0; k < trainingSize; k++) {
-                            G_bar[k] -= C_i * Q_i[k];
-                        }
-                    } else {
-                        for (k = 0; k < trainingSize; k++) {
-                            G_bar[k] += C_i * Q_i[k];
-                        }
+            boolean ui = is_upper_bound(i);
+            boolean uj = is_upper_bound(j);
+            update_alpha_status(i);
+            update_alpha_status(j);
+            int k;
+            if (ui != is_upper_bound(i)) {
+                Q_i = Q.getQ(i, trainingSize);
+                if (ui) {
+                    for (k = 0; k < trainingSize; k++) {
+                        G_bar[k] -= C_i * Q_i[k];
                     }
-                }
-
-                if (uj != is_upper_bound(j)) {
-                    Q_j = Q.get_Q(j, trainingSize);
-                    if (uj) {
-                        for (k = 0; k < trainingSize; k++) {
-                            G_bar[k] -= C_j * Q_j[k];
-                        }
-                    } else {
-                        for (k = 0; k < trainingSize; k++) {
-                            G_bar[k] += C_j * Q_j[k];
-                        }
+                } else {
+                    for (k = 0; k < trainingSize; k++) {
+                        G_bar[k] += C_i * Q_i[k];
                     }
                 }
             }
 
+            if (uj != is_upper_bound(j)) {
+                Q_j = Q.getQ(j, trainingSize);
+                if (uj) {
+                    for (k = 0; k < trainingSize; k++) {
+                        G_bar[k] -= C_j * Q_j[k];
+                    }
+                } else {
+                    for (k = 0; k < trainingSize; k++) {
+                        G_bar[k] += C_j * Q_j[k];
+                    }
+                }
+            }
         }
 
         if (iter >= max_iter) {
@@ -385,7 +386,7 @@ public class Solver {
                 // reconstruct the whole gradient to calculate objective value
                 reconstruct_gradient();
                 active_size = trainingSize;
-                Svm.info("*");
+                LOGGER.info("*");
             }
             System.err.print("\nWARNING: reaching max number of iterations\n");
         }
@@ -395,27 +396,22 @@ public class Solver {
         si.rho = calculate_rho();
 
         // calculate objective value
-        {
-            double v = 0;
-            int i;
-            for (i = 0; i < trainingSize; i++) {
-                v += alpha[i] * (G[i] + p[i]);
-            }
-
-            si.obj = v / 2;
+        double v = 0;
+        for (int i = 0; i < trainingSize; i++) {
+            v += alpha[i] * (G[i] + p[i]);
         }
 
+        si.obj = v / 2;
+
         // put back the solution
-        {
-            for (int i = 0; i < trainingSize; i++) {
-                alpha_[active_set[i]] = alpha[i];
-            }
+        for (int i = 0; i < trainingSize; i++) {
+            alpha_[active_set[i]] = alpha[i];
         }
 
         si.upper_bound_p = Cp;
         si.upper_bound_n = Cn;
 
-        Svm.info("\noptimization finished, #iter = " + iter + "\n");
+        LOGGER.info("\noptimization finished, #iter = " + iter + "\n");
     }
 
     // return 1 if already optimal, return 0 otherwise
@@ -452,9 +448,9 @@ public class Solver {
 
         int i = Gmax_idx;
         float[] Q_i = null;
-        if (i != -1) // null Q_i not accessed: Gmax=-INF if i=-1
-        {
-            Q_i = Q.get_Q(i, active_size);
+        // null Q_i not accessed: Gmax=-INF if i=-1
+        if (i != -1) {
+            Q_i = Q.getQ(i, active_size);
         }
 
         for (int j = 0; j < active_size; j++) {
@@ -564,7 +560,7 @@ public class Solver {
             unshrink = true;
             reconstruct_gradient();
             active_size = l;
-            Svm.info("*");
+            LOGGER.info("*");
         }
 
         for (i = 0; i < active_size; i++) {

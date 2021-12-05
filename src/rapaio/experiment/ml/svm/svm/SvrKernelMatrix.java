@@ -21,22 +21,26 @@
 
 package rapaio.experiment.ml.svm.svm;
 
-import java.util.concurrent.atomic.AtomicReference;
+import rapaio.math.linear.DVector;
+import rapaio.ml.common.kernel.Kernel;
+import rapaio.util.Reference;
+import rapaio.util.collection.TArrays;
 
 class SvrKernelMatrix extends AbstractKernelMatrix {
+
     private final int l;
     private final Cache cache;
     private final byte[] sign;
     private final int[] index;
-    private int next_buffer;
-    private float[][] buffer;
-    private final double[] QD;
+    private int nextBuffer;
+    private final float[][] buffer;
+    private final double[] qd;
 
-    SvrKernelMatrix(svm_problem prob, svm_parameter param) {
-        super(prob.l, prob.x, param);
-        l = prob.l;
-        cache = new Cache(l, (long) (param.cache_size * (1 << 20)));
-        QD = new double[2 * l];
+    SvrKernelMatrix(int l, DVector[] xs, Kernel kernel, long cacheSize) {
+        super(l, xs, kernel);
+        this.l = l;
+        cache = new Cache(l, cacheSize * (1 << 20));
+        qd = new double[2 * l];
         sign = new byte[2 * l];
         index = new int[2 * l];
         for (int k = 0; k < l; k++) {
@@ -44,51 +48,38 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
             sign[k + l] = -1;
             index[k] = k;
             index[k + l] = k;
-            QD[k] = kernel_function(k, k);
-            QD[k + l] = QD[k];
+            qd[k] = kernel_function(k, k);
+            qd[k + l] = qd[k];
         }
         buffer = new float[2][2 * l];
-        next_buffer = 0;
+        nextBuffer = 0;
     }
 
-    void swap_index(int i, int j) {
-        do {
-            byte tmp = sign[i];
-            sign[i] = sign[j];
-            sign[j] = tmp;
-        } while (false);
-        do {
-            int tmp = index[i];
-            index[i] = index[j];
-            index[j] = tmp;
-        } while (false);
-        do {
-            double tmp = QD[i];
-            QD[i] = QD[j];
-            QD[j] = tmp;
-        } while (false);
+    void swapIndex(int i, int j) {
+        TArrays.swap(sign, i, j);
+        TArrays.swap(index, i, j);
+        TArrays.swap(qd, i, j);
     }
 
-    float[] get_Q(int i, int len) {
-        AtomicReference<float[]> data = new AtomicReference<>();
-        int j, real_i = index[i];
-        if (cache.getData(real_i, data, l) < l) {
-            for (j = 0; j < l; j++) {
-                data.get()[j] = (float) kernel_function(real_i, j);
+    float[] getQ(int i, int len) {
+        Reference<float[]> data = new Reference<>();
+        if (cache.getData(index[i], data, l) < l) {
+            for (int j = 0; j < l; j++) {
+                data.get()[j] = (float) kernel_function(index[i], j);
             }
         }
 
         // reorder and copy
-        float buf[] = buffer[next_buffer];
-        next_buffer = 1 - next_buffer;
+        float[] buf = buffer[nextBuffer];
+        nextBuffer = 1 - nextBuffer;
         byte si = sign[i];
-        for (j = 0; j < len; j++) {
+        for (int j = 0; j < len; j++) {
             buf[j] = (float) si * sign[j] * data.get()[index[j]];
         }
         return buf;
     }
 
-    double[] get_QD() {
-        return QD;
+    double[] getQD() {
+        return qd;
     }
 }

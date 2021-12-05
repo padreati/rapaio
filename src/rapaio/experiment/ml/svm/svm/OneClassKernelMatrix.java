@@ -21,41 +21,40 @@
 
 package rapaio.experiment.ml.svm.svm;
 
-import java.util.concurrent.atomic.AtomicReference;
-
+import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
 
 class OneClassKernelMatrix extends AbstractKernelMatrix {
     private final Cache cache;
-    private final double[] QD;
+    private final double[] qd;
 
     OneClassKernelMatrix(svm_problem prob, svm_parameter param) {
-        super(prob.l, prob.x, param);
+        super(prob.l, prob.x, param.kernel);
         cache = new Cache(prob.l, (long) (param.cache_size * (1 << 20)));
-        QD = new double[prob.l];
+        qd = new double[prob.l];
         for (int i = 0; i < prob.l; i++) {
-            QD[i] = kernel_function(i, i);
+            qd[i] = kernel_function(i, i);
         }
     }
 
-    float[] get_Q(int i, int len) {
-        AtomicReference<float[]> data = new AtomicReference<>();
-        int start, j;
-        if ((start = cache.getData(i, data, len)) < len) {
-            for (j = start; j < len; j++) {
+    float[] getQ(int i, int len) {
+        Reference<float[]> data = new Reference<>();
+        int start = cache.getData(i, data, len);
+        if (start < len) {
+            for (int j = start; j < len; j++) {
                 data.get()[j] = (float) kernel_function(i, j);
             }
         }
         return data.get();
     }
 
-    double[] get_QD() {
-        return QD;
+    double[] getQD() {
+        return qd;
     }
 
-    void swap_index(int i, int j) {
-        cache.swap_index(i, j);
-        super.swap_index(i, j);
-        TArrays.swap(QD, i, j);
+    void swapIndex(int i, int j) {
+        cache.swapIndex(i, j);
+        super.swapIndex(i, j);
+        TArrays.swap(qd, i, j);
     }
 }

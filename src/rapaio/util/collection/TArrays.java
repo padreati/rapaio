@@ -60,6 +60,12 @@ public final class TArrays {
         array[j] = tmp;
     }
 
+    public static void swap(float[] array, int i, int j) {
+        float tmp = array[i];
+        array[i] = array[j];
+        array[j] = tmp;
+    }
+
     public static void swap(byte[] array, int i, int j) {
         byte tmp = array[i];
         array[i] = array[j];
