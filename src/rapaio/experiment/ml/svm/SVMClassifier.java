@@ -228,8 +228,8 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
 
         private svm_problem computeProblem() {
             svm_problem prob = new svm_problem();
-            prob.l = xs.length;
-            prob.x = xs;
+            prob.len = xs.length;
+            prob.xs = xs;
             prob.y = y;
             return prob;
         }

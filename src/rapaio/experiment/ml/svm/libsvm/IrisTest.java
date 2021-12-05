@@ -67,9 +67,9 @@ public class IrisTest {
         ClassifierResult cpred = c.fit(iris, "class").predict(iris);
         DMatrix cdensity = DMatrix.copy(cpred.firstDensity()).removeCols(new int[] {0});
 
-        System.out.println("Densities are the same: " + pred.density().deepEquals(cdensity, 1e-12));
+        System.out.println("Densities are the same: " + pred.density().deepEquals(cdensity, 1e-16));
 
-        if (!pred.density().deepEquals(cdensity, 1e-12)) {
+        if (!pred.density().deepEquals(cdensity, 1e-16)) {
             pred.density().printContent();
             cdensity.printContent();
         }

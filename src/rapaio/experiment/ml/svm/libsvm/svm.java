@@ -229,7 +229,7 @@ abstract class Kernel extends QMatrix {
             case svm_parameter.POLY:
                 return powi(gamma * dot(x[i], x[j]) + coef0, degree);
             case svm_parameter.RBF:
-                return Math.exp(-gamma * (x_square[i] + x_square[j] - 2 * dot(x[i], x[j])));
+                return Math.exp(-gamma * dotSquare(x[i], x[j]));
             case svm_parameter.SIGMOID:
                 return Math.tanh(gamma * dot(x[i], x[j]) + coef0);
             case svm_parameter.PRECOMPUTED:
@@ -237,6 +237,27 @@ abstract class Kernel extends QMatrix {
             default:
                 return 0;    // Unreachable
         }
+    }
+
+    static double dotSquare(svm_node[] x, svm_node[] y) {
+        double sum = 0;
+        int xlen = x.length;
+        int ylen = y.length;
+        int i = 0;
+        int j = 0;
+        while (i < xlen && j < ylen) {
+            if (x[i].index == y[j].index) {
+                double value = x[i++].value - y[j++].value;
+                sum += value * value;
+            } else {
+                if (x[i].index > y[j].index) {
+                    ++j;
+                } else {
+                    ++i;
+                }
+            }
+        }
+        return sum;
     }
 
     Kernel(int l, svm_node[][] x_, svm_parameter param) {
@@ -1199,7 +1220,7 @@ class SVC_Q extends Kernel {
         int start, j;
         if ((start = cache.get_data(i, data, len)) < len) {
             for (j = start; j < len; j++) {
-                data[0][j] = (float) (y[i] * y[j] * kernel_function(i, j));
+                data[0][j] = (kernel_function(i, j) * y[i] * y[j]);
             }
         }
         return data[0];
@@ -1243,7 +1264,7 @@ class ONE_CLASS_Q extends Kernel {
         int start, j;
         if ((start = cache.get_data(i, data, len)) < len) {
             for (j = start; j < len; j++) {
-                data[0][j] = (float) kernel_function(i, j);
+                data[0][j] = kernel_function(i, j);
             }
         }
         return data[0];
@@ -1315,7 +1336,7 @@ class SVR_Q extends Kernel {
         int j, real_i = index[i];
         if (cache.get_data(real_i, data, l) < l) {
             for (j = 0; j < l; j++) {
-                data[0][j] = (float) kernel_function(real_i, j);
+                data[0][j] = kernel_function(real_i, j);
             }
         }
         // reorder and copy
@@ -1323,7 +1344,7 @@ class SVR_Q extends Kernel {
         next_buffer = 1 - next_buffer;
         byte si = sign[i];
         for (j = 0; j < len; j++) {
-            buf[j] = (double) si * sign[j] * data[0][index[j]];
+            buf[j] = si * sign[j] * data[0][index[j]];
         }
         return buf;
     }

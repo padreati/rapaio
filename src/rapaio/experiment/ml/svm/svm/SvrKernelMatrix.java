@@ -33,11 +33,11 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
     private final byte[] sign;
     private final int[] index;
     private int nextBuffer;
-    private final float[][] buffer;
+    private final double[][] buffer;
     private final double[] qd;
 
     SvrKernelMatrix(int l, DVector[] xs, Kernel kernel, long cacheSize) {
-        super(l, xs, kernel);
+        super(xs, kernel);
         this.l = l;
         cache = new Cache(l, cacheSize * (1 << 20));
         qd = new double[2 * l];
@@ -48,10 +48,10 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
             sign[k + l] = -1;
             index[k] = k;
             index[k + l] = k;
-            qd[k] = kernel_function(k, k);
+            qd[k] = kernel.compute(xs[k], xs[k]);
             qd[k + l] = qd[k];
         }
-        buffer = new float[2][2 * l];
+        buffer = new double[2][2 * l];
         nextBuffer = 0;
     }
 
@@ -61,20 +61,20 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
         TArrays.swap(qd, i, j);
     }
 
-    float[] getQ(int i, int len) {
-        Reference<float[]> data = new Reference<>();
+    double[] getQ(int i, int len) {
+        Reference<double[]> data = new Reference<>();
         if (cache.getData(index[i], data, l) < l) {
             for (int j = 0; j < l; j++) {
-                data.get()[j] = (float) kernel_function(index[i], j);
+                data.get()[j] = kernel.compute(xs[index[i]], xs[j]);
             }
         }
 
         // reorder and copy
-        float[] buf = buffer[nextBuffer];
+        double[] buf = buffer[nextBuffer];
         nextBuffer = 1 - nextBuffer;
         byte si = sign[i];
         for (int j = 0; j < len; j++) {
-            buf[j] = (float) si * sign[j] * data.get()[index[j]];
+            buf[j] = si * sign[j] * data.get()[index[j]];
         }
         return buf;
     }

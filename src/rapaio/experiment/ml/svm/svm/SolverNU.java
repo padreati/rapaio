@@ -75,8 +75,8 @@ public final class SolverNU extends Solver {
 
         int ip = gmaxpIdx;
         int in = gmaxnIdx;
-        float[] qip = null;
-        float[] qin = null;
+        double[] qip = null;
+        double[] qin = null;
         // null Q_ip not accessed: Gmaxp=-INF if ip=-1
         if (ip != -1) {
             qip = Q.getQ(ip, active_size);

@@ -29,20 +29,20 @@ class OneClassKernelMatrix extends AbstractKernelMatrix {
     private final double[] qd;
 
     OneClassKernelMatrix(svm_problem prob, svm_parameter param) {
-        super(prob.l, prob.x, param.kernel);
-        cache = new Cache(prob.l, (long) (param.cache_size * (1 << 20)));
-        qd = new double[prob.l];
-        for (int i = 0; i < prob.l; i++) {
-            qd[i] = kernel_function(i, i);
+        super(prob.xs, param.kernel);
+        cache = new Cache(prob.len, param.cache_size * (1 << 20));
+        qd = new double[prob.len];
+        for (int i = 0; i < prob.len; i++) {
+            qd[i] = kernel.compute(xs[i], xs[i]);
         }
     }
 
-    float[] getQ(int i, int len) {
-        Reference<float[]> data = new Reference<>();
+    double[] getQ(int i, int len) {
+        Reference<double[]> data = new Reference<>();
         int start = cache.getData(i, data, len);
         if (start < len) {
             for (int j = start; j < len; j++) {
-                data.get()[j] = (float) kernel_function(i, j);
+                data.get()[j] = kernel.compute(xs[i], xs[j]);
             }
         }
         return data.get();

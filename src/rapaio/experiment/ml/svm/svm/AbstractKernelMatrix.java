@@ -25,59 +25,24 @@ import java.util.Arrays;
 
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.Kernel;
-import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.util.collection.TArrays;
 
-public abstract class AbstractKernelMatrix {
-    private DVector[] x;
-    private final double[] x_square;
+abstract class AbstractKernelMatrix {
 
-    // svm_parameter
-    private final Kernel kernel;
+    protected final DVector[] xs;
+    protected final Kernel kernel;
+
+    AbstractKernelMatrix(DVector[] xs, Kernel kernel) {
+        this.kernel = kernel;
+        this.xs = Arrays.copyOf(xs, xs.length);
+    }
 
     abstract double[] getQD();
 
     void swapIndex(int i, int j) {
-        TArrays.swap(x, i, j);
-        if (x_square != null) {
-            TArrays.swap(x_square, i, j);
-        }
+        TArrays.swap(xs, i, j);
     }
 
-    abstract float[] getQ(int column, int len);
+    abstract double[] getQ(int column, int len);
 
-    private static double powi(double base, int times) {
-        double tmp = base, ret = 1.0;
-
-        for (int t = times; t > 0; t /= 2) {
-            if (t % 2 == 1) {
-                ret *= tmp;
-            }
-            tmp = tmp * tmp;
-        }
-        return ret;
-    }
-
-    double kernel_function(int i, int j) {
-        return kernel.compute(x[i], x[j]);
-    }
-
-    AbstractKernelMatrix(int l, DVector[] x_, Kernel kernel) {
-        this.kernel = kernel;
-
-        x = x_.clone();
-
-        if (kernel instanceof RBFKernel) {
-            x_square = new double[l];
-            for (int i = 0; i < l; i++) {
-                x_square[i] = dot(x[i], x[i]);
-            }
-        } else {
-            x_square = null;
-        }
-    }
-
-    static double dot(DVector x, DVector y) {
-        return x.dot(y);
-    }
 }

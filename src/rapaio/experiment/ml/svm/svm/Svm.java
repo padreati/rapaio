@@ -33,7 +33,7 @@ public class Svm {
     public static Random rand = new Random();
 
     private static void solve_c_svc(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si, double Cp, double Cn) {
-        int l = prob.l;
+        int l = prob.len;
         double[] minus_ones = new double[l];
         byte[] y = new byte[l];
 
@@ -44,13 +44,13 @@ public class Svm {
         }
 
         Solver s = new Solver();
-        s.solve(l, new SvcKernelMatrix(prob.l, prob.x, param.kernel, param.cache_size, y), minus_ones, y,
+        s.solve(l, new SvcKernelMatrix(prob.len, prob.xs, param.kernel, param.cache_size, y), minus_ones, y,
                 alpha, Cp, Cn, param.eps, si, param.shrinking);
 
         double sumAlpha = DVector.wrap(alpha).sum();
 
         if (Cp == Cn) {
-            LOGGER.info("nu = " + sumAlpha / (Cp * prob.l) + "\n");
+            LOGGER.info("nu = " + sumAlpha / (Cp * prob.len) + "\n");
         }
 
         for (int i = 0; i < l; i++) {
@@ -60,7 +60,7 @@ public class Svm {
 
     private static void solve_nu_svc(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si) {
         int i;
-        int l = prob.l;
+        int l = prob.len;
         double nu = param.nu;
 
         byte[] y = new byte[l];
@@ -93,7 +93,7 @@ public class Svm {
         }
 
         SolverNU s = new SolverNU();
-        s.solve(l, new SvcKernelMatrix(prob.l, prob.x, param.kernel, param.cache_size, y), zeros, y,
+        s.solve(l, new SvcKernelMatrix(prob.len, prob.xs, param.kernel, param.cache_size, y), zeros, y,
                 alpha, 1.0, 1.0, param.eps, si, param.shrinking);
         double r = si.r;
 
@@ -110,18 +110,18 @@ public class Svm {
     }
 
     private static void solve_one_class(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si) {
-        int l = prob.l;
+        int l = prob.len;
         double[] zeros = new double[l];
         byte[] ones = new byte[l];
         int i;
 
-        int n = (int) (param.nu * prob.l);    // # of alpha's at upper bound
+        int n = (int) (param.nu * prob.len);    // # of alpha's at upper bound
 
         for (i = 0; i < n; i++) {
             alpha[i] = 1;
         }
-        if (n < prob.l) {
-            alpha[n] = param.nu * prob.l - n;
+        if (n < prob.len) {
+            alpha[n] = param.nu * prob.len - n;
         }
         for (i = n + 1; i < l; i++) {
             alpha[i] = 0;
@@ -138,7 +138,7 @@ public class Svm {
     }
 
     private static void solve_epsilon_svr(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si) {
-        int l = prob.l;
+        int l = prob.len;
         double[] alpha2 = new double[2 * l];
         double[] linear_term = new double[2 * l];
         byte[] y = new byte[2 * l];
@@ -155,7 +155,7 @@ public class Svm {
         }
 
         Solver s = new Solver();
-        s.solve(2 * l, new SvrKernelMatrix(prob.l, prob.x, param.kernel, param.cache_size), linear_term, y,
+        s.solve(2 * l, new SvrKernelMatrix(prob.len, prob.xs, param.kernel, param.cache_size), linear_term, y,
                 alpha2, param.C, param.C, param.eps, si, param.shrinking);
 
         double sum_alpha = 0;
@@ -167,7 +167,7 @@ public class Svm {
     }
 
     private static void solve_nu_svr(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si) {
-        int l = prob.l;
+        int l = prob.len;
         double C = param.C;
         double[] alpha2 = new double[2 * l];
         double[] linear_term = new double[2 * l];
@@ -187,7 +187,7 @@ public class Svm {
         }
 
         SolverNU s = new SolverNU();
-        s.solve(2 * l, new SvrKernelMatrix(prob.l, prob.x, param.kernel, param.cache_size), linear_term, y,
+        s.solve(2 * l, new SvrKernelMatrix(prob.len, prob.xs, param.kernel, param.cache_size), linear_term, y,
                 alpha2, C, C, param.eps, si, param.shrinking);
 
         LOGGER.info("epsilon = " + (-si.r) + "\n");
@@ -206,7 +206,7 @@ public class Svm {
     }
 
     public static Decision svm_train_one(svm_problem prob, svm_parameter param, double Cp, double Cn) {
-        double[] alpha = new double[prob.l];
+        double[] alpha = new double[prob.len];
         Solver.SolutionInfo si = new Solver.SolutionInfo();
         switch (param.svm_type) {
             case svm_parameter.C_SVC:
@@ -232,7 +232,7 @@ public class Svm {
 
         int nSV = 0;
         int nBSV = 0;
-        for (int i = 0; i < prob.l; i++) {
+        for (int i = 0; i < prob.len; i++) {
             if (Math.abs(alpha[i]) > 0) {
                 ++nSV;
                 if (prob.y[i] > 0) {
@@ -445,15 +445,15 @@ public class Svm {
         rand = new Random(42);
         int i;
         int nr_fold = 5;
-        int[] perm = new int[prob.l];
-        double[] dec_values = new double[prob.l];
+        int[] perm = new int[prob.len];
+        double[] dec_values = new double[prob.len];
 
         // random shuffle
-        for (i = 0; i < prob.l; i++) {
+        for (i = 0; i < prob.len; i++) {
             perm[i] = i;
         }
-        for (i = 0; i < prob.l; i++) {
-            int j = i + rand.nextInt(prob.l - i);
+        for (i = 0; i < prob.len; i++) {
+            int j = i + rand.nextInt(prob.len - i);
             do {
                 int tmp = perm[i];
                 perm[i] = perm[j];
@@ -461,23 +461,23 @@ public class Svm {
             } while (false);
         }
         for (i = 0; i < nr_fold; i++) {
-            int begin = i * prob.l / nr_fold;
-            int end = (i + 1) * prob.l / nr_fold;
+            int begin = i * prob.len / nr_fold;
+            int end = (i + 1) * prob.len / nr_fold;
             int j, k;
             svm_problem subprob = new svm_problem();
 
-            subprob.l = prob.l - (end - begin);
-            subprob.x = new DVector[subprob.l];
-            subprob.y = new double[subprob.l];
+            subprob.len = prob.len - (end - begin);
+            subprob.xs = new DVector[subprob.len];
+            subprob.y = new double[subprob.len];
 
             k = 0;
             for (j = 0; j < begin; j++) {
-                subprob.x[k] = prob.x[perm[j]];
+                subprob.xs[k] = prob.xs[perm[j]];
                 subprob.y[k] = prob.y[perm[j]];
                 ++k;
             }
-            for (j = end; j < prob.l; j++) {
-                subprob.x[k] = prob.x[perm[j]];
+            for (j = end; j < prob.len; j++) {
+                subprob.xs[k] = prob.xs[perm[j]];
                 subprob.y[k] = prob.y[perm[j]];
                 ++k;
             }
@@ -516,42 +516,42 @@ public class Svm {
                 svm_model submodel = svm_train(subprob, subparam);
                 for (j = begin; j < end; j++) {
                     double[] dec_value = new double[1];
-                    svm_predict_values(submodel, prob.x[perm[j]], dec_value);
+                    svm_predict_values(submodel, prob.xs[perm[j]], dec_value);
                     dec_values[perm[j]] = dec_value[0];
                     // ensure +1 -1 order; reason not using CV subroutine
                     dec_values[perm[j]] *= submodel.label[0];
                 }
             }
         }
-        sigmoid_train(prob.l, dec_values, prob.y, probAB);
+        sigmoid_train(prob.len, dec_values, prob.y, probAB);
     }
 
     // Return parameter of a Laplace distribution
     private static double svm_svr_probability(svm_problem prob, svm_parameter param) {
         int i;
         int nr_fold = 5;
-        double[] ymv = new double[prob.l];
+        double[] ymv = new double[prob.len];
         double mae = 0;
 
         svm_parameter newparam = (svm_parameter) param.clone();
         newparam.probability = 0;
         svm_cross_validation(prob, newparam, nr_fold, ymv);
-        for (i = 0; i < prob.l; i++) {
+        for (i = 0; i < prob.len; i++) {
             ymv[i] = prob.y[i] - ymv[i];
             mae += Math.abs(ymv[i]);
         }
-        mae /= prob.l;
+        mae /= prob.len;
         double std = Math.sqrt(2 * mae * mae);
         int count = 0;
         mae = 0;
-        for (i = 0; i < prob.l; i++) {
+        for (i = 0; i < prob.len; i++) {
             if (Math.abs(ymv[i]) > 5 * std) {
                 count = count + 1;
             } else {
                 mae += Math.abs(ymv[i]);
             }
         }
-        mae /= (prob.l - count);
+        mae /= (prob.len - count);
         LOGGER.info("Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma="
                 + mae + "\n");
         return mae;
@@ -561,7 +561,7 @@ public class Svm {
     // perm, length l, must be allocated before calling this subroutine
     private static void svm_group_classes(svm_problem prob, int[] nr_class_ret, int[][] label_ret, int[][] start_ret, int[][] count_ret,
             int[] perm) {
-        int l = prob.l;
+        int l = prob.len;
         int max_nr_class = 16;
         int nr_class = 0;
         int[] label = new int[max_nr_class];
@@ -671,7 +671,7 @@ public class Svm {
 
             int nSV = 0;
             int i;
-            for (i = 0; i < prob.l; i++) {
+            for (i = 0; i < prob.len; i++) {
                 if (Math.abs(f.alpha[i]) > 0) {
                     ++nSV;
                 }
@@ -681,9 +681,9 @@ public class Svm {
             model.sv_coef[0] = new double[nSV];
             model.sv_indices = new int[nSV];
             int j = 0;
-            for (i = 0; i < prob.l; i++) {
+            for (i = 0; i < prob.len; i++) {
                 if (Math.abs(f.alpha[i]) > 0) {
-                    model.SV[j] = prob.x[i];
+                    model.SV[j] = prob.xs[i];
                     model.sv_coef[0][j] = f.alpha[i];
                     model.sv_indices[j] = i + 1;
                     ++j;
@@ -691,7 +691,7 @@ public class Svm {
             }
         } else {
             // classification
-            int l = prob.l;
+            int l = prob.len;
             int[] tmp_nr_class = new int[1];
             int[][] tmp_label = new int[1][];
             int[][] tmp_start = new int[1][];
@@ -712,7 +712,7 @@ public class Svm {
             DVector[] x = new DVector[l];
             int i;
             for (i = 0; i < l; i++) {
-                x[i] = prob.x[perm[i]];
+                x[i] = prob.xs[perm[i]];
             }
 
             // calculate weighted c
@@ -752,16 +752,16 @@ public class Svm {
                     svm_problem sub_prob = new svm_problem();
                     int si = start[i], sj = start[j];
                     int ci = count[i], cj = count[j];
-                    sub_prob.l = ci + cj;
-                    sub_prob.x = new DVector[sub_prob.l];
-                    sub_prob.y = new double[sub_prob.l];
+                    sub_prob.len = ci + cj;
+                    sub_prob.xs = new DVector[sub_prob.len];
+                    sub_prob.y = new double[sub_prob.len];
                     int k;
                     for (k = 0; k < ci; k++) {
-                        sub_prob.x[k] = x[si + k];
+                        sub_prob.xs[k] = x[si + k];
                         sub_prob.y[k] = +1;
                     }
                     for (k = 0; k < cj; k++) {
-                        sub_prob.x[ci + k] = x[sj + k];
+                        sub_prob.xs[ci + k] = x[sj + k];
                         sub_prob.y[ci + k] = -1;
                     }
 
@@ -888,7 +888,7 @@ public class Svm {
     public static void svm_cross_validation(svm_problem prob, svm_parameter param, int nr_fold, double[] target) {
         int i;
         int[] fold_start = new int[nr_fold + 1];
-        int l = prob.l;
+        int l = prob.len;
         int[] perm = new int[l];
 
         // stratified cv may not give leave-one-out rate
@@ -970,18 +970,18 @@ public class Svm {
             int j, k;
             svm_problem subprob = new svm_problem();
 
-            subprob.l = l - (end - begin);
-            subprob.x = new DVector[subprob.l];
-            subprob.y = new double[subprob.l];
+            subprob.len = l - (end - begin);
+            subprob.xs = new DVector[subprob.len];
+            subprob.y = new double[subprob.len];
 
             k = 0;
             for (j = 0; j < begin; j++) {
-                subprob.x[k] = prob.x[perm[j]];
+                subprob.xs[k] = prob.xs[perm[j]];
                 subprob.y[k] = prob.y[perm[j]];
                 ++k;
             }
             for (j = end; j < l; j++) {
-                subprob.x[k] = prob.x[perm[j]];
+                subprob.xs[k] = prob.xs[perm[j]];
                 subprob.y[k] = prob.y[perm[j]];
                 ++k;
             }
@@ -991,11 +991,11 @@ public class Svm {
                             param.svm_type == svm_parameter.NU_SVC)) {
                 double[] prob_estimates = new double[submodel.nr_class];
                 for (j = begin; j < end; j++) {
-                    target[perm[j]] = svm_predict_probability(submodel, prob.x[perm[j]], prob_estimates);
+                    target[perm[j]] = svm_predict_probability(submodel, prob.xs[perm[j]], prob_estimates);
                 }
             } else {
                 for (j = begin; j < end; j++) {
-                    target[perm[j]] = svm_predict(submodel, prob.x[perm[j]]);
+                    target[perm[j]] = svm_predict(submodel, prob.xs[perm[j]]);
                 }
             }
         }
@@ -1172,7 +1172,7 @@ public class Svm {
         // check whether nu-svc is feasible
 
         if (svm_type == svm_parameter.NU_SVC) {
-            int l = prob.l;
+            int l = prob.len;
             int max_nr_class = 16;
             int nr_class = 0;
             int[] label = new int[max_nr_class];

@@ -33,7 +33,7 @@ public class Cache {
     /**
      * Number of training dataset instances.
      */
-    private final int l;
+    private final int len;
     /**
      * Number of entries available in cache. An entry is a value slot in any position.
      * When we add entries to cache we should remove others which are already there.
@@ -43,7 +43,7 @@ public class Cache {
     private static final class Entry {
         private Entry prev;
         private Entry next;
-        private float[] data;
+        private double[] data;
 
         public int len() {
             return data == null ? 0 : data.length;
@@ -57,13 +57,13 @@ public class Cache {
     private final Entry[] entries;
     private final Entry lruEntry;
 
-    Cache(int l, long size) {
-        this.l = l;
-        entries = new Entry[l];
-        for (int i = 0; i < l; i++) {
+    Cache(int len, long size) {
+        this.len = len;
+        entries = new Entry[len];
+        for (int i = 0; i < len; i++) {
             entries[i] = new Entry();
         }
-        this.size = Math.max(size, 2L * l);
+        this.size = Math.max(size, 2L * len);
         lruEntry = new Entry();
         lruEntry.next = lruEntry.prev = lruEntry;
     }
@@ -93,7 +93,7 @@ public class Cache {
      * the position until it is computed, starting from 0. The other positions will be filled by
      * the caller and the values will remain in cache since data is passed as reference.
      */
-    public int getData(int index, Reference<float[]> data, int len) {
+    public int getData(int index, Reference<double[]> data, int len) {
         Entry h = entries[index];
 
         lruUnlink(h);
@@ -110,7 +110,7 @@ public class Cache {
             }
 
             // allocate new space
-            h.data = (h.data == null) ? new float[len] : Arrays.copyOf(h.data, len);
+            h.data = (h.data == null) ? new double[len] : Arrays.copyOf(h.data, len);
             size -= more;
         }
 
@@ -131,7 +131,7 @@ public class Cache {
         lruUnlink(entries[i]);
         lruUnlink(entries[j]);
 
-        float[] buf = entries[i].data;
+        double[] buf = entries[i].data;
         entries[i].data = entries[j].data;
         entries[j].data = buf;
 

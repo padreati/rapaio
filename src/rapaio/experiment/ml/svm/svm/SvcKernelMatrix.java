@@ -37,21 +37,21 @@ class SvcKernelMatrix extends AbstractKernelMatrix {
     private final double[] qd;
 
     public SvcKernelMatrix(int l, DVector[] xs, Kernel kernel, long cacheSize, byte[] y) {
-        super(l, xs, kernel);
+        super(xs, kernel);
         this.y = Arrays.copyOf(y, y.length);
         this.cache = new Cache(l, cacheSize * (1 << 20));
         this.qd = new double[l];
         for (int i = 0; i < l; i++) {
-            this.qd[i] = kernel_function(i, i);
+            this.qd[i] = kernel.compute(xs[i], xs[i]);
         }
     }
 
-    float[] getQ(int i, int len) {
-        Reference<float[]> data = new Reference<>();
+    double[] getQ(int i, int len) {
+        Reference<double[]> data = new Reference<>();
         int start = cache.getData(i, data, len);
         if (start < len) {
             for (int j = start; j < len; j++) {
-                data.get()[j] = (float) (y[i] * y[j] * kernel_function(i, j));
+                data.get()[j] = y[i] * y[j] * kernel.compute(xs[i], xs[j]);
             }
         }
         return data.get();
