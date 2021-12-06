@@ -32,7 +32,7 @@ public class Svm {
 
     public static Random rand = new Random();
 
-    private static void solve_c_svc(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si, double Cp, double Cn) {
+    private static void solve_c_svc(svm_problem prob, svm_parameter param, double[] alpha, SolverC.SolutionInfo si, double Cp, double Cn) {
         int l = prob.len;
         double[] minus_ones = new double[l];
         byte[] y = new byte[l];
@@ -43,7 +43,7 @@ public class Svm {
             y[i] = (prob.y[i] > 0) ? (byte) +1 : -1;
         }
 
-        Solver s = new Solver();
+        SolverC s = new SolverC();
         s.solve(l, new SvcKernelMatrix(prob.len, prob.xs, param.kernel, param.cache_size, y), minus_ones, y,
                 alpha, Cp, Cn, param.eps, si, param.shrinking);
 
@@ -58,7 +58,7 @@ public class Svm {
         }
     }
 
-    private static void solve_nu_svc(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si) {
+    private static void solve_nu_svc(svm_problem prob, svm_parameter param, double[] alpha, SolverC.SolutionInfo si) {
         int i;
         int l = prob.len;
         double nu = param.nu;
@@ -105,11 +105,11 @@ public class Svm {
 
         si.rho /= r;
         si.obj /= (r * r);
-        si.upper_bound_p = 1 / r;
-        si.upper_bound_n = 1 / r;
+        si.pUpperBound = 1 / r;
+        si.nUpperBound = 1 / r;
     }
 
-    private static void solve_one_class(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si) {
+    private static void solve_one_class(svm_problem prob, svm_parameter param, double[] alpha, SolverC.SolutionInfo si) {
         int l = prob.len;
         double[] zeros = new double[l];
         byte[] ones = new byte[l];
@@ -132,12 +132,12 @@ public class Svm {
             ones[i] = 1;
         }
 
-        Solver s = new Solver();
+        SolverC s = new SolverC();
         s.solve(l, new OneClassKernelMatrix(prob, param), zeros, ones,
                 alpha, 1.0, 1.0, param.eps, si, param.shrinking);
     }
 
-    private static void solve_epsilon_svr(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si) {
+    private static void solve_epsilon_svr(svm_problem prob, svm_parameter param, double[] alpha, SolverC.SolutionInfo si) {
         int l = prob.len;
         double[] alpha2 = new double[2 * l];
         double[] linear_term = new double[2 * l];
@@ -154,7 +154,7 @@ public class Svm {
             y[i + l] = -1;
         }
 
-        Solver s = new Solver();
+        SolverC s = new SolverC();
         s.solve(2 * l, new SvrKernelMatrix(prob.len, prob.xs, param.kernel, param.cache_size), linear_term, y,
                 alpha2, param.C, param.C, param.eps, si, param.shrinking);
 
@@ -166,7 +166,7 @@ public class Svm {
         LOGGER.info("nu = " + sum_alpha / (param.C * l) + "\n");
     }
 
-    private static void solve_nu_svr(svm_problem prob, svm_parameter param, double[] alpha, Solver.SolutionInfo si) {
+    private static void solve_nu_svr(svm_problem prob, svm_parameter param, double[] alpha, SolverC.SolutionInfo si) {
         int l = prob.len;
         double C = param.C;
         double[] alpha2 = new double[2 * l];
@@ -207,7 +207,7 @@ public class Svm {
 
     public static Decision svm_train_one(svm_problem prob, svm_parameter param, double Cp, double Cn) {
         double[] alpha = new double[prob.len];
-        Solver.SolutionInfo si = new Solver.SolutionInfo();
+        SolverC.SolutionInfo si = new SolverC.SolutionInfo();
         switch (param.svm_type) {
             case svm_parameter.C_SVC:
                 solve_c_svc(prob, param, alpha, si, Cp, Cn);
@@ -236,11 +236,11 @@ public class Svm {
             if (Math.abs(alpha[i]) > 0) {
                 ++nSV;
                 if (prob.y[i] > 0) {
-                    if (Math.abs(alpha[i]) >= si.upper_bound_p) {
+                    if (Math.abs(alpha[i]) >= si.pUpperBound) {
                         ++nBSV;
                     }
                 } else {
-                    if (Math.abs(alpha[i]) >= si.upper_bound_n) {
+                    if (Math.abs(alpha[i]) >= si.nUpperBound) {
                         ++nBSV;
                     }
                 }
@@ -1153,71 +1153,6 @@ public class Svm {
         } else {
             return svm_predict(model, x);
         }
-    }
-
-    public static String svm_check_parameter(svm_problem prob, svm_parameter param) {
-        // svm_type
-
-        int svm_type = param.svm_type;
-        if (svm_type != svm_parameter.C_SVC &&
-                svm_type != svm_parameter.NU_SVC &&
-                svm_type != svm_parameter.ONE_CLASS &&
-                svm_type != svm_parameter.EPSILON_SVR &&
-                svm_type != svm_parameter.NU_SVR) {
-            return "unknown svm type";
-        }
-
-        // cache_size,eps,c,nu,p,shrinking
-
-        // check whether nu-svc is feasible
-
-        if (svm_type == svm_parameter.NU_SVC) {
-            int l = prob.len;
-            int max_nr_class = 16;
-            int nr_class = 0;
-            int[] label = new int[max_nr_class];
-            int[] count = new int[max_nr_class];
-
-            int i;
-            for (i = 0; i < l; i++) {
-                int this_label = (int) prob.y[i];
-                int j;
-                for (j = 0; j < nr_class; j++) {
-                    if (this_label == label[j]) {
-                        ++count[j];
-                        break;
-                    }
-                }
-
-                if (j == nr_class) {
-                    if (nr_class == max_nr_class) {
-                        max_nr_class *= 2;
-                        int[] new_data = new int[max_nr_class];
-                        System.arraycopy(label, 0, new_data, 0, label.length);
-                        label = new_data;
-
-                        new_data = new int[max_nr_class];
-                        System.arraycopy(count, 0, new_data, 0, count.length);
-                        count = new_data;
-                    }
-                    label[nr_class] = this_label;
-                    count[nr_class] = 1;
-                    ++nr_class;
-                }
-            }
-
-            for (i = 0; i < nr_class; i++) {
-                int n1 = count[i];
-                for (int j = i + 1; j < nr_class; j++) {
-                    int n2 = count[j];
-                    if (param.nu * (n1 + n2) / 2 > Math.min(n1, n2)) {
-                        return "specified nu is infeasible";
-                    }
-                }
-            }
-        }
-
-        return null;
     }
 
     public static int svm_check_probability_model(svm_model model) {

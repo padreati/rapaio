@@ -241,6 +241,21 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
         public Map<String, Mapping> getMappings() {
             return map;
         }
+
+        boolean checkValidProblem() {
+            if (type == SvmType.NU_SVC) {
+                for (int i = 0; i < levels.size(); i++) {
+                    int ni = map.get(levels.get(i)).size();
+                    for (int j = i + 1; j < levels.size(); j++) {
+                        int nj = map.get(levels.get(j)).size();
+                        if (nu * (ni + nj) / 2 > Math.min(ni, nj)) {
+                            throw new IllegalArgumentException("NU_SVC problem is not feasible.");
+                        }
+                    }
+                }
+            }
+            return true;
+        }
     }
 
     @Override
@@ -250,6 +265,8 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
         Var target = df.rvar(firstTargetName());
 
         ProblemInfo pi = ProblemInfo.from(x, target, this);
+
+        pi.checkValidProblem();
 
         model = Svm.svm_train(pi.computeProblem(), pi.computeParameters());
         problemInfo = pi;

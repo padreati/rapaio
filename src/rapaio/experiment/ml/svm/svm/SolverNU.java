@@ -26,14 +26,14 @@ package rapaio.experiment.ml.svm.svm;
  * <p>
  * additional constraint: e^T \alpha = constant
  */
-public final class SolverNU extends Solver {
+public final class SolverNU extends SolverC {
     private SolutionInfo si;
 
-    public void solve(int trainingSize, AbstractKernelMatrix q, double[] p, byte[] y,
+    public void solve(int len, AbstractKernelMatrix q, double[] p, byte[] y,
             double[] alpha, double cp, double cn, double eps,
             SolutionInfo si, int shrinking) {
         this.si = si;
-        super.solve(trainingSize, q, p, y, alpha, cp, cn, eps, si, shrinking);
+        super.solve(len, q, p, y, alpha, cp, cn, eps, si, shrinking);
     }
 
     // return 1 if already optimal, return 0 otherwise
@@ -44,29 +44,29 @@ public final class SolverNU extends Solver {
         //    (if quadratic coefficeint <= 0, replace it with tau)
         //    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
-        double gmaxp = -INF;
-        double gmaxp2 = -INF;
+        double gmaxp = Double.NEGATIVE_INFINITY;
+        double gmaxp2 = Double.NEGATIVE_INFINITY;
         int gmaxpIdx = -1;
 
-        double gmaxn = -INF;
-        double gmaxn2 = -INF;
+        double gmaxn = Double.NEGATIVE_INFINITY;
+        double gmaxn2 = Double.NEGATIVE_INFINITY;
         int gmaxnIdx = -1;
 
         int Gmin_idx = -1;
-        double obj_diff_min = INF;
+        double obj_diff_min = Double.POSITIVE_INFINITY;
 
-        for (int t = 0; t < active_size; t++) {
+        for (int t = 0; t < activeSize; t++) {
             if (y[t] == +1) {
-                if (!is_upper_bound(t)) {
-                    if (-G[t] >= gmaxp) {
-                        gmaxp = -G[t];
+                if (!isUpperBound(t)) {
+                    if (-grad[t] >= gmaxp) {
+                        gmaxp = -grad[t];
                         gmaxpIdx = t;
                     }
                 }
             } else {
-                if (!is_lower_bound(t)) {
-                    if (G[t] >= gmaxn) {
-                        gmaxn = G[t];
+                if (!isLowerBound(t)) {
+                    if (grad[t] >= gmaxn) {
+                        gmaxn = grad[t];
                         gmaxnIdx = t;
                     }
                 }
@@ -79,22 +79,22 @@ public final class SolverNU extends Solver {
         double[] qin = null;
         // null Q_ip not accessed: Gmaxp=-INF if ip=-1
         if (ip != -1) {
-            qip = Q.getQ(ip, active_size);
+            qip = q.getQ(ip, activeSize);
         }
         if (in != -1) {
-            qin = Q.getQ(in, active_size);
+            qin = q.getQ(in, activeSize);
         }
 
-        for (int j = 0; j < active_size; j++) {
+        for (int j = 0; j < activeSize; j++) {
             if (y[j] == +1) {
-                if (!is_lower_bound(j)) {
-                    double gradDiff = gmaxp + G[j];
-                    if (G[j] >= gmaxp2) {
-                        gmaxp2 = G[j];
+                if (!isLowerBound(j)) {
+                    double gradDiff = gmaxp + grad[j];
+                    if (grad[j] >= gmaxp2) {
+                        gmaxp2 = grad[j];
                     }
                     if (gradDiff > 0) {
                         double objDiff;
-                        double quadCoef = QD[ip] + QD[j] - 2 * qip[j];
+                        double quadCoef = qd[ip] + qd[j] - 2 * qip[j];
                         if (quadCoef > 0) {
                             objDiff = -(gradDiff * gradDiff) / quadCoef;
                         } else {
@@ -108,14 +108,14 @@ public final class SolverNU extends Solver {
                     }
                 }
             } else {
-                if (!is_upper_bound(j)) {
-                    double gradDiff = gmaxn - G[j];
-                    if (-G[j] >= gmaxn2) {
-                        gmaxn2 = -G[j];
+                if (!isUpperBound(j)) {
+                    double gradDiff = gmaxn - grad[j];
+                    if (-grad[j] >= gmaxn2) {
+                        gmaxn2 = -grad[j];
                     }
                     if (gradDiff > 0) {
                         double objDiff;
-                        double quadCoef = QD[in] + QD[j] - 2 * qin[j];
+                        double quadCoef = qd[in] + qd[j] - 2 * qin[j];
                         if (quadCoef > 0) {
                             objDiff = -(gradDiff * gradDiff) / quadCoef;
                         } else {
@@ -146,48 +146,48 @@ public final class SolverNU extends Solver {
     }
 
     private boolean be_shrunk(int i, double gmax1, double gmax2, double gmax3, double gmax4) {
-        if (is_upper_bound(i)) {
+        if (isUpperBound(i)) {
             if (y[i] == +1) {
-                return (-G[i] > gmax1);
+                return (-grad[i] > gmax1);
             } else {
-                return (-G[i] > gmax4);
+                return (-grad[i] > gmax4);
             }
-        } else if (is_lower_bound(i)) {
+        } else if (isLowerBound(i)) {
             if (y[i] == +1) {
-                return (G[i] > gmax2);
+                return (grad[i] > gmax2);
             } else {
-                return (G[i] > gmax3);
+                return (grad[i] > gmax3);
             }
         } else {
             return (false);
         }
     }
 
-    void do_shrinking() {
-        double Gmax1 = -INF;    // max { -y_i * grad(f)_i | y_i = +1, i in I_up(\alpha) }
-        double Gmax2 = -INF;    // max { y_i * grad(f)_i | y_i = +1, i in I_low(\alpha) }
-        double Gmax3 = -INF;    // max { -y_i * grad(f)_i | y_i = -1, i in I_up(\alpha) }
-        double Gmax4 = -INF;    // max { y_i * grad(f)_i | y_i = -1, i in I_low(\alpha) }
+    void doShrinking() {
+        double Gmax1 = Double.NEGATIVE_INFINITY;    // max { -y_i * grad(f)_i | y_i = +1, i in I_up(\alpha) }
+        double Gmax2 = Double.NEGATIVE_INFINITY;    // max { y_i * grad(f)_i | y_i = +1, i in I_low(\alpha) }
+        double Gmax3 = Double.NEGATIVE_INFINITY;    // max { -y_i * grad(f)_i | y_i = -1, i in I_up(\alpha) }
+        double Gmax4 = Double.NEGATIVE_INFINITY;    // max { y_i * grad(f)_i | y_i = -1, i in I_low(\alpha) }
 
         // find maximal violating pair first
         int i;
-        for (i = 0; i < active_size; i++) {
-            if (!is_upper_bound(i)) {
+        for (i = 0; i < activeSize; i++) {
+            if (!isUpperBound(i)) {
                 if (y[i] == +1) {
-                    if (-G[i] > Gmax1) {
-                        Gmax1 = -G[i];
+                    if (-grad[i] > Gmax1) {
+                        Gmax1 = -grad[i];
                     }
-                } else if (-G[i] > Gmax4) {
-                    Gmax4 = -G[i];
+                } else if (-grad[i] > Gmax4) {
+                    Gmax4 = -grad[i];
                 }
             }
-            if (!is_lower_bound(i)) {
+            if (!isLowerBound(i)) {
                 if (y[i] == +1) {
-                    if (G[i] > Gmax2) {
-                        Gmax2 = G[i];
+                    if (grad[i] > Gmax2) {
+                        Gmax2 = grad[i];
                     }
-                } else if (G[i] > Gmax3) {
-                    Gmax3 = G[i];
+                } else if (grad[i] > Gmax3) {
+                    Gmax3 = grad[i];
                 }
             }
         }
@@ -195,51 +195,51 @@ public final class SolverNU extends Solver {
         if (!unshrink && Math.max(Gmax1 + Gmax2, Gmax3 + Gmax4) <= eps * 10) {
             unshrink = true;
             reconstruct_gradient();
-            active_size = l;
+            activeSize = len;
         }
 
-        for (i = 0; i < active_size; i++) {
+        for (i = 0; i < activeSize; i++) {
             if (be_shrunk(i, Gmax1, Gmax2, Gmax3, Gmax4)) {
-                active_size--;
-                while (active_size > i) {
-                    if (!be_shrunk(active_size, Gmax1, Gmax2, Gmax3, Gmax4)) {
-                        swap_index(i, active_size);
+                activeSize--;
+                while (activeSize > i) {
+                    if (!be_shrunk(activeSize, Gmax1, Gmax2, Gmax3, Gmax4)) {
+                        swapIndex(i, activeSize);
                         break;
                     }
-                    active_size--;
+                    activeSize--;
                 }
             }
         }
     }
 
-    double calculate_rho() {
+    double calculateRho() {
         int nrFree1 = 0;
         int nrFree2 = 0;
-        double ub1 = INF;
-        double ub2 = INF;
-        double lb1 = -INF;
-        double lb2 = -INF;
+        double ub1 = Double.POSITIVE_INFINITY;
+        double ub2 = Double.POSITIVE_INFINITY;
+        double lb1 = Double.NEGATIVE_INFINITY;
+        double lb2 = Double.NEGATIVE_INFINITY;
         double sumFree1 = 0;
         double sumFree2 = 0;
 
-        for (int i = 0; i < active_size; i++) {
+        for (int i = 0; i < activeSize; i++) {
             if (y[i] == +1) {
-                if (is_upper_bound(i)) {
-                    lb1 = Math.max(lb1, G[i]);
-                } else if (is_lower_bound(i)) {
-                    ub1 = Math.min(ub1, G[i]);
+                if (isUpperBound(i)) {
+                    lb1 = Math.max(lb1, grad[i]);
+                } else if (isLowerBound(i)) {
+                    ub1 = Math.min(ub1, grad[i]);
                 } else {
                     ++nrFree1;
-                    sumFree1 += G[i];
+                    sumFree1 += grad[i];
                 }
             } else {
-                if (is_upper_bound(i)) {
-                    lb2 = Math.max(lb2, G[i]);
-                } else if (is_lower_bound(i)) {
-                    ub2 = Math.min(ub2, G[i]);
+                if (isUpperBound(i)) {
+                    lb2 = Math.max(lb2, grad[i]);
+                } else if (isLowerBound(i)) {
+                    ub2 = Math.min(ub2, grad[i]);
                 } else {
                     ++nrFree2;
-                    sumFree2 += G[i];
+                    sumFree2 += grad[i];
                 }
             }
         }
