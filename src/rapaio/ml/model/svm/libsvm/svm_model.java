@@ -19,11 +19,12 @@
  *
  */
 
-package rapaio.experiment.ml.svm.svm;
+package rapaio.ml.model.svm.libsvm;
 
 import rapaio.math.linear.DVector;
 
 public class svm_model implements java.io.Serializable {
+
     public svm_parameter param;    // parameter
     public int nr_class;        // number of classes, = 2 in regression/one class svm
     public int l;            // total #SV

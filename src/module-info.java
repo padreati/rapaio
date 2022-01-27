@@ -94,5 +94,6 @@ open module rapaio {
     exports rapaio.util.collection;
     exports rapaio.util.function;
     exports rapaio.util.hash;
-    exports rapaio.experiment.ml.svm;
+    exports rapaio.ml.model.svm.libsvm;
+    exports rapaio.experiment.core;
 }

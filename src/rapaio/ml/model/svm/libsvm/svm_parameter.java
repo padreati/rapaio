@@ -19,11 +19,11 @@
  *
  */
 
-package rapaio.experiment.ml.svm.svm;
+package rapaio.ml.model.svm.libsvm;
 
 import rapaio.ml.common.kernel.Kernel;
 
-public class svm_parameter implements Cloneable, java.io.Serializable {
+public class svm_parameter implements java.io.Serializable {
     /* svm_type */
     public static final int C_SVC = 0;
     public static final int NU_SVC = 1;
@@ -31,28 +31,36 @@ public class svm_parameter implements Cloneable, java.io.Serializable {
     public static final int EPSILON_SVR = 3;
     public static final int NU_SVR = 4;
 
-    public int svm_type;
+    public int svmType;
 
     public Kernel kernel;
 
     // these are for training only
-    public long cache_size; // in MB
+    public long cacheSize; // in MB
     public double eps;    // stopping criteria
-    public double C;    // for C_SVC, EPSILON_SVR and NU_SVR
-    public int nr_weight;        // for C_SVC
-    public int[] weight_label;    // for C_SVC
+    public double c;    // for C_SVC, EPSILON_SVR and NU_SVR
+    public int nrWeight;        // for C_SVC
+    public int[] weightLabel;    // for C_SVC
     public double[] weight;        // for C_SVC
     public double nu;    // for NU_SVC, ONE_CLASS, and NU_SVR
     public double p;    // for EPSILON_SVR
     public int shrinking;    // use the shrinking heuristics
     public int probability; // do probability estimates
 
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+    public svm_parameter copy() {
+        svm_parameter copy = new svm_parameter();
+        copy.svmType = svmType;
+        copy.kernel = kernel;
+        copy.cacheSize = cacheSize;
+        copy.eps = eps;
+        copy.c = c;
+        copy.nrWeight = nrWeight;
+        copy.weightLabel = weightLabel;
+        copy.weight = weight;
+        copy.nu = nu;
+        copy.p = p;
+        copy.shrinking = shrinking;
+        copy.probability = probability;
+        return copy;
     }
-
 }

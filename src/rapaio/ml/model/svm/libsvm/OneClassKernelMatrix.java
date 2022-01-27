@@ -19,30 +19,21 @@
  *
  */
 
-package rapaio.experiment.ml.svm.svm;
+package rapaio.ml.model.svm.libsvm;
 
-import java.util.Arrays;
-
-import rapaio.math.linear.DVector;
-import rapaio.ml.common.kernel.Kernel;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
 
-/**
- * Q matrix for C formulation.
- */
-class SvcKernelMatrix extends AbstractKernelMatrix {
-    private final byte[] y;
+class OneClassKernelMatrix extends AbstractKernelMatrix {
     private final Cache cache;
     private final double[] qd;
 
-    public SvcKernelMatrix(int l, DVector[] xs, Kernel kernel, long cacheSize, byte[] y) {
-        super(xs, kernel);
-        this.y = Arrays.copyOf(y, y.length);
-        this.cache = new Cache(l, cacheSize * (1 << 20));
-        this.qd = new double[l];
-        for (int i = 0; i < l; i++) {
-            this.qd[i] = kernel.compute(xs[i], xs[i]);
+    OneClassKernelMatrix(svm_problem prob, svm_parameter param) {
+        super(prob.xs, param.kernel);
+        cache = new Cache(prob.len, param.cacheSize * (1 << 20));
+        qd = new double[prob.len];
+        for (int i = 0; i < prob.len; i++) {
+            qd[i] = kernel.compute(xs[i], xs[i]);
         }
     }
 
@@ -51,7 +42,7 @@ class SvcKernelMatrix extends AbstractKernelMatrix {
         int start = cache.getData(i, data, len);
         if (start < len) {
             for (int j = start; j < len; j++) {
-                data.get()[j] = y[i] * y[j] * kernel.compute(xs[i], xs[j]);
+                data.get()[j] = kernel.compute(xs[i], xs[j]);
             }
         }
         return data.get();
@@ -64,7 +55,6 @@ class SvcKernelMatrix extends AbstractKernelMatrix {
     void swapIndex(int i, int j) {
         cache.swapIndex(i, j);
         super.swapIndex(i, j);
-        TArrays.swap(y, i, j);
         TArrays.swap(qd, i, j);
     }
 }

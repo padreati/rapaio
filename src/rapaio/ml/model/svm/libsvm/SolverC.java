@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.ml.svm.svm;
+package rapaio.ml.model.svm.libsvm;
 
 import java.util.logging.Logger;
 
@@ -91,16 +91,6 @@ public class SolverC {
 
     boolean is_free(int i) {
         return alphaStatus[i] == ALPHA_STATUS_FREE;
-    }
-
-    // java: information about solution except alpha,
-    // because we cannot return multiple values otherwise...
-    static class SolutionInfo {
-        public double obj;
-        public double rho;
-        public double pUpperBound;
-        public double nUpperBound;
-        public double r;    // for Solver_NU
     }
 
     void swapIndex(int i, int j) {
@@ -203,7 +193,7 @@ public class SolverC {
     }
 
     public void solve(int len, AbstractKernelMatrix Q, double[] p_, byte[] y_,
-            double[] alpha_, double Cp, double Cn, double eps, SolutionInfo si, int shrinking) {
+            double[] alpha_, double Cp, double Cn, double eps, Svm.SolutionInfo si, int shrinking) {
         this.len = len;
         this.q = Q;
         this.qd = Q.getQD();

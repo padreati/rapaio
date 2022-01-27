@@ -185,20 +185,20 @@ public class Datasets {
         int n = 100;
         List<Var> vars = new ArrayList<>();
         vars.add(VarBinary.fromIndex(n,
-                row -> row % 7 == 2 ? Integer.MIN_VALUE : RandomSource.nextInt(3) - 1)
+                        row -> row % 7 == 2 ? Integer.MIN_VALUE : RandomSource.nextInt(3) - 1)
                 .name("boolean"));
         vars.add(VarDouble.from(n,
-                row -> row % 10 == -1 ? Double.NaN : RandomSource.nextDouble())
+                        row -> row % 10 == -1 ? Double.NaN : RandomSource.nextDouble())
                 .name("double"));
         vars.add(VarInt.from(n,
-                row -> row % 13 == 0 ? Integer.MIN_VALUE : RandomSource.nextInt(100) - 50)
+                        row -> row % 13 == 0 ? Integer.MIN_VALUE : RandomSource.nextInt(100) - 50)
                 .name("int"));
         vars.add(VarLong.from(n,
-                row -> row % 17 == 0 ? Long.MIN_VALUE : 3L * RandomSource.nextInt(Integer.MAX_VALUE))
+                        row -> row % 17 == 0 ? Long.MIN_VALUE : 3L * RandomSource.nextInt(Integer.MAX_VALUE))
                 .name("long"));
-        String[] labels = new String[]{"a", "b", "c", "d", "e"};
+        String[] labels = new String[] {"a", "b", "c", "d", "e"};
         vars.add(VarNominal.from(n,
-                row -> row % 17 == 5 ? "?" : labels[RandomSource.nextInt(labels.length)])
+                        row -> row % 17 == 5 ? "?" : labels[RandomSource.nextInt(labels.length)])
                 .name("nominal"));
         return SolidFrame.byVars(vars);
     }
@@ -237,15 +237,13 @@ public class Datasets {
                 .readUrl("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/vowel.test");
     }
 
-    public static void main(String[] args) {
-        Frame train = loadVowelTrain();
-        train.printSummary();
-
-        ClassifierModel model = CForest.newModel().runs.set(200);
-        model.fit(train, "y");
-
-        Frame test = Datasets.loadVowelTest();
-        ClassifierResult result = model.predict(test);
-        result.printSummary();
+    public static Frame loadPhoneData65k() {
+        try {
+            return Csv.instance()
+                    .defaultTypes.set(List.of(VarType.STRING))
+                    .read(Datasets.class.getResourceAsStream("phone_data_65535.csv"));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }

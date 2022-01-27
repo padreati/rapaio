@@ -2532,15 +2532,9 @@ public class svm {
         }
     }
 
-    static final String svm_type_table[] =
-            {
-                    "c_svc", "nu_svc", "one_class", "epsilon_svr", "nu_svr",
-            };
+    static final String[] svm_type_table = {"c_svc", "nu_svc", "one_class", "epsilon_svr", "nu_svr"};
 
-    static final String kernel_type_table[] =
-            {
-                    "linear", "polynomial", "rbf", "sigmoid", "precomputed"
-            };
+    static final String[] kernel_type_table = {"linear", "polynomial", "rbf", "sigmoid", "precomputed"};
 
     private static double atof(String s) {
         return Double.valueOf(s).doubleValue();

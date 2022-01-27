@@ -28,7 +28,7 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.svm.SVMClassifier;
+import rapaio.ml.model.svm.SVMClassifier;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.RBFKernel;
@@ -59,7 +59,7 @@ public class IrisTest {
         // rapaio
 
         SVMClassifier c = new SVMClassifier()
-                .type.set(SVMClassifier.SvmType.C_SVC)
+                .type.set(SVMClassifier.Penalty.C)
                 .c.set(10.0)
                 .probability.set(true)
                 .kernel.set(new RBFKernel(0.7));

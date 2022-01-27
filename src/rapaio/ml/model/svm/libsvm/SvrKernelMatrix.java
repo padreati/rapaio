@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.ml.svm.svm;
+package rapaio.ml.model.svm.libsvm;
 
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.Kernel;
@@ -36,22 +36,22 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
     private final double[][] buffer;
     private final double[] qd;
 
-    SvrKernelMatrix(int l, DVector[] xs, Kernel kernel, long cacheSize) {
+    SvrKernelMatrix(int len, DVector[] xs, Kernel kernel, long cacheSize) {
         super(xs, kernel);
-        this.l = l;
-        cache = new Cache(l, cacheSize * (1 << 20));
-        qd = new double[2 * l];
-        sign = new byte[2 * l];
-        index = new int[2 * l];
-        for (int k = 0; k < l; k++) {
+        this.l = len;
+        cache = new Cache(len, cacheSize * (1 << 20));
+        qd = new double[2 * len];
+        sign = new byte[2 * len];
+        index = new int[2 * len];
+        for (int k = 0; k < len; k++) {
             sign[k] = 1;
-            sign[k + l] = -1;
+            sign[k + len] = -1;
             index[k] = k;
-            index[k + l] = k;
+            index[k + len] = k;
             qd[k] = kernel.compute(xs[k], xs[k]);
-            qd[k + l] = qd[k];
+            qd[k + len] = qd[k];
         }
-        buffer = new double[2][2 * l];
+        buffer = new double[2][2 * len];
         nextBuffer = 0;
     }
 

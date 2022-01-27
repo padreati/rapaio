@@ -19,21 +19,22 @@
  *
  */
 
-package rapaio.core.tools;
+package rapaio.experiment.core;
 
-import java.awt.Color;
 import java.util.function.BiFunction;
 
+import rapaio.core.tools.GridData;
 import rapaio.data.VarDouble;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.linear.DVector;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.sys.Experimental;
 
 /**
  * Two dimension grid of vector data.
  */
-public class ChannelMeshGrid {
+@Experimental
+public class VectorDataGrid {
 
     private final int channels;
     private final VarDouble xRange;
@@ -41,7 +42,7 @@ public class ChannelMeshGrid {
 
     private DVector[] values;
 
-    public ChannelMeshGrid(int channels, double xMin, double xMax, double yMin, double yMax, double step) {
+    public VectorDataGrid(int channels, double xMin, double xMax, double yMin, double yMax, double step) {
         this.channels = channels;
         xRange = VarDouble.seq(xMin, xMax, step);
         yRange = VarDouble.seq(yMin, yMax, step);
@@ -105,15 +106,16 @@ public class ChannelMeshGrid {
             for (int i = 0; i < steps + 1; i++) {
                 q[i] = min + i * (max - min) / steps;
             }
+            q[q.length-1] *= 1.0001;
 
             p.isoBands(grid, ColorGradient.newMonoHueGradient(hues[ch], 0f, 1f, 0.8f, q), q);
-            p.isoLines(grid, () -> {
-                Color[] colors = new Color[100];
-                for (int i = 0; i < colors.length; i++) {
-                    colors[i] = Color.BLACK;
-                }
-                return colors;
-            }, q);
+//            p.isoLines(grid, () -> {
+//                Color[] colors = new Color[100];
+//                for (int i = 0; i < colors.length; i++) {
+//                    colors[i] = Color.BLACK;
+//                }
+//                return colors;
+//            }, q);
         }
 
     }

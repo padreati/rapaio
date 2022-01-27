@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.ml.svm.svm;
+package rapaio.ml.model.svm.libsvm;
 
 import rapaio.math.linear.DVector;
 

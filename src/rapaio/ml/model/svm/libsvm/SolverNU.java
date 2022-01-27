@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.ml.svm.svm;
+package rapaio.ml.model.svm.libsvm;
 
 /**
  * Solver for nu-svm classification and regression.
@@ -27,11 +27,11 @@ package rapaio.experiment.ml.svm.svm;
  * additional constraint: e^T \alpha = constant
  */
 public final class SolverNU extends SolverC {
-    private SolutionInfo si;
+    private Svm.SolutionInfo si;
 
     public void solve(int len, AbstractKernelMatrix q, double[] p, byte[] y,
             double[] alpha, double cp, double cn, double eps,
-            SolutionInfo si, int shrinking) {
+            Svm.SolutionInfo si, int shrinking) {
         this.si = si;
         super.solve(len, q, p, y, alpha, cp, cn, eps, si, shrinking);
     }

@@ -43,7 +43,7 @@ import rapaio.ml.model.ClassifierResult;
  */
 public class GridData implements Serializable {
 
-    public static GridData fromPrediction(ClassifierModel c, Frame df, String xName, String yName, String labelName, int bins) {
+    public static GridData fromPrediction(ClassifierModel<?, ?, ?> c, Frame df, String xName, String yName, String labelName, int bins) {
         return fromPrediction(c, df, xName, yName, labelName, bins, 0.05);
     }
 

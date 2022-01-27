@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.ml.svm.svm;
+package rapaio.ml.model.svm.libsvm;
 
 import java.util.Arrays;
 
@@ -39,10 +39,9 @@ abstract class AbstractKernelMatrix {
 
     abstract double[] getQD();
 
+    abstract double[] getQ(int column, int len);
+
     void swapIndex(int i, int j) {
         TArrays.swap(xs, i, j);
     }
-
-    abstract double[] getQ(int column, int len);
-
 }
