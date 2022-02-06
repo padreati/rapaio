@@ -172,7 +172,7 @@ public class XWilkinsonTest {
         }
     }
 
-    @Test
+//    @Test
     void timeGraph() {
         var time = VarInstant.empty().name("time");
         var values = VarDouble.empty().name("values");
