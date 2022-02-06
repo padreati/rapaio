@@ -188,12 +188,12 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void setInstant(int row, Instant value) {
-        throw new OperationNotAvailableException();
+        source.setInstant(mapping.get(row), value);
     }
 
     @Override
     public Instant getInstant(int row) {
-        throw new OperationNotAvailableException();
+        return source.getInstant(mapping.get(row));
     }
 
     @Override

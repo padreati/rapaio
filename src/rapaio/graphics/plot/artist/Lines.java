@@ -27,8 +27,11 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serial;
 
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarType;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
@@ -49,25 +52,20 @@ public class Lines extends Artist {
     }
 
     public Lines(Var x, Var y, GOption<?>... opts) {
-        this.x = VarDouble.empty().name(x.name());
-        this.y = VarDouble.empty().name(y.name());
-        for (int i = 0; i < Math.min(x.size(), y.size()); i++) {
-            if (x.isMissing(i) || y.isMissing(i))
-                continue;
-            this.x.addDouble(x.getDouble(i));
-            this.y.addDouble(y.getDouble(i));
-        }
+        Frame df = BoundFrame.byVars(x, y).stream().complete().toMappedFrame();
+        this.x = df.rvar(0).copy();
+        this.y = df.rvar(1).copy();
         this.options.bind(opts);
     }
 
     @Override
     public Axis.Type xAxisType() {
-        return Axis.Type.NUMERIC;
+        return x.type() == VarType.INSTANT ? Axis.Type.INSTANT : Axis.Type.NUMERIC;
     }
 
     @Override
     public Axis.Type yAxisType() {
-        return Axis.Type.NUMERIC;
+        return y.type() == VarType.INSTANT ? Axis.Type.INSTANT : Axis.Type.NUMERIC;
     }
 
     @Override
@@ -108,109 +106,114 @@ public class Lines extends Artist {
         }
     }
 
-}
 
-/**
- * Code to compute a line segment clipped by a rectangle
- * <p>
- * Code copied from wikipedia page for Cohen-Sutherland algorithm:
- * <p>
- * https://en.wikipedia.org/wiki/Cohen%E2%80%93Sutherland_algorithm
- */
-class Clip {
+    /**
+     * Code to compute a line segment clipped by a rectangle
+     * <p>
+     * Code copied from wikipedia page for Cohen-Sutherland algorithm:
+     * <p>
+     * https://en.wikipedia.org/wiki/Cohen%E2%80%93Sutherland_algorithm
+     */
+    private static final class Clip {
 
-    private static final int INSIDE = 0; // 0000
-    private static final int LEFT = 1;   // 0001
-    private static final int RIGHT = 2;  // 0010
-    private static final int BOTTOM = 4; // 0100
-    private static final int TOP = 8;    // 1000
+        private static final int INSIDE = 0; // 0000
+        private static final int LEFT = 1;   // 0001
+        private static final int RIGHT = 2;  // 0010
+        private static final int BOTTOM = 4; // 0100
+        private static final int TOP = 8;    // 1000
 
-    private final double xmin;
-    private final double ymin;
-    private final double xmax;
-    private final double ymax;
+        private final double xmin;
+        private final double ymin;
+        private final double xmax;
+        private final double ymax;
 
-    public Clip(double x1, double y1, double x2, double y2) {
-        this.xmin = Math.min(x1, x2);
-        this.ymin = Math.min(y1, y2);
-        this.xmax = Math.max(x1, x2);
-        this.ymax = Math.max(y1, y2);
-    }
-    // Compute the bit code for a point (x, y) using the clip rectangle
-    // bounded diagonally by (xmin, ymin), and (xmax, ymax)
+        public Clip(double x1, double y1, double x2, double y2) {
+            this.xmin = Math.min(x1, x2);
+            this.ymin = Math.min(y1, y2);
+            this.xmax = Math.max(x1, x2);
+            this.ymax = Math.max(y1, y2);
+        }
+        // Compute the bit code for a point (x, y) using the clip rectangle
+        // bounded diagonally by (xmin, ymin), and (xmax, ymax)
 
-    // ASSUME THAT xmax, xmin, ymax and ymin are global constants.
+        // ASSUME THAT xmax, xmin, ymax and ymin are global constants.
 
-    private int computeOutCode(double x, double y) {
-        int code;
+        private int computeOutCode(double x, double y) {
+            int code;
 
-        code = INSIDE;          // initialised as being inside of clip window
+            code = INSIDE;          // initialised as being inside of clip window
 
-        if (x < xmin)           // to the left of clip window
-            code |= LEFT;
-        else if (x > xmax)      // to the right of clip window
-            code |= RIGHT;
-        if (y < ymin)           // below the clip window
-            code |= BOTTOM;
-        else if (y > ymax)      // above the clip window
-            code |= TOP;
+            if (x < xmin) {
+                // to the left of clip window
+                code |= LEFT;
+            } else if (x > xmax) {
+                // to the right of clip window
+                code |= RIGHT;
+            }
+            if (y < ymin) {
+                // below the clip window
+                code |= BOTTOM;
+            } else if (y > ymax) {
+                // above the clip window
+                code |= TOP;
+            }
+            return code;
+        }
 
-        return code;
-    }
+        // Cohen-Sutherland clipping algorithm clips a line from
+        // P0 = (x0, y0) to P1 = (x1, y1) against a rectangle with
+        // diagonal from (xmin, ymin) to (xmax, ymax).
+        public Rectangle2D lineClip(double x0, double y0, double x1, double y1) {
+            // compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
+            int outcode0 = computeOutCode(x0, y0);
+            int outcode1 = computeOutCode(x1, y1);
+            boolean accept = false;
 
-    // Cohen-Sutherland clipping algorithm clips a line from
-    // P0 = (x0, y0) to P1 = (x1, y1) against a rectangle with
-    // diagonal from (xmin, ymin) to (xmax, ymax).
-    public Rectangle2D lineClip(double x0, double y0, double x1, double y1) {
-        // compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
-        int outcode0 = computeOutCode(x0, y0);
-        int outcode1 = computeOutCode(x1, y1);
-        boolean accept = false;
-
-        while (true) {
-            if ((outcode0 | outcode1) == 0) { // Bitwise OR is 0. Trivially accept and get out of loop
-                accept = true;
-                break;
-            } else if ((outcode0 & outcode1) > 0) { // Bitwise AND is not 0. Trivially reject and get out of loop
-                break;
-            } else {
-                // failed both tests, so calculate the line segment to clip
-                // from an outside point to an intersection with clip edge
-                double x = 0;
-                double y = 0;
-
-                // At least one endpoint is outside the clip rectangle; pick it.
-                int outcodeOut = outcode0 > 0 ? outcode0 : outcode1;
-
-                // Now find the intersection point;
-                // use formulas y = y0 + slope * (x - x0), x = x0 + (1 / slope) * (y - y0)
-                if ((outcodeOut & TOP) > 0) {           // point is above the clip rectangle
-                    x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0);
-                    y = ymax;
-                } else if ((outcodeOut & BOTTOM) > 0) { // point is below the clip rectangle
-                    x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0);
-                    y = ymin;
-                } else if ((outcodeOut & RIGHT) > 0) {  // point is to the right of clip rectangle
-                    y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0);
-                    x = xmax;
-                } else if ((outcodeOut & LEFT) > 0) {   // point is to the left of clip rectangle
-                    y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0);
-                    x = xmin;
-                }
-
-                // Now we move outside point to intersection point to clip
-                // and get ready for next pass.
-                if (outcodeOut == outcode0) {
-                    x0 = x;
-                    y0 = y;
-                    outcode0 = computeOutCode(x0, y0);
+            while (true) {
+                if ((outcode0 | outcode1) == 0) { // Bitwise OR is 0. Trivially accept and get out of loop
+                    accept = true;
+                    break;
+                } else if ((outcode0 & outcode1) > 0) { // Bitwise AND is not 0. Trivially reject and get out of loop
+                    break;
                 } else {
-                    x1 = x;
-                    y1 = y;
-                    outcode1 = computeOutCode(x1, y1);
+                    // failed both tests, so calculate the line segment to clip
+                    // from an outside point to an intersection with clip edge
+                    double x = 0;
+                    double y = 0;
+
+                    // At least one endpoint is outside the clip rectangle; pick it.
+                    int outcodeOut = outcode0 > 0 ? outcode0 : outcode1;
+
+                    // Now find the intersection point;
+                    // use formulas y = y0 + slope * (x - x0), x = x0 + (1 / slope) * (y - y0)
+                    if ((outcodeOut & TOP) > 0) {           // point is above the clip rectangle
+                        x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0);
+                        y = ymax;
+                    } else if ((outcodeOut & BOTTOM) > 0) { // point is below the clip rectangle
+                        x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0);
+                        y = ymin;
+                    } else if ((outcodeOut & RIGHT) > 0) {  // point is to the right of clip rectangle
+                        y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0);
+                        x = xmax;
+                    } else if ((outcodeOut & LEFT) > 0) {   // point is to the left of clip rectangle
+                        y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0);
+                        x = xmin;
+                    }
+
+                    // Now we move outside point to intersection point to clip
+                    // and get ready for next pass.
+                    if (outcodeOut == outcode0) {
+                        x0 = x;
+                        y0 = y;
+                        outcode0 = computeOutCode(x0, y0);
+                    } else {
+                        x1 = x;
+                        y1 = y;
+                        outcode1 = computeOutCode(x1, y1);
+                    }
                 }
             }
+            return accept ? new Rectangle2D.Double(x0, y0, x1 - x0, y1 - y0) : null;
         }
-        return accept ? new Rectangle2D.Double(x0, y0, x1 - x0, y1 - y0) : null;
     }
 }

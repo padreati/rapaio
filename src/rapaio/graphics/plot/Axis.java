@@ -23,6 +23,11 @@ package rapaio.graphics.plot;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +47,8 @@ public final class Axis implements Serializable {
     public enum Type {
         UNKNOWN,
         NUMERIC,
-        CATEGORY
+        CATEGORY,
+        INSTANT
     }
 
     private static final double EXTENDED_FACTOR = 1.05;
@@ -117,6 +123,10 @@ public final class Axis implements Serializable {
     }
 
     public void extendedRange() {
+        // no extension for instance type
+        if (type == Type.INSTANT) {
+            return;
+        }
         double extRange = Math.abs(max - min) * EXTENDED_FACTOR;
         double mid = min + (max - min) / 2;
         if (min == max) {
@@ -172,33 +182,69 @@ public final class Axis implements Serializable {
         tickers.clear();
         labels.clear();
 
-        double rangeLength = length();
-
         int spots = (int) Math.floor(span / plot.thickerMinSpace) + 1;
         if (spots < 2) {
             return;
         }
 
-        if (categoryMap.isEmpty()) {
-            XWilkinson.Labels labels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(min, max, spots);
-
-            for (double label : labels.getList()) {
-                tickers.add((label - min) * span / length());
-                this.labels.add(labels.getFormattedValue(label));
-            }
-            return;
+        switch (type) {
+            case CATEGORY -> computeCategoryMarkers(span, spots);
+            case INSTANT -> computeInstantMarkers(span, spots);
+            default -> computeNumericMarkers(span, spots);
         }
+    }
 
+    private void computeCategoryMarkers(double span, int spots) {
         for (Map.Entry<String, Double> entry : categoryMap.entrySet()) {
             tickers.add((entry.getValue() - min) * span / length());
             labels.add(entry.getKey());
         }
     }
 
+    private void computeInstantMarkers(double span, int spots) {
+
+        XWilkinson.Labels xlabels;
+        SimpleDateFormat sdf;
+
+        long range = (long) (max - min + 1);
+        Duration duration = Duration.of(range, ChronoUnit.MILLIS);
+        if (duration.toDays() > 2 * 365) {
+            xlabels = XWilkinson.forYears(XWilkinson.DEEFAULT_EPS).searchBounded(min, max, spots);
+            sdf = new SimpleDateFormat("yyyy");
+        } else if (duration.toDays() > 2 * 30) {
+            xlabels = XWilkinson.forMonths(XWilkinson.DEEFAULT_EPS).searchBounded(min, max, spots);
+            sdf = new SimpleDateFormat("yyyy.MM");
+        } else if (duration.toDays() > 2) {
+            xlabels = XWilkinson.forDays(XWilkinson.DEEFAULT_EPS).searchBounded(min, max, spots);
+            sdf = new SimpleDateFormat("yyyy.MM.dd");
+        } else if (duration.toMinutes() > 2) {
+            xlabels = XWilkinson.forHours24(XWilkinson.DEEFAULT_EPS).searchBounded(min, max, spots);
+            sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm");
+        } else if (duration.toSeconds() > 2) {
+            xlabels = XWilkinson.forSeconds(XWilkinson.DEEFAULT_EPS).searchBounded(min, max, spots);
+            sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        } else {
+            xlabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(min, max, spots);
+            sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss.SSS");
+        }
+
+        for (double value : xlabels.getList()) {
+            tickers.add((value - min) * span / length());
+            labels.add(sdf.format(Date.from(Instant.ofEpochMilli((long) value))));
+        }
+
+    }
+
+    private void computeNumericMarkers(double span, int spots) {
+        XWilkinson.Labels numLabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(min, max, spots);
+        for (double label : numLabels.getList()) {
+            tickers.add((label - min) * span / length());
+            labels.add(numLabels.getFormattedValue(label));
+        }
+    }
+
     public String toString() {
-        return "Axis{min=" + min + ", max=" + max +
-                ", tickers=" + tickers.stream().map(String::valueOf).collect(Collectors.joining(",")) +
-                ", labels=" + String.join(",", labels) +
-                '}';
+        return "Axis{min=" + min + ", max=" + max + ", tickers=" + tickers.stream().map(String::valueOf).collect(Collectors.joining(","))
+                + ", labels=" + String.join(",", labels) + '}';
     }
 }

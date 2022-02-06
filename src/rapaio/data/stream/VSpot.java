@@ -23,6 +23,7 @@ package rapaio.data.stream;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Objects;
 
 import rapaio.data.Var;
@@ -114,6 +115,14 @@ public record VSpot(int row, Var rvar) implements Comparable<VSpot>, Serializabl
      */
     public void setLong(long value) {
         rvar.setLong(row, value);
+    }
+
+    public Instant getInstant() {
+        return rvar.getInstant(row);
+    }
+
+    public void setInstant(Instant value) {
+        rvar.setInstant(row, value);
     }
 
     @Override

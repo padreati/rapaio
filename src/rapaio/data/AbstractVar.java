@@ -65,11 +65,7 @@ public abstract class AbstractVar implements Var {
 
         switch (type()) {
             case INT:
-                VarInt idx = VarInt.empty(size()).name(name());
-                for (int i = 0; i < size(); i++) {
-                    idx.setInt(i, getInt(i));
-                }
-                return idx;
+                return VarInt.from(size(), this::getInt).name(name());
             case LONG:
                 VarLong stamp = VarLong.empty(size()).name(name());
                 for (int i = 0; i < size(); i++) {
@@ -108,6 +104,8 @@ public abstract class AbstractVar implements Var {
                 return nom;
             case STRING:
                 return VarString.from(size(), this::getLabel).name(name());
+            case INSTANT:
+                return VarInstant.from(size(), this::getInstant).name(name());
             default:
                 throw new IllegalArgumentException("Variable type does not hav an implementation.");
         }
