@@ -171,23 +171,4 @@ public class XWilkinsonTest {
             System.out.println(lt);
         }
     }
-
-//    @Test
-    void timeGraph() {
-        var time = VarInstant.empty().name("time");
-        var values = VarDouble.empty().name("values");
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(2012, 1, 1, 12, 30);
-        Instant start = cal.toInstant();
-        Normal normal = Normal.std();
-
-        for (int i = 0; i < 40; i++) {
-            time.addInstant(start);
-            values.addDouble(Math.sin(i * MathTools.DOUBLE_PI * 0.2) + normal.sampleNext());
-            start = start.plus(30, ChronoUnit.MINUTES);
-        }
-
-        WS.draw(Plotter.lines(time, values));
-    }
 }

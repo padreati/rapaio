@@ -2192,7 +2192,16 @@ public final class DoubleArrays {
         }
     }
 
-    protected record Segment(int offset, int length, int level) {
+    private static class Segment {
+        final int offset;
+        final int length;
+        final int level;
+
+        public Segment(int offset, int length, int level) {
+            this.offset = offset;
+            this.length = length;
+            this.level = level;
+        }
     }
 
     private static final Segment POISON_PILL = new Segment(-1, -1, -1);

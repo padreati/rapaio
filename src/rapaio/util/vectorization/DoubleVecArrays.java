@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.util.collection;
+package rapaio.util.vectorization;
 
 
 import static jdk.incubator.vector.VectorOperators.ADD;
@@ -39,6 +39,10 @@ public final class DoubleVecArrays {
     private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
     private static final int SPECIES_LEN = SPECIES.length();
 
+    public static void binaryOp(DoubleBinaryOp op, double[] t, int tOff, double s, int len) {
+        binaryOpTo(op, t, tOff, s, t, tOff, len);
+    }
+
     /**
      * Adds a scalar value to elements of an array (vectorized version).
      *
@@ -48,15 +52,19 @@ public final class DoubleVecArrays {
      * @param len  length
      */
     public static void add(double[] t, int tOff, double s, int len) {
-        int bound = SPECIES.loopBound(len) + tOff;
-        int i = tOff;
+        binaryOp(DoubleBinaryOp.ADD, t, tOff, s, len);
+    }
+
+    public static void binaryOpTo(DoubleBinaryOp op, double[] x, int xOff, double s, double[] to, int toOff, int len) {
+        int bound = SPECIES.loopBound(len);
+        int i = 0;
         var sv = DoubleVector.broadcast(SPECIES, s);
         for (; i < bound; i += SPECIES_LEN) {
-            var tv = DoubleVector.fromArray(SPECIES, t, i);
-            tv.add(sv).intoArray(t, i);
+            var tv = DoubleVector.fromArray(SPECIES, x, xOff + i);
+            tv.lanewise(op.operator(), sv).intoArray(to, toOff + i);
         }
-        for (; i < len + tOff; i++) {
-            t[i] += s;
+        for (; i < toOff + len; i++) {
+            to[toOff + i] = op.apply(x[xOff + i], s);
         }
     }
 
@@ -71,16 +79,7 @@ public final class DoubleVecArrays {
      * @param len   number of elements to be processed
      */
     public static void addTo(double[] x, int xOff, double s, double[] to, int toOff, int len) {
-        int bound = SPECIES.loopBound(len);
-        int i = 0;
-        var sv = DoubleVector.broadcast(SPECIES, s);
-        for (; i < bound; i += SPECIES_LEN) {
-            var tv = DoubleVector.fromArray(SPECIES, x, xOff + i);
-            tv.add(sv).intoArray(to, toOff + i);
-        }
-        for (; i < toOff + len; i++) {
-            to[toOff + i] = x[xOff + i] + s;
-        }
+        binaryOpTo(DoubleBinaryOp.ADD, x, xOff, s, to, toOff, len);
     }
 
     /**

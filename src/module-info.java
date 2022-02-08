@@ -96,4 +96,5 @@ open module rapaio {
     exports rapaio.util.hash;
     exports rapaio.ml.model.svm.libsvm;
     exports rapaio.experiment.core;
+    exports rapaio.util.vectorization;
 }
