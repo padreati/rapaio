@@ -27,6 +27,8 @@ open module rapaio {
 
     exports rapaio.datasets;
 
+    exports rapaio.finance.data;
+
     exports rapaio.graphics;
     exports rapaio.graphics.base;
     exports rapaio.graphics.opt;

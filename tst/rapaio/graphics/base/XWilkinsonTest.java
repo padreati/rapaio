@@ -146,29 +146,4 @@ public class XWilkinsonTest {
             System.out.println(lt);
         }
     }
-
-    @Test
-    void timeTest() {
-
-        XWilkinson x = XWilkinson.forMinutes(XWilkinson.DEEFAULT_EPS);
-        LocalTime start = LocalTime.now();
-        LocalTime end = start.plusMinutes(245); // add 4 hrs 5 mins (245 mins) to the start
-
-        int dmin = start.toSecondOfDay() / 60;
-        int dmax = end.toSecondOfDay() / 60;
-        if (dmin > dmax) {
-            // if adding 4 hrs exceeds the midnight simply swap the values this is just an
-            // example...
-            int swap = dmin;
-            dmin = dmax;
-            dmax = swap;
-        }
-        System.out.println("dmin: " + dmin + " dmax: " + dmax);
-        XWilkinson.Labels labels = x.search(dmin, dmax, 15);
-        System.out.println("labels");
-        for (double time = labels.getMin(); time < labels.getMax(); time += labels.getStep()) {
-            LocalTime lt = LocalTime.ofSecondOfDay(Double.valueOf(time).intValue() * 60);
-            System.out.println(lt);
-        }
-    }
 }

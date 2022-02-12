@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.stock.data;
+package rapaio.finance.data;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -36,13 +36,10 @@ import rapaio.data.VarInt;
 import rapaio.data.VarLong;
 
 /**
- * Summary bar of data. The data bar is a summary of transaction values during a specific period of time.
+ * Summary financial bar of data. The data bar is a summary of transaction values during a specific period of time.
  * <p>
  * If multiple values are produced at various times the data bar summary is required to
  * handle all that information using equal time intervals.
- * <p>
- * The time interval which is covered by this bar is described by {@link #time()} which represents the start of the interval and
- * {@link #duration()} which tell us how long was the interval.
  * <p>
  * The values covered by this bar are summarized by the following:
  * <ul>
@@ -55,9 +52,8 @@ import rapaio.data.VarLong;
  *     <li>count</li> number of transactions
  * </ul>
  */
-public record SBar(Instant time, Duration duration,
-                   double high, double low, double open, double close, double wap,
-                   long volume, int count) {
+public record FinBar(Instant time, double high, double low, double open, double close, double wap,
+                     long volume, int count) {
 
     /**
      * Builds a data frame with time sorted values from a list of data bars.
@@ -65,7 +61,7 @@ public record SBar(Instant time, Duration duration,
      * @param bars collection of data bars
      * @return data frame
      */
-    public static Frame asDf(Collection<SBar> bars) {
+    public static Frame asDf(Collection<FinBar> bars) {
         var time = VarInstant.empty().name("time");
         var open = VarDouble.empty().name("open");
         var low = VarDouble.empty().name("low");
@@ -75,9 +71,9 @@ public record SBar(Instant time, Duration duration,
         var volume = VarLong.empty().name("volume");
         var count = VarInt.empty().name("count");
 
-        List<SBar> copy = new ArrayList<>(bars);
-        copy.sort(Comparator.comparing(SBar::time));
-        for (SBar bar : copy) {
+        List<FinBar> copy = new ArrayList<>(bars);
+        copy.sort(Comparator.comparing(FinBar::time));
+        for (FinBar bar : copy) {
             time.addInstant(bar.time);
             open.addDouble(bar.open);
             high.addDouble(bar.high);
