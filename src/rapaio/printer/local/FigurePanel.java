@@ -34,6 +34,9 @@ import javax.swing.SwingWorker;
 
 import rapaio.graphics.Figure;
 import rapaio.image.ImageTools;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpts;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -43,18 +46,27 @@ public class FigurePanel extends JPanel {
     @Serial
     private static final long serialVersionUID = 6956337145639708156L;
 
-    private final Figure figure;
+    protected Figure figure;
     protected volatile BufferedImage currentImage;
     protected SwingWorker<BufferedImage, Object> drawWorker;
     boolean forceRedraw = true;
+    private final FigurePrinter printer;
+
+    public FigurePanel() {
+        this.figure = null;
+        this.currentImage = null;
+        this.printer = new FigurePrinter(this);
+    }
 
     public FigurePanel(Figure figure) {
         this.figure = figure;
+        this.printer = new FigurePrinter(this);
     }
 
     public FigurePanel(BufferedImage image) {
         this.figure = null;
         this.currentImage = image;
+        this.printer = new FigurePrinter(this);
     }
 
     @Override
@@ -116,4 +128,70 @@ public class FigurePanel extends JPanel {
 
         drawWorker.execute();
     }
+
+    public void createUIComponents() {
+    }
+
+    public Printer getPrinter() {
+        return printer;
+    }
+
+    static final class FigurePrinter implements Printer {
+
+        private final FigurePanel panel;
+        private POpts opts = POpts.defaults;
+
+        public FigurePrinter(FigurePanel panel) {
+            this.panel = panel;
+        }
+
+        @Override
+        public Printer withGraphicShape(int width, int height) {
+            return this;
+        }
+
+        @Override
+        public int graphicWidth() {
+            return panel.getWidth();
+        }
+
+        @Override
+        public int graphicHeight() {
+            return panel.getHeight();
+        }
+
+        @Override
+        public POpts getOptions() {
+            return null;
+        }
+
+        @Override
+        public Printer withOptions(POption<?>... options) {
+            opts = opts.bind(options);
+            return this;
+        }
+
+        @Override
+        public void print(String message) {
+
+        }
+
+        @Override
+        public void println() {
+
+        }
+
+        @Override
+        public void draw(Figure figure, int width, int height) {
+            draw(figure);
+        }
+
+        @Override
+        public void draw(Figure figure) {
+            panel.figure = figure;
+            panel.currentImage = null;
+            panel.repaint();
+        }
+    }
+
 }
