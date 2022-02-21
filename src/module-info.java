@@ -99,4 +99,5 @@ open module rapaio {
     exports rapaio.ml.model.svm.libsvm;
     exports rapaio.experiment.core;
     exports rapaio.util.vectorization;
+    exports rapaio.printer.idea;
 }

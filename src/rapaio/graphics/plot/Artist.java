@@ -78,14 +78,14 @@ public abstract class Artist implements Serializable {
 
     public boolean union(double x, double y) {
         if (Double.isFinite(x) && Double.isNaN(y)) {
-            return plot.xAxis().unionNumeric(x);
+            return plot.xAxis().domain().unionNumeric(x);
         }
         if (Double.isNaN(x) && Double.isFinite(y)) {
-            return plot.yAxis().unionNumeric(y);
+            return plot.yAxis().domain().unionNumeric(y);
         }
-        if (plot.xAxis().allowUnion(x) && plot.yAxis().allowUnion(y)) {
-            plot.xAxis().unionNumeric(x);
-            plot.yAxis().unionNumeric(y);
+        if (plot.xAxis().domain().allowUnion(x) && plot.yAxis().domain().allowUnion(y)) {
+            plot.xAxis().domain().unionNumeric(x);
+            plot.yAxis().domain().unionNumeric(y);
             return true;
         }
         return false;

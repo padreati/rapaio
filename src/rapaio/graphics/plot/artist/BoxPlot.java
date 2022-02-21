@@ -109,7 +109,7 @@ public class BoxPlot extends Artist {
         union(vars.length, Double.NaN);
         for (int i = 0; i < vars.length; i++) {
             Var v = vars[i];
-            plot.xAxis().unionCategory(i + 0.5, names[i]);
+            plot.xAxis().domain().unionCategory(i, i + 0.5, i+1, names[i]);
             for (int j = 0; j < v.size(); j++) {
                 if (v.isMissing(j)) continue;
                 union(Double.NaN, v.getDouble(j));

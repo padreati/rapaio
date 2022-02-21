@@ -56,7 +56,7 @@ public class SilhouetteArtist extends Artist {
 
     @Override
     public Axis.Type xAxisType() {
-        if(options.getHorizontal()) {
+        if (options.getHorizontal()) {
             return Axis.Type.NUMERIC;
         } else {
             return Axis.Type.CATEGORY;
@@ -65,7 +65,7 @@ public class SilhouetteArtist extends Artist {
 
     @Override
     public Axis.Type yAxisType() {
-        if(options.getHorizontal()) {
+        if (options.getHorizontal()) {
             return Axis.Type.CATEGORY;
         } else {
             return Axis.Type.NUMERIC;
@@ -76,7 +76,7 @@ public class SilhouetteArtist extends Artist {
     public void bind(Plot parent) {
         super.bind(parent);
 
-        if(options.getHorizontal()) {
+        if (options.getHorizontal()) {
             parent.yLab("clusters");
             parent.xLab("scores");
         } else {
@@ -93,36 +93,40 @@ public class SilhouetteArtist extends Artist {
         List<List<Integer>> instanceOrder = silhouette.getInstanceOrder();
 
         if (options.getHorizontal()) {
-            plot.yAxis().unionNumeric(0);
-            plot.yAxis().unionNumeric(scores.size());
-            plot.xAxis().unionNumeric(0);
-            plot.xAxis().unionNumeric(1);
-            plot.xAxis().unionNumeric(Minimum.of(scores).value());
-            plot.xAxis().unionNumeric(Maximum.of(scores).value());
+            plot.yAxis().domain().unionNumeric(0);
+            plot.yAxis().domain().unionNumeric(scores.size());
+            plot.xAxis().domain().unionNumeric(0);
+            plot.xAxis().domain().unionNumeric(1);
+            plot.xAxis().domain().unionNumeric(Minimum.of(scores).value());
+            plot.xAxis().domain().unionNumeric(Maximum.of(scores).value());
 
 
             double pos = 0;
             for (int i = 0; i < clusterCount; i++) {
-                plot.yAxis().unionCategory(
-                        scores.size() - pos-instanceOrder.get(i).size()/2.0,
+                plot.yAxis().domain().unionCategory(
+                        scores.size() - pos - instanceOrder.get(i).size(),
+                        scores.size() - pos - instanceOrder.get(i).size() / 2.0,
+                        scores.size() - pos,
                         silhouette.getClusterLabels()[clusterOrder.get(i)]);
-                pos+=instanceOrder.get(i).size();
+                pos += instanceOrder.get(i).size();
             }
 
         } else {
-            plot.xAxis().unionNumeric(0);
-            plot.xAxis().unionNumeric(scores.size());
-            plot.yAxis().unionNumeric(0);
-            plot.yAxis().unionNumeric(1);
-            plot.yAxis().unionNumeric(Minimum.of(scores).value());
-            plot.yAxis().unionNumeric(Maximum.of(scores).value());
+            plot.xAxis().domain().unionNumeric(0);
+            plot.xAxis().domain().unionNumeric(scores.size());
+            plot.yAxis().domain().unionNumeric(0);
+            plot.yAxis().domain().unionNumeric(1);
+            plot.yAxis().domain().unionNumeric(Minimum.of(scores).value());
+            plot.yAxis().domain().unionNumeric(Maximum.of(scores).value());
 
             double pos = 0;
             for (int i = 0; i < clusterCount; i++) {
-                plot.xAxis().unionCategory(
-                        pos+instanceOrder.get(i).size()/2.0,
+                plot.xAxis().domain().unionCategory(
+                        pos,
+                        pos + instanceOrder.get(i).size() / 2.0,
+                        pos + instanceOrder.get(i).size(),
                         silhouette.getClusterLabels()[clusterOrder.get(i)]);
-                pos+=instanceOrder.get(i).size();
+                pos += instanceOrder.get(i).size();
             }
         }
     }

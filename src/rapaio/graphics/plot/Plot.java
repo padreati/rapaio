@@ -25,6 +25,7 @@ import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.Serial;
 import java.util.ArrayList;
@@ -142,8 +143,8 @@ public class Plot implements Figure {
             artist.updateDataRange(g2d);
         }
 
-        xAxis.computeArtifacts(this, viewport.width);
-        yAxis.computeArtifacts(this, viewport.height);
+        xAxis.computeArtifacts(this, g2d, viewport.width);
+        yAxis.computeArtifacts(this, g2d, viewport.height);
     }
 
     protected void buildViewport(Rectangle rectangle) {
@@ -187,6 +188,10 @@ public class Plot implements Figure {
 
     public double yScale(double y) {
         return viewport.y + viewport.height * (1. - (y - yAxis.min()) / yAxis.length());
+    }
+
+    public Rectangle2D getLabelFontMetrics(Graphics2D g2d, String label) {
+        return g2d.getFontMetrics(LABELS_FONT).getStringBounds(label, g2d);
     }
 
     @Override
@@ -337,12 +342,12 @@ public class Plot implements Figure {
     }
 
     public Plot xLim(double start, double end) {
-        xAxis.hardLim(start, end);
+        xAxis.domain().hardLim(start, end);
         return this;
     }
 
     public Plot yLim(double start, double end) {
-        yAxis.hardLim(start, end);
+        yAxis.domain().hardLim(start, end);
         return this;
     }
 

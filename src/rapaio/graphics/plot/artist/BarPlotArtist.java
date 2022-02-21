@@ -169,18 +169,16 @@ public class BarPlotArtist extends Artist {
     public void updateDataRange(Graphics2D g2d) {
 
         // now learn range
-        plot.yAxis().unionNumeric(0);
+        plot.yAxis().domain().unionNumeric(0);
         for (int i = 0; i < selection.length; i++) {
             if (options.getStacked()) {
-                plot.yAxis().unionNumeric(totals[selection[i]]);
+                plot.yAxis().domain().unionNumeric(totals[selection[i]]);
             } else {
                 for (int j = 0; j < conditions.size(); j++) {
-                    plot.yAxis().unionNumeric(hits[selection[i]][j]);
+                    plot.yAxis().domain().unionNumeric(hits[selection[i]][j]);
                 }
             }
-            plot.xAxis().unionCategory(i + 0.5, categories.get(selection[i]));
-            plot.xAxis().unionNumeric(i);
-            plot.xAxis().unionNumeric(i + 1);
+            plot.xAxis().domain().unionCategory(i, i + 0.5, i+1, categories.get(selection[i]));
         }
     }
 

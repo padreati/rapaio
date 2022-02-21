@@ -31,6 +31,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serial;
 
+import rapaio.core.stat.Maximum;
+import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.graphics.opt.GOption;
@@ -101,24 +103,8 @@ public class Histogram extends Artist {
     }
 
     private void rebuild() {
-        minValue = Double.NaN;
-        maxValue = Double.NaN;
-
-        for (int i = 0; i < v.size(); i++) {
-            if (v.isMissing(i)) {
-                continue;
-            }
-            if (!Double.isFinite(minValue)) {
-                minValue = v.getDouble(i);
-            } else {
-                minValue = Math.min(minValue, v.getDouble(i));
-            }
-            if (!Double.isFinite(maxValue)) {
-                maxValue = v.getDouble(i);
-            } else {
-                maxValue = Math.max(maxValue, v.getDouble(i));
-            }
-        }
+        minValue = Minimum.of(v).value();
+        maxValue = Maximum.of(v).value();
 
         if (options.getHorizontal()) {
             if (Double.isFinite(plot.yAxis().min())) {
@@ -166,19 +152,19 @@ public class Histogram extends Artist {
     public void updateDataRange(Graphics2D g2d) {
         rebuild();
         if (options.getHorizontal()) {
-            plot.yAxis().unionNumeric(minValue);
-            plot.yAxis().unionNumeric(maxValue);
+            plot.yAxis().domain().unionNumeric(minValue);
+            plot.yAxis().domain().unionNumeric(maxValue);
             for (double freq : freqTable) {
-                plot.xAxis().unionNumeric(freq);
+                plot.xAxis().domain().unionNumeric(freq);
             }
-            plot.xAxis().unionNumeric(0);
+            plot.xAxis().domain().unionNumeric(0);
         } else {
-            plot.xAxis().unionNumeric(minValue);
-            plot.xAxis().unionNumeric(maxValue);
+            plot.xAxis().domain().unionNumeric(minValue);
+            plot.xAxis().domain().unionNumeric(maxValue);
             for (double freq : freqTable) {
-                plot.yAxis().unionNumeric(freq);
+                plot.yAxis().domain().unionNumeric(freq);
             }
-            plot.yAxis().unionNumeric(0);
+            plot.yAxis().domain().unionNumeric(0);
         }
     }
 
