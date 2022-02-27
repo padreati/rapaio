@@ -58,7 +58,7 @@ import rapaio.printer.Format;
  * <p>
  * The colors used to display values comes from {@link ColorGradient#newHueGradient(int, int, double[])}
  * with start=0, end=240 and an array of 101 percentages. One can changes this behaviour by setting
- * the {@link rapaio.graphics.Plotter#fill(Color[])} graphical option to an array of 101 color elements.
+ * the {@link rapaio.sys.With#fill(Color[])} graphical option to an array of 101 color elements.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/16.
  */
@@ -93,12 +93,12 @@ public class CorrGram extends Artist {
 
     @Override
     public Axis.Type xAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     @Override
     public Axis.Type yAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     private int computeIndex(int i, int j) {

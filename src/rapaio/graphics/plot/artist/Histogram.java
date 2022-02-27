@@ -67,18 +67,18 @@ public class Histogram extends Artist {
         this.maxValue = maxValue;
 
         // default values for histogram
-        options.setFill(new GOptionFill(new Color[]{options.getPalette().getColor(7)}));
+        options.setFill(new GOptionFill(options.getPalette().getColor(7)));
         options.bind(opts);
     }
 
     @Override
     public Axis.Type xAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     @Override
     public Axis.Type yAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     private int computeFreedmanDiaconisEstimation(Var v) {

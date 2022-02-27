@@ -64,12 +64,12 @@ public class Legend extends Artist {
 
     @Override
     public Axis.Type xAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     @Override
     public Axis.Type yAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     @Override
@@ -90,11 +90,9 @@ public class Legend extends Artist {
         double ystart = yScale(y);
 
         if (place != -1) {
-            switch (place) {
-                case UP_LEFT -> {
-                    xstart = xScale(plot.xAxis().min());
-                    ystart = yScale(plot.yAxis().max());
-                }
+            if (place == UP_LEFT) {
+                xstart = xScale(plot.xAxis().min());
+                ystart = yScale(plot.yAxis().max());
             }
         }
 

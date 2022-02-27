@@ -69,12 +69,12 @@ public class IsoCurves extends Artist {
 
     @Override
     public Axis.Type xAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     @Override
     public Axis.Type yAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     @Override

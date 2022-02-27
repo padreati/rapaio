@@ -21,93 +21,211 @@
 
 package rapaio.graphics.plot.artist;
 
-import java.awt.Graphics2D;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import static rapaio.util.time.PrettyTimeInterval._1_DAY;
+import static rapaio.util.time.PrettyTimeInterval._1_HOUR;
+import static rapaio.util.time.PrettyTimeInterval._1_MONTH;
+import static rapaio.util.time.PrettyTimeInterval._1_YEAR;
 
-import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
-import rapaio.core.distributions.Uniform;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInstant;
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Composite;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
+import java.awt.geom.Rectangle2D;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+
 import rapaio.finance.data.FinBar;
 import rapaio.finance.data.FinBarSize;
-import rapaio.graphics.Plotter;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptionFill;
+import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-import rapaio.math.MathTools;
-import rapaio.math.linear.DVector;
-import rapaio.sys.WS;
+import rapaio.graphics.plot.Plot;
 
 public class CandlestickChart extends Artist {
 
     private final List<FinBar> bars;
     private final FinBarSize barSize;
 
-    public CandlestickChart(List<FinBar> bars, FinBarSize barSize) {
+    public CandlestickChart(List<FinBar> bars, FinBarSize barSize, GOption<?>... opts) {
         this.bars = bars;
         this.barSize = barSize;
+
+        // default values can stay here, before general bind
+        options.setFill(new GOptionFill(
+                NColor.tab_orange, // state 0
+                NColor.tab_green, // state 1
+                NColor.tab_red // state -1
+        ));
+        options.bind(opts);
     }
 
     @Override
     public Axis.Type xAxisType() {
-        return Axis.Type.INSTANT;
+        return Axis.Type.newDiscreteTime();
     }
 
     @Override
     public Axis.Type yAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
+    }
+
+    @Override
+    public void bind(Plot parent) {
+        super.bind(parent);
+
+        // here we can override thins in parent
     }
 
     @Override
     public void updateDataRange(Graphics2D g2d) {
         for (FinBar bar : bars) {
-            union(bar.time().toEpochMilli(), bar.low());
-            union(bar.time().toEpochMilli(), bar.high());
+            plot.yAxis().domain().unionNumeric(bar.low());
+            plot.yAxis().domain().unionNumeric(bar.high());
+            plot.xAxis().domain().unionDiscreteTime(bar.time());
         }
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-
+        if (plot.xAxis().type() instanceof Axis.TypeDiscreteTime dt) {
+            Map<Instant, Double> innerMap = dt.computeInnerMap(plot.xAxis());
+            drawSeparators(g2d, innerMap);
+            drawCandles(g2d, innerMap);
+        }
     }
 
+    private void drawSeparators(Graphics2D g2d, Map<Instant, Double> innerMap) {
+        Graphics2D g = (Graphics2D) g2d.create();
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
 
-    public static void main(String[] args) {
+        Instant[] instants = new Instant[innerMap.size()];
+        for (Map.Entry<Instant, Double> entry : innerMap.entrySet()) {
+            instants[entry.getValue().intValue()] = entry.getKey();
+        }
 
-        Instant start = Instant.parse("2010-10-23T13:30:00.000Z");
-        Normal normal = Normal.of(0, 0.1);
-        List<FinBar> bars = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 60 * 4.5; j++) {
-                Instant time = start.plus(i, ChronoUnit.DAYS).plus(j, ChronoUnit.MINUTES);
-                double value = Math.sin(time.getEpochSecond() * MathTools.DOUBLE_PI / 20000);
-                value += normal.sampleNext();
+        boolean[] yearMarker = new boolean[instants.length];
+        boolean[] monthMarker = new boolean[instants.length];
+        boolean[] dayMarker = new boolean[instants.length];
+        boolean[] hourMarker = new boolean[instants.length];
+        int yearMarkerCount = 0;
+        int monthMarkerCount = 0;
+        int dayMarkerCount = 0;
+        int hourMarkerCount = 0;
 
-                DVector v = Uniform.of(0, 100).sample(4).dv().sortValues();
+        for (int i = 1; i < instants.length; i++) {
+            Instant before = instants[i - 1];
+            Instant after = instants[i];
 
-                bars.add(new FinBar(
-                        time,
-                        value + v.get(3),
-                        value - (1 - v.get(0)),
-                        value + v.get(2),
-                        value - (1 - v.get(1)),
-                        value,
-                        RandomSource.nextInt(25),
-                        RandomSource.nextInt(20)
-                ));
+            if (!_1_YEAR.getInstantBefore(before).equals(_1_YEAR.getInstantBefore(after))) {
+                yearMarker[i] = true;
+                yearMarkerCount++;
+            }
+            if (!_1_MONTH.getInstantBefore(before).equals(_1_MONTH.getInstantBefore(after))) {
+                monthMarker[i] = true;
+                monthMarkerCount++;
+            }
+            if (!_1_DAY.getInstantBefore(before).equals(_1_DAY.getInstantBefore(after))) {
+                dayMarker[i] = true;
+                dayMarkerCount++;
+            }
+            if (!_1_HOUR.getInstantBefore(before).equals(_1_HOUR.getInstantBefore(after))) {
+                hourMarker[i] = true;
+                hourMarkerCount++;
             }
         }
 
-        Frame df = FinBar.asDf(bars);
+        boolean[] mainMarker = null;
+        boolean[] secondaryMarker = null;
 
-        df.printHead(10);
-        WS.draw(Plotter.lines(df.rvar("time"), df.rvar("wap")));
+        if (yearMarkerCount > 0) {
+            mainMarker = yearMarker;
+            secondaryMarker = monthMarker;
+        } else if (monthMarkerCount > 0) {
+            mainMarker = monthMarker;
+            secondaryMarker = dayMarker;
+        } else if (dayMarkerCount > 0) {
+            mainMarker = dayMarker;
+            secondaryMarker = hourMarker;
+        } else if (hourMarkerCount > 0) {
+            mainMarker = hourMarker;
+        }
+
+        for (int i = 0; i < instants.length; i++) {
+
+            if (mainMarker != null && mainMarker[i]) {
+                // draw main marker
+                Stroke dashed = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1.0f, new float[] {2f, 0f, 2f}, 2f);
+                g.setStroke(dashed);
+                g.setColor(NColor.darkgray);
+                g.drawLine((int) xScale(i), (int) yScale(plot.yAxis().min()),
+                        (int) xScale(i),
+                        (int) (yScale(plot.yAxis().max()) - yScale(plot.yAxis().min())));
+            }
+
+            if (secondaryMarker != null && secondaryMarker[i]) {
+                // draw secondary marker
+                Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1.0f, new float[] {2f, 0f, 2f}, 2f);
+                g.setStroke(dashed);
+                g.setColor(NColor.lightgray);
+                g.drawLine((int) xScale(i), (int) yScale(plot.yAxis().min()),
+                        (int) xScale(i),
+                        (int) (yScale(plot.yAxis().max()) - yScale(plot.yAxis().min())));
+            }
+        }
+
+        g.dispose();
+    }
+
+    private void drawCandles(Graphics2D g2d, Map<Instant, Double> innerMap) {
+        Composite old = g2d.getComposite();
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
+
+        g2d.setStroke(new BasicStroke(options.getLwd()));
+        for (FinBar bar : bars) {
+            Instant time = bar.time();
+            Double value = innerMap.get(time);
+            if (value == null) {
+                continue;
+            }
+
+            double xIntervalBegin = value;
+            double xIntervalEnd = value + 1;
+
+            // we keep a padding of 0.2
+            double xStart = xScale(xIntervalBegin + 0.1);
+            double xEnd = xScale(xIntervalEnd - 0.1);
+
+            double bodyLow = yScale(Math.min(bar.open(), bar.close()));
+            double bodyHigh = yScale(Math.max(bar.open(), bar.close()));
+
+            double start = xScale(xIntervalBegin + 0.45);
+            double end = xScale(xIntervalEnd - 0.45);
+
+            double lwd = end - start;
+
+            double low = yScale(bar.low());
+            double high = yScale(bar.high());
+
+            int state = 0;
+            if (bar.open() < bar.close()) {
+                state = 1;
+            }
+            if (bar.open() > bar.close()) {
+                state = 2;
+            }
+
+            g2d.setColor(options.getFill(state));
+            g2d.fill(new Rectangle2D.Double(start, high, lwd, low - high));
+            g2d.fill(new Rectangle2D.Double(xStart, low, xEnd - xStart, lwd));
+            g2d.fill(new Rectangle2D.Double(xStart, high, xEnd - xStart, lwd));
+            g2d.fill(new Rectangle2D.Double(xStart, bodyHigh, xEnd - xStart, bodyLow - bodyHigh));
+
+        }
+
+        g2d.setComposite(old);
     }
 }

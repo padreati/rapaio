@@ -84,14 +84,6 @@ public final class With {
         return new GOptionPalette(colorPalette);
     }
 
-    public static GOptionColor color(char... names) {
-        return new GOptionColor(names);
-    }
-
-    public static GOptionColor color(String... names) {
-        return new GOptionColor(names);
-    }
-
     public static GOptionColor color(int... index) {
         return new GOptionColor(index);
     }
@@ -106,14 +98,6 @@ public final class With {
 
     public static GOptionColor color(Var color) {
         return new GOptionColor(color);
-    }
-
-    public static GOptionFill fill(char... names) {
-        return new GOptionFill(names);
-    }
-
-    public static GOptionFill fill(String... names) {
-        return new GOptionFill(names);
     }
 
     public static GOptionFill fill(int... index) {

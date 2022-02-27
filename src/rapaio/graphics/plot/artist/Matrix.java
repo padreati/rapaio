@@ -30,7 +30,6 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.io.Serial;
 
-import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -54,12 +53,12 @@ public class Matrix extends Artist {
 
     @Override
     public Axis.Type xAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     @Override
     public Axis.Type yAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     @Override

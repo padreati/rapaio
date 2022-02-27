@@ -47,8 +47,6 @@ public class Text extends Artist {
     private final double y;
     private final String text;
 
-    private Rectangle2D[] rectangles;
-
     public Text(double x, double y, String text, GOption<?>... opts) {
         this.x = x;
         this.y = y;
@@ -58,12 +56,12 @@ public class Text extends Artist {
 
     @Override
     public Axis.Type xAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     @Override
     public Axis.Type yAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     private String[] getTextLines(String text) {
@@ -86,7 +84,7 @@ public class Text extends Artist {
         Font font = options.getFont();
         FontMetrics fm = g2d.getFontMetrics(font);
 
-        for (String line : text.split("\n")) {
+        for (String line : getTextLines(text)) {
             Rectangle2D r = fm.getStringBounds(line, g2d);
 
             g2d.setFont(font);

@@ -56,20 +56,12 @@ public class SilhouetteArtist extends Artist {
 
     @Override
     public Axis.Type xAxisType() {
-        if (options.getHorizontal()) {
-            return Axis.Type.NUMERIC;
-        } else {
-            return Axis.Type.CATEGORY;
-        }
+        return options.getHorizontal() ? Axis.Type.newNumeric() : Axis.Type.newCategory();
     }
 
     @Override
     public Axis.Type yAxisType() {
-        if (options.getHorizontal()) {
-            return Axis.Type.CATEGORY;
-        } else {
-            return Axis.Type.NUMERIC;
-        }
+        return options.getHorizontal() ? Axis.Type.newCategory() : Axis.Type.newNumeric();
     }
 
     @Override

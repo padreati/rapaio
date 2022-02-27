@@ -49,17 +49,10 @@ public final class Axis implements Serializable {
     @Serial
     private static final long serialVersionUID = 8011268159946315468L;
 
-    public enum Type {
-        UNKNOWN,
-        NUMERIC,
-        CATEGORY,
-        INSTANT,
-        DISCRETE_INSTANT
-    }
-
     private static final double EXTENDED_FACTOR = 1.05;
 
-    private Type type = Type.UNKNOWN;
+    private Type type = Axis.Type.newUnknown();
+
     private final Domain domain = new Domain();
     private final List<Double> tickers = new ArrayList<>();
     private final List<String> labels = new ArrayList<>();
@@ -81,24 +74,31 @@ public final class Axis implements Serializable {
     public void computeArtifacts(Plot plot, Graphics2D g2d, double viewportSpan) {
 
         InnerValues values = domain.computeInnerValues();
-        min = values.min;
-        max = values.max;
 
         // we do that since hard limits are used both to cut an eventual longer
         // interval, but also to extend one if it is shorter
-        min = Double.isFinite(domain.hardMin) ? domain.hardMin : min;
-        max = Double.isFinite(domain.hardMax) ? domain.hardMax : max;
+        min = Double.isFinite(domain.hardMin) ? domain.hardMin : values.min;
+        max = Double.isFinite(domain.hardMax) ? domain.hardMax : values.max;
         if (min == max) {
             min = min - 0.5;
             max = max + 0.5;
         }
+
         extendedRange();
-        buildMarkers(plot, g2d, viewportSpan);
+
+        tickers.clear();
+        labels.clear();
+
+        int spots = (int) Math.floor(viewportSpan / plot.thickerMinSpace) + 1;
+        if (spots < 2) {
+            return;
+        }
+        type.computeArtifacts(this, plot, g2d, viewportSpan, spots);
     }
 
     public void extendedRange() {
         // no extension for instance type
-        if (type == Type.INSTANT) {
+        if (type instanceof TypeTime || type instanceof TypeDiscreteTime) {
             return;
         }
         double extRange = Math.abs(max - min) * EXTENDED_FACTOR;
@@ -144,134 +144,6 @@ public final class Axis implements Serializable {
         return labels;
     }
 
-    private void buildMarkers(Plot plot, Graphics2D g2d, double span) {
-        tickers.clear();
-        labels.clear();
-
-        int spots = (int) Math.floor(span / plot.thickerMinSpace) + 1;
-        if (spots < 2) {
-            return;
-        }
-
-        switch (type) {
-            case CATEGORY -> computeCategoryMarkers(span);
-            case INSTANT -> computeInstantMarkers(plot, g2d, span);
-            case DISCRETE_INSTANT -> computeDiscreteInstantMarkers(plot, g2d, span, spots);
-            default -> computeNumericMarkers(span, spots);
-        }
-    }
-
-    private void computeCategoryMarkers(double span) {
-        for (Map.Entry<String, Domain.CategoryInterval> entry : domain.categoryValues.entrySet()) {
-            tickers.add((entry.getValue().value - min) * span / length());
-            labels.add(entry.getKey());
-        }
-    }
-
-    /**
-     * This is done to improve the search time since we know that for larger intervals there will be no
-     * room to place labels for short time units.
-     */
-    private int minimumTimeIntervalIndex(Instant start, Instant end) {
-        Duration duration = Duration.between(start, end);
-        PrettyTimeInterval interval = PrettyTimeInterval._1_SEC;
-        if (duration.toDays() >= 5) {
-            interval = PrettyTimeInterval._4_HOUR;
-        } else if (duration.toDays() >= 2) {
-            interval = PrettyTimeInterval._15_MIN;
-        } else if (duration.toHours() >= 2) {
-            interval = PrettyTimeInterval._1_MIN;
-        }
-        PrettyTimeInterval[] intervals = PrettyTimeInterval.values();
-        for (int i = 0; i < intervals.length; i++) {
-            if (intervals[i].equals(interval)) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    /**
-     * Compute instant markers using the pretty time intervals.
-     *
-     * The strategy is to start from small pretty intervals towards the larger ones.
-     * If the produced labels fit the screen, than we keep it as best candidate.
-     *
-     * If the produced labels are less than or equal with 2, than we go back one step
-     * to the previous smaller interval and we use than
-     */
-    private void computeInstantMarkers(Plot plot, Graphics2D g2d, double span) {
-
-        Instant start = Instant.ofEpochMilli((long) min);
-        Instant end = Instant.ofEpochMilli((long) max);
-
-        PrettyTimeInterval[] intervals = PrettyTimeInterval.values();
-        int index = minimumTimeIntervalIndex(start, end);
-        for (int i = index; i >= 0; i--) {
-            PrettyTimeInterval interval = intervals[i];
-            List<Instant> instants = interval.getInstantList(start, end);
-            if (start.isAfter(instants.get(0))) {
-                instants = instants.subList(1, instants.size());
-            }
-            if (end.isBefore(instants.get(instants.size() - 1))) {
-                instants = instants.subList(0, instants.size() - 1);
-            }
-            double width = plot.getLabelFontMetrics(g2d, interval.groupFormat().format(Date.from(instants.get(0)))).getWidth() * 1.1;
-
-            if (width * (instants.size() - 1) <= span) {
-                List<Instant> selection = instants;
-                if (instants.size() <= 2 && index != intervals.length - 1) {
-                    // find previous
-                    selection = selectInstantMarkersByElimination(span, width, intervals[i + 1]);
-                    interval = intervals[i + 1];
-                }
-                // good to go, make labels
-                for (Instant t : selection) {
-                    tickers.add((t.toEpochMilli() - min) * span / length());
-                    labels.add(interval.groupFormat().format(Date.from(t)));
-                }
-                return;
-            }
-        }
-    }
-
-    private List<Instant> selectInstantMarkersByElimination(double span, double width, PrettyTimeInterval interval) {
-        Instant start = Instant.ofEpochMilli((long) min);
-        Instant end = Instant.ofEpochMilli((long) max);
-        List<Instant> instants = interval.getInstantList(start, end);
-        if (start.isAfter(instants.get(0))) {
-            instants = instants.subList(1, instants.size());
-        }
-        if (end.isBefore(instants.get(instants.size() - 1))) {
-            instants = instants.subList(0, instants.size() - 1);
-        }
-        for (int period = 1; period < instants.size(); period++) {
-            if (((instants.size() - 1) % period == 0) && (span > width * (instants.size() - 1) / period)) {
-                List<Instant> selection = new ArrayList<>();
-                for (int i = 0; i < instants.size(); i++) {
-                    if (i % period == 0) {
-                        selection.add(instants.get(i));
-                    }
-                }
-                return selection;
-            }
-        }
-        return instants;
-    }
-
-    private void computeDiscreteInstantMarkers(Plot plot, Graphics2D g2d, double span, int spots) {
-        List<Instant> values = domain.instantDiscreteValues.stream().toList();
-
-    }
-
-    private void computeNumericMarkers(double span, int spots) {
-        XWilkinson.Labels numLabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(min, max, spots);
-        for (double label : numLabels.getList()) {
-            tickers.add((label - min) * span / length());
-            labels.add(numLabels.getFormattedValue(label));
-        }
-    }
-
     public String toString() {
         return "Axis{min=" + min + ", max=" + max + ", tickers=" + tickers.stream().map(String::valueOf).collect(Collectors.joining(","))
                 + ", labels=" + String.join(",", labels) + '}';
@@ -280,11 +152,11 @@ public final class Axis implements Serializable {
     public static class Domain {
 
         private final Set<Double> doubleValues = new HashSet<>();
+
         private final Map<CategoryInterval, String> categoryIndex = new HashMap<>();
         private final Map<String, CategoryInterval> categoryValues = new HashMap<>();
         private final Set<Instant> instantValues = new HashSet<>();
         private final Set<Instant> instantDiscreteValues = new HashSet<>();
-
         private double hardMin = Double.NaN;
         private double hardMax = Double.NaN;
 
@@ -371,11 +243,220 @@ public final class Axis implements Serializable {
                 max.set(Double.isNaN(max.get()) ? interval.end : Double.max(max.get(), interval.end));
                 tickerValues.add(interval.value);
             }
-
             return new InnerValues(min.get(), max.get(), tickerValues.stream().toList());
         }
     }
 
     private record InnerValues(double min, double max, List<Double> discreteValues) {
     }
+
+    public abstract static class Type {
+
+        public abstract void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots);
+
+        public static TypeUnknown newUnknown() {
+            return new TypeUnknown();
+        }
+
+        public static TypeNumeric newNumeric() {
+            return new TypeNumeric();
+        }
+
+        public static TypeCategory newCategory() {
+            return new TypeCategory();
+        }
+
+        public static TypeTime newTime() {
+            return new TypeTime();
+        }
+
+        public static TypeDiscreteTime newDiscreteTime() {
+            return new TypeDiscreteTime();
+        }
+    }
+
+    public static class TypeUnknown extends Type {
+
+        @Override
+        public void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots) {
+            // nothing
+        }
+    }
+
+    public static class TypeNumeric extends Type {
+        @Override
+        public void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots) {
+            XWilkinson.Labels numLabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(axis.min, axis.max, spots);
+            for (double label : numLabels.getList()) {
+                axis.tickers.add((label - axis.min) * span / axis.length());
+                axis.labels.add(numLabels.getFormattedValue(label));
+            }
+        }
+    }
+
+    public static class TypeCategory extends Type {
+        @Override
+        public void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots) {
+            for (Map.Entry<String, Domain.CategoryInterval> entry : axis.domain.categoryValues.entrySet()) {
+                axis.tickers.add((entry.getValue().value - axis.min) * span / axis.length());
+                axis.labels.add(entry.getKey());
+            }
+        }
+    }
+
+    public static class TypeTime extends Type {
+        @Override
+        public void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots) {
+            /*
+             * Compute instant markers using the pretty time intervals.
+             *
+             * The strategy is to start from small pretty intervals towards the larger ones.
+             * If the produced labels fit the screen, than we keep it as best candidate.
+             *
+             * If the produced labels are less than or equal with 2, than we go back one step
+             * to the previous smaller interval and we use than
+             */
+            Instant start = Instant.ofEpochMilli((long) axis.min);
+            Instant end = Instant.ofEpochMilli((long) axis.max);
+
+            PrettyTimeInterval[] intervals = PrettyTimeInterval.values();
+            int index = minimumTimeIntervalIndex(start, end);
+            for (int i = index; i >= 0; i--) {
+                PrettyTimeInterval interval = intervals[i];
+                List<Instant> instants = interval.getInstantList(start, end);
+                if (start.isAfter(instants.get(0))) {
+                    instants = instants.subList(1, instants.size());
+                }
+                if (end.isBefore(instants.get(instants.size() - 1))) {
+                    instants = instants.subList(0, instants.size() - 1);
+                }
+                double width = plot.getLabelFontMetrics(g2d, interval.groupFormat().format(Date.from(instants.get(0)))).getWidth() * 1.1;
+
+                if (width * (instants.size() - 1) <= span) {
+                    List<Instant> selection = instants;
+                    if (instants.size() <= 2 && index != intervals.length - 1) {
+                        // find previous
+                        selection = selectInstantMarkersByElimination(axis, span, width, intervals[i + 1]);
+                        interval = intervals[i + 1];
+                    }
+                    // good to go, make labels
+                    for (Instant t : selection) {
+                        axis.tickers.add((t.toEpochMilli() - axis.min) * span / axis.length());
+                        axis.labels.add(interval.groupFormat().format(Date.from(t)));
+                    }
+                    return;
+                }
+            }
+        }
+
+        /**
+         * This is done to improve the search time since we know that for larger intervals there will be no
+         * room to place labels for short time units.
+         */
+        private int minimumTimeIntervalIndex(Instant start, Instant end) {
+            Duration duration = Duration.between(start, end);
+            PrettyTimeInterval interval = PrettyTimeInterval._1_SEC;
+            if (duration.toDays() >= 5) {
+                interval = PrettyTimeInterval._4_HOUR;
+            } else if (duration.toDays() >= 2) {
+                interval = PrettyTimeInterval._15_MIN;
+            } else if (duration.toHours() >= 2) {
+                interval = PrettyTimeInterval._1_MIN;
+            }
+            PrettyTimeInterval[] intervals = PrettyTimeInterval.values();
+            for (int i = 0; i < intervals.length; i++) {
+                if (intervals[i].equals(interval)) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        private List<Instant> selectInstantMarkersByElimination(Axis axis, double span, double width, PrettyTimeInterval interval) {
+            Instant start = Instant.ofEpochMilli((long) axis.min);
+            Instant end = Instant.ofEpochMilli((long) axis.max);
+            List<Instant> instants = interval.getInstantList(start, end);
+            if (start.isAfter(instants.get(0))) {
+                instants = instants.subList(1, instants.size());
+            }
+            if (end.isBefore(instants.get(instants.size() - 1))) {
+                instants = instants.subList(0, instants.size() - 1);
+            }
+            for (int period = 1; period < instants.size(); period++) {
+                if (((instants.size() - 1) % period == 0) && (span > width * (instants.size() - 1) / period)) {
+                    List<Instant> selection = new ArrayList<>();
+                    for (int i = 0; i < instants.size(); i++) {
+                        if (i % period == 0) {
+                            selection.add(instants.get(i));
+                        }
+                    }
+                    return selection;
+                }
+            }
+            return instants;
+        }
+
+    }
+
+    public static class TypeDiscreteTime extends Type {
+
+        @Override
+        public void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots) {
+            List<Instant> values = axis.domain.instantDiscreteValues.stream().toList();
+            axis.min = 0;
+            axis.max = values.size();
+        }
+
+        public Map<Instant, Double> computeInnerMap(Axis axis) {
+            List<Instant> values = new ArrayList<>(axis.domain.instantDiscreteValues);
+            values.sort(Instant::compareTo);
+            Map<Instant, Double> innerMap = new HashMap<>();
+            for (int i = 0; i < values.size(); i++) {
+                innerMap.put(values.get(i), (double) i);
+            }
+            return innerMap;
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

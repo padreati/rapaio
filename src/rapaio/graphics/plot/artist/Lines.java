@@ -60,12 +60,12 @@ public class Lines extends Artist {
 
     @Override
     public Axis.Type xAxisType() {
-        return x.type() == VarType.INSTANT ? Axis.Type.INSTANT : Axis.Type.NUMERIC;
+        return x.type() == VarType.INSTANT ? Axis.Type.newTime() : Axis.Type.newNumeric();
     }
 
     @Override
     public Axis.Type yAxisType() {
-        return y.type() == VarType.INSTANT ? Axis.Type.INSTANT : Axis.Type.NUMERIC;
+        return y.type() == VarType.INSTANT ? Axis.Type.newTime() : Axis.Type.newNumeric();
     }
 
     @Override

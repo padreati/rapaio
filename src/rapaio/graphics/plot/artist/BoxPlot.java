@@ -79,28 +79,28 @@ public class BoxPlot extends Artist {
 
         options.setPch(new GOptionPch(VarInt.wrap(0, 3)));
         options.setColor(color(0));
-        options.setFill(new GOptionFill(new Color[]{new Color(240, 240, 240)}));
+        options.setFill(new GOptionFill(new Color(240, 240, 240)));
         this.options.bind(opts);
     }
 
     public BoxPlot(Frame df, GOption<?>... opts) {
-        this.vars = df.varStream().filter(var -> var.stream().complete().count() > 0).toArray(Var[]::new);
+        this.vars = df.varStream().filter(var -> var.stream().complete().findAny().isPresent()).toArray(Var[]::new);
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
         options.setPch(new GOptionPch(VarInt.wrap(0, 3)));
         options.setColor(color(0));
-        options.setFill(new GOptionFill(new Color[]{new Color(240, 240, 240)}));
+        options.setFill(new GOptionFill(new Color(240, 240, 240)));
         this.options.bind(opts);
     }
 
     @Override
     public Axis.Type xAxisType() {
-        return Axis.Type.CATEGORY;
+        return Axis.Type.newCategory();
     }
 
     @Override
     public Axis.Type yAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     @Override

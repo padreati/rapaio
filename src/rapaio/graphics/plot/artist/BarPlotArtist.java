@@ -130,24 +130,19 @@ public class BarPlotArtist extends Artist {
 
         // sort if required
         switch (options.getSort()) {
-            case SORT_ASC:
-                IntArrays.quickSort(indexes, 0, len, (o1, o2) -> {
-                    if (totals[o1] == totals[o2])
-                        return 0;
-                    return totals[o1] < totals[o2] ? -1 : 1;
-                });
-                break;
-            case SORT_DESC:
-                IntArrays.quickSort(indexes, 0, len, (o1, o2) -> {
-                    if (totals[o1] == totals[o2])
-                        return 0;
-                    return totals[o1] < totals[o2] ? 1 : -1;
-                });
-                break;
-            case SORT_NONE:
-            default:
+            case SORT_ASC -> IntArrays.quickSort(indexes, 0, len, (o1, o2) -> {
+                if (totals[o1] == totals[o2])
+                    return 0;
+                return totals[o1] < totals[o2] ? -1 : 1;
+            });
+            case SORT_DESC -> IntArrays.quickSort(indexes, 0, len, (o1, o2) -> {
+                if (totals[o1] == totals[o2])
+                    return 0;
+                return totals[o1] < totals[o2] ? 1 : -1;
+            });
+            case SORT_NONE, default -> {
                 // do not sort
-                break;
+            }
         }
 
         // apply top if it is the case
@@ -157,12 +152,12 @@ public class BarPlotArtist extends Artist {
 
     @Override
     public Axis.Type xAxisType() {
-        return Axis.Type.CATEGORY;
+        return Axis.Type.newCategory();
     }
 
     @Override
     public Axis.Type yAxisType() {
-        return Axis.Type.NUMERIC;
+        return Axis.Type.newNumeric();
     }
 
     @Override

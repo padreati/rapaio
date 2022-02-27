@@ -40,10 +40,10 @@ public abstract class Artist implements Serializable {
     public void bind(Plot plot) {
         this.plot = plot;
         this.options.setParent(plot.options);
-        if (this.plot.xAxis().type().equals(Axis.Type.UNKNOWN)) {
+        if (this.plot.xAxis().type() instanceof Axis.TypeUnknown) {
             this.plot.xAxis().type(xAxisType());
         }
-        if (this.plot.yAxis().type().equals(Axis.Type.UNKNOWN)) {
+        if (this.plot.yAxis().type() instanceof Axis.TypeUnknown) {
             this.plot.yAxis().type(yAxisType());
         }
     }
