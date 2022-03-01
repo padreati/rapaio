@@ -105,7 +105,7 @@ public class Plot implements Figure {
     private final Axis yAxis;
 
     public Plot(GOption<?>... opts) {
-        this(null, null, opts);
+        this(new Axis(), new Axis(), opts);
     }
 
     public Plot(Axis xAxis, Axis yAxis, GOption<?>... opts) {
@@ -114,8 +114,8 @@ public class Plot implements Figure {
         leftThick(true);
         leftMarkers(true);
         this.options.bind(opts);
-        this.xAxis = (xAxis != null) ? xAxis : new Axis();
-        this.yAxis = (yAxis != null) ? yAxis : new Axis();
+        this.xAxis = xAxis;
+        this.yAxis = yAxis;
     }
 
     public void addArtist(Artist artist) {

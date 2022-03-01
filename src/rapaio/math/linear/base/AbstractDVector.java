@@ -26,7 +26,7 @@ import java.util.function.BiFunction;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.MType;
+import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorMap;
 import rapaio.math.linear.option.AlgebraOption;
@@ -36,8 +36,6 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.DoubleComparator;
-import rapaio.util.DoubleComparators;
-import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -737,8 +735,8 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DMatrix asMatrix(MType type) {
-        DMatrix res = DMatrix.empty(type, size(), 1);
+    public DMatrixDenseC asMatrix() {
+        DMatrixDenseC res = DMatrix.empty(size(), 1);
         for (int i = 0; i < size(); i++) {
             res.set(i, 0, get(i));
         }

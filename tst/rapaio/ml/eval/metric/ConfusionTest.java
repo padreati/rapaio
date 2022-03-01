@@ -34,6 +34,7 @@ import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixDenseR;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -52,7 +53,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrix.wrap(3, 3, true,
+        DMatrix frequency = DMatrixDenseR.wrap(3, 3,
                 2, 1, 1,
                 0, 1, 1,
                 0, 1, 4);
@@ -87,7 +88,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrix.wrap(2, 2, true, 2, 2, 1, 2);
+        DMatrix frequency = DMatrixDenseR.wrap(2, 2, 2, 2, 1, 2);
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mul(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
@@ -117,7 +118,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrix.wrap(2, 2, true,
+        DMatrix frequency = DMatrixDenseR.wrap(2, 2,
                 2, 2, 1, 2);
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mul(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
@@ -149,30 +150,32 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        assertEquals("> Confusion matrix\n" +
-                " - Frequency table\n" +
-                "Ac\\Pr |  a  b | total \n" +
-                "----- |  -  - | ----- \n" +
-                "    a | >2  2 |     4 \n" +
-                "    b |  1 >2 |     3 \n" +
-                "----- |  -  - | ----- \n" +
-                "total |  3  4 |     7 \n" +
-                " - Probability table\n" +
-                "Ac\\Pr |      a      b | total \n" +
-                "----- |      -      - | ----- \n" +
-                "    a | >0.286  0.286 | 0.571 \n" +
-                "    b |  0.143 >0.286 | 0.429 \n" +
-                "----- |      -      - | ----- \n" +
-                "total |  0.429  0.571 | 1.000 \n" +
-                "\n" +
-                "\n" +
-                "Complete cases 7 from 7\n" +
-                "Acc: 0.5714286         (Accuracy )\n" +
-                "F1:  0.5714286         (F1 score / F-measure)\n" +
-                "MCC: 0.1666667         (Matthew correlation coefficient)\n" +
-                "Pre: 0.6666667         (Precision)\n" +
-                "Rec: 0.5         (Recall)\n" +
-                "G:   0.5773503         (G-measure)\n", cm.toSummary());
+        assertEquals("""
+                > Confusion matrix
+                 - Frequency table
+                Ac\\Pr |  a  b | total\s
+                ----- |  -  - | -----\s
+                    a | >2  2 |     4\s
+                    b |  1 >2 |     3\s
+                ----- |  -  - | -----\s
+                total |  3  4 |     7\s
+                 - Probability table
+                Ac\\Pr |      a      b | total\s
+                ----- |      -      - | -----\s
+                    a | >0.286  0.286 | 0.571\s
+                    b |  0.143 >0.286 | 0.429\s
+                ----- |      -      - | -----\s
+                total |  0.429  0.571 | 1.000\s
+
+
+                Complete cases 7 from 7
+                Acc: 0.5714286         (Accuracy )
+                F1:  0.5714286         (F1 score / F-measure)
+                MCC: 0.1666667         (Matthew correlation coefficient)
+                Pre: 0.6666667         (Precision)
+                Rec: 0.5         (Recall)
+                G:   0.5773503         (G-measure)
+                """, cm.toSummary());
         assertEquals(cm.toContent(), cm.toSummary());
         assertEquals(cm.toFullContent(), cm.toSummary());
         assertEquals("ConfusionMatrix(levels:?,a,b)", cm.toString());

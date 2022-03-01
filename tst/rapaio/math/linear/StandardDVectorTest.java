@@ -37,6 +37,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
+import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
@@ -311,7 +312,7 @@ public abstract class StandardDVectorTest {
     void asMatrixTest() {
 
         var v1 = generateCopy(new double[] {1, 3, 9});
-        var m1 = DMatrix.wrap(3, 1, true, 1, 3, 9);
+        var m1 = DMatrixDenseR.wrap(3, 1, 1, 3, 9);
 
         assertTrue(m1.deepEquals(v1.asMatrix()));
     }

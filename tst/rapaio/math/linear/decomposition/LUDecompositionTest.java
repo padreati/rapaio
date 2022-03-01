@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixDenseR;
 
 public class LUDecompositionTest {
 
@@ -69,17 +70,17 @@ public class LUDecompositionTest {
     @Test
     void solveTest() {
 
-        DMatrix a1 = DMatrix.wrap(3, 3, true,
+        DMatrix a1 = DMatrixDenseR.wrap(3, 3,
                 3, 2, -1,
                 2, -2, 4,
                 -1, 0.5, -1
         );
-        DMatrix b1 = DMatrix.wrap(3, 1, true,
+        DMatrix b1 = DMatrixDenseR.wrap(3, 1,
                 1,
                 -2,
                 0
         );
-        DMatrix x1 = DMatrix.wrap(3, 1, true,
+        DMatrix x1 = DMatrixDenseR.wrap(3, 1,
                 1,
                 -2,
                 -2
@@ -87,21 +88,21 @@ public class LUDecompositionTest {
         assertTrue(x1.deepEquals(LUDecomposition.from(a1).solve(b1), TOL));
 
 
-        DMatrix a2 = DMatrix.wrap(2, 2, true,
+        DMatrix a2 = DMatrixDenseR.wrap(2, 2,
                 2, 3,
                 4, 9
         );
-        DMatrix b2 = DMatrix.wrap(2, 1, true,
+        DMatrix b2 = DMatrixDenseR.wrap(2, 1,
                 6,
                 15
         );
-        DMatrix x2 = DMatrix.wrap(2, 1, true, 1.5, 1);
+        DMatrix x2 = DMatrixDenseR.wrap(2, 1, 1.5, 1);
         assertTrue(x2.deepEquals(LUDecomposition.from(a2).solve(b2), TOL));
     }
 
     @Test
     void determinantTest() {
-        DMatrix a = DMatrix.wrap(2, 2, true,
+        DMatrix a = DMatrixDenseR.wrap(2, 2,
                 1, 2,
                 3, 4
         );
@@ -120,6 +121,7 @@ public class LUDecompositionTest {
 
     @Test
     void builderTestMethodEx() {
-        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(DMatrix.random(2, 3), LUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
+        assertThrows(IllegalArgumentException.class,
+                () -> LUDecomposition.from(DMatrix.random(2, 3), LUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
     }
 }

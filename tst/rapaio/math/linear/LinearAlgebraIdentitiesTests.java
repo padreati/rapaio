@@ -29,13 +29,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
+import rapaio.math.linear.dense.DMatrixDenseC;
+import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.dense.DVectorStride;
 import rapaio.util.collection.IntArrays;
 
 public class LinearAlgebraIdentitiesTests {
 
-    private static final MType[] mTypes = new MType[] {
-            MType.RDENSE, MType.CDENSE, MType.MAP
+    private static final MatrixFactory[] mFactories = new MatrixFactory[] {
+            DMatrixDenseC::random,
+            DMatrixDenseR::random,
+            (rows, cols) -> DMatrix.random(rows, cols).mapRows(IntArrays.newSeq(rows)).mapCols(IntArrays.newSeq(cols))
     };
 
     private static final VectorFactory[] vFactories = new VectorFactory[] {
@@ -55,6 +59,10 @@ public class LinearAlgebraIdentitiesTests {
             }
     };
 
+    interface MatrixFactory {
+        DMatrix randomMatrix(int rows, int cols);
+    }
+
     interface VectorFactory {
         DVector randomVector(int size);
     }
@@ -64,25 +72,17 @@ public class LinearAlgebraIdentitiesTests {
         RandomSource.setSeed(42);
     }
 
-    DMatrix randomMatrix(MType type, int rows, int cols) {
-        DMatrix m = DMatrix.random(DMatrix.defaultMType(), rows, cols);
-        if (type == MType.MAP) {
-            m = m.mapRows(IntArrays.newSeq(0, m.rowCount())).mapCols(IntArrays.newSeq(0, m.colCount()));
-        }
-        return m;
-    }
-
     @Test
     void additiveAssociationTest() {
 
         // A*c+B*c = (A+B)*c
 
-        for (MType type1 : mTypes) {
-            var a = randomMatrix(type1, 400, 80);
-            for (MType type2 : mTypes) {
-                var b = randomMatrix(type2, 400, 80);
-                for (MType type3 : mTypes) {
-                    var c = randomMatrix(type3, 80, 120);
+        for (MatrixFactory type1 : mFactories) {
+            var a = type1.randomMatrix(400, 80);
+            for (MatrixFactory type2 : mFactories) {
+                var b = type2.randomMatrix(400, 80);
+                for (MatrixFactory type3 : mFactories) {
+                    var c = type3.randomMatrix(80, 120);
                     assertTrue(a.dot(c).add(b.dot(c)).deepEquals(a.copy().add(b).dot(c)));
                 }
             }
@@ -94,10 +94,10 @@ public class LinearAlgebraIdentitiesTests {
 
         // (A*B)' = B'*A'
 
-        for (MType type1 : mTypes) {
-            var a = randomMatrix(type1, 100, 150);
-            for (MType type2 : mTypes) {
-                var b = randomMatrix(type2, 150, 200);
+        for (MatrixFactory type1 : mFactories) {
+            var a = type1.randomMatrix(100, 150);
+            for (MatrixFactory type2 : mFactories) {
+                var b = type2.randomMatrix(150, 200);
 
                 var x1 = a.dot(b).t();
                 var x2 = b.t().dot(a.t());
@@ -112,10 +112,10 @@ public class LinearAlgebraIdentitiesTests {
 
         // A*v + B*v = (A+B)*v
 
-        for (MType mType1 : mTypes) {
-            var a = randomMatrix(mType1, 400, 80);
-            for (MType mType2 : mTypes) {
-                var b = randomMatrix(mType2, 400, 80);
+        for (MatrixFactory mType1 : mFactories) {
+            var a = mType1.randomMatrix(400, 80);
+            for (MatrixFactory mType2 : mFactories) {
+                var b = mType2.randomMatrix(400, 80);
                 for (VectorFactory vf : vFactories) {
                     var v = vf.randomVector(80);
                     var v1 = a.dot(v).add(b.dot(v));
@@ -132,8 +132,8 @@ public class LinearAlgebraIdentitiesTests {
 
         // A'*diag(w)*A = (A'*diag(w)*A)'
 
-        for (MType mType1 : mTypes) {
-            var a = randomMatrix(mType1, 400, 80);
+        for (MatrixFactory mType1 : mFactories) {
+            var a = mType1.randomMatrix(400, 80);
             for (VectorFactory vf : vFactories) {
                 var v = vf.randomVector(400);
 

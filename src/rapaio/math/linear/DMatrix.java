@@ -36,6 +36,7 @@ import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.sys.With;
 import rapaio.util.NotImplementedException;
+import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
@@ -47,54 +48,14 @@ import rapaio.util.function.IntInt2DoubleBiFunction;
 public interface DMatrix extends Serializable, Printable {
 
     /**
-     * Default storage type for a matrix. This storage type is used when no matrix storage type
-     * is specified as parameter and there are multiple choices available for a given
-     * operation.
-     *
-     * @return default storage type for a matrix
-     */
-    static MType defaultMType() {
-        return MType.RDENSE;
-    }
-
-    /**
      * Creates a matrix with given {@code rows} and {@code cols} filled with values {@code 0}.
      *
      * @param rows number of rows
      * @param cols number of columns
      * @return new empty matrix with default storage type
      */
-    static DMatrix empty(int rows, int cols) {
-        return empty(defaultMType(), rows, cols);
-    }
-
-    /**
-     * Creates a matrix with given {@code rows} and {@code cols} filled with values {@code 0}
-     * with a storage type specified as a parameter.
-     *
-     * @param type matrix storage type
-     * @param rows number of rows
-     * @param cols number of columns
-     * @return new empty matrix with given storage type
-     */
-    static DMatrix empty(MType type, int rows, int cols) {
-        return switch (type) {
-            case RDENSE -> new DMatrixDenseR(rows, cols);
-            case CDENSE -> new DMatrixDenseC(rows, cols);
-            default -> throw new NotImplementedException();
-        };
-    }
-
-    /**
-     * Creates an identity matrix with default storage type.
-     * An identity matrix is a square matrix with {@code 0} values everywhere
-     * except on the main diagonal where it is filled with {@code 1}
-     *
-     * @param n number of rows and columns of the square matrix
-     * @return identity matrix of order n
-     */
-    static DMatrix identity(int n) {
-        return identity(defaultMType(), n);
+    static DMatrixDenseC empty(int rows, int cols) {
+        return DMatrixDenseC.empty(rows, cols);
     }
 
     /**
@@ -102,28 +63,15 @@ public interface DMatrix extends Serializable, Printable {
      * An identity matrix is a matrix with 1 on the main diagonal
      * and 0 otherwise.
      *
-     * @param type matrix implementation storage type
-     * @param n    number of rows and also number of columns
+     * @param n number of rows and also number of columns
      * @return a new instance of identity matrix of order n
      */
-    static DMatrix identity(MType type, int n) {
-        DMatrix m = empty(type, n, n);
-        for (int i = 0; i < n; i++) {
-            m.set(i, i, 1.0);
-        }
-        return m;
+    static DMatrixDenseC identity(int n) {
+        return DMatrixDenseC.identity(n);
     }
 
-    static DMatrix diagonal(DVector v) {
-        return diagonal(defaultMType(), v);
-    }
-
-    static DMatrix diagonal(MType type, DVector v) {
-        DMatrix m = DMatrix.identity(type, v.size());
-        for (int i = 0; i < v.size(); i++) {
-            m.set(i, i, v.get(i));
-        }
-        return m;
+    static DMatrixDenseC diagonal(DVector v) {
+        return DMatrixDenseC.diagonal(v);
     }
 
     /**
@@ -134,26 +82,8 @@ public interface DMatrix extends Serializable, Printable {
      * @param fill fill value for all matrix cells
      * @return new matrix filled with value
      */
-    static DMatrix fill(int rows, int cols, double fill) {
-        return fill(defaultMType(), rows, cols, fill);
-    }
-
-    /**
-     * Builds a new matrix filled with a given value and with specified storage type.
-     *
-     * @param type matrix implementation storage type
-     * @param rows number of rows
-     * @param cols number of columns
-     * @param fill fill value for all matrix cells
-     * @return new matrix filled with value
-     */
-    static DMatrix fill(MType type, int rows, int cols, double fill) {
-        DMatrix m = empty(type, rows, cols);
-        switch (type) {
-            case RDENSE, CDENSE -> Arrays.fill(((DMatrixDense) m).getElements(), fill);
-            default -> throw new NotImplementedException();
-        }
-        return m;
+    static DMatrixDenseC fill(int rows, int cols, double fill) {
+        return DMatrixDenseC.fill(rows, cols, fill);
     }
 
     /**
@@ -166,29 +96,8 @@ public interface DMatrix extends Serializable, Printable {
      * @param fun  lambda function which computes a value given row and column positions
      * @return new matrix filled with value
      */
-    static DMatrix fill(int rows, int cols, IntInt2DoubleBiFunction fun) {
-        return fill(defaultMType(), rows, cols, fun);
-    }
-
-    /**
-     * Builds a new matrix filled with values computed by a given function
-     * which receives as parameter the row and column of each element and
-     * is stored in specified storage format.
-     *
-     * @param type matrix implementation storage type
-     * @param rows number of rows
-     * @param cols number of columns
-     * @param fun  lambda function which computes a value given row and column positions
-     * @return new matrix filled with value
-     */
-    static DMatrix fill(MType type, int rows, int cols, IntInt2DoubleBiFunction fun) {
-        DMatrix m = empty(type, rows, cols);
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                m.set(i, j, fun.applyIntIntAsDouble(i, j));
-            }
-        }
-        return m;
+    static DMatrixDenseC fill(int rows, int cols, IntInt2DoubleBiFunction fun) {
+        return DMatrixDenseC.fill(rows, cols, fun);
     }
 
     /**
@@ -200,52 +109,39 @@ public interface DMatrix extends Serializable, Printable {
      * @return matrix filled with random values
      */
     static DMatrix random(int rows, int cols) {
-        return random(defaultMType(), rows, cols, Normal.std());
-    }
-
-    /**
-     * Build a matrix with values generated by a standard normal distribution and
-     * is stored in the specified storage format.
-     *
-     * @param type matrix storage type
-     * @param rows number of rows
-     * @param cols number of columns
-     * @return matrix filled with random values
-     */
-    static DMatrix random(MType type, int rows, int cols) {
-        return random(type, rows, cols, Normal.std());
+        return random(rows, cols, Normal.std());
     }
 
     /**
      * Build a matrix with values generated by a distribution given as parameter and
      * is stored in the specified storage format.
      *
-     * @param type matrix storage type
      * @param rows number of rows
      * @param cols number of columns
      * @return matrix filled with random values
      */
-    static DMatrix random(MType type, int rows, int cols, Distribution distribution) {
-        return fill(type, rows, cols, (r, c) -> distribution.sampleNext());
+    static DMatrix random(int rows, int cols, Distribution distribution) {
+        return DMatrixDenseC.random(rows, cols, distribution);
     }
 
     /**
-     * Builds a matrix which wraps an array of values. Because we have an array of values, the only storage types allowed
-     * are {@link MType#CDENSE} and {@link MType#RDENSE}. The matrix storage type is chosen by {@code byRows} parameter value.
-     * If {@code byRows} is {@code true} then the array is interpreted as rows values first and
-     * {@link MType#RDENSE} storage matrix is chosen. If the value is {@code false} then the array
-     * is interpreted as column values first and {@link MType#CDENSE} storage type is chosen.
+     * Builds a matrix which wraps an array of values by rows.
      *
-     * @param byRows true if we have an array of rows, false if we have an array of columns
      * @param values array of arrays of values
      * @return matrix which wrap the values
      */
-    static DMatrix wrap(int rows, int cols, boolean byRows, double... values) {
-        if (byRows) {
-            return new DMatrixDenseR(rows, cols, values);
-        } else {
-            return new DMatrixDenseC(rows, cols, values);
-        }
+    static DMatrixDenseR wrapByRows(int rows, int cols, double... values) {
+        return new DMatrixDenseR(rows, cols, values);
+    }
+
+    /**
+     * Builds a matrix which wraps an array of values by columns.
+     *
+     * @param values array of arrays of values
+     * @return matrix which wrap the values
+     */
+    static DMatrixDenseC wrapByCols(int rows, int cols, double... values) {
+        return new DMatrixDenseC(rows, cols, values);
     }
 
     /**
@@ -255,8 +151,8 @@ public interface DMatrix extends Serializable, Printable {
      * @param values array of arrays of values
      * @return matrix which hold a range of data
      */
-    static DMatrix copy(double[][] values) {
-        return copy(defaultMType(), 0, values.length, 0, values[0].length, true, values);
+    static DMatrixDenseC copy(double[][] values) {
+        return DMatrixDenseC.copy(values);
     }
 
     /**
@@ -268,22 +164,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return matrix which hold a range of data
      */
     static DMatrix copy(boolean byRows, double[][] values) {
-        return copy(defaultMType(), 0, values.length, 0, values[0].length, byRows, values);
-    }
-
-    /**
-     * Copy values from an array of arrays into a matrix. Matrix storage type and row/column
-     * orientation are given as parameter.
-     * <p>
-     * The only storage matrix not allowed is {@link MType#MAP} since this matrix storage is not direct.
-     *
-     * @param type   matrix storage type
-     * @param byRows if true values are row oriented, if false values are column oriented
-     * @param values array of arrays of values
-     * @return matrix which hold a range of data
-     */
-    static DMatrix copy(MType type, boolean byRows, double[][] values) {
-        return copy(type, 0, byRows ? values.length : values[0].length, 0, byRows ? values[0].length : values.length, byRows, values);
+        return DMatrixDenseC.copy(0, byRows ? values.length : values[0].length, 0, byRows ? values[0].length : values.length, byRows, values);
     }
 
     /**
@@ -291,10 +172,8 @@ public interface DMatrix extends Serializable, Printable {
      * orientation are given as parameter.
      * <p>
      * This is the most customizable way to transfer values from an array of arrays into a matrix.
-     * The only storage matrix not allowed is {@link MType#MAP} since this matrix storage is not direct.
      * It allows creating of a matrix from a rectangular range of values.
      *
-     * @param type     matrix storage type
      * @param byRows   if true values are row oriented, if false values are column oriented
      * @param rowStart starting row inclusive
      * @param rowEnd   end row exclusive
@@ -303,31 +182,12 @@ public interface DMatrix extends Serializable, Printable {
      * @param values   array of arrays of values
      * @return matrix which hold a range of data
      */
-    static DMatrix copy(MType type, int rowStart, int rowEnd, int colStart, int colEnd, boolean byRows, double[][] values) {
-        if (type == MType.MAP) {
-            throw new IllegalArgumentException("Matrix type not allowed.");
-        }
-        int rows = rowEnd - rowStart;
-        int cols = colEnd - colStart;
-        DMatrix m = empty(type, rows, cols);
-        if (byRows) {
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    m.set(i, j, values[i + rowStart][j + colStart]);
-                }
-            }
-        } else {
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    m.set(i, j, values[j + colStart][i + rowStart]);
-                }
-            }
-        }
-        return m;
+    static DMatrix copy(int rowStart, int rowEnd, int colStart, int colEnd, boolean byRows, double[][] values) {
+        return DMatrixDenseC.copy(rowStart, rowEnd, colStart, colEnd, byRows, values);
     }
 
     /**
-     * Copies values from an array into a matrix with default row orientation and default storage type {@link MType#RDENSE}.
+     * Copies values from an array into a matrix with default row orientation and default storage type.
      * <p>
      * The layout of data is described by {@code inputRows} and {@code columnRows} and this is the same size
      * for the resulted matrix.
@@ -337,45 +197,18 @@ public interface DMatrix extends Serializable, Printable {
      * @param values    array of values
      * @return matrix with a range of values copied from original array
      */
-    static DMatrix copy(int inputRows, int inputCols, double... values) {
-        return copy(defaultMType(), inputRows, inputCols, 0, inputRows, 0, inputCols, true, values);
+    static DMatrixDenseC copy(int inputRows, int inputCols, double... values) {
+        return DMatrixDenseC.copy(inputRows, inputCols, 0, inputRows, 0, inputCols, true, values);
     }
 
-    static DMatrix copy(int inputRows, int inputCols, boolean byRows, double... values) {
-        return copy(defaultMType(), inputRows, inputCols, 0, inputRows, 0, inputCols, byRows, values);
-    }
-
-    /**
-     * Copies values from an array into a matrix.
-     * <p>
-     * All matrix storage types are allowed with the exeption of {@link MType#MAP} since that is an indirect
-     * storage type.
-     * <p>
-     * The layout of data is described by {@code inputRows} and {@code columnRows}.
-     * The row or column orientation is determined by {@code byRows} parameter. If {@code byRows} is true,
-     * the values from the array are interpreted as containing rows one after another. If {@code byRows} is
-     * false then the interpretation is that the array contains columns one after another.
-     * <p>
-     * The method creates an array of values of the same size as input data layout.
-     *
-     * @param type      matrix storage type
-     * @param byRows    value orientation: true if row oriented, false if column oriented
-     * @param inputRows number of rows for data layout
-     * @param inputCols number of columns for data layout
-     * @param values    array of values
-     * @return matrix with a range of values copied from original array
-     */
-    static DMatrix copy(MType type, int inputRows, int inputCols, boolean byRows, double... values) {
-        return copy(type, inputRows, inputCols, 0, inputRows, 0, inputCols, byRows, values);
+    static DMatrixDenseC copy(int inputRows, int inputCols, boolean byRows, double... values) {
+        return DMatrixDenseC.copy(inputRows, inputCols, 0, inputRows, 0, inputCols, byRows, values);
     }
 
     /**
      * Copies values from an array into a matrix.
      * <p>
      * This is the most customizable way to copy values from a contiguous arrays into a matrix.
-     * <p>
-     * All matrix storage types are allowed with the exeption of {@link MType#MAP} since that is an indirect
-     * storage type.
      * <p>
      * The layout of data is described by {@code inputRows} and {@code columnRows}.
      * The row or column orientation is determined by {@code byRows} parameter. If {@code byRows} is true,
@@ -385,7 +218,6 @@ public interface DMatrix extends Serializable, Printable {
      * The method allows creation of an array using a contiguous range of rows and columns described by
      * parameters.
      *
-     * @param type      matrix storage type
      * @param byRows    value orientation: true if row oriented, false if column oriented
      * @param inputRows number of rows for data layout
      * @param inputCols number of columns for data layout
@@ -396,27 +228,9 @@ public interface DMatrix extends Serializable, Printable {
      * @param values    array of values
      * @return matrix with a range of values copied from original array
      */
-    static DMatrix copy(MType type, int inputRows, int inputCols,
-            int rowStart, int rowEnd, int colStart, int colEnd, boolean byRows,
+    static DMatrixDenseC copy(int inputRows, int inputCols, int rowStart, int rowEnd, int colStart, int colEnd, boolean byRows,
             double... values) {
-        int rows = rowEnd - rowStart;
-        int cols = colEnd - colStart;
-        DMatrix m = empty(type, rows, cols);
-
-        if (byRows) {
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    m.set(i, j, values[inputCols * (Math.max(0, rowStart - 1) + i) + colStart + j]);
-                }
-            }
-        } else {
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    m.set(i, j, values[inputRows * (Math.max(0, colStart - 1) + j) + rowStart + i]);
-                }
-            }
-        }
-        return m;
+        return DMatrixDenseC.copy(inputRows, inputCols, rowStart, rowEnd, colStart, colEnd, byRows, values);
     }
 
     /**
@@ -426,28 +240,8 @@ public interface DMatrix extends Serializable, Printable {
      * @param df data frame
      * @return matrix with collected values
      */
-    static DMatrix copy(Frame df) {
-        return copy(defaultMType(), df);
-    }
-
-    /**
-     * Copies data from a data frame using the specified data storage frame.
-     * Data is collected from frame using {@link Frame#getDouble(int, int)} calls.
-     *
-     * @param type matrix storage type
-     * @param df   data frame
-     * @return matrix with collected values
-     */
-    static DMatrix copy(MType type, Frame df) {
-        int rows = df.rowCount();
-        int cols = df.varCount();
-        DMatrix m = empty(type, rows, cols);
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                m.set(i, j, df.getDouble(i, j));
-            }
-        }
-        return m;
+    static DMatrixDenseC copy(Frame df) {
+        return DMatrixDenseC.copy(df);
     }
 
     /**
@@ -457,73 +251,13 @@ public interface DMatrix extends Serializable, Printable {
      * @param vars array of variables
      * @return matrix with collected values
      */
-    static DMatrix copy(Var... vars) {
-        return copy(defaultMType(), vars);
+    static DMatrixDenseC copy(Var... vars) {
+        return DMatrixDenseC.copy(vars);
     }
 
-    /**
-     * Copies data from a list of variables using the specified data storage frame.
-     * Data is collected from frame using {@link Frame#getDouble(int, int)} calls.
-     *
-     * @param type matrix storage type
-     * @param vars array of variables
-     * @return matrix with collected values
-     */
-    static DMatrix copy(MType type, Var... vars) {
-        int rows = vars[0].size();
-        int cols = vars.length;
-        DMatrix m = empty(type, rows, cols);
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                m.set(i, j, vars[j].getDouble(i));
-            }
-        }
-        return m;
+    static DMatrixDenseC copy(boolean byRows, DVector... vectors) {
+        return DMatrixDenseC.copy(byRows, vectors);
     }
-
-    static DMatrix copy(boolean byRows, DVector... vectors) {
-        MType type = byRows ? MType.RDENSE : MType.CDENSE;
-        return copy(type, byRows, vectors);
-    }
-
-    static DMatrix copy(MType type, boolean byRows, DVector... vectors) {
-        // TODO: can be improved but it needs better operation on vectors: store values in an external array
-        int vlen = Arrays.stream(vectors).mapToInt(DVector::size).min().orElse(0);
-        if (vlen == 0) {
-            throw new IllegalArgumentException("Minimum length of a vector is 0 which is invalid.");
-        }
-        DMatrix copy;
-        if (byRows) {
-            copy = DMatrix.empty(type, vectors.length, vlen);
-            for (int i = 0; i < vectors.length; i++) {
-                for (int j = 0; j < vlen; j++) {
-                    copy.set(i, j, vectors[i].get(j));
-                }
-            }
-        } else {
-            copy = DMatrix.empty(type, vlen, vectors.length);
-            for (int i = 0; i < vlen; i++) {
-                for (int j = 0; j < vectors.length; j++) {
-                    copy.set(i, j, vectors[j].get(i));
-                }
-            }
-        }
-        return copy;
-    }
-
-    /**
-     * @return matrix storage type
-     */
-    MType type();
-
-    /**
-     * If the matrix is an indirect storage type this returns
-     * the source matrix storage type. Otherwise, it returns the
-     * same value as {@link #type()}.
-     *
-     * @return inner matrix storage type
-     */
-    MType innerType();
 
     /**
      * @return number of rows of the matrix
@@ -614,7 +348,7 @@ public interface DMatrix extends Serializable, Printable {
      * of rows (axis=0) o columns (axis=1).
      *
      * @param indexes index for each element
-     * @param axis 0 for rows, 1 for columns
+     * @param axis    0 for rows, 1 for columns
      * @return vector with indexed values
      */
     DVector mapValues(int[] indexes, int axis);

@@ -149,7 +149,7 @@ public final class Axis implements Serializable {
                 + ", labels=" + String.join(",", labels) + '}';
     }
 
-    public static class Domain {
+    public static class Domain implements Serializable {
 
         private final Set<Double> doubleValues = new HashSet<>();
 
@@ -247,10 +247,10 @@ public final class Axis implements Serializable {
         }
     }
 
-    private record InnerValues(double min, double max, List<Double> discreteValues) {
+    private record InnerValues(double min, double max, List<Double> discreteValues) implements Serializable {
     }
 
-    public abstract static class Type {
+    public abstract static class Type implements Serializable {
 
         public abstract void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots);
 
@@ -275,7 +275,7 @@ public final class Axis implements Serializable {
         }
     }
 
-    public static class TypeUnknown extends Type {
+    public static class TypeUnknown extends Type implements Serializable {
 
         @Override
         public void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots) {
@@ -283,7 +283,7 @@ public final class Axis implements Serializable {
         }
     }
 
-    public static class TypeNumeric extends Type {
+    public static class TypeNumeric extends Type implements Serializable {
         @Override
         public void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots) {
             XWilkinson.Labels numLabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(axis.min, axis.max, spots);
@@ -294,7 +294,7 @@ public final class Axis implements Serializable {
         }
     }
 
-    public static class TypeCategory extends Type {
+    public static class TypeCategory extends Type implements Serializable {
         @Override
         public void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots) {
             for (Map.Entry<String, Domain.CategoryInterval> entry : axis.domain.categoryValues.entrySet()) {
@@ -304,7 +304,7 @@ public final class Axis implements Serializable {
         }
     }
 
-    public static class TypeTime extends Type {
+    public static class TypeTime extends Type implements Serializable {
         @Override
         public void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots) {
             /*
@@ -398,7 +398,7 @@ public final class Axis implements Serializable {
 
     }
 
-    public static class TypeDiscreteTime extends Type {
+    public static class TypeDiscreteTime extends Type implements Serializable {
 
         @Override
         public void computeArtifacts(Axis axis, Plot plot, Graphics2D g2d, double span, int spots) {

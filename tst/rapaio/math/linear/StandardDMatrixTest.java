@@ -27,12 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
+import static rapaio.sys.With.copy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
+import rapaio.math.linear.dense.DMatrixDenseR;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/14/20.
@@ -395,7 +396,7 @@ public abstract class StandardDMatrixTest {
         var m = generateFill(10, 3, 1);
         var v1 = DVector.wrap(1, 2, 3);
 
-        var d = DMatrix.wrap(3, 3, true,
+        var d = DMatrixDenseR.wrap(3, 3,
                 1, 0, 0,
                 0, 2, 0,
                 0, 0, 3
@@ -486,7 +487,7 @@ public abstract class StandardDMatrixTest {
     void deepEqualsTest() {
         DMatrix m1 = generateIdentity(2);
 
-        DMatrix m2 = DMatrix.wrap(2, 2, true, 1, 0, 0, 1);
+        DMatrix m2 = DMatrixDenseR.wrap(2, 2, 1, 0, 0, 1);
         DMatrix m3 = DMatrix.identity(2);
 
         assertTrue(m1.deepEquals(m2));

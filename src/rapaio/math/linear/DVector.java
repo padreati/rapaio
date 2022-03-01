@@ -30,6 +30,7 @@ import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
@@ -608,24 +609,10 @@ public interface DVector extends Serializable, Printable {
     /**
      * A vector is also a matrix, but for implementation reasons the objects are not the same. This method
      * creates a new copy of the vector in the form of a matrix with {@code n} rows and {@code 1} column.
-     * <p>
-     * The matrix storage type is the default one given by {@link DMatrix#defaultMType()}.
      *
      * @return a matrix corresponding with the current vector
      */
-    default DMatrix asMatrix() {
-        return asMatrix(DMatrix.defaultMType());
-    }
-
-    /**
-     * A vector is also a matrix, but for implementation reasons the objects are not the same. This method
-     * creates a new copy of the vector in the form of a matrix with {@code n} rows and {@code 1} column.
-     * <p>
-     * The matrix storage type is given as parameter.
-     *
-     * @return a matrix corresponding with the current vector
-     */
-    DMatrix asMatrix(MType type);
+    DMatrixDenseC asMatrix();
 
     /**
      * Creates a stream of values to visit all the elements of the vector.

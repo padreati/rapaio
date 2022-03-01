@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixDenseR;
 
 public class CholeskyDecompositionTest {
 
@@ -66,17 +67,17 @@ public class CholeskyDecompositionTest {
 
     @Test
     void testSystem() {
-        DMatrix a1 = DMatrix.wrap(3, 3, true,
+        DMatrix a1 = DMatrixDenseR.wrap(3, 3,
                 2, -1, 0,
                 -1, 2, -1,
                 0, -1, 2
         );
-        DMatrix b1 = DMatrix.wrap(3, 1, true,
+        DMatrix b1 = DMatrixDenseR.wrap(3, 1,
                 1,
                 -2,
                 0
         );
-        DMatrix x1 = DMatrix.wrap(3, 1, true,
+        DMatrix x1 = DMatrixDenseR.wrap(3, 1,
                 -0.25,
                 -1.5,
                 -0.75
@@ -84,15 +85,15 @@ public class CholeskyDecompositionTest {
         DMatrix s1 = CholeskyDecomposition.from(a1).solve(b1);
         assertTrue(x1.deepEquals(s1, TOL));
 
-        DMatrix a2 = DMatrix.wrap(2, 2, true,
+        DMatrix a2 = DMatrixDenseR.wrap(2, 2,
                 2, 3,
                 3, 9
         );
-        DMatrix b2 = DMatrix.wrap(2, 1, true,
+        DMatrix b2 = DMatrixDenseR.wrap(2, 1,
                 6,
                 15
         );
-        DMatrix x2 = DMatrix.wrap(2, 1, true,
+        DMatrix x2 = DMatrixDenseR.wrap(2, 1,
                 1,
                 1.33333333333333333333333333333333
         );

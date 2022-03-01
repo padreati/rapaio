@@ -45,7 +45,14 @@ import rapaio.util.collection.IntArrays;
 
 public class DenseAlgebraTest {
 
-    private static final MType[] mTypes = new MType[] {MType.RDENSE, MType.CDENSE, MType.MAP};
+    private static final MatrixFactory[] mTypes = new MatrixFactory[] {
+            (rows, cols) -> new DMatrixDenseR(rows, cols, newValues(rows, cols)),
+            (rows, cols) -> new DMatrixDenseC(rows, cols, newValues(rows, cols)),
+            (rows, cols) -> new DMatrixDenseR(rows, cols, newValues(rows, cols))
+                    .mapRows(IntArrays.newSeq(rows))
+                    .mapCols(IntArrays.newSeq(cols))
+                    .mapRows(IntArrays.newSeq(rows))
+    };
     private static final VectorFactory[] vectorFactories = new VectorFactory[] {
             // dense vector
             n -> {
@@ -95,39 +102,35 @@ public class DenseAlgebraTest {
         DVector newInstance(int size);
     }
 
-    public DMatrix newMatrix(MType type) {
-        return newMatrix(type, 10, 10);
+    interface MatrixFactory {
+        default DMatrix newMatrix() {
+            return newMatrix(10, 10);
+        }
+
+        DMatrix newMatrix(int rows, int cols);
     }
 
-    public DMatrix newMatrix(MType type, int m, int n) {
+    public static double[] newValues(int m, int n) {
         double[] values = new double[10 + n * m];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 values[i * m + j] = i + j + 1;
             }
         }
-        return switch (type) {
-            case RDENSE -> new DMatrixDenseR(n, m, values);
-            case CDENSE -> new DMatrixDenseC(n, m, values);
-            case MAP -> new DMatrixDenseR(n, m, values)
-                    .mapRows(IntArrays.newSeq(0, n))
-                    .mapCols(IntArrays.newSeq(0, m))
-                    .mapRows(IntArrays.newSeq(0, n));
-        };
+        return values;
     }
 
     private interface F1m {
         void apply(DMatrix m);
     }
 
-    private void t1m(MType mType, F1m f) {
-        DMatrix m = newMatrix(mType);
-        f.apply(m);
+    private void t1m(MatrixFactory mType, F1m f) {
+        f.apply(mType.newMatrix());
     }
 
     @Test
     void testOneMatrix() {
-        for (MType mType : mTypes) {
+        for (MatrixFactory mType : mTypes) {
 
             t1m(mType, m -> assertTrue(m.add(10, copy()).deepEquals(m.add(10))));
             t1m(mType, m -> assertTrue(m.sub(10, copy()).deepEquals(m.sub(10))));
@@ -157,8 +160,6 @@ public class DenseAlgebraTest {
             t1m(mType, m -> assertTrue(m.deepEquals(m.resizeCopy(10, 10, 100))));
             t1m(mType, m -> assertEquals(m.sum(), m.resizeCopy(19, 19, 0).sum()));
             t1m(mType, m -> assertEquals(m.rangeCols(0, 5).rangeRows(0, 5).sum(), m.resizeCopy(5, 5, 0).sum()));
-
-            t1m(mType, m -> assertEquals(mType, m.type()));
 
             t1m(mType, m -> assertEquals(m.getClass().getSimpleName() + """
                     {rowCount:10, colCount:10, values:
@@ -223,7 +224,7 @@ public class DenseAlgebraTest {
                     ...  ... ... ... ... ... ... ... ... ... ... ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ... ...  ... \s
                     [98]  99 100 101 102 103 104 105 106 107 108 109  110  111  112  113  114  115  116  117  118  ... 197  198 \s
                     [99] 100 101 102 103 104 105 106 107 108 109 110  111  112  113  114  115  116  117  118  119  ... 198  199 \s
-                    """, newMatrix(mType, 100, 100).toContent());
+                    """, mType.newMatrix(100, 100).toContent());
         }
     }
 
@@ -231,15 +232,15 @@ public class DenseAlgebraTest {
         void apply(DMatrix m, DVector v);
     }
 
-    void t1m1v(MType mType, VectorFactory vf, F1m1v f) {
-        DMatrix m = newMatrix(mType);
+    void t1m1v(MatrixFactory mType, VectorFactory vf, F1m1v f) {
+        DMatrix m = mType.newMatrix();
         DVector v = vf.newInstance();
         f.apply(m, v);
     }
 
     @Test
     void testOneMatrixOneVector() {
-        for (MType mType : mTypes) {
+        for (MatrixFactory mType : mTypes) {
             for (var vf : vectorFactories) {
                 t1m1v(mType, vf, (m, v) -> assertTrue(m.add(v, 0, copy()).deepEquals(m.add(v, 0))));
                 t1m1v(mType, vf, (m, v) -> assertTrue(m.add(v, 1, copy()).deepEquals(m.add(v, 1))));
@@ -258,17 +259,17 @@ public class DenseAlgebraTest {
         void apply(DMatrix m1, DMatrix m2);
     }
 
-    private void t2m(MType mType1, MType mType2, F2m f) {
-        DMatrix m1 = newMatrix(mType1);
-        DMatrix m2 = newMatrix(mType2);
+    private void t2m(MatrixFactory mType1, MatrixFactory mType2, F2m f) {
+        DMatrix m1 = mType1.newMatrix();
+        DMatrix m2 = mType2.newMatrix();
         f.apply(m1, m2);
     }
 
     @Test
     void testTwoMatrices() {
 
-        for (MType mType1 : mTypes) {
-            for (MType mType2 : mTypes) {
+        for (MatrixFactory mType1 : mTypes) {
+            for (MatrixFactory mType2 : mTypes) {
                 t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.add(m2, copy()).deepEquals(m1.add(m2))));
                 t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.sub(m2, copy()).deepEquals(m1.sub(m2))));
                 t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.mul(m2, copy()).deepEquals(m1.mul(m2))));
@@ -417,10 +418,10 @@ public class DenseAlgebraTest {
         void apply(DVector v1, DVector v2, DMatrix m);
     }
 
-    private void t1m2v(VectorFactory vf1, VectorFactory vf2, MType mType, F1m2v f) {
+    private void t1m2v(VectorFactory vf1, VectorFactory vf2, MatrixFactory mType, F1m2v f) {
         DVector v1 = vf1.newInstance();
         DVector v2 = vf2.newInstance();
-        DMatrix m = newMatrix(mType);
+        DMatrix m = mType.newMatrix();
         f.apply(v1, v2, m);
     }
 
@@ -428,7 +429,7 @@ public class DenseAlgebraTest {
     void testOneMatrixTwoVectors() {
         for (var vf1 : vectorFactories) {
             for (var vf2 : vectorFactories) {
-                for (MType mType1 : mTypes) {
+                for (MatrixFactory mType1 : mTypes) {
                     t1m2v(vf1, vf2, mType1, (v1, v2, m)
                             -> assertEquals(v1.copy().mul(m.diag()).mul(v2).sum(), v1.dotBilinearDiag(m, v2)));
                     t1m2v(vf1, vf2, mType1, (v1, v2, m)

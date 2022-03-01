@@ -88,11 +88,7 @@ public final class With {
         return new GOptionColor(index);
     }
 
-    public static GOptionColor color(Color color) {
-        return new GOptionColor(color);
-    }
-
-    public static GOptionColor color(Color[] colors) {
+    public static GOptionColor color(Color... colors) {
         return new GOptionColor(colors);
     }
 
@@ -104,11 +100,7 @@ public final class With {
         return new GOptionFill(index);
     }
 
-    public static GOptionFill fill(Color color) {
-        return new GOptionFill(color);
-    }
-
-    public static GOptionFill fill(Color[] colors) {
+    public static GOptionFill fill(Color... colors) {
         return new GOptionFill(colors);
     }
 

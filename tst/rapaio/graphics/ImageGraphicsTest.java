@@ -30,6 +30,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
@@ -96,7 +97,7 @@ public class ImageGraphicsTest {
         }
 
         BufferedImage bi1 = ImageTools.makeImage(f, 500, 400);
-        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream(name + ".png"));
+        BufferedImage bi2 = ImageIO.read(Objects.requireNonNull(ImageGraphicsTest.class.getResourceAsStream(name + ".png")));
         boolean condition = bufferedImagesEqual(bi1, bi2);
         assertTrue(condition);
     }

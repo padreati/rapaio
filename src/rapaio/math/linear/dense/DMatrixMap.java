@@ -26,7 +26,6 @@ import java.util.Arrays;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.MType;
 import rapaio.math.linear.base.AbstractDMatrix;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.util.collection.IntArrays;
@@ -65,16 +64,6 @@ public class DMatrixMap extends AbstractDMatrix {
             this.rowIndexes = IntArrays.newSeq(0, ref.rowCount());
             this.colIndexes = Arrays.copyOf(indexes, indexes.length);
         }
-    }
-
-    @Override
-    public MType type() {
-        return MType.MAP;
-    }
-
-    @Override
-    public MType innerType() {
-        return ref.innerType();
     }
 
     @Override

@@ -29,10 +29,8 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 import rapaio.math.MathTools;
-import rapaio.sys.With;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.MType;
 import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.math.linear.decomposition.SVDecomposition;
 import rapaio.math.linear.dense.DMatrixMap;
@@ -41,6 +39,7 @@ import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.sys.With;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -51,9 +50,6 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Serial
     private static final long serialVersionUID = -8475836385935066885L;
-
-    @Override
-    public abstract MType innerType();
 
     protected void checkMatrixSameSize(DMatrix b) {
         if ((rowCount() != b.rowCount()) || (colCount() != b.colCount())) {
@@ -420,7 +416,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix scatter() {
-        DMatrix scatter = DMatrix.empty(DMatrix.defaultMType(), colCount(), colCount());
+        DMatrix scatter = DMatrix.empty(colCount(), colCount());
         DVector mean = DVector.zeros(colCount());
         for (int i = 0; i < colCount(); i++) {
             mean.set(i, mapCol(i).mean());
@@ -625,7 +621,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix resizeCopy(int rows, int cols, double fill) {
-        DMatrix copy = DMatrix.empty(innerType(), rows, cols);
+        DMatrix copy = DMatrix.empty(rows, cols);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (i < rowCount() && j < colCount()) {
