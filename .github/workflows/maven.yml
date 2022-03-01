@@ -16,8 +16,9 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         java-version: [ 17 ]
-        distro: [ 'zulu', 'temurin' ]
+        distro: [ 'zulu' ]
     runs-on: ${{ matrix.os }}
+
 
     steps:
     - uses: actions/checkout@v2
@@ -29,11 +30,7 @@ jobs:
     - name: Build with Maven
       run: mvn verify --file pom.xml
     - name: Codecov
-      uses: codecov/codecov-action@v2.1.0
+      uses: codecov/codecov-action@v2
       with:
-        directory: ./site/jacoco/
-        files: jacoco.xml
-        flags: unittests # optional
-        name: codecov-umbrella # optional
-        fail_ci_if_error: true # optional (default = false)
-        verbose: true # optional (default = false)
+        fail_ci_if_error: true
+        verbose: true
