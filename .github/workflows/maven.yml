@@ -32,6 +32,5 @@ jobs:
     - name: Codecov
       uses: codecov/codecov-action@v2
       with:
-        file: ./jacoco.xml
-        fail_ci_if_error: true
+        fail_ci_if_error: false
         verbose: true
