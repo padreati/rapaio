@@ -131,7 +131,7 @@
                 <version>3.0.0-M5</version>
                 <configuration>
                     <reuseForks>true</reuseForks>
-                    <argLine>--enable-preview</argLine>
+                    <argLine>${argLine} --enable-preview</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -144,10 +144,6 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
-                        <configuration>
-                            <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
-                            <propertyName>surefireArgLine</propertyName>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
@@ -155,10 +151,6 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
-                        <configuration>
-                            <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
-                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
