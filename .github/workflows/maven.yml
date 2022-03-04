@@ -29,6 +29,8 @@ jobs:
         distribution: ${{ matrix.distro }}
     - name: Build with Maven
       run: mvn verify --file pom.xml
+    - name: ls
+      run: ls -l
     - name: Codecov
       uses: codecov/codecov-action@v2
       with:
