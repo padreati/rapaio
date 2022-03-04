@@ -23,6 +23,7 @@ package rapaio.util.collection;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,6 +54,7 @@ import static rapaio.util.collection.DoubleArrays.variance;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -390,16 +392,42 @@ public class DoubleArraysTest {
         assertAsc(a, DoubleArrays::stableSort);
         assertDesc(a, DoubleArrays::stableSort);
 
-        assertAsc(a, DoubleArrays::radixSort);
         assertAsc(a, DoubleArrays::parallelQuickSort);
-
-        assertAscIndirect(a, (p, v) -> DoubleArrays.radixSortIndirect(p, v, true));
-        assertAscIndirect(a, (p, v) -> DoubleArrays.parallelRadixSortIndirect(p, v, true));
 
         assertAsc2(a, b, DoubleArrays::quickSort);
         assertAsc2(a, b, DoubleArrays::parallelQuickSort);
-        assertAsc2(a, b, DoubleArrays::radixSort);
-        assertAsc2(a, b, DoubleArrays::parallelRadixSort);
+
+        double[] a1 = Arrays.copyOf(a, a.length);
+        DoubleArrays.shuffle(a1, new Random(42));
+        boolean eq = true;
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] != a1[i]) {
+                eq = false;
+                break;
+            }
+        }
+        assertFalse(eq);
+
+        DoubleArrays.shuffle(a1, 0, a1.length / 2, new Random(42));
+        eq = true;
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] != a1[i]) {
+                eq = false;
+                break;
+            }
+        }
+        assertFalse(eq);
+
+        double[] a2 = Arrays.copyOf(a1, a1.length);
+        DoubleArrays.reverse(a2, 0, 10);
+        for (int i = 0; i < 10; i++) {
+            assertEquals(a1[i], a2[10 - 1 - i], TOL);
+        }
+        a2 = Arrays.copyOf(a1, a1.length);
+        DoubleArrays.reverse(a2);
+        for (int i = 0; i < a2.length; i++) {
+            assertEquals(a1[i], a2[a2.length - 1 - i], TOL);
+        }
     }
 
     private void assertAsc(double[] src, Consumer<double[]> fun) {
@@ -436,6 +464,22 @@ public class DoubleArraysTest {
         alg.accept(perm, array);
         for (int i = 1; i < array.length; i++) {
             assertTrue(array[perm[i - 1]] <= array[perm[i]]);
+        }
+    }
+
+
+    public interface TriConsumer {
+        void accept(int[] perm, double[] a, double[] b);
+    }
+
+    private void assertAscIndirect2(double[] a, double[] b, TriConsumer alg) {
+        int[] perm = IntArrays.newSeq(0, a.length);
+        alg.accept(perm, a, b);
+        for (int i = 1; i < a.length; i++) {
+            assertTrue(a[perm[i - 1]] <= a[perm[i]]);
+            if (a[perm[i - 1]] == a[perm[i]]) {
+                assertTrue(b[perm[i - 1]] <= b[perm[i]]);
+            }
         }
     }
 

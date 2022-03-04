@@ -23,7 +23,7 @@ package rapaio.util.vectorization;
 
 import jdk.incubator.vector.VectorOperators;
 
-public enum DoubleBinaryOp {
+public enum BinaryOp {
 
     ADD() {
         @Override
@@ -32,12 +32,12 @@ public enum DoubleBinaryOp {
         }
 
         @Override
-        public VectorOperators.Associative operator() {
+        public VectorOperators.Associative binaryOp() {
             return VectorOperators.ADD;
         }
     };
 
     public abstract double apply(double a, double b);
 
-    public abstract VectorOperators.Associative operator();
+    public abstract VectorOperators.Binary binaryOp();
 }

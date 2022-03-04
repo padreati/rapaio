@@ -111,6 +111,12 @@ public class IntArraysTest {
             result -= i * i;
         }
         assertEquals(0, result);
+
+        result = IntArrays.prod(a, 1, 10);
+        for (int i = 1; i < 11; i++) {
+            result /= a[i];
+        }
+        assertEquals(1, result);
     }
 
     @Test
@@ -168,8 +174,8 @@ public class IntArraysTest {
     void testSorting() {
 
         int len = 100_000;
-        var a = IntArrays.newSeq(0, 1000);
-        var b = IntArrays.newSeq(0, 1000);
+        var a = IntArrays.newSeq(0, len);
+        var b = IntArrays.newSeq(0, len);
 
         assertAsc(a, IntArrays::quickSort);
         assertAsc(a, IntArrays::parallelQuickSort);
@@ -183,19 +189,9 @@ public class IntArraysTest {
         assertAsc(a, IntArrays::mergeSort);
         assertDesc(a, IntArrays::mergeSort);
 
-        assertAsc(a, IntArrays::stableSort);
-        assertDesc(a, IntArrays::stableSort);
-
-        assertAsc(a, IntArrays::radixSort);
         assertAsc(a, IntArrays::parallelQuickSort);
-
-        assertAscIndirect(a, (p, v) -> IntArrays.radixSortIndirect(p, v, true));
-        assertAscIndirect(a, (p, v) -> IntArrays.parallelRadixSortIndirect(p, v, true));
-
         assertAsc2(a, b, IntArrays::quickSort);
         assertAsc2(a, b, IntArrays::parallelQuickSort);
-        assertAsc2(a, b, IntArrays::radixSort);
-        assertAsc2(a, b, IntArrays::parallelRadixSort);
     }
 
     private void assertAsc(int[] src, Consumer<int[]> fun) {

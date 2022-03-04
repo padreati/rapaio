@@ -427,17 +427,9 @@ public class IntArrayList implements RandomAccess, Cloneable, java.io.Serializab
 
     public void sort(final IntComparator comp) {
         if (comp == null) {
-            IntArrays.stableSort(data, 0, size);
+            IntArrays.quickSort(data, 0, size);
         } else {
-            IntArrays.stableSort(data, 0, size, comp);
-        }
-    }
-
-    public void unstableSort(final IntComparator comp) {
-        if (comp == null) {
-            IntArrays.unstableSort(data, 0, size);
-        } else {
-            IntArrays.unstableSort(data, 0, size, comp);
+            IntArrays.quickSort(data, 0, size, comp);
         }
     }
 

@@ -132,7 +132,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M5</version>
                 <configuration>
-                    <argLine>--enable-preview</argLine>
+                    <reuseForks>true</reuseForks>
+                    <argLine>${argLine} --enable-preview</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -141,9 +142,13 @@
                 <version>0.8.7</version>
                 <executions>
                     <execution>
+                        <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
@@ -151,6 +156,10 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
+                            <outputDirectory>${project.build.directory}/coverage-reports/jacoco</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -245,7 +254,7 @@
                         <version>3.0.0-M5</version>
                         <configuration>
                             <reuseForks>true</reuseForks>
-                            <argLine>--enable-preview</argLine>
+                            <argLine>${argLine} --enable-preview</argLine>
                         </configuration>
                     </plugin>
                     <plugin>

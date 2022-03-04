@@ -146,7 +146,6 @@
                         </goals>
                         <configuration>
                             <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
-<!--                            <propertyName>surefireArgLine</propertyName>-->
                         </configuration>
                     </execution>
                     <execution>
