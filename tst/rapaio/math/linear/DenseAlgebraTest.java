@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
+import static rapaio.sys.With.copy;
 
 import java.util.stream.IntStream;
 
@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.MappedVar;
 import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
+import rapaio.math.linear.base.DVectorBase;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.dense.DVectorDense;
@@ -41,6 +42,7 @@ import rapaio.math.linear.dense.DVectorMap;
 import rapaio.math.linear.dense.DVectorStride;
 import rapaio.math.linear.dense.DVectorVar;
 import rapaio.sys.With;
+import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
 public class DenseAlgebraTest {
@@ -54,6 +56,8 @@ public class DenseAlgebraTest {
                     .mapRows(IntArrays.newSeq(rows))
     };
     private static final VectorFactory[] vectorFactories = new VectorFactory[] {
+            // base vector
+            n -> new DVectorBase(DoubleArrays.newSeq(1, n + 1)),
             // dense vector
             n -> {
                 double[] values = new double[10 + n];
@@ -303,6 +307,8 @@ public class DenseAlgebraTest {
             t1v(vf, v -> assertTrue(v.mul(10, copy()).deepEquals(v.mul(10))));
             t1v(vf, v -> assertTrue(v.div(10, copy()).deepEquals(v.div(10))));
 
+            t1v(vf, v -> assertTrue(DVectorDense.fill(10, 7).deepEquals(v.copy().fill(7))));
+
             t1v(vf, v -> assertEquals(v.pnorm(1), v.sum()));
             t1v(vf, v -> assertEquals(10, v.pnorm(Double.POSITIVE_INFINITY)));
             t1v(vf, v -> assertEquals(55, v.sum()));
@@ -373,6 +379,13 @@ public class DenseAlgebraTest {
                     [2]  3 [6]  7\s
                     [3]  4 [7]  8\s
                     """, v.toSummary()));
+
+            t1v(vf, v -> {
+                v = v.copy().sortValues();
+                for (int i = 1; i < v.size(); i++) {
+                    assertTrue(v.get(i - 1) <= v.get(i));
+                }
+            });
         }
     }
 
@@ -442,5 +455,4 @@ public class DenseAlgebraTest {
             }
         }
     }
-
 }

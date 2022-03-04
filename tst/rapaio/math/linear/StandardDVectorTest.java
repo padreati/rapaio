@@ -294,7 +294,6 @@ public abstract class StandardDVectorTest {
         var v = generateFill(10, 1);
         var copy1 = v.copy();
         assertTrue(v.deepEquals(copy1));
-        assertEquals(DVectorDense.class.getName(), copy1.getClass().getName());
     }
 
     @Test

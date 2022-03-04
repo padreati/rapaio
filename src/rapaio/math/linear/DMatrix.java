@@ -22,21 +22,17 @@
 package rapaio.math.linear;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.math.linear.dense.DMatrixDense;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.sys.With;
-import rapaio.util.NotImplementedException;
-import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 

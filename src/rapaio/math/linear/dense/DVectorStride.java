@@ -70,8 +70,8 @@ public class DVectorStride extends AbstractDVector {
     }
 
     @Override
-    public DVectorDense copy() {
-        return DVector.wrap(copyArray());
+    public DVector copy() {
+        return new DVectorStride(0, size, 1, copyArray());
     }
 
     @Override

@@ -99,11 +99,7 @@ public interface DVector extends Serializable, Printable {
      * @return dense vector with random values
      */
     static DVectorDense random(int size, Distribution distribution) {
-        double[] array = new double[size];
-        for (int i = 0; i < size; i++) {
-            array[i] = distribution.sampleNext();
-        }
-        return wrapArray(0, array.length, array);
+        return DVectorDense.random(size, distribution);
     }
 
     /**
@@ -180,7 +176,10 @@ public interface DVector extends Serializable, Printable {
     DVector map(int[] indexes, AlgebraOption<?>... opts);
 
     /**
-     * Creates a new copy of the vector.
+     * Creates a new copy of the vector. The type of the copy vector is the same as original one,
+     * with the exception when this is a view vector and a copy using the original type is impossible.
+     * In that case a dense copy will be created.
+     * <p>
      * There are two common reasons why we would need such an operations:
      *
      * <ul>
@@ -193,7 +192,7 @@ public interface DVector extends Serializable, Printable {
      *
      * @return a new solid copy of the vector
      */
-    DVectorDense copy();
+    DVector copy();
 
     /**
      * Gets value from zero-based position index.
@@ -627,7 +626,7 @@ public interface DVector extends Serializable, Printable {
      *
      * @return new double variable instance
      */
-    VarDouble dVar(AlgebraOption<?>...opts);
+    VarDouble dVar(AlgebraOption<?>... opts);
 
     /**
      * Compares the values between the vector given as parameter and the current one.
