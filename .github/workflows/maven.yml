@@ -34,6 +34,6 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         directory: ./coverage-reports/jacoco/
-        files: ./jacoco.xml
+        files: ./coverage-reports/jacoco/jacoco.xml
         fail_ci_if_error: false
         verbose: true
