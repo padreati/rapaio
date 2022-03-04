@@ -29,14 +29,10 @@ jobs:
         distribution: ${{ matrix.distro }}
     - name: Build with Maven
       run: mvn verify --file pom.xml
-    - name: pwd
-      run: pwd
-    - name: ls
-      run: ls -l ./target
     - name: Codecov
       uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files:  ${{ github.workspace }}/coverage-reports/jacoco/jacoco.xml
+        files:  ${{ github.workspace }}/target/coverage-reports/jacoco/jacoco.xml
         fail_ci_if_error: false
         verbose: true
