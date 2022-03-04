@@ -33,7 +33,6 @@ jobs:
       uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./site/jacoco/jacoco.xml
-        file: ./site/jacoco/jacoco.xml
+        directory: ./coverage-reports/jacoco/
         fail_ci_if_error: false
         verbose: true
