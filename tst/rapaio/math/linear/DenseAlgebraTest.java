@@ -31,16 +31,12 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.data.MappedVar;
-import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
 import rapaio.math.linear.base.DVectorBase;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.linear.dense.DVectorMap;
 import rapaio.math.linear.dense.DVectorStride;
-import rapaio.math.linear.dense.DVectorVar;
 import rapaio.sys.With;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
@@ -72,7 +68,7 @@ public class DenseAlgebraTest {
                 for (int i = 0; i < n; i++) {
                     values[10 + i * 2] = i + 1;
                 }
-                return new DVectorStride(10, n, 2, values);
+                return new DVectorStride(10, 2, n, values);
             },
             // map vector
             n -> {
@@ -82,19 +78,7 @@ public class DenseAlgebraTest {
                     values[10 + i * 2] = i + 1;
                     indexes[i] = 10 + i * 2;
                 }
-                return new DVectorMap(new DVectorDense(0, 10 + 2 * n, values), indexes);
-            },
-            // var vector
-            n -> {
-                double[] values = new double[10 + 2 * n];
-                int[] indexes = new int[n];
-                for (int i = 0; i < n; i++) {
-                    values[10 + i * 2] = i + 1;
-                    indexes[i] = 10 + i * 2;
-                }
-                VarDouble original = VarDouble.wrap(values);
-                MappedVar mappedVar = original.mapRows(indexes);
-                return new DVectorVar<>(mappedVar);
+                return new DVectorDense(0, 10 + 2 * n, values).map(indexes);
             }
     };
 

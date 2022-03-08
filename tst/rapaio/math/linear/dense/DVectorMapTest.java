@@ -44,13 +44,13 @@ public class DVectorMapTest extends StandardDVectorTest {
             indexes[i] = 3 + i * 2;
             base[3 + i * 2] = i;
         }
-        return new DVectorMap(DVector.wrap(base), indexes);
+        return new DVectorMap(0, indexes, base);
     }
 
     @Override
     public DVector generateCopy(double[] values) {
         DVector source = DVector.wrap(values);
-        return new DVectorMap(source, IntArrays.newSeq(0, source.size()));
+        return source.map(IntArrays.newSeq(0, source.size()));
     }
 
     @Override

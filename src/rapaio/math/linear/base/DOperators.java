@@ -19,25 +19,40 @@
  *
  */
 
-package rapaio.util.vectorization;
+package rapaio.math.linear.base;
 
 import jdk.incubator.vector.VectorOperators;
 
-public enum BinaryOp {
+public interface DOperators {
 
-    ADD() {
+    interface Binary extends DOperators {
+        VectorOperators.Associative op();
+
+        double apply(double a, double b);
+    }
+
+    Binary ADD = new Binary() {
+        @Override
+        public VectorOperators.Associative op() {
+            return VectorOperators.ADD;
+        }
+
         @Override
         public double apply(double a, double b) {
             return a + b;
         }
-
-        @Override
-        public VectorOperators.Associative binaryOp() {
-            return VectorOperators.ADD;
-        }
     };
 
-    public abstract double apply(double a, double b);
+    Binary MUL = new Binary() {
 
-    public abstract VectorOperators.Binary binaryOp();
+        @Override
+        public VectorOperators.Associative op() {
+            return VectorOperators.MUL;
+        }
+
+        @Override
+        public double apply(double a, double b) {
+            return a * b;
+        }
+    };
 }

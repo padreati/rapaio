@@ -21,40 +21,27 @@
 
 package rapaio.math.linear.dense;
 
-import java.io.Serial;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
-import rapaio.data.Var;
+import jdk.incubator.vector.DoubleVector;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.base.AbstractDVector;
+import rapaio.math.linear.base.AbstractStorageDVector;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
+import rapaio.util.collection.DoubleArrays;
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/21.
- */
-public class DVectorMap extends AbstractDVector {
+public class DVectorMap extends AbstractStorageDVector {
 
-    @Serial
-    private static final long serialVersionUID = -1952913189054878826L;
+    public final int offset;
+    public final int[] indexes;
+    public final double[] array;
 
-    private final DVector source;
-    private final int[] indexes;
-
-    public DVectorMap(DVector source, int... indexes) {
-        if (source instanceof DVectorMap sourceMap) {
-            int[] copy = new int[indexes.length];
-            for (int i = 0; i < indexes.length; i++) {
-                copy[i] = sourceMap.indexes[indexes[i]];
-            }
-            this.indexes = copy;
-            this.source = sourceMap.source;
-        } else {
-            this.indexes = indexes;
-            this.source = source;
-        }
+    public DVectorMap(int offset, int[] indexes, double[] array) {
+        this.offset = offset;
+        this.indexes = indexes;
+        this.array = array;
     }
 
     @Override
@@ -63,62 +50,60 @@ public class DVectorMap extends AbstractDVector {
     }
 
     @Override
-    public DVector map(int[] idxs, AlgebraOption<?>... opts) {
+    public DVector map(int[] sel, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[idxs.length];
-            for (int i = 0; i < idxs.length; i++) {
-                copy[i] = source.get(indexes[idxs[i]]);
+            double[] copy = new double[sel.length];
+            for (int i = 0; i < sel.length; i++) {
+                copy[i] = array[indexes[sel[i]]];
             }
-            return new DVectorDense(0, copy.length, copy);
-        } else {
-            return new DVectorMap(this, idxs);
+            return new DVectorDense(0, sel.length, copy);
         }
+        int[] copyIndexes = new int[sel.length];
+        for (int i = 0; i < sel.length; i++) {
+            copyIndexes[i] = indexes[sel[i]];
+        }
+        return new DVectorMap(offset, copyIndexes, array);
     }
 
     @Override
-    public DVectorDense copy() {
-        double[] copy = new double[indexes.length];
-        for (int i = 0; i < indexes.length; i++) {
-            copy[i] = source.get(indexes[i]);
-        }
+    public DVector copy() {
+        double[] copy = DoubleArrays.copyByIndex(array, offset, indexes);
         return new DVectorDense(0, copy.length, copy);
     }
 
     @Override
+    public DoubleVector loadVector(int i) {
+        return DoubleVector.fromArray(SPECIES, array, offset, indexes, i);
+    }
+
+    @Override
+    public void storeVector(DoubleVector v, int i) {
+        v.intoArray(array, offset, indexes, i);
+    }
+
+    @Override
     public double get(int i) {
-        return source.get(indexes[i]);
+        return array[offset + indexes[i]];
     }
 
     @Override
     public void set(int i, double value) {
-        source.set(indexes[i], value);
+        array[offset + indexes[i]] = value;
     }
 
     @Override
     public void inc(int i, double value) {
-        source.inc(indexes[i], value);
-    }
-
-    @Override
-    public DVector fill(double value) {
-        for (int index : indexes) {
-            source.set(index, value);
-        }
-        return this;
+        array[offset + indexes[i]] += value;
     }
 
     @Override
     public DoubleStream valueStream() {
-        return IntStream.of(indexes).mapToDouble(source::get);
+        return IntStream.of(indexes).map(i -> i + offset).mapToDouble(i -> array[i]);
     }
 
     @Override
-    public VarDouble dVar(AlgebraOption<?>...opts) {
-        double[] copy = new double[indexes.length];
-        int pos = 0;
-        for (int index : indexes) {
-            copy[pos++] = source.get(index);
-        }
-        return VarDouble.wrapArray(copy.length, copy);
+    public VarDouble dVar(AlgebraOption<?>... opts) {
+        double[] copy = DoubleArrays.copyByIndex(array, offset, indexes);
+        return VarDouble.wrap(copy);
     }
 }

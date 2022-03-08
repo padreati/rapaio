@@ -24,32 +24,31 @@ package rapaio.math.linear.dense;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
-import rapaio.data.Var;
+import jdk.incubator.vector.DoubleVector;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.base.AbstractDVector;
+import rapaio.math.linear.base.AbstractStorageDVector;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 
-public class DVectorStride extends AbstractDVector {
+public class DVectorStride extends AbstractStorageDVector {
 
-    private final int offset;
-    private final int size;
-    private final int stride;
-    private final int fullSize;
+    public final int offset;
+    public final int stride;
+    public final int size;
+    public final double[] array;
+    private final int[] indexes;
 
-    private final double[] values;
-
-    public DVectorStride(int offset, int size, int stride, double[] values) {
+    public DVectorStride(int offset, int stride, int size, double[] array) {
         this.offset = offset;
-        this.size = size;
         this.stride = stride;
-        this.values = values;
-        this.fullSize = offset + size;
-    }
+        this.size = size;
+        this.array = array;
 
-    public int offset() {
-        return offset;
+        this.indexes = new int[SPECIES.length()];
+        for (int i = 0; i < indexes.length; i++) {
+            indexes[i] = i * stride;
+        }
     }
 
     @Override
@@ -57,53 +56,75 @@ public class DVectorStride extends AbstractDVector {
         return size;
     }
 
-    public int stride() {
-        return stride;
+    @Override
+    public DVector map(int[] indexes, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = new double[indexes.length];
+            for (int i = 0; i < indexes.length; i++) {
+                copy[i] = get(indexes[i]);
+            }
+            return new DVectorDense(0, copy.length, copy);
+        }
+        int[] copyIndexes = new int[indexes.length];
+        for (int i = 0; i < indexes.length; i++) {
+            copyIndexes[i] = stride * indexes[i];
+        }
+        return new DVectorMap(offset, copyIndexes, array);
     }
 
     private double[] copyArray() {
         double[] copy = new double[size];
         for (int i = 0; i < size; i++) {
-            copy[i] = values[offset + stride * i];
+            copy[i] = array[offset + stride * i];
         }
         return copy;
     }
 
     @Override
     public DVector copy() {
-        return new DVectorStride(0, size, 1, copyArray());
+        return new DVectorStride(0, 1, size, copyArray());
+    }
+
+    @Override
+    public DoubleVector loadVector(int i) {
+        return DoubleVector.fromArray(SPECIES, array, offset + i * stride, indexes, 0);
+    }
+
+    @Override
+    public void storeVector(DoubleVector v, int i) {
+        v.intoArray(array, offset + i * stride, indexes, 0);
     }
 
     @Override
     public double get(int i) {
-        return values[offset + i * stride];
+        return array[offset + i * stride];
     }
 
     @Override
     public void set(int i, double value) {
-        values[offset + i * stride] = value;
+        array[offset + i * stride] = value;
     }
 
     @Override
     public void inc(int i, double value) {
-        values[offset + i * stride] += value;
+        array[offset + i * stride] += value;
     }
 
     @Override
     public DVector fill(double value) {
-        for (int i = offset; i < fullSize; i += stride) {
-            values[i] = value;
+        for (int i = offset; i < offset + size; i += stride) {
+            array[i] = value;
         }
         return this;
     }
 
     @Override
     public DoubleStream valueStream() {
-        return IntStream.range(0, size).mapToDouble(i -> values[offset + i * stride]);
+        return IntStream.range(0, size).mapToDouble(i -> array[offset + i * stride]);
     }
 
     @Override
-    public VarDouble dVar(AlgebraOption<?>...opts) {
+    public VarDouble dVar(AlgebraOption<?>... opts) {
         return VarDouble.wrap(copyArray());
     }
 }

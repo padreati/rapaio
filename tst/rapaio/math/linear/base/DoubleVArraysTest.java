@@ -19,18 +19,16 @@
  *
  */
 
-package rapaio.util.vectorization;
+package rapaio.math.linear.base;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.util.Arrays;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.util.collection.DoubleArrays;
-import rapaio.util.vectorization.DoubleVArrays;
 
 public class DoubleVArraysTest {
 
@@ -38,8 +36,8 @@ public class DoubleVArraysTest {
 
     private final int len = 100_003;
 
-    private double[] x1,x2;
-    private double[] y1,y2;
+    private double[] x1, x2;
+    private double[] y1, y2;
 
     @BeforeEach
     void beforeEach() {
@@ -52,14 +50,14 @@ public class DoubleVArraysTest {
     @Test
     void testAddScalar() {
         DoubleArrays.add(x1, 10, 1, 103);
-        DoubleVArrays.add(x2, 10, 1, 103);
+        VectorAlgebra.binaryOpTo(DOperators.ADD, x2, 10, 1, x2, 10, 103);
         assertArrayEquals(x1, x2, TOL);
     }
 
     @Test
     void testAddVectors() {
         DoubleArrays.add(x1, 10, y1, 20, 10_003);
-        DoubleVArrays.add(x2, 10, y2, 20, 10_003);
+        VectorAlgebra.binaryOpTo(DOperators.ADD, x2, 10, y2, 20, x2, 10, 10_003);
         assertArrayEquals(x1, x2);
     }
 }

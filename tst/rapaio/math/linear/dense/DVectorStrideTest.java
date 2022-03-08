@@ -29,7 +29,7 @@ public class DVectorStrideTest extends StandardDVectorTest {
 
     @Override
     public DVector generateCopy(double[] values) {
-        return new DVectorStride(0, values.length, 1, values);
+        return new DVectorStride(0, 1, values.length, values);
     }
 
     @Override
@@ -38,12 +38,12 @@ public class DVectorStrideTest extends StandardDVectorTest {
         for (int i = 0; i < end; i++) {
             base[3 + i * 2] = i;
         }
-        return new DVectorStride(3, end, 2, base);
+        return new DVectorStride(3, 2, end, base);
     }
 
     @Override
     public DVector generateFill(int size, double fill) {
-        return new DVectorStride(0, size, 1, DoubleArrays.newFill(size, fill));
+        return new DVectorStride(0, 1, size, DoubleArrays.newFill(size, fill));
     }
 
     @Override

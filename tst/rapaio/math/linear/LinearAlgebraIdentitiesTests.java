@@ -50,7 +50,7 @@ public class LinearAlgebraIdentitiesTests {
                 for (int i = 0; i < size; i++) {
                     values[offset + i*2] = RandomSource.nextDouble();
                 }
-                return new DVectorStride(10, size, 2, values);
+                return new DVectorStride(10, 2, size, values);
             },
             size -> {
                 DVector v = DVector.random(size);

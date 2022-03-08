@@ -276,12 +276,6 @@ public class IntArrayList implements RandomAccess, Cloneable, java.io.Serializab
         return size;
     }
 
-    public void size(final int size) {
-        if (size > data.length) data = IntArrays.forceCapacity(data, size, this.size);
-        if (size > this.size) Arrays.fill(data, this.size, size, (0));
-        this.size = size;
-    }
-
     public boolean isEmpty() {
         return size == 0;
     }
