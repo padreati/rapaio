@@ -67,22 +67,22 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
     /**
      * Distance function used to select closest points
      */
-    public final ValueParam<Distance, KnnRegression> distance = new ValueParam<>(this, new EuclideanDistance(),"distance");
+    public final ValueParam<Distance, KnnRegression> distance = new ValueParam<>(this, new EuclideanDistance(), "distance");
 
     /**
      * Distance function used to as basis for computing weights
      */
-    public final ValueParam<Distance, KnnRegression> wdistance = new ValueParam<>(this, new EuclideanDistance(),"wdistance");
+    public final ValueParam<Distance, KnnRegression> wdistance = new ValueParam<>(this, new EuclideanDistance(), "wdistance");
 
     /**
      * Kernel function used to transform distances computed with {@link #wdistance} into similarities.
      */
-    public final ValueParam<Kernel, KnnRegression> kernel = new ValueParam<>(this, Kernel.RECTANGULAR,"kernel");
+    public final ValueParam<Kernel, KnnRegression> kernel = new ValueParam<>(this, Kernel.RECTANGULAR, "kernel");
 
     /**
      * Small positive quantity used to cut normalized weight distances to avoid division by zero
      */
-    public final ValueParam<Double, KnnRegression> eps = new ValueParam<>(this, 1e-6,"eps");
+    public final ValueParam<Double, KnnRegression> eps = new ValueParam<>(this, 1e-6, "eps");
 
     private DVector[] instances;
     private DVector target;
@@ -120,7 +120,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         for (int i = 0; i < df.rowCount(); i++) {
             instances[i] = buildInstance(df, i);
         }
-        this.target = DVector.from(df.rvar(targetNames[0]));
+        this.target = df.rvar(targetNames[0]).dv();
         return true;
     }
 

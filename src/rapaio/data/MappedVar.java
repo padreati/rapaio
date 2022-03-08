@@ -231,7 +231,7 @@ public class MappedVar extends AbstractVar {
             return new DVectorDense(0, mapping.size(), values);
         }
         if (source instanceof VarDouble vd) {
-            new DVectorMap(new DVectorDense(0, vd.size(), vd.elements()), mapping.elements());
+            new DVectorDense(0, vd.size(), vd.elements()).map(mapping.elements());
         }
         return new DVectorVar<>(this);
     }

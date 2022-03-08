@@ -45,7 +45,7 @@ import rapaio.data.VarInt;
 public class DVarOpTest {
 
     private static final double TOLERANCE = 1e-12;
-    private Normal normal = Normal.std();
+    private final Normal normal = Normal.std();
 
     @BeforeEach
     void beforeEach() {

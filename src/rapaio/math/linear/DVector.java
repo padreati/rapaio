@@ -28,7 +28,6 @@ import java.util.stream.DoubleStream;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
-import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DVectorDense;
@@ -130,22 +129,6 @@ public interface DVector extends Serializable, Printable {
     static DVectorDense wrapArray(int offset, int size, double[] values) {
         Objects.requireNonNull(values);
         return new DVectorDense(offset, size, values);
-    }
-
-    /**
-     * Builds a vector over values from a {@link Var} object.
-     * The variable can have any {@link Var#type()}, the values from variable
-     * being obtained using {@link Var#getDouble(int)} calls.
-     * <p>
-     * The obtained object is a wrapper over original {@link Var}. If a copy of the values
-     * is desired, than {@link With#copy()} parameter option must be passed and a
-     * dense vector will be created which contains a copy of the values from the vector.
-     *
-     * @param v source variable
-     * @return new dense vector with values takes from variable v
-     */
-    static DVector from(Var v, AlgebraOption<?>... opts) {
-        return v.dv(opts);
     }
 
     /**

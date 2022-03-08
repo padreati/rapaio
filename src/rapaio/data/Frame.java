@@ -107,14 +107,6 @@ public interface Frame extends Serializable, Printable {
      */
     Var rvar(String name);
 
-    default DVector asDVector(int pos, AlgebraOption<?>...opts) {
-        return rvar(pos).dv(opts);
-    }
-
-    default DVector asDVector(String name, AlgebraOption<?>...opts) {
-        return rvar(name).dv(opts);
-    }
-
     /**
      * Returns the type of the given var
      *
@@ -177,14 +169,18 @@ public interface Frame extends Serializable, Printable {
      */
     default Frame removeVars(VarRange range) {
         Set<String> remove = new HashSet<>(range.parseVarNames(this));
-        if (remove.isEmpty())
+        if (remove.isEmpty()) {
             return this;
-        if (remove.size() == this.varCount())
+        }
+        if (remove.size() == this.varCount()) {
             return SolidFrame.byVars();
+        }
         int[] retain = new int[varNames().length - remove.size()];
         int pos = 0;
         for (String varName : varNames()) {
-            if (remove.contains(varName)) continue;
+            if (remove.contains(varName)) {
+                continue;
+            }
             retain[pos++] = varIndex(varName);
         }
         return mapVars(VarRange.of(retain));
@@ -447,7 +443,9 @@ public interface Frame extends Serializable, Printable {
      */
     default boolean isMissing(int row) {
         for (String colName : varNames()) {
-            if (rvar(colName).isMissing(row)) return true;
+            if (rvar(colName).isMissing(row)) {
+                return true;
+            }
         }
         return false;
     }
@@ -568,10 +566,12 @@ public interface Frame extends Serializable, Printable {
     void printHead(int lines);
 
     default boolean deepEquals(Frame df) {
-        if (rowCount() != df.rowCount())
+        if (rowCount() != df.rowCount()) {
             return false;
-        if (varCount() != df.varCount())
+        }
+        if (varCount() != df.varCount()) {
             return false;
+        }
         String[] names = varNames();
         String[] dfNames = df.varNames();
         for (int i = 0; i < names.length; i++) {

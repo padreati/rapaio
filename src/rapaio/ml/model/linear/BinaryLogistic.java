@@ -21,8 +21,6 @@
 
 package rapaio.ml.model.linear;
 
-import static rapaio.sys.With.copy;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,6 +40,7 @@ import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.linear.binarylogistic.BinaryLogisticIRLS;
 import rapaio.ml.model.linear.binarylogistic.BinaryLogisticNewton;
+import rapaio.sys.With;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
@@ -187,7 +186,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     private DVector computeTargetVector(Var target) {
         switch (target.type()) {
             case BINARY:
-                return DVector.from(target);
+                return target.dv();
             case NOMINAL:
                 DVector result = DVector.zeros(target.size());
                 if (targetLevels.get(firstTargetName()).size() == 3) {
@@ -228,7 +227,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         DVector p = DVector.fill(df.rowCount(), intercept.get() * w.getDouble(0));
         for (int i = 0; i < inputNames.length; i++) {
             double wvalue = w.getDouble(i + offset);
-            DVector z = df.asDVector(inputName(i), copy()).apply(v -> 1 / (1 + Math.exp(-v * wvalue)));
+            DVector z = df.rvar(inputName(i)).dv(With.copy()).apply(v -> 1 / (1 + Math.exp(-v * wvalue)));
             p.add(z);
         }
 

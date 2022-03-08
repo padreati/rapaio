@@ -47,6 +47,7 @@ import rapaio.ml.model.simple.L2Regression;
 import rapaio.ml.model.tree.RTree;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
+import rapaio.sys.With;
 
 /**
  * Gradient Boosting Tree
@@ -182,7 +183,7 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
         prediction.apply(v -> 0);
         prediction.add(initModel.get().predict(df, false).firstPrediction().dv());
         for (var tree : trees) {
-            prediction.add(tree.predict(df, false).firstPrediction().dv(copy()).mul(shrinkage.get()));
+            prediction.add(tree.predict(df, false).firstPrediction().dv(With.copy()).mul(shrinkage.get()));
         }
         result.buildComplete();
         return result;

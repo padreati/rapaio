@@ -166,7 +166,7 @@ public class BinaryLogisticIRLSTest {
         VarDouble y1 = VarDouble.from(100, row -> row > 50 ? 1. : 0);
 
         DMatrix x = DMatrix.copy(x1, x2);
-        DVector y = DVector.from(y1);
+        DVector y = y1.dv();
         DVector w0 = DVector.wrap(0, 0);
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> new BinaryLogisticIRLS()

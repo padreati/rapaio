@@ -55,18 +55,6 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector map(int[] indexes, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[indexes.length];
-            for (int i = 0; i < indexes.length; i++) {
-                copy[i] = get(indexes[i]);
-            }
-            return DVector.wrap(copy);
-        }
-        return new DVectorMap(this, indexes);
-    }
-
-    @Override
     public DVector fill(double value) {
         for (int i = 0; i < size(); i++) {
             set(i, value);

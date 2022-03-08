@@ -25,7 +25,6 @@ import static rapaio.sys.With.*;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;

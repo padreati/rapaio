@@ -43,6 +43,7 @@ import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
 import rapaio.printer.Format;
+import rapaio.sys.With;
 
 /**
  * Correlograms are artists which helps visualize data in correlation matrices.
@@ -58,7 +59,7 @@ import rapaio.printer.Format;
  * <p>
  * The colors used to display values comes from {@link ColorGradient#newHueGradient(int, int, double[])}
  * with start=0, end=240 and an array of 101 percentages. One can changes this behaviour by setting
- * the {@link rapaio.sys.With#fill(Color[])} graphical option to an array of 101 color elements.
+ * the {@link With#fill(Color[])} graphical option to an array of 101 color elements.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/16.
  */

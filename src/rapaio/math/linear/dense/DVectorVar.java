@@ -23,6 +23,7 @@ package rapaio.math.linear.dense;
 
 import java.util.stream.DoubleStream;
 
+import rapaio.data.MappedVar;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
@@ -51,6 +52,18 @@ public class DVectorVar<T extends Var> extends AbstractDVector {
     @Override
     public int size() {
         return ref.size();
+    }
+
+    @Override
+    public DVector map(int[] indexes, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] array = new double[indexes.length];
+            for (int i = 0; i < indexes.length; i++) {
+                array[i] = ref.getDouble(indexes[i]);
+            }
+            return new DVectorDense(0, indexes.length, array);
+        }
+        return new DVectorVar<>(MappedVar.byRows(ref, indexes));
     }
 
     @Override
