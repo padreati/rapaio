@@ -410,6 +410,26 @@ public final class DoubleArrays {
         return min;
     }
 
+    public static int argmax(double[] values, int offset, int size) {
+        int amax = offset;
+        for (int i = offset + 1; i < offset + size; i++) {
+            if (values[amax] < values[i]) {
+                amax = i;
+            }
+        }
+        return amax;
+    }
+
+    public static double max(double[] values, int offset, int size) {
+        double max = values[offset];
+        for (int i = offset + 1; i < offset + size; i++) {
+            if (max < values[i]) {
+                max = values[i];
+            }
+        }
+        return max;
+    }
+
     /**
      * Those functions were copied from fastutil but adapted for our use case.
      * The reason is to avoid importing the huge library of fastutil and

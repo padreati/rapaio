@@ -72,7 +72,7 @@ public abstract class AbstractDVector implements DVector {
             return DVector.wrap(copy);
         }
         for (int i = 0; i < size(); i++) {
-            set(i, get(i) + x);
+            inc(i, x);
         }
         return this;
     }
@@ -88,7 +88,7 @@ public abstract class AbstractDVector implements DVector {
             return DVector.wrap(copy);
         }
         for (int i = 0; i < size(); i++) {
-            set(i, get(i) + b.get(i));
+            inc(i, b.get(i));
         }
         return this;
     }
@@ -103,7 +103,7 @@ public abstract class AbstractDVector implements DVector {
             return DVector.wrap(copy);
         }
         for (int i = 0; i < size(); i++) {
-            set(i, get(i) - x);
+            inc(i, -x);
         }
         return this;
     }
@@ -119,7 +119,7 @@ public abstract class AbstractDVector implements DVector {
             return DVector.wrap(copy);
         }
         for (int i = 0; i < size(); i++) {
-            set(i, get(i) - b.get(i));
+            inc(i, -b.get(i));
         }
         return this;
     }
@@ -322,18 +322,8 @@ public abstract class AbstractDVector implements DVector {
             return size();
         }
         if (p == Double.POSITIVE_INFINITY) {
-            double max = Double.NaN;
-            for (int i = 0; i < size(); i++) {
-                double value = get(i);
-                if (Double.isNaN(max)) {
-                    max = value;
-                } else {
-                    max = Math.max(max, value);
-                }
-            }
-            return max;
+            return max();
         }
-
         double s = 0.0;
         for (int i = 0; i < size(); i++) {
             s += Math.pow(Math.abs(get(i)), p);

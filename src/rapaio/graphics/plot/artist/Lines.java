@@ -48,7 +48,7 @@ public class Lines extends Artist {
     private final Var y;
 
     public Lines(Var y, GOption<?>... opts) {
-        this(VarDouble.seq(0, y.size() - 1), y, opts);
+        this(VarDouble.seq(0, y.size() - 1).name("index"), y, opts);
     }
 
     public Lines(Var x, Var y, GOption<?>... opts) {

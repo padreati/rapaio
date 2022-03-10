@@ -25,104 +25,67 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.option.AlgebraOption;
-import rapaio.math.linear.option.AlgebraOptions;
+import rapaio.math.linear.dense.DVectorStorage;
 
 public abstract class AbstractStorageDVector extends AbstractDVector {
 
-    protected static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
+    private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
+    private static final int SPECIES_LEN = SPECIES.length();
+
+    protected final DVectorStorage storage;
+
+    public AbstractStorageDVector(DVectorStorage storage) {
+        this.storage = storage;
+    }
 
     public abstract int size();
 
-    public abstract DoubleVector loadVector(int i);
-
-    public abstract void storeVector(DoubleVector v, int i);
-
     @Override
-    public DVector add(double x, AlgebraOption<?>... opts) {
-        int bound = SPECIES.loopBound(size());
-        DoubleVector va = DoubleVector.broadcast(SPECIES, x);
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            int i = 0;
-            for (; i < bound; i += SPECIES.length()) {
-                loadVector(i).add(va).intoArray(copy, i);
-            }
-            for(;i<size(); i++) {
-                copy[i] = get(i) + x;
-            }
-            return DVector.wrap(copy);
-        }
-        int i = 0;
-        for (; i < bound; i += SPECIES.length()) {
-            DoubleVector vx = loadVector(i).add(va);
-            storeVector(vx, i);
-        }
-        for (; i < size(); i++) {
-            inc(i, x);
-        }
-        return this;
+    public double get(int i) {
+        return storage.get(i);
     }
 
     @Override
-    public DVector sub(double x, AlgebraOption<?>... opts) {
-        int bound = SPECIES.loopBound(size());
-        DoubleVector va = DoubleVector.broadcast(SPECIES, x);
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            int i = 0;
-            for (; i < bound; i += SPECIES.length()) {
-                loadVector(i).sub(va).intoArray(copy, i);
-            }
-            for (; i < size(); i++) {
-                copy[i] = get(i) - x;
-            }
-            return DVector.wrap(copy);
-        }
-        int i = 0;
-        for (; i < bound; i += SPECIES.length()) {
-            DoubleVector vx = loadVector(i).sub(va);
-            storeVector(vx, i);
-        }
-        for (; i < size(); i++) {
-            inc(i, -x);
-        }
-        return this;
+    public void set(int i, double value) {
+        storage.set(i, value);
     }
 
+    @Override
+    public void inc(int i, double value) {
+        storage.inc(i, value);
+    }
 
     @Override
     public double sum() {
-        int bound = SPECIES.loopBound(size());
         int i = 0;
         DoubleVector aggr = DoubleVector.zero(SPECIES);
-        for (; i < bound; i += SPECIES.length()) {
-            DoubleVector xv = loadVector(i);
+        int bound = SPECIES.loopBound(size());
+        for (; i < bound; i += SPECIES_LEN) {
+            DoubleVector xv = storage.loadVector(i);
             aggr = aggr.add(xv);
         }
         double result = aggr.reduceLanes(VectorOperators.ADD);
         for (; i < size(); i++) {
-            result = result + get(i);
+            result = result + storage.get(i);
         }
         return result;
     }
 
     @Override
     public double nansum() {
-        int bound = SPECIES.loopBound(size());
         int i = 0;
         VectorMask<Double> m;
         DoubleVector aggr = DoubleVector.zero(SPECIES);
-        for (; i < bound; i += SPECIES.length()) {
-            DoubleVector xv = loadVector(i);
+        int bound = SPECIES.loopBound(size());
+        for (; i < bound; i += SPECIES_LEN) {
+            DoubleVector xv = storage.loadVector(i);
             m = xv.test(VectorOperators.IS_NAN).not();
             aggr = aggr.add(xv, m);
         }
         m = aggr.test(VectorOperators.IS_NAN).not();
         double result = aggr.reduceLanes(VectorOperators.ADD, m);
         for (; i < size(); i++) {
-            double value = get(i);
+            double value = storage.get(i);
             if (!Double.isNaN(value)) {
                 result = result + value;
             }
@@ -132,16 +95,16 @@ public abstract class AbstractStorageDVector extends AbstractDVector {
 
     @Override
     public double prod() {
-        int bound = SPECIES.loopBound(size());
         int i = 0;
         DoubleVector aggr = DoubleVector.broadcast(SPECIES, 1);
+        int bound = SPECIES.loopBound(size());
         for (; i < bound; i += SPECIES.length()) {
-            DoubleVector xv = loadVector(i);
+            DoubleVector xv = storage.loadVector(i);
             aggr = aggr.mul(xv);
         }
         double result = aggr.reduceLanes(VectorOperators.MUL);
         for (; i < size(); i++) {
-            result = result * get(i);
+            result = result * storage.get(i);
         }
         return result;
     }
