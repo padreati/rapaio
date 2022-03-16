@@ -27,21 +27,20 @@ import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
 import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.VectorMask;
-import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.base.AbstractStorageDVector;
+import rapaio.math.linear.dense.storage.DVectorStore;
+import rapaio.math.linear.dense.storage.DVectorStoreDense;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.DoubleComparator;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
-public class DVectorDense extends AbstractStorageDVector {
+public class DVectorDense extends AbstractStoreDVector {
 
     public static DVectorDense empty(int n) {
         return new DVectorDense(0, n, new double[n]);
@@ -67,146 +66,50 @@ public class DVectorDense extends AbstractStorageDVector {
     private static final long serialVersionUID = 5763094452899116225L;
     private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
 
-    public static final class Storage implements DVectorStorage {
-
-        public final int offset;
-        public final int size;
-        public final double[] array;
-
-        public Storage(int offset, int size, double[] array) {
-            this.offset = offset;
-            this.size = size;
-            this.array = array;
-        }
-
-        @Override
-        public int size() {
-            return size;
-        }
-
-        @Override
-        public double[] array() {
-            return array;
-        }
-
-        @Override
-        public DoubleVector loadVector(int i) {
-            return DoubleVector.fromArray(SPECIES, array, offset + i);
-        }
-
-        @Override
-        public DoubleVector loadVector(int i, VectorMask<Double> m) {
-            return DoubleVector.fromArray(SPECIES, array, offset + i, m);
-        }
-
-        @Override
-        public void storeVector(DoubleVector v, int i) {
-            v.intoArray(array, offset + i);
-        }
-
-        @Override
-        public void storeVector(DoubleVector v, int i, VectorMask<Double> m) {
-            v.intoArray(array, offset + i, m);
-        }
-
-        @Override
-        public double get(int i) {
-            return array[offset + i];
-        }
-
-        @Override
-        public void set(int i, double value) {
-            array[offset + i] = value;
-        }
-
-        @Override
-        public void inc(int i, double value) {
-            array[offset + i] += value;
-        }
-
-        public double sum() {
-            int i = 0;
-            DoubleVector aggr = DoubleVector.zero(SPECIES);
-            int bound = SPECIES.loopBound(size());
-            for (; i < bound; i += SPECIES.length()) {
-                DoubleVector xv = loadVector(i);
-                aggr = aggr.add(xv);
-            }
-            double result = aggr.reduceLanes(VectorOperators.ADD);
-            for (; i < size(); i++) {
-                result = result + array[offset + i];
-            }
-            return result;
-        }
-
-        public void add(double x) {
-            DoubleVector add = DoubleVector.broadcast(SPECIES, x);
-            int i = 0;
-            int bound = SPECIES.loopBound(size);
-            for (; i < bound; i += SPECIES.length()) {
-                var v = DoubleVector.fromArray(SPECIES, array, offset + i);
-                v.add(add).intoArray(array, offset + i);
-            }
-            for (; i < size; i++) {
-                array[offset + i] += x;
-            }
-        }
-
-    }
-
-    private final Storage s;
+    private final DVectorStoreDense store;
 
     public DVectorDense(int offset, int size, double[] array) {
-        super(new Storage(offset, size, array));
-        this.s = (Storage) storage;
+        this.store = new DVectorStoreDense(offset, size, array);
+    }
+
+    @Override
+    public DVectorStore store() {
+        return store;
     }
 
     @Override
     public int size() {
-        return s.size;
+        return store.size;
     }
 
     @Override
     public DVector map(int[] indexes, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = DoubleArrays.copyByIndex(s.array, s.offset, indexes);
+            double[] copy = DoubleArrays.copyByIndex(store.array, store.offset, indexes);
             return new DVectorDense(0, copy.length, copy);
         } else {
-            return new DVectorMap(s.offset, indexes, s.array);
+            return new DVectorMap(store.offset, indexes, store.array);
         }
     }
 
     public DVectorDense copy() {
-        return new DVectorDense(0, s.size, Arrays.copyOfRange(s.array, s.offset, s.offset + s.size));
+        return new DVectorDense(0, store.size, Arrays.copyOfRange(store.array, store.offset, store.offset + store.size));
     }
 
     @Override
     public DVector fill(double value) {
-        Arrays.fill(s.array, s.offset, s.offset + s.size, value);
+        Arrays.fill(store.array, store.offset, store.offset + store.size, value);
         return this;
     }
 
-//    @Override
-//    public DVector add(double x, AlgebraOption<?>... opts) {
-//        if (AlgebraOptions.from(opts).isCopy()) {
-//            double[] copy = new double[s.size];
-//            DoubleArrays.addTo(s.array, s.offset, x, copy, 0, copy.length);
-//            return DVector.wrap(copy);
-//        }
-//        DoubleArrays.add(s.array, s.offset, x, s.size);
-//        return this;
-//    }
-//
-
-
     @Override
     public DVector add(double x, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[s.size];
-            DoubleArrays.addTo(s.array, s.offset, x, copy, 0, copy.length);
-            return DVector.wrap(copy);
+        if(AlgebraOptions.from(opts).isCopy()) {
+            DVectorDense copy = new DVectorDense(0, store.size(), store.solidArrayCopy());
+            copy.store.add(x);
+            return copy;
         }
-        s.add(x);
+        store.add(x);
         return this;
     }
 
@@ -214,22 +117,22 @@ public class DVectorDense extends AbstractStorageDVector {
     public DVectorDense add(DVector b, AlgebraOption<?>... opts) {
         checkConformance(b);
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[s.size];
+            double[] copy = new double[store.size];
             if (b instanceof DVectorDense bd) {
-                DoubleArrays.addTo(s.array, s.offset, bd.s.array, bd.s.offset, copy, 0, s.size);
+                DoubleArrays.addTo(store.array, store.offset, bd.store.array, bd.store.offset, copy, 0, store.size);
             } else {
-                for (int i = 0; i < s.size; i++) {
-                    copy[i] = s.array[s.offset + i] + b.get(i);
+                for (int i = 0; i < store.size; i++) {
+                    copy[i] = store.array[store.offset + i] + b.get(i);
                 }
             }
             return DVector.wrap(copy);
         }
         if (b instanceof DVectorDense bd) {
-            DoubleArrays.add(s.array, s.offset, bd.s.array, bd.s.offset, s.size);
+            DoubleArrays.add(store.array, store.offset, bd.store.array, bd.store.offset, store.size);
             return this;
         }
-        for (int i = 0; i < s.size; i++) {
-            s.array[s.offset + i] += b.get(i);
+        for (int i = 0; i < store.size; i++) {
+            store.array[store.offset + i] += b.get(i);
         }
         return this;
     }
@@ -238,11 +141,11 @@ public class DVectorDense extends AbstractStorageDVector {
     @Override
     public DVector sub(double x, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[s.size];
-            DoubleArrays.subTo(s.array, s.offset, x, copy, 0, copy.length);
+            double[] copy = new double[store.size];
+            DoubleArrays.subTo(store.array, store.offset, x, copy, 0, copy.length);
             return DVector.wrap(copy);
         }
-        DoubleArrays.sub(s.array, s.offset, x, s.size);
+        DoubleArrays.sub(store.array, store.offset, x, store.size);
         return this;
     }
 
@@ -250,22 +153,22 @@ public class DVectorDense extends AbstractStorageDVector {
     public DVectorDense sub(DVector b, AlgebraOption<?>... opts) {
         checkConformance(b);
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[s.size];
+            double[] copy = new double[store.size];
             if (b instanceof DVectorDense bd) {
-                DoubleArrays.subTo(s.array, s.offset, bd.s.array, bd.s.offset, copy, 0, s.size);
+                DoubleArrays.subTo(store.array, store.offset, bd.store.array, bd.store.offset, copy, 0, store.size);
             } else {
-                for (int i = 0; i < s.size; i++) {
-                    copy[i] = s.array[s.offset + i] - b.get(i);
+                for (int i = 0; i < store.size; i++) {
+                    copy[i] = store.array[store.offset + i] - b.get(i);
                 }
             }
             return DVector.wrap(copy);
         }
         if (b instanceof DVectorDense bd) {
-            DoubleArrays.sub(s.array, s.offset, bd.s.array, bd.s.offset, s.size);
+            DoubleArrays.sub(store.array, store.offset, bd.store.array, bd.store.offset, store.size);
             return this;
         }
-        for (int i = 0; i < s.size; i++) {
-            s.array[s.offset + i] -= b.get(i);
+        for (int i = 0; i < store.size; i++) {
+            store.array[store.offset + i] -= b.get(i);
         }
         return this;
     }
@@ -273,34 +176,34 @@ public class DVectorDense extends AbstractStorageDVector {
     @Override
     public DVector mul(double x, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[s.size];
-            DoubleArrays.multTo(s.array, s.offset, x, copy, 0, copy.length);
+            double[] copy = new double[store.size];
+            DoubleArrays.multTo(store.array, store.offset, x, copy, 0, copy.length);
             return DVector.wrap(copy);
         }
-        DoubleArrays.mul(s.array, s.offset, x, s.size);
+        DoubleArrays.mul(store.array, store.offset, x, store.size);
         return this;
     }
 
     @Override
     public DVector mul(DVector b, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[s.size];
+            double[] copy = new double[store.size];
             if (b instanceof DVectorDense bd) {
-                DoubleArrays.multTo(s.array, s.offset, bd.s.array, bd.s.offset, copy, 0, s.size);
+                DoubleArrays.multTo(store.array, store.offset, bd.store.array, bd.store.offset, copy, 0, store.size);
             } else {
-                for (int i = 0; i < s.size; i++) {
-                    copy[i] = s.array[s.offset + i] * b.get(i);
+                for (int i = 0; i < store.size; i++) {
+                    copy[i] = store.array[store.offset + i] * b.get(i);
                 }
             }
             return DVector.wrap(copy);
         }
         checkConformance(b);
         if (b instanceof DVectorDense bd) {
-            DoubleArrays.mul(s.array, s.offset, bd.s.array, bd.s.offset, s.size);
+            DoubleArrays.mul(store.array, store.offset, bd.store.array, bd.store.offset, store.size);
             return this;
         }
-        for (int i = 0; i < s.size; i++) {
-            s.array[s.offset + i] *= b.get(i);
+        for (int i = 0; i < store.size; i++) {
+            store.array[store.offset + i] *= b.get(i);
         }
         return this;
     }
@@ -308,11 +211,11 @@ public class DVectorDense extends AbstractStorageDVector {
     @Override
     public DVector div(double x, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[s.size];
-            DoubleArrays.divTo(s.array, s.offset, x, copy, 0, copy.length);
+            double[] copy = new double[store.size];
+            DoubleArrays.divTo(store.array, store.offset, x, copy, 0, copy.length);
             return DVector.wrap(copy);
         }
-        DoubleArrays.div(s.array, s.offset, x, s.size);
+        DoubleArrays.div(store.array, store.offset, x, store.size);
         return this;
     }
 
@@ -320,22 +223,22 @@ public class DVectorDense extends AbstractStorageDVector {
     public DVector div(DVector b, AlgebraOption<?>... opts) {
         checkConformance(b);
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[s.size];
+            double[] copy = new double[store.size];
             if (b instanceof DVectorDense bd) {
-                DoubleArrays.divTo(s.array, s.offset, bd.s.array, bd.s.offset, copy, 0, s.size);
+                DoubleArrays.divTo(store.array, store.offset, bd.store.array, bd.store.offset, copy, 0, store.size);
             } else {
-                for (int i = 0; i < s.size; i++) {
-                    copy[i] = s.array[s.offset + i] / b.get(i);
+                for (int i = 0; i < store.size; i++) {
+                    copy[i] = store.array[store.offset + i] / b.get(i);
                 }
             }
             return DVector.wrap(copy);
         }
         if (b instanceof DVectorDense bd) {
-            DoubleArrays.div(s.array, s.offset, bd.s.array, bd.s.offset, s.size);
+            DoubleArrays.div(store.array, store.offset, bd.store.array, bd.store.offset, store.size);
             return this;
         }
-        for (int i = 0; i < s.size; i++) {
-            s.array[s.offset + i] /= b.get(i);
+        for (int i = 0; i < store.size; i++) {
+            store.array[store.offset + i] /= b.get(i);
         }
         return this;
     }
@@ -345,22 +248,32 @@ public class DVectorDense extends AbstractStorageDVector {
         checkConformance(y);
         if (AlgebraOptions.from(opts).isCopy()) {
             if (y instanceof DVectorDense yd) {
-                double[] copy = new double[s.size];
-                DoubleArrays.addMulTo(s.array, s.offset, a, yd.s.array, yd.s.offset, copy, 0, s.size);
+                double[] copy = new double[store.size];
+                DoubleArrays.addMulTo(store.array, store.offset, a, yd.store.array, yd.store.offset, copy, 0, store.size);
                 return new DVectorDense(0, copy.length, copy);
             }
-            double[] copy = new double[s.size];
+            double[] copy = new double[store.size];
             for (int i = 0; i < size(); i++) {
-                copy[i] = s.array[s.offset + i] + a * y.get(i);
+                copy[i] = store.array[store.offset + i] + a * y.get(i);
             }
             return new DVectorDense(0, copy.length, copy);
         }
         if (y instanceof DVectorDense yd) {
-            DoubleArrays.addMul(s.array, s.offset, a, yd.s.array, yd.s.offset, s.size);
+            int bound = SPECIES.loopBound(store.size);
+            int i = 0;
+            var va = DoubleVector.broadcast(SPECIES, a);
+            for (; i < bound; i += SPECIES.length()) {
+                var vs = store.loadVector(i);
+                var vy = yd.store.loadVector(i).fma(va, vs);
+                store.storeVector(vy, i);
+            }
+            for (; i < store.size; i++) {
+                inc(i, yd.get(i) * a);
+            }
             return this;
         }
-        for (int i = 0; i < s.size; i++) {
-            s.array[s.offset + i] += a * y.get(i);
+        for (int i = 0; i < store.size; i++) {
+            store.array[store.offset + i] += a * y.get(i);
         }
         return this;
     }
@@ -370,27 +283,27 @@ public class DVectorDense extends AbstractStorageDVector {
         checkConformance(b);
         if (b instanceof DVectorDense bd) {
             double ss = 0;
-            for (int i = 0; i < s.size; i++) {
-                ss = Math.fma(s.array[s.offset + i], bd.s.array[bd.s.offset + i], ss);
+            for (int i = 0; i < store.size; i++) {
+                ss = Math.fma(store.array[store.offset + i], bd.store.array[bd.store.offset + i], ss);
             }
             return ss;
         }
         double ss = 0;
-        for (int i = 0; i < s.size; i++) {
-            ss = Math.fma(s.array[s.offset + i], b.get(i), ss);
+        for (int i = 0; i < store.size; i++) {
+            ss = Math.fma(store.array[store.offset + i], b.get(i), ss);
         }
         return ss;
     }
 
     @Override
     public double dotBilinear(DMatrix m, DVector y) {
-        if (m.rowCount() != s.size || m.colCount() != y.size()) {
+        if (m.rowCount() != store.size || m.colCount() != y.size()) {
             throw new IllegalArgumentException("Bilinear matrix and vector are not conform for multiplication.");
         }
         double sum = 0.0;
-        for (int i = 0; i < s.size; i++) {
+        for (int i = 0; i < store.size; i++) {
             for (int j = 0; j < y.size(); j++) {
-                sum += s.array[s.offset + i] * m.get(i, j) * y.get(j);
+                sum += store.array[store.offset + i] * m.get(i, j) * y.get(j);
             }
         }
         return sum;
@@ -404,7 +317,7 @@ public class DVectorDense extends AbstractStorageDVector {
         double sum = 0.0;
         for (int i = 0; i < size(); i++) {
             for (int j = 0; j < size(); j++) {
-                sum += s.array[s.offset + i] * m.get(i, j) * s.array[s.offset + j];
+                sum += store.array[store.offset + i] * m.get(i, j) * store.array[store.offset + j];
             }
         }
         return sum;
@@ -417,7 +330,7 @@ public class DVectorDense extends AbstractStorageDVector {
         }
         double sum = 0.0;
         for (int i = 0; i < size(); i++) {
-            sum += s.array[s.offset + i] * m.get(i) * y.get(i);
+            sum += store.array[store.offset + i] * m.get(i) * y.get(i);
         }
         return sum;
     }
@@ -429,7 +342,7 @@ public class DVectorDense extends AbstractStorageDVector {
         }
         double sum = 0.0;
         for (int i = 0; i < size(); i++) {
-            sum += s.array[s.offset + i] * m.get(i, i) * s.array[s.offset + i];
+            sum += store.array[store.offset + i] * m.get(i, i) * store.array[store.offset + i];
         }
         return sum;
     }
@@ -441,7 +354,7 @@ public class DVectorDense extends AbstractStorageDVector {
         }
         double sum = 0.0;
         for (int i = 0; i < size(); i++) {
-            sum += s.array[s.offset + i] * m.get(i, i) * y.get(i);
+            sum += store.array[store.offset + i] * m.get(i, i) * y.get(i);
         }
         return sum;
     }
@@ -453,7 +366,7 @@ public class DVectorDense extends AbstractStorageDVector {
         }
         double sum = 0.0;
         for (int i = 0; i < size(); i++) {
-            sum += s.array[s.offset + i] * m.get(i) * s.array[s.offset + i];
+            sum += store.array[store.offset + i] * m.get(i) * store.array[store.offset + i];
         }
         return sum;
     }
@@ -461,97 +374,97 @@ public class DVectorDense extends AbstractStorageDVector {
     @Override
     public double pnorm(double p) {
         if (p <= 0) {
-            return s.size;
+            return store.size;
         }
         if (p == Double.POSITIVE_INFINITY) {
             return max();
         }
         double sum = 0.0;
-        for (int i = s.offset; i < s.offset + s.size; i++) {
-            sum += Math.pow(Math.abs(s.array[i]), p);
+        for (int i = store.offset; i < store.offset + store.size; i++) {
+            sum += Math.pow(Math.abs(store.array[i]), p);
         }
         return Math.pow(sum, 1.0 / p);
     }
 
     @Override
     public double sum() {
-        return s.sum();
+        return store.sum();
     }
 
     @Override
     public DVector cumsum() {
-        for (int i = s.offset + 1; i < s.offset + s.size; i++) {
-            s.array[i] += s.array[i - 1];
+        for (int i = store.offset + 1; i < store.offset + store.size; i++) {
+            store.array[i] += store.array[i - 1];
         }
         return this;
     }
 
     @Override
     public double nanprod() {
-        return DoubleArrays.nanProd(s.array, s.offset, s.size);
+        return DoubleArrays.nanProd(store.array, store.offset, store.size);
     }
 
     @Override
     public DVector cumprod() {
-        for (int i = s.offset + 1; i < s.offset + s.size; i++) {
-            s.array[i] = s.array[i - 1] * s.array[i];
+        for (int i = store.offset + 1; i < store.offset + store.size; i++) {
+            store.array[i] = store.array[i - 1] * store.array[i];
         }
         return this;
     }
 
     @Override
     public int nancount() {
-        return DoubleArrays.nanCount(s.array, s.offset, s.size);
+        return DoubleArrays.nanCount(store.array, store.offset, store.size);
     }
 
     @Override
     public double mean() {
-        return DoubleArrays.mean(s.array, s.offset, s.size);
+        return DoubleArrays.mean(store.array, store.offset, store.size);
     }
 
     @Override
     public double nanmean() {
-        return DoubleArrays.nanMean(s.array, s.offset, s.size);
+        return DoubleArrays.nanMean(store.array, store.offset, store.size);
     }
 
     @Override
     public double variance() {
-        return DoubleArrays.variance(s.array, s.offset, s.size);
+        return DoubleArrays.variance(store.array, store.offset, store.size);
     }
 
     @Override
     public double nanvariance() {
-        return DoubleArrays.nanVariance(s.array, s.offset, s.size);
+        return DoubleArrays.nanVariance(store.array, store.offset, store.size);
     }
 
     @Override
     public int argmin() {
-        return DoubleArrays.argmin(s.array, s.offset, s.size) - s.offset;
+        return DoubleArrays.argmin(store.array, store.offset, store.size) - store.offset;
     }
 
     @Override
     public double min() {
-        return DoubleArrays.min(s.array, s.offset, s.size);
+        return DoubleArrays.min(store.array, store.offset, store.size);
     }
 
     @Override
     public int argmax() {
-        return DoubleArrays.argmax(s.array, s.offset, s.size) - s.offset;
+        return DoubleArrays.argmax(store.array, store.offset, store.size) - store.offset;
     }
 
     @Override
     public double max() {
-        return DoubleArrays.max(s.array, s.offset, s.size);
+        return DoubleArrays.max(store.array, store.offset, store.size);
     }
 
     @Override
     public DVector apply(Double2DoubleFunction f, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = DoubleArrays.newFrom(s.array, s.offset, s.size + s.offset, f);
+            double[] copy = DoubleArrays.newFrom(store.array, store.offset, store.size + store.offset, f);
             return DVector.wrap(copy);
         }
-        for (int i = s.offset; i < s.offset + s.size; i++) {
-            s.array[i] = f.applyAsDouble(s.array[i]);
+        for (int i = store.offset; i < store.offset + store.size; i++) {
+            store.array[i] = f.applyAsDouble(store.array[i]);
         }
         return this;
     }
@@ -559,35 +472,35 @@ public class DVectorDense extends AbstractStorageDVector {
     @Override
     public DVector apply(BiFunction<Integer, Double, Double> f, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[s.size];
-            for (int i = 0; i < s.size; i++) {
-                copy[i] = f.apply(i, s.array[s.offset + i]);
+            double[] copy = new double[store.size];
+            for (int i = 0; i < store.size; i++) {
+                copy[i] = f.apply(i, store.array[store.offset + i]);
             }
             return DVector.wrap(copy);
         }
-        for (int i = 0; i < s.size; i++) {
-            s.array[s.offset + i] = f.apply(i, s.array[s.offset + i]);
+        for (int i = 0; i < store.size; i++) {
+            store.array[store.offset + i] = f.apply(i, store.array[store.offset + i]);
         }
         return this;
     }
 
     @Override
     public DVector sortValues(DoubleComparator comp, AlgebraOption<?>... opts) {
-        DoubleArrays.quickSort(s.array, s.offset, s.offset + s.size, comp);
+        DoubleArrays.quickSort(store.array, store.offset, store.offset + store.size, comp);
         return this;
     }
 
     @Override
     public DoubleStream valueStream() {
-        return Arrays.stream(s.array).skip(s.offset).limit(s.size);
+        return Arrays.stream(store.array).skip(store.offset).limit(store.size);
     }
 
     @Override
     public VarDouble dVar(AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy() || s.offset != 0) {
-            double[] copy = Arrays.copyOfRange(s.array, s.offset, s.size + s.offset);
-            return VarDouble.wrapArray(s.size, copy);
+        if (AlgebraOptions.from(opts).isCopy() || store.offset != 0) {
+            double[] copy = Arrays.copyOfRange(store.array, store.offset, store.size + store.offset);
+            return VarDouble.wrapArray(store.size, copy);
         }
-        return VarDouble.wrapArray(s.size, s.array);
+        return VarDouble.wrapArray(store.size, store.array);
     }
 }

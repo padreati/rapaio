@@ -26,7 +26,6 @@ import java.util.Arrays;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.base.AbstractDMatrix;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.util.collection.IntArrays;
 

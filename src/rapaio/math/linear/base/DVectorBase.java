@@ -26,6 +26,7 @@ import java.util.stream.DoubleStream;
 
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.AbstractDVector;
 import rapaio.math.linear.dense.DVectorMap;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;

@@ -43,8 +43,8 @@ open module rapaio {
     exports rapaio.math.functions;
     exports rapaio.math.linear;
     exports rapaio.math.linear.option;
-    exports rapaio.math.linear.base;
     exports rapaio.math.linear.dense;
+    exports rapaio.math.linear.dense.storage;
     exports rapaio.math.linear.decomposition;
     exports rapaio.math.optimization;
     exports rapaio.math.optimization.linesearch;
@@ -99,4 +99,5 @@ open module rapaio {
     exports rapaio.ml.model.svm.libsvm;
     exports rapaio.experiment.core;
     exports rapaio.printer.idea;
+    exports rapaio.math.linear.base;
 }

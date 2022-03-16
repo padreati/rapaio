@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.math.linear.base;
+package rapaio.math.linear.dense;
 
 import java.io.Serial;
 import java.util.Arrays;
@@ -33,7 +33,6 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.math.linear.decomposition.SVDecomposition;
-import rapaio.math.linear.dense.DMatrixMap;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Printer;

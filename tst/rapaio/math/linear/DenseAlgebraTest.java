@@ -44,9 +44,9 @@ import rapaio.util.collection.IntArrays;
 public class DenseAlgebraTest {
 
     private static final MatrixFactory[] mTypes = new MatrixFactory[] {
-            (rows, cols) -> new DMatrixDenseR(rows, cols, newValues(rows, cols)),
-            (rows, cols) -> new DMatrixDenseC(rows, cols, newValues(rows, cols)),
-            (rows, cols) -> new DMatrixDenseR(rows, cols, newValues(rows, cols))
+            (rows, cols) -> new DMatrixDenseR(0, rows, cols, newValues(rows, cols)),
+            (rows, cols) -> new DMatrixDenseC(0, rows, cols, newValues(rows, cols)),
+            (rows, cols) -> new DMatrixDenseR(0, rows, cols, newValues(rows, cols))
                     .mapRows(IntArrays.newSeq(rows))
                     .mapCols(IntArrays.newSeq(cols))
                     .mapRows(IntArrays.newSeq(rows))
@@ -334,7 +334,8 @@ public class DenseAlgebraTest {
                 assertTrue(cumprod.deepEquals(v.cumprod()));
             });
 
-            t1v(vf, v -> assertTrue(v.asMatrix().mapCol(0).deepEquals(v)));
+            t1v(vf, v -> assertTrue(v.asMatrix().mapCol(0).deepEquals(v),
+                    "vtype: %s".formatted(vf.newInstance().getClass().getName())));
 
             t1v(vf, v -> assertEquals(v.getClass().getSimpleName() + "{size:10, values:[1,2,3,4,5,6,7,8,9,10]}", v.toString()));
             t1v(vf, v -> assertEquals("""

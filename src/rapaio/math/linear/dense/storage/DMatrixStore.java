@@ -19,31 +19,19 @@
  *
  */
 
-package rapaio.math.linear.dense;
+package rapaio.math.linear.dense.storage;
 
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.VectorMask;
+public interface DMatrixStore {
 
-public interface DVectorStorage {
+    int outerSize();
 
-    int size();
+    int innerSize();
 
-    double[] array();
+    double get(int outer, int inner);
 
-    DoubleVector loadVector(int i);
+    void set(int outer, int inner, double value);
 
-    DoubleVector loadVector(int i, VectorMask<Double> m);
+    void inc(int outer, int inner, double value);
 
-    void storeVector(DoubleVector v, int i);
-
-    void storeVector(DoubleVector v, int i, VectorMask<Double> m);
-
-    double get(int i);
-
-    void set(int i, double value);
-
-    void inc(int i, double value);
-
-    ////////////////////////////////
-
+    double[] solidArrayCopy();
 }

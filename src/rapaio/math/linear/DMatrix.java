@@ -127,7 +127,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return matrix which wrap the values
      */
     static DMatrixDenseR wrapByRows(int rows, int cols, double... values) {
-        return new DMatrixDenseR(rows, cols, values);
+        return new DMatrixDenseR(0, rows, cols, values);
     }
 
     /**
@@ -137,7 +137,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return matrix which wrap the values
      */
     static DMatrixDenseC wrapByCols(int rows, int cols, double... values) {
-        return new DMatrixDenseC(rows, cols, values);
+        return new DMatrixDenseC(0, rows, cols, values);
     }
 
     /**

@@ -21,7 +21,6 @@
 
 package rapaio.math.linear.dense;
 
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import rapaio.core.distributions.Distribution;
@@ -31,13 +30,14 @@ import rapaio.data.Var;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.storage.DMatrixStoreDense;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
-public class DMatrixDenseR extends DMatrixDense {
+public class DMatrixDenseR extends AbstractDMatrix {
 
 
     public static DMatrixDenseR empty(int rows, int cols) {
@@ -47,7 +47,7 @@ public class DMatrixDenseR extends DMatrixDense {
     public static DMatrixDenseR identity(int n) {
         DMatrixDenseR m = new DMatrixDenseR(n, n);
         for (int i = 0; i < n; i++) {
-            m.values[i * n + i] = 1;
+            m.storage.array[i * n + i] = 1;
         }
         return m;
     }
@@ -56,13 +56,13 @@ public class DMatrixDenseR extends DMatrixDense {
         int n = v.size();
         DMatrixDenseR m = new DMatrixDenseR(n, n);
         for (int i = 0; i < n; i++) {
-            m.values[i * n + i] = v.get(i);
+            m.storage.array[i * n + i] = v.get(i);
         }
         return m;
     }
 
     public static DMatrixDenseR fill(int rows, int cols, double fill) {
-        return new DMatrixDenseR(rows, cols, DoubleArrays.newFill(rows * cols, fill));
+        return new DMatrixDenseR(0, rows, cols, DoubleArrays.newFill(rows * cols, fill));
     }
 
     public static DMatrixDenseR fill(int rows, int cols, IntInt2DoubleBiFunction fun) {
@@ -282,87 +282,96 @@ public class DMatrixDenseR extends DMatrixDense {
     }
 
     public static DMatrixDenseR wrap(int rows, int cols, double... values) {
-        return new DMatrixDenseR(rows, cols, values);
+        return new DMatrixDenseR(0, rows, cols, values);
     }
+
+    private final DMatrixStoreDense storage;
 
     public DMatrixDenseR(int rows, int cols) {
-        this(rows, cols, new double[rows * cols]);
+        this(0, rows, cols, new double[rows * cols]);
     }
 
-    public DMatrixDenseR(int rows, int cols, double[] values) {
-        super(rows, cols, values);
+    public DMatrixDenseR(int offset, int rows, int cols, double[] array) {
+        this.storage = new DMatrixStoreDense(offset, cols, rows, array);
+    }
+
+    @Override
+    public int rowCount() {
+        return storage.outerSize;
+    }
+
+    @Override
+    public int colCount() {
+        return storage.innerSize;
     }
 
     @Override
     public double get(int row, int col) {
-        return values[row * colCount + col];
+        return storage.get(row, col);
     }
 
     @Override
     public void set(int row, int col, double value) {
-        values[row * colCount + col] = value;
+        storage.set(row, col, value);
     }
 
     @Override
     public void inc(int row, int col, double value) {
-        values[row * colCount + col] += value;
-    }
-
-    @Override
-    public DMatrix t(AlgebraOption<?>... opts) {
-        double[] ref = values;
-        if (AlgebraOptions.from(opts).isCopy()) {
-            ref = Arrays.copyOf(values, rowCount * colCount);
-        }
-        return new DMatrixDenseC(colCount, rowCount, ref);
-    }
-
-    @Override
-    public DMatrixDenseR apply(Double2DoubleFunction fun, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[rowCount * colCount];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = fun.apply(values[i]);
-            }
-            return new DMatrixDenseR(rowCount, colCount, copy);
-        }
-        for (int i = 0; i < values.length; i++) {
-            values[i] = fun.apply(values[i]);
-        }
-        return this;
-    }
-
-    @Override
-    public DMatrix copy() {
-        return new DMatrixDenseR(rowCount, colCount, Arrays.copyOf(values, values.length));
+        storage.inc(row, col, value);
     }
 
     @Override
     public DVector dot(DVector b) {
-
-        if (b.size() != colCount) {
+        if (b.size() != colCount()) {
             throw new IllegalArgumentException(String.format(
-                    "Matrix ( %d x %d ) and vector ( %d ) not compatible for multiplication.", rowCount, colCount, b.size()));
+                    "Matrix ( %d x %d ) and vector ( %d ) not compatible for multiplication.",
+                    rowCount(), colCount(), b.size()));
         }
 
         // obtain the vector array of elements either as a reference or as a copy
         double[] vector = b.valueStream().toArray();
 
         // allocate memory for the result vector
-        double[] c = new double[rowCount];
+        double[] c = new double[rowCount()];
 
         // employ parallelism only if we have large row vectors
         final int sliceSize = 256;
-        final int slices = rowCount / sliceSize;
+        final int slices = rowCount() / sliceSize;
         IntStream stream = IntStream.range(0, slices + 1);
         if (slices > 1) {
             stream = stream.parallel();
         }
         stream.forEach(s -> {
-            for (int i = s * sliceSize; i < Math.min(rowCount, (s + 1) * sliceSize); i++) {
-                c[i] = DoubleArrays.dotSum(values, i * colCount, vector, 0, colCount);
+            for (int i = s * sliceSize; i < Math.min(rowCount(), (s + 1) * sliceSize); i++) {
+                c[i] = DoubleArrays.dotSum(storage.array, storage.offset + i * colCount(), vector, 0, colCount());
             }
         });
         return new DVectorDense(0, c.length, c);
+    }
+
+    @Override
+    public DMatrix t(AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            return new DMatrixDenseC(0, colCount(), rowCount(), storage.solidArrayCopy());
+        }
+        return new DMatrixDenseC(storage.offset, colCount(), rowCount(), storage.array);
+    }
+
+    @Override
+    public DMatrixDenseR apply(Double2DoubleFunction fun, AlgebraOption<?>... opts) {
+        if (AlgebraOptions.from(opts).isCopy()) {
+            double[] copy = storage.solidArrayCopy();
+            for (int i = 0; i < copy.length; i++) {
+                copy[i] = fun.apply(copy[i]);
+            }
+            return new DMatrixDenseR(0, rowCount(), colCount(), copy);
+        }
+        storage.apply(fun);
+        return this;
+    }
+
+    @Override
+    public DMatrix copy() {
+        return new DMatrixDenseR(0, rowCount(), colCount(), storage.solidArrayCopy());
     }
 }

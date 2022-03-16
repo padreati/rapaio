@@ -27,7 +27,6 @@ import rapaio.data.MappedVar;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.base.AbstractDVector;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;

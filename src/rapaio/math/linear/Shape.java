@@ -35,7 +35,7 @@ import rapaio.printer.opt.POption;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/25/21.
  */
-public record Shape(int[] dimensions) implements Serializable, Printable {
+public record Shape(int[] dims) implements Serializable, Printable {
 
     @Serial
     private static final long serialVersionUID = 8629690522468837031L;
@@ -45,10 +45,10 @@ public record Shape(int[] dimensions) implements Serializable, Printable {
     }
 
     public Shape {
-        if (dimensions == null || dimensions.length < 1) {
+        if (dims == null || dims.length < 1) {
             throw new IllegalArgumentException("Cannot create shape: dimension array is empty or null.");
         }
-        for (int x : dimensions) {
+        for (int x : dims) {
             if (x == 0) {
                 throw new IllegalArgumentException("Dimension value cannot be zero.");
             }
@@ -56,16 +56,16 @@ public record Shape(int[] dimensions) implements Serializable, Printable {
     }
 
     public int size() {
-        return dimensions.length;
+        return dims.length;
     }
 
     public int get(int axis) {
-        return dimensions[axis];
+        return dims[axis];
     }
 
     @Override
     public String toString() {
-        return "[" + Arrays.toString(dimensions) + "]";
+        return "[" + Arrays.toString(dims) + "]";
     }
 
     @Override

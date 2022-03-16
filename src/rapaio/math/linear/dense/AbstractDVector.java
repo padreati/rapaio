@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.math.linear.base;
+package rapaio.math.linear.dense;
 
 import java.io.Serial;
 import java.util.function.BiFunction;
