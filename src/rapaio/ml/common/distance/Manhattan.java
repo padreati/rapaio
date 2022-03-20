@@ -24,7 +24,6 @@ package rapaio.ml.common.distance;
 import static rapaio.math.MathTools.*;
 
 import rapaio.data.Frame;
-import rapaio.math.MathTools;
 import rapaio.math.linear.DVector;
 
 public class Manhattan implements Distance {

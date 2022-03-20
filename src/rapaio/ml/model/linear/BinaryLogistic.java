@@ -160,7 +160,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
                         .y.set(y)
                         .w0.set(w0)
                         .fit();
-                w = irlsResult.getW().dVar();
+                w = irlsResult.getW().dv();
                 iterationLoss = new ArrayList<>(irlsResult.nlls());
                 iterationWeights = new ArrayList<>(irlsResult.ws());
                 converged = irlsResult.converged();
@@ -174,7 +174,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
                         .y.set(y)
                         .w0.set(w0)
                         .fit();
-                w = newtonResult.w().dVar();
+                w = newtonResult.w().dv();
                 iterationLoss = new ArrayList<>(newtonResult.nll());
                 iterationWeights = new ArrayList<>(newtonResult.ws());
                 converged = newtonResult.converged();

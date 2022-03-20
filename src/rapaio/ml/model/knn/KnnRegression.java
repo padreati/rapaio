@@ -22,7 +22,6 @@
 package rapaio.ml.model.knn;
 
 import static rapaio.math.MathTools.*;
-import static rapaio.sys.With.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -172,7 +171,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
             int[] topIndexes = Arrays.copyOf(topIndexesEx, topIndexesEx.length - 1);
             int ref = topIndexesEx[topIndexesEx.length - 1];
             DVector weights = computeWeights(topIndexes, ref, x);
-            prediction.setDouble(i, target.map(topIndexes, copy()).mul(weights).sum() / weights.sum());
+            prediction.setDouble(i, target.mapNew(topIndexes).mul(weights).sum() / weights.sum());
         }
         result.buildComplete();
         return result;
@@ -184,54 +183,54 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         INV {
             @Override
             public DVector transform(DVector d, int k) {
-                return d.apply(v -> 1 / v, copy());
+                return d.applyNew(v -> 1 / v);
             }
         },
         RECTANGULAR {
             @Override
             public DVector transform(DVector d, int k) {
-                return d.apply(v -> abs(v) <= 1 ? 0.5 : 0, copy());
+                return d.applyNew(v -> abs(v) <= 1 ? 0.5 : 0);
             }
         },
         TRIANGLUAR {
             @Override
             public DVector transform(DVector d, int k) {
-                return d.apply(v -> abs(v) <= 1 ? 1 - v : 0, copy());
+                return d.applyNew(v -> abs(v) <= 1 ? 1 - v : 0);
             }
         },
         COS {
             @Override
             public DVector transform(DVector d, int k) {
-                return d.apply(v -> abs(v) <= 1 ? PI * cos(v * HALF_PI) / 4 : 0, copy());
+                return d.applyNew(v -> abs(v) <= 1 ? PI * cos(v * HALF_PI) / 4 : 0);
             }
         },
         EPANECHNIKOV {
             @Override
             public DVector transform(DVector d, int k) {
-                return d.apply(v -> abs(v) <= 1 ? 0.75 * (1 - v * v) : 0, copy());
+                return d.applyNew(v -> abs(v) <= 1 ? 0.75 * (1 - v * v) : 0);
             }
         },
         BIWEIGHT {
             @Override
             public DVector transform(DVector d, int k) {
-                return d.apply(v -> abs(v) <= 1 ? 15 * pow(1 - v * v, 2) / 16 : 0, copy());
+                return d.applyNew(v -> abs(v) <= 1 ? 15 * pow(1 - v * v, 2) / 16 : 0);
             }
         },
         TRIWEIGHT {
             @Override
             public DVector transform(DVector d, int k) {
-                return d.apply(v -> abs(v) <= 1 ? 35 * pow(1 - v * v, 3) / 32 : 0, copy());
+                return d.applyNew(v -> abs(v) <= 1 ? 35 * pow(1 - v * v, 3) / 32 : 0);
             }
         },
         GAUSSIAN {
 
-            private final Normal normal = Normal.std();
+            private static final Normal normal = Normal.std();
 
             @Override
             public DVector transform(DVector d, int k) {
                 double alpha = 1.0 / (2 * (k + 1));
                 double qua = abs(normal.quantile(alpha));
-                return d.apply(v -> normal.pdf(v * qua), copy());
+                return d.applyNew(v -> normal.pdf(v * qua));
             }
         };
 

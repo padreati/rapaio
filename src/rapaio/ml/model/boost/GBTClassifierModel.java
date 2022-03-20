@@ -40,8 +40,8 @@ import rapaio.ml.loss.KDevianceLoss;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
-import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.RegressionModel;
+import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.tree.RTree;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -157,11 +157,11 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
         for (int k = 0; k < K; k++) {
 
-            Var residual_k = residual.mapRow(k).dVar().mapRows(sample.mapping()).name("##tt##");
+            Var residual_k = residual.mapRow(k).dv().mapRows(sample.mapping()).name("##tt##");
 
             var tree = model.get().newInstance();
             tree.fit(sample.df().bindVars(residual_k), sample.weights(), "##tt##");
-            tree.boostUpdate(df, yk.mapRow(k).dVar(), p.mapRow(k).dVar(), new KDevianceLoss(K));
+            tree.boostUpdate(df, yk.mapRow(k).dv(), p.mapRow(k).dv(), new KDevianceLoss(K));
 
             trees.get(k).add(tree);
 

@@ -41,9 +41,9 @@ import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
-import rapaio.ml.model.svm.libsvm.Svm;
 import rapaio.ml.model.svm.libsvm.ModelInfo;
 import rapaio.ml.model.svm.libsvm.ProblemInfo;
+import rapaio.ml.model.svm.libsvm.Svm;
 import rapaio.ml.model.svm.libsvm.svm_model;
 import rapaio.util.collection.DoubleArrays;
 

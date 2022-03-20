@@ -23,7 +23,7 @@ package rapaio.math.linear;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
+import static rapaio.sys.With.copy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

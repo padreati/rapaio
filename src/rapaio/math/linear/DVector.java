@@ -31,9 +31,8 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.linear.option.AlgebraOption;
+import rapaio.math.linear.dense.DVectorStore;
 import rapaio.printer.Printable;
-import rapaio.sys.With;
 import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleComparators;
 import rapaio.util.collection.DoubleArrays;
@@ -104,13 +103,17 @@ public interface DVector extends Serializable, Printable {
     /**
      * Builds a new real dense vector which is a solid copy of the given source vector.
      *
-     * @param source source vector
+     * @param src source vector
      * @return new real dense vector which is a copy of the source vector
      */
-    static DVectorDense copy(DVector source) {
-        double[] copy = new double[source.size()];
+    static DVectorDense copy(DVector src) {
+        if (src instanceof DVectorStore srcs) {
+            double[] copy = srcs.solidArrayCopy();
+            return new DVectorDense(0, copy.length, copy);
+        }
+        double[] copy = new double[src.size()];
         for (int i = 0; i < copy.length; i++) {
-            copy[i] = source.get(i);
+            copy[i] = src.get(i);
         }
         return wrapArray(0, copy.length, copy);
     }
@@ -156,7 +159,28 @@ public interface DVector extends Serializable, Printable {
      * @param indexes of the values to keep
      * @return map instance vector
      */
-    DVector map(int[] indexes, AlgebraOption<?>... opts);
+    DVector map(int[] indexes);
+
+    /**
+     * Creates a new vector map which map values from specified indexes
+     * and stores the values into the {@param to} vector.
+     *
+     * @param indexes of the values to keep
+     * @return map instance vector
+     */
+    DVector mapTo(int[] indexes, DVector to);
+
+    /**
+     * Creates a new vector map which map values from specified indexes
+     * and store the values into a new vector.
+     *
+     * @param indexes of the values to keep
+     * @return map instance vector
+     */
+    default DVector mapNew(int[] indexes) {
+        DVectorDense result = new DVectorDense(indexes.length);
+        return mapTo(indexes, result);
+    }
 
     /**
      * Creates a new copy of the vector. The type of the copy vector is the same as original one,
@@ -206,80 +230,240 @@ public interface DVector extends Serializable, Printable {
     DVector fill(double value);
 
     /**
-     * Adds to all elements the value of x.
+     * Adds value {@param x} to all vector elements.
      *
-     * @param x value to be incremented with
-     * @return same object
+     * @param x value to be added
+     * @return same vector instance
      */
-    DVector add(double x, AlgebraOption<?>... opts);
+    DVector add(double x);
 
     /**
-     * Adds to all positions values from the
-     * corresponding positions of the vector y.
-     * The resulted vectors will have values:
-     * this[i] <- this[i] + y[i].
-     * <p>
-     * Vectors must be conformant for addition, which means
-     * that they have to have the same size.
+     * Computes the sum between this vector and scalar value {@param x} and store into {@param to} vector.
      *
-     * @param y vector which contains values used for increment operation
-     * @return same object
+     * @param x  increment value
+     * @param to destination vector
+     * @return destination vector
      */
-    DVector add(DVector y, AlgebraOption<?>... opts);
+    DVector addTo(double x, DVector to);
 
     /**
-     * Subtracts from all elements the value of x, it is
-     * similar with calling increment with -x for all positions
-     * of the vector.
+     * Computes the sum between this vector and scalar value {@param x} and store into a new vector.
      *
-     * @param x value to be decremented with
-     * @return same object
+     * @param x scalar increment value
+     * @return new vector which contains the result
      */
-    DVector sub(double x, AlgebraOption<?>... opts);
+    default DVector addNew(double x) {
+        DVectorDense copy = new DVectorDense(0, size(), new double[size()]);
+        return addTo(x, copy);
+    }
 
     /**
-     * Subtracts from all positions values from the corresponding positions of the vector {@code b}.
-     * The resulted vectors will have values:  {@code this[i] <- this[i] + B[i]}.
-     * <p>
-     * Vectors must be conformant for addition, which means that they have to have the same size.
+     * Computes in place the sum between this vector and given vector {@param y}.
      *
-     * @param y vector which contains values used for increment operation
-     * @return same object
+     * @param y vector to be added
+     * @return same vector instance
      */
-    DVector sub(DVector y, AlgebraOption<?>... opts);
+    DVector add(DVector y);
 
     /**
-     * Scalar multiplication. All the values from vector
-     * will be multiplied with the given scalar
+     * Computes the sum between this vector and given vector {@param y} and store the result into vector {@param to}.
      *
-     * @param x scalar value
-     * @return the same object
+     * @param y  vector to be added
+     * @param to vector where to store the result
+     * @return result vector
      */
-    DVector mul(double x, AlgebraOption<?>... opts);
+    DVector addTo(DVector y, DVector to);
 
     /**
-     * Element wise multiplication between two vectors.
+     * Computes sum between this vector and given vector {@param y} and store the result into a new vector.
      *
-     * @param y factor vector
-     * @return element wise multiplication result vector
+     * @param y vector to be added
+     * @return new vector which contains the result
      */
-    DVector mul(DVector y, AlgebraOption<?>... opts);
+    default DVector addNew(DVector y) {
+        DVectorDense copy = new DVectorDense(size());
+        return addTo(y, copy);
+    }
 
     /**
-     * Scalar division. All values from vector will be divided by scalar value.
+     * Subtracts value {@param x} from all vector elements.
      *
-     * @param x value
-     * @return reference to original vector
+     * @param x value to be subtracted
+     * @return same vector instance
      */
-    DVector div(double x, AlgebraOption<?>... opts);
+    DVector sub(double x);
 
     /**
-     * Element wise division between two vectors.
+     * Computes the difference between this vector and scalar value {@param x} and store into {@param to} vector.
      *
-     * @param y factor vector
-     * @return element wise division result vector
+     * @param x  decrement value
+     * @param to destination vector
+     * @return destination vector
      */
-    DVector div(DVector y, AlgebraOption<?>... opts);
+    DVector subTo(double x, DVector to);
+
+    /**
+     * Computes the difference between this vector and scalar value {@param x} and store into a new vector.
+     *
+     * @param x scalar decrement value
+     * @return new vector which contains the result
+     */
+    default DVector subNew(double x) {
+        DVectorDense copy = new DVectorDense(0, size(), new double[size()]);
+        return subTo(x, copy);
+    }
+
+    /**
+     * Computes in place the difference between this vector and given vector {@param y}.
+     *
+     * @param y vector to be subtracted
+     * @return same vector instance
+     */
+    DVector sub(DVector y);
+
+    /**
+     * Computes the difference between this vector and given vector {@param y} and store the result into vector {@param to}.
+     *
+     * @param y  vector to be subtracted
+     * @param to vector where to store the result
+     * @return result vector
+     */
+    DVector subTo(DVector y, DVector to);
+
+    /**
+     * Computes the difference between this vector and given vector {@param y} and store result into a new vector.
+     *
+     * @param y vector to be subtracted
+     * @return new vector which contains the result
+     */
+    default DVector subNew(DVector y) {
+        DVectorDense copy = new DVectorDense(size());
+        return subTo(y, copy);
+    }
+
+    /**
+     * Multiply with value {@param x} all vector elements.
+     *
+     * @param x value to be multiplied with
+     * @return same vector instance
+     */
+    DVector mul(double x);
+
+    /**
+     * Computes the product between this vector and scalar value {@param x} and store into {@param to} vector.
+     *
+     * @param x  multiplier value
+     * @param to destination vector
+     * @return destination vector
+     */
+    DVector mulTo(double x, DVector to);
+
+    /**
+     * Computes the product between this vector and scalar value {@param x} and store into a new vector.
+     *
+     * @param x scalar multiplier value
+     * @return new vector which contains the result
+     */
+    default DVector mulNew(double x) {
+        DVectorDense copy = new DVectorDense(0, size(), new double[size()]);
+        return mulTo(x, copy);
+    }
+
+    /**
+     * Computes in place the product between this vector and given vector {@param y}.
+     *
+     * @param y vector to be multiplied with
+     * @return same vector instance
+     */
+    DVector mul(DVector y);
+
+    /**
+     * Computes the product between this vector and given vector {@param y} and store the result into vector {@param to}.
+     *
+     * @param y  vector to be multiplied with
+     * @param to vector where to store the result
+     * @return result vector
+     */
+    DVector mulTo(DVector y, DVector to);
+
+    /**
+     * Computes the product between this vector and given vector {@param y} and store the result into a new vector.
+     *
+     * @param y vector to be multiplied with
+     * @return new vector which contains the result
+     */
+    default DVector mulNew(DVector y) {
+        DVectorDense copy = new DVectorDense(size());
+        return mulTo(y, copy);
+    }
+
+    /**
+     * Divides with value {@param x} all vector elements.
+     *
+     * @param x value to be divided with
+     * @return same vector instance
+     */
+    DVector div(double x);
+
+    /**
+     * Computes the ratio between this vector and scalar value {@param x} and store into {@param to} vector.
+     *
+     * @param x  divisor value
+     * @param to destination vector
+     * @return destination vector
+     */
+    DVector divTo(double x, DVector to);
+
+    /**
+     * Computes the ratio between this vector and scalar value {@param x} and store into a new vector.
+     *
+     * @param x scalar divisor value
+     * @return new vector which contains the result
+     */
+    default DVector divNew(double x) {
+        DVectorDense copy = new DVectorDense(0, size(), new double[size()]);
+        return divTo(x, copy);
+    }
+
+    /**
+     * Computes in place the ratio between this vector and given vector {@param y}.
+     *
+     * @param y vector to be divided with
+     * @return same vector instance
+     */
+    DVector div(DVector y);
+
+    /**
+     * Computes the ratio between this vector and given vector {@param y} and store the result into vector {@param to}.
+     *
+     * @param y  vector to be divided with
+     * @param to vector where to store the result
+     * @return result vector
+     */
+    DVector divTo(DVector y, DVector to);
+
+    /**
+     * Computes the ratio between this vector and given vector {@param y} and stores the result into a new vector.
+     *
+     * @param y vector to be divided with
+     * @return new vector which contains the result
+     */
+    default DVector divNew(DVector y) {
+        DVectorDense copy = new DVectorDense(size());
+        return divTo(y, copy);
+    }
+
+    /**
+     * Adds to the current vector multiple of the given vector {@code this = this + a * y},
+     * where {@code a} is a double scalar and {@code this} and {@code y} are conformant
+     * double vectors. The {@code this} vector in expression is the vector on which
+     * the operation is called.
+     *
+     * @param a scalar
+     * @param y vector
+     * @return new vector which contains the result of {@code this[i] <- this[i] + a * y[i]}
+     */
+    DVector addMul(double a, DVector y);
 
     /**
      * Creates a new {@link DVector} which contains the result of {@code this + a * y},
@@ -291,7 +475,7 @@ public interface DVector extends Serializable, Printable {
      * @param y vector
      * @return new vector which contains the result of {@code this[i] <- this[i] + a * y[i]}
      */
-    DVector addMul(double a, DVector y, AlgebraOption<?>... opts);
+    DVector addMulNew(double a, DVector y);
 
     /**
      * Dot product between two vectors is equal to the sum of the
@@ -390,8 +574,24 @@ public interface DVector extends Serializable, Printable {
      * @param p order of the p norm used at normalization.
      * @return normalized vector
      */
-    default DVector pnormalize(double p, AlgebraOption<?>... opts) {
-        return div(pnorm(p), opts);
+    default DVector normalize(double p) {
+        return div(pnorm(p));
+    }
+
+    /**
+     * Divides all the values by the given p norm. Thus, after normalization
+     * the specific p norm is equal with 1 and stores the result into a new vector.
+     * <p>
+     * An example of usage is to make a unit vector from a given vector.
+     * Thus the normalized vector keeps the same direction with a different size.
+     * <p>
+     * If the p-norm equals 0, than the vector is kept the same.
+     *
+     * @param p order of the p norm used at normalization.
+     * @return normalized vector
+     */
+    default DVector normalizeNew(double p) {
+        return divNew(pnorm(p));
     }
 
     /**
@@ -510,56 +710,119 @@ public interface DVector extends Serializable, Printable {
 
     /**
      * Apply a double to double function on all the values from the vector.
-     * If a new copy of the result is needed use {@link With#copy()} parameter.
      *
-     * @param f    double to double function
-     * @param opts linear algebra options
+     * @param f double to double function
      * @return result vector
      */
-    DVector apply(Double2DoubleFunction f, AlgebraOption<?>... opts);
+    DVector apply(Double2DoubleFunction f);
+
+    /**
+     * Apply a double to double function on all values from the vector and stores results into {@param to} vector.
+     *
+     * @param f  function to be applied
+     * @param to result vector
+     * @return result vector
+     */
+    DVector applyTo(Double2DoubleFunction f, DVector to);
+
+    /**
+     * Apply a double to double function on all the values from the vector and stores results into a new vector.
+     *
+     * @param f double to double function
+     * @return result vector
+     */
+    default DVectorDense applyNew(Double2DoubleFunction f) {
+        DVectorDense copy = new DVectorDense(size());
+        return (DVectorDense) applyTo(f, copy);
+    }
 
     /**
      * Apply an (integer,double) to double function on all the values from the vector.
      * The integer value is the position of the value in the vector.
-     * <p>
-     * If a new copy of the result is needed use {@link With#copy()} parameter.
      *
      * @param f    (int,double) to double function
-     * @param opts linear algebra options
      * @return result vector
      */
-    DVector apply(BiFunction<Integer, Double, Double> f, AlgebraOption<?>... opts);
+    DVector apply(BiFunction<Integer, Double, Double> f);
 
     /**
-     * Sort values from vector. If the storage type allows that, an in place
-     * sorting is executed. To create a new copy use {@link With#copy()}.
+     * Apply an (integer,double) to double function on all the values from the vector
+     * and stores results into {@param to} vector.
      *
-     * @param opts algebra options
-     * @return same vector or a new vector with sorted values
+     * The integer value is the position of the value in the vector.
+     *
+     * @param f    (int,double) to double function
+     * @return result vector
      */
-    default DVector sortValues(AlgebraOption<?>... opts) {
-        return sortValues(true, opts);
+    DVector applyTo(BiFunction<Integer, Double, Double> f, DVector to);
+
+    /**
+     * Apply an (integer,double) to double function on all the values from the vector
+     * and stores results into a new vector.
+     *
+     * The integer value is the position of the value in the vector.
+     *
+     * @param f    (int,double) to double function
+     * @return result vector
+     */
+    default DVectorDense applyNew(BiFunction<Integer, Double, Double> f) {
+        DVectorDense copy = new DVectorDense(size());
+        return (DVectorDense) applyTo(f, copy);
     }
 
     /**
-     * Sort values from vector in place. To create a new copy with sorted values use {@link With#copy()}.
+     * Sort values from vector.
+     *
+     * @return same vector or a new vector with sorted values
+     */
+    default DVector sortValues() {
+        return sortValues(true);
+    }
+
+    /**
+     * Sort values from vector and stores result into a new vector
+     *
+     * @return same vector or a new vector with sorted values
+     */
+    default DVector sortValuesNew() {
+        return sortValuesNew(true);
+    }
+
+    /**
+     * Sort values from vector in place.
      *
      * @param asc  ascending sort if {@code true}, descending otherwise
-     * @param opts algebra options
      * @return same vector or a new vector with sorted values
      */
-    default DVector sortValues(boolean asc, AlgebraOption<?>... opts) {
-        return sortValues(asc ? DoubleComparators.NATURAL_COMPARATOR : DoubleComparators.OPPOSITE_COMPARATOR, opts);
+    default DVector sortValues(boolean asc) {
+        return sortValues(asc ? DoubleComparators.NATURAL_COMPARATOR : DoubleComparators.OPPOSITE_COMPARATOR);
     }
 
     /**
-     * Sort values from vector in place. To create a new copy with sorted values use {@link With#copy()}.
+     * Sort values from vector and store result into a new vector.
      *
-     * @param comp double value comparator
-     * @param opts algebra options
+     * @param asc  ascending sort if {@code true}, descending otherwise
      * @return same vector or a new vector with sorted values
      */
-    DVector sortValues(DoubleComparator comp, AlgebraOption<?>... opts);
+    default DVector sortValuesNew(boolean asc) {
+        return sortValuesNew(asc ? DoubleComparators.NATURAL_COMPARATOR : DoubleComparators.OPPOSITE_COMPARATOR);
+    }
+
+    /**
+     * Sort values from vector in place.
+     *
+     * @param comp double value comparator
+     * @return same vector or a new vector with sorted values
+     */
+    DVector sortValues(DoubleComparator comp);
+
+    /**
+     * Sort values from vector and stores result into a new vector.
+     *
+     * @param comp double value comparator
+     * @return same vector or a new vector with sorted values
+     */
+    DVector sortValuesNew(DoubleComparator comp);
 
     /**
      * Sort in place the integer indexes in ascending order of the double values.
@@ -605,11 +868,11 @@ public interface DVector extends Serializable, Printable {
 
     /**
      * Creates a VarDouble by wrapping the values if possible (if the vector storage type is
-     * a direct one). If a new copy of the data is needed, use {@link With#copy()} parameter.
+     * a direct one). Otherwise, a new copy of the data is created and a VarDouble wraps the data array.
      *
      * @return new double variable instance
      */
-    VarDouble dVar(AlgebraOption<?>... opts);
+    VarDouble dv();
 
     /**
      * Compares the values between the vector given as parameter and the current one.

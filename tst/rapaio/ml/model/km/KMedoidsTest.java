@@ -46,10 +46,10 @@ import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.ml.model.ClusteringResult;
 import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.common.distance.MinkowskiDistance;
 import rapaio.ml.eval.RandIndex;
+import rapaio.ml.model.ClusteringResult;
 import rapaio.util.collection.DoubleArrays;
 
 public class KMedoidsTest {
@@ -271,7 +271,7 @@ public class KMedoidsTest {
         KMedoids km = KMedoids.newAlternateModel(2);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rowCount(), new Manhattan());
 
-        double[] dv = x.mapCol(0).copy().sub(x.get(4, 0)).apply(Math::abs).dVar().elements();
+        double[] dv = x.mapCol(0).copy().sub(x.get(4, 0)).apply(Math::abs).dv().elements();
 
         assertEquals(1, km.peekNextCentroid(x, Set.of(4), dv, cache));
     }

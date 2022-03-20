@@ -104,7 +104,7 @@ public class FRandomProjection extends AbstractFFilter {
             for (int i = 0; i < v.size(); i++) {
                 v.set(i, norm.sampleNext() / Math.sqrt(k));
             }
-            v.pnormalize(2);
+            v.normalize(2);
             return v;
         };
     }
@@ -131,7 +131,7 @@ public class FRandomProjection extends AbstractFFilter {
                 }
                 v.set(i, sqrt);
             }
-            return v.pnormalize(2);
+            return v.normalize(2);
         };
     }
 }

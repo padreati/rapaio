@@ -27,7 +27,6 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 

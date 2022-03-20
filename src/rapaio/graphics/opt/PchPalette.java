@@ -23,20 +23,14 @@ package rapaio.graphics.opt;
 
 import static rapaio.math.MathTools.*;
 
-import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import rapaio.graphics.plot.artist.PolyFill;
-import rapaio.math.MathTools;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

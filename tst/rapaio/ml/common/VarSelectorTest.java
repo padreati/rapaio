@@ -87,7 +87,7 @@ public class VarSelectorTest {
         }
 
         VarDouble expectedProbability = VarDouble.fill(varNames.length, 1.0 / varNames.length);
-        VarDouble counts = freq.dVar();
+        VarDouble counts = freq.dv();
 
         assertTrue(ChiSqGoodnessOfFit.from(counts, expectedProbability).pValue() >= 0.2); // no evidence at all
     }
@@ -112,7 +112,7 @@ public class VarSelectorTest {
         }
 
         VarDouble expectedProbability = VarDouble.fill(varNames.length, 1.0 / varNames.length);
-        VarDouble counts = freq.dVar();
+        VarDouble counts = freq.dv();
 
         assertTrue(ChiSqGoodnessOfFit.from(counts, expectedProbability).pValue() >= 0.2); // no evidence at all
     }

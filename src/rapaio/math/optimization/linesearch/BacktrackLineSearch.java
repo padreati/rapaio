@@ -21,8 +21,6 @@
 
 package rapaio.math.optimization.linesearch;
 
-import static rapaio.sys.With.*;
-
 import java.io.Serial;
 
 import rapaio.math.functions.RDerivative;
@@ -73,7 +71,7 @@ public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implement
         double xbeta = beta.get();
 
         double t = t0;
-        while (f.apply(x.addMul(t, p, copy())) > fx + xalpha * t * gxp) {
+        while (f.apply(x.addMulNew(t, p)) > fx + xalpha * t * gxp) {
             t *= xbeta;
         }
         return t;

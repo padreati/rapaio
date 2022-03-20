@@ -141,7 +141,7 @@ public class GridData implements Serializable {
     }
 
     public double[] quantiles(double... qs) {
-        return Quantiles.of(values.dVar(), qs).values();
+        return Quantiles.of(values.dv(), qs).values();
     }
 
     public void fill(double fill) {

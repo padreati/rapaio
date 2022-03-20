@@ -22,7 +22,9 @@
 package rapaio.experiment.core.test;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.With.*;
+import static rapaio.sys.With.color;
+import static rapaio.sys.With.lwd;
+import static rapaio.sys.With.sz;
 
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;

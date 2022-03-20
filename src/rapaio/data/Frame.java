@@ -36,8 +36,6 @@ import rapaio.data.filter.FFilter;
 import rapaio.data.filter.FRefSort;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 

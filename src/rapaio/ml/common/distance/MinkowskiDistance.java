@@ -22,7 +22,6 @@
 package rapaio.ml.common.distance;
 
 import static rapaio.math.MathTools.*;
-import static rapaio.sys.With.*;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
@@ -52,7 +51,7 @@ public class MinkowskiDistance implements Distance {
 
     @Override
     public double reduced(DVector x, DVector y) {
-        return x.sub(y, copy()).apply(v -> pow(v, p)).sum();
+        return x.subNew(y).apply(v -> pow(v, p)).sum();
     }
 
     @Override

@@ -286,10 +286,11 @@ public class DenseAlgebraTest {
     void testOneVector() {
 
         for (var vf : vectorFactories) {
-            t1v(vf, v -> assertTrue(v.add(10, copy()).deepEquals(v.add(10))));
-            t1v(vf, v -> assertTrue(v.sub(10, copy()).deepEquals(v.sub(10))));
-            t1v(vf, v -> assertTrue(v.mul(10, copy()).deepEquals(v.mul(10))));
-            t1v(vf, v -> assertTrue(v.div(10, copy()).deepEquals(v.div(10))));
+            String message = "vector type: %s".formatted(vf.newInstance().getClass().getName());
+            t1v(vf, v -> assertTrue(v.addNew(10).deepEquals(v.add(10))));
+            t1v(vf, v -> assertTrue(v.subNew(10).deepEquals(v.sub(10))));
+            t1v(vf, v -> assertTrue(v.mulNew(10).deepEquals(v.mul(10))));
+            t1v(vf, v -> assertTrue(v.divNew(10).deepEquals(v.div(10))));
 
             t1v(vf, v -> assertTrue(DVectorDense.fill(10, 7).deepEquals(v.copy().fill(7))));
 
@@ -310,13 +311,13 @@ public class DenseAlgebraTest {
             t1v(vf, v -> assertEquals(9, v.argmax()));
             t1v(vf, v -> assertEquals(10, v.max()));
 
-            t1v(vf, v -> assertTrue(v.apply((row, x) -> row * x, copy()).deepEquals(v.apply((row, x) -> row * x))));
+            t1v(vf, v -> assertTrue(v.applyNew((row, x) -> row * x).deepEquals(v.apply((row, x) -> row * x))));
 
             int[] indexes = new int[] {2, 7, 3, 2};
-            t1v(vf, v -> assertArrayEquals(indexes, v.map(indexes).valueStream().mapToInt(x -> (int) x - 1).toArray()));
-            t1v(vf, v -> assertArrayEquals(indexes, v.map(indexes, copy()).valueStream().mapToInt(x -> (int) x - 1).toArray()));
+            t1v(vf, v -> assertArrayEquals(indexes, v.map(indexes).valueStream().mapToInt(x -> (int) x - 1).toArray(), message));
+            t1v(vf, v -> assertArrayEquals(indexes, v.mapNew(indexes).valueStream().mapToInt(x -> (int) x - 1).toArray(), message));
 
-            t1v(vf, v -> assertTrue(v.apply(x -> x + 1, copy()).deepEquals(v.apply(x -> x + 1))));
+            t1v(vf, v -> assertTrue(v.applyNew(x -> x + 1).deepEquals(v.apply(x -> x + 1))));
 
             t1v(vf, v -> {
                 DVector cumsum = v.copy();
@@ -381,15 +382,15 @@ public class DenseAlgebraTest {
                 DVector v1 = vf1.newInstance();
                 DVector v2 = vf2.newInstance();
 
-                String msg = String.format("type1: %s, type2: %s", vf1.getClass().getName(), vf2.getClass().getName());
-                assertTrue(v1.add(v2, copy()).deepEquals(v1.add(v2)), msg);
-                assertTrue(v1.sub(v2, copy()).deepEquals(v1.sub(v2)), msg);
-                assertTrue(v1.mul(v2, copy()).deepEquals(v1.mul(v2)), msg);
-                assertTrue(v1.div(v2, copy()).deepEquals(v1.div(v2)), msg);
+                String msg = String.format("type1: %s, type2: %s", v1.getClass().getName(), v2.getClass().getName());
+                assertTrue(v1.addNew(v2).deepEquals(v1.add(v2)), msg);
+                assertTrue(v1.subNew(v2).deepEquals(v1.sub(v2)), msg);
+                assertTrue(v1.mulNew(v2).deepEquals(v1.mul(v2)), msg);
+                assertTrue(v1.divNew(v2).deepEquals(v1.div(v2)), msg);
 
                 v1 = vf1.newInstance();
                 v2 = vf2.newInstance();
-                assertTrue(v1.addMul(10, v2, copy()).deepEquals(v1.addMul(10, v2)), msg);
+                assertTrue(v1.addMulNew(10, v2).deepEquals(v1.addMul(10, v2)), msg);
 
                 v1 = vf1.newInstance();
                 v2 = vf2.newInstance();

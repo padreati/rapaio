@@ -34,7 +34,6 @@ import rapaio.data.Mapping;
 import rapaio.data.Unique;
 import rapaio.data.VarDouble;
 import rapaio.data.VarString;
-import rapaio.graphics.Plotter;
 import rapaio.sys.WS;
 import rapaio.sys.With;
 

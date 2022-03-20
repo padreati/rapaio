@@ -27,8 +27,6 @@ import rapaio.data.MappedVar;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.option.AlgebraOption;
-import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;
 
 /**
@@ -54,15 +52,16 @@ public class DVectorVar<T extends Var> extends AbstractDVector {
     }
 
     @Override
-    public DVector map(int[] indexes, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] array = new double[indexes.length];
-            for (int i = 0; i < indexes.length; i++) {
-                array[i] = ref.getDouble(indexes[i]);
-            }
-            return new DVectorDense(0, indexes.length, array);
-        }
+    public DVector map(int[] indexes) {
         return new DVectorVar<>(MappedVar.byRows(ref, indexes));
+    }
+
+    @Override
+    public DVector mapTo(int[] indexes, DVector to) {
+        for (int i = 0; i < indexes.length; i++) {
+            to.set(i, ref.getDouble(indexes[i]));
+        }
+        return to;
     }
 
     @Override
@@ -104,7 +103,10 @@ public class DVectorVar<T extends Var> extends AbstractDVector {
     }
 
     @Override
-    public VarDouble dVar(AlgebraOption<?>... opts) {
+    public VarDouble dv() {
+        if (ref instanceof VarDouble refd) {
+            return refd;
+        }
         double[] copy = DoubleArrays.newFrom(0, size(), ref::getDouble);
         return VarDouble.wrap(copy);
     }

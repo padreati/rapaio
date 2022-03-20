@@ -27,13 +27,13 @@
 
 package rapaio.printer.idea;
 
-import rapaio.graphics.Figure;
-import rapaio.printer.Printer;
-import rapaio.printer.standard.StandardPrinter;
-
 import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Logger;
+
+import rapaio.graphics.Figure;
+import rapaio.printer.Printer;
+import rapaio.printer.standard.StandardPrinter;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

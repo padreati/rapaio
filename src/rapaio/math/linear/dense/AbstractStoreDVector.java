@@ -24,44 +24,19 @@ package rapaio.math.linear.dense;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
-import jdk.incubator.vector.VectorSpecies;
-import rapaio.math.linear.dense.storage.DVectorStore;
 
-public abstract class AbstractStoreDVector extends AbstractDVector {
-
-    private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
-    private static final int SPECIES_LEN = SPECIES.length();
-
-    public abstract DVectorStore store();
-
-    public abstract int size();
-
-    @Override
-    public double get(int i) {
-        return store().get(i);
-    }
-
-    @Override
-    public void set(int i, double value) {
-        store().set(i, value);
-    }
-
-    @Override
-    public void inc(int i, double value) {
-        store().inc(i, value);
-    }
+public abstract class AbstractStoreDVector extends AbstractDVector implements DVectorStore {
 
     @Override
     public double sum() {
         int i = 0;
-        DoubleVector aggr = DoubleVector.zero(SPECIES);
-        int bound = SPECIES.loopBound(size());
-        for (; i < bound; i += SPECIES_LEN) {
-            DoubleVector xv = store().loadVector(i);
+        DoubleVector aggr = DoubleVector.zero(species());
+        for (; i < loopBound(); i += speciesLen()) {
+            DoubleVector xv = loadVector(i);
             aggr = aggr.add(xv);
         }
-        VectorMask<Double> m = store().indexInRange(i);
-        aggr = aggr.add(store().loadVector(i, m), m);
+        VectorMask<Double> m = loopMask();
+        aggr = aggr.add(loadVector(i, m), m);
         return aggr.reduceLanes(VectorOperators.ADD);
     }
 
@@ -69,16 +44,15 @@ public abstract class AbstractStoreDVector extends AbstractDVector {
     public double nansum() {
         int i = 0;
         VectorMask<Double> m;
-        DoubleVector sum = DoubleVector.zero(SPECIES);
-        int bound = SPECIES.loopBound(size());
-        for (; i < bound; i += SPECIES_LEN) {
-            DoubleVector xv = store().loadVector(i);
+        DoubleVector sum = DoubleVector.zero(species());
+        for (; i < loopBound(); i += speciesLen()) {
+            DoubleVector xv = loadVector(i);
             m = xv.test(VectorOperators.IS_NAN).not();
             sum = sum.add(xv, m);
         }
         double result = sum.reduceLanes(VectorOperators.ADD);
         for (; i < size(); i++) {
-            double value = store().get(i);
+            double value = get(i);
             if (!Double.isNaN(value)) {
                 result = result + value;
             }
@@ -89,15 +63,15 @@ public abstract class AbstractStoreDVector extends AbstractDVector {
     @Override
     public double prod() {
         int i = 0;
-        DoubleVector aggr = DoubleVector.broadcast(SPECIES, 1);
-        int bound = SPECIES.loopBound(size());
-        for (; i < bound; i += SPECIES.length()) {
-            DoubleVector xv = store().loadVector(i);
+        DoubleVector aggr = DoubleVector.broadcast(species(), 1);
+        int bound = loopBound();
+        for (; i < bound; i += speciesLen()) {
+            DoubleVector xv = loadVector(i);
             aggr = aggr.mul(xv);
         }
         double result = aggr.reduceLanes(VectorOperators.MUL);
         for (; i < size(); i++) {
-            result = result * store().get(i);
+            result = result * get(i);
         }
         return result;
     }

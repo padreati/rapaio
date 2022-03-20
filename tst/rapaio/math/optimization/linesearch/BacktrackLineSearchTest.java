@@ -25,8 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
-
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
@@ -58,7 +56,7 @@ public class BacktrackLineSearchTest {
             DVector p = df.apply(x0).mul(-1);
             double t = BacktrackLineSearch.newSearch().search(f, df, x0, p);
             double fx0 = f.apply(x0);
-            double fx1 = f.apply(x0.addMul(t, p, copy()));
+            double fx1 = f.apply(x0.addMulNew(t, p));
             assertTrue(fx0 >= fx1);
             assertEquals(0.7, t);
         }
@@ -77,7 +75,7 @@ public class BacktrackLineSearchTest {
             DVector p = df.apply(x0).mul(-1);
             double alpha = BacktrackLineSearch.newSearch().search(f, df, x0, p, 100_000.0);
             double fx0 = f.apply(x0);
-            double fx1 = f.apply(x0.addMul(alpha, p, copy()));
+            double fx1 = f.apply(x0.addMulNew(alpha, p));
             assertTrue(fx0 >= fx1);
         }
     }

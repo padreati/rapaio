@@ -26,16 +26,12 @@ import java.util.function.BiFunction;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DMatrixDenseC;
-import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.linear.dense.DVectorMap;
-import rapaio.math.linear.option.AlgebraOption;
-import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.DoubleComparator;
+import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -63,14 +59,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector add(double x, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = get(i) + x;
-            }
-            return DVector.wrap(copy);
-        }
+    public DVector add(double x) {
         for (int i = 0; i < size(); i++) {
             inc(i, x);
         }
@@ -78,15 +67,16 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector add(DVector b, AlgebraOption<?>... opts) {
-        checkConformance(b);
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = get(i) + b.get(i);
-            }
-            return DVector.wrap(copy);
+    public DVector addTo(double x, DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, get(i) + x);
         }
+        return to;
+    }
+
+    @Override
+    public DVector add(DVector b) {
+        checkConformance(b);
         for (int i = 0; i < size(); i++) {
             inc(i, b.get(i));
         }
@@ -94,14 +84,16 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector sub(double x, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = get(i) - x;
-            }
-            return DVector.wrap(copy);
+    public DVector addTo(DVector b, DVector to) {
+        checkConformance(b);
+        for (int i = 0; i < size(); i++) {
+            to.set(i, get(i) + b.get(i));
         }
+        return to;
+    }
+
+    @Override
+    public DVector sub(double x) {
         for (int i = 0; i < size(); i++) {
             inc(i, -x);
         }
@@ -109,15 +101,16 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector sub(DVector b, AlgebraOption<?>... opts) {
-        checkConformance(b);
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = get(i) - b.get(i);
-            }
-            return DVector.wrap(copy);
+    public DVector subTo(double x, DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, get(i) - x);
         }
+        return to;
+    }
+
+    @Override
+    public DVector sub(DVector b) {
+        checkConformance(b);
         for (int i = 0; i < size(); i++) {
             inc(i, -b.get(i));
         }
@@ -125,14 +118,16 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector mul(double x, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = get(i) * x;
-            }
-            return DVector.wrap(copy);
+    public DVector subTo(DVector b, DVector to) {
+        checkConformance(b);
+        for (int i = 0; i < size(); i++) {
+            to.set(i, get(i) - b.get(i));
         }
+        return to;
+    }
+
+    @Override
+    public DVector mul(double x) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) * x);
         }
@@ -140,15 +135,16 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector mul(DVector b, AlgebraOption<?>... opts) {
-        checkConformance(b);
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = get(i) * b.get(i);
-            }
-            return DVector.wrap(copy);
+    public DVector mulTo(double x, DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, get(i) * x);
         }
+        return to;
+    }
+
+    @Override
+    public DVector mul(DVector b) {
+        checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) * b.get(i));
         }
@@ -156,14 +152,16 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector div(double x, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = get(i) / x;
-            }
-            return DVector.wrap(copy);
+    public DVector mulTo(DVector b, DVector to) {
+        checkConformance(b);
+        for (int i = 0; i < size(); i++) {
+            to.set(i, get(i) * b.get(i));
         }
+        return to;
+    }
+
+    @Override
+    public DVector div(double x) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) / x);
         }
@@ -171,15 +169,16 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector div(DVector b, AlgebraOption<?>... opts) {
-        checkConformance(b);
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = get(i) / b.get(i);
-            }
-            return DVector.wrap(copy);
+    public DVector divTo(double x, DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, get(i) / x);
         }
+        return to;
+    }
+
+    @Override
+    public DVector div(DVector b) {
+        checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) / b.get(i));
         }
@@ -187,19 +186,31 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector addMul(double a, DVector y, AlgebraOption<?>... opts) {
-        checkConformance(y);
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            for (int i = 0; i < size(); i++) {
-                copy[i] = a * get(i) + y.get(i);
-            }
-            return new DVectorDense(0, copy.length, copy);
+    public DVector divTo(DVector b, DVector to) {
+        checkConformance(b);
+        for (int i = 0; i < size(); i++) {
+            to.set(i, get(i) / b.get(i));
         }
+        return to;
+    }
+
+    @Override
+    public DVector addMul(double a, DVector y) {
+        checkConformance(y);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) + a * y.get(i));
         }
         return this;
+    }
+
+    @Override
+    public DVector addMulNew(double a, DVector y) {
+        checkConformance(y);
+        double[] copy = new double[size()];
+        for (int i = 0; i < size(); i++) {
+            copy[i] = a * get(i) + y.get(i);
+        }
+        return new DVectorDense(0, copy.length, copy);
     }
 
     @Override
@@ -292,18 +303,19 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector apply(BiFunction<Integer, Double, Double> f, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            for (int i = 0; i < size(); i++) {
-                copy[i] = f.apply(i, get(i));
-            }
-            return DVector.wrap(copy);
-        }
+    public DVector apply(BiFunction<Integer, Double, Double> f) {
         for (int i = 0; i < size(); i++) {
             set(i, f.apply(i, get(i)));
         }
         return this;
+    }
+
+    @Override
+    public DVector applyTo(BiFunction<Integer, Double, Double> f, DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, f.apply(i, get(i)));
+        }
+        return to;
     }
 
     @Override
@@ -501,14 +513,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector apply(Double2DoubleFunction f, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[size()];
-            for (int i = 0; i < size(); i++) {
-                copy[i] = f.apply(get(i));
-            }
-            return DVector.wrap(copy);
-        }
+    public DVector apply(Double2DoubleFunction f) {
         for (int i = 0; i < size(); i++) {
             set(i, f.applyAsDouble(get(i)));
         }
@@ -516,9 +521,27 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector sortValues(DoubleComparator comp, AlgebraOption<?>... opts) {
+    public DVector applyTo(Double2DoubleFunction f, DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, f.applyAsDouble(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector sortValues(DoubleComparator comp) {
         quickSort(0, size(), comp);
         return this;
+    }
+
+    @Override
+    public DVector sortValuesNew(DoubleComparator comp) {
+        double[] copy = new double[size()];
+        for (int i = 0; i < size(); i++) {
+            copy[i] = get(i);
+        }
+        DoubleArrays.quickSort(copy, 0, size(), comp);
+        return new DVectorDense(0, size(), copy);
     }
 
     private static final int QUICKSORT_NO_REC = 16;

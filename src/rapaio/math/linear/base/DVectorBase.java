@@ -28,8 +28,6 @@ import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.AbstractDVector;
 import rapaio.math.linear.dense.DVectorMap;
-import rapaio.math.linear.option.AlgebraOption;
-import rapaio.math.linear.option.AlgebraOptions;
 
 /**
  * DVector implementation used only as a test bed for the abstract vector functionality.
@@ -48,15 +46,16 @@ public class DVectorBase extends AbstractDVector {
     }
 
     @Override
-    public DVector map(int[] indexes, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[indexes.length];
-            for (int i = 0; i < indexes.length; i++) {
-                copy[i] = get(indexes[i]);
-            }
-            return DVector.wrap(copy);
-        }
+    public DVector map(int[] indexes) {
         return new DVectorMap(0, indexes, values);
+    }
+
+    @Override
+    public DVector mapTo(int[] indexes, DVector to) {
+        for (int i = 0; i < indexes.length; i++) {
+            to.set(i, get(indexes[i]));
+        }
+        return to;
     }
 
     @Override
@@ -85,7 +84,7 @@ public class DVectorBase extends AbstractDVector {
     }
 
     @Override
-    public VarDouble dVar(AlgebraOption<?>... opts) {
+    public VarDouble dv() {
         return VarDouble.wrap(values);
     }
 }

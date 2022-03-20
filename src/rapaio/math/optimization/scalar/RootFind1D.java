@@ -26,7 +26,6 @@ import static rapaio.math.MathTools.*;
 import java.io.Serial;
 import java.io.Serializable;
 
-import rapaio.math.MathTools;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.util.function.Double2DoubleFunction;

@@ -28,11 +28,11 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
-import rapaio.ml.model.svm.SVMClassifier;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.model.ClassifierResult;
+import rapaio.ml.model.svm.SVMClassifier;
 
 public class IrisTest {
 

@@ -30,8 +30,8 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.ml.model.tree.RowPredicate;
 import rapaio.ml.loss.Loss;
+import rapaio.ml.model.tree.RowPredicate;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/2/17.

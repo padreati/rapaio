@@ -21,7 +21,8 @@
 
 package rapaio.graphics.opt;
 
-import static rapaio.sys.With.*;
+import static rapaio.sys.With.HALIGN_LEFT;
+import static rapaio.sys.With.VALIGN_TOP;
 
 import java.awt.Color;
 import java.awt.Font;

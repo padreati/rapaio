@@ -68,12 +68,6 @@ public class SolidFrameTest {
     }
 
     @Test
-    void testInvalidVarIndex() {
-        var ex = assertThrows(ArrayIndexOutOfBoundsException.class, () -> df1.rvar(10));
-        assertEquals("Index 10 out of bounds for length 3", ex.getMessage());
-    }
-
-    @Test
     void testInvalidVarIndexNegative() {
         var ex = assertThrows(ArrayIndexOutOfBoundsException.class, () -> df1.rvar(-10));
         assertEquals("Index -10 out of bounds for length 3", ex.getMessage());

@@ -23,20 +23,12 @@ package rapaio.graphics.base;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.time.Instant;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.distributions.Normal;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInstant;
-import rapaio.graphics.Plotter;
-import rapaio.math.MathTools;
 import rapaio.sys.WS;
 
 /**

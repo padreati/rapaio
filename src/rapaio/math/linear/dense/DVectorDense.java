@@ -27,20 +27,18 @@ import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
 import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.storage.DVectorStore;
-import rapaio.math.linear.dense.storage.DVectorStoreDense;
-import rapaio.math.linear.option.AlgebraOption;
-import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.DoubleComparator;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
-public class DVectorDense extends AbstractStoreDVector {
+public final class DVectorDense extends AbstractStoreDVector {
 
     public static DVectorDense empty(int n) {
         return new DVectorDense(0, n, new double[n]);
@@ -64,218 +62,432 @@ public class DVectorDense extends AbstractStoreDVector {
 
     @Serial
     private static final long serialVersionUID = 5763094452899116225L;
-    private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
+    private static final VectorSpecies<Double> species = DoubleVector.SPECIES_PREFERRED;
+    private static final int speciesLen = species.length();
 
-    private final DVectorStoreDense store;
+    private final int offset;
+    private final int size;
+    private final double[] array;
+    private final VectorMask<Double> loopMask;
+    private final int loopBound;
+
+    public DVectorDense(int size) {
+        this(0, size, new double[size]);
+    }
 
     public DVectorDense(int offset, int size, double[] array) {
-        this.store = new DVectorStoreDense(offset, size, array);
+        this.offset = offset;
+        this.size = size;
+        this.array = array;
+        this.loopMask = species.indexInRange(species.loopBound(size), size);
+        this.loopBound = species.loopBound(size);
     }
 
     @Override
-    public DVectorStore store() {
-        return store;
+    public VectorSpecies<Double> species() {
+        return species;
+    }
+
+    @Override
+    public int speciesLen() {
+        return speciesLen;
     }
 
     @Override
     public int size() {
-        return store.size;
+        return size;
     }
 
     @Override
-    public DVector map(int[] indexes, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = DoubleArrays.copyByIndex(store.array, store.offset, indexes);
-            return new DVectorDense(0, copy.length, copy);
-        } else {
-            return new DVectorMap(store.offset, indexes, store.array);
+    public double[] array() {
+        return array;
+    }
+
+    @Override
+    public DoubleVector loadVector(int i) {
+        return DoubleVector.fromArray(species, array, offset + i);
+    }
+
+    @Override
+    public DoubleVector loadVector(int i, VectorMask<Double> m) {
+        return DoubleVector.fromArray(species, array, offset + i, m);
+    }
+
+    @Override
+    public int loopBound() {
+        return loopBound;
+    }
+
+    @Override
+    public VectorMask<Double> loopMask() {
+        return loopMask;
+    }
+
+    @Override
+    public void storeVector(DoubleVector v, int i) {
+        v.intoArray(array, offset + i);
+    }
+
+    @Override
+    public void storeVector(DoubleVector v, int i, VectorMask<Double> m) {
+        v.intoArray(array, offset + i, m);
+    }
+
+    @Override
+    public double get(int i) {
+        return array[offset + i];
+    }
+
+    @Override
+    public void set(int i, double value) {
+        array[offset + i] = value;
+    }
+
+    @Override
+    public void inc(int i, double value) {
+        array[offset + i] += value;
+    }
+
+    @Override
+    public double[] solidArrayCopy() {
+        return Arrays.copyOfRange(array, offset, offset + size);
+    }
+
+    @Override
+    public DVector map(int[] indexes) {
+        return new DVectorMap(offset, indexes, array);
+    }
+
+    @Override
+    public DVector mapTo(int[] indexes, DVector to) {
+        for (int i = 0; i < indexes.length; i++) {
+            to.set(i, array[offset + indexes[i]]);
         }
+        return to;
     }
 
     public DVectorDense copy() {
-        return new DVectorDense(0, store.size, Arrays.copyOfRange(store.array, store.offset, store.offset + store.size));
+        return new DVectorDense(0, size, Arrays.copyOfRange(array, offset, offset + size));
     }
 
     @Override
     public DVector fill(double value) {
-        Arrays.fill(store.array, store.offset, store.offset + store.size, value);
+        Arrays.fill(array, offset, offset + size, value);
         return this;
     }
 
     @Override
-    public DVector add(double x, AlgebraOption<?>... opts) {
-        if(AlgebraOptions.from(opts).isCopy()) {
-            DVectorDense copy = new DVectorDense(0, store.size(), store.solidArrayCopy());
-            copy.store.add(x);
-            return copy;
+    public DVector add(double x) {
+        int i = 0;
+        DoubleVector va = DoubleVector.broadcast(species, x);
+        for (; i < loopBound; i += speciesLen) {
+            var v = loadVector(i).add(va);
+            storeVector(v, i);
         }
-        store.add(x);
-        return this;
-    }
-
-    @Override
-    public DVectorDense add(DVector b, AlgebraOption<?>... opts) {
-        checkConformance(b);
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[store.size];
-            if (b instanceof DVectorDense bd) {
-                DoubleArrays.addTo(store.array, store.offset, bd.store.array, bd.store.offset, copy, 0, store.size);
-            } else {
-                for (int i = 0; i < store.size; i++) {
-                    copy[i] = store.array[store.offset + i] + b.get(i);
-                }
-            }
-            return DVector.wrap(copy);
-        }
-        if (b instanceof DVectorDense bd) {
-            DoubleArrays.add(store.array, store.offset, bd.store.array, bd.store.offset, store.size);
-            return this;
-        }
-        for (int i = 0; i < store.size; i++) {
-            store.array[store.offset + i] += b.get(i);
-        }
-        return this;
-    }
-
-
-    @Override
-    public DVector sub(double x, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[store.size];
-            DoubleArrays.subTo(store.array, store.offset, x, copy, 0, copy.length);
-            return DVector.wrap(copy);
-        }
-        DoubleArrays.sub(store.array, store.offset, x, store.size);
-        return this;
-    }
-
-    @Override
-    public DVectorDense sub(DVector b, AlgebraOption<?>... opts) {
-        checkConformance(b);
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[store.size];
-            if (b instanceof DVectorDense bd) {
-                DoubleArrays.subTo(store.array, store.offset, bd.store.array, bd.store.offset, copy, 0, store.size);
-            } else {
-                for (int i = 0; i < store.size; i++) {
-                    copy[i] = store.array[store.offset + i] - b.get(i);
-                }
-            }
-            return DVector.wrap(copy);
-        }
-        if (b instanceof DVectorDense bd) {
-            DoubleArrays.sub(store.array, store.offset, bd.store.array, bd.store.offset, store.size);
-            return this;
-        }
-        for (int i = 0; i < store.size; i++) {
-            store.array[store.offset + i] -= b.get(i);
+        for (; i < size; i++) {
+            inc(i, x);
         }
         return this;
     }
 
     @Override
-    public DVector mul(double x, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[store.size];
-            DoubleArrays.multTo(store.array, store.offset, x, copy, 0, copy.length);
-            return DVector.wrap(copy);
-        }
-        DoubleArrays.mul(store.array, store.offset, x, store.size);
-        return this;
-    }
-
-    @Override
-    public DVector mul(DVector b, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[store.size];
-            if (b instanceof DVectorDense bd) {
-                DoubleArrays.multTo(store.array, store.offset, bd.store.array, bd.store.offset, copy, 0, store.size);
-            } else {
-                for (int i = 0; i < store.size; i++) {
-                    copy[i] = store.array[store.offset + i] * b.get(i);
-                }
-            }
-            return DVector.wrap(copy);
-        }
-        checkConformance(b);
-        if (b instanceof DVectorDense bd) {
-            DoubleArrays.mul(store.array, store.offset, bd.store.array, bd.store.offset, store.size);
-            return this;
-        }
-        for (int i = 0; i < store.size; i++) {
-            store.array[store.offset + i] *= b.get(i);
-        }
-        return this;
-    }
-
-    @Override
-    public DVector div(double x, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[store.size];
-            DoubleArrays.divTo(store.array, store.offset, x, copy, 0, copy.length);
-            return DVector.wrap(copy);
-        }
-        DoubleArrays.div(store.array, store.offset, x, store.size);
-        return this;
-    }
-
-    @Override
-    public DVector div(DVector b, AlgebraOption<?>... opts) {
-        checkConformance(b);
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[store.size];
-            if (b instanceof DVectorDense bd) {
-                DoubleArrays.divTo(store.array, store.offset, bd.store.array, bd.store.offset, copy, 0, store.size);
-            } else {
-                for (int i = 0; i < store.size; i++) {
-                    copy[i] = store.array[store.offset + i] / b.get(i);
-                }
-            }
-            return DVector.wrap(copy);
-        }
-        if (b instanceof DVectorDense bd) {
-            DoubleArrays.div(store.array, store.offset, bd.store.array, bd.store.offset, store.size);
-            return this;
-        }
-        for (int i = 0; i < store.size; i++) {
-            store.array[store.offset + i] /= b.get(i);
-        }
-        return this;
-    }
-
-    @Override
-    public DVector addMul(double a, DVector y, AlgebraOption<?>... opts) {
-        checkConformance(y);
-        if (AlgebraOptions.from(opts).isCopy()) {
-            if (y instanceof DVectorDense yd) {
-                double[] copy = new double[store.size];
-                DoubleArrays.addMulTo(store.array, store.offset, a, yd.store.array, yd.store.offset, copy, 0, store.size);
-                return new DVectorDense(0, copy.length, copy);
-            }
-            double[] copy = new double[store.size];
-            for (int i = 0; i < size(); i++) {
-                copy[i] = store.array[store.offset + i] + a * y.get(i);
-            }
-            return new DVectorDense(0, copy.length, copy);
-        }
-        if (y instanceof DVectorDense yd) {
-            int bound = SPECIES.loopBound(store.size);
+    public DVector addTo(double x, DVector to) {
+        if (to instanceof DVectorStore tos) {
+            var va = DoubleVector.broadcast(species, x);
             int i = 0;
-            var va = DoubleVector.broadcast(SPECIES, a);
-            for (; i < bound; i += SPECIES.length()) {
-                var vs = store.loadVector(i);
-                var vy = yd.store.loadVector(i).fma(va, vs);
-                store.storeVector(vy, i);
+            for (; i < loopBound; i += speciesLen) {
+                var v = loadVector(i).add(va);
+                tos.storeVector(v, i);
             }
-            for (; i < store.size; i++) {
+            for (; i < size; i++) {
+                tos.set(i, get(i) + x);
+            }
+            return tos;
+        }
+        return super.addTo(x, to);
+    }
+
+    @Override
+    public DVector add(DVector b) {
+        if (b instanceof DVectorStore bs) {
+            checkConformance(b);
+            int i = 0;
+            for (; i < loopBound; i += speciesLen) {
+                var vb = bs.loadVector(i);
+                var va = loadVector(i).add(vb);
+                storeVector(va, i);
+            }
+            for (; i < size; i++) {
+                inc(i, bs.get(i));
+            }
+            return this;
+        }
+        return super.add(b);
+    }
+
+    @Override
+    public DVector addTo(DVector b, DVector to) {
+        if (b instanceof DVectorStore bs) {
+            if (to instanceof DVectorStore tos) {
+                checkConformance(b);
+                int i = 0;
+                for (; i < loopBound; i += speciesLen) {
+                    var vb = bs.loadVector(i);
+                    var va = loadVector(i).add(vb);
+                    tos.storeVector(va, i);
+                }
+                for (; i < size; i++) {
+                    tos.set(i, get(i) + bs.get(i));
+                }
+                return tos;
+            }
+        }
+        return super.addTo(b, to);
+    }
+
+    @Override
+    public DVector sub(double x) {
+        int i = 0;
+        DoubleVector va = DoubleVector.broadcast(species, x);
+        for (; i < loopBound; i += speciesLen) {
+            var v = loadVector(i).sub(va);
+            storeVector(v, i);
+        }
+        for (; i < size; i++) {
+            inc(i, -x);
+        }
+        return this;
+    }
+
+    @Override
+    public DVector subTo(double x, DVector to) {
+        if (to instanceof DVectorStore tos) {
+            var va = DoubleVector.broadcast(species, x);
+            int i = 0;
+            for (; i < loopBound; i += speciesLen) {
+                var v = loadVector(i).sub(va);
+                tos.storeVector(v, i);
+            }
+            for (; i < size; i++) {
+                tos.set(i, get(i) - x);
+            }
+            return tos;
+        }
+        return super.subTo(x, to);
+    }
+
+    @Override
+    public DVector sub(DVector b) {
+        if (b instanceof DVectorStore bs) {
+            checkConformance(b);
+            int i = 0;
+            for (; i < loopBound; i += speciesLen) {
+                var vb = bs.loadVector(i);
+                var va = loadVector(i).sub(vb);
+                storeVector(va, i);
+            }
+            for (; i < size; i++) {
+                inc(i, -bs.get(i));
+            }
+            return this;
+        }
+        return super.sub(b);
+    }
+
+    @Override
+    public DVector subTo(DVector b, DVector to) {
+        if (b instanceof DVectorStore bs) {
+            if (to instanceof DVectorStore tos) {
+                checkConformance(b);
+                int i = 0;
+                for (; i < loopBound; i += speciesLen) {
+                    var vb = bs.loadVector(i);
+                    var va = loadVector(i).sub(vb);
+                    tos.storeVector(va, i);
+                }
+                for (; i < size; i++) {
+                    tos.set(i, get(i) - bs.get(i));
+                }
+                return tos;
+            }
+        }
+        return super.subTo(b, to);
+    }
+
+    @Override
+    public DVector mul(double x) {
+        int i = 0;
+        DoubleVector va = DoubleVector.broadcast(species, x);
+        for (; i < loopBound; i += speciesLen) {
+            var v = loadVector(i).mul(va);
+            storeVector(v, i);
+        }
+        for (; i < size; i++) {
+            set(i, get(i) * x);
+        }
+        return this;
+    }
+
+    @Override
+    public DVector mulTo(double x, DVector to) {
+        if (to instanceof DVectorStore tos) {
+            var va = DoubleVector.broadcast(species, x);
+            int i = 0;
+            for (; i < loopBound; i += speciesLen) {
+                var v = loadVector(i).mul(va);
+                tos.storeVector(v, i);
+            }
+            for (; i < size; i++) {
+                tos.set(i, get(i) * x);
+            }
+            return tos;
+        }
+        return super.mulTo(x, to);
+    }
+
+    @Override
+    public DVector mul(DVector b) {
+        if (b instanceof DVectorStore bs) {
+            checkConformance(b);
+            int i = 0;
+            for (; i < loopBound; i += speciesLen) {
+                var vb = bs.loadVector(i);
+                var va = loadVector(i).mul(vb);
+                storeVector(va, i);
+            }
+            for (; i < size; i++) {
+                set(i, get(i) * bs.get(i));
+            }
+            return this;
+        }
+        return super.mul(b);
+    }
+
+    @Override
+    public DVector mulTo(DVector b, DVector to) {
+        if (b instanceof DVectorStore bs) {
+            if (to instanceof DVectorStore tos) {
+                checkConformance(b);
+                int i = 0;
+                for (; i < loopBound; i += speciesLen) {
+                    var vb = bs.loadVector(i);
+                    var va = loadVector(i).mul(vb);
+                    tos.storeVector(va, i);
+                }
+                for (; i < size; i++) {
+                    tos.set(i, get(i) * bs.get(i));
+                }
+                return tos;
+            }
+        }
+        return super.mulTo(b, to);
+    }
+
+    @Override
+    public DVector div(double x) {
+        int i = 0;
+        DoubleVector va = DoubleVector.broadcast(species, x);
+        for (; i < loopBound; i += speciesLen) {
+            var v = loadVector(i).div(va);
+            storeVector(v, i);
+        }
+        for (; i < size; i++) {
+            set(i, get(i) / x);
+        }
+        return this;
+    }
+
+    @Override
+    public DVector divTo(double x, DVector to) {
+        if (to instanceof DVectorStore tos) {
+            var va = DoubleVector.broadcast(species, x);
+            int i = 0;
+            for (; i < loopBound; i += speciesLen) {
+                var v = loadVector(i).div(va);
+                tos.storeVector(v, i);
+            }
+            for (; i < size; i++) {
+                tos.set(i, get(i) / x);
+            }
+            return tos;
+        }
+        return super.divTo(x, to);
+    }
+
+    @Override
+    public DVector div(DVector b) {
+        if (b instanceof DVectorStore bs) {
+            checkConformance(b);
+            int i = 0;
+            for (; i < loopBound; i += speciesLen) {
+                var vb = bs.loadVector(i);
+                var va = loadVector(i).div(vb);
+                storeVector(va, i);
+            }
+            for (; i < size; i++) {
+                set(i, get(i) / bs.get(i));
+            }
+            return this;
+        }
+        return super.div(b);
+    }
+
+    @Override
+    public DVector divTo(DVector b, DVector to) {
+        if (b instanceof DVectorStore bs) {
+            if (to instanceof DVectorStore tos) {
+                checkConformance(b);
+                int i = 0;
+                for (; i < loopBound; i += speciesLen) {
+                    var vb = bs.loadVector(i);
+                    var va = loadVector(i).div(vb);
+                    tos.storeVector(va, i);
+                }
+                for (; i < size; i++) {
+                    tos.set(i, get(i) / bs.get(i));
+                }
+                return tos;
+            }
+        }
+        return super.divTo(b, to);
+    }
+
+    @Override
+    public DVector addMul(double a, DVector y) {
+        checkConformance(y);
+        if (y instanceof DVectorDense yd) {
+            int bound = species.loopBound(size);
+            int i = 0;
+            var va = DoubleVector.broadcast(species, a);
+            for (; i < bound; i += species.length()) {
+                var vs = loadVector(i);
+                var vy = yd.loadVector(i).fma(va, vs);
+                storeVector(vy, i);
+            }
+            for (; i < size; i++) {
                 inc(i, yd.get(i) * a);
             }
             return this;
         }
-        for (int i = 0; i < store.size; i++) {
-            store.array[store.offset + i] += a * y.get(i);
+        for (int i = 0; i < size; i++) {
+            array[offset + i] += a * y.get(i);
         }
         return this;
+    }
+
+    @Override
+    public DVector addMulNew(double a, DVector y) {
+        checkConformance(y);
+        if (y instanceof DVectorDense yd) {
+            double[] copy = new double[size];
+            DoubleArrays.addMulTo(array, offset, a, yd.array, yd.offset, copy, 0, size);
+            return new DVectorDense(0, copy.length, copy);
+        }
+        double[] copy = new double[size];
+        for (int i = 0; i < size(); i++) {
+            copy[i] = array[offset + i] + a * y.get(i);
+        }
+        return new DVectorDense(0, copy.length, copy);
     }
 
     @Override
@@ -283,27 +495,27 @@ public class DVectorDense extends AbstractStoreDVector {
         checkConformance(b);
         if (b instanceof DVectorDense bd) {
             double ss = 0;
-            for (int i = 0; i < store.size; i++) {
-                ss = Math.fma(store.array[store.offset + i], bd.store.array[bd.store.offset + i], ss);
+            for (int i = 0; i < size; i++) {
+                ss = Math.fma(array[offset + i], bd.array[bd.offset + i], ss);
             }
             return ss;
         }
         double ss = 0;
-        for (int i = 0; i < store.size; i++) {
-            ss = Math.fma(store.array[store.offset + i], b.get(i), ss);
+        for (int i = 0; i < size; i++) {
+            ss = Math.fma(array[offset + i], b.get(i), ss);
         }
         return ss;
     }
 
     @Override
     public double dotBilinear(DMatrix m, DVector y) {
-        if (m.rowCount() != store.size || m.colCount() != y.size()) {
+        if (m.rowCount() != size || m.colCount() != y.size()) {
             throw new IllegalArgumentException("Bilinear matrix and vector are not conform for multiplication.");
         }
         double sum = 0.0;
-        for (int i = 0; i < store.size; i++) {
+        for (int i = 0; i < size; i++) {
             for (int j = 0; j < y.size(); j++) {
-                sum += store.array[store.offset + i] * m.get(i, j) * y.get(j);
+                sum += array[offset + i] * m.get(i, j) * y.get(j);
             }
         }
         return sum;
@@ -317,7 +529,7 @@ public class DVectorDense extends AbstractStoreDVector {
         double sum = 0.0;
         for (int i = 0; i < size(); i++) {
             for (int j = 0; j < size(); j++) {
-                sum += store.array[store.offset + i] * m.get(i, j) * store.array[store.offset + j];
+                sum += array[offset + i] * m.get(i, j) * array[offset + j];
             }
         }
         return sum;
@@ -330,7 +542,7 @@ public class DVectorDense extends AbstractStoreDVector {
         }
         double sum = 0.0;
         for (int i = 0; i < size(); i++) {
-            sum += store.array[store.offset + i] * m.get(i) * y.get(i);
+            sum += array[offset + i] * m.get(i) * y.get(i);
         }
         return sum;
     }
@@ -342,7 +554,7 @@ public class DVectorDense extends AbstractStoreDVector {
         }
         double sum = 0.0;
         for (int i = 0; i < size(); i++) {
-            sum += store.array[store.offset + i] * m.get(i, i) * store.array[store.offset + i];
+            sum += array[offset + i] * m.get(i, i) * array[offset + i];
         }
         return sum;
     }
@@ -354,7 +566,7 @@ public class DVectorDense extends AbstractStoreDVector {
         }
         double sum = 0.0;
         for (int i = 0; i < size(); i++) {
-            sum += store.array[store.offset + i] * m.get(i, i) * y.get(i);
+            sum += array[offset + i] * m.get(i, i) * y.get(i);
         }
         return sum;
     }
@@ -366,7 +578,7 @@ public class DVectorDense extends AbstractStoreDVector {
         }
         double sum = 0.0;
         for (int i = 0; i < size(); i++) {
-            sum += store.array[store.offset + i] * m.get(i) * store.array[store.offset + i];
+            sum += array[offset + i] * m.get(i) * array[offset + i];
         }
         return sum;
     }
@@ -374,133 +586,154 @@ public class DVectorDense extends AbstractStoreDVector {
     @Override
     public double pnorm(double p) {
         if (p <= 0) {
-            return store.size;
+            return size;
         }
         if (p == Double.POSITIVE_INFINITY) {
             return max();
         }
         double sum = 0.0;
-        for (int i = store.offset; i < store.offset + store.size; i++) {
-            sum += Math.pow(Math.abs(store.array[i]), p);
+        for (int i = offset; i < offset + size; i++) {
+            sum += Math.pow(Math.abs(array[i]), p);
         }
         return Math.pow(sum, 1.0 / p);
     }
 
     @Override
     public double sum() {
-        return store.sum();
+        int i = 0;
+        DoubleVector aggr = DoubleVector.zero(species);
+        int bound = species.loopBound(size());
+        for (; i < bound; i += speciesLen) {
+            var vi = loadVector(i);
+            aggr = aggr.add(vi);
+        }
+        var vi = loadVector(i, loopMask);
+        aggr = aggr.add(vi, loopMask);
+        return aggr.reduceLanes(VectorOperators.ADD);
     }
 
     @Override
     public DVector cumsum() {
-        for (int i = store.offset + 1; i < store.offset + store.size; i++) {
-            store.array[i] += store.array[i - 1];
+        for (int i = offset + 1; i < offset + size; i++) {
+            array[i] += array[i - 1];
         }
         return this;
     }
 
     @Override
     public double nanprod() {
-        return DoubleArrays.nanProd(store.array, store.offset, store.size);
+        return DoubleArrays.nanProd(array, offset, size);
     }
 
     @Override
     public DVector cumprod() {
-        for (int i = store.offset + 1; i < store.offset + store.size; i++) {
-            store.array[i] = store.array[i - 1] * store.array[i];
+        for (int i = offset + 1; i < offset + size; i++) {
+            array[i] = array[i - 1] * array[i];
         }
         return this;
     }
 
     @Override
     public int nancount() {
-        return DoubleArrays.nanCount(store.array, store.offset, store.size);
+        return DoubleArrays.nanCount(array, offset, size);
     }
 
     @Override
     public double mean() {
-        return DoubleArrays.mean(store.array, store.offset, store.size);
+        return DoubleArrays.mean(array, offset, size);
     }
 
     @Override
     public double nanmean() {
-        return DoubleArrays.nanMean(store.array, store.offset, store.size);
+        return DoubleArrays.nanMean(array, offset, size);
     }
 
     @Override
     public double variance() {
-        return DoubleArrays.variance(store.array, store.offset, store.size);
+        return DoubleArrays.variance(array, offset, size);
     }
 
     @Override
     public double nanvariance() {
-        return DoubleArrays.nanVariance(store.array, store.offset, store.size);
+        return DoubleArrays.nanVariance(array, offset, size);
     }
 
     @Override
     public int argmin() {
-        return DoubleArrays.argmin(store.array, store.offset, store.size) - store.offset;
+        return DoubleArrays.argmin(array, offset, size) - offset;
     }
 
     @Override
     public double min() {
-        return DoubleArrays.min(store.array, store.offset, store.size);
+        return DoubleArrays.min(array, offset, size);
     }
 
     @Override
     public int argmax() {
-        return DoubleArrays.argmax(store.array, store.offset, store.size) - store.offset;
+        return DoubleArrays.argmax(array, offset, size) - offset;
     }
 
     @Override
     public double max() {
-        return DoubleArrays.max(store.array, store.offset, store.size);
+        return DoubleArrays.max(array, offset, size);
     }
 
     @Override
-    public DVector apply(Double2DoubleFunction f, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = DoubleArrays.newFrom(store.array, store.offset, store.size + store.offset, f);
-            return DVector.wrap(copy);
-        }
-        for (int i = store.offset; i < store.offset + store.size; i++) {
-            store.array[i] = f.applyAsDouble(store.array[i]);
+    public DVector apply(Double2DoubleFunction f) {
+        for (int i = offset; i < offset + size; i++) {
+            array[i] = f.applyAsDouble(array[i]);
         }
         return this;
     }
 
     @Override
-    public DVector apply(BiFunction<Integer, Double, Double> f, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[store.size];
-            for (int i = 0; i < store.size; i++) {
-                copy[i] = f.apply(i, store.array[store.offset + i]);
-            }
-            return DVector.wrap(copy);
+    public DVector applyTo(Double2DoubleFunction f, DVector to) {
+        for (int i = 0; i < size; i++) {
+            to.set(i, f.applyAsDouble(array[offset + i]));
         }
-        for (int i = 0; i < store.size; i++) {
-            store.array[store.offset + i] = f.apply(i, store.array[store.offset + i]);
+        return to;
+    }
+
+    @Override
+    public DVector apply(BiFunction<Integer, Double, Double> f) {
+        for (int i = 0; i < size; i++) {
+            array[offset + i] = f.apply(i, array[offset + i]);
         }
         return this;
     }
 
     @Override
-    public DVector sortValues(DoubleComparator comp, AlgebraOption<?>... opts) {
-        DoubleArrays.quickSort(store.array, store.offset, store.offset + store.size, comp);
+    public DVector applyTo(BiFunction<Integer, Double, Double> f, DVector to) {
+        for (int i = 0; i < size; i++) {
+            to.set(i, f.apply(i, array[offset + i]));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector sortValues(DoubleComparator comp) {
+        DoubleArrays.quickSort(array, offset, offset + size, comp);
         return this;
+    }
+
+    @Override
+    public DVector sortValuesNew(DoubleComparator comp) {
+        double[] copy = solidArrayCopy();
+        DoubleArrays.quickSort(copy, 0, size, comp);
+        return new DVectorDense(0, size, copy);
     }
 
     @Override
     public DoubleStream valueStream() {
-        return Arrays.stream(store.array).skip(store.offset).limit(store.size);
+        return Arrays.stream(array).skip(offset).limit(size);
     }
 
     @Override
-    public VarDouble dVar(AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy() || store.offset != 0) {
-            double[] copy = Arrays.copyOfRange(store.array, store.offset, store.size + store.offset);
-            return VarDouble.wrapArray(store.size, copy);
+    public VarDouble dv() {
+        if (offset != 0) {
+            double[] copy = Arrays.copyOfRange(array, offset, size + offset);
+            return VarDouble.wrapArray(size, copy);
         }
-        return VarDouble.wrapArray(store.size, store.array);
+        return VarDouble.wrapArray(size, array);
     }
 }

@@ -156,7 +156,7 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
 
             // add next prediction to the predict values
             var pred = tree.predict(df, false).firstPrediction();
-            VarDouble nextFit = fitValues.dv(copy()).add(pred.dv(copy()).mul(shrinkage.get())).dVar();
+            VarDouble nextFit = fitValues.dv(copy()).add(pred.dv(copy()).mul(shrinkage.get())).dv();
 
             double initScore = loss.get().errorScore(y, fitValues);
             double nextScore = loss.get().errorScore(y, nextFit);

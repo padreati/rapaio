@@ -25,76 +25,176 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.storage.DVectorStore;
-import rapaio.math.linear.dense.storage.DVectorStoreStride;
-import rapaio.math.linear.option.AlgebraOption;
-import rapaio.math.linear.option.AlgebraOptions;
 
 public class DVectorStride extends AbstractStoreDVector {
 
-    private final DVectorStoreStride store;
+    private final static VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
+    private final static int SPECIES_LEN = SPECIES.length();
+
+    private final int offset;
+    private final int stride;
+    private final int size;
+    private final int[] indexes;
+    private final double[] array;
+    private final VectorMask<Double> loopMask;
+    private final int loopBound;
 
     public DVectorStride(int offset, int stride, int size, double[] array) {
-        this.store = new DVectorStoreStride(offset, stride, size, array);
+        this.offset = offset;
+        this.stride = stride;
+        this.size = size;
+        this.array = array;
+        this.loopMask = SPECIES.indexInRange(SPECIES.loopBound(size), size);
+        this.loopBound = SPECIES.loopBound(size);
+
+        this.indexes = new int[SPECIES.length()];
+        for (int i = 0; i < indexes.length; i++) {
+            indexes[i] = i * stride;
+        }
     }
 
     @Override
-    public DVectorStore store() {
-        return store;
+    public VectorSpecies<Double> species() {
+        return SPECIES;
+    }
+
+    @Override
+    public int speciesLen() {
+        return SPECIES_LEN;
     }
 
     @Override
     public int size() {
-        return store.size;
+        return size;
     }
 
     @Override
-    public DVector map(int[] indexes, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = new double[indexes.length];
-            for (int i = 0; i < indexes.length; i++) {
-                copy[i] = get(indexes[i]);
-            }
-            return new DVectorDense(0, copy.length, copy);
+    public double[] array() {
+        return array;
+    }
+
+    @Override
+    public double get(int i) {
+        return array[offset + i * stride];
+    }
+
+    @Override
+    public void set(int i, double value) {
+        array[offset + i * stride] = value;
+    }
+
+    @Override
+    public void inc(int i, double value) {
+        array[offset + i * stride] += value;
+    }
+
+    @Override
+    public DoubleVector loadVector(int i) {
+        return DoubleVector.fromArray(SPECIES, array, offset + i * stride, indexes, 0);
+    }
+
+    @Override
+    public DoubleVector loadVector(int i, VectorMask<Double> m) {
+        return DoubleVector.fromArray(SPECIES, array, offset + i * stride, indexes, 0, m);
+    }
+
+    @Override
+    public int loopBound() {
+        return loopBound;
+    }
+
+    @Override
+    public VectorMask<Double> loopMask() {
+        return loopMask;
+    }
+
+    @Override
+    public void storeVector(DoubleVector v, int i) {
+        v.intoArray(array, offset + i * stride, indexes, 0);
+    }
+
+    @Override
+    public void storeVector(DoubleVector v, int i, VectorMask<Double> m) {
+        v.intoArray(array, offset + i * stride, indexes, 0, m);
+    }
+
+    @Override
+    public double[] solidArrayCopy() {
+        double[] copy = new double[indexes.length];
+        int bound = SPECIES.loopBound(indexes.length);
+        int i = 0;
+        for (; i < bound; i += SPECIES_LEN) {
+            loadVector(i).intoArray(copy, i);
         }
+        loadVector(i, loopMask).intoArray(copy, i, loopMask);
+        return copy;
+    }
+
+    public double sum() {
+        int i = 0;
+        DoubleVector aggr = DoubleVector.zero(SPECIES);
+        int bound = SPECIES.loopBound(size());
+        for (; i < bound; i += SPECIES_LEN) {
+            DoubleVector xv = DoubleVector.fromArray(SPECIES, array, offset + i * stride, indexes, 0);
+            aggr = aggr.add(xv);
+        }
+        double result = aggr.reduceLanes(VectorOperators.ADD);
+        for (; i < size(); i++) {
+            result = result + array[offset + i * stride];
+        }
+        return result;
+    }
+
+    @Override
+    public DVector map(int[] indexes) {
         int[] copyIndexes = new int[indexes.length];
         for (int i = 0; i < indexes.length; i++) {
-            copyIndexes[i] = store.stride * indexes[i];
+            copyIndexes[i] = stride * indexes[i];
         }
-        return new DVectorMap(store.offset, copyIndexes, store.array);
+        return new DVectorMap(offset, copyIndexes, array);
+    }
+
+    @Override
+    public DVector mapTo(int[] indexes, DVector to) {
+        for (int i = 0; i < indexes.length; i++) {
+            to.set(i, array[offset + stride * indexes[i]]);
+        }
+        return to;
     }
 
     private double[] copyArray() {
-        double[] copy = new double[store.size];
-        for (int i = 0; i < store.size; i++) {
-            copy[i] = store.array[store.offset + store.stride * i];
+        double[] copy = new double[size];
+        for (int i = 0; i < size; i++) {
+            copy[i] = array[offset + stride * i];
         }
         return copy;
     }
 
     @Override
     public DVector copy() {
-        return new DVectorStride(0, 1, store.size, copyArray());
+        return new DVectorStride(0, 1, size, copyArray());
     }
 
     @Override
     public DVector fill(double value) {
-        for (int i = store.offset; i < store.offset + store.size; i += store.stride) {
-            store.array[i] = value;
+        for (int i = offset; i < offset + size; i += stride) {
+            array[i] = value;
         }
         return this;
     }
 
     @Override
     public DoubleStream valueStream() {
-        return IntStream.range(0, store.size).mapToDouble(i -> store.array[store.offset + i * store.stride]);
+        return IntStream.range(0, size).mapToDouble(i -> array[offset + i * stride]);
     }
 
     @Override
-    public VarDouble dVar(AlgebraOption<?>... opts) {
+    public VarDouble dv() {
         return VarDouble.wrap(copyArray());
     }
 }

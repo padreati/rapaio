@@ -23,8 +23,40 @@ package rapaio.graphics;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.With.*;
+import static rapaio.graphics.Plotter.barplot;
+import static rapaio.graphics.Plotter.boxplot;
+import static rapaio.graphics.Plotter.corrGram;
+import static rapaio.graphics.Plotter.densityLine;
+import static rapaio.graphics.Plotter.funLine;
+import static rapaio.graphics.Plotter.gridLayer;
+import static rapaio.graphics.Plotter.hist;
+import static rapaio.graphics.Plotter.hist2d;
+import static rapaio.graphics.Plotter.lines;
+import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.Plotter.points;
+import static rapaio.graphics.Plotter.qqplot;
+import static rapaio.graphics.Plotter.rocCurve;
+import static rapaio.graphics.Plotter.silhouette;
+import static rapaio.sys.With.HALIGN_CENTER;
+import static rapaio.sys.With.HALIGN_LEFT;
+import static rapaio.sys.With.HALIGN_RIGHT;
+import static rapaio.sys.With.VALIGN_CENTER;
+import static rapaio.sys.With.alpha;
+import static rapaio.sys.With.bins;
+import static rapaio.sys.With.color;
+import static rapaio.sys.With.fill;
+import static rapaio.sys.With.font;
+import static rapaio.sys.With.hAlign;
+import static rapaio.sys.With.heights;
+import static rapaio.sys.With.horizontal;
+import static rapaio.sys.With.lwd;
+import static rapaio.sys.With.pch;
+import static rapaio.sys.With.points;
+import static rapaio.sys.With.sort;
+import static rapaio.sys.With.stacked;
+import static rapaio.sys.With.sz;
+import static rapaio.sys.With.top;
+import static rapaio.sys.With.vAlign;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -59,10 +91,10 @@ import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.Text;
 import rapaio.image.ImageTools;
-import rapaio.ml.model.km.KMCluster;
-import rapaio.ml.model.km.KMClusterResult;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
+import rapaio.ml.model.km.KMCluster;
+import rapaio.ml.model.km.KMClusterResult;
 import rapaio.sys.WS;
 
 /**

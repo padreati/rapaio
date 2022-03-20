@@ -30,8 +30,8 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.WeightedOnlineStat;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.ml.model.tree.RowPredicate;
 import rapaio.ml.model.tree.RTree;
+import rapaio.ml.model.tree.RowPredicate;
 
 /**
  * Computes the selection of the best candidate node for a given test and target

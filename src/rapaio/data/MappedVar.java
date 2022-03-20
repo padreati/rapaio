@@ -27,7 +27,6 @@ import java.util.List;
 
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.linear.dense.DVectorMap;
 import rapaio.math.linear.dense.DVectorVar;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;

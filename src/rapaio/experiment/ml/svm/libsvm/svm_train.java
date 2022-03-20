@@ -21,10 +21,9 @@
 
 package rapaio.experiment.ml.svm.libsvm;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.Vector;
 
-import rapaio.data.Frame;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 

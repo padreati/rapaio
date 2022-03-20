@@ -36,11 +36,11 @@ import rapaio.data.VarInt;
 import rapaio.data.VarType;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.MinkowskiDistance;
+import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -119,7 +119,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     }
 
     private double error(DVector x, DVector y, DVector w, double p) {
-        return x.sub(y, copy()).mul(w).apply(v -> pow(abs(v), p)).sum();
+        return x.subNew(y).mul(w).apply(v -> pow(abs(v), p)).sum();
     }
 
     private DMatrix initializeCentroids(DMatrix x) {
@@ -267,7 +267,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     }
 
     double error(DVector x, double beta, double c) {
-        return x.apply(v -> pow(abs(v - c), beta), copy()).sum();
+        return x.applyNew(v -> pow(abs(v - c), beta)).sum();
     }
 
     double derivative(DVector x, double beta, double c) {
@@ -316,7 +316,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     }
 
     double findMinimum(DVector y, double beta) {
-        DVector errors = y.apply(v -> error(y, beta, v), copy());
+        DVector errors = y.applyNew(v -> error(y, beta, v));
         double c0 = y.get(errors.argmin());
         double left = findLeft(y, beta, c0);
         double right = findRight(y, beta, c0);
@@ -353,7 +353,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
                 if (p.get() > 1) {
                     c.set(i, j, findMinimum(ykj, p.get()));
                 } else {
-                    c.set(i, j, Quantiles.of(ykj.dVar(), 0.5).values()[0]);
+                    c.set(i, j, Quantiles.of(ykj.dv(), 0.5).values()[0]);
                 }
             }
         }

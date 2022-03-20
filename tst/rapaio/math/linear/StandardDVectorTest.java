@@ -27,8 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.copy;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -158,25 +156,25 @@ public abstract class StandardDVectorTest {
     void mapTest() {
         int[] sample = new int[] {2, 5, 8, 11};
 
-        DVector copy = x.map(sample, copy());
+        DVector copy = x.mapNew(sample);
         DVector map = x.map(sample);
         assertTrue(copy.deepEquals(map));
     }
 
     @Test
     void testOperations() {
-        assertTrue(x.add(10, copy()).deepEquals(x.add(10)));
-        assertTrue(x.add(z, copy()).deepEquals(x.add(z)));
+        assertTrue(x.addNew(10).deepEquals(x.add(10)));
+        assertTrue(x.addNew(z).deepEquals(x.add(z)));
         assertTrue(x.add(y).sub(y).deepEquals(x));
 
-        assertTrue(x.sub(10, copy()).deepEquals(x.sub(10)));
-        assertTrue(x.sub(z, copy()).deepEquals(x.sub(z)));
+        assertTrue(x.subNew(10).deepEquals(x.sub(10)));
+        assertTrue(x.subNew(z).deepEquals(x.sub(z)));
 
-        assertTrue(x.mul(10, copy()).deepEquals(x.mul(10)));
-        assertTrue(x.mul(z, copy()).deepEquals(x.mul(z)));
+        assertTrue(x.mulNew(10).deepEquals(x.mul(10)));
+        assertTrue(x.mulNew(z).deepEquals(x.mul(z)));
 
-        assertTrue(x.div(10, copy()).deepEquals(x.div(10)));
-        assertTrue(x.div(z, copy()).deepEquals(x.div(z)));
+        assertTrue(x.divNew(10).deepEquals(x.div(10)));
+        assertTrue(x.divNew(z).deepEquals(x.div(z)));
     }
 
     @Test
@@ -245,13 +243,13 @@ public abstract class StandardDVectorTest {
 
     @Test
     void normalizeTest() {
-        assertEquals(1, x.apply(Math::abs).pnormalize(1).sum(), TOL);
+        assertEquals(1, x.apply(Math::abs).normalize(1).sum(), TOL);
     }
 
     @Test
     void meanVarTest() {
-        assertEquals(Mean.of(x.dVar()).value(), x.mean(), 1e-12);
-        assertEquals(Variance.of(x.dVar()).value(), x.variance(), 1e-12);
+        assertEquals(Mean.of(x.dv()).value(), x.mean(), 1e-12);
+        assertEquals(Variance.of(x.dv()).value(), x.variance(), 1e-12);
         assertTrue(Double.isNaN(generateCopy(new double[0]).mean()));
         assertTrue(Double.isNaN(generateCopy(new double[0]).nanmean()));
         assertTrue(Double.isNaN(generateCopy(new double[0]).variance()));
@@ -278,7 +276,7 @@ public abstract class StandardDVectorTest {
 
     @Test
     void testProduct() {
-        assertTrue(z.prod()/1.0000000000000006E100 < 1e20);
+        assertTrue(z.prod() / 1.0000000000000006E100 < 1e20);
 
         DVector v = generateFill(10, 2);
         v.cumprod();
@@ -300,9 +298,9 @@ public abstract class StandardDVectorTest {
         var v2 = v1.copy();
 
         assertTrue(v2.deepEquals(v1.apply(x -> x - 10).apply(x -> x + 10)));
-        assertTrue(v2.deepEquals(v1.apply(x -> x - 10, copy()).apply(x -> x + 10, copy())));
+        assertTrue(v2.deepEquals(v1.applyNew(x -> x - 10).applyNew(x -> x + 10)));
         assertTrue(v2.deepEquals(v1.apply((i, x) -> x - i).apply(Double::sum)));
-        assertTrue(v2.deepEquals(v1.apply((i, x) -> x - i, copy()).apply(Double::sum, copy())));
+        assertTrue(v2.deepEquals(v1.applyNew((i, x) -> x - i).applyNew(Double::sum)));
     }
 
     @Test

@@ -21,7 +21,7 @@
 
 package rapaio.ml.model.km;
 
-import static rapaio.sys.With.*;
+import static rapaio.sys.With.copy;
 
 import java.io.Serializable;
 import java.util.Arrays;

@@ -27,9 +27,6 @@
 
 package rapaio.printer.idea;
 
-import rapaio.graphics.Figure;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,6 +34,10 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+
+import javax.imageio.ImageIO;
+
+import rapaio.graphics.Figure;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
