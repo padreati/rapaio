@@ -103,6 +103,10 @@ public final class DVectorDense extends AbstractStoreDVector {
         return array;
     }
 
+    public int offset() {
+        return offset;
+    }
+
     @Override
     public DoubleVector loadVector(int i) {
         return DoubleVector.fromArray(species, array, offset + i);
@@ -192,7 +196,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector addTo(double x, DVector to) {
-        if (to instanceof DVectorStore tos) {
+        if (to instanceof DVectorDense tos) {
             var va = DoubleVector.broadcast(species, x);
             int i = 0;
             for (; i < loopBound; i += speciesLen) {
@@ -209,7 +213,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector add(DVector b) {
-        if (b instanceof DVectorStore bs) {
+        if (b instanceof DVectorDense bs) {
             checkConformance(b);
             int i = 0;
             for (; i < loopBound; i += speciesLen) {
@@ -228,7 +232,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     @Override
     public DVector addTo(DVector b, DVector to) {
         if (b instanceof DVectorStore bs) {
-            if (to instanceof DVectorStore tos) {
+            if (to instanceof DVectorDense tos) {
                 checkConformance(b);
                 int i = 0;
                 for (; i < loopBound; i += speciesLen) {
@@ -261,7 +265,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector subTo(double x, DVector to) {
-        if (to instanceof DVectorStore tos) {
+        if (to instanceof DVectorDense tos) {
             var va = DoubleVector.broadcast(species, x);
             int i = 0;
             for (; i < loopBound; i += speciesLen) {
@@ -278,7 +282,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector sub(DVector b) {
-        if (b instanceof DVectorStore bs) {
+        if (b instanceof DVectorDense bs) {
             checkConformance(b);
             int i = 0;
             for (; i < loopBound; i += speciesLen) {
@@ -297,7 +301,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     @Override
     public DVector subTo(DVector b, DVector to) {
         if (b instanceof DVectorStore bs) {
-            if (to instanceof DVectorStore tos) {
+            if (to instanceof DVectorDense tos) {
                 checkConformance(b);
                 int i = 0;
                 for (; i < loopBound; i += speciesLen) {
@@ -330,7 +334,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector mulTo(double x, DVector to) {
-        if (to instanceof DVectorStore tos) {
+        if (to instanceof DVectorDense tos) {
             var va = DoubleVector.broadcast(species, x);
             int i = 0;
             for (; i < loopBound; i += speciesLen) {
@@ -347,7 +351,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector mul(DVector b) {
-        if (b instanceof DVectorStore bs) {
+        if (b instanceof DVectorDense bs) {
             checkConformance(b);
             int i = 0;
             for (; i < loopBound; i += speciesLen) {
@@ -366,7 +370,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     @Override
     public DVector mulTo(DVector b, DVector to) {
         if (b instanceof DVectorStore bs) {
-            if (to instanceof DVectorStore tos) {
+            if (to instanceof DVectorDense tos) {
                 checkConformance(b);
                 int i = 0;
                 for (; i < loopBound; i += speciesLen) {
@@ -399,7 +403,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector divTo(double x, DVector to) {
-        if (to instanceof DVectorStore tos) {
+        if (to instanceof DVectorDense tos) {
             var va = DoubleVector.broadcast(species, x);
             int i = 0;
             for (; i < loopBound; i += speciesLen) {
@@ -416,7 +420,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector div(DVector b) {
-        if (b instanceof DVectorStore bs) {
+        if (b instanceof DVectorDense bs) {
             checkConformance(b);
             int i = 0;
             for (; i < loopBound; i += speciesLen) {
@@ -435,7 +439,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     @Override
     public DVector divTo(DVector b, DVector to) {
         if (b instanceof DVectorStore bs) {
-            if (to instanceof DVectorStore tos) {
+            if (to instanceof DVectorDense tos) {
                 checkConformance(b);
                 int i = 0;
                 for (; i < loopBound; i += speciesLen) {

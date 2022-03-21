@@ -21,7 +21,10 @@
 
 package rapaio.math.linear.base;
 
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.AbstractDMatrix;
+import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorStride;
 
 public class DMatrixBase extends AbstractDMatrix {
 
@@ -58,5 +61,31 @@ public class DMatrixBase extends AbstractDMatrix {
     @Override
     public void inc(int row, int col, double value) {
         array[col * rows + col] += value;
+    }
+
+    @Override
+    public DVector mapRow(int row) {
+        return new DVectorStride(row, rows, cols, array);
+    }
+
+    @Override
+    public DVector mapRowTo(int row, DVector to) {
+        for (int i = 0; i < cols; i++) {
+            to.set(i, array[row + i * rows]);
+        }
+        return to;
+    }
+
+    @Override
+    public DVector mapCol(int col) {
+        return new DVectorDense(col * rows, rows, array);
+    }
+
+    @Override
+    public DVector mapColTo(int col, DVector to) {
+        for (int i = 0; i < rows; i++) {
+            to.set(i, array[col + i * rows]);
+        }
+        return to;
     }
 }

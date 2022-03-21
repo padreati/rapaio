@@ -30,6 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.sys.With;
@@ -118,26 +119,6 @@ public interface DMatrix extends Serializable, Printable {
      */
     static DMatrix random(int rows, int cols, Distribution distribution) {
         return DMatrixDenseC.random(rows, cols, distribution);
-    }
-
-    /**
-     * Builds a matrix which wraps an array of values by rows.
-     *
-     * @param values array of arrays of values
-     * @return matrix which wrap the values
-     */
-    static DMatrixDenseR wrapByRows(int rows, int cols, double... values) {
-        return new DMatrixDenseR(0, rows, cols, values);
-    }
-
-    /**
-     * Builds a matrix which wraps an array of values by columns.
-     *
-     * @param values array of arrays of values
-     * @return matrix which wrap the values
-     */
-    static DMatrixDenseC wrapByCols(int rows, int cols, double... values) {
-        return new DMatrixDenseC(0, rows, cols, values);
     }
 
     /**
@@ -296,23 +277,59 @@ public interface DMatrix extends Serializable, Printable {
      * Returns a vector build from values of the row with given index in the matrix.
      * <p>
      * Depending on implementation, the vector can be a view over the original data.
-     * To enforce a new copy add option {@link With#copy()} as parameter.
      *
-     * @param index index of the selected row
+     * @param row index of the selected row
      * @return result vector reference
      */
-    DVector mapRow(final int index, AlgebraOption<?>... opts);
+    DVector mapRow(final int row);
+
+    /**
+     * Returns a vector build from values of the row with given index in the matrix
+     * and stores the values into the given {@param to} vector.
+     *
+     * @param row index of the selected row
+     * @return destination vector
+     */
+    DVector mapRowTo(final int row, DVector to);
+
+    /**
+     * Returns a vector build from values of the row with given index in the matrix
+     * into a new vector.
+     *
+     * @param row index of the selected row
+     * @return new row vector
+     */
+    default DVector mapRowNew(final int row) {
+        return mapRowTo(row, new DVectorDense(colCount()));
+    }
 
     /**
      * Returns a vector build from values of the column with given index in the matrix.
-     * <p>
-     * Depending on implementation, the vector can be a view over the original data.
-     * To enforce a new copy add option {@link With#copy()} as parameter.
      *
-     * @param index index of the selected column
+     * @param col index of the selected column
      * @return result vector reference
      */
-    DVector mapCol(final int index, AlgebraOption<?>... opts);
+    DVector mapCol(final int col);
+
+    /**
+     * Returns a vector build from values of the column with given index in the matrix
+     * and stores the values into the given {@param to} vector.
+     *
+     * @param col index of the selected column
+     * @return destination vector
+     */
+    DVector mapColTo(final int col, DVector to);
+
+    /**
+     * Returns a vector build from values of the column with given index in the matrix
+     * into a new vector.
+     *
+     * @param col index of the selected column
+     * @return new row vector
+     */
+    default DVector mapColNew(final int col) {
+        return mapColTo(col, new DVectorDense(rowCount()));
+    }
 
     /**
      * Creates a new matrix which contains only the rows

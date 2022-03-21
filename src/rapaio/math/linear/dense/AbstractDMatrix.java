@@ -38,7 +38,6 @@ import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-import rapaio.sys.With;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -54,24 +53,6 @@ public abstract class AbstractDMatrix implements DMatrix {
         if ((rowCount() != b.rowCount()) || (colCount() != b.colCount())) {
             throw new IllegalArgumentException("Matrices are not conform with this operation.");
         }
-    }
-
-    @Override
-    public DVector mapRow(final int row, AlgebraOption<?>... opts) {
-        DVector v = DVector.zeros(colCount());
-        for (int j = 0; j < colCount(); j++) {
-            v.set(j, get(row, j));
-        }
-        return v;
-    }
-
-    @Override
-    public DVector mapCol(int col, AlgebraOption<?>... opts) {
-        DVector v = DVector.zeros(rowCount());
-        for (int j = 0; j < rowCount(); j++) {
-            v.set(j, get(j, col));
-        }
-        return v;
     }
 
     @Override
@@ -421,7 +402,7 @@ public abstract class AbstractDMatrix implements DMatrix {
             mean.set(i, mapCol(i).mean());
         }
         for (int k = 0; k < rowCount(); k++) {
-            DVector row = mapRow(k, With.copy()).sub(mean);
+            DVector row = mapRowNew(k).sub(mean);
             for (int i = 0; i < row.size(); i++) {
                 for (int j = 0; j < row.size(); j++) {
                     scatter.inc(i, j, row.get(i) * row.get(j));
@@ -501,7 +482,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DVector max(int axis) {
-        DVector max = axis == 0 ? mapRow(0, With.copy()) : mapCol(0, With.copy());
+        DVector max = axis == 0 ? mapRowNew(0) : mapColNew(0);
         int i = axis == 0 ? 1 : 0;
         for (; i < rowCount(); i++) {
             int j = axis == 0 ? 0 : 1;
@@ -541,7 +522,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DVector min(int axis) {
-        DVector min = axis == 0 ? mapRow(0, With.copy()) : mapCol(0, With.copy());
+        DVector min = axis == 0 ? mapRowNew(0) : mapColNew(0);
         int i = axis == 0 ? 1 : 0;
         for (; i < rowCount(); i++) {
             int j = axis == 0 ? 0 : 1;

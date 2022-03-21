@@ -91,7 +91,7 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DVector mapCol(int i, AlgebraOption<?>... opts) {
+    public DVector mapCol(int i) {
         DVector v = DVector.zeros(rowIndexes.length);
         for (int j = 0; j < rowIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[j], colIndexes[i]));
@@ -100,10 +100,27 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DVector mapRow(int i, AlgebraOption<?>... opts) {
+    public DVector mapColTo(int col, DVector to) {
+        for (int j = 0; j < rowIndexes.length; j++) {
+            to.set(j, ref.get(rowIndexes[j], colIndexes[col]));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector mapRow(int row) {
         DVector v = DVector.zeros(colIndexes.length);
         for (int j = 0; j < colIndexes.length; j++) {
-            v.set(j, ref.get(rowIndexes[i], colIndexes[j]));
+            v.set(j, ref.get(rowIndexes[row], colIndexes[j]));
+        }
+        return v;
+    }
+
+    @Override
+    public DVector mapRowTo(int row, DVector to) {
+        DVector v = DVector.zeros(colIndexes.length);
+        for (int j = 0; j < colIndexes.length; j++) {
+            v.set(j, ref.get(rowIndexes[row], colIndexes[j]));
         }
         return v;
     }

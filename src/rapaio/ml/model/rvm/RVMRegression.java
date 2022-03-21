@@ -118,7 +118,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                     factories[pp++] = new Factory(
                             String.format("RBF sigma:%s, index: %d", Format.floatFlex(sigmas.getDouble(i)), jj),
                             jj,
-                            x.mapRow(jj, copy()),
+                            x.mapRowNew(jj),
                             () -> DVector.from(x.rowCount(), r -> kernel.compute(x.mapRow(jj), x.mapRow(r))),
                             vector -> kernel.compute(vector, x.mapRow(jj))
                     );

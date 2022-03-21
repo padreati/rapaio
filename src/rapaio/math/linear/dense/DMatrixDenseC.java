@@ -21,8 +21,12 @@
 
 package rapaio.math.linear.dense;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
@@ -30,14 +34,13 @@ import rapaio.data.Var;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.storage.DMatrixStoreDense;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
-public class DMatrixDenseC extends AbstractDMatrix {
+public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     public static DMatrixDenseC empty(int rows, int cols) {
         return new DMatrixDenseC(rows, cols);
@@ -46,7 +49,7 @@ public class DMatrixDenseC extends AbstractDMatrix {
     public static DMatrixDenseC identity(int n) {
         DMatrixDenseC m = new DMatrixDenseC(n, n);
         for (int i = 0; i < n; i++) {
-            m.storage.array[i * n + i] = 1;
+            m.array[i * n + i] = 1;
         }
         return m;
     }
@@ -55,7 +58,7 @@ public class DMatrixDenseC extends AbstractDMatrix {
         int n = v.size();
         DMatrixDenseC m = new DMatrixDenseC(n, n);
         for (int i = 0; i < n; i++) {
-            m.storage.array[i * n + i] = v.get(i);
+            m.array[i * n + i] = v.get(i);
         }
         return m;
     }
@@ -284,67 +287,190 @@ public class DMatrixDenseC extends AbstractDMatrix {
         return new DMatrixDenseC(0, rows, cols, values);
     }
 
+    private static final VectorSpecies<Double> species = DoubleVector.SPECIES_PREFERRED;
+    private static final int speciesLen = species.length();
     private static final int SLICE_SIZE = 512;
-    private final DMatrixStoreDense storage;
+
+    private final int offset;
+    private final int rows;
+    private final int cols;
+    private final double[] array;
+
+    private final int loopBoundRow;
+    private final int loopBoundCol;
+    private final VectorMask<Double> loopMaskRow;
+    private final VectorMask<Double> loopMaskCol;
+    private final int[] rowVectorIndexes;
 
     public DMatrixDenseC(int rows, int cols) {
         this(0, rows, cols, new double[rows * cols]);
     }
 
     public DMatrixDenseC(int offset, int rows, int cols, double[] array) {
-        this.storage = new DMatrixStoreDense(offset, rows, cols, array);
+        this.offset = offset;
+        this.rows = rows;
+        this.cols = cols;
+        this.array = array;
+        this.loopBoundRow = species.loopBound(cols);
+        this.loopMaskRow = species.indexInRange(loopBoundRow, cols);
+        this.loopBoundCol = species.loopBound(rows);
+        this.loopMaskCol = species.indexInRange(loopBoundCol, rows);
+        this.rowVectorIndexes = new int[speciesLen];
+        for (int i = 0; i < speciesLen; i++) {
+            rowVectorIndexes[i] = i * cols;
+        }
+    }
+
+    @Override
+    public double[] solidArrayCopy() {
+        return Arrays.copyOfRange(array, offset, offset + rows * cols);
     }
 
     @Override
     public int rowCount() {
-        return storage.innerSize;
+        return rows;
     }
 
     @Override
     public int colCount() {
-        return storage.outerSize;
+        return cols;
     }
 
     @Override
     public double get(int row, int col) {
-        return storage.get(col, row);
+        return array[offset + col * rows + row];
     }
 
     @Override
     public void set(int row, int col, double value) {
-        storage.set(col, row, value);
+        array[offset + col * rows + row] = value;
     }
 
     @Override
     public void inc(int row, int col, double value) {
-        storage.inc(col, row, value);
+        array[offset + col * rows + row] += value;
     }
 
     @Override
-    public DVector mapCol(int col, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = DoubleArrays.copy(storage.array, storage.offset + col * storage.innerSize, storage.innerSize);
-            return DVectorDense.wrap(0, copy.length, copy);
+    public VectorSpecies<Double> species() {
+        return species;
+    }
+
+    @Override
+    public int speciesLen() {
+        return speciesLen;
+    }
+
+    @Override
+    public int loopBoundRow() {
+        return loopBoundRow;
+    }
+
+    @Override
+    public VectorMask<Double> loopMaskRow() {
+        return loopMaskRow;
+    }
+
+    @Override
+    public DoubleVector loadVectorRow(int row, int i) {
+        return DoubleVector.fromArray(species, array, offset + i * rows + row, rowVectorIndexes, 0);
+    }
+
+    @Override
+    public DoubleVector loadVectorRow(int row, int i, VectorMask<Double> m) {
+        return DoubleVector.fromArray(species, array, offset + i * rows + row, rowVectorIndexes, 0, m);
+    }
+
+    @Override
+    public void storeVectorRow(DoubleVector vector, int row, int i) {
+        vector.intoArray(array, offset + i * rows + row, rowVectorIndexes, 0);
+    }
+
+    @Override
+    public void storeVectorRow(DoubleVector vector, int row, int i, VectorMask<Double> m) {
+        vector.intoArray(array, offset + i * rows + row, rowVectorIndexes, 0, m);
+    }
+
+    @Override
+    public int loopBoundCol() {
+        return loopBoundCol;
+    }
+
+    @Override
+    public VectorMask<Double> loopMaskCol() {
+        return loopMaskCol;
+    }
+
+    @Override
+    public DoubleVector loadVectorCol(int col, int i) {
+        return DoubleVector.fromArray(species, array, offset + col * rows + i);
+    }
+
+    @Override
+    public DoubleVector loadVectorCol(int col, int i, VectorMask<Double> m) {
+        return DoubleVector.fromArray(species, array, offset + col * rows + i, m);
+    }
+
+    @Override
+    public void storeVectorCol(DoubleVector vector, int col, int i) {
+        vector.intoArray(array, offset + col * rows + i);
+    }
+
+    @Override
+    public void storeVectorCol(DoubleVector vector, int col, int i, VectorMask<Double> m) {
+        vector.intoArray(array, offset + col * rows + i, m);
+    }
+
+    @Override
+    public DVector mapRow(int row) {
+        return new DVectorStride(offset + row, rows, cols, array);
+    }
+
+    @Override
+    public DVector mapRowTo(int row, DVector to) {
+        for (int i = 0; i < cols; i++) {
+            to.set(i, array[offset + row + i * rows]);
         }
-        return new DVectorDense(storage.offset + col * storage.innerSize, storage.innerSize, storage.array);
+        return to;
+    }
+
+    @Override
+    public DVector mapCol(int col) {
+        return new DVectorDense(offset + col * rows, rows, array);
+    }
+
+    @Override
+    public DVector mapColTo(int col, DVector to) {
+        int i = 0;
+        if (to instanceof DVectorDense tos) {
+            int bound = species.loopBound(rows);
+            for (; i < bound; i += speciesLen) {
+                var va = loadVectorCol(col, i);
+                tos.storeVector(va, i);
+            }
+        }
+        for (; i < rows; i++) {
+            to.set(i, get(i, col));
+        }
+        return to;
     }
 
     @Override
     public DVector dot(DVector b) {
-        if (storage.outerSize != b.size()) {
+        if (cols != b.size()) {
             throw new IllegalArgumentException(
-                    String.format("Matrix (%d x %d) and vector ( %d ) are not conform for multiplication.",
-                            storage.innerSize, storage.outerSize, b.size()));
+                    "Matrix (%d x %d) and vector ( %d ) are not conform for multiplication.".formatted(
+                            rows, cols, b.size()));
         }
-        int slices = storage.outerSize / SLICE_SIZE;
+        int slices = cols / SLICE_SIZE;
         DVectorDense[] cslices = new DVectorDense[slices + 1];
         var stream = IntStream.range(0, slices + 1).unordered();
         if (slices > 0) {
             stream = stream.parallel();
         }
         stream.forEach(s -> {
-            DVectorDense slice = new DVectorDense(0, storage.innerSize, new double[storage.innerSize]);
-            for (int j = s * SLICE_SIZE; j < Math.min(storage.outerSize, (s + 1) * SLICE_SIZE); j++) {
+            DVectorDense slice = new DVectorDense(0, rows, new double[rows]);
+            for (int j = s * SLICE_SIZE; j < Math.min(cols, (s + 1) * SLICE_SIZE); j++) {
                 slice.addMul(b.get(j), mapCol(j));
             }
             cslices[s] = slice;
@@ -359,25 +485,33 @@ public class DMatrixDenseC extends AbstractDMatrix {
     @Override
     public DMatrixDenseR t(AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            double[] ref = storage.solidArrayCopy();
-            return new DMatrixDenseR(0, colCount(), rowCount(), ref);
+            double[] ref = solidArrayCopy();
+            return new DMatrixDenseR(0, cols, rows, ref);
         }
-        return new DMatrixDenseR(storage.offset, colCount(), rowCount(), storage.array);
+        return new DMatrixDenseR(offset, cols, rows, array);
     }
 
     @Override
     public DMatrixDenseC apply(Double2DoubleFunction fun, AlgebraOption<?>... opts) {
         if (AlgebraOptions.from(opts).isCopy()) {
-            var copy = new DMatrixDenseC(0, rowCount(), colCount(), storage.solidArrayCopy());
-            copy.storage.apply(fun);
+            var copy = new DMatrixDenseC(0, rows, cols, solidArrayCopy());
+            copy.apply(fun);
             return copy;
         }
-        storage.apply(fun);
+        apply(fun);
         return this;
     }
 
     @Override
+    public void apply(Double2DoubleFunction fun) {
+        int len = offset + rows * cols;
+        for (int i = offset; i < len; i++) {
+            array[i] = fun.apply(array[i]);
+        }
+    }
+
+    @Override
     public DMatrix copy() {
-        return new DMatrixDenseC(0, rowCount(), colCount(), storage.solidArrayCopy());
+        return new DMatrixDenseC(0, rows, cols, solidArrayCopy());
     }
 }

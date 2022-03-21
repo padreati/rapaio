@@ -22,7 +22,6 @@
 package rapaio.ml.model.km;
 
 import static rapaio.math.MathTools.*;
-import static rapaio.sys.With.copy;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -349,7 +348,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
             int[] indexes = computeCentroidIndexes(i, assign);
             DMatrix xc = x.mapRows(indexes);
             for (int j = 0; j < x.colCount(); j++) {
-                DVector ykj = xc.mapCol(j, copy());
+                DVector ykj = xc.mapColNew(j);
                 if (p.get() > 1) {
                     c.set(i, j, findMinimum(ykj, p.get()));
                 } else {

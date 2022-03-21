@@ -61,7 +61,7 @@ public abstract class StandardDMatrixTest {
     void testMapRow() {
         DMatrix m = generateSequential(10, 11);
         DVector vector1 = m.mapRow(3);
-        DVector vector2 = m.mapRow(3, copy());
+        DVector vector2 = m.mapRowNew(3);
         for (int i = 0; i < vector1.size(); i++) {
             assertEquals(33.0 + i, vector1.get(i), TOL);
             assertEquals(33.0 + i, vector2.get(i), TOL);
@@ -135,7 +135,7 @@ public abstract class StandardDMatrixTest {
     void testMapCol() {
         DMatrix m = generateSequential(10, 11);
         DVector vector1 = m.mapCol(3);
-        DVector vector2 = m.mapCol(3, copy());
+        DVector vector2 = m.mapColNew(3);
         for (int i = 0; i < vector1.size(); i++) {
             assertEquals(3.0 + i * 11, vector1.get(i), TOL);
             assertEquals(3.0 + i * 11, vector2.get(i), TOL);

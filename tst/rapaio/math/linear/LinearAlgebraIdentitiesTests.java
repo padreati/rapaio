@@ -118,6 +118,9 @@ public class LinearAlgebraIdentitiesTests {
                 var b = mType2.randomMatrix(400, 80);
                 for (VectorFactory vf : vFactories) {
                     var v = vf.randomVector(80);
+
+
+
                     var v1 = a.dot(v).add(b.dot(v));
                     var v2 = a.copy().add(b).dot(v);
                     assertTrue(v1.deepEquals(v2));
