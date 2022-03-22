@@ -66,14 +66,20 @@ public class CorrPearson extends AbstractCorrelation {
     private CorrPearson(Var[] vars, String[] names) {
         super(vars, names);
         for (int i = 0; i < vars.length; i++) {
-            d.set(i, i, 1);
+            distanceMatrix.set(i, i, 1);
             for (int j = i + 1; j < vars.length; j++) {
-                d.set(i, j, compute(vars[i], vars[j]));
+                distanceMatrix.set(i, j, computeCorrelationCoefficient(vars[i], vars[j]));
             }
         }
     }
 
-    private double compute(Var x, Var y) {
+    /**
+     * Compute correlation coefficient
+     * @param x X co-ordinate used to calculate X-mean
+     * @param y Y co-ordinate used to calculate Y-mean
+     * @return  the computed Co-relation Coefficient
+     */
+    private double computeCorrelationCoefficient(Var x, Var y) {
 
         double sum = 0;
         int len = min(x.size(), y.size());
@@ -84,12 +90,12 @@ public class CorrPearson extends AbstractCorrelation {
         double xMean = Mean.of(x.mapRows(map)).value();
         double yMean = Mean.of(y.mapRows(map)).value();
 
-        double sdp = Variance.of(x.mapRows(map)).sdValue() * Variance.of(y.mapRows(map)).sdValue();
+        double stateDependentParameter = Variance.of(x.mapRows(map)).sdValue() * Variance.of(y.mapRows(map)).sdValue();
         for (int i = 0; i < map.size(); i++) {
             int pos = map.get(i);
             sum += ((x.getDouble(pos) - xMean) * (y.getDouble(pos) - yMean));
         }
-        return sdp == 0 ? Double.NaN : sum / (sdp * (map.size() - 1));
+        return stateDependentParameter == 0 ? Double.NaN : sum / (stateDependentParameter * (map.size() - 1));
     }
 
     @Override

@@ -61,8 +61,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>16</maven.compiler.target>
         <java.version>17</java.version>
     </properties>
 
@@ -131,6 +131,7 @@
                 <version>3.0.0-M5</version>
                 <configuration>
                     <reuseForks>true</reuseForks>
+                    <!--suppress UnresolvedMavenProperty -->
                     <argLine>${argLine} --enable-preview</argLine>
                 </configuration>
             </plugin>

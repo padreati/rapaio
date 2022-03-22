@@ -38,7 +38,7 @@ public abstract class AbstractCorrelation implements Correlation {
 
     @Serial
     private static final long serialVersionUID = 1291660783599973889L;
-    protected final DistanceMatrix d;
+    protected final DistanceMatrix distanceMatrix;
     protected final int rowCount;
 
     public AbstractCorrelation(Var[] vars, String[] names) {
@@ -51,17 +51,17 @@ public abstract class AbstractCorrelation implements Correlation {
             }
         }
         rowCount = Arrays.stream(vars).mapToInt(Var::size).min().orElse(0);
-        d = DistanceMatrix.empty(names);
+        distanceMatrix = DistanceMatrix.empty(names);
     }
 
     @Override
     public DistanceMatrix matrix() {
-        return d;
+        return distanceMatrix;
     }
 
     @Override
     public double singleValue() {
-        return d.get(0, 1);
+        return distanceMatrix.get(0, 1);
     }
 
     protected abstract String corrName();
@@ -71,21 +71,21 @@ public abstract class AbstractCorrelation implements Correlation {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(corrName()).append(Arrays.deepToString(d.names()));
+        sb.append(corrName()).append(Arrays.deepToString(distanceMatrix.names()));
         int pos = 10;
 
         sb.append(" = [");
-        for (int i = 0; i < d.names().length; i++) {
+        for (int i = 0; i < distanceMatrix.names().length; i++) {
             boolean flag = pos >= 0;
             if (!flag) {
                 sb.append("...");
                 break;
             }
             sb.append('[');
-            for (int j = 0; j < d.names().length; j++) {
+            for (int j = 0; j < distanceMatrix.names().length; j++) {
                 if (pos >= 0) {
-                    sb.append(Format.floatFlex(d.get(i, j)));
-                    if (j < d.names().length - 1) {
+                    sb.append(Format.floatFlex(distanceMatrix.get(i, j)));
+                    if (j < distanceMatrix.names().length - 1) {
                         sb.append(",");
                     }
                     pos--;
@@ -95,7 +95,7 @@ public abstract class AbstractCorrelation implements Correlation {
                 break;
             }
             sb.append("]");
-            if (i < d.names().length - 1) {
+            if (i < distanceMatrix.names().length - 1) {
                 sb.append(",");
             }
         }
@@ -116,7 +116,7 @@ public abstract class AbstractCorrelation implements Correlation {
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
-        if (d.names().length == 2) {
+        if (distanceMatrix.names().length == 2) {
             summaryTwo(sb);
         } else {
             summaryMore(sb, printer, options);
@@ -125,21 +125,21 @@ public abstract class AbstractCorrelation implements Correlation {
     }
 
     private void summaryTwo(StringBuilder sb) {
-        sb.append(String.format("> %s[%s, %s] - %s\n", corrName(), d.name(0), d.name(1), corrDescription()));
-        sb.append(Format.floatFlex(d.get(0, 1))).append("\n");
+        sb.append(String.format("> %s[%s, %s] - %s\n", corrName(), distanceMatrix.name(0), distanceMatrix.name(1), corrDescription()));
+        sb.append(Format.floatFlex(distanceMatrix.get(0, 1))).append("\n");
     }
 
     private void summaryMore(StringBuilder sb, Printer printer, POption<?>... options) {
-        sb.append(String.format("> %s[%s] - %s\n", corrName(), Arrays.deepToString(d.names()), corrDescription()));
+        sb.append(String.format("> %s[%s] - %s\n", corrName(), Arrays.deepToString(distanceMatrix.names()), corrDescription()));
 
-        TextTable tt = TextTable.empty(d.names().length + 1, d.names().length + 1, 1, 1);
+        TextTable tt = TextTable.empty(distanceMatrix.names().length + 1, distanceMatrix.names().length + 1, 1, 1);
         tt.textCenter(0, 0, "");
 
-        for (int i = 1; i < d.names().length + 1; i++) {
-            tt.textCenter(0, i, i + "." + d.name(i - 1));
-            tt.textLeft(i, 0, i + "." + d.name(i - 1));
-            for (int j = 1; j < d.names().length + 1; j++) {
-                double value = d.get(i - 1, j - 1);
+        for (int i = 1; i < distanceMatrix.names().length + 1; i++) {
+            tt.textCenter(0, i, i + "." + distanceMatrix.name(i - 1));
+            tt.textLeft(i, 0, i + "." + distanceMatrix.name(i - 1));
+            for (int j = 1; j < distanceMatrix.names().length + 1; j++) {
+                double value = distanceMatrix.get(i - 1, j - 1);
                 if (Double.isNaN(value)) {
                     tt.textCenter(i, j, "NaN");
                 } else {
