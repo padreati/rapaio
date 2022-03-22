@@ -76,15 +76,38 @@ public class CorrSpearman extends AbstractCorrelation {
     }
 
     private void compute(Var[] vars) {
+
+        Var[] ranks;
+
+        // compute ranks
+        ranks = computeRanks(vars);
+
+        // compute Pearson on ranks
+        DistanceMatrix dp = CorrPearson.of(ranks).matrix();
+
+        for (int i = 0; i < dp.length(); i++) {
+            for (int j = 0; j < dp.length(); j++) {
+                distanceMatrix.set(i, j, dp.get(i, j));
+            }
+        }
+    }
+
+    /**
+     * Function that computes the ranks and returns an array of rank used to compute pearson on ranks
+     * @param vars
+     * @return Var[] : ranks
+     */
+    private Var[] computeRanks(Var[] vars){
+
         Var[] sorted = new Var[vars.length];
         Var[] ranks = new Var[vars.length];
+
         for (int i = 0; i < sorted.length; i++) {
             VarInt index = VarInt.seq(vars[i].size());
             sorted[i] = new VRefSort(RowComparators.doubleComparator(vars[i], true)).fapply(index);
             ranks[i] = VarDouble.fill(vars[i].size());
         }
 
-        // compute ranks
         for (int i = 0; i < sorted.length; i++) {
             int start = 0;
             while (start < sorted[i].size()) {
@@ -101,13 +124,7 @@ public class CorrSpearman extends AbstractCorrelation {
             }
         }
 
-        // compute Pearson on ranks
-        DistanceMatrix dp = CorrPearson.of(ranks).matrix();
-        for (int i = 0; i < dp.length(); i++) {
-            for (int j = 0; j < dp.length(); j++) {
-                d.set(i, j, dp.get(i, j));
-            }
-        }
+        return ranks;
     }
 
     @Override
