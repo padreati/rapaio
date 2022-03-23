@@ -21,8 +21,6 @@
 
 package rapaio.ml.model.km;
 
-import static rapaio.sys.With.copy;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -44,7 +42,7 @@ public enum KMClusterInit implements Serializable {
 
     Forgy {
         public DMatrix init(Distance distance, DMatrix m, int k) {
-            return m.mapRows(SamplingTools.sampleWOR(m.rowCount(), k), copy());
+            return m.mapRowsNew(SamplingTools.sampleWOR(m.rowCount(), k));
         }
     },
     PlusPlus {
@@ -80,7 +78,7 @@ public enum KMClusterInit implements Serializable {
                 ids.add(next);
             }
 
-            return m.mapRows(centroids, copy());
+            return m.mapRowsNew(centroids);
         }
     };
 

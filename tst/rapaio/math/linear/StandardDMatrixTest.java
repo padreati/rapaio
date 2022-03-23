@@ -27,8 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.copy;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -72,8 +70,8 @@ public abstract class StandardDMatrixTest {
     void testMapRows() {
         DMatrix m = generateSequential(10, 11);
 
-        DMatrix view = m.mapRows(new int[] {3, 4});
-        DMatrix copy = m.mapRows(new int[] {3, 4}, copy());
+        DMatrix view = m.mapRows(3, 4);
+        DMatrix copy = m.mapRowsNew(3, 4);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -94,7 +92,7 @@ public abstract class StandardDMatrixTest {
         DMatrix m = generateSequential(10, 11);
 
         DMatrix view = m.rangeRows(3, 5);
-        DMatrix copy = m.rangeRows(3, 5, copy());
+        DMatrix copy = m.rangeRowsNew(3, 5);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -114,8 +112,8 @@ public abstract class StandardDMatrixTest {
     void testRemoveRows() {
         DMatrix m = generateSequential(10, 11);
 
-        DMatrix view = m.removeRows(new int[] {0, 1, 2, 4, 6, 7, 8, 9, 10});
-        DMatrix copy = m.removeRows(new int[] {0, 1, 2, 4, 6, 7, 8, 9, 10}, copy());
+        DMatrix view = m.removeRows(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DMatrix copy = m.removeRowsNew(0, 1, 2, 4, 6, 7, 8, 9, 10);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -146,8 +144,8 @@ public abstract class StandardDMatrixTest {
     void testMapCols() {
         DMatrix m = generateSequential(10, 11);
 
-        DMatrix view = m.mapCols(new int[] {3, 4});
-        DMatrix copy = m.mapCols(new int[] {3, 4}, copy());
+        DMatrix view = m.mapCols(3, 4);
+        DMatrix copy = m.mapColsNew(3, 4);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -168,7 +166,7 @@ public abstract class StandardDMatrixTest {
         DMatrix m = generateSequential(10, 11);
 
         DMatrix view = m.rangeCols(3, 5);
-        DMatrix copy = m.rangeCols(3, 5, copy());
+        DMatrix copy = m.rangeColsNew(3, 5);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -188,8 +186,8 @@ public abstract class StandardDMatrixTest {
     void testRemoveCols() {
         DMatrix m = generateSequential(10, 11);
 
-        DMatrix view = m.removeCols(new int[] {0, 1, 2, 4, 6, 7, 8, 9, 10});
-        DMatrix copy = m.removeCols(new int[] {0, 1, 2, 4, 6, 7, 8, 9, 10}, copy());
+        DMatrix view = m.removeCols(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DMatrix copy = m.removeColsNew(0, 1, 2, 4, 6, 7, 8, 9, 10);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
