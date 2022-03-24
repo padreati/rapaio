@@ -21,10 +21,15 @@
 
 package rapaio.math.linear.base;
 
+import java.util.Arrays;
+
+import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.AbstractDMatrix;
+import rapaio.math.linear.dense.DMatrixMap;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorStride;
+import rapaio.util.collection.IntArrays;
 
 public class DMatrixBase extends AbstractDMatrix {
 
@@ -87,5 +92,67 @@ public class DMatrixBase extends AbstractDMatrix {
             to.set(i, array[col + i * rows]);
         }
         return to;
+    }
+
+    @Override
+    public DMatrix mapRows(int[] indexes) {
+        int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
+        int[] colIndexes = IntArrays.newSeq(0, colCount());
+        IntArrays.mul(colIndexes, 0, rowCount(), rowIndexes.length);
+        return new DMatrixMap(0, rowIndexes, colIndexes, array);
+    }
+
+    @Override
+    public DMatrix mapRowsTo(int[] indexes, DMatrix to) {
+        int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
+        int[] colIndexes = IntArrays.newSeq(0, colCount());
+        IntArrays.mul(colIndexes, 0, rowCount(), rowIndexes.length);
+        for (int i = 0; i < rowIndexes.length; i++) {
+            for (int j = 0; j < colIndexes.length; j++) {
+                to.set(i, j, array[rowIndexes[i] + colIndexes[j]]);
+            }
+        }
+        return to;
+    }
+
+    @Override
+    public DMatrix mapCols(int[] indexes) {
+        int[] rowIndexes = IntArrays.newSeq(0, colCount());
+        int[] colIndexes = Arrays.copyOf(indexes, indexes.length);
+        IntArrays.mul(colIndexes, 0, rowCount(), rowIndexes.length);
+        return new DMatrixMap(0, rowIndexes, colIndexes, array);
+    }
+
+    @Override
+    public DMatrix mapColsTo(int[] indexes, DMatrix to) {
+        int[] rowIndexes = IntArrays.newSeq(0, colCount());
+        int[] colIndexes = Arrays.copyOf(indexes, indexes.length);
+        IntArrays.mul(colIndexes, 0, rowCount(), rowIndexes.length);
+        for (int i = 0; i < rowIndexes.length; i++) {
+            for (int j = 0; j < colIndexes.length; j++) {
+                to.set(i, j, array[rowIndexes[i] + colIndexes[j]]);
+            }
+        }
+        return to;
+    }
+
+    @Override
+    public DMatrix rangeRows(int start, int end) {
+        return mapRows(IntArrays.newSeq(start, end));
+    }
+
+    @Override
+    public DMatrix rangeRowsTo(int start, int end, DMatrix to) {
+        return mapRowsTo(IntArrays.newSeq(start, end), to);
+    }
+
+    @Override
+    public DMatrix rangeCols(int start, int end) {
+        return mapCols(IntArrays.newSeq(start, end));
+    }
+
+    @Override
+    public DMatrix rangeColsTo(int start, int end, DMatrix to) {
+        return mapColsTo(IntArrays.newSeq(start, end), to);
     }
 }

@@ -29,11 +29,11 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.math.linear.dense.DMatrixDenseC;
-import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.sys.With;
+import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
@@ -334,17 +334,34 @@ public interface DMatrix extends Serializable, Printable {
     /**
      * Creates a new matrix which contains only the rows
      * specified by given indexes.
-     * <p>
-     * Depending on implementation, the vector can be a view over the original data.
-     * To enforce a new copy add option {@link With#copy()} as parameter.
      *
      * @param indexes row indexes
      * @return result matrix reference
      */
-    DMatrix mapRows(int[] indexes, AlgebraOption<?>... opts);
+    DMatrix mapRows(int... indexes);
 
     /**
-     * Creates a new matrix which contains only the columns
+     * Stores in {@param to} matrix only the rows specified by given indexes.
+     *
+     * @param indexes row indexes
+     * @return result matrix reference
+     */
+    DMatrix mapRowsTo(int[] indexes, DMatrix to);
+
+    /**
+     * Creates a new matrix which contains only the rows
+     * specified by given indexes.
+     *
+     * @param indexes row indexes
+     * @return result matrix reference
+     */
+    default DMatrix mapRowsNew(int... indexes) {
+        DMatrixDenseC to = new DMatrixDenseC(indexes.length, colCount());
+        return mapRowsTo(indexes, to);
+    }
+
+    /**
+     * Creates a matrix which contains only the columns
      * specified by given indexes.
      * <p>
      * Depending on implementation, the vector can be a view over the original data.
@@ -353,7 +370,27 @@ public interface DMatrix extends Serializable, Printable {
      * @param indexes row indexes
      * @return result matrix reference
      */
-    DMatrix mapCols(int[] indexes, AlgebraOption<?>... opts);
+    DMatrix mapCols(int... indexes);
+
+    /**
+     * Stores into matrix {@param to} only the columns specified by given indexes.
+     *
+     * @param indexes row indexes
+     * @return result matrix reference
+     */
+    DMatrix mapColsTo(int[] indexes, DMatrix to);
+
+    /**
+     * Creates a new matrix which contains only the columns
+     * specified by given indexes.
+     *
+     * @param indexes row indexes
+     * @return result matrix reference
+     */
+    default DMatrix mapColsNew(int... indexes) {
+        DMatrixDenseC to = new DMatrixDenseC(rowCount(), indexes.length);
+        return mapColsTo(indexes, to);
+    }
 
     /**
      * Creates a new vector with the index value from each row (axis=0) or
@@ -367,19 +404,50 @@ public interface DMatrix extends Serializable, Printable {
     DVector mapValues(int[] indexes, int axis);
 
     /**
-     * Creates a new matrix which contains only rows with
+     * Creates a new view matrix which contains only rows with
      * indices in the given range starting from {@param start} inclusive
      * and ending at {@param end} exclusive.
-     * <p>
-     * Depending on the implementation
-     * the new matrix can be a view. To obtain a new matrix copy
-     * one has to add {@link With#copy()} parameter.
      *
      * @param start start row index (inclusive)
      * @param end   end row index (exclusive)
      * @return result matrix reference
      */
-    DMatrix rangeRows(int start, int end, AlgebraOption<?>... opts);
+    DMatrix rangeRows(int start, int end);
+
+    /**
+     * Filters rows with indices in the given range starting from {@param start} inclusive
+     * and ending at {@param end} exclusive and copies the values into {@param to} matrix.
+     *
+     * @param start start row index (inclusive)
+     * @param end   end row index (exclusive)
+     * @return result matrix
+     */
+    DMatrix rangeRowsTo(int start, int end, DMatrix to);
+
+    /**
+     * Creates a new copy matrix which contains only rows with
+     * indices in the given range starting from {@param start} inclusive
+     * and ending at {@param end} exclusive.
+     *
+     * @param start start row index (inclusive)
+     * @param end   end row index (exclusive)
+     * @return result matrix reference
+     */
+    default DMatrix rangeRowsNew(int start, int end) {
+        DMatrixDenseC to = new DMatrixDenseC(end-start, colCount());
+        return rangeRowsTo(start, end, to);
+    }
+
+    /**
+     * Creates a new view matrix which contains only columns with
+     * indices in the given range starting from {@param start} inclusive
+     * and ending at {@param end} exclusive.
+     *
+     * @param start start col index (inclusive)
+     * @param end   end col index (exclusive)
+     * @return result matrix reference
+     */
+    DMatrix rangeCols(int start, int end);
 
     /**
      * Creates a new matrix which contains only columns with
@@ -394,29 +462,90 @@ public interface DMatrix extends Serializable, Printable {
      * @param end   end col index (exclusive)
      * @return result matrix reference
      */
-    DMatrix rangeCols(int start, int end, AlgebraOption<?>... opts);
+    DMatrix rangeColsTo(int start, int end, DMatrix to);
 
     /**
-     * Builds a new matrix having all rows not specified by given indexes.
-     * <p>
-     * Depending on the implementation this can be a view over the original matrix.
-     * To obtain a new copy of the data method {@link With#copy()} must be added as parameter.
+     * Creates a new copy matrix which contains only columns with
+     * indices in the given range starting from {@param start} inclusive
+     * and ending at {@param end} exclusive.
+     *
+     * @param start start col index (inclusive)
+     * @param end   end col index (exclusive)
+     * @return result matrix reference
+     */
+    default DMatrix rangeColsNew(int start, int end) {
+        DMatrixDenseC to = new DMatrixDenseC(rowCount(), end - start);
+        return rangeColsTo(start, end, to);
+    }
+
+    /**
+     * Builds a view matrix having all rows not specified by given indexes.
      *
      * @param indexes rows to be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    DMatrix removeRows(int[] indexes, AlgebraOption<?>... opts);
+    default DMatrix removeRows(int... indexes) {
+        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rowCount(), indexes);
+        return mapRows(rows);
+    }
 
     /**
-     * Builds a new matrix having all rows not specified by given indexes.
-     * <p>
-     * Depending on the implementation this can be a view over the original matrix.
-     * To obtain a new copy of the data method {@link With#copy()} must be added as parameter.
+     * Builds view matrix having all rows not specified by given indexes
+     * and stores the values into the {@param to} matrix.
      *
      * @param indexes rows to be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    DMatrix removeCols(int[] indexes, AlgebraOption<?>... opts);
+    default DMatrix removeRowsTo(int[] indexes, DMatrix to) {
+        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rowCount(), indexes);
+        return mapRowsTo(rows, to);
+    }
+
+    /**
+     * Builds a new copy matrix having all rows not specified by given indexes.
+     *
+     * @param indexes rows to be removed
+     * @return new mapped matrix containing all rows not specified by indexes
+     */
+    default DMatrix removeRowsNew(int... indexes) {
+        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rowCount(), indexes);
+        return mapRowsNew(rows);
+    }
+
+    /**
+     * Builds a view matrix having all columns not specified by given indexes.
+     *
+     * @param indexes columns to be removed
+     * @return new mapped matrix containing all columns not specified by indexes
+     */
+    default DMatrix removeCols(int... indexes) {
+        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, colCount(), indexes);
+        return mapCols(cols);
+    }
+
+    /**
+     * Builds a new matrix having columns not specified by given indexes and stores the
+     * values into {@param to}.
+     *
+     * @param indexes columns to be removed
+     * @return new mapped matrix containing all columns not specified by indexes
+     */
+    default DMatrix removeColsTo(int[] indexes, DMatrix to) {
+        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, colCount(), indexes);
+        return mapColsTo(cols, to);
+    }
+
+    /**
+     * Builds a new matrix having columns not specified by given indexes and stores the
+     * values into a new matrix.
+     *
+     * @param indexes columns to be removed
+     * @return new mapped matrix containing all columns not specified by indexes
+     */
+    default DMatrix removeColsNew(int... indexes) {
+        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, colCount(), indexes);
+        return mapColsNew(cols);
+    }
 
     /**
      * Adds a scalar value to all elements of a matrix. If possible,
