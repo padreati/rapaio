@@ -230,6 +230,32 @@ public final class IntArrays {
     }
 
     /**
+     * Returns true if the values from indexes are semi positive and values
+     * covers a contiguous range of integer numbers, contains no duplicates and values are
+     * in increasing order.
+     * <p>
+     * Returns the start element value
+     *
+     * @param indexes index array to be checked
+     * @return value of the start element, if we have a contiguous interval, {@code -1} otherwise
+     */
+    public static boolean isDenseArray(int[] indexes) {
+        int start = indexes[0];
+        for (int index : indexes) {
+            start = Math.min(start, index);
+        }
+        if (indexes[0] != start || indexes[0] < 0) {
+            return false;
+        }
+        for (int i = 1; i < indexes.length; i++) {
+            if (indexes[i] != indexes[i - 1] + 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * A static, final, empty array.
      */
     public static final int[] EMPTY_ARRAY = {};

@@ -60,12 +60,12 @@ public class DMatrixBase extends AbstractDMatrix {
 
     @Override
     public void set(int row, int col, double value) {
-        array[col * rows + col] = value;
+        array[col * rows + row] = value;
     }
 
     @Override
     public void inc(int row, int col, double value) {
-        array[col * rows + col] += value;
+        array[col * rows + row] += value;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class DMatrixBase extends AbstractDMatrix {
     @Override
     public DVector mapColTo(int col, DVector to) {
         for (int i = 0; i < rows; i++) {
-            to.set(i, array[col + i * rows]);
+            to.set(i, array[col * rows + i]);
         }
         return to;
     }
@@ -98,7 +98,7 @@ public class DMatrixBase extends AbstractDMatrix {
     public DMatrix mapRows(int[] indexes) {
         int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
         int[] colIndexes = IntArrays.newSeq(0, colCount());
-        IntArrays.mul(colIndexes, 0, rowCount(), rowIndexes.length);
+        IntArrays.mul(colIndexes, 0, rowCount(), colIndexes.length);
         return new DMatrixMap(0, rowIndexes, colIndexes, array);
     }
 
@@ -106,7 +106,7 @@ public class DMatrixBase extends AbstractDMatrix {
     public DMatrix mapRowsTo(int[] indexes, DMatrix to) {
         int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
         int[] colIndexes = IntArrays.newSeq(0, colCount());
-        IntArrays.mul(colIndexes, 0, rowCount(), rowIndexes.length);
+        IntArrays.mul(colIndexes, 0, rowCount(), colIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 to.set(i, j, array[rowIndexes[i] + colIndexes[j]]);
@@ -119,7 +119,7 @@ public class DMatrixBase extends AbstractDMatrix {
     public DMatrix mapCols(int[] indexes) {
         int[] rowIndexes = IntArrays.newSeq(0, colCount());
         int[] colIndexes = Arrays.copyOf(indexes, indexes.length);
-        IntArrays.mul(colIndexes, 0, rowCount(), rowIndexes.length);
+        IntArrays.mul(colIndexes, 0, rowCount(), colIndexes.length);
         return new DMatrixMap(0, rowIndexes, colIndexes, array);
     }
 
@@ -127,7 +127,7 @@ public class DMatrixBase extends AbstractDMatrix {
     public DMatrix mapColsTo(int[] indexes, DMatrix to) {
         int[] rowIndexes = IntArrays.newSeq(0, colCount());
         int[] colIndexes = Arrays.copyOf(indexes, indexes.length);
-        IntArrays.mul(colIndexes, 0, rowCount(), rowIndexes.length);
+        IntArrays.mul(colIndexes, 0, rowCount(), colIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 to.set(i, j, array[rowIndexes[i] + colIndexes[j]]);

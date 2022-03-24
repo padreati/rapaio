@@ -370,9 +370,6 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public double variance() {
-        if (rowCount() == 0 || colCount() == 0) {
-            return Double.NaN;
-        }
         double mean = mean();
         double sum2 = 0;
         double sum3 = 0;
@@ -388,9 +385,6 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DVector variance(int axis) {
-        if (rowCount() == 0 || colCount() == 0) {
-            return DVector.fill(axis == 0 ? colCount() : rowCount(), Double.NaN);
-        }
         DVector variance = new DVectorDense(axis == 0 ? colCount() : rowCount());
         if (axis == 0) {
             for (int i = 0; i < colCount(); i++) {

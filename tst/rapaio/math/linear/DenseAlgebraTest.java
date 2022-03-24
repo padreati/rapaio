@@ -31,7 +31,9 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
+import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
+import rapaio.math.linear.base.DMatrixBase;
 import rapaio.math.linear.base.DVectorBase;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
@@ -43,26 +45,63 @@ import rapaio.util.collection.IntArrays;
 
 public class DenseAlgebraTest {
 
-    private static final MatrixFactory[] mTypes = new MatrixFactory[] {
+    private static final MatrixFactory[] matrixFactories = new MatrixFactory[] {
+            // base matrix - used only for tests
             (rows, cols) -> {
-                DMatrix m = new DMatrixDenseR(rows, cols);
-                setValues(m, rows, cols);
+                double[] array = new double[rows * cols];
+                DMatrix m = new DMatrixBase(rows, cols, array);
+                setMatrixValues(m, rows, cols);
                 return m;
             },
+            // dense matrix row wise
+            (rows, cols) -> {
+                DMatrix m = new DMatrixDenseR(rows, cols);
+                setMatrixValues(m, rows, cols);
+                return m;
+            },
+            // dense matrix column wise
             (rows, cols) -> {
                 DMatrix m = new DMatrixDenseC(rows, cols);
-                setValues(m, rows, cols);
+                setMatrixValues(m, rows, cols);
                 return m;
             },
+            // dense matrix column wise with stride
+            (rows, cols) -> {
+                int offset = 10;
+                int colStride = rows + 5;
+                double[] array = new double[offset + colStride * cols];
+                DMatrixDenseC m = new DMatrixDenseC(offset, rows, cols, colStride, array);
+                setMatrixValues(m, rows, cols);
+                return m;
+            },
+            // dense matrix row wise with stride
+            (rows, cols) -> {
+                int offset = 10;
+                int rowStride = rows + 5;
+                double[] array = new double[offset + rowStride * cols];
+                DMatrixDenseR m = new DMatrixDenseR(offset, rows, cols, rowStride, array);
+                setMatrixValues(m, rows, cols);
+                return m;
+            },
+            // map matrix
             (rows, cols) -> {
                 DMatrix m = new DMatrixDenseR(rows, cols);
-                setValues(m, rows, cols);
+                setMatrixValues(m, rows, cols);
                 return m
                         .mapRows(IntArrays.newSeq(rows))
                         .mapCols(IntArrays.newSeq(cols))
                         .mapRows(IntArrays.newSeq(rows));
             }
     };
+
+    private static void setMatrixValues(DMatrix matrix, int m, int n) {
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix.set(i, j, i * m + j + 1);
+            }
+        }
+    }
+
     private static final VectorFactory[] vectorFactories = new VectorFactory[] {
             // base vector
             n -> new DVectorBase(DoubleArrays.newSeq(1, n + 1)),
@@ -94,74 +133,82 @@ public class DenseAlgebraTest {
             }
     };
 
+    @FunctionalInterface
     interface VectorFactory {
+
         default DVector newInstance() {
             return newInstance(10);
         }
 
         DVector newInstance(int size);
+
     }
 
+    @FunctionalInterface
     interface MatrixFactory {
+
         default DMatrix newMatrix() {
             return newMatrix(10, 10);
         }
 
         DMatrix newMatrix(int rows, int cols);
+
     }
 
-    public static void setValues(DMatrix matrix, int m, int n) {
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                matrix.set(i, j, i * m + j + 1);
-            }
-        }
-    }
-
-    private interface F1m {
+    private interface Function1matrix {
         void apply(DMatrix m);
     }
 
-    private void t1m(MatrixFactory mType, F1m f) {
-        f.apply(mType.newMatrix());
+    private void test1matrix(MatrixFactory mFactory, Function1matrix f) {
+        f.apply(mFactory.newMatrix());
     }
 
     @Test
     void testOneMatrix() {
-        for (MatrixFactory mType : mTypes) {
-            String message = "matrix type: %s".formatted(mType.newMatrix().getClass().getName());
-            t1m(mType, m -> assertTrue(m.add(10, copy()).deepEquals(m.add(10))));
-            t1m(mType, m -> assertTrue(m.sub(10, copy()).deepEquals(m.sub(10))));
-            t1m(mType, m -> assertTrue(m.mul(10, copy()).deepEquals(m.mul(10))));
-            t1m(mType, m -> assertTrue(m.div(10, copy()).deepEquals(m.div(10))));
+        for (MatrixFactory mFactory : matrixFactories) {
+            String message = "matrix: %s".formatted(mFactory.newMatrix());
+            test1matrix(mFactory, m -> assertTrue(m.add(10, copy()).deepEquals(m.add(10))));
+            test1matrix(mFactory, m -> assertTrue(m.sub(10, copy()).deepEquals(m.sub(10))));
+            test1matrix(mFactory, m -> assertTrue(m.mul(10, copy()).deepEquals(m.mul(10))));
+            test1matrix(mFactory, m -> assertTrue(m.div(10, copy()).deepEquals(m.div(10))));
 
-            t1m(mType, m -> assertEquals(IntStream.range(0, 10).mapToObj(i -> i * 11 + 1).mapToInt(i -> i).sum(), m.trace()));
+            test1matrix(mFactory, m -> assertEquals(IntStream.range(0, 10).mapToObj(i -> i * 11 + 1).mapToInt(i -> i).sum(), m.trace()));
 
-            t1m(mType, m -> assertTrue(
+            test1matrix(mFactory, m -> assertTrue(
                     DVector.wrap(IntStream.range(0, 10).mapToDouble(i -> i * 11 + 1).toArray()).deepEquals(m.diag())));
 
-            t1m(mType, m -> assertTrue(m.scatter().deepEquals(m.copy().scatter())));
+            test1matrix(mFactory, m -> assertTrue(m.scatter().deepEquals(m.copy().scatter())));
 
-            t1m(mType, m -> assertEquals(5050, m.sum()));
-            t1m(mType, m -> assertEquals(m.sum(0).sum(), m.sum(1).sum()));
-            t1m(mType, m -> assertEquals(841.666666666666668, m.variance()));
-            t1m(mType, m -> assertTrue(DVectorDense.fill(10, 916.66666666666668).deepEquals(m.variance(0)), message));
-            t1m(mType, m -> assertTrue(DVectorDense.fill(10, 9.166666666666668).deepEquals(m.variance(1))));
+            test1matrix(mFactory, m -> assertEquals(5050, m.sum()));
+            test1matrix(mFactory, m -> assertEquals(m.sum(0).sum(), m.sum(1).sum()));
+            test1matrix(mFactory, m -> assertEquals(841.666666666666668, m.variance()));
+            test1matrix(mFactory, m -> assertTrue(DVectorDense.fill(10, 916.66666666666668).deepEquals(m.variance(0)), message));
+            test1matrix(mFactory, m -> assertTrue(DVectorDense.fill(10, 9.166666666666668).deepEquals(m.variance(1))));
 
-            t1m(mType, m -> assertTrue(m.mapValues(m.argmax(0), 0).deepEquals(m.max(0)), message));
-            t1m(mType, m -> assertTrue(m.mapValues(m.argmax(1), 1).deepEquals(m.max(1))));
-            t1m(mType, m -> assertTrue(m.mapValues(m.argmin(0), 0).deepEquals(m.min(0))));
-            t1m(mType, m -> assertTrue(m.mapValues(m.argmin(1), 1).deepEquals(m.min(1)), message));
+            test1matrix(mFactory, m -> assertTrue(m.mapValues(m.argmax(0), 0).deepEquals(m.max(0)), message));
+            test1matrix(mFactory, m -> assertTrue(m.mapValues(m.argmax(1), 1).deepEquals(m.max(1)), message));
+            test1matrix(mFactory, m -> assertTrue(m.mapValues(m.argmin(0), 0).deepEquals(m.min(0)), message));
+            test1matrix(mFactory, m -> assertTrue(m.mapValues(m.argmin(1), 1).deepEquals(m.min(1)), message));
 
-            t1m(mType, m -> assertTrue(m.apply(MathTools::sqrt, With.copy()).deepEquals(m.apply(MathTools::sqrt))));
-            t1m(mType, m -> assertTrue(m.t(copy()).t(copy()).deepEquals(m.t().t())));
-            t1m(mType, m -> assertEquals(m.sum(), m.valueStream().sum()));
+            test1matrix(mFactory, m -> assertTrue(m.apply(MathTools::sqrt, With.copy()).deepEquals(m.apply(MathTools::sqrt))));
+            test1matrix(mFactory, m -> assertTrue(m.t(copy()).t(copy()).deepEquals(m.t().t())));
+            test1matrix(mFactory, m -> assertEquals(m.sum(), m.valueStream().sum()));
 
-            t1m(mType, m -> assertTrue(m.deepEquals(m.resizeCopy(10, 10, 100))));
-            t1m(mType, m -> assertEquals(m.sum(), m.resizeCopy(19, 19, 0).sum()));
-            t1m(mType, m -> assertEquals(m.rangeCols(0, 5).rangeRows(0, 5).sum(), m.resizeCopy(5, 5, 0).sum()));
+            test1matrix(mFactory, m -> assertTrue(m.deepEquals(m.resizeCopy(10, 10, 100))));
+            test1matrix(mFactory, m -> assertEquals(m.sum(), m.resizeCopy(19, 19, 0).sum()));
+            test1matrix(mFactory, m -> assertEquals(m.rangeCols(0, 5).rangeRows(0, 5).sum(), m.resizeCopy(5, 5, 0).sum()));
 
-            t1m(mType, m -> assertEquals(m.getClass().getSimpleName() + """
+            test1matrix(mFactory, m -> {
+                DMatrix copy = m.copy();
+                for (int i = 0; i < m.rowCount(); i++) {
+                    for (int j = 0; j < m.colCount(); j++) {
+                        m.inc(i, j, 1);
+                        assertEquals(copy.get(i, j) + 1, m.get(i, j));
+                    }
+                }
+            });
+
+            test1matrix(mFactory, m -> assertEquals(m.getClass().getSimpleName() + """
                     {rowCount:10, colCount:10, values:
                     [
                      [  1  2  3  4  5  6  7  8  9  10 ],\s
@@ -176,14 +223,14 @@ public class DenseAlgebraTest {
                      [ 91 92 93 94 95 96 97 98 99 100 ],\s
                     ]}""", m.toString()));
 
-            t1m(mType, m -> assertEquals("""
+            test1matrix(mFactory, m -> assertEquals("""
                         [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]\s
                     [0]  1   2   3   4   5   6   7   8   9   10 [4] 41  42  43  44  45  46  47  48  49   50 [8] 81  82  83  84  85  86  87  88  89   90\s
                     [1] 11  12  13  14  15  16  17  18  19   20 [5] 51  52  53  54  55  56  57  58  59   60 [9] 91  92  93  94  95  96  97  98  99  100\s
                     [2] 21  22  23  24  25  26  27  28  29   30 [6] 61  62  63  64  65  66  67  68  69   70\s
                     [3] 31  32  33  34  35  36  37  38  39   40 [7] 71  72  73  74  75  76  77  78  79   80\s
                     """, m.toContent()));
-            t1m(mType, m -> assertEquals("""
+            test1matrix(mFactory, m -> assertEquals("""
                         [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]\s
                     [0]  1   2   3   4   5   6   7   8   9   10 [4] 41  42  43  44  45  46  47  48  49   50 [8] 81  82  83  84  85  86  87  88  89   90\s
                     [1] 11  12  13  14  15  16  17  18  19   20 [5] 51  52  53  54  55  56  57  58  59   60 [9] 91  92  93  94  95  96  97  98  99  100\s
@@ -191,7 +238,7 @@ public class DenseAlgebraTest {
                     [3] 31  32  33  34  35  36  37  38  39   40 [7] 71  72  73  74  75  76  77  78  79   80\s
                     """, m.toFullContent()));
 
-            t1m(mType, m -> assertEquals("""
+            test1matrix(mFactory, m -> assertEquals("""
                         [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]\s
                     [0]  1   2   3   4   5   6   7   8   9   10 [4] 41  42  43  44  45  46  47  48  49   50 [8] 81  82  83  84  85  86  87  88  89   90\s
                     [1] 11  12  13  14  15  16  17  18  19   20 [5] 51  52  53  54  55  56  57  58  59   60 [9] 91  92  93  94  95  96  97  98  99  100\s
@@ -224,76 +271,88 @@ public class DenseAlgebraTest {
                     ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...  ...  ...   ...  \s
                     [98] 9,801 9,802 9,803 9,804 9,805 9,806 9,807 9,808 9,809 9,810 9,811 9,812 9,813 9,814 9,815 9,816 9,817 9,818 9,819 9,820 ... 9,899  9,900\s
                     [99] 9,901 9,902 9,903 9,904 9,905 9,906 9,907 9,908 9,909 9,910 9,911 9,912 9,913 9,914 9,915 9,916 9,917 9,918 9,919 9,920 ... 9,999 10,000\s
-                    """, mType.newMatrix(100, 100).toContent());
+                    """, mFactory.newMatrix(100, 100).toContent());
         }
     }
 
-    private interface F1m1v {
+    private interface Function1matrix1vector {
         void apply(DMatrix m, DVector v);
     }
 
-    void t1m1v(MatrixFactory mType, VectorFactory vf, F1m1v f) {
-        DMatrix m = mType.newMatrix();
-        DVector v = vf.newInstance();
+    void test1matrix1vector(MatrixFactory mFactory, VectorFactory vFactory, Function1matrix1vector f) {
+        DMatrix m = mFactory.newMatrix();
+        DVector v = vFactory.newInstance();
         f.apply(m, v);
     }
 
     @Test
     void testOneMatrixOneVector() {
-        for (MatrixFactory mType : mTypes) {
-            for (var vf : vectorFactories) {
-                t1m1v(mType, vf, (m, v) -> assertTrue(m.add(v, 0, copy()).deepEquals(m.add(v, 0))));
-                t1m1v(mType, vf, (m, v) -> assertTrue(m.add(v, 1, copy()).deepEquals(m.add(v, 1))));
-                t1m1v(mType, vf, (m, v) -> assertTrue(m.sub(v, 0, copy()).deepEquals(m.sub(v, 0))));
-                t1m1v(mType, vf, (m, v) -> assertTrue(m.sub(v, 1, copy()).deepEquals(m.sub(v, 1))));
-                t1m1v(mType, vf, (m, v) -> assertTrue(m.mul(v, 0, copy()).deepEquals(m.mul(v, 0))));
-                t1m1v(mType, vf, (m, v) -> assertTrue(m.mul(v, 1, copy()).deepEquals(m.mul(v, 1))));
-                t1m1v(mType, vf, (m, v) -> assertTrue(m.div(v, 0, copy()).deepEquals(m.div(v, 0))));
-                t1m1v(mType, vf, (m, v) -> assertTrue(m.div(v, 1, copy()).deepEquals(m.div(v, 1))));
-                t1m1v(mType, vf, (m, v) -> assertTrue(m.dot(v).deepEquals(m.copy().dot(v.copy()))));
+        for (MatrixFactory mFactory : matrixFactories) {
+            for (var vFactory : vectorFactories) {
+                String message = "matrix: %s, vector: %s".formatted(
+                        mFactory.newMatrix().toString(),
+                        vFactory.newInstance().toString()
+                );
+                test1matrix1vector(mFactory, vFactory, (m, v) -> assertTrue(m.add(v, 0, copy()).deepEquals(m.add(v, 0)), message));
+                test1matrix1vector(mFactory, vFactory, (m, v) -> assertTrue(m.add(v, 1, copy()).deepEquals(m.add(v, 1)), message));
+                test1matrix1vector(mFactory, vFactory, (m, v) -> assertTrue(m.sub(v, 0, copy()).deepEquals(m.sub(v, 0)), message));
+                test1matrix1vector(mFactory, vFactory, (m, v) -> assertTrue(m.sub(v, 1, copy()).deepEquals(m.sub(v, 1)), message));
+                test1matrix1vector(mFactory, vFactory, (m, v) -> assertTrue(m.mul(v, 0, copy()).deepEquals(m.mul(v, 0)), message));
+                test1matrix1vector(mFactory, vFactory, (m, v) -> assertTrue(m.mul(v, 1, copy()).deepEquals(m.mul(v, 1)), message));
+                test1matrix1vector(mFactory, vFactory, (m, v) -> assertTrue(m.div(v, 0, copy()).deepEquals(m.div(v, 0)), message));
+                test1matrix1vector(mFactory, vFactory, (m, v) -> assertTrue(m.div(v, 1, copy()).deepEquals(m.div(v, 1)), message));
+                test1matrix1vector(mFactory, vFactory, (m, v) -> assertTrue(m.dot(v).deepEquals(m.copy().dot(v.copy())), message));
+
             }
         }
     }
 
-    private interface F2m {
+    private interface Function2matrices {
         void apply(DMatrix m1, DMatrix m2);
     }
 
-    private void t2m(MatrixFactory mType1, MatrixFactory mType2, F2m f) {
-        DMatrix m1 = mType1.newMatrix();
-        DMatrix m2 = mType2.newMatrix();
+    private void test2matrices(MatrixFactory mFactory1, MatrixFactory mFactory2, Function2matrices f) {
+        DMatrix m1 = mFactory1.newMatrix();
+        DMatrix m2 = mFactory2.newMatrix();
         f.apply(m1, m2);
     }
 
     @Test
     void testTwoMatrices() {
 
-        for (MatrixFactory mType1 : mTypes) {
-            for (MatrixFactory mType2 : mTypes) {
-                String message = "m1 type: %s, m2 type: %s".formatted(
-                        mType1.newMatrix().getClass().getName(),
-                        mType2.newMatrix().getClass().getName());
-                t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.add(m2, copy()).deepEquals(m1.add(m2))));
-                t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.sub(m2, copy()).deepEquals(m1.sub(m2))));
-                t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.mul(m2, copy()).deepEquals(m1.mul(m2))));
-                t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.div(m2, copy()).deepEquals(m1.div(m2))));
-                t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.dot(m2).deepEquals(m1.copy().dot(m2.copy())), message));
-                int[] in = new int[] {0, 1, 2, 3, 4};
-                int[] out = new int[] {5, 6, 7, 8, 9};
-                t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.mapRows(in).deepEquals(m2.removeRows(out))));
-                t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.mapRowsNew(in).deepEquals(m2.removeRowsNew(out))));
-                t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.mapCols(in).deepEquals(m2.removeCols(out))));
-                t2m(mType1, mType2, (m1, m2) -> assertTrue(m1.mapColsNew(in).deepEquals(m2.removeColsNew(out))));
+        for (MatrixFactory mFactory1 : matrixFactories) {
+            for (MatrixFactory mFactory2 : matrixFactories) {
+                String message = "m1: %s, m2: %s".formatted(
+                        mFactory1.newMatrix().toString(),
+                        mFactory2.newMatrix().toString());
+                test2matrices(mFactory1, mFactory2, (m1, m2) -> assertTrue(m1.add(m2, copy()).deepEquals(m1.add(m2))));
+                test2matrices(mFactory1, mFactory2, (m1, m2) -> assertTrue(m1.sub(m2, copy()).deepEquals(m1.sub(m2))));
+                test2matrices(mFactory1, mFactory2, (m1, m2) -> assertTrue(m1.mul(m2, copy()).deepEquals(m1.mul(m2))));
+                test2matrices(mFactory1, mFactory2, (m1, m2) -> assertTrue(m1.div(m2, copy()).deepEquals(m1.div(m2))));
+                test2matrices(mFactory1, mFactory2, (m1, m2) -> assertTrue(m1.dot(m2).deepEquals(m1.copy().dot(m2.copy())), message));
+                int[] in = new int[] {0, 1, 3, 4, 5};
+                int[] out = new int[] {2, 6, 7, 8, 9};
+                test2matrices(mFactory1, mFactory2, (m1, m2) -> assertTrue(m1.mapRows(in).deepEquals(m2.removeRows(out)), message));
+                test2matrices(mFactory1, mFactory2, (m1, m2) -> assertTrue(m1.mapRowsNew(in).deepEquals(m2.removeRowsNew(out)), message));
+                test2matrices(mFactory1, mFactory2, (m1, m2) -> assertTrue(m1.mapCols(in).deepEquals(m2.removeCols(out)), message));
+                test2matrices(mFactory1, mFactory2, (m1, m2) -> assertTrue(m1.mapColsNew(in).deepEquals(m2.removeColsNew(out)), message));
+
+                test2matrices(mFactory1, mFactory2, (m1, m2) -> assertTrue(m1.rangeRows(2, 6).deepEquals(m2.rangeRows(2, 6)), message));
+                test2matrices(mFactory1, mFactory2,
+                        (m1, m2) -> assertTrue(m1.rangeRowsNew(2, 6).deepEquals(m2.rangeRowsNew(2, 6)), message));
+                test2matrices(mFactory1, mFactory2, (m1, m2) -> assertTrue(m1.rangeCols(2, 6).deepEquals(m2.rangeCols(2, 6)), message));
+                test2matrices(mFactory1, mFactory2,
+                        (m1, m2) -> assertTrue(m1.rangeColsNew(2, 6).deepEquals(m2.rangeColsNew(2, 6)), message));
             }
         }
     }
 
-    private interface F1v {
+    private interface Function1vector {
         void apply(DVector v);
     }
 
-    private void t1v(VectorFactory vf, F1v f) {
-        DVector v = vf.newInstance();
+    private void test1vector(VectorFactory vFactory, Function1vector f) {
+        DVector v = vFactory.newInstance();
         f.apply(v);
     }
 
@@ -301,40 +360,40 @@ public class DenseAlgebraTest {
     void testOneVector() {
 
         for (var vf : vectorFactories) {
-            String message = "vector type: %s".formatted(vf.newInstance().getClass().getName());
-            t1v(vf, v -> assertTrue(v.addNew(10).deepEquals(v.add(10))));
-            t1v(vf, v -> assertTrue(v.subNew(10).deepEquals(v.sub(10))));
-            t1v(vf, v -> assertTrue(v.mulNew(10).deepEquals(v.mul(10))));
-            t1v(vf, v -> assertTrue(v.divNew(10).deepEquals(v.div(10))));
+            String message = "vector: %s".formatted(vf.newInstance().toString());
+            test1vector(vf, v -> assertTrue(v.addNew(10).deepEquals(v.add(10))));
+            test1vector(vf, v -> assertTrue(v.subNew(10).deepEquals(v.sub(10))));
+            test1vector(vf, v -> assertTrue(v.mulNew(10).deepEquals(v.mul(10))));
+            test1vector(vf, v -> assertTrue(v.divNew(10).deepEquals(v.div(10))));
 
-            t1v(vf, v -> assertTrue(DVectorDense.fill(10, 7).deepEquals(v.copy().fill(7))));
+            test1vector(vf, v -> assertTrue(DVectorDense.fill(10, 7).deepEquals(v.copy().fill(7))));
 
-            t1v(vf, v -> assertEquals(v.pnorm(1), v.sum()));
-            t1v(vf, v -> assertEquals(10, v.pnorm(Double.POSITIVE_INFINITY)));
-            t1v(vf, v -> assertEquals(55, v.sum()));
-            t1v(vf, v -> assertEquals(55, v.nansum()));
-            t1v(vf, v -> assertEquals(3628800, v.prod()));
-            t1v(vf, v -> assertEquals(3628800, v.nanprod()));
-            t1v(vf, v -> assertEquals(10, v.nancount()));
-            t1v(vf, v -> assertEquals(5.5, v.mean()));
-            t1v(vf, v -> assertEquals(5.5, v.nanmean()));
-            t1v(vf, v -> assertEquals(9.166666666666666, v.variance()));
-            t1v(vf, v -> assertEquals(9.166666666666666, v.nanvariance()));
+            test1vector(vf, v -> assertEquals(v.pnorm(1), v.sum()));
+            test1vector(vf, v -> assertEquals(10, v.pnorm(Double.POSITIVE_INFINITY)));
+            test1vector(vf, v -> assertEquals(55, v.sum()));
+            test1vector(vf, v -> assertEquals(55, v.nansum()));
+            test1vector(vf, v -> assertEquals(3628800, v.prod()));
+            test1vector(vf, v -> assertEquals(3628800, v.nanprod()));
+            test1vector(vf, v -> assertEquals(10, v.nancount()));
+            test1vector(vf, v -> assertEquals(5.5, v.mean()));
+            test1vector(vf, v -> assertEquals(5.5, v.nanmean()));
+            test1vector(vf, v -> assertEquals(9.166666666666666, v.variance()));
+            test1vector(vf, v -> assertEquals(9.166666666666666, v.nanvariance()));
 
-            t1v(vf, v -> assertEquals(0, v.argmin()));
-            t1v(vf, v -> assertEquals(1, v.min()));
-            t1v(vf, v -> assertEquals(9, v.argmax()));
-            t1v(vf, v -> assertEquals(10, v.max()));
+            test1vector(vf, v -> assertEquals(0, v.argmin()));
+            test1vector(vf, v -> assertEquals(1, v.min()));
+            test1vector(vf, v -> assertEquals(9, v.argmax()));
+            test1vector(vf, v -> assertEquals(10, v.max()));
 
-            t1v(vf, v -> assertTrue(v.applyNew((row, x) -> row * x).deepEquals(v.apply((row, x) -> row * x))));
+            test1vector(vf, v -> assertTrue(v.applyNew((row, x) -> row * x).deepEquals(v.apply((row, x) -> row * x))));
 
             int[] indexes = new int[] {2, 7, 3, 2};
-            t1v(vf, v -> assertArrayEquals(indexes, v.map(indexes).valueStream().mapToInt(x -> (int) x - 1).toArray(), message));
-            t1v(vf, v -> assertArrayEquals(indexes, v.mapNew(indexes).valueStream().mapToInt(x -> (int) x - 1).toArray(), message));
+            test1vector(vf, v -> assertArrayEquals(indexes, v.map(indexes).valueStream().mapToInt(x -> (int) x - 1).toArray(), message));
+            test1vector(vf, v -> assertArrayEquals(indexes, v.mapNew(indexes).valueStream().mapToInt(x -> (int) x - 1).toArray(), message));
 
-            t1v(vf, v -> assertTrue(v.applyNew(x -> x + 1).deepEquals(v.apply(x -> x + 1))));
+            test1vector(vf, v -> assertTrue(v.applyNew(x -> x + 1).deepEquals(v.apply(x -> x + 1))));
 
-            t1v(vf, v -> {
+            test1vector(vf, v -> {
                 DVector cumsum = v.copy();
                 for (int i = 1; i < cumsum.size(); i++) {
                     cumsum.inc(i, cumsum.get(i - 1));
@@ -342,7 +401,7 @@ public class DenseAlgebraTest {
                 assertTrue(cumsum.deepEquals(v.cumsum()));
             });
 
-            t1v(vf, v -> {
+            test1vector(vf, v -> {
                 var cumprod = v.copy();
                 for (int i = 1; i < cumprod.size(); i++) {
                     cumprod.set(i, cumprod.get(i) * cumprod.get(i - 1));
@@ -350,11 +409,11 @@ public class DenseAlgebraTest {
                 assertTrue(cumprod.deepEquals(v.cumprod()));
             });
 
-            t1v(vf, v -> assertTrue(v.asMatrix().mapCol(0).deepEquals(v),
+            test1vector(vf, v -> assertTrue(v.asMatrix().mapCol(0).deepEquals(v),
                     "vtype: %s".formatted(vf.newInstance().getClass().getName())));
 
-            t1v(vf, v -> assertEquals(v.getClass().getSimpleName() + "{size:10, values:[1,2,3,4,5,6,7,8,9,10]}", v.toString()));
-            t1v(vf, v -> assertEquals("""
+            test1vector(vf, v -> assertEquals(v.getClass().getSimpleName() + "{size:10, values:[1,2,3,4,5,6,7,8,9,10]}", v.toString()));
+            test1vector(vf, v -> assertEquals("""
                     [0]  1 [4]  5 [8]  9\s
                     [1]  2 [5]  6 [9] 10\s
                     [2]  3 [6]  7\s
@@ -368,47 +427,50 @@ public class DenseAlgebraTest {
                      [4]   5 [10]  11 [16]  17 [99] 100\s
                      [5]   6 [11]  12 [17]  18\s
                     """, vf.newInstance(100).toContent());
-            t1v(vf, v -> assertEquals("""
+            test1vector(vf, v -> assertEquals("""
                     [0]  1 [4]  5 [8]  9\s
                     [1]  2 [5]  6 [9] 10\s
                     [2]  3 [6]  7\s
                     [3]  4 [7]  8\s
                     """, v.toFullContent()));
-            t1v(vf, v -> assertEquals("""
+            test1vector(vf, v -> assertEquals("""
                     [0]  1 [4]  5 [8]  9\s
                     [1]  2 [5]  6 [9] 10\s
                     [2]  3 [6]  7\s
                     [3]  4 [7]  8\s
                     """, v.toSummary()));
 
-            t1v(vf, v -> {
+            test1vector(vf, v -> {
                 v = v.copy().sortValues();
                 for (int i = 1; i < v.size(); i++) {
                     assertTrue(v.get(i - 1) <= v.get(i));
                 }
             });
+
+            test1vector(vf, v -> v.dv().deepEquals(VarDouble.seq(1, 10)));
         }
     }
 
     @Test
     void testTwoVectors() {
-        for (VectorFactory vf1 : vectorFactories) {
-            for (VectorFactory vf2 : vectorFactories) {
-                DVector v1 = vf1.newInstance();
-                DVector v2 = vf2.newInstance();
+        for (VectorFactory vFactory1 : vectorFactories) {
+            for (VectorFactory vFactory2 : vectorFactories) {
+                DVector v1 = vFactory1.newInstance();
+                DVector v2 = vFactory2.newInstance();
 
-                String msg = String.format("type1: %s, type2: %s", v1.getClass().getName(), v2.getClass().getName());
+                String msg = "v1: %s, v2: %s".formatted(v1, v2);
+
                 assertTrue(v1.addNew(v2).deepEquals(v1.add(v2)), msg);
                 assertTrue(v1.subNew(v2).deepEquals(v1.sub(v2)), msg);
                 assertTrue(v1.mulNew(v2).deepEquals(v1.mul(v2)), msg);
                 assertTrue(v1.divNew(v2).deepEquals(v1.div(v2)), msg);
 
-                v1 = vf1.newInstance();
-                v2 = vf2.newInstance();
+                v1 = vFactory1.newInstance();
+                v2 = vFactory2.newInstance();
                 assertTrue(v1.addMulNew(10, v2).deepEquals(v1.addMul(10, v2)), msg);
 
-                v1 = vf1.newInstance();
-                v2 = vf2.newInstance();
+                v1 = vFactory1.newInstance();
+                v2 = vFactory2.newInstance();
 
                 assertEquals(385.0, v1.dot(v2));
                 assertEquals(385.0, v1.dotBilinear(DMatrix.identity(10), v2));
@@ -428,29 +490,29 @@ public class DenseAlgebraTest {
         }
     }
 
-    private interface F1m2v {
+    private interface Function1matrix2vectors {
         void apply(DVector v1, DVector v2, DMatrix m);
     }
 
-    private void t1m2v(VectorFactory vf1, VectorFactory vf2, MatrixFactory mType, F1m2v f) {
-        DVector v1 = vf1.newInstance();
-        DVector v2 = vf2.newInstance();
-        DMatrix m = mType.newMatrix();
+    private void test1matrix2vectors(VectorFactory vFactory1, VectorFactory vFactory2, MatrixFactory mFactory, Function1matrix2vectors f) {
+        DVector v1 = vFactory1.newInstance();
+        DVector v2 = vFactory2.newInstance();
+        DMatrix m = mFactory.newMatrix();
         f.apply(v1, v2, m);
     }
 
     @Test
     void testOneMatrixTwoVectors() {
-        for (var vf1 : vectorFactories) {
-            for (var vf2 : vectorFactories) {
-                for (MatrixFactory mType1 : mTypes) {
-                    t1m2v(vf1, vf2, mType1, (v1, v2, m)
+        for (var vFactory1 : vectorFactories) {
+            for (var vFactory2 : vectorFactories) {
+                for (MatrixFactory mFactory1 : matrixFactories) {
+                    test1matrix2vectors(vFactory1, vFactory2, mFactory1, (v1, v2, m)
                             -> assertEquals(v1.copy().mul(m.diag()).mul(v2).sum(), v1.dotBilinearDiag(m, v2)));
-                    t1m2v(vf1, vf2, mType1, (v1, v2, m)
+                    test1matrix2vectors(vFactory1, vFactory2, mFactory1, (v1, v2, m)
                             -> assertEquals(v1.copy().mul(m.diag()).mul(v1).sum(), v1.dotBilinearDiag(m)));
-                    t1m2v(vf1, vf2, mType1, (v1, v2, m)
+                    test1matrix2vectors(vFactory1, vFactory2, mFactory1, (v1, v2, m)
                             -> assertEquals(v1.copy().mul(v1).mul(v2).sum(), v1.dotBilinearDiag(v2, v1)));
-                    t1m2v(vf1, vf2, mType1, (v1, v2, m)
+                    test1matrix2vectors(vFactory1, vFactory2, mFactory1, (v1, v2, m)
                             -> assertEquals(v1.copy().mul(v1).mul(v2).sum(), v1.dotBilinearDiag(v2)));
                 }
             }

@@ -295,6 +295,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     private final int offset;
     private final int rows;
     private final int cols;
+    private final int colStride;
     private final double[] array;
 
     private final int loopBoundRow;
@@ -304,13 +305,18 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     private final int[] rowVectorIndexes;
 
     public DMatrixDenseC(int rows, int cols) {
-        this(0, rows, cols, new double[rows * cols]);
+        this(0, rows, cols, rows, new double[rows * cols]);
     }
 
     public DMatrixDenseC(int offset, int rows, int cols, double[] array) {
+        this(offset, rows, cols, rows, array);
+    }
+
+    public DMatrixDenseC(int offset, int rows, int cols, int colStride, double[] array) {
         this.offset = offset;
         this.rows = rows;
         this.cols = cols;
+        this.colStride = colStride;
         this.array = array;
         this.loopBoundRow = species.loopBound(cols);
         this.loopMaskRow = species.indexInRange(loopBoundRow, cols);
@@ -318,13 +324,20 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
         this.loopMaskCol = species.indexInRange(loopBoundCol, rows);
         this.rowVectorIndexes = new int[speciesLen];
         for (int i = 0; i < speciesLen; i++) {
-            rowVectorIndexes[i] = i * cols;
+            rowVectorIndexes[i] = i * colStride;
         }
     }
 
     @Override
     public double[] solidArrayCopy() {
-        return Arrays.copyOfRange(array, offset, offset + rows * cols);
+        if (rows == colStride) {
+            return Arrays.copyOfRange(array, offset, offset + rows * cols);
+        }
+        double[] copy = new double[rows * cols];
+        for (int i = 0; i < cols; i++) {
+            System.arraycopy(array, offset + i * colStride, copy, i * rows, rows);
+        }
+        return copy;
     }
 
     @Override
@@ -339,17 +352,17 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public double get(int row, int col) {
-        return array[offset + col * rows + row];
+        return array[offset + col * colStride + row];
     }
 
     @Override
     public void set(int row, int col, double value) {
-        array[offset + col * rows + row] = value;
+        array[offset + col * colStride + row] = value;
     }
 
     @Override
     public void inc(int row, int col, double value) {
-        array[offset + col * rows + row] += value;
+        array[offset + col * colStride + row] += value;
     }
 
     @Override
@@ -374,22 +387,22 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DoubleVector loadVectorRow(int row, int i) {
-        return DoubleVector.fromArray(species, array, offset + i * rows + row, rowVectorIndexes, 0);
+        return DoubleVector.fromArray(species, array, offset + i * colStride + row, rowVectorIndexes, 0);
     }
 
     @Override
     public DoubleVector loadVectorRow(int row, int i, VectorMask<Double> m) {
-        return DoubleVector.fromArray(species, array, offset + i * rows + row, rowVectorIndexes, 0, m);
+        return DoubleVector.fromArray(species, array, offset + i * colStride + row, rowVectorIndexes, 0, m);
     }
 
     @Override
     public void storeVectorRow(DoubleVector vector, int row, int i) {
-        vector.intoArray(array, offset + i * rows + row, rowVectorIndexes, 0);
+        vector.intoArray(array, offset + i * colStride + row, rowVectorIndexes, 0);
     }
 
     @Override
     public void storeVectorRow(DoubleVector vector, int row, int i, VectorMask<Double> m) {
-        vector.intoArray(array, offset + i * rows + row, rowVectorIndexes, 0, m);
+        vector.intoArray(array, offset + i * colStride + row, rowVectorIndexes, 0, m);
     }
 
     @Override
@@ -404,40 +417,40 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DoubleVector loadVectorCol(int col, int i) {
-        return DoubleVector.fromArray(species, array, offset + col * rows + i);
+        return DoubleVector.fromArray(species, array, offset + col * colStride + i);
     }
 
     @Override
     public DoubleVector loadVectorCol(int col, int i, VectorMask<Double> m) {
-        return DoubleVector.fromArray(species, array, offset + col * rows + i, m);
+        return DoubleVector.fromArray(species, array, offset + col * colStride + i, m);
     }
 
     @Override
     public void storeVectorCol(DoubleVector vector, int col, int i) {
-        vector.intoArray(array, offset + col * rows + i);
+        vector.intoArray(array, offset + col * colStride + i);
     }
 
     @Override
     public void storeVectorCol(DoubleVector vector, int col, int i, VectorMask<Double> m) {
-        vector.intoArray(array, offset + col * rows + i, m);
+        vector.intoArray(array, offset + col * colStride + i, m);
     }
 
     @Override
     public DVector mapRow(int row) {
-        return new DVectorStride(offset + row, rows, cols, array);
+        return new DVectorStride(offset + row, colStride, cols, array);
     }
 
     @Override
     public DVector mapRowTo(int row, DVector to) {
         for (int i = 0; i < cols; i++) {
-            to.set(i, array[offset + row + i * rows]);
+            to.set(i, array[offset + row + i * colStride]);
         }
         return to;
     }
 
     @Override
     public DVector mapCol(int col) {
-        return new DVectorDense(offset + col * rows, rows, array);
+        return new DVectorDense(offset + col * colStride, rows, array);
     }
 
     @Override
@@ -458,8 +471,13 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DMatrix mapRows(int... indexes) {
+        if (IntArrays.isDenseArray(indexes)) {
+            int start = indexes[0];
+            int end = indexes[indexes.length - 1];
+            return rangeRows(start, end + 1);
+        }
         int[] colIndexes = IntArrays.newSeq(0, colCount());
-        IntArrays.mul(colIndexes, 0, rows, colIndexes.length);
+        IntArrays.mul(colIndexes, 0, colStride, colIndexes.length);
         return new DMatrixMap(offset, indexes, colIndexes, array);
     }
 
@@ -475,9 +493,14 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DMatrix mapCols(int... indexes) {
+        if (IntArrays.isDenseArray(indexes)) {
+            int start = indexes[0];
+            int end = indexes[indexes.length - 1];
+            return rangeCols(start, end + 1);
+        }
         int[] rowIndexes = IntArrays.newSeq(0, rows);
         int[] colIndexes = Arrays.copyOf(indexes, indexes.length);
-        IntArrays.mul(colIndexes, 0, rows, colIndexes.length);
+        IntArrays.mul(colIndexes, 0, colStride, colIndexes.length);
         return new DMatrixMap(offset, rowIndexes, colIndexes, array);
     }
 
@@ -493,7 +516,9 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DMatrix rangeRows(int start, int end) {
-        return mapRows(IntArrays.newSeq(start, end));
+        int newOffset = offset + start;
+        int newRows = end - start;
+        return new DMatrixDenseC(newOffset, newRows, cols, colStride, array);
     }
 
     @Override
@@ -503,7 +528,9 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DMatrix rangeCols(int start, int end) {
-        return mapCols(IntArrays.newSeq(start, end));
+        int newOffset = offset + start * colStride;
+        int newCols = end - start;
+        return new DMatrixDenseC(newOffset, rows, newCols, colStride, array);
     }
 
     @Override
@@ -525,7 +552,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
             stream = stream.parallel();
         }
         stream.forEach(s -> {
-            DVectorDense slice = new DVectorDense(0, rows, new double[rows]);
+            DVectorDense slice = new DVectorDense(rows);
             for (int j = s * SLICE_SIZE; j < Math.min(cols, (s + 1) * SLICE_SIZE); j++) {
                 slice.addMul(b.get(j), mapCol(j));
             }
@@ -544,7 +571,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
             double[] ref = solidArrayCopy();
             return new DMatrixDenseR(0, cols, rows, ref);
         }
-        return new DMatrixDenseR(offset, cols, rows, array);
+        return new DMatrixDenseR(offset, cols, rows, colStride, array);
     }
 
     @Override
@@ -560,9 +587,17 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public void apply(Double2DoubleFunction fun) {
-        int len = offset + rows * cols;
-        for (int i = offset; i < len; i++) {
-            array[i] = fun.apply(array[i]);
+        if (colStride == rows) {
+            int len = offset + rows * cols;
+            for (int i = offset; i < len; i++) {
+                array[i] = fun.apply(array[i]);
+            }
+        } else {
+            for (int j = 0; j < cols; j++) {
+                for (int i = 0; i < rows; i++) {
+                    set(i, j, fun.apply(get(i, j)));
+                }
+            }
         }
     }
 
