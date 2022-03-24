@@ -59,4 +59,17 @@ public class FApplyCommon {
         return BoundFrame.byVars(vars);
     }
 
+    public Frame applyQuantileDiscrete(Frame df,Map<String, VQuantileDiscrete> filters) {
+        Var[] vars = new Var[df.varCount()];
+        int pos = 0;
+        for (String varName : df.varNames()) {
+            if (filters.containsKey(varName)) {
+                vars[pos++] = filters.get(varName).apply(df.rvar(varName));
+            } else {
+                vars[pos++] = df.rvar(varName);
+            }
+        }
+        return BoundFrame.byVars(vars);
+    }
+
 }
