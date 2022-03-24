@@ -143,7 +143,7 @@ public class BarPlotArtist extends Artist {
                     return 0;
                 return totals[o1] < totals[o2] ? 1 : -1;
             });
-            case SORT_NONE, default -> {
+            default -> {
                 // do not sort
             }
         }

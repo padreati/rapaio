@@ -93,47 +93,8 @@ public class FOneHotEncoding extends AbstractFFilter {
     }
 
     public Frame apply(Frame df) {
-        if (varNames == null || varNames.length == 0) {
-            return df;
-        }
+        FApplyCommon fOneApplyHotEncoding = new FApplyCommon();
 
-        // list of variables with encoding
-        List<Var> vars = new ArrayList<>();
-
-        for (String varName : df.varNames()) {
-
-            // if the variable has been learned
-            if (levels.containsKey(varName)) {
-
-                // get the learned dictionary
-                List<String> dict = levels.get(varName);
-                if (!useNa) {
-                    dict = dict.subList(1, dict.size());
-                }
-                if (lessOne) {
-                    dict = dict.subList(1, dict.size());
-                }
-
-                List<Var> oneHotVars = new ArrayList<>();
-                Map<String, Var> index = new HashMap<>();
-                // create a new numeric var for each level, filled with 0
-                for (String token : dict) {
-                    Var v = VarBinary.fill(df.rowCount(), 0).name(varName + "." + token);
-                    oneHotVars.add(v);
-                    index.put(token, v);
-                }
-                // populate encoding variables
-                for (int i = 0; i < df.rowCount(); i++) {
-                    String level = df.getLabel(i, varName);
-                    if (index.containsKey(level)) {
-                        index.get(level).setInt(i, 1);
-                    }
-                }
-                vars.addAll(oneHotVars);
-            } else {
-                vars.add(df.rvar(varName));
-            }
-        }
-        return BoundFrame.byVars(vars);
+        return fOneApplyHotEncoding.applyHotEncoding(df,varNames,levels,useNa,lessOne);
     }
 }

@@ -83,15 +83,8 @@ public class FQuantileDiscrete extends AbstractFFilter {
 
     @Override
     public Frame apply(Frame df) {
-        Var[] vars = new Var[df.varCount()];
-        int pos = 0;
-        for (String varName : df.varNames()) {
-            if (filters.containsKey(varName)) {
-                vars[pos++] = filters.get(varName).apply(df.rvar(varName));
-            } else {
-                vars[pos++] = df.rvar(varName);
-            }
-        }
-        return BoundFrame.byVars(vars);
+
+        FApplyCommon fApplyQuantileDiscrete = new FApplyCommon();
+        return fApplyQuantileDiscrete.applyQuantileDiscrete(df,filters);
     }
 }
