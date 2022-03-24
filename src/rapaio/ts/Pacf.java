@@ -35,21 +35,16 @@ import rapaio.printer.opt.POption;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/17.
  */
-public class Pacf implements Printable {
+public class Pacf extends Correlation {
 
     public static Pacf from(Var ts, int maxLag) {
         return new Pacf(ts, VarInt.seq(1, maxLag));
     }
 
-    private final Var ts;
-    private final VarInt lags;
-
     private VarDouble pacf;
 
     private Pacf(Var ts, VarInt indexes) {
-        this.ts = ts;
-        this.lags = indexes;
-
+        super(ts,indexes);
         computeDurbinLevinson();
     }
 

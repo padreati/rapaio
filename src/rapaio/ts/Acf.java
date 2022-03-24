@@ -36,10 +36,8 @@ import rapaio.printer.opt.POption;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
  */
-public final class Acf implements Printable {
+public final class Acf extends Correlation {
 
-    private final Var ts;
-    private final VarInt lags;
     private final VarDouble correlation;
     private final VarDouble covariance;
 
@@ -52,11 +50,10 @@ public final class Acf implements Printable {
     }
 
     private Acf(Var ts, VarInt lags) {
+        super(ts, lags);
         if (ts.stream().complete().count() != ts.size()) {
             throw new IllegalArgumentException("Acf does not allow missing values.");
         }
-        this.ts = ts.copy();
-        this.lags = lags.copy();
         this.correlation = VarDouble.fill(lags.size(), 0).name("correlation");
         this.covariance = VarDouble.fill(lags.size(), 0).name("covariance");
 
