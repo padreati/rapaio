@@ -45,7 +45,6 @@ import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.model.ClusteringResult;
 import rapaio.ml.model.RunInfo;
-import rapaio.sys.With;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
@@ -131,7 +130,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         int[] centroidIndexes = SamplingTools.sampleWOR(x.rowCount(), k.get());
         LOGGER.finest("medoid indexes: " + Arrays.stream(centroidIndexes)
                 .mapToObj(String::valueOf).collect(Collectors.joining(",")));
-        c = x.mapRows(centroidIndexes, With.copy());
+        c = x.mapRowsNew(centroidIndexes);
 
         LOGGER.finest("Initialize a cache for training purposes");
         DistanceCache cache = new DistanceCache(x.rowCount(), distance.get());
@@ -163,7 +162,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
                         .mapToObj(String::valueOf).collect(Collectors.joining(",")));
                 centroidIndexes = nextCentroidIndexes;
                 assign = nextAssign;
-                c = x.mapRows(centroidIndexes, With.copy());
+                c = x.mapRowsNew(centroidIndexes);
                 continue;
             }
 
@@ -289,7 +288,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
 
         LOGGER.finest("medoid indexes: " + Arrays.stream(centroidIndexes)
                 .mapToObj(String::valueOf).collect(Collectors.joining(",")));
-        c = x.mapRows(centroidIndexes, With.copy());
+        c = x.mapRowsNew(centroidIndexes);
 
         LOGGER.finest("Assign instances to centroids.");
         int[] assign = computeAssignment(x, centroidIndexes, cache);
@@ -330,7 +329,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
                         "medoid indexes: " + Arrays.stream(centroidIndexes).mapToObj(String::valueOf).collect(Collectors.joining(",")));
                 centroidIndexes = nextCentroidIndexes;
                 assign = nextAssign;
-                c = x.mapRows(centroidIndexes, With.copy());
+                c = x.mapRowsNew(centroidIndexes);
 
                 // update closest distance vectors
                 updateAllClosest(x, centroidIndexes, dv, ev, cache);

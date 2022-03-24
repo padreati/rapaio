@@ -37,6 +37,7 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.option.AlgebraOption;
 import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
@@ -455,6 +456,66 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
             to.set(i, get(i, col));
         }
         return to;
+    }
+
+    @Override
+    public DMatrix mapRows(int... indexes) {
+        int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
+        IntArrays.mul(rowIndexes, 0, cols, rowIndexes.length);
+        int[] colIndexes = IntArrays.newSeq(0, cols);
+        return new DMatrixMap(offset, rowIndexes, colIndexes, array);
+    }
+
+    @Override
+    public DMatrix mapRowsTo(int[] indexes, DMatrix to) {
+        int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
+        IntArrays.mul(rowIndexes, 0, cols, rowIndexes.length);
+        int[] colIndexes = IntArrays.newSeq(0, cols);
+        for (int i = 0; i < rowIndexes.length; i++) {
+            for (int j = 0; j < colIndexes.length; j++) {
+                to.set(i, j, array[offset + rowIndexes[i] + colIndexes[j]]);
+            }
+        }
+        return to;
+    }
+
+    @Override
+    public DMatrix mapCols(int... indexes) {
+        int[] rowIndexes = IntArrays.newSeq(0, rows);
+        IntArrays.mul(rowIndexes, 0, cols, rowIndexes.length);
+        return new DMatrixMap(offset, rowIndexes, indexes, array);
+    }
+
+    @Override
+    public DMatrix mapColsTo(int[] indexes, DMatrix to) {
+        int[] rowIndexes = IntArrays.newSeq(0, rows);
+        IntArrays.mul(rowIndexes, 0, cols, rowIndexes.length);
+        for (int i = 0; i < rowIndexes.length; i++) {
+            for (int j = 0; j < indexes.length; j++) {
+                to.set(i, j, array[offset + rowIndexes[i] + indexes[j]]);
+            }
+        }
+        return to;
+    }
+
+    @Override
+    public DMatrix rangeRows(int start, int end) {
+        return mapRows(IntArrays.newSeq(start, end));
+    }
+
+    @Override
+    public DMatrix rangeRowsTo(int start, int end, DMatrix to) {
+        return mapRowsTo(IntArrays.newSeq(start, end), to);
+    }
+
+    @Override
+    public DMatrix rangeCols(int start, int end) {
+        return mapCols(IntArrays.newSeq(start, end));
+    }
+
+    @Override
+    public DMatrix rangeColsTo(int start, int end, DMatrix to) {
+        return mapColsTo(IntArrays.newSeq(start, end), to);
     }
 
     @Override

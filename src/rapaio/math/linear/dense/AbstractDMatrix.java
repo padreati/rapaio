@@ -22,9 +22,6 @@
 package rapaio.math.linear.dense;
 
 import java.io.Serial;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
@@ -38,7 +35,6 @@ import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
@@ -56,89 +52,18 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix mapRows(final int[] indexes, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            DMatrix copy = DMatrix.empty(indexes.length, colCount());
-            for (int i = 0; i < indexes.length; i++) {
-                for (int j = 0; j < colCount(); j++) {
-                    copy.set(i, j, get(indexes[i], j));
-                }
-            }
-            return copy;
-        }
-        return new DMatrixMap(this, true, indexes);
-    }
-
-    @Override
-    public DMatrix mapCols(int[] indexes, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            DMatrix copy = DMatrix.empty(rowCount(), indexes.length);
-            for (int i = 0; i < rowCount(); i++) {
-                for (int j = 0; j < indexes.length; j++) {
-                    copy.set(i, j, get(i, indexes[j]));
-                }
-            }
-            return copy;
-        }
-        return new DMatrixMap(this, false, indexes);
-    }
-
-    @Override
     public DVector mapValues(int[] indexes, int axis) {
-        DVector v = DVector.zeros(axis == 0 ? rowCount() : colCount());
+        DVector v = DVector.zeros(axis == 0 ? colCount() : rowCount());
         if (axis == 0) {
-            for (int i = 0; i < rowCount(); i++) {
-                v.set(i, get(i, indexes[i]));
-            }
-        } else {
             for (int i = 0; i < colCount(); i++) {
                 v.set(i, get(indexes[i], i));
             }
+        } else {
+            for (int i = 0; i < rowCount(); i++) {
+                v.set(i, get(i, indexes[i]));
+            }
         }
         return v;
-    }
-
-    @Override
-    public DMatrix rangeRows(final int start, final int end, AlgebraOption<?>... opts) {
-        int[] rows = IntArrays.newSeq(start, end);
-        return mapRows(rows, opts);
-    }
-
-    @Override
-    public DMatrix rangeCols(int start, int end, AlgebraOption<?>... opts) {
-        int[] cols = IntArrays.newSeq(start, end);
-        return mapCols(cols, opts);
-    }
-
-    @Override
-    public DMatrix removeRows(int[] indexes, AlgebraOption<?>... opts) {
-        Set<Integer> rem = Arrays.stream(indexes).boxed()
-                .filter(v -> v >= 0)
-                .filter(v -> v < rowCount())
-                .collect(Collectors.toSet());
-        int[] rows = new int[rowCount() - rem.size()];
-        int pos = 0;
-        for (int i = 0; i < rowCount(); i++) {
-            if (rem.contains(i)) {
-                continue;
-            }
-            rows[pos++] = i;
-        }
-        return mapRows(rows, opts);
-    }
-
-    @Override
-    public DMatrix removeCols(int[] indexes, AlgebraOption<?>... opts) {
-        Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
-        int[] cols = new int[colCount() - rem.size()];
-        int pos = 0;
-        for (int i = 0; i < colCount(); i++) {
-            if (rem.contains(i)) {
-                continue;
-            }
-            cols[pos++] = i;
-        }
-        return mapCols(cols, opts);
     }
 
     @Override
@@ -466,16 +391,15 @@ public abstract class AbstractDMatrix implements DMatrix {
         if (rowCount() == 0 || colCount() == 0) {
             return DVector.fill(axis == 0 ? colCount() : rowCount(), Double.NaN);
         }
+        DVector variance = new DVectorDense(axis == 0 ? colCount() : rowCount());
         if (axis == 0) {
-            DVector variance = DVector.fill(colCount(), 0);
             for (int i = 0; i < colCount(); i++) {
-                variance.inc(i, mapCol(i).variance());
+                variance.set(i, mapCol(i).variance());
             }
-            return variance;
-        }
-        DVector variance = DVector.fill(rowCount(), 0);
-        for (int i = 0; i < rowCount(); i++) {
-            variance.inc(i, mapRow(i).variance());
+        } else {
+            for (int i = 0; i < rowCount(); i++) {
+                variance.inc(i, mapRow(i).variance());
+            }
         }
         return variance;
     }

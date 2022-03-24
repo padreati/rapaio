@@ -21,8 +21,6 @@
 
 package rapaio.ml.model.rvm;
 
-import static rapaio.sys.With.copy;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1129,7 +1127,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
             // adjust phiHat
 
-            phiHat = phiHat.removeRows(new int[] {pos}).removeCols(new int[] {pos}, copy());
+            phiHat = phiHat.removeRows(pos).removeColsNew(pos);
         }
 
         private boolean testConvergence(DVector old_alpha) {

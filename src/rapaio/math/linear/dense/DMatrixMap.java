@@ -22,11 +22,9 @@
 package rapaio.math.linear.dense;
 
 import java.io.Serial;
-import java.util.Arrays;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.option.AlgebraOption;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -37,32 +35,16 @@ public class DMatrixMap extends AbstractDMatrix {
     @Serial
     private static final long serialVersionUID = -3840785397560969659L;
 
-    private final DMatrix ref;
+    private final int offset;
     private final int[] rowIndexes;
     private final int[] colIndexes;
+    private final double[] array;
 
-    public DMatrixMap(DMatrix ref, boolean byRow, int... indexes) {
-        if (ref instanceof DMatrixMap mref) {
-            if (byRow) {
-                this.ref = mref.ref;
-                this.rowIndexes = Arrays.copyOf(indexes, indexes.length);
-                this.colIndexes = mref.colIndexes;
-            } else {
-                this.ref = mref.ref;
-                this.rowIndexes = mref.rowIndexes;
-                this.colIndexes = Arrays.copyOf(indexes, indexes.length);
-            }
-            return;
-        }
-        if (byRow) {
-            this.ref = ref;
-            this.rowIndexes = Arrays.copyOf(indexes, indexes.length);
-            this.colIndexes = IntArrays.newSeq(0, ref.colCount());
-        } else {
-            this.ref = ref;
-            this.rowIndexes = IntArrays.newSeq(0, ref.rowCount());
-            this.colIndexes = Arrays.copyOf(indexes, indexes.length);
-        }
+    public DMatrixMap(int offset, int[] rowIndexes, int[] colIndexes, double[] array) {
+        this.offset = offset;
+        this.rowIndexes = rowIndexes;
+        this.colIndexes = colIndexes;
+        this.array = array;
     }
 
     @Override
@@ -76,52 +58,107 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public double get(int i, int j) {
-        return ref.get(rowIndexes[i], colIndexes[j]);
+    public double get(int row, int col) {
+        return array[offset + rowIndexes[row] + colIndexes[col]];
     }
 
     @Override
-    public void set(int i, int j, double value) {
-        ref.set(rowIndexes[i], colIndexes[j], value);
+    public void set(int row, int col, double value) {
+        array[offset + rowIndexes[row] + colIndexes[col]] = value;
     }
 
     @Override
-    public void inc(int i, int j, double value) {
-        ref.inc(rowIndexes[i], colIndexes[j], value);
+    public void inc(int row, int col, double value) {
+        array[offset + rowIndexes[row] + colIndexes[col]] += value;
     }
 
     @Override
-    public DVector mapCol(int i) {
-        DVector v = DVector.zeros(rowIndexes.length);
-        for (int j = 0; j < rowIndexes.length; j++) {
-            v.set(j, ref.get(rowIndexes[j], colIndexes[i]));
-        }
-        return v;
+    public DVector mapCol(int col) {
+        return new DVectorMap(offset + colIndexes[col], rowIndexes, array);
     }
 
     @Override
     public DVector mapColTo(int col, DVector to) {
-        for (int j = 0; j < rowIndexes.length; j++) {
-            to.set(j, ref.get(rowIndexes[j], colIndexes[col]));
+        int pos = offset + colIndexes[col];
+        for (int i = 0; i < rowIndexes.length; i++) {
+            to.set(i, array[pos + rowIndexes[i]]);
         }
         return to;
     }
 
     @Override
     public DVector mapRow(int row) {
-        DVector v = DVector.zeros(colIndexes.length);
-        for (int j = 0; j < colIndexes.length; j++) {
-            v.set(j, ref.get(rowIndexes[row], colIndexes[j]));
-        }
-        return v;
+        return new DVectorMap(offset + rowIndexes[row], colIndexes, array);
     }
 
     @Override
     public DVector mapRowTo(int row, DVector to) {
-        DVector v = DVector.zeros(colIndexes.length);
-        for (int j = 0; j < colIndexes.length; j++) {
-            v.set(j, ref.get(rowIndexes[row], colIndexes[j]));
+        int pos = offset + rowIndexes[row];
+        for (int i = 0; i < colIndexes.length; i++) {
+            to.set(i, array[pos + colIndexes[i]]);
         }
-        return v;
+        return to;
+    }
+
+    private int[] transform(int[] base, int[] selection) {
+        int[] transform = new int[selection.length];
+        for (int i = 0; i < transform.length; i++) {
+            transform[i] = base[selection[i]];
+        }
+        return transform;
+    }
+
+    @Override
+    public DMatrix mapRows(int[] indexes) {
+        int[] transform = transform(rowIndexes, indexes);
+        return new DMatrixMap(offset, transform, colIndexes, array);
+    }
+
+    @Override
+    public DMatrix mapRowsTo(int[] indexes, DMatrix to) {
+        int[] transform = transform(rowIndexes, indexes);
+        for (int i = 0; i < transform.length; i++) {
+            for (int j = 0; j < colIndexes.length; j++) {
+                to.set(i, j, array[offset + transform[i] + colIndexes[j]]);
+            }
+        }
+        return to;
+    }
+
+    @Override
+    public DMatrix mapCols(int[] indexes) {
+        int[] transform = transform(colIndexes, indexes);
+        return new DMatrixMap(offset, rowIndexes, transform, array);
+    }
+
+    @Override
+    public DMatrix mapColsTo(int[] indexes, DMatrix to) {
+        int[] transform = transform(colIndexes, indexes);
+        for (int i = 0; i < rowIndexes.length; i++) {
+            for (int j = 0; j < transform.length; j++) {
+                to.set(i, j, array[offset + rowIndexes[i] + transform[j]]);
+            }
+        }
+        return to;
+    }
+
+    @Override
+    public DMatrix rangeRows(int start, int end) {
+        return mapRows(IntArrays.newSeq(start, end));
+    }
+
+    @Override
+    public DMatrix rangeRowsTo(int start, int end, DMatrix to) {
+        return mapRowsTo(IntArrays.newSeq(start, end), to);
+    }
+
+    @Override
+    public DMatrix rangeCols(int start, int end) {
+        return mapCols(IntArrays.newSeq(start, end));
+    }
+
+    @Override
+    public DMatrix rangeColsTo(int start, int end, DMatrix to) {
+        return mapColsTo(IntArrays.newSeq(start, end), to);
     }
 }
