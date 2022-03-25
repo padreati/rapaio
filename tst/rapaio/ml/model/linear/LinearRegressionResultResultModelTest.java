@@ -121,17 +121,17 @@ public class LinearRegressionResultResultModelTest {
                         "\n", lmfit.toSummary());
 
 
-        assertEquals(2, lmfit.getBetaHat().rowCount());
-        assertEquals(1, lmfit.getBetaHat().colCount());
+        assertEquals(2, lmfit.getBetaHat().rows());
+        assertEquals(1, lmfit.getBetaHat().cols());
 
-        assertEquals(2, lmfit.getBetaStdError().rowCount());
-        assertEquals(1, lmfit.getBetaStdError().colCount());
+        assertEquals(2, lmfit.getBetaStdError().rows());
+        assertEquals(1, lmfit.getBetaStdError().cols());
 
-        assertEquals(2, lmfit.getBetaTValue().rowCount());
-        assertEquals(1, lmfit.getBetaTValue().colCount());
+        assertEquals(2, lmfit.getBetaTValue().rows());
+        assertEquals(1, lmfit.getBetaTValue().cols());
 
-        assertEquals(2, lmfit.getBetaPValue().rowCount());
-        assertEquals(1, lmfit.getBetaPValue().colCount());
+        assertEquals(2, lmfit.getBetaPValue().rows());
+        assertEquals(1, lmfit.getBetaPValue().cols());
 
         assertEquals(2, lmfit.getBetaSignificance().length);
 

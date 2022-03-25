@@ -73,8 +73,8 @@ public abstract class StandardDMatrixTest {
         DMatrix view = m.mapRows(3, 4);
         DMatrix copy = m.mapRowsNew(3, 4);
 
-        for (int i = 0; i < view.rowCount(); i++) {
-            for (int j = 0; j < view.colCount(); j++) {
+        for (int i = 0; i < view.rows(); i++) {
+            for (int j = 0; j < view.cols(); j++) {
                 assertEquals(view.get(i, j), copy.get(i, j), TOL);
             }
         }
@@ -94,8 +94,8 @@ public abstract class StandardDMatrixTest {
         DMatrix view = m.rangeRows(3, 5);
         DMatrix copy = m.rangeRowsNew(3, 5);
 
-        for (int i = 0; i < view.rowCount(); i++) {
-            for (int j = 0; j < view.colCount(); j++) {
+        for (int i = 0; i < view.rows(); i++) {
+            for (int j = 0; j < view.cols(); j++) {
                 assertEquals(view.get(i, j), copy.get(i, j), TOL);
             }
         }
@@ -115,8 +115,8 @@ public abstract class StandardDMatrixTest {
         DMatrix view = m.removeRows(0, 1, 2, 4, 6, 7, 8, 9, 10);
         DMatrix copy = m.removeRowsNew(0, 1, 2, 4, 6, 7, 8, 9, 10);
 
-        for (int i = 0; i < view.rowCount(); i++) {
-            for (int j = 0; j < view.colCount(); j++) {
+        for (int i = 0; i < view.rows(); i++) {
+            for (int j = 0; j < view.cols(); j++) {
                 assertEquals(view.get(i, j), copy.get(i, j), TOL);
             }
         }
@@ -147,8 +147,8 @@ public abstract class StandardDMatrixTest {
         DMatrix view = m.mapCols(3, 4);
         DMatrix copy = m.mapColsNew(3, 4);
 
-        for (int i = 0; i < view.rowCount(); i++) {
-            for (int j = 0; j < view.colCount(); j++) {
+        for (int i = 0; i < view.rows(); i++) {
+            for (int j = 0; j < view.cols(); j++) {
                 assertEquals(view.get(i, j), copy.get(i, j), TOL);
             }
         }
@@ -168,8 +168,8 @@ public abstract class StandardDMatrixTest {
         DMatrix view = m.rangeCols(3, 5);
         DMatrix copy = m.rangeColsNew(3, 5);
 
-        for (int i = 0; i < view.rowCount(); i++) {
-            for (int j = 0; j < view.colCount(); j++) {
+        for (int i = 0; i < view.rows(); i++) {
+            for (int j = 0; j < view.cols(); j++) {
                 assertEquals(view.get(i, j), copy.get(i, j), TOL);
             }
         }
@@ -189,8 +189,8 @@ public abstract class StandardDMatrixTest {
         DMatrix view = m.removeCols(0, 1, 2, 4, 6, 7, 8, 9, 10);
         DMatrix copy = m.removeColsNew(0, 1, 2, 4, 6, 7, 8, 9, 10);
 
-        for (int i = 0; i < view.rowCount(); i++) {
-            for (int j = 0; j < view.colCount(); j++) {
+        for (int i = 0; i < view.rows(); i++) {
+            for (int j = 0; j < view.cols(); j++) {
                 assertEquals(view.get(i, j), copy.get(i, j), TOL);
             }
         }
@@ -212,12 +212,12 @@ public abstract class StandardDMatrixTest {
         DMatrix t2 = m1.copy().add(1);
         DMatrix t3 = m1.add(1).add(m2);
 
-        assertEquals(20, t1.rowCount());
-        assertEquals(10, t1.colCount());
-        assertEquals(20, t2.rowCount());
-        assertEquals(10, t2.colCount());
-        assertEquals(20, t3.rowCount());
-        assertEquals(10, t3.colCount());
+        assertEquals(20, t1.rows());
+        assertEquals(10, t1.cols());
+        assertEquals(20, t2.rows());
+        assertEquals(10, t2.cols());
+        assertEquals(20, t3.rows());
+        assertEquals(10, t3.cols());
 
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
@@ -252,12 +252,12 @@ public abstract class StandardDMatrixTest {
         DMatrix t2 = m1.copy().sub(1);
         DMatrix t3 = m1.sub(1).sub(m2);
 
-        assertEquals(20, t1.rowCount());
-        assertEquals(10, t1.colCount());
-        assertEquals(20, t2.rowCount());
-        assertEquals(10, t2.colCount());
-        assertEquals(20, t3.rowCount());
-        assertEquals(10, t3.colCount());
+        assertEquals(20, t1.rows());
+        assertEquals(10, t1.cols());
+        assertEquals(20, t2.rows());
+        assertEquals(10, t2.cols());
+        assertEquals(20, t3.rows());
+        assertEquals(10, t3.cols());
 
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
@@ -292,12 +292,12 @@ public abstract class StandardDMatrixTest {
         DMatrix t2 = m1.copy().mul(2);
         DMatrix t3 = m1.mul(2).mul(m2);
 
-        assertEquals(20, t1.rowCount());
-        assertEquals(10, t1.colCount());
-        assertEquals(20, t2.rowCount());
-        assertEquals(10, t2.colCount());
-        assertEquals(20, t3.rowCount());
-        assertEquals(10, t3.colCount());
+        assertEquals(20, t1.rows());
+        assertEquals(10, t1.cols());
+        assertEquals(20, t2.rows());
+        assertEquals(10, t2.cols());
+        assertEquals(20, t3.rows());
+        assertEquals(10, t3.cols());
 
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
@@ -322,12 +322,12 @@ public abstract class StandardDMatrixTest {
         DMatrix t2 = m1.copy().div(2);
         DMatrix t3 = m1.div(2).div(m2);
 
-        assertEquals(20, t1.rowCount());
-        assertEquals(10, t1.colCount());
-        assertEquals(20, t2.rowCount());
-        assertEquals(10, t2.colCount());
-        assertEquals(20, t3.rowCount());
-        assertEquals(10, t3.colCount());
+        assertEquals(20, t1.rows());
+        assertEquals(10, t1.cols());
+        assertEquals(20, t2.rows());
+        assertEquals(10, t2.cols());
+        assertEquals(20, t3.rows());
+        assertEquals(10, t3.cols());
 
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
@@ -379,11 +379,11 @@ public abstract class StandardDMatrixTest {
         DMatrix n2 = generateSequential(20, 30);
 
         var m2 = n1.dot(n2);
-        assertEquals(10, m2.rowCount());
-        assertEquals(30, m2.colCount());
+        assertEquals(10, m2.rows());
+        assertEquals(30, m2.cols());
 
-        for (int i = 0; i < m2.rowCount(); i++) {
-            for (int j = 0; j < m2.colCount(); j++) {
+        for (int i = 0; i < m2.rows(); i++) {
+            for (int j = 0; j < m2.cols(); j++) {
                 assertEquals(n1.mapRow(i).dot(n2.mapCol(j)), m2.get(i, j), TOL);
             }
         }

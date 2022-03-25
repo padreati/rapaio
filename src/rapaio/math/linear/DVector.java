@@ -31,7 +31,6 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.linear.dense.DVectorStore;
 import rapaio.printer.Printable;
 import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleComparators;
@@ -98,24 +97,6 @@ public interface DVector extends Serializable, Printable {
      */
     static DVectorDense random(int size, Distribution distribution) {
         return DVectorDense.random(size, distribution);
-    }
-
-    /**
-     * Builds a new real dense vector which is a solid copy of the given source vector.
-     *
-     * @param src source vector
-     * @return new real dense vector which is a copy of the source vector
-     */
-    static DVectorDense copy(DVector src) {
-        if (src instanceof DVectorStore srcs) {
-            double[] copy = srcs.solidArrayCopy();
-            return new DVectorDense(0, copy.length, copy);
-        }
-        double[] copy = new double[src.size()];
-        for (int i = 0; i < copy.length; i++) {
-            copy[i] = src.get(i);
-        }
-        return wrapArray(0, copy.length, copy);
     }
 
     static DVectorDense wrap(double... values) {
@@ -560,7 +541,7 @@ public interface DVector extends Serializable, Printable {
      * @param p the order of the norm
      * @return computed p norm value
      */
-    double pnorm(double p);
+    double norm(double p);
 
     /**
      * Divides all the values by the given p norm. Thus, after normalization
@@ -575,7 +556,7 @@ public interface DVector extends Serializable, Printable {
      * @return normalized vector
      */
     default DVector normalize(double p) {
-        return div(pnorm(p));
+        return div(norm(p));
     }
 
     /**
@@ -591,7 +572,7 @@ public interface DVector extends Serializable, Printable {
      * @return normalized vector
      */
     default DVector normalizeNew(double p) {
-        return divNew(pnorm(p));
+        return divNew(norm(p));
     }
 
     /**

@@ -104,7 +104,7 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
                 .apply((i, v) -> (y.get(i) == 1) ? (1. / (1. + exp(-v))) : (1 - 1. / (1. + exp(-v))))
                 .apply(this::cut)
                 .apply(Math::log)
-                .nansum() / x.rowCount();
+                .nansum() / x.rows();
     }
 
     private double cut(double value) {
@@ -126,9 +126,9 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
 
         // Xt(p(1-p)
         DMatrix xpvar = x.get().copy();
-        for (int i = 0; i < xpvar.rowCount(); i++) {
+        for (int i = 0; i < xpvar.rows(); i++) {
             double pvar = pvars.get(i);
-            for (int j = 0; j < xpvar.colCount(); j++) {
+            for (int j = 0; j < xpvar.cols(); j++) {
                 xpvar.set(i, j, xpvar.get(i, j) * pvar);
             }
         }

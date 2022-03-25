@@ -51,7 +51,6 @@ import rapaio.graphics.opt.GOptionTop;
 import rapaio.graphics.opt.GOptionVAlign;
 import rapaio.graphics.opt.GOptionWidths;
 import rapaio.graphics.opt.Position;
-import rapaio.math.linear.option.AlgebraOptionCopy;
 import rapaio.printer.opt.POptionTextWidth;
 import rapaio.printer.opt.POtpionFloatFormat;
 
@@ -59,16 +58,6 @@ import rapaio.printer.opt.POtpionFloatFormat;
  * Utility class which provides shortcuts to various named options.
  */
 public final class With {
-
-    // Algebra options
-
-    public static AlgebraOptionCopy copy() {
-        return new AlgebraOptionCopy(true);
-    }
-
-    public static AlgebraOptionCopy copy(boolean copy) {
-        return new AlgebraOptionCopy(copy);
-    }
 
     public static POptionTextWidth textWidth(int textWidth) {
         return new POptionTextWidth(textWidth);

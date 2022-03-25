@@ -165,13 +165,13 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
         }
 
         // solve the scaled system
-        DMatrix l = DMatrix.identity(X.colCount()).mul(lambda.get());
+        DMatrix l = DMatrix.identity(X.cols()).mul(lambda.get());
         DMatrix A = X.t().dot(X).add(l);
         DMatrix B = X.t().dot(Y);
         DMatrix scaledBeta = QRDecomposition.from(A).solve(B);
 
         if (intercept.get()) {
-            beta = DMatrix.fill(scaledBeta.rowCount() + 1, scaledBeta.colCount(), 0);
+            beta = DMatrix.fill(scaledBeta.rows() + 1, scaledBeta.cols(), 0);
 
             for (int i = 0; i < targetNames.length; i++) {
                 String targetName = targetName(i);

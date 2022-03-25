@@ -58,25 +58,25 @@ public final class ChiSqIndependence implements HTest {
     public static ChiSqIndependence from(DMatrix m, boolean yates) {
         List<String> rowLevels = new ArrayList<>();
         List<String> colLevels = new ArrayList<>();
-        for (int i = 0; i < m.rowCount(); i++) {
+        for (int i = 0; i < m.rows(); i++) {
             rowLevels.add("R" + (i + 1));
         }
-        for (int i = 0; i < m.colCount(); i++) {
+        for (int i = 0; i < m.cols(); i++) {
             colLevels.add("C" + (i + 1));
         }
         return from(m, rowLevels, colLevels, yates);
     }
 
     public static ChiSqIndependence from(DMatrix m, List<String> rowLevels, List<String> colLevels, boolean yates) {
-        if (m.rowCount() != rowLevels.size()) {
+        if (m.rows() != rowLevels.size()) {
             throw new IllegalArgumentException("Row levels length is different than matrix rows.");
         }
-        if (m.colCount() != colLevels.size()) {
+        if (m.cols() != colLevels.size()) {
             throw new IllegalArgumentException("Col levels length is different than matrix cols.");
         }
         var dt = DensityTable.emptyByLabel(true, rowLevels, colLevels);
-        for (int i = 0; i < m.rowCount(); i++) {
-            for (int j = 0; j < m.colCount(); j++) {
+        for (int i = 0; i < m.rows(); i++) {
+            for (int j = 0; j < m.cols(); j++) {
                 dt.increment(i, j, m.get(i, j));
             }
         }

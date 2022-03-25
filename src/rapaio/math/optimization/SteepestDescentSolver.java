@@ -99,7 +99,7 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
         solutions.add(sol.copy());
         for (int i = 0; i < maxIt.get(); i++) {
             DVector p = d1f.get().apply(sol).mul(-1);
-            double error = p.pnorm(2);
+            double error = p.norm(2);
             errors.addDouble(error);
             if (abs(error) < tol.get()) {
                 converged = true;

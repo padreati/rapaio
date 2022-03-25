@@ -156,7 +156,7 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
 
         ClassifierResult result = ClassifierResult.build(this, df, withClasses, withDistributions);
         DMatrix xs = DMatrix.copy(df.mapVars(inputNames));
-        for (int i = 0; i < xs.rowCount(); i++) {
+        for (int i = 0; i < xs.rows(); i++) {
             int k = problemInfo.levels().size();
 
             if (probability.get()) {

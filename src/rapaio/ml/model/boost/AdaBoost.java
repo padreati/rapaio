@@ -40,7 +40,6 @@ import rapaio.ml.model.tree.CTree;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.sys.With;
 
 /**
  * AdaBoost SAMME classifier is the classical version of AdaBoost which has
@@ -113,7 +112,7 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, RunInf
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
-        Var w = weights.dv(With.copy()).div(weights.dv().nansum()).dv();
+        Var w = weights.dvNew().div(weights.dv().nansum()).dv();
         double k = firstTargetLevels().size() - 1;
 
         learners.clear();

@@ -125,7 +125,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
 
         logger.fine("compute eigenvalues");
         EigenPair ep = Linear.eigenDecomp(s);
-        eigenValues = ep.values().div(x.rowCount() - 1);
+        eigenValues = ep.values().div(x.rows() - 1);
         eigenVectors = ep.vectors();
 
         logger.fine("sort eigen values and vectors");

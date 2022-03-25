@@ -40,12 +40,12 @@ public record ProblemInfo(DVector[] xs, double[] y,
                           double c, Map<String, Double> weighting, double nu, double p, boolean shrinking, boolean probability) {
 
     public static ProblemInfo from(DMatrix x, Var target, SVMClassifier parent) {
-        DVector[] xs = new DVector[x.rowCount()];
+        DVector[] xs = new DVector[x.rows()];
         for (int i = 0; i < xs.length; i++) {
             xs[i] = x.mapRow(i);
         }
-        double[] y = new double[x.rowCount()];
-        for (int i = 0; i < x.rowCount(); i++) {
+        double[] y = new double[x.rows()];
+        for (int i = 0; i < x.rows(); i++) {
             switch (target.type()) {
                 case BINARY, INT -> y[i] = target.getInt(i);
                 case NOMINAL -> y[i] = target.getInt(i) - 1;
@@ -109,7 +109,7 @@ public record ProblemInfo(DVector[] xs, double[] y,
         }
 
         if (param.nrWeight == 2) {
-            param.weightLabel[0] = +1;
+            param.weightLabel[0] = 1;
             param.weightLabel[1] = -1;
         }
 

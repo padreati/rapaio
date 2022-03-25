@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static rapaio.DataTestingTools.generateRandomBinaryVariable;
 import static rapaio.DataTestingTools.generateRandomDoubleVariable;
 import static rapaio.DataTestingTools.generateRandomIntVariable;
-import static rapaio.sys.With.copy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,17 +56,17 @@ public class DVarOpTest {
 
         VarDouble x = VarDouble.from(100, row -> row % 4 == 0 ? Double.NaN : normal.sampleNext());
         VarDouble apply1 = x.copy().dv().apply(v -> v + 1).dv();
-        VarDouble apply2 = x.dv(copy()).apply(v -> v + 1).dv();
-        VarDouble apply3 = x.dv(copy()).add(1).dv();
-        VarDouble apply4 = x.dv(copy()).add(VarDouble.fill(100, 1).dv()).dv();
+        VarDouble apply2 = x.dvNew().apply(v -> v + 1).dv();
+        VarDouble apply3 = x.dvNew().add(1).dv();
+        VarDouble apply4 = x.dvNew().add(VarDouble.fill(100, 1).dv()).dv();
 
         assertTrue(apply1.deepEquals(apply2));
         assertTrue(apply1.deepEquals(apply3));
         assertTrue(apply1.deepEquals(apply4));
 
         double sum1 = x.dv().nansum();
-        assertEquals(sum1, x.dv(copy()).sortValues(true).nansum(), 1e-12);
-        assertEquals(sum1, x.dv(copy()).sortValues(false).nanmean() * 75, 1e-12);
+        assertEquals(sum1, x.dvNew().sortValues(true).nansum(), 1e-12);
+        assertEquals(sum1, x.dvNew().sortValues(false).nanmean() * 75, 1e-12);
         int[] rows = x.rowsComplete();
         x.dv().sortIndexes(rows);
         assertEquals(sum1, x.mapRows(rows).dv().nansum(), TOLERANCE);
@@ -97,8 +96,8 @@ public class DVarOpTest {
         assertTrue(apply1.deepEquals(apply4));
 
         double sum1 = x.dv().nansum();
-        assertEquals(sum1, x.dv(copy()).sortValues(true).nansum());
-        assertEquals(sum1, x.dv(copy()).sortValues(false).nanmean() * 75);
+        assertEquals(sum1, x.dvNew().sortValues(true).nansum());
+        assertEquals(sum1, x.dvNew().sortValues(false).nanmean() * 75);
 
         int[] rows = x.rowsComplete();
         x.dv().sortIndexes(rows);

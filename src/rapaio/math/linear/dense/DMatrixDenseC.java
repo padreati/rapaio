@@ -34,8 +34,6 @@ import rapaio.data.Var;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.option.AlgebraOption;
-import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
@@ -341,12 +339,12 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     }
 
     @Override
-    public int rowCount() {
+    public int rows() {
         return rows;
     }
 
     @Override
-    public int colCount() {
+    public int cols() {
         return cols;
     }
 
@@ -476,7 +474,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
             int end = indexes[indexes.length - 1];
             return rangeRows(start, end + 1);
         }
-        int[] colIndexes = IntArrays.newSeq(0, colCount());
+        int[] colIndexes = IntArrays.newSeq(0, cols());
         IntArrays.mul(colIndexes, 0, colStride, colIndexes.length);
         return new DMatrixMap(offset, indexes, colIndexes, array);
     }
@@ -566,27 +564,12 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     }
 
     @Override
-    public DMatrixDenseR t(AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] ref = solidArrayCopy();
-            return new DMatrixDenseR(0, cols, rows, ref);
-        }
+    public DMatrixDenseR t() {
         return new DMatrixDenseR(offset, cols, rows, colStride, array);
     }
 
     @Override
-    public DMatrixDenseC apply(Double2DoubleFunction fun, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            var copy = new DMatrixDenseC(0, rows, cols, solidArrayCopy());
-            copy.apply(fun);
-            return copy;
-        }
-        apply(fun);
-        return this;
-    }
-
-    @Override
-    public void apply(Double2DoubleFunction fun) {
+    public DMatrixDenseC apply(Double2DoubleFunction fun) {
         if (colStride == rows) {
             int len = offset + rows * cols;
             for (int i = offset; i < len; i++) {
@@ -599,6 +582,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
                 }
             }
         }
+        return this;
     }
 
     @Override

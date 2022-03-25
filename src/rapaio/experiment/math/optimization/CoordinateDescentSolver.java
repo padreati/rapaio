@@ -86,7 +86,7 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
             DVector deltaX = DVector.fill(d1fx.size(), 0);
             deltaX.set(index, -signum(d1fx.get(index)));
 
-            if (abs(deltaX.pnorm(2)) < tol.get()) {
+            if (abs(deltaX.norm(2)) < tol.get()) {
                 converged = true;
                 break;
             }

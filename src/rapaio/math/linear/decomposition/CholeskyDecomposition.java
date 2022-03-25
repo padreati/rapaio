@@ -67,9 +67,9 @@ public class CholeskyDecomposition implements Serializable {
     private CholeskyDecomposition(DMatrix A) {
 
         // Initialize.
-        n = A.rowCount();
+        n = A.rows();
         l = new double[n][n];
-        isspd = (A.colCount() == n);
+        isspd = (A.cols() == n);
 
         // Main loop.
         for (int j = 0; j < n; j++) {
@@ -173,7 +173,7 @@ public class CholeskyDecomposition implements Serializable {
      */
 
     public DMatrix solve(DMatrix B) {
-        if (B.rowCount() != n) {
+        if (B.rows() != n) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
         if (!isspd) {
@@ -182,7 +182,7 @@ public class CholeskyDecomposition implements Serializable {
 
         // Copy right hand side.
         DMatrix x = B.copy();
-        int nx = B.colCount();
+        int nx = B.cols();
 
         x = forwardSubstitution(n, nx, x, l);
         x = backwardSubstitution(n, nx, x, l);

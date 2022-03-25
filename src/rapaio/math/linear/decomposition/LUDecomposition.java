@@ -64,13 +64,13 @@ public class LUDecomposition implements Serializable, Printable {
      * @param A input matrix
      */
     public static LUDecomposition from(DMatrix A) {
-        if (A.rowCount() < A.colCount())
+        if (A.rows() < A.cols())
             throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
         return new LUDecomposition(A, Method.GAUSSIAN_ELIMINATION);
     }
 
     public static LUDecomposition from(DMatrix A, Method method) {
-        if (A.rowCount() < A.colCount())
+        if (A.rows() < A.cols())
             throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
         return new LUDecomposition(A, method);
     }
@@ -160,7 +160,7 @@ public class LUDecomposition implements Serializable, Printable {
      * @throws RuntimeException         Matrix is singular.
      */
     public DMatrix solve(DMatrix B) {
-        if (B.rowCount() != rowCount) {
+        if (B.rows() != rowCount) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
         if (!this.isNonSingular()) {
@@ -168,7 +168,7 @@ public class LUDecomposition implements Serializable, Printable {
         }
 
         // Copy right hand side with pivoting
-        int nx = B.colCount();
+        int nx = B.cols();
         DMatrix X = B.mapRows(piv).copy();
 
         // Solve L*Y = B(piv,:)
@@ -199,13 +199,10 @@ public class LUDecomposition implements Serializable, Printable {
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("LU decomposition summary\n");
-        sb.append("========================\n");
-
-        sb.append("\nL matrix\n").append(getL().toSummary(printer, options));
-        sb.append("\nU matrix:\n").append(getU().toSummary(printer, options));
-        return sb.toString();
+        return "LU decomposition summary\n"
+                + "========================\n"
+                + "\nL matrix\n" + getL().toSummary(printer, options)
+                + "\nU matrix:\n" + getU().toSummary(printer, options);
     }
 
     public enum Method {
@@ -219,8 +216,8 @@ public class LUDecomposition implements Serializable, Printable {
             BiConsumer<LUDecomposition, DMatrix> method() {
                 return (lu, A) -> {
                     lu.LU = A.copy();
-                    lu.rowCount = A.rowCount();
-                    lu.colCount = A.colCount();
+                    lu.rowCount = A.rows();
+                    lu.colCount = A.cols();
                     lu.piv = new int[lu.rowCount];
                     for (int i = 0; i < lu.rowCount; i++) {
                         lu.piv[i] = i;
@@ -254,13 +251,13 @@ public class LUDecomposition implements Serializable, Printable {
                         // Find pivot and exchange if necessary.
 
                         int p = j;
-                        for (int i = j + 1; i < lu.LU.rowCount(); i++) {
+                        for (int i = j + 1; i < lu.LU.rows(); i++) {
                             if (Math.abs(LUcolj[i]) > Math.abs(LUcolj[p])) {
                                 p = i;
                             }
                         }
                         if (p != j) {
-                            for (int k = 0; k < lu.LU.colCount(); k++) {
+                            for (int k = 0; k < lu.LU.cols(); k++) {
                                 double t = lu.LU.get(p, k);
                                 lu.LU.set(p, k, lu.LU.get(j, k));
                                 lu.LU.set(j, k, t);
@@ -272,8 +269,8 @@ public class LUDecomposition implements Serializable, Printable {
                         }
 
                         // Compute multipliers.
-                        if (j < lu.LU.rowCount() & lu.LU.get(j, j) != 0.0) {
-                            for (int i = j + 1; i < lu.LU.rowCount(); i++) {
+                        if (j < lu.LU.rows() & lu.LU.get(j, j) != 0.0) {
+                            for (int i = j + 1; i < lu.LU.rows(); i++) {
                                 lu.LU.set(i, j, lu.LU.get(i, j) / lu.LU.get(j, j));
                             }
                         }
@@ -293,8 +290,8 @@ public class LUDecomposition implements Serializable, Printable {
 
                     // Initialize.
                     lu.LU = A.copy();
-                    lu.rowCount = A.rowCount();
-                    lu.colCount = A.colCount();
+                    lu.rowCount = A.rows();
+                    lu.colCount = A.cols();
                     lu.piv = new int[lu.rowCount];
                     for (int i = 0; i < lu.rowCount; i++) {
                         lu.piv[i] = i;

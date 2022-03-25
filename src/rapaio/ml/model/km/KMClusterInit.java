@@ -42,7 +42,7 @@ public enum KMClusterInit implements Serializable {
 
     Forgy {
         public DMatrix init(Distance distance, DMatrix m, int k) {
-            return m.mapRowsNew(SamplingTools.sampleWOR(m.rowCount(), k));
+            return m.mapRowsNew(SamplingTools.sampleWOR(m.rows(), k));
         }
     },
     PlusPlus {
@@ -51,16 +51,16 @@ public enum KMClusterInit implements Serializable {
 
             int[] centroids = IntArrays.newFill(k, -1);
 
-            centroids[0] = RandomSource.nextInt(m.rowCount());
+            centroids[0] = RandomSource.nextInt(m.rows());
             Set<Integer> ids = new HashSet<>();//new IntOpenHashSet();
             ids.add(centroids[0]);
 
-            double[] p = new double[m.rowCount()];
+            double[] p = new double[m.rows()];
             for (int i = 1; i < k; i++) {
                 // fill weights with 0
                 Arrays.fill(p, 0);
                 // assign weights to the minimum distance to center
-                for (int j = 0; j < m.rowCount(); j++) {
+                for (int j = 0; j < m.rows(); j++) {
                     if (ids.contains(j)) {
                         continue;
                     }

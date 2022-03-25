@@ -23,7 +23,6 @@ package rapaio.ml.model.linear;
 
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
-import rapaio.sys.With;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
@@ -44,7 +43,7 @@ public enum Scaling {
     NORM {
         @Override
         public double compute(Var x) {
-            return Math.sqrt(x.dv(With.copy()).apply(a -> a * a).nansum());
+            return Math.sqrt(x.dvNew().apply(a -> a * a).nansum());
         }
     };
 

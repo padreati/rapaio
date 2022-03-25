@@ -24,8 +24,6 @@ package rapaio.math.optimization;
 import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 
-import static rapaio.sys.With.copy;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
@@ -207,7 +205,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
             for (int it = 0; it < maxIt; it++) {
                 // error vector
                 DVector e = A.dot(x).sub(b);
-                errors.addDouble(e.pnorm(p));
+                errors.addDouble(e.norm(p));
 
                 // error weights for IRLS
                 DVector w = e.apply(v -> (p == 1) ? 1 / Math.max(tol, abs(v)) : pow(abs(v), (p - 2) / 2));
@@ -217,7 +215,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                 w.mul(w);
                 // weighted L2 solution
 
-                DMatrix w2a = A.mul(w, 1, copy());
+                DMatrix w2a = A.mulNew(w, 1);
                 DMatrix A1 = w2a.t().dot(A);
                 DVector b1 = w2a.t().dot(b);
 
@@ -271,7 +269,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                 // normalize weight vector
                 w.div(w.sum());
                 // weighted L2 solution
-                DMatrix w2a = A.mul(w, 1, copy());
+                DMatrix w2a = A.mulNew(w, 1);
                 DMatrix A1 = w2a.t().dot(A);
                 DVector b1 = w2a.t().dot(b);
                 DVector x1 = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
@@ -288,7 +286,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                     nn = 2;
                 }
                 solutions.add(x);
-                errors.addDouble(e.pnorm(nn));
+                errors.addDouble(e.norm(nn));
                 // break if the improvement is less then tolerance
                 if (it > 0 && Math.abs(errors.getDouble(errors.size() - 2) - errors.getDouble(errors.size() - 1)) < tol) {
                     converged = true;

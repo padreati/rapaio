@@ -40,9 +40,9 @@ public class IrisTest {
         Frame iris = Datasets.loadIrisDataset();
 
         DMatrix xs = DMatrix.copy(iris.mapVars(VarRange.onlyTypes(VarType.DOUBLE)));
-        DVector ys = DVector.zeros(xs.rowCount());
+        DVector ys = DVector.zeros(xs.rows());
         Var target = iris.rvar(4);
-        for (int i = 0; i < xs.rowCount(); i++) {
+        for (int i = 0; i < xs.rows(); i++) {
             ys.set(i, target.getInt(i) - 1);
         }
 

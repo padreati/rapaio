@@ -34,8 +34,6 @@ import rapaio.data.Var;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.option.AlgebraOption;
-import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
@@ -340,28 +338,12 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
     }
 
     @Override
-    public void apply(Double2DoubleFunction fun) {
-        if (cols == rowStride) {
-            int len = offset + rows * cols;
-            for (int i = offset; i < len; i++) {
-                array[i] = fun.apply(array[i]);
-            }
-        } else {
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    set(i, j, fun.apply(get(i, j)));
-                }
-            }
-        }
-    }
-
-    @Override
-    public int rowCount() {
+    public int rows() {
         return rows;
     }
 
     @Override
-    public int colCount() {
+    public int cols() {
         return cols;
     }
 
@@ -542,7 +524,7 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DVector dot(DVector b) {
-        if (b.size() != colCount()) {
+        if (b.size() != cols()) {
             throw new IllegalArgumentException("Matrix ( %d x %d ) and vector ( %d ) not compatible for multiplication."
                     .formatted(rows, cols, b.size()));
         }
@@ -551,17 +533,17 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
         double[] vector = b.valueStream().toArray();
 
         // allocate memory for the result vector
-        double[] c = new double[rowCount()];
+        double[] c = new double[rows()];
 
         // employ parallelism only if we have large row vectors
         final int sliceSize = 256;
-        final int slices = rowCount() / sliceSize;
+        final int slices = rows() / sliceSize;
         IntStream stream = IntStream.range(0, slices + 1);
         if (slices > 1) {
             stream = stream.parallel();
         }
         stream.forEach(s -> {
-            for (int i = s * sliceSize; i < Math.min(rowCount(), (s + 1) * sliceSize); i++) {
+            for (int i = s * sliceSize; i < Math.min(rows(), (s + 1) * sliceSize); i++) {
                 c[i] = DoubleArrays.dotSum(array, offset + i * rowStride, vector, 0, cols);
             }
         });
@@ -569,23 +551,24 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
     }
 
     @Override
-    public DMatrix t(AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            return new DMatrixDenseC(0, cols, rows, solidArrayCopy());
-        }
+    public DMatrix t() {
         return new DMatrixDenseC(offset, cols, rows, rowStride, array);
     }
 
     @Override
-    public DMatrixDenseR apply(Double2DoubleFunction fun, AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] copy = solidArrayCopy();
-            for (int i = 0; i < copy.length; i++) {
-                copy[i] = fun.apply(copy[i]);
+    public DMatrixDenseR apply(Double2DoubleFunction fun) {
+        if (cols == rowStride) {
+            int len = offset + rows * cols;
+            for (int i = offset; i < len; i++) {
+                array[i] = fun.apply(array[i]);
             }
-            return new DMatrixDenseR(0, rows, cols, copy);
+        } else {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    set(i, j, fun.apply(get(i, j)));
+                }
+            }
         }
-        apply(fun);
         return this;
     }
 

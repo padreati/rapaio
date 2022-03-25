@@ -111,9 +111,9 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
     @Override
     public KMedoids coreFit(Frame df, Var weights) {
         DMatrix x = DMatrix.copy(df.mapVars(inputNames));
-        if (k.get() > x.rowCount()) {
+        if (k.get() > x.rows()) {
             throw new IllegalArgumentException(
-                    "Number of clusters %d bigger than number of instances %d.".formatted(k.get(), x.rowCount()));
+                    "Number of clusters %d bigger than number of instances %d.".formatted(k.get(), x.rows()));
         }
 
         if (method.get() == Method.ALTERNATE) {
@@ -127,13 +127,13 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
     void coreFitAlternate(DMatrix x) {
         LOGGER.fine("Starting core fit for alternate method.");
         LOGGER.finest("Initialize centroids as random instances.");
-        int[] centroidIndexes = SamplingTools.sampleWOR(x.rowCount(), k.get());
+        int[] centroidIndexes = SamplingTools.sampleWOR(x.rows(), k.get());
         LOGGER.finest("medoid indexes: " + Arrays.stream(centroidIndexes)
                 .mapToObj(String::valueOf).collect(Collectors.joining(",")));
         c = x.mapRowsNew(centroidIndexes);
 
         LOGGER.finest("Initialize a cache for training purposes");
-        DistanceCache cache = new DistanceCache(x.rowCount(), distance.get());
+        DistanceCache cache = new DistanceCache(x.rows(), distance.get());
 
         LOGGER.finest("Assign instances to centroids.");
         int[] assign = computeAssignment(x, centroidIndexes, cache);
@@ -239,7 +239,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
      * @return vector of assignments which contains for each instance identified by it's index the index of the closest medoid
      */
     int[] computeAssignment(DMatrix x, int[] cint, DistanceCache cache) {
-        int[] assign = new int[x.rowCount()];
+        int[] assign = new int[x.rows()];
         for (int i = 0; i < assign.length; i++) {
             int min = 0;
             double dj = cache.get(i, cint[0], x.mapRow(i), x.mapRow(cint[0]));
@@ -276,12 +276,12 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         LOGGER.fine("Starting core fit for PAM method.");
 
         LOGGER.finest("Initialize a cache for training purposes");
-        DistanceCache cache = new DistanceCache(x.rowCount(), distance.get());
+        DistanceCache cache = new DistanceCache(x.rows(), distance.get());
 
         // array which stores the distance to the closest centroid
-        double[] dv = DoubleArrays.newFill(x.rowCount(), Double.NaN);
+        double[] dv = DoubleArrays.newFill(x.rows(), Double.NaN);
         // array which stores the distance to the second closest centroid
-        double[] ev = DoubleArrays.newFill(x.rowCount(), Double.NaN);
+        double[] ev = DoubleArrays.newFill(x.rows(), Double.NaN);
 
         LOGGER.finest("Initialize centroids as random instances.");
         int[] centroidIndexes = initializePAM(x, dv, ev, cache);
@@ -349,7 +349,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         // first index which minimize the whole distance
         centroidIndexes[0] = peekFirstCentroid(x, cache);
         centroidSet.add(centroidIndexes[0]);
-        for (int j = 0; j < x.rowCount(); j++) {
+        for (int j = 0; j < x.rows(); j++) {
             dv[j] = cache.get(centroidIndexes[0], j, x.mapRow(centroidIndexes[0]), x.mapRow(j));
         }
         for (int t = 1; t < k.get(); t++) {
@@ -364,7 +364,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
     }
 
     void updateNewClosest(DMatrix x, int next, double[] dv, double[] ev, DistanceCache cache) {
-        for (int i = 0; i < x.rowCount(); i++) {
+        for (int i = 0; i < x.rows(); i++) {
             double d = cache.get(i, next, x.mapRow(i), x.mapRow(next));
             if (Double.isNaN(dv[i]) || d < dv[i]) {
                 ev[i] = dv[i];
@@ -380,7 +380,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
     void updateAllClosest(DMatrix x, int[] centroidIndexes, double[] dv, double[] ev, DistanceCache cache) {
         Arrays.fill(dv, Double.NaN);
         Arrays.fill(ev, Double.NaN);
-        for (int i = 0; i < x.rowCount(); i++) {
+        for (int i = 0; i < x.rows(); i++) {
             for (int c : centroidIndexes) {
                 double d = cache.get(i, c, x.mapRow(i), x.mapRow(c));
                 if (Double.isNaN(dv[i]) || d < dv[i]) {
@@ -407,12 +407,12 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
     int peekNextCentroid(DMatrix x, Set<Integer> centroidSet, double[] dv, DistanceCache cache) {
         int next = -1;
         double nextG = Double.NaN;
-        for (int i = 0; i < x.rowCount(); i++) {
+        for (int i = 0; i < x.rows(); i++) {
             if (centroidSet.contains(i)) {
                 continue;
             }
             double g = 0.0;
-            for (int j = 0; j < x.rowCount(); j++) {
+            for (int j = 0; j < x.rows(); j++) {
                 if (i == j || centroidSet.contains(j)) {
                     continue;
                 }
@@ -436,7 +436,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
     int peekFirstCentroid(DMatrix x, DistanceCache cache) {
         int i = 0;
         double error = distanceFromCluster(x, i, cache);
-        for (int j = 0; j < x.rowCount(); j++) {
+        for (int j = 0; j < x.rows(); j++) {
             double nextError = distanceFromCluster(x, j, cache);
             if (nextError < error) {
                 error = nextError;
@@ -448,7 +448,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
 
     double distanceFromCluster(DMatrix x, int c, DistanceCache cache) {
         double total = 0;
-        for (int i = 0; i < x.rowCount(); i++) {
+        for (int i = 0; i < x.rows(); i++) {
             total += cache.get(i, c, x.mapRow(i), x.mapRow(c));
         }
         return total;
@@ -461,13 +461,13 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         double bestReduction = Double.NaN;
 
         for (int i : centroidIndexes) {
-            for (int h = 0; h < x.rowCount(); h++) {
+            for (int h = 0; h < x.rows(); h++) {
                 if (assign[h] == h) {
                     continue;
                 }
 
                 double reduction = 0.0;
-                for (int j = 0; j < x.rowCount(); j++) {
+                for (int j = 0; j < x.rows(); j++) {
                     if (j == h) {
                         continue;
                     }
@@ -491,12 +491,12 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
     @Override
     public ClusteringResult<KMedoids> corePredict(Frame df, boolean withScores) {
         DMatrix x = DMatrix.copy(df.mapVars(inputNames));
-        int[] assign = new int[x.rowCount()];
+        int[] assign = new int[x.rows()];
         for (int i = 0; i < assign.length; i++) {
             int min = 0;
             DVector xi = x.mapRow(i);
             double dj = distance.get().compute(xi, c.mapRow(0));
-            for (int j = 1; j < c.rowCount(); j++) {
+            for (int j = 1; j < c.rows(); j++) {
                 double d = distance.get().compute(xi, c.mapRow(j));
                 if (dj > d) {
                     dj = d;

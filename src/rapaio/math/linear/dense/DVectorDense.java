@@ -513,7 +513,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public double dotBilinear(DMatrix m, DVector y) {
-        if (m.rowCount() != size || m.colCount() != y.size()) {
+        if (m.rows() != size || m.cols() != y.size()) {
             throw new IllegalArgumentException("Bilinear matrix and vector are not conform for multiplication.");
         }
         double sum = 0.0;
@@ -527,7 +527,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public double dotBilinear(DMatrix m) {
-        if (m.rowCount() != size() || m.colCount() != size()) {
+        if (m.rows() != size() || m.cols() != size()) {
             throw new IllegalArgumentException("Bilinear matrix is not conform for multiplication.");
         }
         double sum = 0.0;
@@ -553,7 +553,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public double dotBilinearDiag(DMatrix m) {
-        if (m.rowCount() != size() || m.colCount() != size()) {
+        if (m.rows() != size() || m.cols() != size()) {
             throw new IllegalArgumentException("Bilinear matrix is not conform for multiplication.");
         }
         double sum = 0.0;
@@ -565,7 +565,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public double dotBilinearDiag(DMatrix m, DVector y) {
-        if (m.rowCount() != size() || m.colCount() != y.size()) {
+        if (m.rows() != size() || m.cols() != y.size()) {
             throw new IllegalArgumentException("Bilinear matrix is not conform for multiplication.");
         }
         double sum = 0.0;
@@ -588,7 +588,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public double pnorm(double p) {
+    public double norm(double p) {
         if (p <= 0) {
             return size;
         }

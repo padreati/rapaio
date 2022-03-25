@@ -121,7 +121,7 @@ public abstract class StandardDVectorTest {
         }
 
         DVector y = VarDouble.seq(N - 1).dv();
-        x = DVector.copy(y);
+        x = y.copy();
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(i, x.get(i), TOL);
@@ -199,10 +199,10 @@ public abstract class StandardDVectorTest {
     @Test
     void dotBilinearTest() {
         double result = z.dotBilinear(m, z);
-        assertEquals(Math.pow(z.pnorm(2), 2) * 2, result);
+        assertEquals(Math.pow(z.norm(2), 2) * 2, result);
 
         result = z.dotBilinear(m);
-        assertEquals(Math.pow(z.pnorm(2), 2) * 2, result);
+        assertEquals(Math.pow(z.norm(2), 2) * 2, result);
 
         var ex = assertThrows(IllegalArgumentException.class, () -> z.dotBilinear(DMatrix.identity(10), z));
         assertEquals("Bilinear matrix and vector are not conform for multiplication.", ex.getMessage());
@@ -235,10 +235,10 @@ public abstract class StandardDVectorTest {
 
     @Test
     void normTest() {
-        assertEquals(100, x.pnorm(0), TOL);
-        assertEquals(x.copy().apply(Math::abs).sum(), x.pnorm(1), TOL);
-        assertEquals(Math.pow(x.copy().apply(v -> Math.pow(Math.abs(v), 1.2)).sum(), 1 / 1.2), x.pnorm(1.2), TOL);
-        assertEquals(x.copy().valueStream().max().orElse(Double.NaN), x.pnorm(Double.POSITIVE_INFINITY), TOL);
+        assertEquals(100, x.norm(0), TOL);
+        assertEquals(x.copy().apply(Math::abs).sum(), x.norm(1), TOL);
+        assertEquals(Math.pow(x.copy().apply(v -> Math.pow(Math.abs(v), 1.2)).sum(), 1 / 1.2), x.norm(1.2), TOL);
+        assertEquals(x.copy().valueStream().max().orElse(Double.NaN), x.norm(Double.POSITIVE_INFINITY), TOL);
     }
 
     @Test

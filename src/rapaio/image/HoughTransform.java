@@ -83,8 +83,8 @@ public class HoughTransform extends ParamSet<HoughTransform> {
         double[] values = hsMatrix.valueStream().toArray();
         double qvalue = Quantiles.of(VarDouble.wrap(values), 1 - percentage).values()[0];
         double d = sqrt(width * width + height * height);
-        for (int i = 0; i < hsMatrix.rowCount(); i++) {
-            for (int j = 0; j < hsMatrix.colCount(); j++) {
+        for (int i = 0; i < hsMatrix.rows(); i++) {
+            for (int j = 0; j < hsMatrix.cols(); j++) {
                 double count = hsMatrix.get(i, j);
                 if (count > qvalue) {
                     double theta = j * PI / thetaSize.get();

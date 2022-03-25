@@ -85,8 +85,8 @@ public class MWKMeansTest {
         model.fit(iris);
 
         assertTrue(model.hasLearned());
-        assertEquals(3, model.getCentroidsMatrix().rowCount());
-        assertEquals(4, model.getCentroidsMatrix().colCount());
+        assertEquals(3, model.getCentroidsMatrix().rows());
+        assertEquals(4, model.getCentroidsMatrix().cols());
 
         MWKMeansResult result = model.predict(iris);
         var prediction = result.getAssignment();
@@ -109,8 +109,8 @@ public class MWKMeansTest {
         model.fit(iris);
 
         assertTrue(model.hasLearned());
-        assertEquals(3, model.getCentroidsMatrix().rowCount());
-        assertEquals(4, model.getCentroidsMatrix().colCount());
+        assertEquals(3, model.getCentroidsMatrix().rows());
+        assertEquals(4, model.getCentroidsMatrix().cols());
 
         MWKMeansResult result = model.predict(iris);
         var prediction = result.getAssignment();

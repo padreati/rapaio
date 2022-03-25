@@ -23,8 +23,6 @@ package rapaio.math.linear;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.copy;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -140,8 +138,8 @@ public class LinearAlgebraIdentitiesTests {
             for (VectorFactory vf : vFactories) {
                 var v = vf.randomVector(400);
 
-                var x1 = a.mul(v, 1, copy()).t().dot(a);
-                var x2 = a.t().mul(v, 0, copy()).dot(a);
+                var x1 = a.mulNew(v, 1).t().dot(a);
+                var x2 = a.t().mulNew(v, 0).dot(a);
                 var x3 = a.t().dot(DMatrix.diagonal(v)).dot(a);
 
                 assertTrue(x1.deepEquals(x1.t()));

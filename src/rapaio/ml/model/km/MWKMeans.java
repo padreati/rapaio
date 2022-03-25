@@ -43,7 +43,6 @@ import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.sys.With;
 
 /**
  * Minkowsky Weighted KMeans
@@ -153,7 +152,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         weights = subspace.get()
                 ? DMatrix.fill(k.get(), inputNames.length, 1.0 / inputNames.length)
                 : DMatrix.fill(1, inputNames.length, 1.0 / inputNames.length);
-        LOGGER.finer("Initial weights: " + weights.toString());
+        LOGGER.finer("Initial weights: " + weights);
         errors = VarDouble.empty().name("errors");
 
         // initialize design matrix
@@ -201,9 +200,9 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     }
 
     private double computeError(DMatrix x, DMatrix centroids) {
-        return IntStream.range(0, x.rowCount()).parallel().mapToDouble(j -> {
+        return IntStream.range(0, x.rows()).parallel().mapToDouble(j -> {
             double d = Double.NaN;
-            for (int c = 0; c < centroids.rowCount(); c++) {
+            for (int c = 0; c < centroids.rows(); c++) {
                 DVector w = subspace.get() ? weights.mapRow(c) : weights.mapRow(0);
                 double dd = error(x.mapRow(j), centroids.mapRow(c), w, p.get());
                 d = Double.isNaN(d) ? dd : Math.min(dd, d);
@@ -216,12 +215,12 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     }
 
     private int[] computeAssignmentAndError(DMatrix x, boolean withErrors) {
-        int[] assignment = new int[x.rowCount()];
+        int[] assignment = new int[x.rows()];
         double totalError = 0.0;
-        for (int i = 0; i < x.rowCount(); i++) {
+        for (int i = 0; i < x.rows(); i++) {
             double error = Double.NaN;
             int cluster = -1;
-            for (int j = 0; j < c.rowCount(); j++) {
+            for (int j = 0; j < c.rows(); j++) {
                 DVector w = subspace.get() ? weights.mapRow(j) : weights.mapRow(0);
                 double currentError = error(x.mapRow(i), c.mapRow(j), w, p.get());
                 if (!Double.isFinite(currentError)) {
@@ -347,7 +346,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         for (int i = 0; i < k.get(); i++) {
             int[] indexes = computeCentroidIndexes(i, assign);
             DMatrix xc = x.mapRows(indexes);
-            for (int j = 0; j < x.colCount(); j++) {
+            for (int j = 0; j < x.cols(); j++) {
                 DVector ykj = xc.mapColNew(j);
                 if (p.get() > 1) {
                     c.set(i, j, findMinimum(ykj, p.get()));
@@ -367,11 +366,11 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     }
 
     private void subspaceWeightsUpdate(DMatrix x, int[] assign) {
-        DMatrix dm = c.mapRows(assign).sub(x, With.copy()).apply(v -> pow(abs(v), p.get()));
+        DMatrix dm = c.mapRows(assign).subNew(x).apply(v -> pow(abs(v), p.get()));
 
-        DMatrix dv = DMatrix.empty(k.get(), dm.colCount());
-        for (int i = 0; i < dm.rowCount(); i++) {
-            for (int j = 0; j < dm.colCount(); j++) {
+        DMatrix dv = DMatrix.empty(k.get(), dm.cols());
+        for (int i = 0; i < dm.rows(); i++) {
+            for (int j = 0; j < dm.cols(); j++) {
                 dv.inc(assign[i], j, dm.get(i, j));
             }
         }
@@ -380,10 +379,10 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
 
         double invPow = p.get() > 1 ? 1 / (p.get() - 1) : 0;
 
-        for (int i = 0; i < dv.rowCount(); i++) {
-            for (int j = 0; j < dv.colCount(); j++) {
+        for (int i = 0; i < dv.rows(); i++) {
+            for (int j = 0; j < dv.cols(); j++) {
                 double v = 0;
-                for (int l = 0; l < dv.colCount(); l++) {
+                for (int l = 0; l < dv.cols(); l++) {
                     v += pow(dv.get(i, j) / dv.get(i, l), invPow);
                 }
                 weights.set(i, j, 1 / v);
@@ -392,7 +391,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     }
 
     private void globalWeightsUpdate(DMatrix x, int[] assign) {
-        DVector dv = c.mapRows(assign).sub(x, With.copy()).apply(v -> pow(abs(v), p.get())).sum(0);
+        DVector dv = c.mapRows(assign).subNew(x).apply(v -> pow(abs(v), p.get())).sum(0);
         // avoid division by 0
         dv.apply(v -> max(v, 1e-10));
 
@@ -435,7 +434,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         if (learned) {
             sb.append("Inertia:").append(getError()).append("\n");
             sb.append("Iterations:").append(errors.size()).append("\n");
-            sb.append("Clusters:").append(c.rowCount()).append("\n");
+            sb.append("Clusters:").append(c.rows()).append("\n");
         }
         return sb.toString();
     }

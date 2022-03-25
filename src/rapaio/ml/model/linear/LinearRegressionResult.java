@@ -113,7 +113,7 @@ public class LinearRegressionResult extends RegressionResult {
                     }
                 }
                 DMatrix X = DMatrix.copy(features.mapVars(model.inputNames()));
-                DMatrix m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(DMatrix.identity(X.colCount()));
+                DMatrix m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(DMatrix.identity(X.cols()));
 
                 for (int j = 0; j < model.inputNames().length; j++) {
                     beta_std_error.set(j, i, Math.sqrt(m_beta_hat.get(j, j) * var));

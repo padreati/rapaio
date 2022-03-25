@@ -40,7 +40,6 @@ import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.linear.binarylogistic.BinaryLogisticIRLS;
 import rapaio.ml.model.linear.binarylogistic.BinaryLogisticNewton;
-import rapaio.sys.With;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
@@ -148,7 +147,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
         DMatrix x = computeInputMatrix(df, firstTargetName());
         DVector y = computeTargetVector(df.rvar(firstTargetName()));
-        DVector w0 = DVector.fill(x.colCount(), init.get().getFunction().apply(y));
+        DVector w0 = DVector.fill(x.cols(), init.get().getFunction().apply(y));
 
         switch (solver.get()) {
             case IRLS -> {
@@ -227,7 +226,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         DVector p = DVector.fill(df.rowCount(), intercept.get() * w.getDouble(0));
         for (int i = 0; i < inputNames.length; i++) {
             double wvalue = w.getDouble(i + offset);
-            DVector z = df.rvar(inputName(i)).dv(With.copy()).apply(v -> 1 / (1 + Math.exp(-v * wvalue)));
+            DVector z = df.rvar(inputName(i)).dvNew().apply(v -> 1 / (1 + Math.exp(-v * wvalue)));
             p.add(z);
         }
 

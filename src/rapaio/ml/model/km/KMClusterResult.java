@@ -54,7 +54,7 @@ public class KMClusterResult extends ClusteringResult<KMCluster> {
 
         DMatrix c = model.getCentroidsMatrix();
         DMatrix m = DMatrix.copy(df);
-        int ccount = c.rowCount();
+        int ccount = c.rows();
 
         Var id = VarInt.seq(1, ccount).name("ID");
         Var count = VarInt.fill(ccount, 0).name("count");
@@ -67,7 +67,7 @@ public class KMClusterResult extends ClusteringResult<KMCluster> {
 
         Map<Integer, VarDouble> errors = new HashMap<>();
 
-        for (int i = 0; i < m.rowCount(); i++) {
+        for (int i = 0; i < m.rows(); i++) {
             double d = model.method.get().distance().compute(c.mapRow(assignment.getInt(i)), m.mapRow(i));
             errors.computeIfAbsent(assignment.getInt(i), row -> VarDouble.empty()).addDouble(d * d);
             distances.addDouble(d * d);

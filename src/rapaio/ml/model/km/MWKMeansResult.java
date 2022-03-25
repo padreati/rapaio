@@ -55,7 +55,7 @@ public class MWKMeansResult extends ClusteringResult<MWKMeans> {
 
         DMatrix c = model.getCentroidsMatrix();
         DMatrix m = DMatrix.copy(df);
-        int ccount = c.rowCount();
+        int ccount = c.rows();
 
         Var count = VarInt.fill(ccount, 0).name("count");
         Var mean = VarDouble.fill(ccount, 0).name("mean");
@@ -67,7 +67,7 @@ public class MWKMeansResult extends ClusteringResult<MWKMeans> {
 
         Map<Integer, VarDouble> errors = new HashMap<>();
 
-        for (int i = 0; i < m.rowCount(); i++) {
+        for (int i = 0; i < m.rows(); i++) {
             DVector w = model.getWeightsMatrix().mapRow(model.subspace.get() ? assignment.getInt(i) : 0);
             double d = model.distance(m.mapRow(i), c.mapRow(assignment.getInt(i)), w, model.p.get());
             errors.computeIfAbsent(assignment.getInt(i), row -> VarDouble.empty()).addDouble(d * d);

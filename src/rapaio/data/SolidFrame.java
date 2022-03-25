@@ -109,9 +109,9 @@ public class SolidFrame extends AbstractFrame {
     }
 
     public static Frame matrix(DMatrix m, List<String> varNames) {
-        Frame df = matrix(m.rowCount(), varNames);
-        for (int i = 0; i < m.rowCount(); i++) {
-            for (int j = 0; j < m.colCount(); j++) {
+        Frame df = matrix(m.rows(), varNames);
+        for (int i = 0; i < m.rows(); i++) {
+            for (int j = 0; j < m.cols(); j++) {
                 df.setDouble(i, j, m.get(i, j));
             }
         }

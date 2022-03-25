@@ -32,8 +32,6 @@ import rapaio.data.unique.UniqueLabel;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorVar;
-import rapaio.math.linear.option.AlgebraOption;
-import rapaio.math.linear.option.AlgebraOptions;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -112,15 +110,17 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public DVector dv(AlgebraOption<?>... opts) {
-        if (AlgebraOptions.from(opts).isCopy()) {
-            double[] values = new double[size()];
-            for (int i = 0; i < size(); i++) {
-                values[i] = getDouble(i);
-            }
-            return new DVectorDense(0, size(), values);
-        }
+    public DVector dv() {
         return new DVectorVar<>(this);
+    }
+
+    @Override
+    public DVector dvNew() {
+        double[] values = new double[size()];
+        for (int i = 0; i < size(); i++) {
+            values[i] = getDouble(i);
+        }
+        return new DVectorDense(0, size(), values);
     }
 
     @Serial
@@ -200,20 +200,11 @@ public abstract class AbstractVar implements Var {
      */
     void fillSummary(TextTable tt, int headerColIndex, int valueColIndex) {
         switch (type()) {
-            case BINARY:
-                fillSummaryBinary(this, tt, headerColIndex, valueColIndex);
-                break;
-            case NOMINAL:
-            case STRING:
-                fillSummaryLabel(this, tt, headerColIndex, valueColIndex);
-                break;
-            case DOUBLE:
-            case INT:
-            case LONG:
-                fillSummaryDouble(this, tt, headerColIndex, valueColIndex);
-                break;
-
-            default:
+            case BINARY -> fillSummaryBinary(this, tt, headerColIndex, valueColIndex);
+            case NOMINAL, STRING -> fillSummaryLabel(this, tt, headerColIndex, valueColIndex);
+            case DOUBLE, INT, LONG -> fillSummaryDouble(this, tt, headerColIndex, valueColIndex);
+            default -> {
+            }
         }
     }
 

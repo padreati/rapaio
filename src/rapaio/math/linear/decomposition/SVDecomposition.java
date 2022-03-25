@@ -66,8 +66,8 @@ public class SVDecomposition implements java.io.Serializable {
         // Derived from LINPACK code.
         // Initialize.
         DMatrix A = Arg.copy();
-        rowCount = Arg.rowCount();
-        colCount = Arg.colCount();
+        rowCount = Arg.rows();
+        colCount = Arg.cols();
 
         if (rowCount < colCount) {
             throw new IllegalArgumentException("SVD only works for rowCount >= colCount");

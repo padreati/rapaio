@@ -88,8 +88,8 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         @Override
         public Factory[] generateFactories(DMatrix x) {
-            DVector mean = DVector.from(x.colCount(), col -> x.mapCol(col).mean());
-            return new Factory[] {new Factory("intercept", -1, mean, () -> DVector.fill(x.rowCount(), 1.0), v -> 1.0)};
+            DVector mean = DVector.from(x.cols(), col -> x.mapCol(col).mean());
+            return new Factory[] {new Factory("intercept", -1, mean, () -> DVector.fill(x.rows(), 1.0), v -> 1.0)};
         }
     }
 
@@ -97,14 +97,14 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         @Override
         public Factory[] generateFactories(DMatrix x) {
-            int len = Math.max(1, (int) (x.rowCount() * sigmas.size() * p));
-            int[] selection = SamplingTools.sampleWOR(x.rowCount() * sigmas.size(), len);
+            int len = Math.max(1, (int) (x.rows() * sigmas.size() * p));
+            int[] selection = SamplingTools.sampleWOR(x.rows() * sigmas.size(), len);
             Factory[] factories = new Factory[selection.length];
             IntArrays.quickSort(selection);
             int pp = 0;
             for (int i = 0; i < sigmas.size(); i++) {
-                for (int j = 0; j < x.rowCount(); j++) {
-                    int pos = i * x.rowCount() + j;
+                for (int j = 0; j < x.rows(); j++) {
+                    int pos = i * x.rows() + j;
                     if (pp >= selection.length) {
                         break;
                     }
@@ -117,7 +117,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                             String.format("RBF sigma:%s, index: %d", Format.floatFlex(sigmas.getDouble(i)), jj),
                             jj,
                             x.mapRowNew(jj),
-                            () -> DVector.from(x.rowCount(), r -> kernel.compute(x.mapRow(jj), x.mapRow(r))),
+                            () -> DVector.from(x.rows(), r -> kernel.compute(x.mapRow(jj), x.mapRow(r))),
                             vector -> kernel.compute(vector, x.mapRow(jj))
                     );
                 }
@@ -130,7 +130,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         @Override
         public Factory[] generateFactories(DMatrix x) {
-            int len = Math.min(1, (int) (sigmas.size() * x.rowCount() * p));
+            int len = Math.min(1, (int) (sigmas.size() * x.rows() * p));
             Factory[] factories = new Factory[len];
             for (int i = 0; i < len; i++) {
                 factories[i] = nextFactory(x);
@@ -141,15 +141,15 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         public Factory nextFactory(DMatrix x) {
             double sigma = sigmas.getDouble(RandomSource.nextInt(sigmas.size()));
             RBFKernel kernel = new RBFKernel(sigma);
-            DVector out = DVector.fill(x.colCount(), 0);
+            DVector out = DVector.fill(x.cols(), 0);
             for (int j = 0; j < out.size(); j++) {
-                out.set(j, x.get(RandomSource.nextInt(x.rowCount()), j) + noise.sampleNext());
+                out.set(j, x.get(RandomSource.nextInt(x.rows()), j) + noise.sampleNext());
             }
             return new Factory(
                     String.format("RBF sigma:%s, index: %s", Format.floatFlex(sigma), out),
                     -1,
                     out,
-                    () -> DVector.from(x.rowCount(), r -> kernel.compute(out, x.mapRow(r))),
+                    () -> DVector.from(x.rows(), r -> kernel.compute(out, x.mapRow(r))),
                     vector -> kernel.compute(vector, out)
             );
         }
@@ -293,7 +293,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
      * @return Numbers of fitted relevant vectors count, -1 if model is not fitted.
      */
     public int getVectorCount() {
-        return hasLearned ? relevanceVectors.rowCount() : -1;
+        return hasLearned ? relevanceVectors.rows() : -1;
     }
 
     @Override
@@ -383,7 +383,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             return sb.toString();
         }
 
-        sb.append("> relevant vectors count: ").append(relevanceVectors.rowCount()).append("\n");
+        sb.append("> relevant vectors count: ").append(relevanceVectors.rows()).append("\n");
         sb.append("> relevant vector training indexes: [")
                 .append(IntArrays.stream(trainingIndexes, 0, trainingIndexes.length).mapToObj(String::valueOf)
                         .collect(Collectors.joining(",")))
@@ -478,7 +478,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         private int fcount;
 
         public boolean fit() {
-            n = x.rowCount();
+            n = x.rows();
             fcount = parent.factories.size();
             phi = buildPhi();
             indexes = IntArrays.newSeq(0, parent.factories.size());
@@ -490,14 +490,14 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
                 // compute m and sigma
                 DMatrix t = phi_t_phi.copy().mul(beta);
-                for (int i = 0; i < t.rowCount(); i++) {
+                for (int i = 0; i < t.rows(); i++) {
                     t.inc(i, i, alpha.get(i));
                 }
 
                 try {
-                    sigma = LUDecomposition.from(t).solve(DMatrix.identity(t.rowCount()));
+                    sigma = LUDecomposition.from(t).solve(DMatrix.identity(t.rows()));
                 } catch (IllegalArgumentException ignored) {
-                    sigma = QRDecomposition.from(t).solve(DMatrix.identity(t.rowCount()));
+                    sigma = QRDecomposition.from(t).solve(DMatrix.identity(t.rows()));
                 }
                 m = sigma.dot(phi_t_y).mul(beta);
 
@@ -569,14 +569,14 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             phi_t_y = phi_t_y.mapNew(keep);
 
             DMatrix t = phi_t_phi.copy().mul(beta);
-            for (int i = 0; i < t.rowCount(); i++) {
+            for (int i = 0; i < t.rows(); i++) {
                 t.inc(i, i, alpha.get(i));
             }
 
             try {
-                sigma = LUDecomposition.from(t).solve(DMatrix.identity(t.rowCount()));
+                sigma = LUDecomposition.from(t).solve(DMatrix.identity(t.rows()));
             } catch (IllegalArgumentException ignored) {
-                sigma = QRDecomposition.from(t).solve(DMatrix.identity(t.rowCount()));
+                sigma = QRDecomposition.from(t).solve(DMatrix.identity(t.rows()));
             }
 
             m = sigma.dot(phi_t_y).mul(beta);
@@ -584,7 +584,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         private void initializeAlphaBeta() {
             beta = 1.0 / (y.variance() * 0.1);
-            alpha = DVector.from(phi.colCount(), row -> Math.abs(RandomSource.nextDouble() / 10));
+            alpha = DVector.from(phi.cols(), row -> Math.abs(RandomSource.nextDouble() / 10));
         }
 
         private void updateResults(RVMRegression parent, boolean convergent, int iterations) {
@@ -622,7 +622,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             phi_hat = phi.t().dot(phi);
             phi_dot_y = phi.t().dot(y);
 
-            n = phi.rowCount();
+            n = phi.rows();
             fcount = parent.factories.size();
             ss = new double[fcount];
             qq = new double[fcount];
@@ -827,7 +827,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         public boolean fit() {
             initialize();
 
-            n = x.rowCount();
+            n = x.rows();
 
             computeSigmaAndMu();
             computeSQ();
@@ -1073,28 +1073,28 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
             // adjust phiHat by adding a new row and column
 
-            phiHat = phiHat.resizeCopy(phiHat.rowCount() + 1, phiHat.colCount() + 1, Double.NaN);
+            phiHat = phiHat.resizeCopy(phiHat.rows() + 1, phiHat.cols() + 1, Double.NaN);
 
             // fill the remaining entries from cache
             boolean full = true;
-            for (int i = 0; i < phiHat.rowCount(); i++) {
+            for (int i = 0; i < phiHat.rows(); i++) {
                 double value = cache.get(index, active.get(i).index);
                 if (Double.isNaN(value)) {
                     full = false;
                 } else {
-                    phiHat.set(phiHat.rowCount() - 1, i, value);
-                    phiHat.set(i, phiHat.colCount() - 1, value);
+                    phiHat.set(phiHat.rows() - 1, i, value);
+                    phiHat.set(i, phiHat.cols() - 1, value);
                 }
             }
 
             // if not completed from cache
             if (!full) {
-                for (int i = 0; i < phiHat.rowCount(); i++) {
-                    double value = phiHat.get(phiHat.rowCount() - 1, i);
+                for (int i = 0; i < phiHat.rows(); i++) {
+                    double value = phiHat.get(phiHat.rows() - 1, i);
                     if (Double.isNaN(value)) {
                         value = active.get(i).vector.dot(phii);
-                        phiHat.set(phiHat.rowCount() - 1, i, value);
-                        phiHat.set(i, phiHat.colCount() - 1, value);
+                        phiHat.set(phiHat.rows() - 1, i, value);
+                        phiHat.set(i, phiHat.cols() - 1, value);
                         cache.store(index, active.get(i).index, value);
                     }
                 }

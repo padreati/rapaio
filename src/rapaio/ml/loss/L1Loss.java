@@ -26,7 +26,6 @@ import java.io.Serial;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.sys.With;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/17.
@@ -53,7 +52,7 @@ public class L1Loss implements Loss {
 
     @Override
     public double additiveScalarMinimizer(Var y, Var fx) {
-        return Quantiles.of(y.dv(With.copy()).sub(fx.dv()).dv(), 0.5).values()[0];
+        return Quantiles.of(y.dvNew().sub(fx.dv()).dv(), 0.5).values()[0];
     }
 
     @Override
@@ -63,7 +62,7 @@ public class L1Loss implements Loss {
 
     @Override
     public VarDouble error(Var y, Var y_hat) {
-        return y.dv(With.copy()).sub(y_hat.dv()).apply(Math::abs).dv();
+        return y.dvNew().sub(y_hat.dv()).apply(Math::abs).dv();
     }
 
     @Override
@@ -73,7 +72,7 @@ public class L1Loss implements Loss {
 
     @Override
     public double residualErrorScore(Var residual) {
-        return residual.dv(With.copy()).apply(Math::abs).nansum();
+        return residual.dvNew().apply(Math::abs).nansum();
     }
 
     @Override

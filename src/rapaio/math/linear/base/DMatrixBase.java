@@ -44,12 +44,12 @@ public class DMatrixBase extends AbstractDMatrix {
     }
 
     @Override
-    public int rowCount() {
+    public int rows() {
         return rows;
     }
 
     @Override
-    public int colCount() {
+    public int cols() {
         return cols;
     }
 
@@ -97,16 +97,16 @@ public class DMatrixBase extends AbstractDMatrix {
     @Override
     public DMatrix mapRows(int[] indexes) {
         int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
-        int[] colIndexes = IntArrays.newSeq(0, colCount());
-        IntArrays.mul(colIndexes, 0, rowCount(), colIndexes.length);
+        int[] colIndexes = IntArrays.newSeq(0, cols());
+        IntArrays.mul(colIndexes, 0, rows(), colIndexes.length);
         return new DMatrixMap(0, rowIndexes, colIndexes, array);
     }
 
     @Override
     public DMatrix mapRowsTo(int[] indexes, DMatrix to) {
         int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
-        int[] colIndexes = IntArrays.newSeq(0, colCount());
-        IntArrays.mul(colIndexes, 0, rowCount(), colIndexes.length);
+        int[] colIndexes = IntArrays.newSeq(0, cols());
+        IntArrays.mul(colIndexes, 0, rows(), colIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 to.set(i, j, array[rowIndexes[i] + colIndexes[j]]);
@@ -117,17 +117,17 @@ public class DMatrixBase extends AbstractDMatrix {
 
     @Override
     public DMatrix mapCols(int[] indexes) {
-        int[] rowIndexes = IntArrays.newSeq(0, colCount());
+        int[] rowIndexes = IntArrays.newSeq(0, cols());
         int[] colIndexes = Arrays.copyOf(indexes, indexes.length);
-        IntArrays.mul(colIndexes, 0, rowCount(), colIndexes.length);
+        IntArrays.mul(colIndexes, 0, rows(), colIndexes.length);
         return new DMatrixMap(0, rowIndexes, colIndexes, array);
     }
 
     @Override
     public DMatrix mapColsTo(int[] indexes, DMatrix to) {
-        int[] rowIndexes = IntArrays.newSeq(0, colCount());
+        int[] rowIndexes = IntArrays.newSeq(0, cols());
         int[] colIndexes = Arrays.copyOf(indexes, indexes.length);
-        IntArrays.mul(colIndexes, 0, rowCount(), colIndexes.length);
+        IntArrays.mul(colIndexes, 0, rows(), colIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 to.set(i, j, array[rowIndexes[i] + colIndexes[j]]);

@@ -85,10 +85,10 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         public void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment) {
 
             // we compute mean for each feature separately
-            for (int j = 0; j < instances.colCount(); j++) {
+            for (int j = 0; j < instances.cols(); j++) {
                 // collect values for each cluster in mean, for a given input feature
                 Var[] means = IntStream.range(0, k).mapToObj(i -> VarDouble.empty()).toArray(VarDouble[]::new);
-                for (int i = 0; i < instances.rowCount(); i++) {
+                for (int i = 0; i < instances.rows(); i++) {
                     means[assignment[i]].addDouble(instances.get(i, j));
                 }
                 for (int i = 0; i < k; i++) {
@@ -113,10 +113,10 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         public void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment) {
 
             // we compute mean for each feature separately
-            for (int j = 0; j < instances.colCount(); j++) {
+            for (int j = 0; j < instances.cols(); j++) {
                 // collect values for each cluster in mean, for a given input feature
                 Var[] means = IntStream.range(0, k).mapToObj(i -> VarDouble.empty()).toArray(VarDouble[]::new);
-                for (int i = 0; i < instances.rowCount(); i++) {
+                for (int i = 0; i < instances.rows(); i++) {
                     means[assignment[i]].addDouble(instances.get(i, j));
                 }
                 for (int i = 0; i < k; i++) {
@@ -205,7 +205,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         DMatrix m = DMatrix.copy(initialDf);
         c = initializeClusters(m);
 
-        int[] assignment = IntArrays.newFill(m.rowCount(), -1);
+        int[] assignment = IntArrays.newFill(m.rows(), -1);
         errors = VarDouble.empty().name("errors");
 
         assignToCentroids(m, assignment, true);
@@ -252,7 +252,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
 
     private double computeInitError(DMatrix m, DMatrix centroids) {
         double sum = 0;
-        for (int i = 0; i < m.rowCount(); i++) {
+        for (int i = 0; i < m.rows(); i++) {
             DVector mrow = m.mapRow(i);
             int cluster = findClosestCentroid(mrow, centroids);
             sum += method.get().distance().reduced(centroids.mapRow(cluster), mrow);
@@ -262,7 +262,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
 
     private void assignToCentroids(DMatrix m, int[] assignment, boolean withErrors) {
         double totalError = 0.0;
-        for (int i = 0; i < m.rowCount(); i++) {
+        for (int i = 0; i < m.rows(); i++) {
             DVector row = m.mapRow(i);
             int cluster = findClosestCentroid(row, c);
             if (withErrors) {
@@ -278,7 +278,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
     private int findClosestCentroid(DVector mrow, DMatrix centroids) {
         int cluster = 0;
         double d = method.get().distance().compute(mrow, centroids.mapRow(0));
-        for (int j = 1; j < centroids.rowCount(); j++) {
+        for (int j = 1; j < centroids.rows(); j++) {
             double dd = method.get().distance().compute(mrow, centroids.mapRow(j));
             if (d > dd) {
                 d = dd;
@@ -311,12 +311,12 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         while (it.hasNext()) {
             int next = it.next();
             while (true) {
-                int selection = RandomSource.nextInt(df.rowCount());
+                int selection = RandomSource.nextInt(df.rows());
                 boolean found = false;
 
                 // check if it does not collide with existent valid clusters
 
-                for (int i = 0; i < c.rowCount(); i++) {
+                for (int i = 0; i < c.rows(); i++) {
                     if (emptyCentroids.contains(i)) {
                         continue;
                     }
@@ -331,7 +331,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
 
                 // we found a valid centroid, it will be assigned
 
-                for (int j = 0; j < c.colCount(); j++) {
+                for (int j = 0; j < c.cols(); j++) {
                     c.set(next, j, df.get(selection, j));
                 }
                 break;
@@ -352,7 +352,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
 
     private boolean checkIfEqual(DMatrix centroids, int c, DMatrix df, int i) {
         int count = 0;
-        for (int j = 0; j < centroids.colCount(); j++) {
+        for (int j = 0; j < centroids.cols(); j++) {
             if (centroids.get(c, j) == df.get(i, j)) {
                 count++;
             }

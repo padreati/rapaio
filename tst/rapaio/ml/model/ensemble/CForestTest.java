@@ -70,8 +70,8 @@ public class CForestTest {
 
         int[] maxRows = densities.argmax(1);
 
-        assertEquals(iris.rowCount(), densities.rowCount());
-        assertEquals(model.firstTargetLevels().size() - 1, densities.colCount());
+        assertEquals(iris.rowCount(), densities.rows());
+        assertEquals(model.firstTargetLevels().size() - 1, densities.cols());
 
         for (int i = 0; i < iris.rowCount(); i++) {
             assertEquals(maxRows[i], predClass.getInt(i) - 1);

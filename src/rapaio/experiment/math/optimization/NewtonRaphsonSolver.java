@@ -113,7 +113,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         // find minimum diagonal element
 
         double minac = A.get(0, 0);
-        for (int i = 1; i < A.rowCount(); i++) {
+        for (int i = 1; i < A.rows(); i++) {
             minac = min(minac, A.get(i, i));
         }
 
@@ -122,7 +122,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
 
         // update matrix
         DMatrix Ac = A.copy();
-        for (int i = 0; i < Ac.rowCount(); i++) {
+        for (int i = 0; i < Ac.rows(); i++) {
             Ac.set(i, i, A.get(i, i) + sigma);
         }
 
@@ -137,7 +137,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
             sigma = max(100 * sigma, beta);
             // update matrix
             DMatrix Acc = Ac.copy();
-            for (int i = 0; i < Acc.rowCount(); i++) {
+            for (int i = 0; i < Acc.rows(); i++) {
                 Acc.set(i, i, Ac.get(i, i) + sigma);
             }
 

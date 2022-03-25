@@ -23,8 +23,6 @@ package rapaio.ml.eval;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static rapaio.sys.With.copy;
-
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -74,7 +72,7 @@ public class RegressionResultEvaluationTest {
         double mean = target.dv().nanmean();
         double count = target.size();
 
-        double expectedScore = Math.sqrt(target.dv(copy()).sub(mean).apply(x -> x * x).nansum() / count);
+        double expectedScore = Math.sqrt(target.dvNew().sub(mean).apply(x -> x * x).nansum() / count);
 
         RegressionEvaluationResult result = eval.run();
         assertEquals(2, result.getTrainScores().rowCount());

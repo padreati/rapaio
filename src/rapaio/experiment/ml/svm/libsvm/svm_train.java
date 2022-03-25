@@ -252,9 +252,9 @@ class svm_train {
     private void read_problem(DMatrix xs, DVector ys) {
         Vector<Double> vy = new Vector<>();
         Vector<svm_node[]> vx = new Vector<>();
-        int cols = xs.colCount();
+        int cols = xs.cols();
 
-        for (int i = 0; i < xs.rowCount(); i++) {
+        for (int i = 0; i < xs.rows(); i++) {
             vy.addElement(ys.get(i));
             svm_node[] x = new svm_node[cols];
             for (int j = 0; j < cols; j++) {

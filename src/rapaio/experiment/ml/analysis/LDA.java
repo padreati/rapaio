@@ -95,9 +95,9 @@ public class LDA implements Printable {
 
         // compute mean and sd
 
-        mean = DVector.zeros(xx.colCount());
-        sd = DVector.zeros(xx.colCount());
-        for (int i = 0; i < xx.colCount(); i++) {
+        mean = DVector.zeros(xx.cols());
+        sd = DVector.zeros(xx.cols());
+        for (int i = 0; i < xx.cols(); i++) {
             mean.set(i, xx.mapCol(i).mean());
             sd.set(i, Math.sqrt(xx.mapCol(i).variance()));
         }
@@ -105,8 +105,8 @@ public class LDA implements Printable {
         // scale the whole data if it is the case
 
         if (scaling) {
-            for (int i = 0; i < xx.rowCount(); i++) {
-                for (int j = 0; j < xx.colCount(); j++) {
+            for (int i = 0; i < xx.rows(); i++) {
+                for (int j = 0; j < xx.cols(); j++) {
                     if (sd.get(j) != 0)
                         xx.set(i, j, (xx.get(i, j) - mean.get(j)) / sd.get(j));
                 }
@@ -128,8 +128,8 @@ public class LDA implements Printable {
 
         classMean = new DVector[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
-            classMean[i] = DVector.zeros(x[i].colCount());
-            for (int j = 0; j < x[i].colCount(); j++) {
+            classMean[i] = DVector.zeros(x[i].cols());
+            for (int j = 0; j < x[i].cols(); j++) {
                 classMean[i].set(j, x[i].mapCol(j).mean());
             }
         }
@@ -146,7 +146,7 @@ public class LDA implements Printable {
         DMatrix sb = DMatrix.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.size(); i++) {
             DMatrix cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().sub(mean.asMatrix());
-            sb.add(cm.dot(cm.t()).mul(x[i].rowCount()));
+            sb.add(cm.dot(cm.t()).mul(x[i].rows()));
         }
 
         // inverse sw
@@ -182,8 +182,8 @@ public class LDA implements Printable {
         DMatrix x = DMatrix.copy(df.mapVars(inputNames));
 
         if (scaling) {
-            for (int i = 0; i < x.rowCount(); i++) {
-                for (int j = 0; j < x.colCount(); j++) {
+            for (int i = 0; i < x.rows(); i++) {
+                for (int j = 0; j < x.cols(); j++) {
                     x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
                 }
             }

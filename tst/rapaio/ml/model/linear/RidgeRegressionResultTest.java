@@ -126,8 +126,8 @@ public class RidgeRegressionResultTest {
         RidgeRegressionModel rlm = RidgeRegressionModel.newModel(10).fit(df, "Sales");
 
         assertArrayEquals(rlm.firstCoefficients().valueStream().toArray(), rlm.getCoefficients(0).valueStream().toArray(), TOL);
-        assertEquals(1, rlm.getAllCoefficients().colCount());
-        assertEquals(4, rlm.getAllCoefficients().rowCount());
+        assertEquals(1, rlm.getAllCoefficients().cols());
+        assertEquals(4, rlm.getAllCoefficients().rows());
         assertArrayEquals(rlm.firstCoefficients().valueStream().toArray(), rlm.getAllCoefficients().mapCol(0).valueStream().toArray(), TOL);
     }
 

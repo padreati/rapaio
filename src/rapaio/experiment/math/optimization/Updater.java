@@ -89,7 +89,7 @@ class L1Updater implements Updater {
             i += 1;
         }
 
-        return Pair.from(brzWeights, brzWeights.pnorm(1) * regParam);
+        return Pair.from(brzWeights, brzWeights.norm(1) * regParam);
     }
 }
 
@@ -112,7 +112,7 @@ class SquaredL2Updater implements Updater {
         DVector brzWeights = weightsOld.copy();
         brzWeights.sub(brzWeights.copy().mul(thisIterStepSize * regParam));
         brzWeights.add(gradient.copy().mul(-thisIterStepSize));
-        double norm = brzWeights.pnorm(2.0);
+        double norm = brzWeights.norm(2.0);
 
         return Pair.from(brzWeights, 0.5 * regParam * norm * norm);
     }

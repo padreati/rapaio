@@ -36,20 +36,20 @@ public final class Linear {
     }
 
     public static DMatrix chol2inv(DMatrix R) {
-        return chol2inv(R, DMatrix.identity(R.rowCount()));
+        return chol2inv(R, DMatrix.identity(R.rows()));
     }
 
     public static DMatrix chol2inv(DMatrix R, DMatrix B) {
         DMatrix ref = R.t();
-        if (B.rowCount() != R.rowCount()) {
+        if (B.rows() != R.rows()) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
 
         // Copy right hand side.
         DMatrix X = B.copy();
 
-        int n = ref.rowCount();
-        int nx = X.colCount();
+        int n = ref.rows();
+        int nx = X.cols();
         double[][] L = new double[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -65,7 +65,7 @@ public final class Linear {
 
     public static EigenPair eigenDecomp(DMatrix s) {
 
-        int n = s.colCount();
+        int n = s.cols();
         EigenDecomposition evd = EigenDecomposition.from(s);
 
         double[] _values = evd.getRealEigenvalues();
@@ -77,9 +77,9 @@ public final class Linear {
         for (int i = 0; i < values.size(); i++) {
             values.set(values.size() - i - 1, _values[i]);
         }
-        for (int i = 0; i < vectors.rowCount(); i++) {
-            for (int j = 0; j < vectors.colCount(); j++) {
-                vectors.set(i, vectors.colCount() - j - 1, _vectors.get(i, j));
+        for (int i = 0; i < vectors.rows(); i++) {
+            for (int j = 0; j < vectors.cols(); j++) {
+                vectors.set(i, vectors.cols() - j - 1, _vectors.get(i, j));
             }
         }
         return EigenPair.from(values, vectors);
@@ -89,7 +89,7 @@ public final class Linear {
         EigenPair eigenPair = eigenDecomp(s);
         DMatrix U = eigenPair.vectors();
         DMatrix lambda = eigenPair.expandedValues();
-        for (int i = 0; i < lambda.rowCount(); i++) {
+        for (int i = 0; i < lambda.rows(); i++) {
             //TODO quick fix
             // this is because negative numbers can be produced for small quantities
             lambda.set(i, i, Math.pow(Math.abs(lambda.get(i, i)), power));
@@ -99,8 +99,8 @@ public final class Linear {
 
     @SuppressWarnings("unused")
     private static boolean inTolerance(DMatrix s, double tol) {
-        for (int i = 0; i < s.rowCount(); i++) {
-            for (int j = i + 1; j < s.colCount(); j++) {
+        for (int i = 0; i < s.rows(); i++) {
+            for (int j = i + 1; j < s.cols(); j++) {
                 if (Math.abs(s.get(i, j)) > tol)
                     return false;
             }

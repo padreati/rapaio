@@ -64,7 +64,7 @@ public class Matrix extends Artist {
     @Override
     public void updateDataRange(Graphics2D g2d) {
         union(0, 0);
-        union(m.colCount(), m.rowCount());
+        union(m.cols(), m.rows());
     }
 
     @Override
@@ -77,8 +77,8 @@ public class Matrix extends Artist {
         double max = Double.NaN;
         double min = Double.NaN;
 
-        for (int i = 0; i < m.rowCount(); i++) {
-            for (int j = 0; j < m.colCount(); j++) {
+        for (int i = 0; i < m.rows(); i++) {
+            for (int j = 0; j < m.cols(); j++) {
                 double v = m.get(i, j);
                 if (Double.isNaN(v)) {
                     continue;
@@ -96,8 +96,8 @@ public class Matrix extends Artist {
 
         final double eps = 1 / (xScale(1) - xScale(0));
 
-        for (int i = 0; i < m.rowCount(); i++) {
-            for (int j = 0; j < m.colCount(); j++) {
+        for (int i = 0; i < m.rows(); i++) {
+            for (int j = 0; j < m.cols(); j++) {
                 Path2D.Double path = new Path2D.Double();
                 path.moveTo(xScale(j), yScale(i));
                 path.lineTo(xScale(j + 1 + eps), yScale(i));
@@ -113,19 +113,19 @@ public class Matrix extends Artist {
         }
 
         if (options.getColor(0) != null) {
-            for (int i = 0; i <= m.colCount(); i++) {
+            for (int i = 0; i <= m.cols(); i++) {
 
                 Point2D.Double from = new Point2D.Double(xScale(i), yScale(0));
-                Point2D.Double to = new Point2D.Double(xScale(i), yScale(m.rowCount()));
+                Point2D.Double to = new Point2D.Double(xScale(i), yScale(m.rows()));
 
                 g2d.setColor(options.getColor(0));
                 g2d.setStroke(new BasicStroke(0f));
                 g2d.draw(new Line2D.Double(from, to));
             }
-            for (int i = 0; i <= m.rowCount(); i++) {
+            for (int i = 0; i <= m.rows(); i++) {
 
                 Point2D.Double from = new Point2D.Double(xScale(0), yScale(i));
-                Point2D.Double to = new Point2D.Double(xScale(m.colCount()), yScale(i));
+                Point2D.Double to = new Point2D.Double(xScale(m.cols()), yScale(i));
 
                 g2d.setColor(options.getColor(0));
                 g2d.setStroke(new BasicStroke(options.getLwd()));

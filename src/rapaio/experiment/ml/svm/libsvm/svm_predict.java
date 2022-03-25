@@ -54,10 +54,10 @@ class svm_predict {
             }
         }
 
-        double[] classes = new double[xs.rowCount()];
-        DMatrix density = DMatrix.empty(xs.rowCount(), nr_class);
+        double[] classes = new double[xs.rows()];
+        DMatrix density = DMatrix.empty(xs.rows(), nr_class);
 
-        for (int i = 0; i < xs.rowCount(); i++) {
+        for (int i = 0; i < xs.rows(); i++) {
 
             DVector row = xs.mapRow(i);
             int m = row.size();

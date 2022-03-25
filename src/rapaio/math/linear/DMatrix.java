@@ -30,7 +30,6 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.linear.option.AlgebraOption;
 import rapaio.printer.Printable;
 import rapaio.sys.With;
 import rapaio.util.collection.IntArrays;
@@ -141,7 +140,11 @@ public interface DMatrix extends Serializable, Printable {
      * @return matrix which hold a range of data
      */
     static DMatrix copy(boolean byRows, double[][] values) {
-        return DMatrixDenseC.copy(0, byRows ? values.length : values[0].length, 0, byRows ? values[0].length : values.length, byRows, values);
+        if (byRows) {
+            return DMatrixDenseC.copy(0, values.length, 0, values[0].length, true, values);
+        } else {
+            return DMatrixDenseC.copy(0, values[0].length, 0, values.length, false, values);
+        }
     }
 
     /**
@@ -239,12 +242,12 @@ public interface DMatrix extends Serializable, Printable {
     /**
      * @return number of rows of the matrix
      */
-    int rowCount();
+    int rows();
 
     /**
      * @return number of columns of the matrix
      */
-    int colCount();
+    int cols();
 
     /**
      * Getter for value found at given row and column index.
@@ -300,7 +303,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new row vector
      */
     default DVector mapRowNew(final int row) {
-        return mapRowTo(row, new DVectorDense(colCount()));
+        return mapRowTo(row, new DVectorDense(cols()));
     }
 
     /**
@@ -328,7 +331,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new row vector
      */
     default DVector mapColNew(final int col) {
-        return mapColTo(col, new DVectorDense(rowCount()));
+        return mapColTo(col, new DVectorDense(rows()));
     }
 
     /**
@@ -356,16 +359,13 @@ public interface DMatrix extends Serializable, Printable {
      * @return result matrix reference
      */
     default DMatrix mapRowsNew(int... indexes) {
-        DMatrixDenseC to = new DMatrixDenseC(indexes.length, colCount());
+        DMatrixDenseC to = new DMatrixDenseC(indexes.length, cols());
         return mapRowsTo(indexes, to);
     }
 
     /**
-     * Creates a matrix which contains only the columns
+     * Creates a view matrix which contains only the columns
      * specified by given indexes.
-     * <p>
-     * Depending on implementation, the vector can be a view over the original data.
-     * To enforce a new copy add option {@link With#copy()} as parameter.
      *
      * @param indexes row indexes
      * @return result matrix reference
@@ -388,7 +388,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return result matrix reference
      */
     default DMatrix mapColsNew(int... indexes) {
-        DMatrixDenseC to = new DMatrixDenseC(rowCount(), indexes.length);
+        DMatrixDenseC to = new DMatrixDenseC(rows(), indexes.length);
         return mapColsTo(indexes, to);
     }
 
@@ -415,8 +415,8 @@ public interface DMatrix extends Serializable, Printable {
     DMatrix rangeRows(int start, int end);
 
     /**
-     * Filters rows with indices in the given range starting from {@param start} inclusive
-     * and ending at {@param end} exclusive and copies the values into {@param to} matrix.
+     * Filters rows with indices in the given range starting from {@code start} inclusive
+     * and ending at {@code end} exclusive and copies the values into {@code to} matrix.
      *
      * @param start start row index (inclusive)
      * @param end   end row index (exclusive)
@@ -434,7 +434,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return result matrix reference
      */
     default DMatrix rangeRowsNew(int start, int end) {
-        DMatrixDenseC to = new DMatrixDenseC(end-start, colCount());
+        DMatrixDenseC to = new DMatrixDenseC(end - start, cols());
         return rangeRowsTo(start, end, to);
     }
 
@@ -452,11 +452,8 @@ public interface DMatrix extends Serializable, Printable {
     /**
      * Creates a new matrix which contains only columns with
      * indices in the given range starting from {@param start} inclusive
-     * and ending at {@param end} exclusive.
-     * <p>
-     * Depending on the implementation
-     * the new matrix can be a view. To obtain a new matrix copy
-     * one has to add {@link With#copy()} parameter.
+     * and ending at {@param end} exclusive and stores the result
+     * into {@code to} matrix.
      *
      * @param start start col index (inclusive)
      * @param end   end col index (exclusive)
@@ -465,16 +462,17 @@ public interface DMatrix extends Serializable, Printable {
     DMatrix rangeColsTo(int start, int end, DMatrix to);
 
     /**
-     * Creates a new copy matrix which contains only columns with
+     * Creates a new matrix which contains only columns with
      * indices in the given range starting from {@param start} inclusive
-     * and ending at {@param end} exclusive.
+     * and ending at {@param end} exclusive and stores the result
+     * into a new matrix.
      *
      * @param start start col index (inclusive)
      * @param end   end col index (exclusive)
      * @return result matrix reference
      */
     default DMatrix rangeColsNew(int start, int end) {
-        DMatrixDenseC to = new DMatrixDenseC(rowCount(), end - start);
+        DMatrixDenseC to = new DMatrixDenseC(rows(), end - start);
         return rangeColsTo(start, end, to);
     }
 
@@ -485,7 +483,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all rows not specified by indexes
      */
     default DMatrix removeRows(int... indexes) {
-        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rowCount(), indexes);
+        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rows(), indexes);
         return mapRows(rows);
     }
 
@@ -497,7 +495,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all rows not specified by indexes
      */
     default DMatrix removeRowsTo(int[] indexes, DMatrix to) {
-        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rowCount(), indexes);
+        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rows(), indexes);
         return mapRowsTo(rows, to);
     }
 
@@ -508,7 +506,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all rows not specified by indexes
      */
     default DMatrix removeRowsNew(int... indexes) {
-        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rowCount(), indexes);
+        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rows(), indexes);
         return mapRowsNew(rows);
     }
 
@@ -519,7 +517,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all columns not specified by indexes
      */
     default DMatrix removeCols(int... indexes) {
-        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, colCount(), indexes);
+        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, cols(), indexes);
         return mapCols(cols);
     }
 
@@ -531,7 +529,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all columns not specified by indexes
      */
     default DMatrix removeColsTo(int[] indexes, DMatrix to) {
-        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, colCount(), indexes);
+        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, cols(), indexes);
         return mapColsTo(cols, to);
     }
 
@@ -543,72 +541,245 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all columns not specified by indexes
      */
     default DMatrix removeColsNew(int... indexes) {
-        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, colCount(), indexes);
+        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, cols(), indexes);
         return mapColsNew(cols);
     }
 
     /**
-     * Adds a scalar value to all elements of a matrix. If possible,
-     * the operation is realized in place.
+     * Adds a scalar value to all elements of a matrix in place.
      *
      * @param x value to be added
      * @return instance of the result matrix
      */
-    DMatrix add(double x, AlgebraOption<?>... opts);
+    DMatrix add(double x);
 
     /**
-     * Add vector values each row/column of the matrix.
+     * Computes the sum between matrix and a given scalar and store the result
+     * into the given matrix.
+     *
+     * @param x  value to be added
+     * @param to destination matrix
+     * @return instance of the result matrix
+     */
+    DMatrix addTo(double x, DMatrix to);
+
+    /**
+     * Computes the sum between matrix and the given scalar and
+     * store the result into a new matrix.
+     *
+     * @param x value to be added
+     * @return instance of the result matrix
+     */
+    default DMatrix addNew(double x) {
+        DMatrixDenseC copy = new DMatrixDenseC(rows(), cols());
+        return addTo(x, copy);
+    }
+
+    /**
+     * Add vector values each row/column of the matrix in place.
      *
      * @param x    vector to be added
      * @param axis 0 for rows, 1 for columns
      * @return same matrix with added values
      */
-    DMatrix add(DVector x, int axis, AlgebraOption<?>... opts);
+    DMatrix add(DVector x, int axis);
 
     /**
-     * Adds element wise values from given matrix. If possible,
-     * the operation is realized in place.
+     * Computes the sum of vector values and each row/column of the matrix and
+     * store the result to given {@param to} matrix.
+     *
+     * @param x    vector to be added
+     * @param axis 0 for rows, 1 for columns
+     * @param to   matrix to store the result
+     * @return result matrix
+     */
+    DMatrix addTo(DVector x, int axis, DMatrix to);
+
+    /**
+     * Computes the sum of vector values to each row/column of the matrix
+     * and stores the result into a new matrix.
+     *
+     * @param x    vector to be added
+     * @param axis 0 for rows, 1 for columns
+     * @return new result instance
+     */
+    default DMatrix addNew(DVector x, int axis) {
+        DMatrixDenseC to = new DMatrixDenseC(rows(), cols());
+        return addTo(x, axis, to);
+    }
+
+    /**
+     * Adds element wise values from given matrix in place.
      *
      * @param b matrix with elements to be added
      * @return instance of the result matrix
      */
-    DMatrix add(DMatrix b, AlgebraOption<?>... opts);
+    DMatrix add(DMatrix b);
 
     /**
-     * Subtract a scalar value to all elements of a matrix. If possible,
-     * the operation is realized in place.
+     * Adds element wise values from given matrix and store result into
+     * given {@param to} matrix.
      *
-     * @param x value to be substracted
+     * @param b  matrix with elements to be added
+     * @param to result matrix
      * @return instance of the result matrix
      */
-    DMatrix sub(double x, AlgebraOption<?>... opts);
+    DMatrix addTo(DMatrix b, DMatrix to);
 
     /**
-     * Subtract vector values to all rows (axis 0) or vectors (axis 1).
+     * Adds element wise values from given matrix and store the result
+     * into a new matrix.
+     *
+     * @param b matrix with elements to be added
+     * @return instance of the result matrix
+     */
+    default DMatrix addNew(DMatrix b) {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return addTo(b, to);
+    }
+
+    /**
+     * Subtract a scalar value to all elements of a matrix in place.
+     *
+     * @param x value to be subtracted
+     * @return instance of the result matrix
+     */
+    DMatrix sub(double x);
+
+    /**
+     * Computes the difference between all elements of the matrix and the scalar value
+     * and stores the result into {@param to} matrix.
+     *
+     * @param x  value to be subtracted
+     * @param to result destination matrix
+     * @return the result matrix
+     */
+    DMatrix subTo(double x, DMatrix to);
+
+    /**
+     * Computes the difference between all elements of the matrix and the scalar value
+     * and stores the result into a new matrix.
+     *
+     * @param x value to be subtracted
+     * @return instance of the result matrix
+     */
+    default DMatrix subNew(double x) {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return subTo(x, to);
+    }
+
+    /**
+     * Subtract vector values from all rows (axis 0) or columns (axis 1).
      *
      * @param x    vector to be added
      * @param axis 0 for rows, 1 for columns
      * @return same matrix with added values
      */
-    DMatrix sub(DVector x, int axis, AlgebraOption<?>... opts);
+    DMatrix sub(DVector x, int axis);
 
     /**
-     * Subtracts element wise values from given matrix. If possible,
-     * the operation is realized in place.
+     * Computes the difference between vector values and each row (axis 0) or column (axis 1)
+     * and stores the result into a {@code to} matrix.
+     *
+     * @param x    vector to be added
+     * @param axis 0 for rows, 1 for columns
+     * @param to   result matrix
+     * @return result matrix
+     */
+    DMatrix subTo(DVector x, int axis, DMatrix to);
+
+    /**
+     * Computes the difference between vector values and each row (axis 0) or column (axis 1)
+     * and stores the result into a new matrix.
+     *
+     * @param x    vector to be added
+     * @param axis 0 for rows, 1 for columns
+     * @return same matrix with added values
+     */
+    default DMatrix subNew(DVector x, int axis) {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return subTo(x, axis, to);
+    }
+
+    /**
+     * Subtracts element wise values from given matrix in place.
      *
      * @param b matrix with elements to be substracted
      * @return instance of the result matrix
      */
-    DMatrix sub(DMatrix b, AlgebraOption<?>... opts);
+    DMatrix sub(DMatrix b);
 
     /**
-     * Multiply a scalar value to all elements of a matrix. If possible,
-     * the operation is realized in place.
+     * Computes the difference between this matrix and the given {@code b} matrix
+     * and stores the result into {@code to} matrix.
+     *
+     * @param b  matrix with elements to be subtracted
+     * @param to result matrix
+     * @return instance of the result matrix
+     */
+    DMatrix subTo(DMatrix b, DMatrix to);
+
+    /**
+     * Computes the difference between this matrix and the given {@code b} matrix
+     * and stores the result into a new matrix.
+     *
+     * @param b matrix with elements to be subtracted
+     * @return instance of the result matrix
+     */
+    default DMatrix subNew(DMatrix b) {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return subTo(b, to);
+    }
+
+    /**
+     * Multiply a scalar value to all elements of a matrix in place.
      *
      * @param x value to be multiplied with
      * @return instance of the result matrix
      */
-    DMatrix mul(double x, AlgebraOption<?>... opts);
+    DMatrix mul(double x);
+
+    /**
+     * Computes the product between the matrix and the given scalar and stores the
+     * result into {@code to} matrix.
+     *
+     * @param x  value to be multiplied with
+     * @param to result matrix
+     * @return instance of the result matrix
+     */
+    DMatrix mulTo(double x, DMatrix to);
+
+    /**
+     * Computes the product between the matrix and the given scalar and stores the
+     * result into a new matrix.
+     *
+     * @param x value to be multiplied with
+     * @return instance of the result matrix
+     */
+    default DMatrix mulNew(double x) {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return mulTo(x, to);
+    }
+
+    /**
+     * Multiply vector values to all rows (axis 0) or columns (axis 1) in place.
+     *
+     * @param x    vector to be added
+     * @param axis 0 for rows, 1 for columns
+     * @return same matrix with added values
+     */
+    DMatrix mul(DVector x, int axis);
+
+    /**
+     * Multiply vector values to all rows (axis 0) or columns (axis 1) and
+     * stores the result into {@code to} matrix.
+     *
+     * @param x    vector to be added
+     * @param axis 0 for rows, 1 for columns
+     * @param to   result matrix
+     * @return result
+     */
+    DMatrix mulTo(DVector x, int axis, DMatrix to);
 
     /**
      * Multiply vector values to all rows (axis 0) or columns (axis 1).
@@ -617,43 +788,134 @@ public interface DMatrix extends Serializable, Printable {
      * @param axis 0 for rows, 1 for columns
      * @return same matrix with added values
      */
-    DMatrix mul(DVector x, int axis, AlgebraOption<?>... opts);
+    default DMatrix mulNew(DVector x, int axis) {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return mulTo(x, axis, to);
+    }
 
     /**
-     * Multiplies element wise values from given matrix. If possible,
-     * the operation is realized in place.
+     * Multiplies element wise with given matrix in place.
      *
      * @param b matrix with elements to be multiplied with
      * @return instance of the result matrix
      */
-    DMatrix mul(DMatrix b, AlgebraOption<?>... opts);
+    DMatrix mul(DMatrix b);
 
     /**
-     * Divide a scalar value from all elements of a matrix. If possible,
-     * the operation is realized in place.
+     * Multiplies element wise with given matrix and
+     * stores the result into {@code to} matrix.
+     *
+     * @param b  matrix with elements to be multiplied with
+     * @param to result matrix
+     * @return result matrix
+     */
+    DMatrix mulTo(DMatrix b, DMatrix to);
+
+    /**
+     * Multiplies element wise with given matrix and
+     * stores the result into a new matrix.
+     *
+     * @param b matrix with elements to be multiplied with
+     * @return instance of the result matrix
+     */
+    default DMatrix mulNew(DMatrix b) {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return mulTo(b, to);
+    }
+
+    /**
+     * Divide a scalar value from all elements of a matrix in place.
      *
      * @param x divisor value
      * @return instance of the result matrix
      */
-    DMatrix div(double x, AlgebraOption<?>... opts);
+    DMatrix div(double x);
+
+    /**
+     * Divide a scalar value from all elements of a matrix and stores the result
+     * into {@code to} matrix.
+     *
+     * @param x  divisor value
+     * @param to result matrix
+     * @return result matrix
+     */
+    DMatrix divTo(double x, DMatrix to);
+
+    /**
+     * Divide a scalar value from all elements of a matrix and stores the result
+     * into a new matrix.
+     *
+     * @param x divisor value
+     * @return instance of the result matrix
+     */
+    default DMatrix divNew(double x) {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return divTo(x, to);
+    }
 
     /**
      * Divide all rows (axis 0) or columns (axis 1) by elements of the given vector
+     * in place.
+     *
+     * @param x    vector to be divided with
+     * @param axis axis addition
+     * @return same matrix with divided values
+     */
+    DMatrix div(DVector x, int axis);
+
+    /**
+     * Divide all rows (axis 0) or columns (axis 1) by elements of the given vector
+     * and stores the result into {@code to} matrix.
+     *
+     * @param x    vector to be added
+     * @param axis axis addition
+     * @param to   result matrix
+     * @return result matrix
+     */
+    DMatrix divTo(DVector x, int axis, DMatrix to);
+
+    /**
+     * Divide all rows (axis 0) or columns (axis 1) by elements of the given vector
+     * and stores the result into a new matrix.
      *
      * @param x    vector to be added
      * @param axis axis addition
      * @return same matrix with added values
      */
-    DMatrix div(DVector x, int axis, AlgebraOption<?>... opts);
+    default DMatrix divNew(DVector x, int axis) {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return divTo(x, axis, to);
+    }
 
     /**
-     * Divides element wise values from given matrix. If possible,
-     * the operation is realized in place.
+     * Divides element wise values with values from given matrix in place.
      *
      * @param b matrix with division elements
      * @return instance of the result matrix
      */
-    DMatrix div(DMatrix b, AlgebraOption<?>... opts);
+    DMatrix div(DMatrix b);
+
+    /**
+     * Divides element wise values with values from given matrix and
+     * stores the result into {@code to} matrix.
+     *
+     * @param b  matrix with division elements
+     * @param to result matrix
+     * @return result matrix
+     */
+    DMatrix divTo(DMatrix b, DMatrix to);
+
+    /**
+     * Divides element wise values with values from given matrix and
+     * stores the result into a new matrix.
+     *
+     * @param b matrix with division elements
+     * @return instance of the result matrix
+     */
+    default DMatrix divNew(DMatrix b) {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return divTo(b, to);
+    }
 
     /**
      * Apply the given function to all elements of the matrix.
@@ -661,7 +923,29 @@ public interface DMatrix extends Serializable, Printable {
      * @param fun function to be applied
      * @return same instance matrix
      */
-    DMatrix apply(Double2DoubleFunction fun, AlgebraOption<?>... opts);
+    DMatrix apply(Double2DoubleFunction fun);
+
+    /**
+     * Apply the given function to all elements of the matrix and store
+     * the result into {@code to} matrix.
+     *
+     * @param fun function to be applied
+     * @param to  result matrix
+     * @return result matrix
+     */
+    DMatrix applyTo(Double2DoubleFunction fun, DMatrix to);
+
+    /**
+     * Apply the given function to all elements of the matrix and store
+     * the result into a new matrix.
+     *
+     * @param fun function to be applied
+     * @return new instance matrix
+     */
+    default DMatrix applyNew(Double2DoubleFunction fun) {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return applyTo(fun, to);
+    }
 
     /**
      * Computes matrix vector multiplication.
@@ -696,12 +980,28 @@ public interface DMatrix extends Serializable, Printable {
     int rank();
 
     /**
-     * Creates an instance of a transposed matrix. Depending on implementation
-     * this can be a view of the original data.
+     * Creates an instance of a transposed matrix which is a view over original data, if possible.
      *
      * @return new transposed matrix
      */
-    DMatrix t(AlgebraOption<?>... opts);
+    DMatrix t();
+
+    /**
+     * Creates an instance of a transposed matrix and store it into {@code to} matrix.
+     *
+     * @return new transposed matrix
+     */
+    DMatrix tTo(DMatrix to);
+
+    /**
+     * Creates an instance of a transposed matrix and stores it into a new matrix.
+     *
+     * @return new transposed matrix
+     */
+    default DMatrix tNew() {
+        DMatrix to = new DMatrixDenseC(rows(), cols());
+        return tTo(to);
+    }
 
     /**
      * Vector with values from main diagonal
@@ -780,7 +1080,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return mean of all matrix elements
      */
     default double mean() {
-        return sum() / (rowCount() * colCount());
+        return sum() / (rows() * cols());
     }
 
     /**
@@ -790,7 +1090,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return vector of means along axis
      */
     default DVector mean(int axis) {
-        return sum(axis).div(axis == 0 ? rowCount() : colCount());
+        return sum(axis).div(axis == 0 ? rows() : cols());
     }
 
     /**
@@ -867,5 +1167,14 @@ public interface DMatrix extends Serializable, Printable {
      */
     boolean deepEquals(DMatrix m, double eps);
 
+    /**
+     * Creates a new matrix with a different shape which contains original values
+     * in the same position and eventual extended space filled with given {@code fill} value.
+     *
+     * @param rows new number of rows
+     * @param cols new number of columns
+     * @param fill fill value for extended cells
+     * @return new matrix instance
+     */
     DMatrix resizeCopy(int rows, int cols, double fill);
 }

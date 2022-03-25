@@ -25,7 +25,6 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.linear.DMatrix;
-import rapaio.util.function.Double2DoubleFunction;
 
 public interface DMatrixStore extends DMatrix {
 
@@ -58,6 +57,4 @@ public interface DMatrixStore extends DMatrix {
     VectorMask<Double> loopMaskCol();
 
     double[] solidArrayCopy();
-
-    void apply(Double2DoubleFunction fun);
 }

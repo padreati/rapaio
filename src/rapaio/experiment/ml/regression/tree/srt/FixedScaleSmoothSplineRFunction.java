@@ -124,7 +124,7 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
 
                 try {
                     lm.fit(bf, y.name());
-                    if (lm.firstCoefficients().pnorm(2) > 10_000) {
+                    if (lm.firstCoefficients().norm(2) > 10_000) {
                         continue;
                     }
                 } catch (RuntimeException ex) {

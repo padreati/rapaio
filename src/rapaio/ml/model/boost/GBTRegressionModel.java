@@ -21,8 +21,6 @@
 
 package rapaio.ml.model.boost;
 
-import static rapaio.sys.With.copy;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +45,6 @@ import rapaio.ml.model.simple.L2Regression;
 import rapaio.ml.model.tree.RTree;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.sys.With;
 
 /**
  * Gradient Boosting Tree
@@ -156,7 +153,7 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
 
             // add next prediction to the predict values
             var pred = tree.predict(df, false).firstPrediction();
-            VarDouble nextFit = fitValues.dv(copy()).add(pred.dv(copy()).mul(shrinkage.get())).dv();
+            VarDouble nextFit = fitValues.dvNew().addMul(shrinkage.get(), pred.dv()).dv();
 
             double initScore = loss.get().errorScore(y, fitValues);
             double nextScore = loss.get().errorScore(y, nextFit);
@@ -183,7 +180,7 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
         prediction.apply(v -> 0);
         prediction.add(initModel.get().predict(df, false).firstPrediction().dv());
         for (var tree : trees) {
-            prediction.add(tree.predict(df, false).firstPrediction().dv(With.copy()).mul(shrinkage.get()));
+            prediction.addMul(shrinkage.get(), tree.predict(df, false).firstPrediction().dv());
         }
         result.buildComplete();
         return result;

@@ -48,12 +48,12 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public int rowCount() {
+    public int rows() {
         return rowIndexes.length;
     }
 
     @Override
-    public int colCount() {
+    public int cols() {
         return colIndexes.length;
     }
 
