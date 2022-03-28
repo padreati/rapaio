@@ -26,20 +26,20 @@ import java.util.stream.IntStream;
 
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorMask;
-import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
+import rapaio.util.collection.IntArrays;
 
 public class DVectorStride extends AbstractStoreDVector {
 
-    private final static VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
-    private final static int SPECIES_LEN = SPECIES.length();
+    private final static VectorSpecies<Double> species = DoubleVector.SPECIES_PREFERRED;
+    private final static int speciesLen = species.length();
 
     private final int offset;
     private final int stride;
     private final int size;
-    private final int[] indexes;
+    private final int[] loopIndexes;
     private final double[] array;
     private final VectorMask<Double> loopMask;
     private final int loopBound;
@@ -49,23 +49,23 @@ public class DVectorStride extends AbstractStoreDVector {
         this.stride = stride;
         this.size = size;
         this.array = array;
-        this.loopMask = SPECIES.indexInRange(SPECIES.loopBound(size), size);
-        this.loopBound = SPECIES.loopBound(size);
+        this.loopMask = species.indexInRange(species.loopBound(size), size);
+        this.loopBound = species.loopBound(size);
 
-        this.indexes = new int[SPECIES.length()];
-        for (int i = 0; i < indexes.length; i++) {
-            indexes[i] = i * stride;
+        this.loopIndexes = new int[speciesLen];
+        for (int i = 0; i < loopIndexes.length; i++) {
+            loopIndexes[i] = i * stride;
         }
     }
 
     @Override
     public VectorSpecies<Double> species() {
-        return SPECIES;
+        return species;
     }
 
     @Override
     public int speciesLen() {
-        return SPECIES_LEN;
+        return speciesLen;
     }
 
     @Override
@@ -95,12 +95,12 @@ public class DVectorStride extends AbstractStoreDVector {
 
     @Override
     public DoubleVector loadVector(int i) {
-        return DoubleVector.fromArray(SPECIES, array, offset + i * stride, indexes, 0);
+        return DoubleVector.fromArray(species, array, offset + i * stride, loopIndexes, 0);
     }
 
     @Override
     public DoubleVector loadVector(int i, VectorMask<Double> m) {
-        return DoubleVector.fromArray(SPECIES, array, offset + i * stride, indexes, 0, m);
+        return DoubleVector.fromArray(species, array, offset + i * stride, loopIndexes, 0, m);
     }
 
     @Override
@@ -115,39 +115,22 @@ public class DVectorStride extends AbstractStoreDVector {
 
     @Override
     public void storeVector(DoubleVector v, int i) {
-        v.intoArray(array, offset + i * stride, indexes, 0);
+        v.intoArray(array, offset + i * stride, loopIndexes, 0);
     }
 
     @Override
     public void storeVector(DoubleVector v, int i, VectorMask<Double> m) {
-        v.intoArray(array, offset + i * stride, indexes, 0, m);
+        v.intoArray(array, offset + i * stride, loopIndexes, 0, m);
     }
 
     @Override
     public double[] solidArrayCopy() {
-        double[] copy = new double[indexes.length];
-        int bound = SPECIES.loopBound(indexes.length);
-        int i = 0;
-        for (; i < bound; i += SPECIES_LEN) {
+        double[] copy = new double[size];
+        for (int i = 0; i < loopBound; i += speciesLen) {
             loadVector(i).intoArray(copy, i);
         }
-        loadVector(i, loopMask).intoArray(copy, i, loopMask);
+        loadVector(loopBound, loopMask).intoArray(copy, loopBound, loopMask);
         return copy;
-    }
-
-    public double sum() {
-        int i = 0;
-        DoubleVector aggr = DoubleVector.zero(SPECIES);
-        int bound = SPECIES.loopBound(size());
-        for (; i < bound; i += SPECIES_LEN) {
-            DoubleVector xv = DoubleVector.fromArray(SPECIES, array, offset + i * stride, indexes, 0);
-            aggr = aggr.add(xv);
-        }
-        double result = aggr.reduceLanes(VectorOperators.ADD);
-        for (; i < size(); i++) {
-            result = result + array[offset + i * stride];
-        }
-        return result;
     }
 
     @Override
@@ -169,21 +152,28 @@ public class DVectorStride extends AbstractStoreDVector {
 
     private double[] copyArray() {
         double[] copy = new double[size];
-        for (int i = 0; i < size; i++) {
-            copy[i] = array[offset + stride * i];
+        int len = offset + stride * size;
+        int pos = 0;
+        int i = offset;
+        while (i < len) {
+            copy[pos++] = array[i];
+            i += stride;
         }
         return copy;
     }
 
     @Override
     public DVector copy() {
-        return new DVectorStride(0, 1, size, copyArray());
+        return new DVectorDense(0, size, copyArray());
     }
 
     @Override
     public DVector fill(double value) {
-        for (int i = offset; i < offset + size; i += stride) {
+        int len = offset + size * stride;
+        int i = offset;
+        while (i < len) {
             array[i] = value;
+            i += stride;
         }
         return this;
     }

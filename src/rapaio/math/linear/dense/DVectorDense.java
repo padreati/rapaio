@@ -188,9 +188,8 @@ public final class DVectorDense extends AbstractStoreDVector {
             var v = loadVector(i).add(va);
             storeVector(v, i);
         }
-        for (; i < size; i++) {
-            inc(i, x);
-        }
+        var v = loadVector(i, loopMask).add(va, loopMask);
+        storeVector(v, i, loopMask);
         return this;
     }
 
@@ -498,8 +497,15 @@ public final class DVectorDense extends AbstractStoreDVector {
     public double dot(DVector b) {
         checkConformance(b);
         if (b instanceof DVectorDense bd) {
-            double ss = 0;
-            for (int i = 0; i < size; i++) {
+            int i = 0;
+            DoubleVector sum = DoubleVector.zero(species);
+            for (; i < loopBound; i += speciesLen) {
+                var va = loadVector(i);
+                var vb = bd.loadVector(i);
+                sum = va.fma(vb, sum);
+            }
+            double ss = sum.reduceLanes(VectorOperators.ADD);
+            for (; i < size; i++) {
                 ss = Math.fma(array[offset + i], bd.array[bd.offset + i], ss);
             }
             return ss;

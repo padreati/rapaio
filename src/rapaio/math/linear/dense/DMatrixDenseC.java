@@ -453,16 +453,12 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DVector mapColTo(int col, DVector to) {
-        int i = 0;
         if (to instanceof DVectorDense tos) {
-            int bound = species.loopBound(rows);
-            for (; i < bound; i += speciesLen) {
-                var va = loadVectorCol(col, i);
-                tos.storeVector(va, i);
-            }
+            System.arraycopy(array, offset + col * colStride, tos.array(), tos.offset(), rows);
         }
-        for (; i < rows; i++) {
-            to.set(i, get(i, col));
+        int off = offset + col * colStride;
+        for (int i = 0; i < rows; i++) {
+            to.set(i, array[off + i]);
         }
         return to;
     }
@@ -540,8 +536,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     public DVector dot(DVector b) {
         if (cols != b.size()) {
             throw new IllegalArgumentException(
-                    "Matrix (%d x %d) and vector ( %d ) are not conform for multiplication.".formatted(
-                            rows, cols, b.size()));
+                    "Matrix (%d x %d) and vector ( %d ) are not conform for multiplication.".formatted(rows, cols, b.size()));
         }
         int slices = cols / SLICE_SIZE;
         DVectorDense[] cslices = new DVectorDense[slices + 1];
@@ -562,6 +557,62 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
         }
         return c;
     }
+
+    @Override
+    public DMatrix dot(DMatrix b) {
+        if (cols() != b.rows()) {
+            throw new IllegalArgumentException("Matrices not conform to multiplication: [%d,%d] [%d,%d]."
+                    .formatted(rows, cols, b.rows(), b.cols()));
+        }
+        if (b instanceof DMatrixDenseC bc) {
+            return dotC(bc);
+        }
+        if (b instanceof DMatrixDenseR br) {
+            return dotR(br);
+        }
+        return super.dot(b);
+    }
+
+    private DMatrix dotC(DMatrixDenseC b) {
+        // in right we are good, in left we build dense rows and share them
+        DMatrixDenseC result = new DMatrixDenseC(rows, b.cols());
+        int chunk = 32;
+        int threads = rows / chunk;
+
+        IntStream.range(0, threads + 1).parallel().forEach(c -> {
+            for (int row = c * chunk; row < Math.min(rows, (c + 1) * chunk); row++) {
+                DVector rowVector = mapRowNew(row);
+                for (int i = 0; i < b.cols; i++) {
+                    result.set(row, i, rowVector.dot(b.mapCol(i)));
+                }
+            }
+        });
+        return result;
+    }
+
+    private DMatrix dotR(DMatrixDenseR b) {
+        // worst situation
+        DMatrixDenseC result = new DMatrixDenseC(rows, b.cols());
+
+        DVector[] colVectors = new DVector[b.cols()];
+        for (int i = 0; i < b.cols(); i++) {
+            colVectors[i] = b.mapColNew(i);
+        }
+
+        int chunk = 32;
+        int threads = rows / chunk;
+
+        IntStream.range(0, threads + 1).parallel().forEach(c -> {
+            for (int row = c * chunk; row < Math.min(rows, (c + 1) * chunk); row++) {
+                DVector rowVector = mapRowNew(row);
+                for (int i = 0; i < b.cols(); i++) {
+                    result.set(row, i, rowVector.dot(colVectors[i]));
+                }
+            }
+        });
+        return result;
+    }
+
 
     @Override
     public DMatrixDenseR t() {

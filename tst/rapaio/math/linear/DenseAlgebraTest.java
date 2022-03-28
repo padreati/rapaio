@@ -23,6 +23,7 @@ package rapaio.math.linear;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.stream.IntStream;
@@ -145,7 +146,7 @@ public class DenseAlgebraTest {
     interface VectorFactory {
 
         default DVector newInstance() {
-            return newInstance(10);
+            return newInstance(11);
         }
 
         DVector newInstance(int size);
@@ -156,7 +157,7 @@ public class DenseAlgebraTest {
     interface MatrixFactory {
 
         default DMatrix newMatrix() {
-            return newMatrix(10, 10);
+            return newMatrix(11, 11);
         }
 
         DMatrix newMatrix(int rows, int cols);
@@ -199,19 +200,18 @@ public class DenseAlgebraTest {
             test1matrix(mf, m -> assertTrue(m.mapColsTo(inCols, new DMatrixDenseC(m.rows(), 2))
                     .deepEquals(m.removeColsTo(outCols, new DMatrixDenseC(m.rows(), 2)))));
 
-
-            test1matrix(mf, m -> assertEquals(IntStream.range(0, 10).mapToObj(i -> i * 11 + 1).mapToInt(i -> i).sum(), m.trace()));
+            test1matrix(mf, m -> assertEquals(IntStream.range(0, 11).mapToObj(i -> i * 12 + 1).mapToInt(i -> i).sum(), m.trace()));
 
             test1matrix(mf, m -> assertTrue(
-                    DVector.wrap(IntStream.range(0, 10).mapToDouble(i -> i * 11 + 1).toArray()).deepEquals(m.diag())));
+                    DVector.wrap(IntStream.range(0, 11).mapToDouble(i -> i * 12 + 1).toArray()).deepEquals(m.diag())));
 
             test1matrix(mf, m -> assertTrue(m.scatter().deepEquals(m.copy().scatter())));
 
-            test1matrix(mf, m -> assertEquals(5050, m.sum()));
+            test1matrix(mf, m -> assertEquals(7381, m.sum()));
             test1matrix(mf, m -> assertEquals(m.sum(0).sum(), m.sum(1).sum()));
-            test1matrix(mf, m -> assertEquals(841.666666666666668, m.variance()));
-            test1matrix(mf, m -> assertTrue(DVectorDense.fill(10, 916.66666666666668).deepEquals(m.variance(0)), message));
-            test1matrix(mf, m -> assertTrue(DVectorDense.fill(10, 9.166666666666668).deepEquals(m.variance(1))));
+            test1matrix(mf, m -> assertEquals(1230.166666666666668, m.variance()));
+            test1matrix(mf, m -> assertTrue(DVectorDense.fill(11, 1331).deepEquals(m.variance(0)), message));
+            test1matrix(mf, m -> assertTrue(DVectorDense.fill(11, 11).deepEquals(m.variance(1))));
 
             test1matrix(mf, m -> assertEquals(Mean.of(VarDouble.wrap(m.valueStream().toArray())).value(), m.mean()));
             test1matrix(mf, m -> assertEquals(Mean.of(m.mapRowNew(2).dv()).value(), m.mean(1).get(2)));
@@ -225,7 +225,7 @@ public class DenseAlgebraTest {
             test1matrix(mf, m -> assertTrue(m.tNew().tNew().deepEquals(m.t().t())));
             test1matrix(mf, m -> assertEquals(m.sum(), m.valueStream().sum()));
 
-            test1matrix(mf, m -> assertTrue(m.deepEquals(m.resizeCopy(10, 10, 100))));
+            test1matrix(mf, m -> assertTrue(m.deepEquals(m.resizeCopy(11, 11, 100))));
             test1matrix(mf, m -> assertEquals(m.sum(), m.resizeCopy(19, 19, 0).sum()));
             test1matrix(mf, m -> assertEquals(m.rangeCols(0, 5).rangeRows(0, 5).sum(), m.resizeCopy(5, 5, 0).sum()));
 
@@ -240,41 +240,42 @@ public class DenseAlgebraTest {
             });
 
             test1matrix(mf, m -> assertEquals(m.getClass().getSimpleName() + """
-                    {rowCount:10, colCount:10, values:
+                    {rowCount:11, colCount:11, values:
                     [
-                     [  1  2  3  4  5  6  7  8  9  10 ],\s
-                     [ 11 12 13 14 15 16 17 18 19  20 ],\s
-                     [ 21 22 23 24 25 26 27 28 29  30 ],\s
-                     [ 31 32 33 34 35 36 37 38 39  40 ],\s
-                     [ 41 42 43 44 45 46 47 48 49  50 ],\s
-                     [ 51 52 53 54 55 56 57 58 59  60 ],\s
-                     [ 61 62 63 64 65 66 67 68 69  70 ],\s
-                     [ 71 72 73 74 75 76 77 78 79  80 ],\s
-                     [ 81 82 83 84 85 86 87 88 89  90 ],\s
-                     [ 91 92 93 94 95 96 97 98 99 100 ],\s
+                     [   1   2   3   4   5   6   7   8   9  10 .. ],\s
+                     [  12  13  14  15  16  17  18  19  20  21 .. ],\s
+                     [  23  24  25  26  27  28  29  30  31  32 .. ],\s
+                     [  34  35  36  37  38  39  40  41  42  43 .. ],\s
+                     [  45  46  47  48  49  50  51  52  53  54 .. ],\s
+                     [  56  57  58  59  60  61  62  63  64  65 .. ],\s
+                     [  67  68  69  70  71  72  73  74  75  76 .. ],\s
+                     [  78  79  80  81  82  83  84  85  86  87 .. ],\s
+                     [  89  90  91  92  93  94  95  96  97  98 .. ],\s
+                     [ 100 101 102 103 104 105 106 107 108 109 .. ],\s
+                     [ 111 112 113 114 115 116 117 118 119 120 .. ],\s
                     ]}""", m.toString()));
 
             test1matrix(mf, m -> assertEquals("""
-                        [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]\s
-                    [0]  1   2   3   4   5   6   7   8   9   10 [4] 41  42  43  44  45  46  47  48  49   50 [8] 81  82  83  84  85  86  87  88  89   90\s
-                    [1] 11  12  13  14  15  16  17  18  19   20 [5] 51  52  53  54  55  56  57  58  59   60 [9] 91  92  93  94  95  96  97  98  99  100\s
-                    [2] 21  22  23  24  25  26  27  28  29   30 [6] 61  62  63  64  65  66  67  68  69   70\s
-                    [3] 31  32  33  34  35  36  37  38  39   40 [7] 71  72  73  74  75  76  77  78  79   80\s
+                         [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]      [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]      [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]\s
+                     [0]   1   2   3   4   5   6   7   8   9  10  11   [4]  45  46  47  48  49  50  51  52  53  54  55   [8]  89  90  91  92  93  94  95  96  97  98  99 \s
+                     [1]  12  13  14  15  16  17  18  19  20  21  22   [5]  56  57  58  59  60  61  62  63  64  65  66   [9] 100 101 102 103 104 105 106 107 108 109 110 \s
+                     [2]  23  24  25  26  27  28  29  30  31  32  33   [6]  67  68  69  70  71  72  73  74  75  76  77  [10] 111 112 113 114 115 116 117 118 119 120 121 \s
+                     [3]  34  35  36  37  38  39  40  41  42  43  44   [7]  78  79  80  81  82  83  84  85  86  87  88 \s
                     """, m.toContent()));
             test1matrix(mf, m -> assertEquals("""
-                        [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]\s
-                    [0]  1   2   3   4   5   6   7   8   9   10 [4] 41  42  43  44  45  46  47  48  49   50 [8] 81  82  83  84  85  86  87  88  89   90\s
-                    [1] 11  12  13  14  15  16  17  18  19   20 [5] 51  52  53  54  55  56  57  58  59   60 [9] 91  92  93  94  95  96  97  98  99  100\s
-                    [2] 21  22  23  24  25  26  27  28  29   30 [6] 61  62  63  64  65  66  67  68  69   70\s
-                    [3] 31  32  33  34  35  36  37  38  39   40 [7] 71  72  73  74  75  76  77  78  79   80\s
+                         [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]      [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]      [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]\s
+                     [0]   1   2   3   4   5   6   7   8   9  10  11   [4]  45  46  47  48  49  50  51  52  53  54  55   [8]  89  90  91  92  93  94  95  96  97  98  99 \s
+                     [1]  12  13  14  15  16  17  18  19  20  21  22   [5]  56  57  58  59  60  61  62  63  64  65  66   [9] 100 101 102 103 104 105 106 107 108 109 110 \s
+                     [2]  23  24  25  26  27  28  29  30  31  32  33   [6]  67  68  69  70  71  72  73  74  75  76  77  [10] 111 112 113 114 115 116 117 118 119 120 121 \s
+                     [3]  34  35  36  37  38  39  40  41  42  43  44   [7]  78  79  80  81  82  83  84  85  86  87  88 \s
                     """, m.toFullContent()));
 
             test1matrix(mf, m -> assertEquals("""
-                        [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9]\s
-                    [0]  1   2   3   4   5   6   7   8   9   10 [4] 41  42  43  44  45  46  47  48  49   50 [8] 81  82  83  84  85  86  87  88  89   90\s
-                    [1] 11  12  13  14  15  16  17  18  19   20 [5] 51  52  53  54  55  56  57  58  59   60 [9] 91  92  93  94  95  96  97  98  99  100\s
-                    [2] 21  22  23  24  25  26  27  28  29   30 [6] 61  62  63  64  65  66  67  68  69   70\s
-                    [3] 31  32  33  34  35  36  37  38  39   40 [7] 71  72  73  74  75  76  77  78  79   80\s
+                         [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]      [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]      [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]\s
+                     [0]   1   2   3   4   5   6   7   8   9  10  11   [4]  45  46  47  48  49  50  51  52  53  54  55   [8]  89  90  91  92  93  94  95  96  97  98  99 \s
+                     [1]  12  13  14  15  16  17  18  19  20  21  22   [5]  56  57  58  59  60  61  62  63  64  65  66   [9] 100 101 102 103 104 105 106 107 108 109 110 \s
+                     [2]  23  24  25  26  27  28  29  30  31  32  33   [6]  67  68  69  70  71  72  73  74  75  76  77  [10] 111 112 113 114 115 116 117 118 119 120 121 \s
+                     [3]  34  35  36  37  38  39  40  41  42  43  44   [7]  78  79  80  81  82  83  84  85  86  87  88 \s
                     """, m.toSummary()));
 
             assertEquals("""
@@ -334,6 +335,7 @@ public class DenseAlgebraTest {
                 test1matrix1vector(mf, vf, (m, v) -> assertTrue(m.divNew(v, 1).deepEquals(m.div(v, 1)), message));
                 test1matrix1vector(mf, vf, (m, v) -> assertTrue(m.dot(v).deepEquals(m.copy().dot(v.copy())), message));
 
+                test1matrix1vector(mf, vf, (m, v) -> assertThrows(IllegalArgumentException.class, () -> m.dot(new DVectorDense(v.size()-1))));
             }
         }
     }
@@ -362,7 +364,7 @@ public class DenseAlgebraTest {
                 test2matrices(mf1, mf2, (m1, m2) -> assertTrue(m1.divNew(m2).deepEquals(m1.div(m2))));
                 test2matrices(mf1, mf2, (m1, m2) -> assertTrue(m1.dot(m2).deepEquals(m1.copy().dot(m2.copy())), message));
                 int[] in = new int[] {0, 1, 3, 4, 5};
-                int[] out = new int[] {2, 6, 7, 8, 9};
+                int[] out = new int[] {2, 6, 7, 8, 9, 10};
                 test2matrices(mf1, mf2, (m1, m2) -> assertTrue(m1.mapRows(in).deepEquals(m2.removeRows(out)), message));
                 test2matrices(mf1, mf2, (m1, m2) -> assertTrue(m1.mapRowsNew(in).deepEquals(m2.removeRowsNew(out)), message));
                 test2matrices(mf1, mf2, (m1, m2) -> assertTrue(m1.mapCols(in).deepEquals(m2.removeCols(out)), message));
@@ -397,24 +399,24 @@ public class DenseAlgebraTest {
             test1vector(vf, v -> assertTrue(v.mulNew(10).deepEquals(v.mul(10))));
             test1vector(vf, v -> assertTrue(v.divNew(10).deepEquals(v.div(10))));
 
-            test1vector(vf, v -> assertTrue(DVectorDense.fill(10, 7).deepEquals(v.copy().fill(7))));
+            test1vector(vf, v -> assertTrue(DVectorDense.fill(11, 7).deepEquals(v.copy().fill(7))));
 
             test1vector(vf, v -> assertEquals(v.norm(1), v.sum()));
-            test1vector(vf, v -> assertEquals(10, v.norm(Double.POSITIVE_INFINITY)));
-            test1vector(vf, v -> assertEquals(55, v.sum()));
-            test1vector(vf, v -> assertEquals(55, v.nansum()));
-            test1vector(vf, v -> assertEquals(3628800, v.prod()));
-            test1vector(vf, v -> assertEquals(3628800, v.nanprod()));
-            test1vector(vf, v -> assertEquals(10, v.nancount()));
-            test1vector(vf, v -> assertEquals(5.5, v.mean()));
-            test1vector(vf, v -> assertEquals(5.5, v.nanmean()));
-            test1vector(vf, v -> assertEquals(9.166666666666666, v.variance()));
-            test1vector(vf, v -> assertEquals(9.166666666666666, v.nanvariance()));
+            test1vector(vf, v -> assertEquals(11, v.norm(Double.POSITIVE_INFINITY)));
+            test1vector(vf, v -> assertEquals(66, v.sum()));
+            test1vector(vf, v -> assertEquals(66, v.nansum()));
+            test1vector(vf, v -> assertEquals(3.99168E7, v.prod()));
+            test1vector(vf, v -> assertEquals(3.99168E7, v.nanprod()));
+            test1vector(vf, v -> assertEquals(11, v.nancount()));
+            test1vector(vf, v -> assertEquals(6, v.mean()));
+            test1vector(vf, v -> assertEquals(6, v.nanmean()));
+            test1vector(vf, v -> assertEquals(11, v.variance()));
+            test1vector(vf, v -> assertEquals(11, v.nanvariance()));
 
             test1vector(vf, v -> assertEquals(0, v.argmin()));
             test1vector(vf, v -> assertEquals(1, v.min()));
-            test1vector(vf, v -> assertEquals(9, v.argmax()));
-            test1vector(vf, v -> assertEquals(10, v.max()));
+            test1vector(vf, v -> assertEquals(10, v.argmax()));
+            test1vector(vf, v -> assertEquals(11, v.max()));
 
             test1vector(vf, v -> assertTrue(v.applyNew((row, x) -> row * x).deepEquals(v.apply((row, x) -> row * x))));
 
@@ -463,12 +465,12 @@ public class DenseAlgebraTest {
             test1vector(vf, v -> assertTrue(v.asMatrix().mapCol(0).deepEquals(v),
                     "vtype: %s".formatted(vf.newInstance().getClass().getName())));
 
-            test1vector(vf, v -> assertEquals(v.getClass().getSimpleName() + "{size:10, values:[1,2,3,4,5,6,7,8,9,10]}", v.toString()));
+            test1vector(vf, v -> assertEquals(v.getClass().getSimpleName() + "{size:11, values:[1,2,3,4,5,6,7,8,9,10,11]}", v.toString()));
             test1vector(vf, v -> assertEquals("""
-                    [0]  1 [4]  5 [8]  9\s
-                    [1]  2 [5]  6 [9] 10\s
-                    [2]  3 [6]  7\s
-                    [3]  4 [7]  8\s
+                     [0]  1  [4]  5  [8]  9\s
+                     [1]  2  [5]  6  [9] 10\s
+                     [2]  3  [6]  7 [10] 11\s
+                     [3]  4  [7]  8\s
                     """, v.toContent()));
             assertEquals("""
                      [0]   1  [6]   7 [12]  13 [18]  19\s
@@ -479,16 +481,16 @@ public class DenseAlgebraTest {
                      [5]   6 [11]  12 [17]  18\s
                     """, vf.newInstance(100).toContent());
             test1vector(vf, v -> assertEquals("""
-                    [0]  1 [4]  5 [8]  9\s
-                    [1]  2 [5]  6 [9] 10\s
-                    [2]  3 [6]  7\s
-                    [3]  4 [7]  8\s
+                     [0]  1  [4]  5  [8]  9\s
+                     [1]  2  [5]  6  [9] 10\s
+                     [2]  3  [6]  7 [10] 11\s
+                     [3]  4  [7]  8\s
                     """, v.toFullContent()));
             test1vector(vf, v -> assertEquals("""
-                    [0]  1 [4]  5 [8]  9\s
-                    [1]  2 [5]  6 [9] 10\s
-                    [2]  3 [6]  7\s
-                    [3]  4 [7]  8\s
+                     [0]  1  [4]  5  [8]  9\s
+                     [1]  2  [5]  6  [9] 10\s
+                     [2]  3  [6]  7 [10] 11\s
+                     [3]  4  [7]  8\s
                     """, v.toSummary()));
 
             test1vector(vf, v -> {
@@ -499,44 +501,57 @@ public class DenseAlgebraTest {
             });
 
             test1vector(vf, v -> v.dv().deepEquals(VarDouble.seq(1, 10)));
+
+            test1vector(vf, v -> assertThrows(IllegalArgumentException.class, () -> v.dot(DVectorDense.fill(v.size()-1, 0))));
         }
+    }
+
+    private interface Function2vector {
+        void apply(DVector v1, DVector v2);
+    }
+
+    private void test2vector(VectorFactory vf1, VectorFactory vf2, Function2vector fun) {
+        DVector v1 = vf1.newInstance();
+        DVector v2 = vf2.newInstance();
+        fun.apply(v1, v2);
     }
 
     @Test
     void testTwoVectors() {
         for (VectorFactory vf1 : vectorFactories) {
             for (VectorFactory vf2 : vectorFactories) {
-                DVector v1 = vf1.newInstance();
-                DVector v2 = vf2.newInstance();
 
-                String msg = "v1: %s, v2: %s".formatted(v1, v2);
+                String msg = "v1: %s, v2: %s".formatted(vf1.newInstance(), vf2.newInstance());
 
-                assertTrue(v1.addNew(v2).deepEquals(v1.add(v2)), msg);
-                assertTrue(v1.subNew(v2).deepEquals(v1.sub(v2)), msg);
-                assertTrue(v1.mulNew(v2).deepEquals(v1.mul(v2)), msg);
-                assertTrue(v1.divNew(v2).deepEquals(v1.div(v2)), msg);
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.addNew(v2).deepEquals(v1.add(v2)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.subNew(v2).deepEquals(v1.sub(v2)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.mulNew(v2).deepEquals(v1.mul(v2)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.divNew(v2).deepEquals(v1.div(v2)), msg));
 
-                v1 = vf1.newInstance();
-                v2 = vf2.newInstance();
-                assertTrue(v1.addMulNew(10, v2).deepEquals(v1.addMul(10, v2)), msg);
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.addTo(10, v2).deepEquals(v1.addNew(10)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.subTo(10, v2).deepEquals(v1.subNew(10)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.mulTo(10, v2).deepEquals(v1.mulNew(10)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.divTo(10, v2).deepEquals(v1.divNew(10)), msg));
 
-                v1 = vf1.newInstance();
-                v2 = vf2.newInstance();
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.addMulNew(10, v2).deepEquals(v1.addMul(10, v2)), msg));
 
-                assertEquals(385.0, v1.dot(v2));
-                assertEquals(385.0, v1.dotBilinear(DMatrix.identity(10), v2));
-                assertEquals(385.0, v1.dotBilinear(DMatrix.identity(10)));
-                assertEquals(385.0, v1.dotBilinearDiag(DMatrix.identity(10), v2));
-                assertEquals(385.0, v1.dotBilinearDiag(DVector.ones(10)));
+                test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dot(v2), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinear(DMatrix.identity(11), v2), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinear(DMatrix.identity(11)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinearDiag(DMatrix.identity(11), v2), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinearDiag(DVector.ones(11)), msg));
 
-                DMatrix m = v1.outer(v2);
-                assertEquals(v1.size(), m.rows());
-                assertEquals(v2.size(), m.cols());
-                for (int i = 0; i < v1.size(); i++) {
-                    for (int j = 0; j < v2.size(); j++) {
-                        assertEquals(v1.get(i) * v2.get(j), m.get(i, j));
+                test2vector(vf1, vf2, (v1, v2) -> {
+                    DMatrix m = v1.outer(v2);
+                    assertEquals(v1.size(), m.rows());
+                    assertEquals(v2.size(), m.cols());
+                    for (int i = 0; i < v1.size(); i++) {
+                        for (int j = 0; j < v2.size(); j++) {
+                            assertEquals(v1.get(i) * v2.get(j), m.get(i, j));
+                        }
                     }
-                }
+                });
+
             }
         }
     }

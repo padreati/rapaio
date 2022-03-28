@@ -22,9 +22,11 @@
 package rapaio.math.linear.base;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.math.linear.dense.AbstractDMatrix;
 import rapaio.math.linear.dense.DMatrixMap;
 import rapaio.math.linear.dense.DVectorDense;
@@ -154,5 +156,29 @@ public class DMatrixBase extends AbstractDMatrix {
     @Override
     public DMatrix rangeColsTo(int start, int end, DMatrix to) {
         return mapColsTo(IntArrays.newSeq(start, end), to);
+    }
+
+    @Override
+    public DMatrix dot(DMatrix b) {
+        if (cols() != b.rows()) {
+            throw new IllegalArgumentException(
+                    String.format("Matrices not conformant for multiplication: (%d,%d) x (%d,%d)",
+                            rows(), cols(), b.rows(), b.cols()));
+        }
+        DMatrix C = DMatrix.empty(rows(), b.cols());
+        DVector[] as = new DVector[C.rows()];
+        DVector[] bs = new DVector[C.cols()];
+        for (int i = 0; i < C.rows(); i++) {
+            as[i] = mapRowNew(i);
+        }
+        for (int i = 0; i < C.cols(); i++) {
+            bs[i] = b.mapCol(i);
+        }
+        IntStream.range(0, C.rows()).parallel().forEach(i -> {
+            for (int j = 0; j < C.cols(); j++) {
+                C.set(i, j, as[i].dot(bs[j]));
+            }
+        });
+        return C;
     }
 }

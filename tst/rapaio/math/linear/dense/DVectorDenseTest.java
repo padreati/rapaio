@@ -21,7 +21,11 @@
 
 package rapaio.math.linear.dense;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.StandardDVectorTest;
@@ -51,5 +55,18 @@ public class DVectorDenseTest extends StandardDVectorTest {
     @Override
     public String className() {
         return DVectorDense.class.getSimpleName();
+    }
+
+    @Test
+    void testBuilders() {
+        DVectorDense v = DVectorDense.empty(6);
+        assertEquals(6, v.size());
+        assertEquals(0, v.get(2));
+
+        double[] array = new double[] {1, 2, 3, 4, 5, 6};
+        v = DVectorDense.wrap(2, 2, array);
+        assertEquals(2, v.size());
+        assertEquals(3, v.get(0));
+        assertEquals(4, v.get(1));
     }
 }

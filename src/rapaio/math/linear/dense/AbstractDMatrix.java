@@ -28,6 +28,8 @@ import java.util.stream.IntStream;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.decomposition.DBaseMatrixOps;
+import rapaio.math.linear.decomposition.MatrixOps;
 import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.math.linear.decomposition.SVDecomposition;
 import rapaio.printer.Printer;
@@ -683,6 +685,11 @@ public abstract class AbstractDMatrix implements DMatrix {
             }
         }
         return to;
+    }
+
+    @Override
+    public MatrixOps ops() {
+        return new DBaseMatrixOps(this);
     }
 
     @Override

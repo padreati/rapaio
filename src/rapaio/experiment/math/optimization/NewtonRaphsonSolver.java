@@ -35,7 +35,7 @@ import rapaio.math.functions.RFunction;
 import rapaio.math.functions.RHessian;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.CholeskyDecomposition;
+import rapaio.math.linear.decomposition.DCholeskyDecomposition;
 import rapaio.math.optimization.Solver;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
@@ -92,7 +92,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
 //            }
 
             // apply Cholesky modified
-            CholeskyDecomposition chol = modifiedCholesky(d2f_x);
+            DCholeskyDecomposition chol = modifiedCholesky(d2f_x);
             delta_x = chol.solve(d1f_x_n.asMatrix()).mapCol(0);
 
             double error = d1f_x.copy().dot(delta_x);
@@ -107,7 +107,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         return this;
     }
 
-    private CholeskyDecomposition modifiedCholesky(DMatrix A) {
+    private DCholeskyDecomposition modifiedCholesky(DMatrix A) {
         double beta = 0.001;
 
         // find minimum diagonal element
@@ -127,7 +127,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         }
 
         // compute Cholesky
-        CholeskyDecomposition chol = CholeskyDecomposition.from(Ac);
+        DCholeskyDecomposition chol = Ac.ops().cholesky();
         if (chol.isSPD()) {
             return chol;
         }
@@ -142,7 +142,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
             }
 
             // compute Cholesky
-            CholeskyDecomposition chol2 = CholeskyDecomposition.from(Acc);
+            DCholeskyDecomposition chol2 = Acc.ops().cholesky();
             if (chol2.isSPD()) {
                 return chol2;
             }

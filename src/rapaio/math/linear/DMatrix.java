@@ -22,16 +22,18 @@
 package rapaio.math.linear;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.stream.DoubleStream;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.math.linear.decomposition.MatrixOps;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
-import rapaio.sys.With;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
@@ -104,7 +106,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param cols number of columns
      * @return matrix filled with random values
      */
-    static DMatrix random(int rows, int cols) {
+    static DMatrixDenseC random(int rows, int cols) {
         return random(rows, cols, Normal.std());
     }
 
@@ -116,7 +118,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param cols number of columns
      * @return matrix filled with random values
      */
-    static DMatrix random(int rows, int cols, Distribution distribution) {
+    static DMatrixDenseC random(int rows, int cols, Distribution distribution) {
         return DMatrixDenseC.random(rows, cols, distribution);
     }
 
@@ -139,7 +141,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param values array of arrays of values
      * @return matrix which hold a range of data
      */
-    static DMatrix copy(boolean byRows, double[][] values) {
+    static DMatrixDenseC copy(boolean byRows, double[][] values) {
         if (byRows) {
             return DMatrixDenseC.copy(0, values.length, 0, values[0].length, true, values);
         } else {
@@ -162,7 +164,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param values   array of arrays of values
      * @return matrix which hold a range of data
      */
-    static DMatrix copy(int rowStart, int rowEnd, int colStart, int colEnd, boolean byRows, double[][] values) {
+    static DMatrixDenseC copy(int rowStart, int rowEnd, int colStart, int colEnd, boolean byRows, double[][] values) {
         return DMatrixDenseC.copy(rowStart, rowEnd, colStart, colEnd, byRows, values);
     }
 
@@ -1143,6 +1145,13 @@ public interface DMatrix extends Serializable, Printable {
     DMatrix copy();
 
     /**
+     * Provides an interface to various matrix operations.
+     *
+     * @return instance of matrix decomposition
+     */
+    MatrixOps ops();
+
+    /**
      * Compares matrices using a tolerance of 1e-12 for values.
      * If the absolute difference between two values is less
      * than the specified tolerance, than the values are
@@ -1177,4 +1186,13 @@ public interface DMatrix extends Serializable, Printable {
      * @return new matrix instance
      */
     DMatrix resizeCopy(int rows, int cols, double fill);
+
+    default DMatrix roundValues(int scale) {
+        return roundValues(scale, RoundingMode.HALF_UP);
+    }
+
+    default DMatrix roundValues(int scale, RoundingMode mode) {
+        apply(x -> BigDecimal.valueOf(x).setScale(scale, mode).doubleValue());
+        return this;
+    }
 }

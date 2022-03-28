@@ -26,7 +26,6 @@ import java.util.stream.IntStream;
 
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorMask;
-import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
@@ -34,8 +33,8 @@ import rapaio.util.collection.DoubleArrays;
 
 public class DVectorMap extends AbstractStoreDVector {
 
-    private final static VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
-    private final static int SPECIES_LEN = SPECIES.length();
+    private final static VectorSpecies<Double> species = DoubleVector.SPECIES_PREFERRED;
+    private final static int speciesLen = species.length();
 
     private final int offset;
     private final int[] indexes;
@@ -47,18 +46,18 @@ public class DVectorMap extends AbstractStoreDVector {
         this.offset = offset;
         this.indexes = indexes;
         this.array = array;
-        this.loopMask = SPECIES.indexInRange(SPECIES.loopBound(indexes.length), indexes.length);
-        this.loopBound = SPECIES.loopBound(indexes.length);
+        this.loopMask = species.indexInRange(species.loopBound(indexes.length), indexes.length);
+        this.loopBound = species.loopBound(indexes.length);
     }
 
     @Override
     public VectorSpecies<Double> species() {
-        return SPECIES;
+        return species;
     }
 
     @Override
     public int speciesLen() {
-        return SPECIES_LEN;
+        return speciesLen;
     }
 
     @Override
@@ -88,12 +87,12 @@ public class DVectorMap extends AbstractStoreDVector {
 
     @Override
     public DoubleVector loadVector(int i) {
-        return DoubleVector.fromArray(SPECIES, array, offset, indexes, i);
+        return DoubleVector.fromArray(species, array, offset, indexes, i);
     }
 
     @Override
     public DoubleVector loadVector(int i, VectorMask<Double> m) {
-        return DoubleVector.fromArray(SPECIES, array, offset, indexes, i, m);
+        return DoubleVector.fromArray(species, array, offset, indexes, i, m);
     }
 
     @Override
@@ -119,27 +118,11 @@ public class DVectorMap extends AbstractStoreDVector {
     @Override
     public double[] solidArrayCopy() {
         double[] copy = new double[indexes.length];
-        for (int i = 0; i < loopBound; i += SPECIES_LEN) {
+        for (int i = 0; i < loopBound; i += speciesLen) {
             loadVector(i).intoArray(copy, i);
         }
         loadVector(loopBound, loopMask).intoArray(copy, loopBound, loopMask);
         return copy;
-    }
-
-    @Override
-    public double sum() {
-        int i = 0;
-        DoubleVector aggr = DoubleVector.zero(SPECIES);
-        int bound = SPECIES.loopBound(size());
-        for (; i < bound; i += SPECIES_LEN) {
-            DoubleVector xv = DoubleVector.fromArray(SPECIES, array, offset, indexes, i);
-            aggr = aggr.add(xv);
-        }
-        double result = aggr.reduceLanes(VectorOperators.ADD);
-        for (; i < size(); i++) {
-            result = result + array[offset + indexes[i]];
-        }
-        return result;
     }
 
     @Override

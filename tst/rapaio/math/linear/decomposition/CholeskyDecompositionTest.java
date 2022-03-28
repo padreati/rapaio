@@ -21,6 +21,7 @@
 
 package rapaio.math.linear.decomposition;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,6 +31,8 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
 
 public class CholeskyDecompositionTest {
@@ -48,8 +51,8 @@ public class CholeskyDecompositionTest {
             DMatrix a = DMatrix.random(30, 30);
             DMatrix b = a.t().dot(a);
 
-            CholeskyDecomposition cholesky = CholeskyDecomposition.from(b);
-            DMatrix l = cholesky.getL();
+            DCholeskyDecomposition cholesky = b.ops().cholesky();
+            DMatrix l = cholesky.l();
 
             assertTrue(cholesky.isSPD());
             assertTrue(b.deepEquals(l.dot(l.t()), TOL));
@@ -60,9 +63,16 @@ public class CholeskyDecompositionTest {
     void testNonSPD() {
         for (int i = 0; i < TIMES; i++) {
             DMatrix a = DMatrix.random(30, 30);
-            CholeskyDecomposition cholesky = CholeskyDecomposition.from(a);
+            DCholeskyDecomposition cholesky = a.ops().cholesky();
             assertFalse(cholesky.isSPD());
+
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, cholesky::inv);
+            assertEquals("Matrix is not symmetric positive definite.", ex.getMessage());
         }
+
+        DMatrix a = DMatrix.random(10, 3);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> a.ops().cholesky());
+        assertEquals("Only square matrices can have Cholesky decomposition.", ex.getMessage());
     }
 
     @Test
@@ -82,7 +92,7 @@ public class CholeskyDecompositionTest {
                 -1.5,
                 -0.75
         );
-        DMatrix s1 = CholeskyDecomposition.from(a1).solve(b1);
+        DMatrix s1 = a1.ops().cholesky().solve(b1);
         assertTrue(x1.deepEquals(s1, TOL));
 
         DMatrix a2 = DMatrixDenseR.wrap(2, 2,
@@ -97,17 +107,55 @@ public class CholeskyDecompositionTest {
                 1,
                 1.33333333333333333333333333333333
         );
-        DMatrix s2 = LUDecomposition.from(a2).solve(b2);
+        DMatrix s2 = a2.ops().lu().solve(b2);
         assertTrue(x2.deepEquals(s2, TOL));
     }
 
     @Test
     void testSystemNonSymmetric() {
-        assertThrows(IllegalArgumentException.class, () -> CholeskyDecomposition.from(DMatrix.random(2, 2)).solve(DMatrix.random(2, 1)));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> DMatrix.random(2, 2).ops().cholesky().solve(DMatrix.random(2, 1)));
+        assertEquals("Matrix is not symmetric positive definite.", ex.getMessage());
     }
 
     @Test
     void testSystemNonCompatible() {
-        assertThrows(IllegalArgumentException.class, () -> CholeskyDecomposition.from(DMatrix.random(2, 2)).solve(DMatrix.random(3, 1)));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> DMatrix.random(2, 2).ops().cholesky().solve(DMatrix.random(3, 1)));
+        assertEquals("Matrix row dimensions must agree.", ex.getMessage());
+    }
+
+    @Test
+    void testLeftRight() {
+
+        DMatrix a = DMatrixDenseC.random(4, 4);
+        DMatrix ata = a.t().dot(a);
+
+        var chl = ata.ops().cholesky();
+        var chr = ata.ops().cholesky(true);
+
+        assertFalse(chl.hasRightFlag());
+        assertTrue(chr.hasRightFlag());
+
+        assertTrue(chl.l().t().deepEquals(chr.r(), 1e-10));
+
+        DMatrix inv = chl.solve(DMatrix.identity(4));
+        DMatrix res = ata.dot(inv).roundValues(12);
+        assertTrue(DMatrix.identity(4).deepEquals(res));
+
+        inv = chr.solve(DMatrix.identity(4));
+        res = ata.dot(inv).roundValues(12);
+        assertTrue(DMatrix.identity(4).deepEquals(res));
+
+        DMatrix inv1 = chl.inv();
+        DMatrix inv2 = chr.inv();
+        assertTrue(inv1.deepEquals(inv2));
+
+
+        DVector v = DVector.random(4);
+        DVector x1 = chl.solve(v);
+        DVector x2 = chr.solve(v);
+
+        assertTrue(x1.deepEquals(x2));
     }
 }

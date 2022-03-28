@@ -29,7 +29,7 @@ import java.util.List;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.CholeskyDecomposition;
+import rapaio.math.linear.decomposition.DCholeskyDecomposition;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
@@ -155,7 +155,7 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
         //XI(p(1-p))^T * X * z
         DMatrix b = xpvar.t().dot(z.asMatrix());
 
-        CholeskyDecomposition chol = CholeskyDecomposition.from(mA);
+        DCholeskyDecomposition chol = mA.ops().cholesky();
         if (chol.isSPD()) {
             // if we have a symmetric positive definite matrix we solve it with Cholesky
             return chol.solve(b).mapColNew(0);

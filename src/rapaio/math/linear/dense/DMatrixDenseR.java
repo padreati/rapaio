@@ -443,8 +443,9 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
             System.arraycopy(array, offset + row * rowStride, tod.array(), tod.offset(), cols);
             return tod;
         }
+        int off = offset + row * rowStride;
         for (int i = 0; i < cols; i++) {
-            to.set(i, array[offset + row * rowStride + i]);
+            to.set(i, array[off + i]);
         }
         return to;
     }
@@ -548,6 +549,58 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
             }
         });
         return new DVectorDense(0, c.length, c);
+    }
+
+    @Override
+    public DMatrix dot(DMatrix b) {
+        if (cols() != b.rows()) {
+            throw new IllegalArgumentException("Matrices not conform to multiplication: [%d,%d] [%d,%d]."
+                    .formatted(rows, cols, b.rows(), b.cols()));
+        }
+        if (b instanceof DMatrixDenseC bc) {
+            return dotC(bc);
+        }
+        if (b instanceof DMatrixDenseR br) {
+            return dotR(br);
+        }
+        return super.dot(b);
+    }
+
+    private DMatrix dotC(DMatrixDenseC bc) {
+        // we are in the best case
+        DMatrixDenseC result = new DMatrixDenseC(rows, bc.cols());
+
+        int chunk = 32;
+        int threads = bc.cols() / chunk;
+
+        IntStream.range(0, threads + 1).parallel().forEach(c -> {
+            for (int col = c * chunk; col < Math.min(bc.cols(), (c + 1) * chunk); col++) {
+                DVector colVector = bc.mapCol(col);
+                for (int i = 0; i < rows; i++) {
+                    result.set(i, col, mapRow(i).dot(colVector));
+                }
+            }
+        });
+        return result;
+    }
+
+    private DMatrix dotR(DMatrixDenseR b) {
+        // in left we are good, we have rows, in right we have also rows
+        // we build solid right cols and share them for each thread
+        DMatrixDenseC result = new DMatrixDenseC(rows, b.cols);
+
+        int chunk = 32;
+        int threads = b.cols() / chunk;
+
+        IntStream.range(0, threads + 1).parallel().forEach(c -> {
+            for (int col = c * chunk; col < Math.min(b.cols, (c + 1) * chunk); col++) {
+                DVector colVector = b.mapColNew(col);
+                for (int i = 0; i < rows; i++) {
+                    result.set(i, col, mapRow(i).dot(colVector));
+                }
+            }
+        });
+        return result;
     }
 
     @Override

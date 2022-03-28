@@ -29,7 +29,7 @@ import java.util.List;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.CholeskyDecomposition;
+import rapaio.math.linear.decomposition.DCholeskyDecomposition;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
@@ -137,7 +137,7 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
         DMatrix mA = xpvar.t().dot(x.get());
 
         DMatrix invA;
-        CholeskyDecomposition chol = CholeskyDecomposition.from(mA);
+        DCholeskyDecomposition chol = mA.ops().cholesky();
         if (chol.isSPD()) {
             invA = chol.solve(DMatrix.identity(w.size()));
         } else {

@@ -46,25 +46,25 @@ public class LUDecompositionTest {
     void testBasicGaussian() {
 
         DMatrix a = DMatrix.random(100, 100);
-        LUDecomposition lu = LUDecomposition.from(a, LUDecomposition.Method.GAUSSIAN_ELIMINATION);
+        DLUDecomposition lu = a.ops().lu(DLUDecomposition.Method.GAUSSIAN_ELIMINATION);
         DMatrix a1 = a.mapRows(lu.getPivot());
-        DMatrix a2 = lu.getL().dot(lu.getU());
+        DMatrix a2 = lu.l().dot(lu.u());
         assertTrue(a1.deepEquals(a2, TOL));
     }
 
     @Test
     void testBasicCrout() {
         DMatrix a = DMatrix.random(100, 100);
-        LUDecomposition lu = LUDecomposition.from(a, LUDecomposition.Method.CROUT);
+        DLUDecomposition lu = a.ops().lu(DLUDecomposition.Method.CROUT);
         DMatrix a1 = a.mapRows(lu.getPivot());
-        DMatrix a2 = lu.getL().dot(lu.getU());
+        DMatrix a2 = lu.l().dot(lu.u());
         assertTrue(a1.deepEquals(a2, TOL));
     }
 
     @Test
     void testIsSingular() {
-        assertFalse(LUDecomposition.from(DMatrix.empty(10, 10)).isNonSingular());
-        assertTrue(LUDecomposition.from(DMatrix.random(10, 10)).isNonSingular());
+        assertFalse(DMatrix.empty(10, 10).ops().lu().isNonSingular());
+        assertTrue(DMatrix.random(10, 10).ops().lu().isNonSingular());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class LUDecompositionTest {
                 -2,
                 -2
         );
-        assertTrue(x1.deepEquals(LUDecomposition.from(a1).solve(b1), TOL));
+        assertTrue(x1.deepEquals(a1.ops().lu().solve(b1), TOL));
 
 
         DMatrix a2 = DMatrixDenseR.wrap(2, 2,
@@ -97,7 +97,7 @@ public class LUDecompositionTest {
                 15
         );
         DMatrix x2 = DMatrixDenseR.wrap(2, 1, 1.5, 1);
-        assertTrue(x2.deepEquals(LUDecomposition.from(a2).solve(b2), TOL));
+        assertTrue(x2.deepEquals(a2.ops().lu().solve(b2), TOL));
     }
 
     @Test
@@ -106,22 +106,29 @@ public class LUDecompositionTest {
                 1, 2,
                 3, 4
         );
-        assertEquals(-2, LUDecomposition.from(a).det(), TOL);
+        assertEquals(-2, a.ops().lu().det(), TOL);
     }
 
     @Test
-    void determinantTestEx() {
-        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(DMatrix.random(4, 3)).det());
+    void testInvalidMatrixForDeterminant() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> DMatrix.random(4, 3).ops().lu().det());
+        assertEquals("The determinant can be computed only for squared matrices.", ex.getMessage());
+
+        ex = assertThrows(IllegalArgumentException.class, () -> DMatrix.random(2, 3).ops().lu().det());
+        assertEquals("For LU decomposition, number of rows must be greater or equal with number of columns.", ex.getMessage());
+
+        ex = assertThrows(IllegalArgumentException.class,
+                () -> DMatrix.random(2, 3).ops().lu(DLUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
+        assertEquals("For LU decomposition, number of rows must be greater or equal with number of columns.", ex.getMessage());
     }
 
     @Test
-    void builderTestEx() {
-        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(DMatrix.random(2, 3)).det());
-    }
+    void testInvalidSolver() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> DMatrix.random(4,3).ops().lu().solve(DMatrix.random(6,6)));
+        assertEquals("Matrix row dimensions must agree.", ex.getMessage());
 
-    @Test
-    void builderTestMethodEx() {
-        assertThrows(IllegalArgumentException.class,
-                () -> LUDecomposition.from(DMatrix.random(2, 3), LUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
+        ex = assertThrows(IllegalArgumentException.class, () -> DMatrix.fill(3, 3, 0).ops().lu().solve(DMatrix.identity(3)));
+        assertEquals("Matrix is singular.", ex.getMessage());
     }
 }

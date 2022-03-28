@@ -21,7 +21,6 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.EigenDecomposition;
 
 /**
@@ -33,34 +32,6 @@ import rapaio.math.linear.decomposition.EigenDecomposition;
 public final class Linear {
 
     private Linear() {
-    }
-
-    public static DMatrix chol2inv(DMatrix R) {
-        return chol2inv(R, DMatrix.identity(R.rows()));
-    }
-
-    public static DMatrix chol2inv(DMatrix R, DMatrix B) {
-        DMatrix ref = R.t();
-        if (B.rows() != R.rows()) {
-            throw new IllegalArgumentException("Matrix row dimensions must agree.");
-        }
-
-        // Copy right hand side.
-        DMatrix X = B.copy();
-
-        int n = ref.rows();
-        int nx = X.cols();
-        double[][] L = new double[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                L[i][j] = ref.get(i, j);
-            }
-        }
-
-        X = CholeskyDecomposition.forwardSubstitution(n, nx, X, L);
-        X = CholeskyDecomposition.backwardSubstitution(n, nx, X, L);
-
-        return X;
     }
 
     public static EigenPair eigenDecomp(DMatrix s) {
