@@ -42,8 +42,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.DBaseLUDecomposition;
-import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ListParam;
 import rapaio.ml.common.ValueParam;
@@ -494,9 +492,9 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 }
 
                 try {
-                    sigma = t.ops().lu().inv();
+                    sigma = t.lu().inv();
                 } catch (IllegalArgumentException ignored) {
-                    sigma = QRDecomposition.from(t).solve(DMatrix.identity(t.rows()));
+                    sigma = t.qr().inv();
                 }
                 m = sigma.dot(phi_t_y).mul(beta);
 
@@ -573,9 +571,9 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             }
 
             try {
-                sigma = t.ops().lu().inv();
+                sigma = t.lu().inv();
             } catch (IllegalArgumentException ignored) {
-                sigma = QRDecomposition.from(t).solve(DMatrix.identity(t.rows()));
+                sigma = t.qr().inv();
             }
 
             m = sigma.dot(phi_t_y).mul(beta);
@@ -745,7 +743,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             for (int i = 0; i < indexes.length; i++) {
                 m_sigma_inv.inc(i, i, alpha.get(indexes[i]));
             }
-            sigma = QRDecomposition.from(m_sigma_inv).solve(DMatrix.identity(indexes.length));
+            sigma = m_sigma_inv.qr().inv();
             m = sigma.dot(phi_dot_y.mapNew(indexes)).mul(beta);
         }
 
@@ -925,7 +923,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             for (int i = 0; i < active.size(); i++) {
                 m_sigma_inv.inc(i, i, alpha.get(active.get(i).index));
             }
-            sigma = m_sigma_inv.ops().cholesky().solve(DMatrix.identity(active.size()));
+            sigma = m_sigma_inv.cholesky().solve(DMatrix.identity(active.size()));
             m = sigma.dot(computePhiDotY().mul(beta));
         }
 

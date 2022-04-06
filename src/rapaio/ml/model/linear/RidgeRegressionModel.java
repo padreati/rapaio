@@ -30,7 +30,6 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
@@ -168,7 +167,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
         DMatrix l = DMatrix.identity(X.cols()).mul(lambda.get());
         DMatrix A = X.t().dot(X).add(l);
         DMatrix B = X.t().dot(Y);
-        DMatrix scaledBeta = QRDecomposition.from(A).solve(B);
+        DMatrix scaledBeta = A.qr().solve(B);
 
         if (intercept.get()) {
             beta = DMatrix.fill(scaledBeta.rows() + 1, scaledBeta.cols(), 0);

@@ -34,7 +34,6 @@ import rapaio.data.filter.FIntercept;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 import rapaio.printer.Format;
@@ -113,7 +112,7 @@ public class LinearRegressionResult extends RegressionResult {
                     }
                 }
                 DMatrix X = DMatrix.copy(features.mapVars(model.inputNames()));
-                DMatrix m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(DMatrix.identity(X.cols()));
+                DMatrix m_beta_hat = X.t().dot(X).qr().inv();
 
                 for (int j = 0; j < model.inputNames().length; j++) {
                     beta_std_error.set(j, i, Math.sqrt(m_beta_hat.get(j, j) * var));

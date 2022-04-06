@@ -21,7 +21,7 @@
 
 package rapaio.ml.common.distance;
 
-import static rapaio.math.MathTools.*;
+import static java.lang.StrictMath.abs;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;

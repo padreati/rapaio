@@ -32,7 +32,6 @@ import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 
@@ -201,7 +200,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
         public MethodImpl compute() {
             converged = false;
             // initial L2 solution
-            DVector x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
+            DVector x = A.qr().solve(b.asMatrix()).mapCol(0);
             for (int it = 0; it < maxIt; it++) {
                 // error vector
                 DVector e = A.dot(x).sub(b);
@@ -220,7 +219,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                 DVector b1 = w2a.t().dot(b);
 
                 try {
-                    x = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
+                    x = A1.qr().solve(b1.asMatrix()).mapCol(0);
                 } catch (RuntimeException ignored) {
                     converged = false;
                     break;
@@ -258,7 +257,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
             double pk = 2;
             // initial L2 solution
 
-            DVector x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
+            DVector x = A.qr().solve(b);
             for (int it = 0; it < maxIt; it++) {
                 pk = (p >= 2) ? Math.min(p, k * pk) : Math.max(p, k * pk);
                 // error vector
@@ -272,7 +271,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                 DMatrix w2a = A.mulNew(w, 1);
                 DMatrix A1 = w2a.t().dot(A);
                 DVector b1 = w2a.t().dot(b);
-                DVector x1 = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
+                DVector x1 = A1.qr().solve(b1);
                 // Newton's parameter
                 double q = 1.0 / (pk - 1);
                 double nn;

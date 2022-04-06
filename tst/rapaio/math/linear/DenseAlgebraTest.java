@@ -37,7 +37,6 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.MathTools;
 import rapaio.math.linear.base.DMatrixBase;
 import rapaio.math.linear.base.DVectorBase;
 import rapaio.math.linear.dense.DMatrixDenseC;
@@ -45,7 +44,6 @@ import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorStride;
 import rapaio.math.linear.dense.DVectorVar;
-import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleComparators;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
@@ -221,7 +219,7 @@ public class DenseAlgebraTest {
             test1matrix(mf, m -> assertEquals(Variance.of(m.mapRowNew(2).dv()).sdValue(), m.sd(1).get(2)));
             test1matrix(mf, m -> assertEquals(Variance.of(m.mapColNew(2).dv()).sdValue(), m.sd(0).get(2)));
 
-            test1matrix(mf, m -> assertTrue(m.applyNew(MathTools::sqrt).deepEquals(m.apply(MathTools::sqrt))));
+            test1matrix(mf, m -> assertTrue(m.applyNew(StrictMath::sqrt).deepEquals(m.apply(StrictMath::sqrt))));
             test1matrix(mf, m -> assertTrue(m.tNew().tNew().deepEquals(m.t().t())));
             test1matrix(mf, m -> assertEquals(m.sum(), m.valueStream().sum()));
 

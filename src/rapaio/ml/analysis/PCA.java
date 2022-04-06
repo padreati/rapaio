@@ -34,8 +34,6 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.EigenPair;
-import rapaio.math.linear.Linear;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
@@ -124,9 +122,9 @@ public class PCA extends ParamSet<PCA> implements Printable {
         DMatrix s = x.scatter();
 
         logger.fine("compute eigenvalues");
-        EigenPair ep = Linear.eigenDecomp(s);
-        eigenValues = ep.values().div(x.rows() - 1);
-        eigenVectors = ep.vectors();
+        var evd = s.evd();
+        eigenValues = evd.real().div(x.rows() - 1);
+        eigenVectors = evd.v();
 
         logger.fine("sort eigen values and vectors");
 

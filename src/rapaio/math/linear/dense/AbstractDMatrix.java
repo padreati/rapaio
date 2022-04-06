@@ -28,10 +28,7 @@ import java.util.stream.IntStream;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.DBaseMatrixOps;
-import rapaio.math.linear.decomposition.MatrixOps;
 import rapaio.math.linear.decomposition.MatrixMultiplication;
-import rapaio.math.linear.decomposition.SVDecomposition;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -446,6 +443,21 @@ public abstract class AbstractDMatrix implements DMatrix {
         return MatrixMultiplication.ikjParallel(this, b);
     }
 
+    @Override
+    public boolean isSymmetric() {
+        if (rows() != cols()) {
+            return false;
+        }
+        for (int i = 0; i < rows(); i++) {
+            for (int j = 0; j < cols(); j++) {
+                if (get(i, j) != get(j, i)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     /**
      * Trace of the matrix, if the matrix is square. The trace of a squared
      * matrix is the sum of the elements from the main diagonal.
@@ -472,7 +484,7 @@ public abstract class AbstractDMatrix implements DMatrix {
      */
     @Override
     public int rank() {
-        return SVDecomposition.from(this).rank();
+        return svd().rank();
     }
 
     /**
@@ -685,11 +697,6 @@ public abstract class AbstractDMatrix implements DMatrix {
             }
         }
         return to;
-    }
-
-    @Override
-    public MatrixOps ops() {
-        return new DBaseMatrixOps(this);
     }
 
     @Override

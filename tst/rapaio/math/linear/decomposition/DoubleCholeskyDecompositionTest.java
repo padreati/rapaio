@@ -35,7 +35,7 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
 
-public class CholeskyDecompositionTest {
+public class DoubleCholeskyDecompositionTest {
 
     private static final double TOL = 1e-12;
     private static final int TIMES = 100;
@@ -51,7 +51,7 @@ public class CholeskyDecompositionTest {
             DMatrix a = DMatrix.random(30, 30);
             DMatrix b = a.t().dot(a);
 
-            DCholeskyDecomposition cholesky = b.ops().cholesky();
+            DoubleCholeskyDecomposition cholesky = b.cholesky();
             DMatrix l = cholesky.l();
 
             assertTrue(cholesky.isSPD());
@@ -63,7 +63,7 @@ public class CholeskyDecompositionTest {
     void testNonSPD() {
         for (int i = 0; i < TIMES; i++) {
             DMatrix a = DMatrix.random(30, 30);
-            DCholeskyDecomposition cholesky = a.ops().cholesky();
+            DoubleCholeskyDecomposition cholesky = a.cholesky();
             assertFalse(cholesky.isSPD());
 
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, cholesky::inv);
@@ -71,7 +71,7 @@ public class CholeskyDecompositionTest {
         }
 
         DMatrix a = DMatrix.random(10, 3);
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> a.ops().cholesky());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, a::cholesky);
         assertEquals("Only square matrices can have Cholesky decomposition.", ex.getMessage());
     }
 
@@ -92,7 +92,7 @@ public class CholeskyDecompositionTest {
                 -1.5,
                 -0.75
         );
-        DMatrix s1 = a1.ops().cholesky().solve(b1);
+        DMatrix s1 = a1.cholesky().solve(b1);
         assertTrue(x1.deepEquals(s1, TOL));
 
         DMatrix a2 = DMatrixDenseR.wrap(2, 2,
@@ -107,21 +107,21 @@ public class CholeskyDecompositionTest {
                 1,
                 1.33333333333333333333333333333333
         );
-        DMatrix s2 = a2.ops().lu().solve(b2);
+        DMatrix s2 = a2.lu().solve(b2);
         assertTrue(x2.deepEquals(s2, TOL));
     }
 
     @Test
     void testSystemNonSymmetric() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> DMatrix.random(2, 2).ops().cholesky().solve(DMatrix.random(2, 1)));
+                () -> DMatrix.random(2, 2).cholesky().solve(DMatrix.random(2, 1)));
         assertEquals("Matrix is not symmetric positive definite.", ex.getMessage());
     }
 
     @Test
     void testSystemNonCompatible() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> DMatrix.random(2, 2).ops().cholesky().solve(DMatrix.random(3, 1)));
+                () -> DMatrix.random(2, 2).cholesky().solve(DMatrix.random(3, 1)));
         assertEquals("Matrix row dimensions must agree.", ex.getMessage());
     }
 
@@ -131,8 +131,8 @@ public class CholeskyDecompositionTest {
         DMatrix a = DMatrixDenseC.random(4, 4);
         DMatrix ata = a.t().dot(a);
 
-        var chl = ata.ops().cholesky();
-        var chr = ata.ops().cholesky(true);
+        var chl = ata.cholesky();
+        var chr = ata.cholesky(true);
 
         assertFalse(chl.hasRightFlag());
         assertTrue(chr.hasRightFlag());

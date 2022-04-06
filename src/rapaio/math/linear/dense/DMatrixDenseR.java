@@ -31,7 +31,6 @@ import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.util.collection.DoubleArrays;
@@ -258,7 +257,7 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
     public static DMatrixDenseR copy(boolean byRows, DVector... vectors) {
         int minSize = Integer.MAX_VALUE;
         for (DVector vector : vectors) {
-            minSize = MathTools.min(vector.size(), minSize);
+            minSize = StrictMath.min(vector.size(), minSize);
         }
         if (minSize == 0 || minSize == Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Minimum length of a vector is 0 which is invalid.");

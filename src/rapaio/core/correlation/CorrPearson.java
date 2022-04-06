@@ -21,7 +21,7 @@
 
 package rapaio.core.correlation;
 
-import static rapaio.math.MathTools.*;
+import static java.lang.StrictMath.min;
 
 import java.io.Serial;
 import java.util.Arrays;

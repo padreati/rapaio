@@ -21,7 +21,7 @@
 
 package rapaio.core.tools;
 
-import static rapaio.math.MathTools.*;
+import static java.lang.StrictMath.abs;
 
 import java.io.Serial;
 import java.io.Serializable;

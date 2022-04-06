@@ -21,6 +21,11 @@
 
 package rapaio.core.distributions;
 
+import static java.lang.Math.exp;
+import static java.lang.Math.log;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
+
 import static rapaio.math.MathTools.*;
 import static rapaio.printer.Format.floatFlex;
 

@@ -30,7 +30,11 @@ import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.math.linear.decomposition.MatrixOps;
+import rapaio.math.linear.decomposition.DoubleCholeskyDecomposition;
+import rapaio.math.linear.decomposition.DoubleEigenDecomposition;
+import rapaio.math.linear.decomposition.DoubleLUDecomposition;
+import rapaio.math.linear.decomposition.DoubleQRDecomposition;
+import rapaio.math.linear.decomposition.DoubleSVDecomposition;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
@@ -1059,6 +1063,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     int[] argmin(int axis);
 
+    boolean isSymmetric();
     /**
      * Computes the sum of all elements from the matrix.
      *
@@ -1144,12 +1149,37 @@ public interface DMatrix extends Serializable, Printable {
      */
     DMatrix copy();
 
-    /**
-     * Provides an interface to various matrix operations.
-     *
-     * @return instance of matrix decomposition
-     */
-    MatrixOps ops();
+    default DoubleCholeskyDecomposition cholesky() {
+        return cholesky(false);
+    }
+
+    default DoubleCholeskyDecomposition cholesky(boolean rightFlag) {
+        return new DoubleCholeskyDecomposition(this, rightFlag);
+    }
+
+    default DoubleLUDecomposition lu() {
+        return lu(DoubleLUDecomposition.Method.GAUSSIAN_ELIMINATION);
+    }
+
+    default DoubleLUDecomposition lu(DoubleLUDecomposition.Method method) {
+        return new DoubleLUDecomposition(this, method);
+    }
+
+    default DoubleQRDecomposition qr() {
+        return new DoubleQRDecomposition(this);
+    }
+
+    default DoubleSVDecomposition svd() {
+        return new DoubleSVDecomposition(this, true, true);
+    }
+
+    default DoubleSVDecomposition svd(boolean wantu, boolean wantv) {
+        return new DoubleSVDecomposition(this, wantu, wantv);
+    }
+
+    default DoubleEigenDecomposition evd() {
+        return new DoubleEigenDecomposition(this);
+    }
 
     /**
      * Compares matrices using a tolerance of 1e-12 for values.

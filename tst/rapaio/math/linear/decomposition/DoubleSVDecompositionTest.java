@@ -31,8 +31,10 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 
-public class SVDecompositionTest {
+public class DoubleSVDecompositionTest {
 
     private static final double TOL = 1e-14;
     private static final int ROUNDS = 100;
@@ -42,38 +44,38 @@ public class SVDecompositionTest {
         RandomSource.setSeed(1234);
     }
 
-//    @Test
+    @Test
     void testBuilder() {
 
         for (int round = 0; round < ROUNDS; round++) {
 
-            int n = RandomSource.nextInt(20) + 1;
-            int m = RandomSource.nextInt(20) + n;
+            int n = RandomSource.nextInt(5) + 1;
+            int m = RandomSource.nextInt(5) + n;
 
             DMatrix a = DMatrix.random(m, n);
 
-            SVDecomposition svd = SVDecomposition.from(a);
+            DoubleSVDecomposition svd = a.svd();
 
-            DMatrix u = svd.getU();
-            DMatrix s = svd.getS();
-            DMatrix v = svd.getV();
+            DMatrix u = svd.u();
+            DMatrix s = svd.s();
+            DMatrix v = svd.v();
 
             assertTrue(a.deepEquals(u.dot(s).dot(v.t()), TOL));
 
-            double[] sv = svd.getSingularValues();
+            DVector sv = svd.singularValues();
             for (int i = 0; i < n - 1; i++) {
-                assertEquals(s.get(i, i), sv[i], TOL);
-                assertTrue(sv[i] >= sv[i + 1]);
+                assertEquals(s.get(i, i), sv.get(i), TOL);
+                assertTrue(sv.get(i) >= sv.get(i + 1));
             }
 
-            assertEquals(sv[0], svd.norm2(), TOL);
+            assertEquals(sv.get(0), svd.norm2(), TOL);
             assertEquals(n, svd.rank());
         }
     }
 
     @Test
     void testDimension() {
-        assertThrows(IllegalArgumentException.class, () -> SVDecomposition.from(DMatrix.random(10, 50)));
+        assertThrows(IllegalArgumentException.class, () -> DMatrix.random(10, 50).svd());
     }
 
     @Test
@@ -82,15 +84,17 @@ public class SVDecompositionTest {
         // for random matrices we expect a low condition number
 
         for (int i = 0; i < ROUNDS; i++) {
-            double c = SVDecomposition.from(DMatrix.random(10, 10)).cond();
+            var svd = DMatrix.random(10, 10).svd();
+            double c = svd.conditionNumber();
             assertTrue(Math.log10(c) < 4);
+            assertEquals(1/c, svd.inverseConditionNumber(), 1e-12);
         }
 
         // for ill conditioned the condition number explodes
 
         Normal norm = Normal.of(0, 0.000001);
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < ROUNDS; i++) {
             DMatrix a = DMatrix.random(10, 10);
 
             // we create the first column as a slightly modified
@@ -99,8 +103,27 @@ public class SVDecompositionTest {
                 a.set(j, 0, a.get(j, 1) + norm.sampleNext());
             }
 
-            double c = SVDecomposition.from(a).cond();
+            double c = a.svd().conditionNumber();
             assertTrue(Math.log10(c) > 5);
+            assertEquals(1/c, a.svd().inverseConditionNumber(), 1e-12);
+        }
+    }
+
+    @Test
+    void testProjectors() {
+        for (int i = 0; i < ROUNDS; i++) {
+            DVector v = DVectorDense.random(3);
+            DMatrix p = v.outer(v);
+            assertEquals(1, p.svd().rank());
+        }
+
+        for (int i = 0; i < ROUNDS; i++) {
+            DVector v = DVectorDense.random(3);
+            DMatrix p = v.outer(v);
+            v = DVectorDense.random(3);
+            p.add(v.outer(v));
+            var svd = p.svd();
+            assertEquals(2, svd.rank());
         }
     }
 }

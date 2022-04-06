@@ -21,6 +21,9 @@
 
 package rapaio.core.tools;
 
+import static java.lang.StrictMath.min;
+import static java.lang.StrictMath.pow;
+
 import static rapaio.math.MathTools.*;
 import static rapaio.util.collection.DoubleArrays.nanSum;
 

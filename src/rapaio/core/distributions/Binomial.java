@@ -21,6 +21,15 @@
 
 package rapaio.core.distributions;
 
+import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.exp;
+import static java.lang.StrictMath.floor;
+import static java.lang.StrictMath.log;
+import static java.lang.StrictMath.max;
+import static java.lang.StrictMath.min;
+import static java.lang.StrictMath.rint;
+import static java.lang.StrictMath.sqrt;
+
 import static rapaio.math.MathTools.*;
 
 import java.io.Serial;

@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@
 
 package rapaio.math.linear.decomposition;
 
-import java.io.Serial;
+import java.io.Serializable;
 import java.util.Arrays;
-import java.util.function.BiConsumer;
 
 import rapaio.math.linear.DMatrix;
+import rapaio.printer.Format;
+import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
@@ -43,117 +44,33 @@ import rapaio.util.collection.IntArrays;
  * decomposition is in the solution of square systems of simultaneous linear
  * equations. This will fail if isNonSingular() returns false.
  */
-public class DBaseLUDecomposition extends DLUDecomposition {
+public class DoubleLUDecomposition implements Serializable, Printable {
 
-    @Serial
-    private static final long serialVersionUID = -4226024886673558685L;
+    public enum Method {
+        CROUT,
+        GAUSSIAN_ELIMINATION
+    }
+
+    protected final DMatrix ref;
+    protected final Method method;
 
     // internal storage of decomposition
     private DMatrix LU;
-    private int rowCount;
-    private int colCount;
     // pivot sign
     private int pivSign;
     // internal storage for row pivot indexes
     private int[] piv;
 
-    public DBaseLUDecomposition(DMatrix A, Method method) {
-        super(A, method);
+    public DoubleLUDecomposition(DMatrix ref, Method method) {
+        if (ref.rows() < ref.cols()) {
+            throw new IllegalArgumentException("For LU decomposition, number of rows must be greater or equal with number of columns.");
+        }
+        this.ref = ref;
+        this.method = method;
         switch (method) {
             case CROUT -> buildCrout();
             case GAUSSIAN_ELIMINATION -> buildGaussianElimination();
         }
-    }
-
-    @Override
-    public boolean isNonSingular() {
-        for (int j = 0; j < colCount; j++) {
-            if (LU.get(j, j) == 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public DMatrix l() {
-        DMatrix X = DMatrix.empty(rowCount, colCount);
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j <= i; j++) {
-                if (i > j) {
-                    X.set(i, j, LU.get(i, j));
-                } else {
-                    X.set(i, j, 1.0);
-                }
-            }
-        }
-        return X;
-    }
-
-    @Override
-    public DMatrix u() {
-        DMatrix U = DMatrix.empty(colCount, colCount);
-        for (int i = 0; i < colCount; i++) {
-            for (int j = i; j < colCount; j++) {
-                U.set(i, j, LU.get(i, j));
-            }
-        }
-        return U;
-    }
-
-    @Override
-    public int[] getPivot() {
-        return Arrays.copyOf(piv, rowCount);
-    }
-
-    @Override
-    public double det() {
-        if (rowCount != colCount) {
-            throw new IllegalArgumentException("The determinant can be computed only for squared matrices.");
-        }
-        double d = pivSign;
-        for (int j = 0; j < colCount; j++) {
-            d *= LU.get(j, j);
-        }
-        return d;
-    }
-
-    @Override
-    public DMatrix solve(DMatrix B) {
-        if (B.rows() != rowCount) {
-            throw new IllegalArgumentException("Matrix row dimensions must agree.");
-        }
-        if (!isNonSingular()) {
-            throw new IllegalArgumentException("Matrix is singular.");
-        }
-
-        // Copy right hand side with pivoting
-        int nx = B.cols();
-        DMatrix X = B.mapRows(piv).copy();
-
-        // Solve L*Y = B(piv,:)
-
-        for (int k = 0; k < colCount; k++) {
-            for (int i = k + 1; i < colCount; i++) {
-                for (int j = 0; j < nx; j++) {
-                    X.set(i, j, X.get(i, j) - X.get(k, j) * LU.get(i, k));
-                }
-            }
-        }
-
-        // Solve U*X = Y;
-
-        for (int k = colCount - 1; k >= 0; k--) {
-            for (int j = 0; j < nx; j++) {
-                X.set(k, j, X.get(k, j) / LU.get(k, k));
-            }
-            for (int i = 0; i < k; i++) {
-                for (int j = 0; j < nx; j++) {
-                    X.set(i, j, X.get(i, j) - X.get(k, j) * LU.get(i, k));
-                }
-            }
-        }
-        return X;
     }
 
     /**
@@ -163,22 +80,20 @@ public class DBaseLUDecomposition extends DLUDecomposition {
     public void buildCrout() {
 
         LU = ref.copy();
-        rowCount = ref.rows();
-        colCount = ref.cols();
-        piv = IntArrays.newSeq(rowCount);
+        piv = IntArrays.newSeq(ref.rows());
         pivSign = 1;
-        double[] LUcolj = new double[rowCount];
+        double[] LUcolj = new double[ref.rows()];
 
         // Outer loop.
-        for (int j = 0; j < colCount; j++) {
+        for (int j = 0; j < ref.cols(); j++) {
 
             // Make a copy of the j-th column to localize references.
-            for (int i = 0; i < rowCount; i++) {
+            for (int i = 0; i < ref.rows(); i++) {
                 LUcolj[i] = LU.get(i, j);
             }
 
             // Apply previous transformations.
-            for (int i = 0; i < rowCount; i++) {
+            for (int i = 0; i < ref.rows(); i++) {
 
                 // Most of the time is spent in the following dot product.
 
@@ -227,22 +142,20 @@ public class DBaseLUDecomposition extends DLUDecomposition {
     public void buildGaussianElimination() {
         // Initialize.
         LU = ref.copy();
-        rowCount = ref.rows();
-        colCount = ref.cols();
-        piv = IntArrays.newSeq(rowCount);
+        piv = IntArrays.newSeq(ref.rows());
         pivSign = 1;
         // Main loop.
-        for (int k = 0; k < colCount; k++) {
+        for (int k = 0; k < ref.cols(); k++) {
             // Find pivot.
             int p = k;
-            for (int i = k + 1; i < rowCount; i++) {
+            for (int i = k + 1; i < ref.rows(); i++) {
                 if (Math.abs(LU.get(i, k)) > Math.abs(LU.get(p, k))) {
                     p = i;
                 }
             }
             // Exchange if necessary.
             if (p != k) {
-                for (int j = 0; j < colCount; j++) {
+                for (int j = 0; j < ref.cols(); j++) {
                     double t = LU.get(p, j);
                     LU.set(p, j, LU.get(k, j));
                     LU.set(k, j, t);
@@ -254,13 +167,130 @@ public class DBaseLUDecomposition extends DLUDecomposition {
             }
             // Compute multipliers and eliminate k-th column.
             if (LU.get(k, k) != 0.0) {
-                for (int i = k + 1; i < rowCount; i++) {
+                for (int i = k + 1; i < ref.rows(); i++) {
                     LU.set(i, k, LU.get(i, k) / LU.get(k, k));
-                    for (int j = k + 1; j < colCount; j++) {
+                    for (int j = k + 1; j < ref.cols(); j++) {
                         LU.set(i, j, LU.get(i, j) - LU.get(i, k) * LU.get(k, j));
                     }
                 }
             }
         }
+    }
+
+    public boolean isNonSingular() {
+        for (int j = 0; j < ref.cols(); j++) {
+            if (LU.get(j, j) == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public DMatrix l() {
+        DMatrix x = DMatrix.empty(ref.rows(), ref.cols());
+        int i=0;
+        for (; i < ref.cols(); i++) {
+            for (int j = 0; j < i; j++) {
+                x.set(i, j, LU.get(i, j));
+            }
+            x.set(i, i, 1.0);
+        }
+        for(; i<ref.rows();i++) {
+            for (int j = 0; j < ref.cols(); j++) {
+                x.set(i, j, LU.get(i, j));
+            }
+        }
+        return x;
+    }
+
+    public DMatrix u() {
+        DMatrix U = DMatrix.empty(ref.cols(), ref.cols());
+        for (int i = 0; i < ref.cols(); i++) {
+            for (int j = i; j < ref.cols(); j++) {
+                U.set(i, j, LU.get(i, j));
+            }
+        }
+        return U;
+    }
+
+    public int[] pivots() {
+        return Arrays.copyOf(piv, ref.rows());
+    }
+
+    public double det() {
+        if (ref.rows() != ref.cols()) {
+            throw new IllegalArgumentException("The determinant can be computed only for squared matrices.");
+        }
+        double d = pivSign;
+        for (int j = 0; j < ref.cols(); j++) {
+            d *= LU.get(j, j);
+        }
+        return d;
+    }
+
+    public DMatrix solve(DMatrix B) {
+        if (B.rows() != ref.rows()) {
+            throw new IllegalArgumentException("Matrix row dimensions must agree.");
+        }
+        if (!isNonSingular()) {
+            throw new IllegalArgumentException("Matrix is singular.");
+        }
+
+        // Copy right hand side with pivoting
+        int nx = B.cols();
+        DMatrix X = B.mapRows(piv).copy();
+
+        // Solve L*Y = B(piv,:)
+
+        for (int k = 0; k < ref.cols(); k++) {
+            for (int i = k + 1; i < ref.cols(); i++) {
+                for (int j = 0; j < nx; j++) {
+                    X.set(i, j, X.get(i, j) - X.get(k, j) * LU.get(i, k));
+                }
+            }
+        }
+
+        // Solve U*X = Y;
+
+        for (int k = ref.cols() - 1; k >= 0; k--) {
+            for (int j = 0; j < nx; j++) {
+                X.set(k, j, X.get(k, j) / LU.get(k, k));
+            }
+            for (int i = 0; i < k; i++) {
+                for (int j = 0; j < nx; j++) {
+                    X.set(i, j, X.get(i, j) - X.get(k, j) * LU.get(i, k));
+                }
+            }
+        }
+        return X;
+    }
+
+    public DMatrix inv() {
+        return solve(DMatrix.identity(ref.rows()));
+    }
+
+    @Override
+    public String toSummary(Printer printer, POption<?>... options) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("LU decomposition summary\n")
+                .append("========================\n")
+                .append("\nL matrix\n")
+                .append(l().toSummary(printer, options))
+                .append("\nU matrix:\n")
+                .append(u().toSummary(printer, options))
+                .append("\npivots: [");
+        int[] pivots = pivots();
+        for (int i = 0; i < Math.min(12, pivots.length); i++) {
+            sb.append(pivots[i]).append(",");
+        }
+        if (pivots.length > 12) {
+            sb.append("...");
+        }
+        sb.append("]");
+
+        if (ref.rows() == ref.cols()) {
+            sb.append("\ndet: ").append(Format.floatFlex(det()));
+        }
+        return sb.toString();
     }
 }

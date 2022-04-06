@@ -29,8 +29,7 @@ import java.util.List;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.DCholeskyDecomposition;
-import rapaio.math.linear.decomposition.QRDecomposition;
+import rapaio.math.linear.decomposition.DoubleCholeskyDecomposition;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 
@@ -72,7 +71,7 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
      */
     public final ValueParam<DVector, BinaryLogisticNewton> w0 = new ValueParam<>(this,null, "w0");
 
-    public static record Result(DVector w, List<Double> nll, List<DVector> ws, boolean converged) {
+    public record Result(DVector w, List<Double> nll, List<DVector> ws, boolean converged) {
     }
 
     public Result fit() {
@@ -137,12 +136,11 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
         DMatrix mA = xpvar.t().dot(x.get());
 
         DMatrix invA;
-        DCholeskyDecomposition chol = mA.ops().cholesky();
+        DoubleCholeskyDecomposition chol = mA.cholesky();
         if (chol.isSPD()) {
             invA = chol.solve(DMatrix.identity(w.size()));
         } else {
-            QRDecomposition qr = QRDecomposition.from(mA);
-            invA = qr.solve(DMatrix.identity(w.size()));
+            invA = mA.qr().inv();
         }
 
         // z = Wx - I(p(1-p))^{-1}(y-p)

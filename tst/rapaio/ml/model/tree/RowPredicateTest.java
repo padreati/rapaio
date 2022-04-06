@@ -58,7 +58,7 @@ public class RowPredicateTest {
     @Test
     void testNumPredicates() {
 
-        Frame df = SolidFrame.byVars(VarDouble.from(50, MathTools::sqrt).name("x"));
+        Frame df = SolidFrame.byVars(VarDouble.from(50, StrictMath::sqrt).name("x"));
 
         // test basic numeric predicates
 

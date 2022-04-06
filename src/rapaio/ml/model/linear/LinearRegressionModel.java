@@ -27,7 +27,6 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -71,7 +70,7 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
     protected boolean coreFit(Frame df, Var weights) {
         DMatrix X = DMatrix.copy(df.mapVars(inputNames()));
         DMatrix Y = DMatrix.copy(df.mapVars(targetNames()));
-        beta = QRDecomposition.from(X).solve(Y);
+        beta = X.qr().solve(Y);
         return true;
     }
 }

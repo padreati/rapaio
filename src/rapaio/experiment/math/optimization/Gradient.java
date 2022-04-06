@@ -21,7 +21,8 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.math.MathTools;
+import static rapaio.math.MathTools.*;
+
 import rapaio.math.linear.DVector;
 import rapaio.util.Pair;
 
@@ -211,9 +212,9 @@ class LogisticGradient implements Gradient {
             cumGradient.add(data.copy().mul(multiplier2));
             if (label > 0) {
                 // The following is equivalent to log(1 + exp(margin)) but more numerically stable.
-                return MathTools.log1pExp(margin2);
+                return log1pExp(margin2);
             } else {
-                return MathTools.log1pExp(margin2) - margin2;
+                return log1pExp(margin2) - margin2;
             }
         }
         /*

@@ -21,10 +21,10 @@
 
 package rapaio.ml.model.km;
 
+import static java.lang.StrictMath.abs;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static rapaio.math.MathTools.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -136,7 +136,7 @@ public class MWKMeansTest {
         assertEquals("""
                 MWKMeans{k=3,nstart=3,p=3,subspace clustering flag=true}
                 Model fitted=true
-                Inertia:9.60130221317551
+                Inertia:9.601302213175508
                 Iterations:11
                 Clusters:3
                 """, model.toSummary());
@@ -144,7 +144,7 @@ public class MWKMeansTest {
         assertEquals("""
                 MWKMeans{k=3,nstart=3,p=3,subspace clustering flag=true}
                 Model fitted=true
-                Inertia:9.60130221317551
+                Inertia:9.601302213175508
                 Iterations:11
                 Clusters:3
                 """, model.toContent());
@@ -152,7 +152,7 @@ public class MWKMeansTest {
         assertEquals("""
                 MWKMeans{k=3,nstart=3,p=3,subspace clustering flag=true}
                 Model fitted=true
-                Inertia:9.60130221317551
+                Inertia:9.601302213175508
                 Iterations:11
                 Clusters:3
                 Centroids:
@@ -163,7 +163,7 @@ public class MWKMeansTest {
                 Weights:
                                     [0]                 [1]                 [2]                 [3]\s
                 [0] 0.1255641752675887  0.31483725762707626 0.10186068763814621 0.4577378794671888 \s
-                [1] 0.49737953182084893 0.15477617835581178 0.18077398413522214 0.1670703056881172 \s
+                [1] 0.49737953182084893 0.15477617835581176 0.18077398413522214 0.1670703056881172 \s
                 [2] 0.22830331555968278 0.1957300412590679  0.15386102479123878 0.42210561839001054\s
                 """, model.toFullContent());
     }

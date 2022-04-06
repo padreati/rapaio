@@ -35,7 +35,6 @@ import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.QRDecomposition;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/21.
@@ -82,7 +81,7 @@ public class IRLSSolverTest {
 
         DMatrix ata = A.t().dot(A);
         DVector ab = A.t().dot(b);
-        DVector sol = QRDecomposition.from(ata).solve(ab.asMatrix()).mapCol(0);
+        DVector sol = ata.qr().solve(ab);
         assertTrue(irlsSolution.deepEquals(sol, eps));
     }
 

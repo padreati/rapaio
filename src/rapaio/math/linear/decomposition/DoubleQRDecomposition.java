@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,32 +27,19 @@ import java.io.Serializable;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 
-/**
- * QR Decomposition.
- * <p>
- * For an m-by-n matrix A with m >= n, the QR decomposition is an m-by-n
- * orthogonal matrix Q and an n-by-n upper triangular matrix R so that A = Q*R.
- * <p>
- * The QR decomposition always exists, even if the matrix does not have
- * full rank.  The primary use of the QR decomposition is in the least squares solution
- * of non square systems of simultaneous linear equations. This will fail if A is not of full rank.
- */
-public class QRDecomposition implements Serializable {
-
-    public static QRDecomposition from(DMatrix A) {
-        return new QRDecomposition(A);
-    }
+public class DoubleQRDecomposition implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -8322866575684242727L;
+    protected final DMatrix ref;
+    protected final DMatrix QR;
+    protected final DVector diag;
 
-    private final DMatrix QR;
-    private final DVector Rdiag;
-
-    private QRDecomposition(DMatrix A) {
+    public DoubleQRDecomposition(DMatrix ref) {
         // Initialize.
-        QR = A.copy();
-        Rdiag = DVector.zeros(QR.cols());
+        this.ref = ref;
+        QR = ref.copy();
+        diag = DVector.zeros(QR.cols());
 
         // Main loop.
         for (int k = 0; k < QR.cols(); k++) {
@@ -84,7 +71,7 @@ public class QRDecomposition implements Serializable {
                     }
                 }
             }
-            Rdiag.set(k, Rdiag.get(k) - nrm);
+            diag.set(k, diag.get(k) - nrm);
         }
     }
 
@@ -95,8 +82,9 @@ public class QRDecomposition implements Serializable {
      */
     public boolean isFullRank() {
         for (int j = 0; j < QR.cols(); j++) {
-            if (Rdiag.get(j) == 0)
+            if (diag.get(j) == 0) {
                 return false;
+            }
         }
         return true;
     }
@@ -106,18 +94,18 @@ public class QRDecomposition implements Serializable {
      *
      * @return Lower trapezoidal matrix whose columns define the reflections
      */
-    public DMatrix getH() {
-        DMatrix H = DMatrix.empty(QR.rows(), QR.cols());
+    public DMatrix h() {
+        DMatrix h = DMatrix.empty(QR.rows(), QR.cols());
         for (int i = 0; i < QR.rows(); i++) {
             for (int j = 0; j < QR.cols(); j++) {
                 if (i >= j) {
-                    H.set(i, j, QR.get(i, j));
+                    h.set(i, j, QR.get(i, j));
                 } else {
-                    H.set(i, j, 0.0);
+                    h.set(i, j, 0.0);
                 }
             }
         }
-        return H;
+        return h;
     }
 
     /**
@@ -125,20 +113,20 @@ public class QRDecomposition implements Serializable {
      *
      * @return R
      */
-    public DMatrix getR() {
-        DMatrix R = DMatrix.empty(QR.cols(), QR.cols());
+    public DMatrix r() {
+        DMatrix r = DMatrix.empty(QR.cols(), QR.cols());
         for (int i = 0; i < QR.cols(); i++) {
             for (int j = 0; j < QR.cols(); j++) {
                 if (i < j) {
-                    R.set(i, j, QR.get(i, j));
+                    r.set(i, j, QR.get(i, j));
                 } else if (i == j) {
-                    R.set(i, j, Rdiag.get(i));
+                    r.set(i, j, diag.get(i));
                 } else {
-                    R.set(i, j, 0.0);
+                    r.set(i, j, 0.0);
                 }
             }
         }
-        return R;
+        return r;
     }
 
     /**
@@ -147,27 +135,27 @@ public class QRDecomposition implements Serializable {
      * @return Q
      */
 
-    public DMatrix getQ() {
-        DMatrix Q = DMatrix.empty(QR.rows(), QR.cols());
+    public DMatrix q() {
+        DMatrix q = DMatrix.empty(QR.rows(), QR.cols());
         for (int k = QR.cols() - 1; k >= 0; k--) {
             for (int i = 0; i < QR.rows(); i++) {
-                Q.set(i, k, 0.0);
+                q.set(i, k, 0.0);
             }
-            Q.set(k, k, 1.0);
+            q.set(k, k, 1.0);
             for (int j = k; j < QR.cols(); j++) {
                 if (QR.get(k, k) != 0) {
                     double s = 0.0;
                     for (int i = k; i < QR.rows(); i++) {
-                        s += QR.get(i, k) * Q.get(i, j);
+                        s += QR.get(i, k) * q.get(i, j);
                     }
                     s = -s / QR.get(k, k);
                     for (int i = k; i < QR.rows(); i++) {
-                        Q.set(i, j, Q.get(i, j) + s * QR.get(i, k));
+                        q.set(i, j, q.get(i, j) + s * QR.get(i, k));
                     }
                 }
             }
         }
-        return Q;
+        return q;
     }
 
     /**
@@ -207,7 +195,7 @@ public class QRDecomposition implements Serializable {
         // Solve R*X = Y;
         for (int k = QR.cols() - 1; k >= 0; k--) {
             for (int j = 0; j < B.cols(); j++) {
-                X.set(k, j, X.get(k, j) / Rdiag.get(k));
+                X.set(k, j, X.get(k, j) / diag.get(k));
             }
             for (int i = 0; i < k; i++) {
                 for (int j = 0; j < B.cols(); j++) {
@@ -216,5 +204,21 @@ public class QRDecomposition implements Serializable {
             }
         }
         return X.rangeRows(0, QR.cols()).rangeCols(0, B.cols()).copy();
+    }
+
+    /**
+     * Least squares solution of A*x = b
+     *
+     * @param b A Matrix with as many rows as A and any number of columns.
+     * @return X that minimizes the two norm of Q*R*X-B.
+     * @throws IllegalArgumentException Matrix row dimensions must agree.
+     * @throws RuntimeException         Matrix is rank deficient.
+     */
+    public DVector solve(DVector b) {
+        return solve(b.asMatrix()).mapCol(0);
+    }
+
+    public DMatrix inv() {
+        return solve(DMatrix.identity(ref.rows()));
     }
 }

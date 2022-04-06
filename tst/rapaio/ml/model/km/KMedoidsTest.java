@@ -21,12 +21,12 @@
 
 package rapaio.ml.model.km;
 
+import static java.lang.StrictMath.abs;
+
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static rapaio.math.MathTools.*;
 
 import java.util.List;
 import java.util.Set;

@@ -37,9 +37,6 @@ import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.EigenPair;
-import rapaio.math.linear.Linear;
-import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -150,19 +147,21 @@ public class LDA implements Printable {
         }
 
         // inverse sw
-        DMatrix swi = QRDecomposition.from(sw).solve(DMatrix.identity(inputNames.length));
+        DMatrix swi = sw.qr().inv();
 //        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
 
         // use decomp of sbe
-        DMatrix sbplus = Linear.pdPower(sb, 0.5);
-        DMatrix sbminus = Linear.pdPower(sb, -0.5);
+        var evd = sb.evd();
+        DMatrix sbplus = evd.power(0.5);
+        DMatrix sbminus = evd.power(-0.5);
 
-        EigenPair p = Linear.eigenDecomp(sbplus.dot(swi).dot(sbplus));
+        evd = sbplus.dot(swi).dot(sbplus).evd();
+
+
 
         logger.fine("compute eigenvalues");
-        eigenValues = p.values();
-        eigenVectors = sbminus.dot(p.vectors());
-//        eigenVectors = p.vectors();
+        eigenValues = evd.real();
+        eigenVectors = sbminus.dot(evd.v());
 
         logger.fine("sort eigen values and vectors");
 

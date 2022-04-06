@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,34 +21,41 @@
 
 package rapaio.math.linear.decomposition;
 
-
-import java.io.Serial;
+import java.io.Serializable;
 
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DMatrixDenseC;
 
-public class DBaseCholeskyDecomposition extends DCholeskyDecomposition {
+/**
+ * Cholesky Decomposition.
+ * <p>
+ * For a symmetric, positive definite matrix A, the Cholesky decomposition is a lower triangular matrix L so that A = L*L'.
+ * <p>
+ * If the matrix is not symmetric or positive definite, the constructor returns a partial decomposition and sets an internal
+ * flag that may be queried by the {@code #isSPD()} method.
+ */
+public class DoubleCholeskyDecomposition implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = -3047433451986241586L;
-
+    protected final DMatrix ref;
+    protected final boolean rightFlag;
+    protected boolean spd = false;
     /**
      * Left lower triangular decomposition
      */
     private DMatrixDenseC l;
-
     /**
      * Right upper triangular decomposition
      */
     private DMatrixDenseC r;
 
-    /**
-     * Cholesky algorithm for symmetric and positive definite matrix.
-     *
-     * @param a Square, symmetric matrix.
-     */
-    public DBaseCholeskyDecomposition(DMatrix a, boolean rightFlag) {
-        super(a, rightFlag);
+    public DoubleCholeskyDecomposition(DMatrix ref, boolean rightFlag) {
+        if (ref.rows() != ref.cols()) {
+            throw new IllegalArgumentException("Only square matrices can have Cholesky decomposition.");
+        }
+        this.ref = ref;
+        this.rightFlag = rightFlag;
+
         if (!rightFlag) {
             leftCholesky();
         } else {
@@ -57,12 +64,27 @@ public class DBaseCholeskyDecomposition extends DCholeskyDecomposition {
     }
 
     /**
+     * @return true if A is symmetric and positive definite.
+     */
+    public boolean isSPD() {
+        return spd;
+    }
+
+    public boolean hasRightFlag() {
+        return rightFlag;
+    }
+
+    public DMatrix l() {
+        return l;
+    }
+
+    /**
      * Left Triangular Cholesky Decomposition.
      * <p>
      * For a symmetric, positive definite matrix A, the Left Triangular Cholesky decomposition is a lower
      * triangular matrix L so that A = L*L'.
      */
-    private void leftCholesky() {
+    protected void leftCholesky() {
         int n = ref.rows();
         l = new DMatrixDenseC(n, n);
         spd = (ref.cols() == n);
@@ -92,7 +114,7 @@ public class DBaseCholeskyDecomposition extends DCholeskyDecomposition {
      * triangular matrix R so that A = R'*R. This constructor computes R with
      * the Fortran inspired column oriented algorithm used in LINPACK and MATLAB.
      */
-    private void rightCholesky() {
+    protected void rightCholesky() {
         int n = ref.cols();
         r = new DMatrixDenseC(n, n);
         spd = (ref.cols() == n);
@@ -117,12 +139,6 @@ public class DBaseCholeskyDecomposition extends DCholeskyDecomposition {
         return r;
     }
 
-    @Override
-    public DMatrix l() {
-        return l;
-    }
-
-    @Override
     public DMatrix solve(DMatrix b) {
         if (b.rows() != ref.rows()) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
@@ -141,7 +157,16 @@ public class DBaseCholeskyDecomposition extends DCholeskyDecomposition {
         return x;
     }
 
-    @Override
+    /**
+     * Solve A*x=b linear system when A is symmetric positive definite.
+     *
+     * @param b result vector
+     * @return coefficient vector
+     */
+    public DVector solve(DVector b) {
+        return solve(b.asMatrix()).mapCol(0);
+    }
+
     public DMatrix inv() {
         if (!spd) {
             throw new IllegalArgumentException("Matrix is not symmetric positive definite.");

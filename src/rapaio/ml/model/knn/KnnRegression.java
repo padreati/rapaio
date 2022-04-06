@@ -21,6 +21,12 @@
 
 package rapaio.ml.model.knn;
 
+import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.cos;
+import static java.lang.StrictMath.max;
+import static java.lang.StrictMath.min;
+import static java.lang.StrictMath.pow;
+
 import static rapaio.math.MathTools.*;
 
 import java.util.Arrays;

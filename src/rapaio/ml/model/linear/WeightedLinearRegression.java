@@ -27,7 +27,6 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -72,7 +71,7 @@ public class WeightedLinearRegression extends BaseLinearRegressionModel<Weighted
         w.apply(Math::sqrt);
         DMatrix X = DMatrix.copy(df.mapVars(inputNames())).mul(w, 1);
         DMatrix Y = DMatrix.copy(df.mapVars(targetNames())).mul(w, 1);
-        beta = QRDecomposition.from(X).solve(Y);
+        beta = X.qr().solve(Y);
         return true;
     }
 }

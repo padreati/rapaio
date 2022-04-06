@@ -21,7 +21,7 @@
 
 package rapaio.graphics.opt;
 
-import static rapaio.math.MathTools.*;
+import static java.lang.StrictMath.sqrt;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

@@ -21,7 +21,7 @@
 
 package rapaio.math.optimization.scalar;
 
-import static rapaio.math.MathTools.*;
+import static java.lang.StrictMath.sqrt;
 
 import java.io.Serial;
 import java.io.Serializable;

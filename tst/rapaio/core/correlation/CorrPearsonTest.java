@@ -76,7 +76,7 @@ public class CorrPearsonTest {
         VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).name("y");
 
         CorrPearson cp = CorrPearson.of(x, y);
-        assertEquals(0.021769705986371478, cp.singleValue(), TOL);
+        assertEquals(0.021769705986371783, cp.singleValue(), TOL);
         assertEquals("pearson[x, y] = [[1,0.0217697],[0.0217697,1]]", cp.toString());
         assertEquals("> pearson[x, y] - Pearson product-moment correlation coefficient\n" +
                 "0.0217697\n", cp.toContent());

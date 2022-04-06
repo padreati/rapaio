@@ -21,6 +21,11 @@
 
 package rapaio.core.distributions;
 
+import static java.lang.StrictMath.floor;
+import static java.lang.StrictMath.floorDiv;
+import static java.lang.StrictMath.rint;
+import static java.lang.StrictMath.sqrt;
+
 import static rapaio.math.MathTools.*;
 
 import java.io.Serial;

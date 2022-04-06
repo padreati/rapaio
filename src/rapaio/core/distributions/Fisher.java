@@ -21,6 +21,9 @@
 
 package rapaio.core.distributions;
 
+import static java.lang.StrictMath.pow;
+import static java.lang.StrictMath.sqrt;
+
 import static rapaio.math.MathTools.*;
 
 import java.io.Serial;

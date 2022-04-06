@@ -31,6 +31,7 @@ import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
@@ -50,6 +51,11 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     public static DVectorDense wrap(int offset, int size, double[] values) {
         return new DVectorDense(offset, size, values);
+    }
+
+
+    public static DVectorDense random(int size) {
+        return random(size, Normal.std());
     }
 
     public static DVectorDense random(int size, Distribution distribution) {
@@ -158,7 +164,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector map(int[] indexes) {
+    public DVector map(int... indexes) {
         return new DVectorMap(offset, indexes, array);
     }
 

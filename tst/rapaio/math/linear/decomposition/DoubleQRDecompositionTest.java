@@ -33,8 +33,10 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 
-public class QRDecompositionTest {
+public class DoubleQRDecompositionTest {
 
     private static final double TOL = 1e-14;
 
@@ -54,10 +56,10 @@ public class QRDecompositionTest {
             int off = RandomSource.nextInt(n);
 
             DMatrix a = DMatrix.random(n + off, n);
-            QRDecomposition qr = QRDecomposition.from(a);
+            DoubleQRDecomposition qr = a.qr();
 
-            DMatrix q = qr.getQ();
-            DMatrix r = qr.getR();
+            DMatrix q = qr.q();
+            DMatrix r = qr.r();
 
             // test various properties of the decomposition
 
@@ -92,9 +94,9 @@ public class QRDecompositionTest {
             // generate a random matrix
 
             DMatrix a = DMatrix.random(n, n);
-            QRDecomposition qr = QRDecomposition.from(a);
+            DoubleQRDecomposition qr = a.qr();
 
-            DMatrix h = qr.getH();
+            DMatrix h = qr.h();
             DMatrix p = DMatrix.identity(10).sub(h.mul(2).dot(h.t()));
 
             // p is hermitian
@@ -134,7 +136,7 @@ public class QRDecompositionTest {
                 b.set(i, 0, y);
             }
 
-            DMatrix x = QRDecomposition.from(a).solve(b);
+            DMatrix x = a.qr().solve(b);
 
             double c0 = x.get(0, 0);
             double c1 = x.get(1, 0);
@@ -148,11 +150,23 @@ public class QRDecompositionTest {
 
     @Test
     void testIncompatible() {
-        assertThrows(IllegalArgumentException.class, () -> QRDecomposition.from(DMatrix.random(10, 10)).solve(DMatrix.random(12, 1)));
+        assertThrows(IllegalArgumentException.class, () -> DMatrix.random(10, 10).qr().solve(DMatrix.random(12, 1)));
     }
 
     @Test
     void testSingular() {
-        assertThrows(RuntimeException.class, () -> QRDecomposition.from(DMatrix.fill(10, 10, 2)).solve(DMatrix.random(10, 1)));
+        assertThrows(RuntimeException.class, () -> DMatrix.fill(10, 10, 2).qr().solve(DMatrix.random(10, 1)));
+    }
+
+    @Test
+    void testInv() {
+        DMatrix m = DMatrix.random(4,4);
+        DMatrix inv = m.qr().inv();
+        assertTrue(inv.deepEquals(m.qr().solve(DMatrix.identity(4))));
+
+        DVector v = DVectorDense.wrap(0, 4, new double[]{1,2,3,4});
+        DVector x = m.qr().solve(v);
+
+        assertTrue(v.deepEquals(m.dot(x)));
     }
 }

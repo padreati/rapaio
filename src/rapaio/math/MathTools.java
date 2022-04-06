@@ -21,6 +21,15 @@
 
 package rapaio.math;
 
+import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.exp;
+import static java.lang.StrictMath.floor;
+import static java.lang.StrictMath.log;
+import static java.lang.StrictMath.log1p;
+import static java.lang.StrictMath.max;
+import static java.lang.StrictMath.min;
+import static java.lang.StrictMath.sqrt;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -34,75 +43,120 @@ import rapaio.core.distributions.Normal;
  */
 public class MathTools {
 
-     // sqrt(2)
+    /**
+     * {@code sqrt(2)}.
+     */
     public static final double SQRT_2 =
             1.41421356237309504880168872420969807856967187537694807317667973799073247846210703885038753432764157273501384623091229702;
-     // 1/sqrt(2)
+    /**
+     * {@code 1/sqrt(2)}.
+     */
     public static final double INV_SQRT_2 =
             0.70710678118654752440084436210484903928483593768847403658833986899536623923105351942519376716382078636750692311545614851;
-     // ln(2)
+
+    /**
+     * {@code ln(2)}.
+     */
     public static final double LN_2 =
             0.69314718055994530941723212145817656807550013436025525412068000949339362196969471560586332699641868754200148102057068573;
-     // ln(10)
+    /**
+     * {@code ln(10)}
+     */
     public static final double LN_10 =
             2.30258509299404568401799145468436420760110148862877297603332790096757260967735248023599720508959829834196778404228624863;
-    // log_10(2)
+
+    /**
+     * {@code log_10(2)}
+     */
     public static final double LOG10_2 =
             0.30102999566398119521373889472449302676818988146210854131042746112710818927442450948692725211818617204068447719143099537;
 
+    /**
+     * {@code e}
+     */
     public static final double E =
             2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992;
 
+    /**
+     * {@code pi}
+     */
     public static final double PI =
             3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664;
 
-    public static final double DOUBLE_PI =
-            6.28318530717958647692528676655900576839433879875021164194988918461563281257241799725606965068423413596429617302656461329;
-
-    public static final double LN_PI =
-            1.14472988584940017414342735135305871164729481291531157151362307147213776988482607978362327027548970770200981222869798915;
-
-    // 1/pi
-    public static final double INV_PI =
-            0.31830988618379067153776752674502872406891929148091289749533468811779359526845307018022760553250617191214568545351591607;
-
-    // pi/2
+    /**
+     * {@code pi/2}
+     */
     public static final double HALF_PI =
             1.57079632679489661923132169163975144209858469968755291048747229615390820314310449931401741267105853399107404325664115332;
 
+    /**
+     * {@code 2*pi}
+     */
+    public static final double DOUBLE_PI =
+            6.28318530717958647692528676655900576839433879875021164194988918461563281257241799725606965068423413596429617302656461329;
+
+    /**
+     * {@code ln(pi}
+     */
+    public static final double LN_PI =
+            1.14472988584940017414342735135305871164729481291531157151362307147213776988482607978362327027548970770200981222869798915;
+
+    /**
+     * {@code 1/pi}
+     */
+    public static final double INV_PI =
+            0.31830988618379067153776752674502872406891929148091289749533468811779359526845307018022760553250617191214568545351591607;
+
+    /**
+     * {@code ln(2*pi}
+     */
     public static final double LN_2PI =
             1.83787706640934548356065947281123527972279494727556682563430308096553139185452079538948659727190839524401129324926867489;
+    /**
+     * 1/2 * log(2 &#960;).
+     */
+    private static final double HALF_LN_2PI = 0.5 * LN_2PI;
 
-    // sqrt(pi)
+    /**
+     * {@code sqrt(pi)}
+     */
     public static final double SQRT_PI =
             1.77245385090551602729816748334114518279754945612238712821380778985291128459103218137495065673854466541622682362428257066;
-    // 1/sqrt(2pi)
+    /**
+     * {@code 1/sqrt(2pi)}
+     */
     public static final double INV_SQRT_2PI =
             0.39894228040143267793994605993438186847585863116493465766592582967065792589930183850125233390730693643030255886263518268;
-    // sqrt(2/pi)
+    /**
+     * {@code sqrt(2/pi)}
+     */
     public static final double M_SQRT_2dPI =
             0.79788456080286535587989211986876373695171726232986931533185165934131585179860367700250466781461387286060511772527036537;
 
-    // ln(sqrt(pi)) = ln(pi)/2
+    /**
+     * {@code ln(sqrt(pi)) = ln(pi)/2}
+     */
     public static final double LN_SQRT_PI =
             0.57236494292470008707171367567652935582364740645765578575681153573606888494241303989181163513774485385100490611434899457;
-    // ln(sqrt(2*pi)) = ln(2*pi)/2
+    /**
+     * {@code ln(sqrt(2*pi)) = ln(2*pi)/2}
+     */
     public static final double LN_SQRT_2PI =
             0.91893853320467274178032973640561763986139747363778341281715154048276569592726039769474329863595419762200564662463433744;
-    // log(sqrt(pi/2)) = log(pi/2)/2
+    /**
+     * {@code log(sqrt(pi/2)) = log(pi/2)/2}
+     */
     public static final double LN_SQRT_HALF_PI =
             0.22579135264472743236309761494744107178589733927752815869647153098937207395756568208887997163953551008000416560406365171;
 
+    /**
+     * Difference between 1.0 and the minimum float/double greater than 1.0
+     * Relative threshold for small quantities.
+     */
+    public static final double DBL_EPSILON = 0x1.0p-52;
+
     /* constants taken from float.h for gcc 2.90.29 for Linux 2.0 i386  */
     /* -- should match Java since both are supposed to be IEEE 754 compliant */
-
-    /* Difference between 1.0 and the minimum float/double greater than 1.0 */
-    public static final double FLT_EPSILON = 1.19209290e-07F;
-    public static final double DBL_EPSILON = 2.2204460492503131e-16;
-    public static final double DBL_MIN = 2.22507385850720138309e-308;
-    public static final double DBL_MAX = 1.797693134862315708145e+308;
-    public static final double SQRT_DBL_EPSILON = sqrt(DBL_EPSILON);
-
     /*
      * machine constants
      */
@@ -112,17 +166,6 @@ public class MathTools {
 
     public static final double MINLOG = -7.451332191019412076235E2;
 
-    public static final double MAXGAM = 171.624376956302725;
-
-    public static final double SQTPI = 2.50662827463100050242E0;
-
-    public static final double SQRTH = 7.07106781186547524401E-1;
-
-    public static final double LOGPI = 1.14472988584940017414;
-
-
-    public static final double biginv = 2.22044604925031308085e-16;
-
     /**
      * This is the squared inverse of the golden ratio ((3 - sqrt(5.0))/ 2).
      * Used in golden-ratio search.
@@ -131,74 +174,34 @@ public class MathTools {
     public static final double kInvGoldRatio =
             0.38196601125010515179541316563436188227969082019423713786455137729473953718109755029279279581060886251524591192461310824;
 
-    public static final double TWO_PI = 6.283185307179586476925286;
     public static final double SMALL_ERR = 1e-10;
+
     private static final double
-            lng_a0 = 7.72156649015328655494e-02,
-            lng_a1 = 3.22467033424113591611e-01,
-            lng_a2 = 6.73523010531292681824e-02,
-            lng_a3 = 2.05808084325167332806e-02,
-            lng_a4 = 7.38555086081402883957e-03,
-            lng_a5 = 2.89051383673415629091e-03,
-            lng_a6 = 1.19270763183362067845e-03,
-            lng_a7 = 5.10069792153511336608e-04,
-            lng_a8 = 2.20862790713908385557e-04,
-            lng_a9 = 1.08011567247583939954e-04,
-            lng_a10 = 2.52144565451257326939e-05,
-            lng_a11 = 4.48640949618915160150e-05,
+            lng_a0 = 7.72156649015328655494e-02, lng_a1 = 3.22467033424113591611e-01, lng_a2 = 6.73523010531292681824e-02,
+            lng_a3 = 2.05808084325167332806e-02, lng_a4 = 7.38555086081402883957e-03, lng_a5 = 2.89051383673415629091e-03,
+            lng_a6 = 1.19270763183362067845e-03, lng_a7 = 5.10069792153511336608e-04, lng_a8 = 2.20862790713908385557e-04,
+            lng_a9 = 1.08011567247583939954e-04, lng_a10 = 2.52144565451257326939e-05, lng_a11 = 4.48640949618915160150e-05,
             lng_tc = 1.46163214496836224576e+00,
             lng_tf = -1.21486290535849611461e-01,
             lng_tt = -3.63867699703950536541e-18,
             lng_t0 = 4.83836122723810047042e-01,
-            t1 = -1.47587722994593911752e-01,
-            t2 = 6.46249402391333854778e-02,
-            t3 = -3.27885410759859649565e-02,
-            t4 = 1.79706750811820387126e-02,
-            t5 = -1.03142241298341437450e-02,
-            t6 = 6.10053870246291332635e-03,
-            t7 = -3.68452016781138256760e-03,
-            t8 = 2.25964780900612472250e-03,
-            t9 = -1.40346469989232843813e-03,
-            t10 = 8.81081882437654011382e-04,
-            t11 = -5.38595305356740546715e-04,
-            t12 = 3.15632070903625950361e-04,
-            t13 = -3.12754168375120860518e-04,
-            t14 = 3.35529192635519073543e-04,
-            u0 = -7.72156649015328655494e-02,
-            u1 = 6.32827064025093366517e-01,
-            u2 = 1.45492250137234768737e+00,
-            u3 = 9.77717527963372745603e-01,
-            u4 = 2.28963728064692451092e-01,
-            u5 = 1.33810918536787660377e-02,
-            v1 = 2.45597793713041134822e+00,
-            v2 = 2.12848976379893395361e+00,
-            v3 = 7.69285150456672783825e-01,
-            v4 = 1.04222645593369134254e-01,
-            v5 = 3.21709242282423911810e-03,
-            s0 = -7.72156649015328655494e-02,
-            s1 = 2.14982415960608852501e-01,
-            s2 = 3.25778796408930981787e-01,
-            s3 = 1.46350472652464452805e-01,
-            s4 = 2.66422703033638609560e-02,
-            s5 = 1.84028451407337715652e-03,
+            t1 = -1.47587722994593911752e-01, t2 = 6.46249402391333854778e-02, t3 = -3.27885410759859649565e-02,
+            t4 = 1.79706750811820387126e-02, t5 = -1.03142241298341437450e-02, t6 = 6.10053870246291332635e-03,
+            t7 = -3.68452016781138256760e-03, t8 = 2.25964780900612472250e-03, t9 = -1.40346469989232843813e-03,
+            t10 = 8.81081882437654011382e-04, t11 = -5.38595305356740546715e-04, t12 = 3.15632070903625950361e-04,
+            t13 = -3.12754168375120860518e-04, t14 = 3.35529192635519073543e-04,
+            u0 = -7.72156649015328655494e-02, u1 = 6.32827064025093366517e-01, u2 = 1.45492250137234768737e+00,
+            u3 = 9.77717527963372745603e-01, u4 = 2.28963728064692451092e-01, u5 = 1.33810918536787660377e-02,
+            v1 = 2.45597793713041134822e+00, v2 = 2.12848976379893395361e+00, v3 = 7.69285150456672783825e-01,
+            v4 = 1.04222645593369134254e-01, v5 = 3.21709242282423911810e-03,
+            s0 = -7.72156649015328655494e-02, s1 = 2.14982415960608852501e-01, s2 = 3.25778796408930981787e-01,
+            s3 = 1.46350472652464452805e-01, s4 = 2.66422703033638609560e-02, s5 = 1.84028451407337715652e-03,
             s6 = 3.19475326584100867617e-05,
-            r1 = 1.39200533467621045958e+00,
-            r2 = 7.21935547567138069525e-01,
-            r3 = 1.71933865632803078993e-01,
-            r4 = 1.86459191715652901344e-02,
-            r5 = 7.77942496381893596434e-04,
-            r6 = 7.32668430744625636189e-06,
-            w0 = 4.18938533204672725052e-01,
-            w1 = 8.33333333333329678849e-02,
-            w2 = -2.77777777728775536470e-03,
-            w3 = 7.93650558643019558500e-04,
-            w4 = -5.95187557450339963135e-04,
-            w5 = 8.36339918996282139126e-04,
+            r1 = 1.39200533467621045958e+00, r2 = 7.21935547567138069525e-01, r3 = 1.71933865632803078993e-01,
+            r4 = 1.86459191715652901344e-02, r5 = 7.77942496381893596434e-04, r6 = 7.32668430744625636189e-06,
+            w0 = 4.18938533204672725052e-01, w1 = 8.33333333333329678849e-02, w2 = -2.77777777728775536470e-03,
+            w3 = 7.93650558643019558500e-04, w4 = -5.95187557450339963135e-04, w5 = 8.36339918996282139126e-04,
             w6 = -1.63092934096575273989e-03;
-    /**
-     * 1/2 * log(2 &#960;).
-     */
-    private static final double HALF_LN_2PI = 0.5 * LN_2PI;
     /**
      * exact Stirling expansion error for certain values.
      */
@@ -234,41 +237,6 @@ public class MathTools {
             0.005746216513010115682023589, /* 14.5 */
             0.005554733551962801371038690 /* 15.0 */
     };
-
-    public static double cut(double x, double min, double max) {
-        if (x < min) {
-            return min;
-        }
-        return Math.min(x, max);
-    }
-
-    public static int cut(int x, int min, int max) {
-        if (x < min) {
-            return min;
-        }
-        return Math.min(x, max);
-    }
-
-    /**
-     * Returns the base 2 logarithm of a {@code double} value.
-     *
-     * @param x the number from which we take base 2 logarithm
-     * @return the base 2 logarithm of input value
-     */
-    public static double log2(double x) {
-        return Math.log(x) / Math.log(2);
-    }
-
-    /**
-     * Returns the logarithm of value in a given base.
-     *
-     * @param x    value
-     * @param base logarithm's base
-     * @return logarithm of value in specified base
-     */
-    public static double logBase(double x, double base) {
-        return Math.log(x) / Math.log(base);
-    }
 
     /*
      * Computes ln(gamma) function.
@@ -311,7 +279,7 @@ public class MathTools {
         }
         if (ix < 0x3b900000) {
             /* |x|<2**-70, return -log(|x|) */
-            return -Math.log(x);
+            return -log(x);
         }
 
         /*
@@ -322,11 +290,11 @@ public class MathTools {
         } /*
          * for x < 2.0
          */ else if (ix < 0x40000000) {
-            if (ix <= 0x3feccccc) {    /*
-             * lgamma(x) = lgamma(x+1)-log(x)
-             */
-
-                r = -Math.log(x);
+            if (ix <= 0x3feccccc) {
+                /*
+                 * lgamma(x) = lgamma(x+1)-log(x)
+                 */
+                r = -log(x);
                 if (ix >= 0x3FE76944) {
                     y = 1 - x;
                     i = 0;
@@ -380,10 +348,10 @@ public class MathTools {
                     r += (-0.5 * y + p1 / p2);
                 }
             }
-        } else if (ix < 0x40200000) {            /*
-         * x < 8.0
-         */
-
+        } else if (ix < 0x40200000) {
+            /*
+             * x < 8.0
+             */
             i = (int) x;
             y = x - (double) i;
             p = y * (s0 + y * (s1 + y * (s2 + y * (s3 + y * (s4 + y * (s5 + y * s6))))));
@@ -401,14 +369,14 @@ public class MathTools {
                     z *= (y + 3.0);
                 case 3:
                     z *= (y + 2.0);
-                    r += Math.log(z);
+                    r += log(z);
                     break;
             }
             /*
              * 8.0 <= x < 2**58
              */
         } else if (ix < 0x43900000) {
-            t = Math.log(x);
+            t = log(x);
             z = 1 / x;
             y = z * z;
             w = w0 + z * (w1 + y * (w2 + y * (w3 + y * (w4 + y * (w5 + y * w6)))));
@@ -416,7 +384,7 @@ public class MathTools {
         } else /*
          * 2**58 <= x <= inf
          */ {
-            r = x * (Math.log(x) - 1);
+            r = x * (log(x) - 1);
         }
         return r;
     }
@@ -424,7 +392,7 @@ public class MathTools {
     /**
      * Error function of a {@code double} value.
      * <p>
-     * erf(x) = 2 * cdf(x sqrt(2)) -1
+     * {@code erf(x) = 2 * cdf(x * sqrt(2)) - 1}
      * <p>
      * where cdf is the cdf of the gaussian densities
      * <p>
@@ -434,7 +402,7 @@ public class MathTools {
      * @return the erf of x
      */
     public static double erf(double x) {
-        return 2 * Normal.std().cdf(x * Math.sqrt(2.0)) - 1;
+        return 2 * Normal.std().cdf(x * SQRT_2) - 1;
     }
 
     /**
@@ -450,7 +418,7 @@ public class MathTools {
      * @return the invErf of x
      */
     public static double inverf(double x) {
-        return Normal.std().quantile(x / 2 + 0.5) / Math.sqrt(2.0);
+        return Normal.std().quantile(x / 2 + 0.5) / SQRT_2;
     }
 
     /**
@@ -464,7 +432,7 @@ public class MathTools {
      * @return the erf of x
      */
     public static double erfc(double x) {
-        return 2 * Normal.std().cdf(-x * Math.sqrt(2.0));
+        return 2 * Normal.std().cdf(-x * SQRT_2);
     }
 
     /**
@@ -480,7 +448,7 @@ public class MathTools {
      * @return the invErf of x
      */
     public static double inverfc(double x) {
-        return Normal.std().quantile(x / 2) / -Math.sqrt(2.0);
+        return Normal.std().quantile(x / 2) / -SQRT_2;
     }
 
     /**
@@ -493,7 +461,7 @@ public class MathTools {
      * @return beta function of z and w
      */
     public static double beta(double z, double w) {
-        return Math.exp(lnBeta(z, w));
+        return exp(lnBeta(z, w));
     }
 
     /**
@@ -536,7 +504,6 @@ public class MathTools {
             return 1 - betaIncReg(1 - x, b, a);
         }
 
-
         /*
          * All values are from x = 0 to x = 1, in 0.025 increments a = 0.5, b =
          * 0.5: max rel error ~ 2.2e-15 a = 0.5, b = 5: max rel error ~ 2e-15 a
@@ -545,9 +512,9 @@ public class MathTools {
          * clearly not uniform but always small a = 80, b = 100: max rel error ~
          * 1.2e-14, rel error is clearly not uniform but always small
          */
-        double numer = a * Math.log(x) + b * Math.log(1 - x) - (Math.log(a) + lnBeta(a, b));
+        double numer = a * log(x) + b * log(1 - x) - (log(a) + lnBeta(a, b));
 
-        return Math.exp(numer) / lentz(x, a, b);
+        return exp(numer) / lentz(x, a, b);
     }
 
     private static double lentzA(int pos, double... args) {
@@ -565,14 +532,15 @@ public class MathTools {
     }
 
     private static double lentz(double... args) {
-        double f_n = 1.0;
-        double c_n, c_0 = f_n;
+        double f_n = 1;
+        double c_n = 1;
+        double c_0 = 1;
         double d_n, d_0 = 0;
 
         double delta = 0;
 
         int j = 0;
-        while (Math.abs(delta - 1) > 1e-15) {
+        while (abs(delta - 1) > 1e-15) {
 
             j++;
             d_n = 1.0 + lentzA(j, args) * d_0;
@@ -630,10 +598,10 @@ public class MathTools {
         }
 
         double dif;//Measure the change interface values
-        while (Math.abs(x1 - x2) > eps && maxIterations-- > 0) {
+        while (abs(x1 - x2) > eps && maxIterations-- > 0) {
             double x3 = (x1 + x2) * 0.5;
             double fx3 = betaIncRegFunc(x3, a, b, p);
-            double x4 = x3 + (x3 - x1) * Math.signum(fx1 - fx2) * fx3 / Math.sqrt(fx3 * fx3 - fx1 * fx2);
+            double x4 = x3 + (x3 - x1) * Math.signum(fx1 - fx2) * fx3 / sqrt(fx3 * fx3 - fx1 * fx2);
             double fx4 = betaIncRegFunc(x4, a, b, p);
             if (fx3 * fx4 < 0) {
                 x1 = x3;
@@ -641,7 +609,7 @@ public class MathTools {
                 x2 = x4;
                 fx2 = fx4;
             } else if (fx1 * fx4 < 0) {
-                dif = Math.abs(x4 - x2);
+                dif = abs(x4 - x2);
                 if (dif <= halfEps)//WE are no longer updating, return the value
                 {
                     return x4;
@@ -649,7 +617,7 @@ public class MathTools {
                 x2 = x4;
                 fx2 = fx4;
             } else {
-                dif = Math.abs(x4 - x1);
+                dif = abs(x4 - x1);
                 if (dif <= halfEps)//WE are no longer updating, return the value
                 {
                     return x4;
@@ -681,12 +649,12 @@ public class MathTools {
         }
 
         /* Compute x**a * exp(-x) / gamma(a) */
-        ax = a * Math.log(x) - x - lnGamma(a);
+        ax = a * log(x) - x - lnGamma(a);
         if (ax < -MAXLOG) {
             return (0.0);
         }
 
-        ax = Math.exp(ax);
+        ax = exp(ax);
 
         /* power series */
         r = a;
@@ -722,12 +690,12 @@ public class MathTools {
             return 1.0 - incGamma(a, x);
         }
 
-        ax = a * Math.log(x) - x - lnGamma(a);
+        ax = a * log(x) - x - lnGamma(a);
         if (ax < -MAXLOG) {
             return 0.0;
         }
 
-        ax = Math.exp(ax);
+        ax = exp(ax);
 
         /* continued fraction */
         y = 1.0 - a;
@@ -748,7 +716,7 @@ public class MathTools {
             qk = qkm1 * z - qkm2 * yc;
             if (qk != 0) {
                 r = pk / qk;
-                t = Math.abs((ans - r) / r);
+                t = abs((ans - r) / r);
                 ans = r;
             } else {
                 t = 1.0;
@@ -758,11 +726,11 @@ public class MathTools {
             pkm1 = pk;
             qkm2 = qkm1;
             qkm1 = qk;
-            if (Math.abs(pk) > big) {
-                pkm2 *= biginv;
-                pkm1 *= biginv;
-                qkm2 *= biginv;
-                qkm1 *= biginv;
+            if (abs(pk) > big) {
+                pkm2 *= DBL_EPSILON;
+                pkm1 *= DBL_EPSILON;
+                qkm2 *= DBL_EPSILON;
+                qkm1 *= DBL_EPSILON;
             }
         } while (t > MACHEP);
 
@@ -774,22 +742,20 @@ public class MathTools {
      * <p>
      * References:
      * <ol>
-     * <li>Eric W. Weisstein. "Stirling's Series." From MathWorld--A Wolfram Web
-     * Resource. <a target="_blank"
-     * href="http://mathworld.wolfram.com/StirlingsSeries.html">
-     * http://mathworld.wolfram.com/StirlingsSeries.html</a></li>
+     * <li>Eric W. Weisstein. "Stirling's Series." From MathWorld--A Wolfram Web Resource.
+     * <a href="http://mathworld.wolfram.com/StirlingsSeries.html">http://mathworld.wolfram.com/StirlingsSeries.html</a></li>
      * </ol>
      * </p>
      *
      * @param z the value.
      * @return the Striling's series error.
      */
-    static double getStirlingError(double z) {
+    static double stirlingErr(double z) {
         double ret;
         if (z < 15.0) {
             double z2 = 2.0 * z;
-            if (Math.abs(Math.floor(z2) - z2) > 0) {
-                ret = lnGamma(z + 1.0) - (z + 0.5) * Math.log(z) + z - HALF_LN_2PI;
+            if (abs(floor(z2) - z2) > 0) {
+                ret = lnGamma(z + 1.0) - (z + 0.5) * log(z) + z - HALF_LN_2PI;
             } else {
                 ret = EXACT_STIRLING_ERRORS[(int) z2];
             }
@@ -810,10 +776,8 @@ public class MathTools {
      * <p>
      * References:
      * <ol>
-     * <li>Catherine Loader (2000). "Fast and Accurate Computation of Binomial
-     * Probabilities.". <a target="_blank"
-     * href="http://www.herine.net/stat/papers/dbinom.pdf">
-     * http://www.herine.net/stat/papers/dbinom.pdf</a></li>
+     * <li>Catherine Loader (2000). "Fast and Accurate Computation of Binomial Probabilities.".
+     * <a href="http://www.herine.net/stat/papers/dbinom.pdf">http://www.herine.net/stat/papers/dbinom.pdf</a></li>
      * </ol>
      * </p>
      *
@@ -821,9 +785,9 @@ public class MathTools {
      * @param mu the average.
      * @return a part of the deviance.
      */
-    static double getDeviancePart(double x, double mu) {
+    static double deviancePart(double x, double mu) {
         double ret;
-        if (Math.abs(x - mu) < 0.1 * (x + mu)) {
+        if (abs(x - mu) < 0.1 * (x + mu)) {
             double d = x - mu;
             double v = d / (x + mu);
             double s1 = v * d;
@@ -831,7 +795,7 @@ public class MathTools {
             double ej = 2.0 * x * v;
             v *= v;
             int j = 1;
-            while (Double.isNaN(s) || Math.abs(s1 - s) >= 1e-100) {
+            while (Double.isNaN(s) || abs(s1 - s) >= 1e-100) {
                 s = s1;
                 ej *= v;
                 s1 = s + ej / ((j * 2) + 1);
@@ -839,7 +803,7 @@ public class MathTools {
             }
             ret = s1;
         } else {
-            ret = x * Math.log(x / mu) + mu - x;
+            ret = x * log(x / mu) + mu - x;
         }
         return ret;
     }
@@ -858,22 +822,20 @@ public class MathTools {
         double ret;
         if (x == 0) {
             if (p < 0.1) {
-                ret = -getDeviancePart(n, n * q) - n * p;
+                ret = -deviancePart(n, n * q) - n * p;
             } else {
-                ret = n * Math.log(q);
+                ret = n * log(q);
             }
         } else if (x == n) {
             if (q < 0.1) {
-                ret = -getDeviancePart(n, n * p) - n * q;
+                ret = -deviancePart(n, n * p) - n * q;
             } else {
-                ret = n * Math.log(p);
+                ret = n * log(p);
             }
         } else {
-            ret = getStirlingError(n) - getStirlingError(x) -
-                    getStirlingError(n - x) - getDeviancePart(x, n * p) -
-                    getDeviancePart(n - x, n * q);
-            double f = (TWO_PI * x * (n - x)) / n;
-            ret = -0.5 * Math.log(f) + ret;
+            ret = stirlingErr(n) - stirlingErr(x) - stirlingErr(n - x) - deviancePart(x, n * p) - deviancePart(n - x, n * q);
+            double f = (DOUBLE_PI * x * (n - x)) / n;
+            ret = -0.5 * log(f) + ret;
         }
         return ret;
     }
@@ -883,84 +845,44 @@ public class MathTools {
             return (x == 0) ? 1.0 : 0.0;
         }
         if (x == 0) {
-            return Math.exp(-lb);
+            return exp(-lb);
         }
-        return Math.exp(-getStirlingError(x) - getDeviancePart(x, lb)) / Math.sqrt(TWO_PI * x);
+        return exp(-stirlingErr(x) - deviancePart(x, lb)) / sqrt(DOUBLE_PI * x);
     }
 
-    public static double sqrt(double x) {
-        return Math.sqrt(x);
+    public static double cut(double x, double min, double max) {
+        x = max(min, x);
+        x = min(max, x);
+        return x;
     }
 
-    public static double pow(double x, double power) {
-        return Math.pow(x, power);
+    public static int cut(int x, int min, int max) {
+        x = max(min, x);
+        x = min(max, x);
+        return x;
     }
 
-    public static double log(double x) {
-        return Math.log(x);
+    /**
+     * Returns the base 2 logarithm of a {@code double} value.
+     *
+     * @param x the number from which we take base 2 logarithm
+     * @return the base 2 logarithm of input value
+     */
+    public static double log2(double x) {
+        return log(x) / LN_2;
     }
 
-    public static double exp(double x) {
-        return Math.exp(x);
+    /**
+     * Returns the logarithm of value in a given base.
+     *
+     * @param x    value
+     * @param base logarithm's base
+     * @return logarithm of value in specified base
+     */
+    public static double logBase(double x, double base) {
+        return log(x) / log(base);
     }
 
-    public static double expm1(double x) {
-        double y, a = Math.abs(x);
-
-        if (a < DBL_EPSILON) {
-            return x;
-        }
-        if (a > 0.697) {
-            return Math.exp(x) - 1;  /* negligible cancellation */
-        }
-
-        if (a > 1e-8) {
-            y = Math.exp(x) - 1;
-        } else /* Taylor expansion, more accurate in this range */ {
-            y = (x / 2 + 1) * x;
-        }
-
-        /* Newton step for solving   log(1 + y) = x   for y : */
-        /* WARNING: does not work for y ~ -1: bug in 1.5.0 */
-        y -= (1 + y) * (Math.log1p(y) - x);
-        return y;
-    }
-
-    public static double min(double x, double y) {
-        return Math.min(x, y);
-    }
-
-    public static int min(int x, int y) {
-        return Math.min(x, y);
-    }
-
-    public static double max(double x, double y) {
-        return Math.max(x, y);
-    }
-
-    public static int max(int x, int y) {
-        return Math.max(x, y);
-    }
-
-    public static double abs(double x) {
-        return Math.abs(x);
-    }
-
-    public static double floor(double x) {
-        return Math.floor(x);
-    }
-
-    public static int floorDiv(int x, int y) {
-        return Math.floorDiv(x, y);
-    }
-
-    public static double rint(double x) {
-        return Math.rint(x);
-    }
-
-    public static double cos(double radians) {
-        return Math.cos(radians);
-    }
 
     /**
      * Tests if the double values are approximately equal
@@ -984,11 +906,17 @@ public class MathTools {
         return 1 - betaIncReg(d1 * x / (d1 * x + d2), d1 / 2, d2 / 2);
     }
 
+    /**
+     * {@code ln(1+e^x)}
+     *
+     * @param x input value
+     * @return computed result
+     */
     public static double log1pExp(double x) {
         if (x > 0) {
-            return x + Math.log1p(Math.exp(-x));
+            return x + log1p(exp(-x));
         } else {
-            return Math.log1p(Math.exp(x));
+            return log1p(exp(x));
         }
     }
 

@@ -21,7 +21,9 @@
 
 package rapaio.ml.model.km;
 
-import static rapaio.math.MathTools.*;
+import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.max;
+import static java.lang.StrictMath.pow;
 
 import java.util.List;
 import java.util.logging.Logger;
