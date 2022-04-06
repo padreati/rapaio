@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.stream.IntStream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Bernoulli;
@@ -44,11 +45,18 @@ import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorStride;
 import rapaio.math.linear.dense.DVectorVar;
+import rapaio.sys.WS;
+import rapaio.sys.With;
 import rapaio.util.DoubleComparators;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
 public class DenseAlgebraTest {
+
+    @BeforeEach
+    void beforeEach() {
+        WS.getPrinter().withOptions(With.textWidth(120));
+    }
 
     private static final MatrixFactory[] matrixFactories = new MatrixFactory[] {
             // base matrix - used only for tests
