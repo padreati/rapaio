@@ -1,12 +1,9 @@
 /.idea/
-/src/rapaio/datasets/UCI-small.zip
 /build.xml
 /manifest.mf
 /target
 /bin/
 /lib/
-/rapaio.iml
-mvnsettings.xml
 .gitignore
 /.github/
 /mkdocs/site/
