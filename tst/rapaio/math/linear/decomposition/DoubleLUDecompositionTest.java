@@ -35,7 +35,7 @@ import rapaio.math.linear.dense.DMatrixDenseR;
 
 public class DoubleLUDecompositionTest {
 
-    private static final double TOL = 1e-14;
+    private static final double TOL = 1e-12;
 
     @BeforeEach
     void setUpEach() {
