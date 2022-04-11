@@ -21,29 +21,23 @@
 
 package rapaio.graphics.plot.artist;
 
-import static java.lang.Math.floor;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serial;
-import java.util.stream.DoubleStream;
 
 import rapaio.core.correlation.CorrPearson;
 import rapaio.core.correlation.CorrSpearman;
 import rapaio.core.tools.DistanceMatrix;
-import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionFill;
+import rapaio.graphics.opt.GOptionGradient;
+import rapaio.graphics.opt.Gradient;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
 import rapaio.printer.Format;
-import rapaio.sys.With;
 
 /**
  * Correlograms are artists which helps visualize data in correlation matrices.
@@ -56,10 +50,6 @@ import rapaio.sys.With;
  * <p>
  * By default, adding this artist will turn all markers and tickers for the given axes.
  * If one wants a different behaviour it must turn them on explicitly.
- * <p>
- * The colors used to display values comes from {@link ColorGradient#newHueGradient(int, int, double[])}
- * with start=0, end=240 and an array of 101 percentages. One can changes this behaviour by setting
- * the {@link With#fill(Color[])} graphical option to an array of 101 color elements.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/16.
  */
@@ -77,9 +67,7 @@ public class CorrGram extends Artist {
         this.grid = grid;
         this.d = d;
 
-        this.options.setFill(new GOptionFill(ColorGradient.newHueGradient(0, 240,
-                DoubleStream.iterate(0, x -> x + 0.01).limit(101).toArray()).getColors()
-        ));
+        this.options.setGradient(new GOptionGradient(Gradient.newHueGradient(0, 240, -1, 1)));
         this.options.bind(opts);
     }
 
@@ -102,13 +90,6 @@ public class CorrGram extends Artist {
         return Axis.Type.newNumeric();
     }
 
-    private int computeIndex(int i, int j) {
-        double value = d.get(i, j);
-        value = min(value, 1);
-        value = max(value, -1);
-        return (int) floor((1 + value) * 50);
-    }
-
     @Override
     public void updateDataRange(Graphics2D g2d) {
         union(0, 0);
@@ -123,7 +104,7 @@ public class CorrGram extends Artist {
         for (int i = 0; i < d.length(); i++) {
             for (int j = 0; j < d.length(); j++) {
                 if (i != j) {
-                    g2d.setColor(options.getFill(computeIndex(i, j)));
+                    g2d.setColor(options.getGradient().getColor(d.get(i, j)));
                     g2d.fill(new Rectangle2D.Double(
                             xScale(j),
                             yScale(d.length() - i),

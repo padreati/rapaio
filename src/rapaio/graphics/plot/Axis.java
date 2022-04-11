@@ -77,14 +77,14 @@ public final class Axis implements Serializable {
 
         // we do that since hard limits are used both to cut an eventual longer
         // interval, but also to extend one if it is shorter
-        min = Double.isFinite(domain.hardMin) ? domain.hardMin : values.min;
-        max = Double.isFinite(domain.hardMax) ? domain.hardMax : values.max;
+        min = domain.hasHardMin() ? domain.hardMin : values.min;
+        max = domain.hasHardMax() ? domain.hardMax : values.max;
         if (min == max) {
             min = min - 0.5;
             max = max + 0.5;
         }
 
-        extendedRange();
+//        extendedRange();
 
         tickers.clear();
         labels.clear();
@@ -185,8 +185,16 @@ public final class Axis implements Serializable {
             instantDiscreteValues.clear();
         }
 
+        public boolean hasHardMin() {
+            return Double.isFinite(hardMin);
+        }
+
+        public boolean hasHardMax() {
+            return Double.isFinite(hardMax);
+        }
+
         public boolean allowUnion(double x) {
-            return Double.isFinite(x) && (!Double.isFinite(hardMin) || (x >= hardMin)) && (!Double.isFinite(hardMax) || (x <= hardMax));
+            return Double.isFinite(x) && (!hasHardMin() || (x >= hardMin)) && (!hasHardMax() || (x <= hardMax));
         }
 
         public boolean unionNumeric(double x) {
@@ -227,6 +235,15 @@ public final class Axis implements Serializable {
             TreeSet<Double> tickerValues = new TreeSet<>();
             AtomicReference<Double> min = new AtomicReference<>(Double.NaN);
             AtomicReference<Double> max = new AtomicReference<>(Double.NaN);
+
+            if(hasHardMin()) {
+                min.set(hardMin);
+                tickerValues.add(hardMin);
+            }
+            if(hasHardMax()) {
+                max.set(hardMax);
+                tickerValues.add(hardMax);
+            }
 
             Consumer<Double> collect = (Double x) -> {
                 min.set(Double.isNaN(min.get()) ? x : Double.min(min.get(), x));

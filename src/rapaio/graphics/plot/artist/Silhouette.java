@@ -40,11 +40,11 @@ import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
 import rapaio.ml.eval.ClusterSilhouette;
 
-public class SilhouetteArtist extends Artist {
+public class Silhouette extends Artist {
 
     private final ClusterSilhouette silhouette;
 
-    public SilhouetteArtist(ClusterSilhouette silhouette, GOption<?>... opts) {
+    public Silhouette(ClusterSilhouette silhouette, GOption<?>... opts) {
         this.silhouette = silhouette;
 
         // default fill and color

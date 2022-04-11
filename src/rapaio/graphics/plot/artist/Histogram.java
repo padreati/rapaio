@@ -33,6 +33,7 @@ import java.io.Serial;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
+import rapaio.core.tools.HistogramTable;
 import rapaio.data.Var;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionFill;
@@ -40,9 +41,24 @@ import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.MathTools;
+import rapaio.math.linear.dense.DVectorDense;
 
 /**
  * Plot component which allows one to add a histogram to a plot.
+ * <p>
+ * Histogram frequency bins are computed in the interval specified
+ * by parameters {@code rangeMinValue} and {@code rangeMaxValue} specified at
+ * construction time. If those values are equal with {@code Double.NaN},
+ * than minimum, respectively maximum values are used instead.
+ * <p>
+ * The number of bins could be given as parameter through graphical
+ * {@link rapaio.sys.With#bins(int)} option. If this is missing, the number
+ * of bins is computed through Friedman-Diaconis estimator.
+ * <p>
+ * The range of displayed values is controlled through {@link Plot#xLim(double, double)}
+ * and {@link Plot#yLim(double, double)} constructs. As such, it is possible
+ * to compute the number of bins in an interval which is not the same as the
+ * displayed interval.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -51,23 +67,20 @@ public class Histogram extends Artist {
     @Serial
     private static final long serialVersionUID = -7990247895216501553L;
 
-    private final Var v;
-    private double[] freqTable;
-    private double minValue;
-    private double maxValue;
+    private final String varName;
+    private final HistogramTable hist;
 
     public Histogram(Var v, GOption<?>... opts) {
         this(v, Double.NaN, Double.NaN, opts);
     }
 
-    public Histogram(Var v, double minValue, double maxValue, GOption<?>... opts) {
-        this.v = v;
-        this.minValue = minValue;
-        this.maxValue = maxValue;
-
+    public Histogram(Var v, double rangeMinValue, double rangeMaxValue, GOption<?>... opts) {
         // default values for histogram
         options.setFill(new GOptionFill(options.getPalette().getColor(7)));
         options.bind(opts);
+
+        this.varName = v.name();
+        this.hist = new HistogramTable(v, rangeMinValue, rangeMaxValue, options.getBins());
     }
 
     @Override
@@ -80,86 +93,43 @@ public class Histogram extends Artist {
         return Axis.Type.newNumeric();
     }
 
-    private int computeFreedmanDiaconisEstimation(Var v) {
-        double[] q = Quantiles.of(v, 0, 0.25, 0.75, 1).values();
-        double iqr = q[2] - q[1];
-        return (int) Math.min(1024, Math.ceil((q[3] - q[0]) / (2 * iqr * Math.pow(v.stream().complete().count(), -1.0 / 3.0))));
-    }
-
     @Override
     public void bind(Plot parent) {
         super.bind(parent);
 
         parent.yLab(options.getProb() ? "density" : "frequency");
-        parent.xLab(v.name());
+        parent.xLab(varName);
         parent.leftThick(true);
         parent.leftMarkers(true);
         parent.bottomThick(true);
         parent.bottomMarkers(true);
         if (options.getBins() == -1) {
-            options.bind(bins(computeFreedmanDiaconisEstimation(v)));
+            options.bind(bins(hist.bins()));
         }
     }
 
-    private void rebuild() {
-        minValue = Minimum.of(v).value();
-        maxValue = Maximum.of(v).value();
+    private DVectorDense freqTable;
 
-        if (options.getHorizontal()) {
-            if (Double.isFinite(plot.yAxis().min())) {
-                minValue = plot.yAxis().min();
-            }
-            if (Double.isFinite(plot.yAxis().max())) {
-                maxValue = plot.yAxis().max();
-            }
-        } else {
-            if (Double.isFinite(plot.xAxis().min())) {
-                minValue = plot.xAxis().min();
-            }
-            if (Double.isFinite(plot.xAxis().max())) {
-                maxValue = plot.xAxis().max();
-            }
-        }
-
-        double step = (maxValue - minValue) / (1. * options.getBins());
-        freqTable = new double[options.getBins()];
-        if (freqTable.length == 0) {
-            return;
-        }
-        double total = 0;
-        for (int i = 0; i < v.size(); i++) {
-            if (v.isMissing(i)) {
-                continue;
-            }
-            total++;
-            if (v.getDouble(i) < minValue || v.getDouble(i) > maxValue) {
-                continue;
-            }
-            int index = (int) ((v.getDouble(i) - minValue) / step);
-            index = MathTools.cut(index, 0, freqTable.length - 1);
-            freqTable[index]++;
-        }
-
-        if (options.getProb() && (total != 0)) {
-            for (int i = 0; i < freqTable.length; i++) {
-                freqTable[i] /= (total * step);
-            }
+    private void buildData() {
+        freqTable = hist.freq().copy();
+        if (getOptions().getProb()) {
+            freqTable.div(freqTable.sum());
         }
     }
 
     @Override
     public void updateDataRange(Graphics2D g2d) {
-        rebuild();
+        buildData();
         if (options.getHorizontal()) {
-            plot.yAxis().domain().unionNumeric(minValue);
-            plot.yAxis().domain().unionNumeric(maxValue);
+            plot.yAxis().domain().unionNumeric(hist.min());
+            plot.yAxis().domain().unionNumeric(hist.max());
             for (double freq : freqTable) {
                 plot.xAxis().domain().unionNumeric(freq);
             }
             plot.xAxis().domain().unionNumeric(0);
         } else {
-            plot.xAxis().domain().unionNumeric(minValue);
-            plot.xAxis().domain().unionNumeric(maxValue);
+            plot.xAxis().domain().unionNumeric(hist.min());
+            plot.xAxis().domain().unionNumeric(hist.max());
             for (double freq : freqTable) {
                 plot.yAxis().domain().unionNumeric(freq);
             }
@@ -170,22 +140,39 @@ public class Histogram extends Artist {
     @Override
     public void paint(Graphics2D g2d) {
         g2d.setStroke(new BasicStroke(options.getLwd()));
-        for (int i = 0; i < freqTable.length; i++) {
-            double d = freqTable[i];
-            double mind = Math.min(d, plot.yAxis().max());
+        for (int i = 0; i < freqTable.size(); i++) {
+            double d = freqTable.get(i);
             Composite old = g2d.getComposite();
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
-            double x = xScale(binStart(i));
-            double y = yScale(mind);
-            double w = xScale(binStart(i + 1)) - xScale(binStart(i));
-            double h = yScale(0) - yScale(mind);
+
+
+            double mind;
+            double x;
+            double y;
+            double w;
+            double h;
+
+            double minBin = Math.min(binStart(i), binStart(i + 1));
+            double maxBin = Math.max(binStart(i), binStart(i + 1));
 
             if (getOptions().getHorizontal()) {
+                if (maxBin > plot.yAxis().max() || minBin < plot.yAxis().min()) {
+                    continue;
+                }
                 mind = Math.min(d, plot.xAxis().max());
                 x = xScale(0);
                 y = yScale(binStart(i + 1));
                 w = -(xScale(0) - xScale(mind));
                 h = -(yScale(binStart(i + 1)) - yScale(binStart(i)));
+            } else {
+                if (maxBin > plot.xAxis().max() || minBin < plot.xAxis().min()) {
+                    continue;
+                }
+                mind = Math.min(d, plot.yAxis().max());
+                x = xScale(binStart(i));
+                y = yScale(mind);
+                w = xScale(binStart(i + 1)) - xScale(binStart(i));
+                h = yScale(0) - yScale(mind);
             }
 
             if (d != 0) {
@@ -199,7 +186,7 @@ public class Histogram extends Artist {
     }
 
     private double binStart(int i) {
-        double fraction = (maxValue - minValue) / (1. * options.getBins());
-        return minValue + fraction * i;
+        double fraction = (hist.max() - hist.min()) / hist.bins();
+        return hist.min() + fraction * i;
     }
 }

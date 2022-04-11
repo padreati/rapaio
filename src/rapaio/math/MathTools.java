@@ -872,6 +872,10 @@ public class MathTools {
         return log(x) / LN_2;
     }
 
+    public static double log10(double x) {
+        return log(x) / LN_10;
+    }
+
     /**
      * Returns the logarithm of value in a given base.
      *
@@ -882,7 +886,6 @@ public class MathTools {
     public static double logBase(double x, double base) {
         return log(x) / log(base);
     }
-
 
     /**
      * Tests if the double values are approximately equal

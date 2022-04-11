@@ -21,12 +21,13 @@
 
 package rapaio.graphics.opt;
 
+import java.awt.geom.Rectangle2D;
 import java.io.Serial;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/21.
  */
-public record GOptionPosition(Position position) implements GOption<Position> {
+public record GOptionPosition(Rectangle2D rectangle) implements GOption<Rectangle2D> {
 
     @Serial
     private static final long serialVersionUID = 5320193537092151537L;
@@ -37,7 +38,7 @@ public record GOptionPosition(Position position) implements GOption<Position> {
     }
 
     @Override
-    public Position apply(GOptions opts) {
-        return position;
+    public Rectangle2D apply(GOptions opts) {
+        return rectangle;
     }
 }

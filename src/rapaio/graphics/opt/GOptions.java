@@ -26,6 +26,7 @@ import static rapaio.sys.With.VALIGN_TOP;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.geom.Rectangle2D;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -51,6 +52,7 @@ public class GOptions implements Serializable {
         defaults.palette = new GOptionPalette(ColorPalette.TABLEAU21);
         defaults.color = new GOptionColor(Color.BLACK);
         defaults.fill = new GOptionFill(-1);
+        defaults.gradient = new GOptionGradient(Gradient.newHueGradient(0, 256));
         defaults.lwd = new GOptionLwd(1.0f);
         defaults.sz = new GOptionSz(VarDouble.scalar(3));
         defaults.pch = new GOptionPch(VarInt.scalar(0));
@@ -62,13 +64,13 @@ public class GOptions implements Serializable {
         defaults.top = new GOptionTop(Integer.MAX_VALUE);
         defaults.sort = new GOptionSort(0);
         defaults.horizontal = new GOptionHorizontal(false);
-        defaults.widths = new GOptionWidths(new double[]{-1});
-        defaults.heights = new GOptionHeights(new double[]{-1});
-        defaults.labels = new GOptionLabels(new String[]{""});
+        defaults.widths = new GOptionWidths(new double[] {-1});
+        defaults.heights = new GOptionHeights(new double[] {-1});
+        defaults.labels = new GOptionLabels(new String[] {""});
         defaults.hAlign = new GOptionHAlign(HALIGN_LEFT);
         defaults.vAlign = new GOptionVAlign(VALIGN_TOP);
         defaults.font = new GOptionFont(new Font("DejaVu Sans", Font.PLAIN, 20));
-        defaults.position = new GOptionPosition(new Position(0, 0, 1, 1));
+        defaults.position = new GOptionPosition(new Rectangle2D.Double(0, 0, 1, 1));
     }
 
     private GOptions parent;
@@ -76,6 +78,7 @@ public class GOptions implements Serializable {
     private GOptionPalette palette;
     private GOptionColor color;
     private GOptionFill fill;
+    private GOptionGradient gradient;
     private GOptionLwd lwd;
     private GOptionSz sz;
     private GOptionPch pch;
@@ -101,10 +104,11 @@ public class GOptions implements Serializable {
     }
 
     public GOption<?>[] toArray() {
-        return new GOption[]{
+        return new GOption[] {
                 palette,
                 color,
                 fill,
+                gradient,
                 lwd,
                 sz,
                 pch,
@@ -187,6 +191,21 @@ public class GOptions implements Serializable {
 
     public void setFill(GOptionFill fill) {
         this.fill = fill;
+    }
+
+    public Gradient getGradient() {
+        if (gradient == null) {
+            if (parent != null) {
+                return parent.getGradient();
+            } else {
+                return defaults.gradient.apply(this);
+            }
+        }
+        return gradient.apply(this);
+    }
+
+    public void setGradient(GOptionGradient gradient) {
+        this.gradient = gradient;
     }
 
     /*
@@ -404,7 +423,7 @@ public class GOptions implements Serializable {
         this.font = font;
     }
 
-    public Position getPosition() {
+    public Rectangle2D getPosition() {
         if (position == null) {
             return parent != null ? parent.getPosition() : defaults.position.apply(this);
         }

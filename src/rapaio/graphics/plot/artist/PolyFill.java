@@ -34,7 +34,7 @@ import rapaio.graphics.opt.GOption;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/26/20.
  */
-public class PolyFill extends BasePolyArtist {
+public class PolyFill extends BasePoly {
 
     @Serial
     private static final long serialVersionUID = 8507830080358347197L;

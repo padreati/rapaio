@@ -39,15 +39,15 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VSort;
 import rapaio.graphics.Figure;
-import rapaio.graphics.opt.ColorGradient;
+import rapaio.graphics.opt.Gradient;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
-import rapaio.graphics.plot.artist.ABLineArtist;
-import rapaio.graphics.plot.artist.BarPlotArtist;
+import rapaio.graphics.plot.artist.ABLine;
+import rapaio.graphics.plot.artist.BarPlot;
 import rapaio.graphics.plot.artist.BoxPlot;
 import rapaio.graphics.plot.artist.DensityLine;
-import rapaio.graphics.plot.artist.FunctionLine;
+import rapaio.graphics.plot.artist.FunLine;
 import rapaio.graphics.plot.artist.Histogram;
 import rapaio.graphics.plot.artist.Histogram2D;
 import rapaio.graphics.plot.artist.ImageArtist;
@@ -60,7 +60,7 @@ import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment;
-import rapaio.graphics.plot.artist.SilhouetteArtist;
+import rapaio.graphics.plot.artist.Silhouette;
 import rapaio.graphics.plot.artist.Text;
 import rapaio.math.linear.DMatrix;
 import rapaio.ml.eval.ClusterSilhouette;
@@ -384,22 +384,22 @@ public class Plot implements Figure {
     }
 
     public Plot hLine(double a, GOption<?>... opts) {
-        add(new ABLineArtist(true, a, opts));
+        add(new ABLine(true, a, opts));
         return this;
     }
 
     public Plot vLine(double a, GOption<?>... opts) {
-        add(new ABLineArtist(false, a, opts));
+        add(new ABLine(false, a, opts));
         return this;
     }
 
     public Plot abLine(double a, double b, GOption<?>... opts) {
-        add(new ABLineArtist(a, b, opts));
+        add(new ABLine(a, b, opts));
         return this;
     }
 
     public Plot funLine(Double2DoubleFunction f, GOption<?>... opts) {
-        add(new FunctionLine(f, opts));
+        add(new FunLine(f, opts));
         return this;
     }
 
@@ -482,17 +482,17 @@ public class Plot implements Figure {
     }
 
     public Plot barplot(Var category, GOption<?>... opts) {
-        add(new BarPlotArtist(category, null, null, opts));
+        add(new BarPlot(category, null, null, opts));
         return this;
     }
 
     public Plot barplot(Var category, Var cond, GOption<?>... opts) {
-        add(new BarPlotArtist(category, cond, null, opts));
+        add(new BarPlot(category, cond, null, opts));
         return this;
     }
 
     public Plot barplot(Var category, Var cond, Var numeric, GOption<?>... opts) {
-        add(new BarPlotArtist(category, cond, numeric, opts));
+        add(new BarPlot(category, cond, numeric, opts));
         return this;
     }
 
@@ -511,17 +511,17 @@ public class Plot implements Figure {
     }
 
 
-    public Plot isoCurves(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+    public Plot isoCurves(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
         add(new IsoCurves(grid, true, true, gradient, levels, opts));
         return this;
     }
 
-    public Plot isoLines(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+    public Plot isoLines(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
         add(new IsoCurves(grid, true, false, gradient, levels, opts));
         return this;
     }
 
-    public Plot isoBands(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+    public Plot isoBands(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
         add(new IsoCurves(grid, false, true, gradient, levels, opts));
         return this;
     }
@@ -542,7 +542,7 @@ public class Plot implements Figure {
     }
 
     public Plot silhouette(ClusterSilhouette silhouette, GOption<?>... opts) {
-        add(new SilhouetteArtist(silhouette, opts));
+        add(new Silhouette(silhouette, opts));
         return this;
     }
 }

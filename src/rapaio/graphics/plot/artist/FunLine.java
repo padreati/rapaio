@@ -40,13 +40,13 @@ import rapaio.util.function.Double2DoubleFunction;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class FunctionLine extends Artist {
+public class FunLine extends Artist {
 
     @Serial
     private static final long serialVersionUID = 8388944194915495215L;
     private final Double2DoubleFunction f;
 
-    public FunctionLine(Double2DoubleFunction f, GOption<?>... opts) {
+    public FunLine(Double2DoubleFunction f, GOption<?>... opts) {
         this.f = f;
         // apply default values for function line
         this.options.bind(points(1024 * 64));

@@ -21,9 +21,28 @@
 
 package rapaio.graphics.opt;
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/21.
- */
-public record Position(double x, double y, double width, double height) {
+import java.io.Serial;
 
+/**
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
+ */
+public class GOptionGradient implements GOption<Gradient> {
+
+    @Serial
+    private static final long serialVersionUID = 8113363057332129656L;
+    private final Gradient colorRange;
+
+    public GOptionGradient(Gradient colorRange) {
+        this.colorRange = colorRange;
+    }
+
+    @Override
+    public void bind(GOptions opts) {
+        opts.setGradient(this);
+    }
+
+    @Override
+    public Gradient apply(GOptions opts) {
+        return colorRange;
+    }
 }

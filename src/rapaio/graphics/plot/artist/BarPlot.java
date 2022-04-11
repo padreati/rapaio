@@ -23,7 +23,6 @@ package rapaio.graphics.plot.artist;
 
 import static rapaio.sys.With.SORT_ASC;
 import static rapaio.sys.With.SORT_DESC;
-import static rapaio.sys.With.SORT_NONE;
 import static rapaio.sys.With.fill;
 
 import java.awt.Graphics2D;
@@ -35,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import rapaio.data.Unique;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
@@ -47,14 +47,16 @@ import rapaio.graphics.plot.Axis;
 import rapaio.util.collection.IntArrays;
 
 /**
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class BarPlotArtist extends Artist {
+public class BarPlot extends Artist {
 
     @Serial
     private static final long serialVersionUID = -3953248625109450364L;
 
-    private static final Set<VarType> categoryTypes = Set.of(VarType.BINARY, VarType.NOMINAL);
+    private static final Set<VarType> categoryTypes = Set.of(
+            VarType.BINARY, VarType.NOMINAL, VarType.INT);
     private final GOptions options = new GOptions();
     private final List<String> categories;
     private final List<String> conditions;
@@ -62,7 +64,7 @@ public class BarPlotArtist extends Artist {
     private final double[][] hits;
     private final double[] totals;
 
-    public BarPlotArtist(Var category, Var condition, Var weights, GOption<?>... opts) {
+    public BarPlot(Var category, Var condition, Var values, GOption<?>... opts) {
         if (!categoryTypes.contains(category.type())) {
             throw new IllegalArgumentException("Categories are nominal only");
         }
@@ -72,26 +74,26 @@ public class BarPlotArtist extends Artist {
         if (!categoryTypes.contains(condition.type())) {
             throw new IllegalArgumentException("Conditions are nominal only.");
         }
-        if (weights == null) {
-            weights = VarDouble.fill(category.size(), 1);
+        if (values == null) {
+            values = VarDouble.fill(category.size(), 1);
         }
-        if (!weights.type().isNumeric()) {
+        if (!values.type().isNumeric()) {
             throw new IllegalArgumentException("Numeric var must be numeric.");
         }
 
         int shift = 9;
-        options.bind(fill(VarInt.seq(shift, condition.levels().size())));
+        options.bind(fill(VarInt.seq(shift, Unique.of(condition).uniqueCount())));
         options.bind(opts);
 
         Map<String, Map<String, Double>> map = new HashMap<>();
         int rowCount = category.size();
         rowCount = Math.min(rowCount, condition.size());
-        rowCount = Math.min(rowCount, weights.size());
+        rowCount = Math.min(rowCount, values.size());
         LinkedHashSet<String> categoryLevels = new LinkedHashSet<>();
         LinkedHashSet<String> conditionLevels = new LinkedHashSet<>();
         for (int i = 0; i < rowCount; i++) {
             map.computeIfAbsent(category.getLabel(i), label -> new HashMap<>())
-                    .merge(condition.getLabel(i), weights.getDouble(i), Double::sum);
+                    .merge(condition.getLabel(i), values.getDouble(i), Double::sum);
             categoryLevels.add(category.getLabel(i));
             conditionLevels.add(condition.getLabel(i));
         }

@@ -24,16 +24,16 @@ package rapaio.graphics.plot.artist;
 import static rapaio.sys.With.position;
 
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.Serial;
 
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.Position;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
 /**
- * Artist which displays an image.
+ * Artist which displays an image onto a plot.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/21.
  */
@@ -45,7 +45,7 @@ public class ImageArtist extends Artist {
 
     public ImageArtist(BufferedImage image, GOption<?>... opts) {
         this.image = image;
-        this.options.bind(position(0, 0, image.getWidth(), image.getHeight()));
+        this.options.bind(position(0, image.getHeight(), image.getWidth(), image.getHeight()));
         this.options.bind(opts);
     }
 
@@ -61,19 +61,19 @@ public class ImageArtist extends Artist {
 
     @Override
     public void updateDataRange(Graphics2D g2d) {
-        Position pos = options.getPosition();
-        union(pos.x(), pos.y());
-        union(pos.x() + pos.width(), pos.y() + pos.height());
+        Rectangle2D pos = options.getPosition();
+        union(pos.getX(), pos.getY());
+        union(pos.getX() + pos.getWidth(), pos.getY() - pos.getHeight());
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        Position pos = options.getPosition();
+        Rectangle2D pos = options.getPosition();
         g2d.drawImage(image,
-                (int) xScale(pos.x()),
-                (int) yScale(pos.height()),
-                (int) xScale(pos.width()) - (int) xScale(pos.x()),
-                -(int) yScale(pos.height()) + (int) yScale(pos.y()),
+                (int) xScale(pos.getX()),
+                (int) yScale(pos.getY()),
+                (int) xScale(pos.getX() + pos.getWidth()) - (int) xScale(pos.getX()),
+                (int) yScale(pos.getY() - pos.getHeight()) - (int) yScale(pos.getY()),
                 null);
     }
 }

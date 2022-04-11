@@ -40,8 +40,8 @@ import java.util.List;
 
 import rapaio.core.tools.GridData;
 import rapaio.data.Var;
-import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.Gradient;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -53,14 +53,14 @@ public class IsoCurves extends Artist {
     @Serial
     private static final long serialVersionUID = -642370269224702175L;
     private final GridData grid;
-    private final ColorGradient gradient;
+    private final Gradient gradient;
     private final double[] levels;
     private final boolean contour;
     private final boolean fill;
 
-    public IsoCurves(GridData grid, boolean contour, boolean fill, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+    public IsoCurves(GridData grid, boolean contour, boolean fill, Gradient gradient, double[] levels, GOption<?>... opts) {
         this.grid = grid;
-        this.gradient = gradient;
+        this.gradient = gradient.forRange(0, levels.length);
         this.levels = levels;
         this.contour = contour;
         this.fill = fill;
@@ -85,6 +85,22 @@ public class IsoCurves extends Artist {
         union(x.getDouble(x.size() - 1), y.getDouble(y.size() - 1));
     }
 
+    private boolean isInside(double x, double y) {
+        if (plot.xAxis().domain().hasHardMin() && x < plot.xAxis().min()) {
+            return false;
+        }
+        if (plot.xAxis().domain().hasHardMax() && x < plot.xAxis().max()) {
+            return false;
+        }
+        if (plot.yAxis().domain().hasHardMin() && y < plot.yAxis().min()) {
+            return false;
+        }
+        if (plot.yAxis().domain().hasHardMax() && y < plot.yAxis().max()) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void paint(Graphics2D g2d) {
         Composite old = g2d.getComposite();
@@ -98,10 +114,14 @@ public class IsoCurves extends Artist {
 
         if (fill) {
             visitEach(g2d, x, y, fillStroke, contourStroke, (fillPoints, fillIndexes, levelIndex) -> {
+
                 if (fillPoints.size() > 2) {
                     g2d.setColor(gradient.getColor(levelIndex));
                     g2d.setStroke(fillStroke);
                     Path2D.Double path = new Path2D.Double();
+                    if(!isInside(fillPoints.get(0).x, fillPoints.get(0).y)) {
+                        return;
+                    }
                     path.moveTo(fillPoints.get(fillPoints.size() - 1).x, fillPoints.get(fillPoints.size() - 1).y);
                     for (Point2D.Double p : fillPoints) {
                         path.lineTo(p.x, p.y);
@@ -118,6 +138,9 @@ public class IsoCurves extends Artist {
                 g2d.setStroke(contourStroke);
 
                 if (fillPoints.size() > 2) {
+                    if(!isInside(fillPoints.get(0).x, fillPoints.get(0).y)) {
+                        return;
+                    }
                     fillPoints.add(fillPoints.get(0));
                     fillIndexes.add(fillIndexes.get(0) + 12);
                 }
@@ -145,13 +168,15 @@ public class IsoCurves extends Artist {
         for (int l = 0; l < levels.length - 1; l++) {
             MeshStripe mg = new MeshStripe(grid, levels[l], levels[l + 1]);
 
-            for (int i = 0; i < grid.getX().size() - 1; i++) {
-                for (int j = 0; j < grid.getY().size() - 1; j++) {
+            for (int i = 0; i < x.size() - 1; i++) {
+                for (int j = 0; j < y.size() - 1; j++) {
 
-                    if (!contains(x.getDouble(i), y.getDouble(j)))
+                    if (!contains(x.getDouble(i), y.getDouble(j))) {
                         continue;
-                    if (!contains(x.getDouble(i + 1), y.getDouble(j + 1)))
+                    }
+                    if (!contains(x.getDouble(i + 1), y.getDouble(j + 1))) {
                         continue;
+                    }
 
                     int k = mg.computeIndex(i, j);
 

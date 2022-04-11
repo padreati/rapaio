@@ -22,8 +22,10 @@
 package rapaio.math.linear;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.stream.DoubleStream;
 
 import rapaio.core.distributions.Distribution;
@@ -43,7 +45,7 @@ import rapaio.util.function.Int2DoubleFunction;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface DVector extends Serializable, Printable {
+public interface DVector extends Serializable, Printable, Iterable<Double> {
 
     /**
      * Builds a new real dense vector of size {@param n} filled with 0.
@@ -721,7 +723,7 @@ public interface DVector extends Serializable, Printable {
      * Apply an (integer,double) to double function on all the values from the vector.
      * The integer value is the position of the value in the vector.
      *
-     * @param f    (int,double) to double function
+     * @param f (int,double) to double function
      * @return result vector
      */
     DVector apply(BiFunction<Integer, Double, Double> f);
@@ -729,10 +731,10 @@ public interface DVector extends Serializable, Printable {
     /**
      * Apply an (integer,double) to double function on all the values from the vector
      * and stores results into {@param to} vector.
-     *
+     * <p>
      * The integer value is the position of the value in the vector.
      *
-     * @param f    (int,double) to double function
+     * @param f (int,double) to double function
      * @return result vector
      */
     DVector applyTo(BiFunction<Integer, Double, Double> f, DVector to);
@@ -740,10 +742,10 @@ public interface DVector extends Serializable, Printable {
     /**
      * Apply an (integer,double) to double function on all the values from the vector
      * and stores results into a new vector.
-     *
+     * <p>
      * The integer value is the position of the value in the vector.
      *
-     * @param f    (int,double) to double function
+     * @param f (int,double) to double function
      * @return result vector
      */
     default DVectorDense applyNew(BiFunction<Integer, Double, Double> f) {
@@ -772,7 +774,7 @@ public interface DVector extends Serializable, Printable {
     /**
      * Sort values from vector in place.
      *
-     * @param asc  ascending sort if {@code true}, descending otherwise
+     * @param asc ascending sort if {@code true}, descending otherwise
      * @return same vector or a new vector with sorted values
      */
     default DVector sortValues(boolean asc) {
@@ -782,7 +784,7 @@ public interface DVector extends Serializable, Printable {
     /**
      * Sort values from vector and store result into a new vector.
      *
-     * @param asc  ascending sort if {@code true}, descending otherwise
+     * @param asc ascending sort if {@code true}, descending otherwise
      * @return same vector or a new vector with sorted values
      */
     default DVector sortValuesNew(boolean asc) {
@@ -846,6 +848,16 @@ public interface DVector extends Serializable, Printable {
      * @return a stream of values
      */
     DoubleStream valueStream();
+
+    @Override
+    default void forEach(Consumer<? super Double> action) {
+        for (int i = 0; i < size(); i++) {
+            action.accept(get(i));
+        }
+    }
+
+    @Override
+    Iterator<Double> iterator();
 
     /**
      * Creates a VarDouble by wrapping the values if possible (if the vector storage type is

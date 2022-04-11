@@ -30,16 +30,16 @@ import rapaio.core.tools.GridData;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.graphics.opt.ColorGradient;
+import rapaio.graphics.opt.Gradient;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.artist.ABLineArtist;
-import rapaio.graphics.plot.artist.BarPlotArtist;
+import rapaio.graphics.plot.artist.ABLine;
+import rapaio.graphics.plot.artist.BarPlot;
 import rapaio.graphics.plot.artist.BoxPlot;
 import rapaio.graphics.plot.artist.CorrGram;
 import rapaio.graphics.plot.artist.DensityLine;
-import rapaio.graphics.plot.artist.FunctionLine;
+import rapaio.graphics.plot.artist.FunLine;
 import rapaio.graphics.plot.artist.Histogram;
 import rapaio.graphics.plot.artist.Histogram2D;
 import rapaio.graphics.plot.artist.ImageArtist;
@@ -124,7 +124,7 @@ public final class Plotter {
     }
 
     public static Plot funLine(Double2DoubleFunction f, GOption<?>... opts) {
-        return plot().add(new FunctionLine(f, opts));
+        return plot().add(new FunLine(f, opts));
     }
 
     public static Plot lines(Var x, Var y, GOption<?>... opts) {
@@ -148,27 +148,27 @@ public final class Plotter {
     }
 
     public static Plot barplot(Var category, GOption<?>... opts) {
-        return plot().add(new BarPlotArtist(category, null, null, opts));
+        return plot().add(new BarPlot(category, null, null, opts));
     }
 
     public static Plot barplot(Var category, Var cond, GOption<?>... opts) {
-        return plot().add(new BarPlotArtist(category, cond, null, opts));
+        return plot().add(new BarPlot(category, cond, null, opts));
     }
 
     public static Plot barplot(Var category, Var cond, Var numeric, GOption<?>... opts) {
-        return plot().add(new BarPlotArtist(category, cond, numeric, opts));
+        return plot().add(new BarPlot(category, cond, numeric, opts));
     }
 
     public static Plot hLine(double a, GOption<?>... opts) {
-        return plot().add(new ABLineArtist(true, a, opts));
+        return plot().add(new ABLine(true, a, opts));
     }
 
     public static Plot vLine(double a, GOption<?>... opts) {
-        return plot().add(new ABLineArtist(false, a, opts));
+        return plot().add(new ABLine(false, a, opts));
     }
 
     public static Plot abLine(double a, double b, GOption<?>... opts) {
-        return plot().add(new ABLineArtist(a, b, opts));
+        return plot().add(new ABLine(a, b, opts));
     }
 
     public static Plot corrGram(DistanceMatrix d, GOption<?>... opts) {
@@ -191,15 +191,15 @@ public final class Plotter {
         return plot().add(new Matrix(m, opts));
     }
 
-    public static Plot isoCurves(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+    public static Plot isoCurves(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
         return plot().add(new IsoCurves(grid, true, true, gradient, levels, opts));
     }
 
-    public static Plot isoLines(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+    public static Plot isoLines(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
         return plot().add(new IsoCurves(grid, true, false, gradient, levels, opts));
     }
 
-    public static Plot isoBands(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+    public static Plot isoBands(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
         return plot().add(new IsoCurves(grid, false, true, gradient, levels, opts));
     }
 

@@ -37,10 +37,10 @@ import rapaio.graphics.plot.Axis;
 
 /**
  * Artist which draws a line of the form y = f(x) = a*x + b
- * There is a generic form of the line by calling {@link #ABLineArtist(double, double, GOption...)}.
+ * There is a generic form of the line by calling {@link #ABLine(double, double, GOption...)}.
  * <p>
  * Also there is a simpler form for drawing horizontal or vertical lines.
- * The simpler form is called by using {@link #ABLineArtist(boolean, double, GOption...)},
+ * The simpler form is called by using {@link #ABLine(boolean, double, GOption...)},
  * with the boolean parameter specifying if the line is horizontal or vertical.
  * <p>
  * Also there are two dedicated shortcuts in plotter {@link Plotter#hLine(double, GOption...)}
@@ -50,7 +50,7 @@ import rapaio.graphics.plot.Axis;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ABLineArtist extends Artist {
+public class ABLine extends Artist {
 
     @Serial
     private static final long serialVersionUID = 8980967297314815554L;
@@ -59,21 +59,21 @@ public class ABLineArtist extends Artist {
     private final boolean h;
     private final boolean v;
 
-    public ABLineArtist(boolean horiz, double a, GOption<?>... opts) {
+    public ABLine(boolean horiz, double a, GOption<?>... opts) {
         this.a = a;
         this.b = a;
         this.h = horiz;
         this.v = !horiz;
-        this.options.setColor(color(new Color[]{Color.LIGHT_GRAY}));
+        this.options.setColor(color(Color.LIGHT_GRAY));
         this.options.bind(opts);
     }
 
-    public ABLineArtist(double a, double b, GOption<?>... opts) {
+    public ABLine(double a, double b, GOption<?>... opts) {
         this.a = a;
         this.b = b;
         this.h = false;
         this.v = false;
-        this.options.setColor(color(new Color[]{Color.LIGHT_GRAY}));
+        this.options.setColor(color(Color.LIGHT_GRAY));
         this.options.bind(opts);
     }
 

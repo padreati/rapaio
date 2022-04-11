@@ -23,6 +23,7 @@ package rapaio.sys;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
 
 import rapaio.data.Var;
@@ -34,6 +35,7 @@ import rapaio.graphics.opt.GOptionBins;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.opt.GOptionFill;
 import rapaio.graphics.opt.GOptionFont;
+import rapaio.graphics.opt.GOptionGradient;
 import rapaio.graphics.opt.GOptionHAlign;
 import rapaio.graphics.opt.GOptionHeights;
 import rapaio.graphics.opt.GOptionHorizontal;
@@ -50,7 +52,7 @@ import rapaio.graphics.opt.GOptionSz;
 import rapaio.graphics.opt.GOptionTop;
 import rapaio.graphics.opt.GOptionVAlign;
 import rapaio.graphics.opt.GOptionWidths;
-import rapaio.graphics.opt.Position;
+import rapaio.graphics.opt.Gradient;
 import rapaio.printer.opt.POptionTextWidth;
 import rapaio.printer.opt.POtpionFloatFormat;
 
@@ -95,6 +97,10 @@ public final class With {
 
     public static GOptionFill fill(Var color) {
         return new GOptionFill(color);
+    }
+
+    public static GOptionGradient gradient(Gradient colorRange) {
+        return new GOptionGradient(colorRange);
     }
 
     public static GOptionLwd lwd(float lwd) {
@@ -181,6 +187,18 @@ public final class With {
         return new GOptionSort(sort);
     }
 
+    public static GOptionSort sortAsc() {
+        return new GOptionSort(SORT_ASC);
+    }
+
+    public static GOptionSort sortNone() {
+        return new GOptionSort(SORT_NONE);
+    }
+
+    public static GOptionSort sortDesc() {
+        return new GOptionSort(SORT_DESC);
+    }
+
     public static GOptionHorizontal horizontal(boolean horizontal) {
         return new GOptionHorizontal(horizontal);
     }
@@ -233,11 +251,11 @@ public final class With {
         return new GOptionFont(new Font(fontName, style, size));
     }
 
-    public static GOptionPosition position(Position position) {
+    public static GOptionPosition position(Rectangle2D position) {
         return new GOptionPosition(position);
     }
 
-    public static GOptionPosition position(int x, int y, int width, int height) {
-        return new GOptionPosition(new Position(x, y, width, height));
+    public static GOptionPosition position(double x, double y, double width, double height) {
+        return position(new Rectangle2D.Double(x, y, width, height));
     }
 }

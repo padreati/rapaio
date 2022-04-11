@@ -25,7 +25,7 @@ import java.util.function.BiFunction;
 
 import rapaio.core.tools.GridData;
 import rapaio.data.VarDouble;
-import rapaio.graphics.opt.ColorGradient;
+import rapaio.graphics.opt.Gradient;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.linear.DVector;
 import rapaio.sys.Experimental;
@@ -108,7 +108,7 @@ public class VectorDataGrid {
             }
             q[q.length-1] *= 1.0001;
 
-            p.isoBands(grid, ColorGradient.newMonoHueGradient(hues[ch], 0f, 1f, 0.8f, q), q);
+            p.isoBands(grid, Gradient.newMonoHueGradient(hues[ch], 0f, 1f, 0.8f, min, max), q);
 //            p.isoLines(grid, () -> {
 //                Color[] colors = new Color[100];
 //                for (int i = 0; i < colors.length; i++) {

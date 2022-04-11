@@ -22,6 +22,8 @@
 package rapaio.math.linear.dense;
 
 import java.io.Serial;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 
 import rapaio.math.linear.DMatrix;
@@ -720,6 +722,34 @@ public abstract class AbstractDVector implements DVector {
         if ((s = d - c) > 1) {
             quickSortIndirect(perm, to - s, to, comp);
         }
+    }
+
+    private static final class DoubleIterator implements Iterator<Double> {
+        private final DVector parent;
+        private int pos = 0;
+
+        public DoubleIterator(DVector parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return pos < parent.size();
+        }
+
+        @Override
+        public Double next() {
+            if (pos < parent.size()) {
+                pos++;
+                return parent.get(pos - 1);
+            }
+            throw new NoSuchElementException();
+        }
+    }
+
+    @Override
+    public Iterator<Double> iterator() {
+        return new DoubleIterator(this);
     }
 
     @Override

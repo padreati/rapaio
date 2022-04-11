@@ -32,14 +32,14 @@ import rapaio.graphics.plot.Axis;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/20.
  */
-public abstract class BasePolyArtist extends Artist {
+public abstract class BasePoly extends Artist {
 
     @Serial
     private static final long serialVersionUID = 5977928265266862160L;
     protected final Var x;
     protected final Var y;
 
-    public BasePolyArtist(Var x, Var y, GOption<?>... options) {
+    public BasePoly(Var x, Var y, GOption<?>... options) {
         this.x = x;
         this.y = y;
         this.options.bind(options);

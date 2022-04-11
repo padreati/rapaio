@@ -155,4 +155,12 @@ public class GridData implements Serializable {
             }
         }
     }
+
+    public double minValue() {
+        return values.min();
+    }
+
+    public double maxValue() {
+        return values.max();
+    }
 }
