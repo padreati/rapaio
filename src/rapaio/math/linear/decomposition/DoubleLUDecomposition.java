@@ -21,6 +21,9 @@
 
 package rapaio.math.linear.decomposition;
 
+import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.min;
+
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -97,7 +100,7 @@ public class DoubleLUDecomposition implements Serializable, Printable {
 
                 // Most of the time is spent in the following dot product.
 
-                int kmax = Math.min(i, j);
+                int kmax = min(i, j);
                 double s = 0.0;
                 for (int k = 0; k < kmax; k++) {
                     s += LU.get(i, k) * LUcolj[k];
@@ -110,7 +113,7 @@ public class DoubleLUDecomposition implements Serializable, Printable {
 
             int p = j;
             for (int i = j + 1; i < LU.rows(); i++) {
-                if (Math.abs(LUcolj[i]) > Math.abs(LUcolj[p])) {
+                if (abs(LUcolj[i]) > abs(LUcolj[p])) {
                     p = i;
                 }
             }
@@ -149,7 +152,7 @@ public class DoubleLUDecomposition implements Serializable, Printable {
             // Find pivot.
             int p = k;
             for (int i = k + 1; i < ref.rows(); i++) {
-                if (Math.abs(LU.get(i, k)) > Math.abs(LU.get(p, k))) {
+                if (abs(LU.get(i, k)) > abs(LU.get(p, k))) {
                     p = i;
                 }
             }
