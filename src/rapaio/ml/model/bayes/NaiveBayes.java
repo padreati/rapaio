@@ -111,10 +111,9 @@ public class NaiveBayes extends ClassifierModel<NaiveBayes, ClassifierResult, Ru
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                0, 1_000_000, Arrays.asList(VarType.NOMINAL, VarType.DOUBLE, VarType.INT, VarType.BINARY), true,
-                1, 1, List.of(VarType.NOMINAL, VarType.BINARY), false
-        );
+        return new Capabilities()
+                .inputs(0, 1_000_000, true, VarType.NOMINAL, VarType.DOUBLE, VarType.INT, VarType.BINARY)
+                .targets(1, 1, false, VarType.NOMINAL, VarType.BINARY);
     }
 
     @Override

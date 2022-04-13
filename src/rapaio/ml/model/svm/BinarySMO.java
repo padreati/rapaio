@@ -164,10 +164,9 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, 100_000,
-                Arrays.asList(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE), false,
-                1, 1, List.of(VarType.NOMINAL), false);
+        return new Capabilities()
+                .inputs(1, 100_000, false, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE)
+                .targets(1, 1, false, VarType.NOMINAL);
     }
 
     private void convertWeightVector() {
@@ -242,7 +241,6 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                 } else {
                     //This is the code for Modification 2 from Keerthi et al.'s paper
                     boolean innerLoopSuccess = true;
-                    numChanged = 0;
                     while ((s.bUp < s.bLow - 2 * eps.get()) && innerLoopSuccess) {
                         innerLoopSuccess = takeStep(s, s.iUp, s.iLow);
                         if (innerLoopSuccess) {
@@ -335,7 +333,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         }
     }
 
-    private boolean initialize(State s) {
+    private void initialize(State s) {
 
         final int n = train.rowCount();
 
@@ -367,7 +365,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                 b = 1;
             } else {
                 y = null;
-                return false;
+                return;
             }
             if (kernel.get().isLinear()) {
                 sparseWeights = new double[0];
@@ -378,7 +376,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                 alpha = new double[0];
                 y = new double[0];
             }
-            return false;
+            return;
         }
 
         // If machine is linear, reserve space for weights
@@ -420,7 +418,6 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                 s.I4.set(i, true);
             }
         }
-        return true;
     }
 
     @Override

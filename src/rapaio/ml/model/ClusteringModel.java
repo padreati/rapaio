@@ -39,7 +39,7 @@ import rapaio.util.function.SConsumer;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/31/20.
  */
-public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R extends ClusteringResult, H>
+public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R extends ClusteringResult<M>, H>
         extends ParamSet<M> implements Printable, Serializable {
 
     @Serial
@@ -93,8 +93,9 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
      * @return capabilities of the clustering algorithm
      */
     public Capabilities capabilities() {
-        return new Capabilities(1, 1_000_000, List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY), false,
-                0, 0, List.of(), true);
+        return new Capabilities()
+                .inputs(1, 1_000_000, false, VarType.DOUBLE, VarType.INT, VarType.BINARY)
+                .targets(0, 0, true);
     }
 
     /**

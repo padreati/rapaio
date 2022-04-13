@@ -23,6 +23,8 @@ package rapaio.ml.common;
 
 import static java.util.stream.Collectors.joining;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import rapaio.data.Frame;
@@ -35,13 +37,100 @@ import rapaio.data.VarType;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
-public record Capabilities(int minInputCount, int maxInputCount, List<VarType> inputTypes, boolean allowMissingInputValues,
-                           int minTargetCount, int maxTargetCount, List<VarType> targetTypes, boolean allowMissingTargetValues) {
+public final class Capabilities {
 
-    public static Capabilities newDefault() {
-        return new Capabilities(
-                0, 0, List.of(), true,
-                0, 0, List.of(), false);
+    private int minInputCount = 0;
+    private int maxInputCount = 0;
+    private final List<VarType> inputTypes = new ArrayList<>();
+    private boolean allowMissingInputValues = false;
+    private int minTargetCount = 0;
+    private int maxTargetCount = 0;
+    private final List<VarType> targetTypes = new ArrayList<>();
+    private boolean allowMissingTargetValues = false;
+
+    public Capabilities() {
+    }
+
+    public Capabilities inputs(int min, int max, boolean allowMissing, VarType...types) {
+        return minInputCount(min).maxInputCount(max).allowMissingInputValues(allowMissing).inputTypes(types);
+    }
+
+    public Capabilities minInputCount(int minInputCount) {
+        this.minInputCount = minInputCount;
+        return this;
+    }
+
+    public int minInputCount() {
+        return minInputCount;
+    }
+
+    public Capabilities maxInputCount(int maxInputCount) {
+        this.maxInputCount = maxInputCount;
+        return this;
+    }
+
+    public int maxInputCount() {
+        return maxInputCount;
+    }
+
+    public Capabilities inputTypes(VarType...varTypes) {
+        inputTypes.clear();
+        inputTypes.addAll(Arrays.asList(varTypes));
+        return this;
+    }
+
+    public VarType[] inputTypes() {
+        return inputTypes.toArray(VarType[]::new);
+    }
+
+    public Capabilities allowMissingInputValues(boolean allow) {
+        this.allowMissingInputValues = allow;
+        return this;
+    }
+
+    public boolean allowMissingInputValues() {
+        return allowMissingInputValues;
+    }
+
+    public Capabilities targets(int min, int max, boolean allowMissing, VarType...types) {
+        return minTargetCount(min).maxTargetCount(max).allowMissingTargetValues(allowMissing).targetTypes(types);
+    }
+
+    public Capabilities minTargetCount(int minTargetCount) {
+        this.minTargetCount = minTargetCount;
+        return this;
+    }
+
+    public int minTargetCount() {
+        return minTargetCount;
+    }
+
+    public Capabilities maxTargetCount(int maxTargetCount) {
+        this.maxTargetCount = maxTargetCount;
+        return this;
+    }
+
+    public int maxTargetCount() {
+        return maxTargetCount;
+    }
+
+    public Capabilities targetTypes(VarType...varTypes) {
+        targetTypes.clear();
+        targetTypes.addAll(Arrays.asList(varTypes));
+        return this;
+    }
+
+    public VarType[] targetTypes() {
+        return targetTypes.toArray(VarType[]::new);
+    }
+
+    public Capabilities allowMissingTargetValues(boolean allow) {
+        this.allowMissingTargetValues = allow;
+        return this;
+    }
+
+    public boolean allowMissingTargetValues() {
+        return allowMissingTargetValues;
     }
 
     /**
@@ -145,13 +234,11 @@ public record Capabilities(int minInputCount, int maxInputCount, List<VarType> i
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("types inputs/targets: ").append(inputTypes.stream().map(Enum::name).collect(joining(",")));
-        sb.append("/").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
-        sb.append("counts inputs/targets: [").append(minInputCount).append(",").append(maxInputCount).append("] ");
-        sb.append("/ [").append(minTargetCount).append(",").append(maxTargetCount).append("]\n");
-        sb.append("missing inputs/targets: ").append(allowMissingInputValues);
-        sb.append("/").append(allowMissingTargetValues).append("\n");
-        return sb.toString();
+        return "types inputs/targets: " + inputTypes.stream().map(Enum::name).collect(joining(","))
+                + "/" + targetTypes.stream().map(Enum::name).collect(joining(",")) + "\n"
+                + "counts inputs/targets: [" + minInputCount + "," + maxInputCount + "] "
+                + "/ [" + minTargetCount + "," + maxTargetCount + "]\n"
+                + "missing inputs/targets: " + allowMissingInputValues
+                + "/" + allowMissingTargetValues + "\n";
     }
 }

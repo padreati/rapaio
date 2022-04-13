@@ -104,8 +104,9 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(1, Integer.MAX_VALUE, List.of(VarType.DOUBLE, VarType.INT, VarType.LONG, VarType.BINARY), false,
-                1, 1, List.of(VarType.DOUBLE, VarType.INT, VarType.LONG, VarType.BINARY), false);
+        return new Capabilities()
+                .inputs(1, Integer.MAX_VALUE, false, VarType.DOUBLE, VarType.INT, VarType.LONG, VarType.BINARY)
+                .targets(1, 1, false, VarType.DOUBLE, VarType.INT, VarType.LONG, VarType.BINARY);
     }
 
     private DVector buildInstance(Frame df, int row) {

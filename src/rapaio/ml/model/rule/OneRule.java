@@ -99,10 +99,9 @@ public class OneRule extends ClassifierModel<OneRule, ClassifierResult, RunInfo<
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, 1_000_000,
-                List.of(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE, VarType.LONG), true,
-                1, 1, List.of(VarType.NOMINAL), false);
+        return new Capabilities()
+                .inputs(1, 1_000_000,true, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE, VarType.LONG)
+                .targets(1, 1, false, VarType.NOMINAL);
     }
 
     @Override

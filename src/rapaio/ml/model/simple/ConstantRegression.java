@@ -66,10 +66,9 @@ public class ConstantRegression extends RegressionModel<ConstantRegression, Regr
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                0, 1_000_000,
-                Arrays.asList(VarType.DOUBLE, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.STRING), true,
-                1, 1, List.of(VarType.DOUBLE), true);
+        return new Capabilities()
+                .inputs(0, 1_000_000, true, VarType.DOUBLE, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.STRING)
+                .targets(1, 1, true, VarType.DOUBLE);
     }
 
     @Override

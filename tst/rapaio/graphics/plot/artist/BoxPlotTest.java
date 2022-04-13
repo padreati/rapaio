@@ -1,4 +1,4 @@
-package rapaio.graphics;
+package rapaio.graphics.plot.artist;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
@@ -24,6 +24,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.stream.VSpot;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.GridLayer;
+import rapaio.graphics.plot.artist.AbstractArtistTest;
 
 public class BoxPlotTest extends AbstractArtistTest {
 

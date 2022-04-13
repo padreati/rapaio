@@ -281,9 +281,9 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
      */
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, Integer.MAX_VALUE, List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY), false,
-                1, 1, List.of(VarType.DOUBLE), false);
+        return new Capabilities()
+                .inputs(1, Integer.MAX_VALUE, false, VarType.DOUBLE, VarType.INT, VarType.BINARY)
+                .targets(1, 1, false, VarType.DOUBLE);
     }
 
     /**

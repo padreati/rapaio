@@ -96,9 +96,9 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, RunInf
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, 10_000, Arrays.asList(VarType.DOUBLE, VarType.NOMINAL, VarType.INT, VarType.BINARY), true,
-                1, 1, List.of(VarType.NOMINAL), false);
+        return new Capabilities()
+                .inputs(1, 10_000, true, VarType.DOUBLE, VarType.NOMINAL, VarType.INT, VarType.BINARY)
+                .targets(1, 1, false, VarType.NOMINAL);
     }
 
     public List<Double> getAlphas() {

@@ -1,9 +1,6 @@
-package rapaio.graphics;
+package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.With.bins;
-import static rapaio.sys.With.horizontal;
-import static rapaio.sys.With.prob;
 
 import java.io.IOException;
 
@@ -16,7 +13,8 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.filter.VApply;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.plot.GridLayer;
+import rapaio.graphics.Figure;
+import rapaio.graphics.plot.artist.AbstractArtistTest;
 import rapaio.image.ImageTools;
 
 public class LinesTest extends AbstractArtistTest {

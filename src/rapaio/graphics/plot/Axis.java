@@ -49,8 +49,6 @@ public final class Axis implements Serializable {
     @Serial
     private static final long serialVersionUID = 8011268159946315468L;
 
-    private static final double EXTENDED_FACTOR = 1.05;
-
     private Type type = Axis.Type.newUnknown();
 
     private final Domain domain = new Domain();
@@ -84,8 +82,6 @@ public final class Axis implements Serializable {
             max = max + 0.5;
         }
 
-//        extendedRange();
-
         tickers.clear();
         labels.clear();
 
@@ -94,22 +90,6 @@ public final class Axis implements Serializable {
             return;
         }
         type.computeArtifacts(this, plot, g2d, viewportSpan, spots);
-    }
-
-    public void extendedRange() {
-        // no extension for instance type
-        if (type instanceof TypeTime || type instanceof TypeDiscreteTime) {
-            return;
-        }
-        double extRange = Math.abs(max - min) * EXTENDED_FACTOR;
-        double mid = min + (max - min) / 2;
-        if (min == max) {
-            min = min - 1;
-            max = max + 1;
-        } else {
-            min = mid - extRange / 2;
-            max = mid + extRange / 2;
-        }
     }
 
     public boolean contains(double x) {

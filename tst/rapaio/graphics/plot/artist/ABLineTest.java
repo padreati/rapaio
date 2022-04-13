@@ -1,4 +1,4 @@
-package rapaio.graphics;
+package rapaio.graphics.plot.artist;
 
 import static rapaio.sys.With.fill;
 
@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.artist.AbstractArtistTest;
 
 public class ABLineTest extends AbstractArtistTest {
 

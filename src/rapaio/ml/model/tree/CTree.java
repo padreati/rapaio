@@ -195,8 +195,9 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(1, 1_000_000, Arrays.asList(VarType.NOMINAL, VarType.INT, VarType.DOUBLE, VarType.BINARY), true,
-                1, 1, List.of(VarType.NOMINAL), false);
+        return new Capabilities()
+                .inputs(1, 1_000_000, true, VarType.NOMINAL, VarType.INT, VarType.DOUBLE, VarType.BINARY)
+                .targets(1, 1, false, VarType.NOMINAL);
     }
 
     record Triple(Node node, Frame df, Var weight) {

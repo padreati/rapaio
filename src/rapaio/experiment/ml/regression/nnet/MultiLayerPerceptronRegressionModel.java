@@ -25,7 +25,6 @@ import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 import java.util.Arrays;
-import java.util.List;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
@@ -123,9 +122,9 @@ public class MultiLayerPerceptronRegressionModel
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, 1_000_000, Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY), false,
-                1, 1_000_000, List.of(VarType.DOUBLE), false);
+        return new Capabilities()
+                .inputs(1, 1_000_000, false, VarType.DOUBLE, VarType.INT, VarType.BINARY)
+                .targets(1, 1_000_000, false, VarType.DOUBLE);
     }
 
     public MultiLayerPerceptronRegressionModel withFunction(TFunction function) {
@@ -205,7 +204,9 @@ public class MultiLayerPerceptronRegressionModel
                 for (int j = 0; j < net[i].length; j++) {
                     double sum = 0;
                     for (int k = 0; k < net[i + 1].length; k++) {
-                        if (net[i + 1][k].weights == null) continue;
+                        if (net[i + 1][k].weights == null) {
+                            continue;
+                        }
                         sum += net[i + 1][k].weights[j] * net[i + 1][k].gamma;
                     }
                     net[i][j].gamma = function.differential(net[i][j].value) * sum;

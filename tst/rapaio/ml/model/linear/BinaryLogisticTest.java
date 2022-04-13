@@ -21,11 +21,10 @@
 
 package rapaio.ml.model.linear;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
@@ -88,12 +87,12 @@ public class BinaryLogisticTest {
     @Test
     void testCapabilities() {
         Capabilities capabilities = BinaryLogistic.newModel().capabilities();
-        assertEquals(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE), capabilities.inputTypes());
+        assertArrayEquals(new VarType[] {VarType.BINARY, VarType.INT, VarType.DOUBLE}, capabilities.inputTypes());
         assertEquals(1, capabilities.minInputCount());
         assertEquals(10000, capabilities.maxInputCount());
         assertFalse(capabilities.allowMissingInputValues());
 
-        assertEquals(Arrays.asList(VarType.NOMINAL, VarType.BINARY), capabilities.targetTypes());
+        assertArrayEquals(new VarType[] {VarType.NOMINAL, VarType.BINARY}, capabilities.targetTypes());
         assertEquals(1, capabilities.minTargetCount());
         assertEquals(1, capabilities.maxTargetCount());
         assertFalse(capabilities.allowMissingTargetValues());

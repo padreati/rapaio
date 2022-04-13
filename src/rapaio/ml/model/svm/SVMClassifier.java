@@ -129,8 +129,9 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(1, 10_000, List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY), false,
-                1, 1, List.of(VarType.NOMINAL, VarType.BINARY, VarType.INT), false);
+        return new Capabilities()
+                .inputs(1, 10_000, false, VarType.DOUBLE, VarType.INT, VarType.BINARY)
+                .targets(1, 1, false, VarType.NOMINAL, VarType.BINARY, VarType.INT);
     }
 
     @Override

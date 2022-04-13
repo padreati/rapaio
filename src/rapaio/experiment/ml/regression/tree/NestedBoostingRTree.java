@@ -22,8 +22,6 @@
 package rapaio.experiment.ml.regression.tree;
 
 import java.io.Serial;
-import java.util.Arrays;
-import java.util.List;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -71,10 +69,9 @@ public class NestedBoostingRTree
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, Integer.MAX_VALUE,
-                Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY, VarType.LONG), false,
-                1, 1, List.of(VarType.DOUBLE), false);
+        return new Capabilities()
+                .inputs(1, Integer.MAX_VALUE, false, VarType.DOUBLE, VarType.INT, VarType.BINARY, VarType.LONG)
+                .targets(1, 1, false, VarType.DOUBLE);
     }
 
     public int getMinCount() {

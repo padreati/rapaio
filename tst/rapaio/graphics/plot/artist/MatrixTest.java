@@ -1,4 +1,4 @@
-package rapaio.graphics;
+package rapaio.graphics.plot.artist;
 
 import static java.lang.StrictMath.sqrt;
 
@@ -17,6 +17,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.GridLayer;
+import rapaio.graphics.plot.artist.AbstractArtistTest;
 import rapaio.image.ImageTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
@@ -24,12 +25,9 @@ import rapaio.math.linear.dense.DMatrixDenseC;
 
 public class MatrixTest extends AbstractArtistTest {
 
-    private Frame df;
-
     @BeforeEach
     void setUp() throws Exception {
         RandomSource.setSeed(1234);
-        df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
         ImageTools.setBestRenderingHints();
     }
 

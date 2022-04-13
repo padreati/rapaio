@@ -93,10 +93,9 @@ public class CBinaryLogisticStacking extends ClassifierModel<CBinaryLogisticStac
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, 100_000,
-                Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE), false,
-                1, 1, List.of(VarType.NOMINAL), false);
+        return new Capabilities()
+                .inputs(1, 100_000, false, VarType.BINARY, VarType.INT, VarType.DOUBLE)
+                .targets(1, 1, false, VarType.NOMINAL);
     }
 
     @Override
@@ -112,13 +111,12 @@ public class CBinaryLogisticStacking extends ClassifierModel<CBinaryLogisticStac
             }
             logger.config("started fitting weak learner...");
             return weak.predict(df).firstDensity().rvar(1);
-        }).collect(toList()).forEach(var -> vars.add(var.copy().name("V" + vars.size())));
+        }).toList().forEach(var -> vars.add(var.copy().name("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
                 .map(v -> v.copy()
                         .fapply(VApply.onDouble(x -> x * x))
-                        .name(v.name() + "^2"))
-                .collect(toList());
+                        .name(v.name() + "^2")).toList();
         vars.addAll(quadratic);
 
         List<String> targets = VarRange.of(targetVars).parseVarNames(df);
@@ -146,11 +144,10 @@ public class CBinaryLogisticStacking extends ClassifierModel<CBinaryLogisticStac
         weaks.parallelStream().map(weak -> {
             logger.config("started fitting weak learner ...");
             return weak.predict(df).firstDensity().rvar(1);
-        }).collect(toList()).forEach(var -> vars.add(var.copy().name("V" + vars.size())));
+        }).toList().forEach(var -> vars.add(var.copy().name("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.copy().fapply(VApply.onDouble(x -> x * x)).name(v.name() + "^2"))
-                .collect(toList());
+                .map(v -> v.copy().fapply(VApply.onDouble(x -> x * x)).name(v.name() + "^2")).toList();
         vars.addAll(quadratic);
         return PredSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);
     }

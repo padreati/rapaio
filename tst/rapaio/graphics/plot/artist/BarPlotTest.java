@@ -1,4 +1,4 @@
-package rapaio.graphics;
+package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.*;
 import static rapaio.sys.With.sortAsc;
@@ -20,6 +20,7 @@ import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.GridLayer;
+import rapaio.graphics.plot.artist.AbstractArtistTest;
 
 public class BarPlotTest extends AbstractArtistTest {
 

@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.graphics;
+package rapaio.graphics.plot.artist;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -37,25 +37,20 @@ import static rapaio.sys.With.vAlign;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Objects;
-
-import javax.imageio.ImageIO;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.core.stat.Quantiles;
 import rapaio.data.VarDouble;
+import rapaio.graphics.Figure;
 import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.artist.AbstractArtistTest;
 import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.Text;
 import rapaio.image.ImageTools;
-import rapaio.sys.WS;
 
 /**
  * Test some graphics by maintaining some previously generated images.

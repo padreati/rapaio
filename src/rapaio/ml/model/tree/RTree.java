@@ -172,10 +172,9 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, 1_000_000,
-                Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL), true,
-                1, 1, List.of(VarType.DOUBLE), false);
+        return new Capabilities()
+                .inputs(1, 1_000_000, true, VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL)
+                .targets(1, 1, false, VarType.DOUBLE);
     }
 
     public Node root() {
@@ -261,7 +260,7 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
                         .computeCandidate(this, df, weights, testCol, firstTargetName())
                         .orElse(null))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
 
         Candidate bestCandidate = null;
         for (Candidate candidate : candidates) {

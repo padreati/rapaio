@@ -1,4 +1,4 @@
-package rapaio.graphics;
+package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.*;
 
@@ -10,6 +10,7 @@ import rapaio.core.correlation.CorrSpearman;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.plot.artist.AbstractArtistTest;
 
 public class CorrGramTest extends AbstractArtistTest {
 

@@ -97,8 +97,9 @@ public class SvmRegression extends RegressionModel<SvmRegression, RegressionResu
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(1, 1_000_000, List.of(VarType.DOUBLE, VarType.BINARY, VarType.INT), false,
-                1, 1, List.of(VarType.DOUBLE, VarType.BINARY, VarType.INT), false);
+        return new Capabilities()
+                .inputs(1, 1_000_000, false, VarType.DOUBLE, VarType.BINARY, VarType.INT)
+                .targets(1, 1, false, VarType.DOUBLE, VarType.BINARY, VarType.INT);
     }
 
     @Override

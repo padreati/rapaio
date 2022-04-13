@@ -104,10 +104,9 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, 1_000_000,
-                Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL), true,
-                1, 1, List.of(VarType.DOUBLE), false);
+        return new Capabilities()
+                .inputs(1, 1_000_000, true, VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL)
+                .targets(1, 1, false, VarType.DOUBLE);
     }
 
     public VarDouble getFitValues() {
@@ -119,7 +118,6 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected boolean coreFit(Frame df, Var weights) {
 
         trees = new ArrayList<>();

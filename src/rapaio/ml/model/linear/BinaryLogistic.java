@@ -137,9 +137,9 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, 10_000, List.of(VarType.BINARY, VarType.INT, VarType.DOUBLE), false,
-                1, 1, List.of(VarType.NOMINAL, VarType.BINARY), false);
+        return new Capabilities()
+                .inputs(1, 10_000, false, VarType.BINARY, VarType.INT, VarType.DOUBLE)
+                .targets(1, 1, false, VarType.NOMINAL, VarType.BINARY);
     }
 
     @Override

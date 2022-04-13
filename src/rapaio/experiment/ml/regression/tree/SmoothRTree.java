@@ -54,7 +54,7 @@ public class SmoothRTree extends GBTRtree<SmoothRTree, RegressionResult, RunInfo
     private double minWeight = 1e-10;
     private int maxDepth = 3;
     private VarSelector varSelector = VarSelector.all();
-    private SmoothRFunction smoothRFunction = FixedScaleSmoothSplineRFunction.fromScales(1, 5, 0.1, new double[]{0.001, 0.01, 0.1});
+    private SmoothRFunction smoothRFunction = FixedScaleSmoothSplineRFunction.fromScales(1, 5, 0.1, new double[] {0.001, 0.01, 0.1});
     private Loss loss = new L2Loss();
 
     private SmoothRTreeNode root;
@@ -71,9 +71,9 @@ public class SmoothRTree extends GBTRtree<SmoothRTree, RegressionResult, RunInfo
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, Integer.MAX_VALUE, Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY, VarType.LONG), false,
-                1, 1, List.of(VarType.DOUBLE), false);
+        return new Capabilities()
+                .inputs(1, Integer.MAX_VALUE, false, VarType.DOUBLE, VarType.INT, VarType.BINARY, VarType.LONG)
+                .targets(1, 1, false, VarType.DOUBLE);
     }
 
     public int getMinCount() {

@@ -108,11 +108,9 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, 1_000_000,
-                Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL), true,
-                1, 1,
-                List.of(VarType.DOUBLE), false);
+        return new Capabilities()
+                .inputs(1, 1_000_000, true, VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL)
+                .targets(1, 1, false, VarType.DOUBLE);
     }
 
     @Override
@@ -137,7 +135,8 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
                         regressions.add(m);
                         runningHook.get().accept(RunInfo.forRegression(this, run++));
                         it.remove();
-                    } catch (InterruptedException | ExecutionException ignored) {}
+                    } catch (InterruptedException | ExecutionException ignored) {
+                    }
                 }
             }
         }
@@ -153,8 +152,7 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
         RegressionResult fit = RegressionResult.build(this, df, withResiduals, quantiles);
         List<VarDouble> results = regressions
                 .parallelStream()
-                .map(r -> r.predict(df, false).firstPrediction())
-                .collect(Collectors.toList());
+                .map(r -> r.predict(df, false).firstPrediction()).toList();
         var pred = fit.firstPrediction().dv();
         pred.fill(0);
         for (VarDouble result : results) {
@@ -167,7 +165,7 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
         return fit;
     }
 
-    private static record FitTask(RowSampler.Sample sample, RegressionModel<?, ?, ?> model, String[] targetNames)
+    private record FitTask(RowSampler.Sample sample, RegressionModel<?, ?, ?> model, String[] targetNames)
             implements Callable<RegressionModel<?, ?, ?>>, Serializable {
 
         @Serial

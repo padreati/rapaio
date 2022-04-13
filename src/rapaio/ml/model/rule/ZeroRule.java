@@ -70,10 +70,10 @@ public class ZeroRule extends ClassifierModel<ZeroRule, ClassifierResult, RunInf
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                0, Integer.MAX_VALUE,
-                List.of(VarType.DOUBLE, VarType.INT, VarType.NOMINAL, VarType.BINARY, VarType.LONG, VarType.INSTANT, VarType.STRING), true,
-                1, 1, List.of(VarType.NOMINAL, VarType.BINARY), true);
+        return new Capabilities()
+                .inputs(0, Integer.MAX_VALUE, true, VarType.DOUBLE, VarType.INT, VarType.NOMINAL, VarType.BINARY, VarType.LONG,
+                        VarType.INSTANT, VarType.STRING)
+                .targets(1, 1, true, VarType.NOMINAL, VarType.BINARY);
     }
 
     @Override

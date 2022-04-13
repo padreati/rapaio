@@ -1,4 +1,4 @@
-package rapaio.graphics;
+package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.*;
 import static rapaio.sys.With.bins;
@@ -16,6 +16,7 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.GridLayer;
+import rapaio.graphics.plot.artist.AbstractArtistTest;
 import rapaio.image.ImageTools;
 
 public class HistogramTest extends AbstractArtistTest {

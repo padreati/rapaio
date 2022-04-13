@@ -157,10 +157,9 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
     @Override
     public Capabilities capabilities() {
         Capabilities cc = model.get().capabilities();
-        return new Capabilities(
-                cc.minInputCount(), cc.maxInputCount(), Arrays.asList(cc.inputTypes().toArray(VarType[]::new)),
-                cc.allowMissingInputValues(),
-                1, 1, List.of(VarType.NOMINAL, VarType.BINARY), false);
+        return new Capabilities()
+                .inputs(cc.minInputCount(), cc.maxInputCount(), cc.allowMissingInputValues(), cc.inputTypes())
+                .targets(1, 1, false, VarType.NOMINAL, VarType.BINARY);
     }
 
     private Frame getVIInfo(Map<String, List<Double>> viMap) {
@@ -236,8 +235,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
             range = range.parallel();
         }
         List<Pair<ClassifierModel<?, ?, ?>, Mapping>> list = range
-                .mapToObj(s -> buildWeakPredictor(df, weights))
-                .collect(Collectors.toList());
+                .mapToObj(s -> buildWeakPredictor(df, weights)).toList();
         for (int i = 0; i < list.size(); i++) {
             Pair<ClassifierModel<?, ?, ?>, Mapping> weak = list.get(i);
             predictors.add(weak.v1);

@@ -111,7 +111,9 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(1, Integer.MAX_VALUE, List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY), false, 0, 0, List.of(), true);
+        return new Capabilities()
+                .inputs(1, Integer.MAX_VALUE, false, VarType.DOUBLE, VarType.INT, VarType.BINARY)
+                .targets(0, 0, true);
     }
 
     public double distance(DVector x, DVector y, DVector w, double p) {

@@ -1,4 +1,4 @@
-package rapaio.graphics;
+package rapaio.graphics.plot.artist;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,6 +17,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.Figure;
 import rapaio.image.ImageTools;
 import rapaio.sys.WS;
 
@@ -24,12 +25,9 @@ public abstract class AbstractArtistTest {
 
     public static final String ROOT = "/home/ati/work/rapaio/tst";
 
-    private Frame df;
-
     @BeforeEach
     void setUp() throws Exception {
         RandomSource.setSeed(1234);
-        df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
         ImageTools.setBestRenderingHints();
     }
 
@@ -39,7 +37,7 @@ public abstract class AbstractArtistTest {
 
     protected void assertTest(Figure f, String name) throws IOException {
         if (regenerate()) {
-            ImageTools.saveFigureImage(f, 800, 600, ROOT + "/rapaio/graphics/" + name + ".png");
+            ImageTools.saveFigureImage(f, 800, 600, ROOT + "/rapaio/graphics/plot/artist/" + name + ".png");
         }
 
         BufferedImage bi1 = ImageTools.makeImage(f, 800, 600);

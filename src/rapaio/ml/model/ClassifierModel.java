@@ -54,7 +54,7 @@ import rapaio.util.function.SFunction;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @SuppressWarnings("unchecked")
-public abstract class ClassifierModel <M extends ClassifierModel<M, R, H>, R extends ClassifierResult, H extends RunInfo<M>>
+public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R extends ClassifierResult, H extends RunInfo<M>>
         extends ParamSet<M> implements Printable, Serializable {
 
     @Serial
@@ -135,7 +135,7 @@ public abstract class ClassifierModel <M extends ClassifierModel<M, R, H>, R ext
      * @return capabilities of the classification algorithm
      */
     public Capabilities capabilities() {
-        return Capabilities.newDefault();
+        return new Capabilities();
     }
 
     /**
@@ -324,7 +324,7 @@ public abstract class ClassifierModel <M extends ClassifierModel<M, R, H>, R ext
 
         HashSet<String> targetSet = new HashSet<>(targets);
 
-        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
+        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).toList();
         this.inputNames = inputs.toArray(new String[0]);
         this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
 

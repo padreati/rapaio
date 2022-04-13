@@ -71,10 +71,9 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(
-                1, 1_000_000,
-                Arrays.asList(VarType.DOUBLE, VarType.INT, VarType.BINARY), false,
-                1, 1_000_000, List.of(VarType.DOUBLE), false);
+        return new Capabilities()
+                .inputs(1, 1_000_000, false, VarType.DOUBLE, VarType.INT, VarType.BINARY)
+                .targets(1, 1_000_000, false, VarType.DOUBLE);
     }
 
     @Override

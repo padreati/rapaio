@@ -194,9 +194,9 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(1, 10_000,
-                List.of(VarType.DOUBLE, VarType.INT, VarType.BINARY), true,
-                0, 0, List.of(), true);
+        return new Capabilities()
+                .inputs(1, 10_000, true, VarType.DOUBLE, VarType.INT, VarType.BINARY)
+                .targets(0, 0, true);
     }
 
     @Override

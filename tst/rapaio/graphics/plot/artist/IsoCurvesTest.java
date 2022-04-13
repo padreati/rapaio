@@ -1,4 +1,4 @@
-package rapaio.graphics;
+package rapaio.graphics.plot.artist;
 
 import static java.lang.StrictMath.pow;
 
@@ -19,16 +19,14 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.opt.Gradient;
 import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
+import rapaio.graphics.plot.artist.AbstractArtistTest;
 import rapaio.image.ImageTools;
 
 public class IsoCurvesTest extends AbstractArtistTest {
 
-    private Frame df;
-
     @BeforeEach
     void setUp() throws Exception {
         RandomSource.setSeed(1234);
-        df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
         ImageTools.setBestRenderingHints();
     }
 
