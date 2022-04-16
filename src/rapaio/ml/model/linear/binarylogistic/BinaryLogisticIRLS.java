@@ -68,7 +68,7 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
     public record Result(List<Double> nlls, List<DVector> ws, boolean converged) {
 
         public DVector getW() {
-            if (ws.size() > 0) {
+            if (!ws.isEmpty()) {
                 return ws.get(ws.size() - 1);
             }
             return null;

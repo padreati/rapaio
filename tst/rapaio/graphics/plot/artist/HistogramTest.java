@@ -2,6 +2,7 @@ package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.*;
 import static rapaio.sys.With.bins;
+import static rapaio.sys.With.fill;
 import static rapaio.sys.With.horizontal;
 import static rapaio.sys.With.prob;
 
@@ -15,8 +16,8 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
-import rapaio.graphics.plot.artist.AbstractArtistTest;
 import rapaio.image.ImageTools;
 
 public class HistogramTest extends AbstractArtistTest {
@@ -36,12 +37,20 @@ public class HistogramTest extends AbstractArtistTest {
 
         GridLayer grid = new GridLayer(2, 2);
 
-        grid.add(hist(x, -10, -2, bins(30)).xLim(-10,-2));
+        grid.add(hist(x, -10, -2, bins(30)).xLim(-10, -2));
         grid.add(hist(x));
 
-        grid.add(hist(x, bins(40), horizontal(true)).yLim(-10,-2));
-        grid.add(hist(x, bins(40), horizontal(true), prob(true)).yLim(-10,-2).xLim(0, 0.02));
+        grid.add(hist(x, bins(40), horizontal(true)).yLim(-10, -2));
+        grid.add(hist(x, bins(40), horizontal(true), prob(true)).yLim(-10, -2).xLim(0, 0.02));
 
         assertTest(grid, "hist-test");
+    }
+
+    @Test
+    void testNormedHistogram() throws IOException {
+        Frame iris = Datasets.loadIrisDataset();
+        var v = iris.rvar("sepal-length");
+        assertTest(hist(v, bins(30), prob(true), fill(NColor.tab_purple))
+                .densityLine(v, (v.dv().max() - v.dv().min())/15), "hist-density-test");
     }
 }

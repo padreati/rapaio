@@ -28,7 +28,7 @@
     <artifactId>rapaio</artifactId>
     <packaging>jar</packaging>
 
-    <version>3.1.0</version>
+    <version>4.0.0</version>
 
     <name>Rapaio Library</name>
     <description>Rapaio Library core files</description>

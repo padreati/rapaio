@@ -37,6 +37,7 @@ import rapaio.printer.Printable;
 import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleComparators;
 import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
 
@@ -163,6 +164,18 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
     default DVector mapNew(int[] indexes) {
         DVectorDense result = new DVectorDense(indexes.length);
         return mapTo(indexes, result);
+    }
+
+    default DVector range(int start, int end) {
+        return map(IntArrays.newSeq(start, end));
+    }
+
+    default DVector rangeTo(int start, int end, DVector to) {
+        return mapTo(IntArrays.newSeq(start, end), to);
+    }
+
+    default DVector rangeNew(int start, int end) {
+        return mapNew(IntArrays.newSeq(start, end));
     }
 
     /**

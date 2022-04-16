@@ -30,9 +30,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serial;
 
-import rapaio.core.stat.Maximum;
-import rapaio.core.stat.Minimum;
-import rapaio.core.stat.Quantiles;
 import rapaio.core.tools.HistogramTable;
 import rapaio.data.Var;
 import rapaio.graphics.opt.GOption;
@@ -40,7 +37,6 @@ import rapaio.graphics.opt.GOptionFill;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
-import rapaio.math.MathTools;
 import rapaio.math.linear.dense.DVectorDense;
 
 /**
@@ -113,7 +109,8 @@ public class Histogram extends Artist {
     private void buildData() {
         freqTable = hist.freq().copy();
         if (getOptions().getProb()) {
-            freqTable.div(freqTable.sum());
+            double step = (hist.max() - hist.min()) / hist.bins();
+            freqTable.div(freqTable.sum() * step);
         }
     }
 

@@ -137,8 +137,7 @@ public class KDE implements Serializable {
         if (sd == 0) {
             sd = 1;
         }
-        double count = 0;
-        for (int i = 0; i < vector.size(); i++) if (!vector.isMissing(i)) count++;
+        double count = vector.stream().complete().count();
         return 1.06 * sd * Math.pow(count, -1. / 5.);
     }
 }

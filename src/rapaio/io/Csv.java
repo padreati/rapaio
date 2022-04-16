@@ -289,7 +289,7 @@ public class Csv extends ParamSet<Csv> {
         List<Var> variables = new ArrayList<>();
         for (int i = 0; i < varSlots.size(); i++) {
             String name = names.size() > i ? names.get(i) : "V" + (i + 1);
-            variables.add(varSlots.get(i).rvar().name(name));
+            variables.add(varSlots.get(i).var.name(name));
         }
         return SolidFrame.byVars(rows - startRow.get(), variables);
     }
@@ -441,13 +441,12 @@ public class Csv extends ParamSet<Csv> {
         return label;
     }
 
-    static class VarSlot {
+    private static class VarSlot {
 
         private final Csv parent;
-
         private final VarType type;
         private Var var;
-        private VarString text;
+        public VarString text;
 
         /**
          * Constructor for slot which does not have a predefined type, it tries the best by using default types
@@ -542,10 +541,6 @@ public class Csv extends ParamSet<Csv> {
                                     value, var.type(), var.name(), th.getMessage()));
                 }
             }
-        }
-
-        public Var rvar() {
-            return var;
         }
     }
 }
