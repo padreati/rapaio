@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import static rapaio.sys.With.floatFormat;
+
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +47,7 @@ import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorStride;
 import rapaio.math.linear.dense.DVectorVar;
+import rapaio.printer.Format;
 import rapaio.sys.WS;
 import rapaio.sys.With;
 import rapaio.util.DoubleComparators;
@@ -310,6 +313,45 @@ public class DenseAlgebraTest {
                     [98] 9,801 9,802 9,803 9,804 9,805 9,806 9,807 9,808 9,809 9,810 9,811 9,812 9,813 9,814 9,815 9,816 9,817 9,818 9,819 9,820 ... 9,899  9,900\s
                     [99] 9,901 9,902 9,903 9,904 9,905 9,906 9,907 9,908 9,909 9,910 9,911 9,912 9,913 9,914 9,915 9,916 9,917 9,918 9,919 9,920 ... 9,999 10,000\s
                     """, mf.newMatrix(100, 100).toContent());
+
+            assertEquals("""
+                                        [0]                [1]                 [2]                [3]\s
+                    [0] 0.14285714285714285 0.2857142857142857 0.42857142857142855 0.5714285714285714\s
+                    [1] 0.7142857142857143  0.8571428571428571 1                   1.1428571428571428\s
+                    [2] 1.2857142857142858  1.4285714285714286 1.5714285714285714  1.7142857142857142\s
+                    [3] 1.8571428571428572  2                  2.142857142857143   2.2857142857142856\s
+                    """, mf.newMatrix(4,4).div(7).toContent());
+
+            assertEquals("""
+                          [0]   [1]   [2]   [3]\s
+                    [0] 0.143 0.286 0.429 0.571\s
+                    [1] 0.714 0.857 1.000 1.143\s
+                    [2] 1.286 1.429 1.571 1.714\s
+                    [3] 1.857 2.000 2.143 2.286\s
+                    """, mf.newMatrix(4,4).div(7).toContent(floatFormat(Format.formatDecShort)));
+
+            assertEquals("""
+                              [0]       [1]       [2]       [3]\s
+                    [0] 0.1428571 0.2857143 0.4285714 0.5714286\s
+                    [1] 0.7142857 0.8571429 1.0000000 1.1428571\s
+                    [2] 1.2857143 1.4285714 1.5714286 1.7142857\s
+                    [3] 1.8571429 2.0000000 2.1428571 2.2857143\s
+                    """, mf.newMatrix(4,4).div(7).toContent(floatFormat(Format.formatDecMedium)));
+
+            assertEquals("""
+                                                     [0]                              [1]                              [2]\s
+                    [0] 0.142857142857142850000000000000 0.285714285714285700000000000000 0.428571428571428550000000000000\s
+                    [1] 0.714285714285714300000000000000 0.857142857142857100000000000000 1.000000000000000000000000000000\s
+                    [2] 1.285714285714285800000000000000 1.428571428571428600000000000000 1.571428571428571400000000000000\s
+                    [3] 1.857142857142857200000000000000 2.000000000000000000000000000000 2.142857142857143000000000000000\s
+                                        
+                                                     [3]\s
+                    [0] 0.571428571428571400000000000000\s
+                    [1] 1.142857142857142800000000000000\s
+                    [2] 1.714285714285714200000000000000\s
+                    [3] 2.285714285714285600000000000000\s
+                                        
+                    """, mf.newMatrix(4,4).div(7).toContent(floatFormat(Format.formatDecLong)));
         }
     }
 

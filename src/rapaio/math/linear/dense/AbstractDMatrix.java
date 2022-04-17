@@ -22,6 +22,7 @@
 package rapaio.math.linear.dense;
 
 import java.io.Serial;
+import java.text.DecimalFormat;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
@@ -796,6 +797,8 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public String toContent(Printer printer, POption<?>... options) {
+
+        DecimalFormat floatFormat = printer.getOptions().bind(options).floatFormat();
         int headRows = 20;
         int headCols = 20;
         int tailRows = 2;
@@ -857,7 +860,7 @@ public abstract class AbstractDMatrix implements DMatrix {
                 if (rows[i] == -1 || cols[j] == -1) {
                     tt.textCenter(i + 1, j + 1, "...");
                 } else {
-                    tt.floatFlexLong(i + 1, j + 1, get(rows[i], cols[j]));
+                    tt.floatString(i + 1, j + 1, floatFormat.format(get(rows[i], cols[j])));
                 }
             }
         }
@@ -867,6 +870,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     @Override
     public String toFullContent(Printer printer, POption<?>... options) {
 
+        DecimalFormat floatFormat = printer.getOptions().bind(options).floatFormat();
         TextTable tt = TextTable.empty(rows() + 1, cols() + 1, 1, 1);
         for (int i = 0; i < rows(); i++) {
             tt.intRow(i + 1, 0, i);
@@ -876,7 +880,7 @@ public abstract class AbstractDMatrix implements DMatrix {
         }
         for (int i = 0; i < rows(); i++) {
             for (int j = 0; j < cols(); j++) {
-                tt.floatFlexLong(i + 1, j + 1, get(i, j));
+                tt.floatString(i + 1, j + 1, floatFormat.format(get(i, j)));
             }
         }
         return tt.getDynamicText(printer, options);
