@@ -33,7 +33,9 @@ public class DVectorMapTest extends StandardDVectorTest {
     @Override
     public DVector generateFill(int size, double fill) {
         DVector source = DVector.fill(size, fill);
-        return source.map(IntArrays.newSeq(0, source.size()));
+        int[] indexes = IntArrays.newSeq(0, source.size());
+        IntArrays.reverse(indexes);
+        return source.map(indexes);
     }
 
     @Override

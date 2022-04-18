@@ -71,7 +71,7 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
             if (!ws.isEmpty()) {
                 return ws.get(ws.size() - 1);
             }
-            return null;
+            return DVector.zeros(0);
         }
 
         public double getNll() {
