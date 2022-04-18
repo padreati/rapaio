@@ -138,7 +138,7 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
         DMatrix invA;
         DoubleCholeskyDecomposition chol = mA.cholesky();
         if (chol.isSPD()) {
-            invA = chol.solve(DMatrix.identity(w.size()));
+            invA = chol.solve(DMatrix.eye(w.size()));
         } else {
             invA = mA.qr().inv();
         }

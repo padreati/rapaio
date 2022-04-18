@@ -139,13 +139,13 @@ public class DoubleCholeskyDecompositionTest {
 
         assertTrue(chl.l().t().deepEquals(chr.r(), 1e-10));
 
-        DMatrix inv = chl.solve(DMatrix.identity(4));
+        DMatrix inv = chl.solve(DMatrix.eye(4));
         DMatrix res = ata.dot(inv).roundValues(12);
-        assertTrue(DMatrix.identity(4).deepEquals(res));
+        assertTrue(DMatrix.eye(4).deepEquals(res));
 
-        inv = chr.solve(DMatrix.identity(4));
+        inv = chr.solve(DMatrix.eye(4));
         res = ata.dot(inv).roundValues(12);
-        assertTrue(DMatrix.identity(4).deepEquals(res));
+        assertTrue(DMatrix.eye(4).deepEquals(res));
 
         DMatrix inv1 = chl.inv();
         DMatrix inv2 = chr.inv();

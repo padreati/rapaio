@@ -54,7 +54,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param n the size of the vector
      * @return dense vector instance
      */
-    static DVector zeros(int n) {
+    static DVectorDense zeros(int n) {
         return fill(n, 0);
     }
 
@@ -66,6 +66,20 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     static DVectorDense ones(int n) {
         return fill(n, 1);
+    }
+
+    /**
+     * Builds a standard basis vector of dimension {@code n} with {@code 1}
+     * on the given position.
+     *
+     * @param n   dimension of the vector
+     * @param pos position from the vector set to value {@code 1}
+     * @return basis vector instance
+     */
+    static DVectorDense one(int n, int pos) {
+        DVectorDense v = zeros(n);
+        v.set(pos, 1);
+        return v;
     }
 
     /**
@@ -103,7 +117,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
     }
 
     static DVectorDense wrap(double... values) {
-        return wrapArray(0, values.length, values);
+        return wrapAt(0, values.length, values);
     }
 
     /**
@@ -113,7 +127,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param values referenced array of values
      * @return new real dense vector
      */
-    static DVectorDense wrapArray(int offset, int size, double[] values) {
+    static DVectorDense wrapAt(int offset, int size, double... values) {
         Objects.requireNonNull(values);
         return new DVectorDense(offset, size, values);
     }
@@ -127,7 +141,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @return dense vector with computed values
      */
     static DVector from(int len, Int2DoubleFunction fun) {
-        return wrapArray(0, len, DoubleArrays.newFrom(0, len, fun));
+        return wrapAt(0, len, DoubleArrays.newFrom(0, len, fun));
     }
 
     /**
@@ -143,7 +157,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param indexes of the values to keep
      * @return map instance vector
      */
-    DVector map(int[] indexes);
+    DVector map(int... indexes);
 
     /**
      * Creates a new vector map which map values from specified indexes
@@ -152,7 +166,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param indexes of the values to keep
      * @return map instance vector
      */
-    DVector mapTo(int[] indexes, DVector to);
+    DVector mapTo(DVector to, int[] indexes);
 
     /**
      * Creates a new vector map which map values from specified indexes
@@ -161,17 +175,17 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param indexes of the values to keep
      * @return map instance vector
      */
-    default DVector mapNew(int[] indexes) {
+    default DVector mapNew(int... indexes) {
         DVectorDense result = new DVectorDense(indexes.length);
-        return mapTo(indexes, result);
+        return mapTo(result, indexes);
     }
 
     default DVector range(int start, int end) {
         return map(IntArrays.newSeq(start, end));
     }
 
-    default DVector rangeTo(int start, int end, DVector to) {
-        return mapTo(IntArrays.newSeq(start, end), to);
+    default DVector rangeTo(DVector to, int start, int end) {
+        return mapTo(to, IntArrays.newSeq(start, end));
     }
 
     default DVector rangeNew(int start, int end) {
@@ -240,7 +254,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param to destination vector
      * @return destination vector
      */
-    DVector addTo(double x, DVector to);
+    DVector addTo(DVector to, double x);
 
     /**
      * Computes the sum between this vector and scalar value {@param x} and store into a new vector.
@@ -250,7 +264,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     default DVector addNew(double x) {
         DVectorDense copy = new DVectorDense(0, size(), new double[size()]);
-        return addTo(x, copy);
+        return addTo(copy, x);
     }
 
     /**
@@ -268,7 +282,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param to vector where to store the result
      * @return result vector
      */
-    DVector addTo(DVector y, DVector to);
+    DVector addTo(DVector to, DVector y);
 
     /**
      * Computes sum between this vector and given vector {@param y} and store the result into a new vector.
@@ -278,7 +292,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     default DVector addNew(DVector y) {
         DVectorDense copy = new DVectorDense(size());
-        return addTo(y, copy);
+        return addTo(copy, y);
     }
 
     /**
@@ -296,7 +310,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param to destination vector
      * @return destination vector
      */
-    DVector subTo(double x, DVector to);
+    DVector subTo(DVector to, double x);
 
     /**
      * Computes the difference between this vector and scalar value {@param x} and store into a new vector.
@@ -306,7 +320,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     default DVector subNew(double x) {
         DVectorDense copy = new DVectorDense(0, size(), new double[size()]);
-        return subTo(x, copy);
+        return subTo(copy, x);
     }
 
     /**
@@ -324,7 +338,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param to vector where to store the result
      * @return result vector
      */
-    DVector subTo(DVector y, DVector to);
+    DVector subTo(DVector to, DVector y);
 
     /**
      * Computes the difference between this vector and given vector {@param y} and store result into a new vector.
@@ -334,7 +348,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     default DVector subNew(DVector y) {
         DVectorDense copy = new DVectorDense(size());
-        return subTo(y, copy);
+        return subTo(copy, y);
     }
 
     /**
@@ -352,7 +366,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param to destination vector
      * @return destination vector
      */
-    DVector mulTo(double x, DVector to);
+    DVector mulTo(DVector to, double x);
 
     /**
      * Computes the product between this vector and scalar value {@param x} and store into a new vector.
@@ -362,7 +376,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     default DVector mulNew(double x) {
         DVectorDense copy = new DVectorDense(0, size(), new double[size()]);
-        return mulTo(x, copy);
+        return mulTo(copy, x);
     }
 
     /**
@@ -380,7 +394,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param to vector where to store the result
      * @return result vector
      */
-    DVector mulTo(DVector y, DVector to);
+    DVector mulTo(DVector to, DVector y);
 
     /**
      * Computes the product between this vector and given vector {@param y} and store the result into a new vector.
@@ -390,7 +404,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     default DVector mulNew(DVector y) {
         DVectorDense copy = new DVectorDense(size());
-        return mulTo(y, copy);
+        return mulTo(copy, y);
     }
 
     /**
@@ -408,7 +422,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param to destination vector
      * @return destination vector
      */
-    DVector divTo(double x, DVector to);
+    DVector divTo(DVector to, double x);
 
     /**
      * Computes the ratio between this vector and scalar value {@param x} and store into a new vector.
@@ -418,7 +432,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     default DVector divNew(double x) {
         DVectorDense copy = new DVectorDense(0, size(), new double[size()]);
-        return divTo(x, copy);
+        return divTo(copy, x);
     }
 
     /**
@@ -436,7 +450,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param to vector where to store the result
      * @return result vector
      */
-    DVector divTo(DVector y, DVector to);
+    DVector divTo(DVector to, DVector y);
 
     /**
      * Computes the ratio between this vector and given vector {@param y} and stores the result into a new vector.
@@ -446,7 +460,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     default DVector divNew(DVector y) {
         DVectorDense copy = new DVectorDense(size());
-        return divTo(y, copy);
+        return divTo(copy, y);
     }
 
     /**
@@ -719,7 +733,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param to result vector
      * @return result vector
      */
-    DVector applyTo(Double2DoubleFunction f, DVector to);
+    DVector applyTo(DVector to, Double2DoubleFunction f);
 
     /**
      * Apply a double to double function on all the values from the vector and stores results into a new vector.
@@ -729,7 +743,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     default DVectorDense applyNew(Double2DoubleFunction f) {
         DVectorDense copy = new DVectorDense(size());
-        return (DVectorDense) applyTo(f, copy);
+        return (DVectorDense) applyTo(copy, f);
     }
 
     /**
@@ -750,7 +764,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param f (int,double) to double function
      * @return result vector
      */
-    DVector applyTo(BiFunction<Integer, Double, Double> f, DVector to);
+    DVector applyTo(DVector to, BiFunction<Integer, Double, Double> f);
 
     /**
      * Apply an (integer,double) to double function on all the values from the vector
@@ -763,7 +777,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     default DVectorDense applyNew(BiFunction<Integer, Double, Double> f) {
         DVectorDense copy = new DVectorDense(size());
-        return (DVectorDense) applyTo(f, copy);
+        return (DVectorDense) applyTo(copy, f);
     }
 
     /**

@@ -29,7 +29,6 @@ import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.util.collection.IntArrays;
 
 public class DVectorStride extends AbstractStoreDVector {
 
@@ -143,7 +142,7 @@ public class DVectorStride extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector mapTo(int[] indexes, DVector to) {
+    public DVector mapTo(DVector to, int... indexes) {
         for (int i = 0; i < indexes.length; i++) {
             to.set(i, array[offset + stride * indexes[i]]);
         }

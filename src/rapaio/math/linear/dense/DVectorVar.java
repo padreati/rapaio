@@ -52,12 +52,12 @@ public class DVectorVar<T extends Var> extends AbstractDVector {
     }
 
     @Override
-    public DVector map(int[] indexes) {
+    public DVector map(int... indexes) {
         return new DVectorVar<>(MappedVar.byRows(ref, indexes));
     }
 
     @Override
-    public DVector mapTo(int[] indexes, DVector to) {
+    public DVector mapTo(DVector to, int... indexes) {
         for (int i = 0; i < indexes.length; i++) {
             to.set(i, ref.getDouble(indexes[i]));
         }
@@ -96,10 +96,6 @@ public class DVectorVar<T extends Var> extends AbstractDVector {
     @Override
     public DoubleStream valueStream() {
         return ref.stream().mapToDouble();
-    }
-
-    public T asVar() {
-        return ref;
     }
 
     @Override

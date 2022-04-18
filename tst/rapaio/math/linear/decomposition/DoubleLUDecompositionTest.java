@@ -128,7 +128,7 @@ public class DoubleLUDecompositionTest {
                 () -> DMatrix.random(4,3).lu().solve(DMatrix.random(6,6)));
         assertEquals("Matrix row dimensions must agree.", ex.getMessage());
 
-        ex = assertThrows(IllegalArgumentException.class, () -> DMatrix.fill(3, 3, 0).lu().solve(DMatrix.identity(3)));
+        ex = assertThrows(IllegalArgumentException.class, () -> DMatrix.fill(3, 3, 0).lu().solve(DMatrix.eye(3)));
         assertEquals("Matrix is singular.", ex.getMessage());
     }
 
@@ -197,8 +197,8 @@ public class DoubleLUDecompositionTest {
         DMatrix m = DMatrix.random(4,4);
         DMatrix inv = m.lu().inv();
 
-        assertTrue(m.lu().solve(DMatrix.identity(4)).deepEquals(inv));
-        assertTrue(m.dot(inv).roundValues(14).deepEquals(DMatrix.identity(4)));
+        assertTrue(m.lu().solve(DMatrix.eye(4)).deepEquals(inv));
+        assertTrue(m.dot(inv).roundValues(14).deepEquals(DMatrix.eye(4)));
     }
 
 }

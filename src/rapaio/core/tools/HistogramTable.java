@@ -63,7 +63,7 @@ public final class HistogramTable implements Printable {
     }
 
     public DVectorDense freq() {
-        return DVectorDense.wrap(0, bins, freq);
+        return DVectorDense.wrapAt(0, bins, freq);
     }
 
     @Override

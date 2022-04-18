@@ -68,10 +68,17 @@ public interface DMatrix extends Serializable, Printable {
      * @param n number of rows and also number of columns
      * @return a new instance of identity matrix of order n
      */
-    static DMatrixDenseC identity(int n) {
-        return DMatrixDenseC.identity(n);
+    static DMatrixDenseC eye(int n) {
+        return DMatrixDenseC.eye(n);
     }
 
+    /**
+     * Builds a dense matrix filled with {@code 0}, except the main diagonal
+     * where the elements are the values from the vector given as parameter.
+     *
+     * @param v vector with elements which will be saved on the main diagonal
+     * @return dense diagonal matrix
+     */
     static DMatrixDenseC diagonal(DVector v) {
         return DMatrixDenseC.diagonal(v);
     }
@@ -299,7 +306,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param row index of the selected row
      * @return destination vector
      */
-    DVector mapRowTo(final int row, DVector to);
+    DVector mapRowTo(DVector to, final int row);
 
     /**
      * Returns a vector build from values of the row with given index in the matrix
@@ -309,7 +316,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new row vector
      */
     default DVector mapRowNew(final int row) {
-        return mapRowTo(row, new DVectorDense(cols()));
+        return mapRowTo(new DVectorDense(cols()), row);
     }
 
     /**
@@ -327,7 +334,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param col index of the selected column
      * @return destination vector
      */
-    DVector mapColTo(final int col, DVector to);
+    DVector mapColTo(DVector to, final int col);
 
     /**
      * Returns a vector build from values of the column with given index in the matrix
@@ -337,7 +344,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new row vector
      */
     default DVector mapColNew(final int col) {
-        return mapColTo(col, new DVectorDense(rows()));
+        return mapColTo(new DVectorDense(rows()), col);
     }
 
     /**
@@ -355,7 +362,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param indexes row indexes
      * @return result matrix reference
      */
-    DMatrix mapRowsTo(int[] indexes, DMatrix to);
+    DMatrix mapRowsTo(DMatrix to, int... indexes);
 
     /**
      * Creates a new matrix which contains only the rows
@@ -366,7 +373,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix mapRowsNew(int... indexes) {
         DMatrixDenseC to = new DMatrixDenseC(indexes.length, cols());
-        return mapRowsTo(indexes, to);
+        return mapRowsTo(to, indexes);
     }
 
     /**
@@ -384,7 +391,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param indexes row indexes
      * @return result matrix reference
      */
-    DMatrix mapColsTo(int[] indexes, DMatrix to);
+    DMatrix mapColsTo(DMatrix to, int... indexes);
 
     /**
      * Creates a new matrix which contains only the columns
@@ -395,7 +402,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix mapColsNew(int... indexes) {
         DMatrixDenseC to = new DMatrixDenseC(rows(), indexes.length);
-        return mapColsTo(indexes, to);
+        return mapColsTo(to, indexes);
     }
 
     /**
@@ -407,7 +414,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param axis    0 for rows, 1 for columns
      * @return vector with indexed values
      */
-    DVector mapValues(int[] indexes, int axis);
+    DVector mapValues(int axis, int... indexes);
 
     /**
      * Creates a new view matrix which contains only rows with
@@ -428,7 +435,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param end   end row index (exclusive)
      * @return result matrix
      */
-    DMatrix rangeRowsTo(int start, int end, DMatrix to);
+    DMatrix rangeRowsTo(DMatrix to, int start, int end);
 
     /**
      * Creates a new copy matrix which contains only rows with
@@ -441,7 +448,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix rangeRowsNew(int start, int end) {
         DMatrixDenseC to = new DMatrixDenseC(end - start, cols());
-        return rangeRowsTo(start, end, to);
+        return rangeRowsTo(to, start, end);
     }
 
     /**
@@ -465,7 +472,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param end   end col index (exclusive)
      * @return result matrix reference
      */
-    DMatrix rangeColsTo(int start, int end, DMatrix to);
+    DMatrix rangeColsTo(DMatrix to, int start, int end);
 
     /**
      * Creates a new matrix which contains only columns with
@@ -479,7 +486,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix rangeColsNew(int start, int end) {
         DMatrixDenseC to = new DMatrixDenseC(rows(), end - start);
-        return rangeColsTo(start, end, to);
+        return rangeColsTo(to, start, end);
     }
 
     /**
@@ -500,9 +507,9 @@ public interface DMatrix extends Serializable, Printable {
      * @param indexes rows to be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    default DMatrix removeRowsTo(int[] indexes, DMatrix to) {
+    default DMatrix removeRowsTo(DMatrix to, int... indexes) {
         int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rows(), indexes);
-        return mapRowsTo(rows, to);
+        return mapRowsTo(to, rows);
     }
 
     /**
@@ -534,9 +541,9 @@ public interface DMatrix extends Serializable, Printable {
      * @param indexes columns to be removed
      * @return new mapped matrix containing all columns not specified by indexes
      */
-    default DMatrix removeColsTo(int[] indexes, DMatrix to) {
+    default DMatrix removeColsTo(DMatrix to, int... indexes) {
         int[] cols = IntArrays.removeIndexesFromDenseSequence(0, cols(), indexes);
-        return mapColsTo(cols, to);
+        return mapColsTo(to, cols);
     }
 
     /**
@@ -567,7 +574,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to destination matrix
      * @return instance of the result matrix
      */
-    DMatrix addTo(double x, DMatrix to);
+    DMatrix addTo(DMatrix to, double x);
 
     /**
      * Computes the sum between matrix and the given scalar and
@@ -578,7 +585,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix addNew(double x) {
         DMatrixDenseC copy = new DMatrixDenseC(rows(), cols());
-        return addTo(x, copy);
+        return addTo(copy, x);
     }
 
     /**
@@ -599,7 +606,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to   matrix to store the result
      * @return result matrix
      */
-    DMatrix addTo(DVector x, int axis, DMatrix to);
+    DMatrix addTo(DMatrix to, DVector x, int axis);
 
     /**
      * Computes the sum of vector values to each row/column of the matrix
@@ -611,7 +618,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix addNew(DVector x, int axis) {
         DMatrixDenseC to = new DMatrixDenseC(rows(), cols());
-        return addTo(x, axis, to);
+        return addTo(to, x, axis);
     }
 
     /**
@@ -630,7 +637,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to result matrix
      * @return instance of the result matrix
      */
-    DMatrix addTo(DMatrix b, DMatrix to);
+    DMatrix addTo(DMatrix to, DMatrix b);
 
     /**
      * Adds element wise values from given matrix and store the result
@@ -641,7 +648,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix addNew(DMatrix b) {
         DMatrix to = new DMatrixDenseC(rows(), cols());
-        return addTo(b, to);
+        return addTo(to, b);
     }
 
     /**
@@ -660,7 +667,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to result destination matrix
      * @return the result matrix
      */
-    DMatrix subTo(double x, DMatrix to);
+    DMatrix subTo(DMatrix to, double x);
 
     /**
      * Computes the difference between all elements of the matrix and the scalar value
@@ -671,7 +678,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix subNew(double x) {
         DMatrix to = new DMatrixDenseC(rows(), cols());
-        return subTo(x, to);
+        return subTo(to, x);
     }
 
     /**
@@ -692,7 +699,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to   result matrix
      * @return result matrix
      */
-    DMatrix subTo(DVector x, int axis, DMatrix to);
+    DMatrix subTo(DMatrix to, DVector x, int axis);
 
     /**
      * Computes the difference between vector values and each row (axis 0) or column (axis 1)
@@ -704,7 +711,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix subNew(DVector x, int axis) {
         DMatrix to = new DMatrixDenseC(rows(), cols());
-        return subTo(x, axis, to);
+        return subTo(to, x, axis);
     }
 
     /**
@@ -723,7 +730,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to result matrix
      * @return instance of the result matrix
      */
-    DMatrix subTo(DMatrix b, DMatrix to);
+    DMatrix subTo(DMatrix to, DMatrix b);
 
     /**
      * Computes the difference between this matrix and the given {@code b} matrix
@@ -734,7 +741,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix subNew(DMatrix b) {
         DMatrix to = new DMatrixDenseC(rows(), cols());
-        return subTo(b, to);
+        return subTo(to, b);
     }
 
     /**
@@ -753,7 +760,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to result matrix
      * @return instance of the result matrix
      */
-    DMatrix mulTo(double x, DMatrix to);
+    DMatrix mulTo(DMatrix to, double x);
 
     /**
      * Computes the product between the matrix and the given scalar and stores the
@@ -764,7 +771,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix mulNew(double x) {
         DMatrix to = new DMatrixDenseC(rows(), cols());
-        return mulTo(x, to);
+        return mulTo(to, x);
     }
 
     /**
@@ -785,7 +792,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to   result matrix
      * @return result
      */
-    DMatrix mulTo(DVector x, int axis, DMatrix to);
+    DMatrix mulTo(DMatrix to, DVector x, int axis);
 
     /**
      * Multiply vector values to all rows (axis 0) or columns (axis 1).
@@ -796,7 +803,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix mulNew(DVector x, int axis) {
         DMatrix to = new DMatrixDenseC(rows(), cols());
-        return mulTo(x, axis, to);
+        return mulTo(to, x, axis);
     }
 
     /**
@@ -815,7 +822,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to result matrix
      * @return result matrix
      */
-    DMatrix mulTo(DMatrix b, DMatrix to);
+    DMatrix mulTo(DMatrix to, DMatrix b);
 
     /**
      * Multiplies element wise with given matrix and
@@ -826,7 +833,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix mulNew(DMatrix b) {
         DMatrix to = new DMatrixDenseC(rows(), cols());
-        return mulTo(b, to);
+        return mulTo(to, b);
     }
 
     /**
@@ -845,7 +852,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to result matrix
      * @return result matrix
      */
-    DMatrix divTo(double x, DMatrix to);
+    DMatrix divTo(DMatrix to, double x);
 
     /**
      * Divide a scalar value from all elements of a matrix and stores the result
@@ -856,7 +863,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix divNew(double x) {
         DMatrix to = new DMatrixDenseC(rows(), cols());
-        return divTo(x, to);
+        return divTo(to, x);
     }
 
     /**
@@ -878,7 +885,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to   result matrix
      * @return result matrix
      */
-    DMatrix divTo(DVector x, int axis, DMatrix to);
+    DMatrix divTo(DMatrix to, DVector x, int axis);
 
     /**
      * Divide all rows (axis 0) or columns (axis 1) by elements of the given vector
@@ -890,7 +897,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix divNew(DVector x, int axis) {
         DMatrix to = new DMatrixDenseC(rows(), cols());
-        return divTo(x, axis, to);
+        return divTo(to, x, axis);
     }
 
     /**
@@ -909,7 +916,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to result matrix
      * @return result matrix
      */
-    DMatrix divTo(DMatrix b, DMatrix to);
+    DMatrix divTo(DMatrix to, DMatrix b);
 
     /**
      * Divides element wise values with values from given matrix and
@@ -920,7 +927,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix divNew(DMatrix b) {
         DMatrix to = new DMatrixDenseC(rows(), cols());
-        return divTo(b, to);
+        return divTo(to, b);
     }
 
     /**
@@ -939,7 +946,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param to  result matrix
      * @return result matrix
      */
-    DMatrix applyTo(Double2DoubleFunction fun, DMatrix to);
+    DMatrix applyTo(DMatrix to, Double2DoubleFunction fun);
 
     /**
      * Apply the given function to all elements of the matrix and store
@@ -950,7 +957,7 @@ public interface DMatrix extends Serializable, Printable {
      */
     default DMatrix applyNew(Double2DoubleFunction fun) {
         DMatrix to = new DMatrixDenseC(rows(), cols());
-        return applyTo(fun, to);
+        return applyTo(to, fun);
     }
 
     /**
@@ -1064,6 +1071,7 @@ public interface DMatrix extends Serializable, Printable {
     int[] argmin(int axis);
 
     boolean isSymmetric();
+
     /**
      * Computes the sum of all elements from the matrix.
      *
@@ -1170,7 +1178,7 @@ public interface DMatrix extends Serializable, Printable {
     }
 
     default DoubleSVDecomposition svd() {
-        return new DoubleSVDecomposition(this, true, true);
+        return svd(true, true);
     }
 
     default DoubleSVDecomposition svd(boolean wantu, boolean wantv) {

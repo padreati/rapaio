@@ -63,7 +63,7 @@ public class DoubleQRDecompositionTest {
 
             // test various properties of the decomposition
 
-            DMatrix I = DMatrix.identity(n);
+            DMatrix I = DMatrix.eye(n);
             assertTrue(I.deepEquals(q.t().dot(q), TOL));
 
             for (int i = 0; i < n; i++) {
@@ -97,7 +97,7 @@ public class DoubleQRDecompositionTest {
             DoubleQRDecomposition qr = a.qr();
 
             DMatrix h = qr.h();
-            DMatrix p = DMatrix.identity(10).sub(h.mul(2).dot(h.t()));
+            DMatrix p = DMatrix.eye(10).sub(h.mul(2).dot(h.t()));
 
             // p is hermitian
             assertTrue(p.deepEquals(p.t(), TOL));
@@ -160,11 +160,11 @@ public class DoubleQRDecompositionTest {
 
     @Test
     void testInv() {
-        DMatrix m = DMatrix.random(4,4);
+        DMatrix m = DMatrix.random(4, 4);
         DMatrix inv = m.qr().inv();
-        assertTrue(inv.deepEquals(m.qr().solve(DMatrix.identity(4))));
+        assertTrue(inv.deepEquals(m.qr().solve(DMatrix.eye(4))));
 
-        DVector v = DVectorDense.wrap(0, 4, new double[]{1,2,3,4});
+        DVector v = DVectorDense.wrapAt(0, 4, 1, 2, 3, 4);
         DVector x = m.qr().solve(v);
 
         assertTrue(v.deepEquals(m.dot(x)));

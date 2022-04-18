@@ -121,17 +121,13 @@ public class MultinomialEstimator extends AbstractEstimator {
         if (targetLevels == null) {
             return name();
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append("Multinomial{laplaceSmoother=").append(Format.floatFlexLong(laplaceSmoother)).append(", ");
-        sb.append("tests=[").append(String.join(",", getTestNames())).append("],");
-        sb.append("distributions=[").append(targetLevels.stream()
+        return "Multinomial{laplaceSmoother=" + Format.floatFlexLong(laplaceSmoother) + ", "
+                + "tests=[" + String.join(",", getTestNames()) + "],"
+                + "distributions=[" + targetLevels.stream()
                 .map(targetLevel -> targetLevel + ":[" + densityMap.get(targetLevel)
                         .valueStream().mapToObj(Format::floatFlexLong).collect(Collectors.joining(",")) + "]")
                 .collect(Collectors.joining(","))
-
-
-        ).append("]}");
-        return sb.toString();
+                + "]}";
     }
 
     @Override
@@ -163,7 +159,7 @@ public class MultinomialEstimator extends AbstractEstimator {
         densityMap = new HashMap<>();
         countDensities.forEach((level, density) -> {
             // add normalized densities to prediction map
-            densityMap.put(level, DVector.wrapArray(0, density.index().size(), density.normalize().streamValues().toArray()));
+            densityMap.put(level, DVector.wrapAt(0, density.index().size(), density.normalize().streamValues().toArray()));
         });
 
         return false;

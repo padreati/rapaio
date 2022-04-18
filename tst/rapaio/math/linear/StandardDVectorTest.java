@@ -62,7 +62,7 @@ public abstract class StandardDVectorTest {
         x = generateCopy(values);
         y = generateSeq(100);
         z = generateFill(100, 10);
-        m = DMatrix.identity(100).mul(2);
+        m = DMatrix.eye(100).mul(2);
     }
 
     public abstract DVector generateCopy(double[] values);
@@ -204,10 +204,10 @@ public abstract class StandardDVectorTest {
         result = z.dotBilinear(m);
         assertEquals(Math.pow(z.norm(2), 2) * 2, result);
 
-        var ex = assertThrows(IllegalArgumentException.class, () -> z.dotBilinear(DMatrix.identity(10), z));
+        var ex = assertThrows(IllegalArgumentException.class, () -> z.dotBilinear(DMatrix.eye(10), z));
         assertEquals("Bilinear matrix and vector are not conform for multiplication.", ex.getMessage());
 
-        ex = assertThrows(IllegalArgumentException.class, () -> z.dotBilinear(DMatrix.identity(10)));
+        ex = assertThrows(IllegalArgumentException.class, () -> z.dotBilinear(DMatrix.eye(10)));
         assertEquals("Bilinear matrix is not conform for multiplication.", ex.getMessage());
     }
 
@@ -217,11 +217,11 @@ public abstract class StandardDVectorTest {
         assertEquals(x.dotBilinearDiag(z), x.dotBilinearDiag(z, x));
 
         assertEquals(assertThrows(IllegalArgumentException.class,
-                        () -> x.dotBilinearDiag(DMatrix.identity(1))).getMessage(),
+                        () -> x.dotBilinearDiag(DMatrix.eye(1))).getMessage(),
                 "Bilinear matrix is not conform for multiplication.");
 
         assertEquals(assertThrows(IllegalArgumentException.class,
-                        () -> x.dotBilinearDiag(DMatrix.identity(1), z)).getMessage(),
+                        () -> x.dotBilinearDiag(DMatrix.eye(1), z)).getMessage(),
                 "Bilinear matrix is not conform for multiplication.");
 
         assertEquals(assertThrows(IllegalArgumentException.class,

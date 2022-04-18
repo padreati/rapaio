@@ -190,10 +190,10 @@ public class DenseAlgebraTest {
             test1matrix(mf, m -> assertTrue(m.mulNew(10).deepEquals(m.mul(10))));
             test1matrix(mf, m -> assertTrue(m.divNew(10).deepEquals(m.div(10))));
 
-            test1matrix(mf, m -> assertTrue(m.mapValues(m.argmax(0), 0).deepEquals(m.max(0)), message));
-            test1matrix(mf, m -> assertTrue(m.mapValues(m.argmax(1), 1).deepEquals(m.max(1)), message));
-            test1matrix(mf, m -> assertTrue(m.mapValues(m.argmin(0), 0).deepEquals(m.min(0)), message));
-            test1matrix(mf, m -> assertTrue(m.mapValues(m.argmin(1), 1).deepEquals(m.min(1)), message));
+            test1matrix(mf, m -> assertTrue(m.mapValues(0, m.argmax(0)).deepEquals(m.max(0)), message));
+            test1matrix(mf, m -> assertTrue(m.mapValues(1, m.argmax(1)).deepEquals(m.max(1)), message));
+            test1matrix(mf, m -> assertTrue(m.mapValues(0, m.argmin(0)).deepEquals(m.min(0)), message));
+            test1matrix(mf, m -> assertTrue(m.mapValues(1, m.argmin(1)).deepEquals(m.min(1)), message));
 
             int[] inRows = new int[] {1, 3};
             int[] outRows = IntArrays.removeIndexesFromDenseSequence(0, mf.newMatrix().rows(), inRows);
@@ -204,10 +204,10 @@ public class DenseAlgebraTest {
             test1matrix(mf, m -> assertTrue(m.mapRows(inRows).deepEquals(m.removeRows(outRows))));
             test1matrix(mf, m -> assertTrue(m.mapCols(inCols).deepEquals(m.removeCols(outCols))));
 
-            test1matrix(mf, m -> assertTrue(m.mapRowsTo(inRows, new DMatrixDenseC(2, m.cols()))
-                    .deepEquals(m.removeRowsTo(outRows, new DMatrixDenseC(2, m.cols())))));
-            test1matrix(mf, m -> assertTrue(m.mapColsTo(inCols, new DMatrixDenseC(m.rows(), 2))
-                    .deepEquals(m.removeColsTo(outCols, new DMatrixDenseC(m.rows(), 2)))));
+            test1matrix(mf, m -> assertTrue(m.mapRowsTo(new DMatrixDenseC(2, m.cols()), inRows)
+                    .deepEquals(m.removeRowsTo(new DMatrixDenseC(2, m.cols()), outRows))));
+            test1matrix(mf, m -> assertTrue(m.mapColsTo(new DMatrixDenseC(m.rows(), 2), inCols)
+                    .deepEquals(m.removeColsTo(new DMatrixDenseC(m.rows(), 2), outCols))));
 
             test1matrix(mf, m -> assertEquals(IntStream.range(0, 11).mapToObj(i -> i * 12 + 1).mapToInt(i -> i).sum(), m.trace()));
 
@@ -576,17 +576,17 @@ public class DenseAlgebraTest {
                 test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.mulNew(v2).deepEquals(v1.mul(v2)), msg));
                 test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.divNew(v2).deepEquals(v1.div(v2)), msg));
 
-                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.addTo(10, v2).deepEquals(v1.addNew(10)), msg));
-                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.subTo(10, v2).deepEquals(v1.subNew(10)), msg));
-                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.mulTo(10, v2).deepEquals(v1.mulNew(10)), msg));
-                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.divTo(10, v2).deepEquals(v1.divNew(10)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.addTo(v2, 10).deepEquals(v1.addNew(10)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.subTo(v2, 10).deepEquals(v1.subNew(10)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.mulTo(v2, 10).deepEquals(v1.mulNew(10)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.divTo(v2, 10).deepEquals(v1.divNew(10)), msg));
 
                 test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.addMulNew(10, v2).deepEquals(v1.addMul(10, v2)), msg));
 
                 test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dot(v2), msg));
-                test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinear(DMatrix.identity(11), v2), msg));
-                test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinear(DMatrix.identity(11)), msg));
-                test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinearDiag(DMatrix.identity(11), v2), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinear(DMatrix.eye(11), v2), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinear(DMatrix.eye(11)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinearDiag(DMatrix.eye(11), v2), msg));
                 test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinearDiag(DVector.ones(11)), msg));
 
                 test2vector(vf1, vf2, (v1, v2) -> {

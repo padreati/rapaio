@@ -33,6 +33,7 @@ import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.sys.WS;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
@@ -50,7 +51,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DVector mapValues(int[] indexes, int axis) {
+    public DVector mapValues(int axis, int... indexes) {
         DVector v = DVector.zeros(axis == 0 ? cols() : rows());
         if (axis == 0) {
             for (int i = 0; i < cols(); i++) {
@@ -75,7 +76,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix addTo(double x, DMatrix to) {
+    public DMatrix addTo(DMatrix to, double x) {
         for (int i = 0; i < rows(); i++) {
             for (int j = 0; j < cols(); j++) {
                 to.set(i, j, get(i, j) + x);
@@ -109,7 +110,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix addTo(DVector v, int axis, DMatrix to) {
+    public DMatrix addTo(DMatrix to, DVector v, int axis) {
         if (axis == 0) {
             if (v.size() != to.cols()) {
                 throw new IllegalArgumentException("Vector has different size then the number of columns.");
@@ -144,7 +145,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix addTo(DMatrix b, DMatrix to) {
+    public DMatrix addTo(DMatrix to, DMatrix b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < to.rows(); i++) {
             for (int j = 0; j < to.cols(); j++) {
@@ -165,7 +166,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix subTo(double x, DMatrix to) {
+    public DMatrix subTo(DMatrix to, double x) {
         for (int i = 0; i < rows(); i++) {
             for (int j = 0; j < cols(); j++) {
                 to.set(i, j, get(i, j) - x);
@@ -199,7 +200,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix subTo(DVector v, int axis, DMatrix to) {
+    public DMatrix subTo(DMatrix to, DVector v, int axis) {
         if (axis == 0) {
             if (v.size() != to.cols()) {
                 throw new IllegalArgumentException("Vector has different size then the number of columns.");
@@ -234,7 +235,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix subTo(DMatrix b, DMatrix to) {
+    public DMatrix subTo(DMatrix to, DMatrix b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < rows(); i++) {
             for (int j = 0; j < cols(); j++) {
@@ -255,7 +256,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix mulTo(double x, DMatrix to) {
+    public DMatrix mulTo(DMatrix to, double x) {
         for (int i = 0; i < rows(); i++) {
             for (int j = 0; j < cols(); j++) {
                 to.set(i, j, get(i, j) * x);
@@ -289,7 +290,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix mulTo(DVector v, int axis, DMatrix to) {
+    public DMatrix mulTo(DMatrix to, DVector v, int axis) {
         if (axis == 0) {
             if (v.size() != cols()) {
                 throw new IllegalArgumentException("Vector has different size then the number of columns.");
@@ -324,7 +325,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix mulTo(DMatrix b, DMatrix to) {
+    public DMatrix mulTo(DMatrix to, DMatrix b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < rows(); i++) {
             for (int j = 0; j < cols(); j++) {
@@ -345,7 +346,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix divTo(double x, DMatrix to) {
+    public DMatrix divTo(DMatrix to, double x) {
         for (int i = 0; i < rows(); i++) {
             for (int j = 0; j < cols(); j++) {
                 to.set(i, j, get(i, j) / x);
@@ -379,7 +380,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix divTo(DVector v, int axis, DMatrix to) {
+    public DMatrix divTo(DMatrix to, DVector v, int axis) {
         if (axis == 0) {
             if (v.size() != cols()) {
                 throw new IllegalArgumentException("Vector has different size then the number of columns.");
@@ -414,7 +415,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix divTo(DMatrix b, DMatrix to) {
+    public DMatrix divTo(DMatrix to, DMatrix b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < rows(); i++) {
             for (int j = 0; j < cols(); j++) {
@@ -670,7 +671,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix applyTo(Double2DoubleFunction fun, DMatrix to) {
+    public DMatrix applyTo(DMatrix to, Double2DoubleFunction fun) {
         for (int i = 0; i < to.rows(); i++) {
             for (int j = 0; j < to.cols(); j++) {
                 to.set(i, j, fun.apply(get(i, j)));
@@ -752,6 +753,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public String toString() {
+        DecimalFormat floatFormat = WS.getPrinter().getOptions().floatFormat();
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getSimpleName()).append("{");
         sb.append("rowCount:").append(rows()).append(", colCount:").append(cols()).append(", values:\n");
@@ -783,7 +785,7 @@ public abstract class AbstractDMatrix implements DMatrix {
                     tt.textCenter(i, j, "..");
                     continue;
                 }
-                tt.floatFlex(i, j, get(i, j - 1));
+                tt.floatString(i, j, floatFormat.format(get(i, j - 1)));
             }
         }
         sb.append(tt.getRawText()).append("]}");

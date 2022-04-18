@@ -69,7 +69,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector addTo(double x, DVector to) {
+    public DVector addTo(DVector to, double x) {
         for (int i = 0; i < size(); i++) {
             to.set(i, get(i) + x);
         }
@@ -86,7 +86,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector addTo(DVector b, DVector to) {
+    public DVector addTo(DVector to, DVector b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             to.set(i, get(i) + b.get(i));
@@ -103,7 +103,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector subTo(double x, DVector to) {
+    public DVector subTo(DVector to, double x) {
         for (int i = 0; i < size(); i++) {
             to.set(i, get(i) - x);
         }
@@ -120,7 +120,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector subTo(DVector b, DVector to) {
+    public DVector subTo(DVector to, DVector b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             to.set(i, get(i) - b.get(i));
@@ -137,7 +137,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector mulTo(double x, DVector to) {
+    public DVector mulTo(DVector to, double x) {
         for (int i = 0; i < size(); i++) {
             to.set(i, get(i) * x);
         }
@@ -154,7 +154,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector mulTo(DVector b, DVector to) {
+    public DVector mulTo(DVector to, DVector b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             to.set(i, get(i) * b.get(i));
@@ -171,7 +171,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector divTo(double x, DVector to) {
+    public DVector divTo(DVector to, double x) {
         for (int i = 0; i < size(); i++) {
             to.set(i, get(i) / x);
         }
@@ -188,7 +188,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector divTo(DVector b, DVector to) {
+    public DVector divTo(DVector to, DVector b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             to.set(i, get(i) / b.get(i));
@@ -313,7 +313,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector applyTo(BiFunction<Integer, Double, Double> f, DVector to) {
+    public DVector applyTo(DVector to, BiFunction<Integer, Double, Double> f) {
         for (int i = 0; i < size(); i++) {
             to.set(i, f.apply(i, get(i)));
         }
@@ -523,7 +523,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector applyTo(Double2DoubleFunction f, DVector to) {
+    public DVector applyTo(DVector to, Double2DoubleFunction f) {
         for (int i = 0; i < size(); i++) {
             to.set(i, f.applyAsDouble(get(i)));
         }

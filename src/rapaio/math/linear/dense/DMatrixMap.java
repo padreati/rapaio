@@ -78,7 +78,7 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DVector mapColTo(int col, DVector to) {
+    public DVector mapColTo(DVector to, int col) {
         int pos = offset + colIndexes[col];
         for (int i = 0; i < rowIndexes.length; i++) {
             to.set(i, array[pos + rowIndexes[i]]);
@@ -92,7 +92,7 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DVector mapRowTo(int row, DVector to) {
+    public DVector mapRowTo(DVector to, int row) {
         int pos = offset + rowIndexes[row];
         for (int i = 0; i < colIndexes.length; i++) {
             to.set(i, array[pos + colIndexes[i]]);
@@ -115,7 +115,7 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix mapRowsTo(int[] indexes, DMatrix to) {
+    public DMatrix mapRowsTo(DMatrix to, int... indexes) {
         int[] transform = transform(rowIndexes, indexes);
         for (int i = 0; i < transform.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
@@ -126,13 +126,13 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix mapCols(int[] indexes) {
+    public DMatrix mapCols(int... indexes) {
         int[] transform = transform(colIndexes, indexes);
         return new DMatrixMap(offset, rowIndexes, transform, array);
     }
 
     @Override
-    public DMatrix mapColsTo(int[] indexes, DMatrix to) {
+    public DMatrix mapColsTo(DMatrix to, int... indexes) {
         int[] transform = transform(colIndexes, indexes);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < transform.length; j++) {
@@ -148,8 +148,8 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix rangeRowsTo(int start, int end, DMatrix to) {
-        return mapRowsTo(IntArrays.newSeq(start, end), to);
+    public DMatrix rangeRowsTo(DMatrix to, int start, int end) {
+        return mapRowsTo(to, IntArrays.newSeq(start, end));
     }
 
     @Override
@@ -158,7 +158,7 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix rangeColsTo(int start, int end, DMatrix to) {
-        return mapColsTo(IntArrays.newSeq(start, end), to);
+    public DMatrix rangeColsTo(DMatrix to, int start, int end) {
+        return mapColsTo(to, IntArrays.newSeq(start, end));
     }
 }

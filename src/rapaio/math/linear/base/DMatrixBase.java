@@ -26,7 +26,6 @@ import java.util.stream.IntStream;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.math.linear.dense.AbstractDMatrix;
 import rapaio.math.linear.dense.DMatrixMap;
 import rapaio.math.linear.dense.DVectorDense;
@@ -76,7 +75,7 @@ public class DMatrixBase extends AbstractDMatrix {
     }
 
     @Override
-    public DVector mapRowTo(int row, DVector to) {
+    public DVector mapRowTo(DVector to, int row) {
         for (int i = 0; i < cols; i++) {
             to.set(i, array[row + i * rows]);
         }
@@ -89,7 +88,7 @@ public class DMatrixBase extends AbstractDMatrix {
     }
 
     @Override
-    public DVector mapColTo(int col, DVector to) {
+    public DVector mapColTo(DVector to, int col) {
         for (int i = 0; i < rows; i++) {
             to.set(i, array[col * rows + i]);
         }
@@ -97,7 +96,7 @@ public class DMatrixBase extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix mapRows(int[] indexes) {
+    public DMatrix mapRows(int... indexes) {
         int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
         int[] colIndexes = IntArrays.newSeq(0, cols());
         IntArrays.mul(colIndexes, 0, rows(), colIndexes.length);
@@ -105,7 +104,7 @@ public class DMatrixBase extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix mapRowsTo(int[] indexes, DMatrix to) {
+    public DMatrix mapRowsTo(DMatrix to, int... indexes) {
         int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
         int[] colIndexes = IntArrays.newSeq(0, cols());
         IntArrays.mul(colIndexes, 0, rows(), colIndexes.length);
@@ -118,7 +117,7 @@ public class DMatrixBase extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix mapCols(int[] indexes) {
+    public DMatrix mapCols(int... indexes) {
         int[] rowIndexes = IntArrays.newSeq(0, cols());
         int[] colIndexes = Arrays.copyOf(indexes, indexes.length);
         IntArrays.mul(colIndexes, 0, rows(), colIndexes.length);
@@ -126,7 +125,7 @@ public class DMatrixBase extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix mapColsTo(int[] indexes, DMatrix to) {
+    public DMatrix mapColsTo(DMatrix to, int... indexes) {
         int[] rowIndexes = IntArrays.newSeq(0, cols());
         int[] colIndexes = Arrays.copyOf(indexes, indexes.length);
         IntArrays.mul(colIndexes, 0, rows(), colIndexes.length);
@@ -144,8 +143,8 @@ public class DMatrixBase extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix rangeRowsTo(int start, int end, DMatrix to) {
-        return mapRowsTo(IntArrays.newSeq(start, end), to);
+    public DMatrix rangeRowsTo(DMatrix to, int start, int end) {
+        return mapRowsTo(to, IntArrays.newSeq(start, end));
     }
 
     @Override
@@ -154,8 +153,8 @@ public class DMatrixBase extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix rangeColsTo(int start, int end, DMatrix to) {
-        return mapColsTo(IntArrays.newSeq(start, end), to);
+    public DMatrix rangeColsTo(DMatrix to, int start, int end) {
+        return mapColsTo(to, IntArrays.newSeq(start, end));
     }
 
     @Override

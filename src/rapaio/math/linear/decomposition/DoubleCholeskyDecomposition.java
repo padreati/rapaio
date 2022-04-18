@@ -173,7 +173,7 @@ public class DoubleCholeskyDecomposition implements Serializable {
         }
 
         // Copy right-hand side.
-        DMatrix x = DMatrixDenseC.identity(ref.rows());
+        DMatrix x = DMatrixDenseC.eye(ref.rows());
         DMatrix triangle = rightFlag ? r.t() : l;
 
         forwardSubstitution(x, triangle);

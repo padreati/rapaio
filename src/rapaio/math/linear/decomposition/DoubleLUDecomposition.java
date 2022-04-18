@@ -269,7 +269,7 @@ public class DoubleLUDecomposition implements Serializable, Printable {
     }
 
     public DMatrix inv() {
-        return solve(DMatrix.identity(ref.rows()));
+        return solve(DMatrix.eye(ref.rows()));
     }
 
     @Override

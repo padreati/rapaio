@@ -486,7 +486,7 @@ public abstract class StandardDMatrixTest {
         DMatrix m1 = generateIdentity(2);
 
         DMatrix m2 = DMatrixDenseR.wrap(2, 2, 1, 0, 0, 1);
-        DMatrix m3 = DMatrix.identity(2);
+        DMatrix m3 = DMatrix.eye(2);
 
         assertTrue(m1.deepEquals(m2));
         assertTrue(m2.deepEquals(m3));
@@ -526,12 +526,12 @@ public abstract class StandardDMatrixTest {
 
         var id3 = generateIdentity(3).add(0x.1p-22);
 
-        assertEquals(className() + "{rowCount:3, colCount:3, values:\n" +
-                "[\n" +
-                " [ 1 0 0 ], \n" +
-                " [ 0 1 0 ], \n" +
-                " [ 0 0 1 ], \n" +
-                "]}", id3.toString());
+        assertEquals(className() + "{rowCount:3, colCount:3, values:\n"
+                + "[\n"
+                + " [ 1.0000000149011612         0.000000014901161193847656 0.000000014901161193847656 ], \n"
+                + " [ 0.000000014901161193847656 1.0000000149011612         0.000000014901161193847656 ], \n"
+                + " [ 0.000000014901161193847656 0.000000014901161193847656 1.0000000149011612         ], \n"
+                + "]}", id3.toString());
 
         assertEquals("""
                                            [0]                        [1]                        [2]\s

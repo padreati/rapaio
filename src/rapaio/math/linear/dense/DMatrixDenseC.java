@@ -44,7 +44,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
         return new DMatrixDenseC(rows, cols);
     }
 
-    public static DMatrixDenseC identity(int n) {
+    public static DMatrixDenseC eye(int n) {
         DMatrixDenseC m = new DMatrixDenseC(n, n);
         for (int i = 0; i < n; i++) {
             m.array[i * n + i] = 1;
@@ -438,7 +438,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     }
 
     @Override
-    public DVector mapRowTo(int row, DVector to) {
+    public DVector mapRowTo(DVector to, int row) {
         for (int i = 0; i < cols; i++) {
             to.set(i, array[offset + row + i * colStride]);
         }
@@ -451,7 +451,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     }
 
     @Override
-    public DVector mapColTo(int col, DVector to) {
+    public DVector mapColTo(DVector to, int col) {
         if (to instanceof DVectorDense tos) {
             System.arraycopy(array, offset + col * colStride, tos.array(), tos.offset(), rows);
         }
@@ -475,7 +475,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     }
 
     @Override
-    public DMatrix mapRowsTo(int[] indexes, DMatrix to) {
+    public DMatrix mapRowsTo(DMatrix to, int... indexes) {
         for (int j = 0; j < cols; j++) {
             for (int i = 0; i < indexes.length; i++) {
                 to.set(i, j, get(indexes[i], j));
@@ -498,7 +498,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     }
 
     @Override
-    public DMatrix mapColsTo(int[] indexes, DMatrix to) {
+    public DMatrix mapColsTo(DMatrix to, int... indexes) {
         for (int j = 0; j < indexes.length; j++) {
             for (int i = 0; i < rows; i++) {
                 to.set(i, j, get(i, indexes[j]));
@@ -515,8 +515,8 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     }
 
     @Override
-    public DMatrix rangeRowsTo(int start, int end, DMatrix to) {
-        return mapRowsTo(IntArrays.newSeq(start, end), to);
+    public DMatrix rangeRowsTo(DMatrix to, int start, int end) {
+        return mapRowsTo(to, IntArrays.newSeq(start, end));
     }
 
     @Override
@@ -527,8 +527,8 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     }
 
     @Override
-    public DMatrix rangeColsTo(int start, int end, DMatrix to) {
-        return mapColsTo(IntArrays.newSeq(start, end), to);
+    public DMatrix rangeColsTo(DMatrix to, int start, int end) {
+        return mapColsTo(to, IntArrays.newSeq(start, end));
     }
 
     @Override

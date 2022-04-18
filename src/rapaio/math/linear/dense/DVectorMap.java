@@ -135,7 +135,7 @@ public class DVectorMap extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector mapTo(int[] sel, DVector to) {
+    public DVector mapTo(DVector to, int... sel) {
         for (int i = 0; i < sel.length; i++) {
             to.set(i, array[indexes[sel[i]]]);
         }

@@ -37,6 +37,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.util.DoubleComparator;
 import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
 public final class DVectorDense extends AbstractStoreDVector {
@@ -49,10 +50,13 @@ public final class DVectorDense extends AbstractStoreDVector {
         return new DVectorDense(0, n, DoubleArrays.newFill(n, fill));
     }
 
-    public static DVectorDense wrap(int offset, int size, double[] values) {
-        return new DVectorDense(offset, size, values);
+    public static DVectorDense wrap(double... values) {
+        return new DVectorDense(0, values.length, values);
     }
 
+    public static DVectorDense wrapAt(int offset, int size, double... values) {
+        return new DVectorDense(offset, size, values);
+    }
 
     public static DVectorDense random(int size) {
         return random(size, Normal.std());
@@ -165,11 +169,14 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector map(int... indexes) {
+        if (indexes.length > 0 && IntArrays.isDenseArray(indexes)) {
+            return new DVectorDense(offset + indexes[0], indexes.length, array);
+        }
         return new DVectorMap(offset, indexes, array);
     }
 
     @Override
-    public DVector mapTo(int[] indexes, DVector to) {
+    public DVector mapTo(DVector to, int... indexes) {
         for (int i = 0; i < indexes.length; i++) {
             to.set(i, array[offset + indexes[i]]);
         }
@@ -200,7 +207,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector addTo(double x, DVector to) {
+    public DVector addTo(DVector to, double x) {
         if (to instanceof DVectorDense tos) {
             var va = DoubleVector.broadcast(species, x);
             int i = 0;
@@ -213,7 +220,7 @@ public final class DVectorDense extends AbstractStoreDVector {
             }
             return tos;
         }
-        return super.addTo(x, to);
+        return super.addTo(to, x);
     }
 
     @Override
@@ -235,7 +242,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector addTo(DVector b, DVector to) {
+    public DVector addTo(DVector to, DVector b) {
         if (b instanceof DVectorStore bs) {
             if (to instanceof DVectorDense tos) {
                 checkConformance(b);
@@ -251,7 +258,7 @@ public final class DVectorDense extends AbstractStoreDVector {
                 return tos;
             }
         }
-        return super.addTo(b, to);
+        return super.addTo(to, b);
     }
 
     @Override
@@ -269,7 +276,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector subTo(double x, DVector to) {
+    public DVector subTo(DVector to, double x) {
         if (to instanceof DVectorDense tos) {
             var va = DoubleVector.broadcast(species, x);
             int i = 0;
@@ -282,7 +289,7 @@ public final class DVectorDense extends AbstractStoreDVector {
             }
             return tos;
         }
-        return super.subTo(x, to);
+        return super.subTo(to, x);
     }
 
     @Override
@@ -304,7 +311,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector subTo(DVector b, DVector to) {
+    public DVector subTo(DVector to, DVector b) {
         if (b instanceof DVectorStore bs) {
             if (to instanceof DVectorDense tos) {
                 checkConformance(b);
@@ -320,7 +327,7 @@ public final class DVectorDense extends AbstractStoreDVector {
                 return tos;
             }
         }
-        return super.subTo(b, to);
+        return super.subTo(to, b);
     }
 
     @Override
@@ -338,7 +345,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector mulTo(double x, DVector to) {
+    public DVector mulTo(DVector to, double x) {
         if (to instanceof DVectorDense tos) {
             var va = DoubleVector.broadcast(species, x);
             int i = 0;
@@ -351,7 +358,7 @@ public final class DVectorDense extends AbstractStoreDVector {
             }
             return tos;
         }
-        return super.mulTo(x, to);
+        return super.mulTo(to, x);
     }
 
     @Override
@@ -373,7 +380,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector mulTo(DVector b, DVector to) {
+    public DVector mulTo(DVector to, DVector b) {
         if (b instanceof DVectorStore bs) {
             if (to instanceof DVectorDense tos) {
                 checkConformance(b);
@@ -389,7 +396,7 @@ public final class DVectorDense extends AbstractStoreDVector {
                 return tos;
             }
         }
-        return super.mulTo(b, to);
+        return super.mulTo(to, b);
     }
 
     @Override
@@ -407,7 +414,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector divTo(double x, DVector to) {
+    public DVector divTo(DVector to, double x) {
         if (to instanceof DVectorDense tos) {
             var va = DoubleVector.broadcast(species, x);
             int i = 0;
@@ -420,7 +427,7 @@ public final class DVectorDense extends AbstractStoreDVector {
             }
             return tos;
         }
-        return super.divTo(x, to);
+        return super.divTo(to, x);
     }
 
     @Override
@@ -442,7 +449,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector divTo(DVector b, DVector to) {
+    public DVector divTo(DVector to, DVector b) {
         if (b instanceof DVectorStore bs) {
             if (to instanceof DVectorDense tos) {
                 checkConformance(b);
@@ -458,7 +465,7 @@ public final class DVectorDense extends AbstractStoreDVector {
                 return tos;
             }
         }
-        return super.divTo(b, to);
+        return super.divTo(to, b);
     }
 
     @Override
@@ -703,7 +710,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector applyTo(Double2DoubleFunction f, DVector to) {
+    public DVector applyTo(DVector to, Double2DoubleFunction f) {
         for (int i = 0; i < size; i++) {
             to.set(i, f.applyAsDouble(array[offset + i]));
         }
@@ -719,7 +726,7 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
-    public DVector applyTo(BiFunction<Integer, Double, Double> f, DVector to) {
+    public DVector applyTo(DVector to, BiFunction<Integer, Double, Double> f) {
         for (int i = 0; i < size; i++) {
             to.set(i, f.apply(i, array[offset + i]));
         }

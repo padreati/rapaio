@@ -51,7 +51,7 @@ public class DVectorBase extends AbstractDVector {
     }
 
     @Override
-    public DVector mapTo(int[] indexes, DVector to) {
+    public DVector mapTo(DVector to, int... indexes) {
         for (int i = 0; i < indexes.length; i++) {
             to.set(i, get(indexes[i]));
         }

@@ -50,7 +50,7 @@ public class DMatrixDenseCTest extends StandardDMatrixTest {
 
     @Override
     protected DMatrix generateIdentity(int n) {
-        return DMatrixDenseC.identity(n);
+        return DMatrixDenseC.eye(n);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class DMatrixDenseCTest extends StandardDMatrixTest {
     @Test
     void buildersTest() {
 
-        DMatrix i3 = DMatrixDenseC.identity(3);
+        DMatrix i3 = DMatrixDenseC.eye(3);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (i == j) {

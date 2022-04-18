@@ -64,7 +64,7 @@ public class DVectorDenseTest extends StandardDVectorTest {
         assertEquals(0, v.get(2));
 
         double[] array = new double[] {1, 2, 3, 4, 5, 6};
-        v = DVectorDense.wrap(2, 2, array);
+        v = DVectorDense.wrapAt(2, 2, array);
         assertEquals(2, v.size());
         assertEquals(3, v.get(0));
         assertEquals(4, v.get(1));

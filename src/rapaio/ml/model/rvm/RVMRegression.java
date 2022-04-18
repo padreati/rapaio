@@ -923,7 +923,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             for (int i = 0; i < active.size(); i++) {
                 m_sigma_inv.inc(i, i, alpha.get(active.get(i).index));
             }
-            sigma = m_sigma_inv.cholesky().solve(DMatrix.identity(active.size()));
+            sigma = m_sigma_inv.cholesky().solve(DMatrix.eye(active.size()));
             m = sigma.dot(computePhiDotY().mul(beta));
         }
 

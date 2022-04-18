@@ -23,7 +23,6 @@ package rapaio.ml.model.linear.binarylogistic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,13 +52,13 @@ public class BinaryLogisticIRLSTest {
     @Test
     void testDefaults() {
         var optimizer = new BinaryLogisticIRLS()
-                .x.set(DMatrix.identity(1))
+                .x.set(DMatrix.eye(1))
                 .y.set(DVector.zeros(1))
                 .w0.set(DVector.ones(1));
         assertEquals(1e-20, optimizer.eps.get());
         assertEquals(10, optimizer.maxIter.get());
         assertEquals(0, optimizer.lambda.get());
-        assertTrue(DMatrix.identity(1).deepEquals(optimizer.x.get()));
+        assertTrue(DMatrix.eye(1).deepEquals(optimizer.x.get()));
         assertTrue(DVector.zeros(1).deepEquals(optimizer.y.get()));
         assertTrue(DVector.ones(1).deepEquals(optimizer.w0.get()));
     }
@@ -67,7 +66,7 @@ public class BinaryLogisticIRLSTest {
     @Test
     void testResult() {
         BinaryLogisticIRLS.Result result = new BinaryLogisticIRLS.Result(Collections.emptyList(), Collections.emptyList(), false);
-        assertNull(result.getW());
+        assertEquals(0, result.getW().size());
         assertEquals(Double.NaN, result.getNll());
     }
 
