@@ -21,12 +21,13 @@
 
 package rapaio.ml.model.linear.binarylogistic;
 
-import static java.lang.Math.exp;
+import static java.lang.StrictMath.abs;
 
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
+import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.DoubleCholeskyDecomposition;
@@ -54,27 +55,27 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
     /**
      * L2 regularization penalty
      */
-    public final ValueParam<Double, BinaryLogisticIRLS> lambda = new ValueParam<>(this, 0.0, "lambda");
+    public final ValueParam<Double, BinaryLogisticIRLS> lambdap = new ValueParam<>(this, 0.0, "lambda");
 
-    public final ValueParam<DMatrix, BinaryLogisticIRLS> x = new ValueParam<>(this, null, "x");
+    public final ValueParam<DMatrix, BinaryLogisticIRLS> xp = new ValueParam<>(this, null, "x");
 
-    public final ValueParam<DVector, BinaryLogisticIRLS> y = new ValueParam<>(this, null, "y");
+    public final ValueParam<DVector, BinaryLogisticIRLS> yp = new ValueParam<>(this, null, "y");
 
     /**
      * Initial weights
      */
-    public final ValueParam<DVector, BinaryLogisticIRLS> w0 = new ValueParam<>(this,null, "w0");
+    public final ValueParam<DVector, BinaryLogisticIRLS> w0 = new ValueParam<>(this, null, "w0");
 
     public record Result(List<Double> nlls, List<DVector> ws, boolean converged) {
 
-        public DVector getW() {
+        public DVector w() {
             if (!ws.isEmpty()) {
                 return ws.get(ws.size() - 1);
             }
             return DVector.zeros(0);
         }
 
-        public double getNll() {
+        public double nll() {
             if (nlls.size() > 1) {
                 return nlls.get(nlls.size() - 1);
             }
@@ -82,84 +83,75 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
         }
     }
 
-    public Result fit() {
+    public BinaryLogisticIRLS.Result fit() {
+
+        DMatrix x = xp.get();
+        DVector y = yp.get();
+        DVector ny = DVector.ones(y.size()).sub(y);
+        DVector w = w0.get();
+        double lambda = lambdap.get();
+        DVector p = x.dot(w).apply(MathTools::logistic);
+        DVector np = p.applyNew(v -> 1 - v);
+
         int it = 0;
         // current solution
-        DVector w = w0.get().copy();
         ArrayList<DVector> ws = new ArrayList<>();
         ws.add(w);
         List<Double> nlls = new ArrayList<>();
-        nlls.add(negativeLogLikelihood(x.get(), y.get(), w));
+        nlls.add(negativeLogLikelihood(y, ny, w, lambda, p, np));
 
         while (it++ < maxIter.get()) {
-            DVector wnew = iterate(w);
-            double nll = negativeLogLikelihood(x.get(), y.get(), wnew);
+
+            DVector wnew = iterate(w, x, y, lambda, p, np);
+
+            p = x.dot(wnew).apply(MathTools::logistic);
+            np = p.applyNew(v -> 1 - v);
+            double nll = negativeLogLikelihood(y, ny, wnew, lambda, p, np);
 
             double nll_delta = nll - nlls.get(nlls.size() - 1);
-            if (it > 1 && (Math.abs(nll_delta) <= eps.get())) {
-                return new Result(nlls, ws, true);
+            if (it > 1 && (abs(nll_delta / nll) <= eps.get() /*|| nll_delta > 0*/)) {
+                return new BinaryLogisticIRLS.Result(nlls, ws, true);
             }
             ws.add(wnew);
             nlls.add(nll);
             w = wnew;
         }
-        return new Result(nlls, ws, false);
+        return new BinaryLogisticIRLS.Result(nlls, ws, false);
     }
 
-    private double negativeLogLikelihood(DMatrix x, DVector y, DVector w) {
-        return -x.dot(w)
-                .apply((i, v) -> (y.get(i) == 1) ? (1. / (1. + exp(-v))) : (1 - 1. / (1. + exp(-v))))
-                .apply(this::cut)
-                .apply(Math::log)
-                .nansum() / x.rows();
+    private double negativeLogLikelihood(DVector y, DVector ny, DVector w, double lambda, DVector p, DVector np) {
+        DVector logp = p.applyNew(this::cut).apply(StrictMath::log);
+        DVector lognp = np.applyNew(this::cut).apply(StrictMath::log);
+
+        return -logp.dot(y) - lognp.dot(ny) + lambda * w.norm(2) / 2;
     }
 
     private double cut(double value) {
-        return Math.min(1 - 1e-12, value);
+        return Math.max(1e-6, value);
     }
 
-    private DVector iterate(DVector w) {
-
-        // Xw dot product
-        DVector xw = x.get().dot(w);
-
-        // p diag = 1/(1+exp(-Xw))
-        DVector p = xw.copy().apply(value -> cut(1. / (1. + exp(-value))));
+    private DVector iterate(DVector w, DMatrix x, DVector y, double lambda, DVector p, DVector np) {
 
         // p(1-p) diag from p diag
-        DVector pvars = p.copy().apply(value -> value * (1 - value));
+        DVector pvar = p.mulNew(np).apply(this::cut);
 
-        // z = Wx - I(p(1-p))^{-1}(y-p)
-        DVector z = xw.add(y.get().copy().sub(p).div(pvars));
-
-        // Xt(p(1-p)
-        DMatrix xpvar = x.get().copy();
-        for (int i = 0; i < xpvar.rows(); i++) {
-            double pvar = pvars.get(i);
-            for (int j = 0; j < xpvar.cols(); j++) {
-                xpvar.set(i, j, xpvar.get(i, j) * pvar);
-            }
+        // H = X^t * I{p(1-p)} * X + I_lambda
+        DMatrix xta = x.t().mulNew(pvar, 0);
+        DMatrix h = xta.dot(x);
+        if (lambda > 0) {
+            h.add(DMatrix.diagonal(DVector.fill(h.rows(), lambda)));
         }
 
-        // XI(p(1-p))^T * X
-        DMatrix mA = xpvar.t().dot(x.get());
+        // z = Xw + I{p(1-p)}^{-1} (y-p)
+        DVector z = x.dot(w).add(y.subNew(p).div(pvar));
+        DVector right = xta.dot(z);
 
-        // for L2 regularization we inflate main diagonal
-        if (lambda.get() != 0) {
-            for (int i = 0; i < mA.rows(); i++) {
-                mA.inc(i, i, lambda.get());
-            }
-        }
-
-        //XI(p(1-p))^T * X * z
-        DMatrix b = xpvar.t().dot(z.asMatrix());
-
-        DoubleCholeskyDecomposition chol = mA.cholesky();
+        // solve IRLS
+        DoubleCholeskyDecomposition chol = h.cholesky();
         if (chol.isSPD()) {
-            // if we have a symmetric positive definite matrix we solve it with Cholesky
-            return chol.solve(b).mapColNew(0);
+            return chol.solve(right);
+        } else {
+            return h.qr().solve(right);
         }
-        // otherwise we fall in QR decomposition
-        return mA.qr().solve(b.mapCol(0));
     }
 }

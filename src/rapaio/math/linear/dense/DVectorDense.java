@@ -35,6 +35,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.base.DVectorBase;
 import rapaio.util.DoubleComparator;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
@@ -68,6 +69,21 @@ public final class DVectorDense extends AbstractStoreDVector {
             array[i] = distribution.sampleNext();
         }
         return new DVectorDense(0, array.length, array);
+    }
+
+    public static DVectorDense copy(DVector v) {
+        if (v instanceof DVectorDense vd) {
+            return vd.copy();
+        }
+        if (v instanceof DVectorStore vs) {
+            double[] copy = vs.solidArrayCopy();
+            return DVectorDense.wrap(copy);
+        }
+        double[] copy = new double[v.size()];
+        for (int i = 0; i < v.size(); i++) {
+            copy[i] = v.get(i);
+        }
+        return DVectorDense.wrap(copy);
     }
 
     @Serial

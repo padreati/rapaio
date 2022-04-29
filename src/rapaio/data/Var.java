@@ -468,6 +468,16 @@ public interface Var extends Serializable, Printable {
      * @return true if type, size and content is identical
      */
     default boolean deepEquals(Var var) {
+        return deepEquals(var, 1e-100);
+    }
+
+    /**
+     * Tests if two variables has identical content, it does not matter the implementation.
+     *
+     * @param var variable on which the deep equals applied
+     * @return true if type, size and content is identical
+     */
+    default boolean deepEquals(Var var, double tol) {
         if (!Objects.equals(name(), var.name())) {
             return false;
         }
@@ -484,7 +494,7 @@ public interface Var extends Serializable, Printable {
             }
             switch (type()) {
                 case DOUBLE:
-                    if (Math.abs(getDouble(i) - var.getDouble(i)) > 1e-100) {
+                    if (Math.abs(getDouble(i) - var.getDouble(i)) > tol) {
                         return false;
                     }
                     break;

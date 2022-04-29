@@ -61,7 +61,7 @@ public class GBTClassifierModelTest {
         assertEquals(10, model.getTrees().get(1).size());
 
         assertEquals("GBTClassifier{debug=true,model=RTree{maxDepth=3,minCount=4,splitter=Random," +
-                "varSelector=VarSelector[10]},runs=10}; fitted=true, fitted trees=10", model.toString());
+                "varSelector=VarSelector[10]}}; fitted=true, fitted trees=10", model.toString());
 
         var result = model.predict(spam, true, true);
 

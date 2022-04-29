@@ -533,7 +533,6 @@ public class MathTools {
 
     private static double lentz(double... args) {
         double f_n = 1;
-        double c_n = 1;
         double c_0 = 1;
         double d_n, d_0 = 0;
 
@@ -548,7 +547,7 @@ public class MathTools {
                 d_n = 1e-30;
             }
 
-            c_n = 1.0 + lentzA(j, args) / c_0;
+            double c_n = 1.0 + lentzA(j, args) / c_0;
             if (c_n == 0.0) {
                 c_n = 1e-30;
             }
@@ -860,6 +859,24 @@ public class MathTools {
         x = max(min, x);
         x = min(max, x);
         return x;
+    }
+
+    public static double logistic(double x) {
+        return 1/(1+StrictMath.exp(-x));
+    }
+
+    /**
+     * Logit function is the inverse of logistic function. The logit function
+     * takes as parameter the value of the probability and returns the logit value.
+     *
+     * For performance reasons the range value of {@code p} is not checked. The
+     * valid value range is [0,1]. For other values the behaviour is not specified.
+     *
+     * @param p probability value
+     * @return value of the logit function
+     */
+    public static double logit(double p) {
+        return StrictMath.log(p/(1-p));
     }
 
     /**

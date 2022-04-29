@@ -144,7 +144,7 @@ public interface Printable {
      * @param options printing options
      */
     default void printSummary(POption<?>... options) {
-        WS.getPrinter().printSummary(this, options);
+        printSummary(WS.getPrinter(), options);
     }
 
     /**
@@ -163,7 +163,7 @@ public interface Printable {
      * @param options printing options
      */
     default void printContent(POption<?>... options) {
-        WS.getPrinter().printContent(this, options);
+        printContent(WS.getPrinter(), options);
     }
 
     /**
@@ -182,7 +182,7 @@ public interface Printable {
      * @param options printing options
      */
     default void printFullContent(POption<?>... options) {
-        WS.getPrinter().printFullContent(this, options);
+        printFullContent(WS.getPrinter(), options);
     }
 
     /**

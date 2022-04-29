@@ -26,7 +26,7 @@ import java.util.List;
 
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
-import rapaio.data.VarNominal;
+import rapaio.data.Var;
 import rapaio.ml.model.ClassifierResult;
 
 /**
@@ -38,7 +38,7 @@ public enum BaggingMode implements Serializable {
 
     VOTING(true, false) {
         @Override
-        public void computeDensity(List<String> dictionary, List<ClassifierResult> predictions, VarNominal classes, Frame densities) {
+        public void computeDensity(List<String> dictionary, List<ClassifierResult> predictions, Var classes, Frame densities) {
             predictions.stream().map(ClassifierResult::firstClasses).forEach(d -> {
                 for (int i = 0; i < d.size(); i++) {
                     int best = d.getInt(i);
@@ -60,7 +60,7 @@ public enum BaggingMode implements Serializable {
     },
     DISTRIBUTION(false, true) {
         @Override
-        public void computeDensity(List<String> dictionary, List<ClassifierResult> results, VarNominal classes, Frame densities) {
+        public void computeDensity(List<String> dictionary, List<ClassifierResult> results, Var classes, Frame densities) {
             for (int i = 0; i < densities.rowCount(); i++) {
                 for (int j = 0; j < densities.varCount(); j++) {
                     densities.setDouble(i, j, 0);
@@ -107,5 +107,5 @@ public enum BaggingMode implements Serializable {
         return useDensities;
     }
 
-    abstract void computeDensity(List<String> dictionary, List<ClassifierResult> treeFits, VarNominal classes, Frame densities);
+    abstract void computeDensity(List<String> dictionary, List<ClassifierResult> treeFits, Var classes, Frame densities);
 }

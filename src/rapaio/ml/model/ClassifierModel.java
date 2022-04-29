@@ -81,7 +81,7 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
      * For example for CForest the number of runs is used to specify
      * the number of decision trees to be built.
      */
-    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1, "runs", x -> x > 0
+    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 10, "runs", x -> x > 0
     );
 
     /**
@@ -317,6 +317,17 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
      */
     protected FitSetup prepareFit(Frame df, final Var weights, final String... targetVars) {
         List<String> targets = VarRange.of(targetVars).parseVarNames(df);
+        if (capabilities().minTargetCount() > targets.size()) {
+            throw new IllegalArgumentException("Minimum number of targets (" +
+                    capabilities().minTargetCount() + ") is not met. Targets specified: [" +
+                    String.join(",", targetVars) + "]");
+        }
+        if (capabilities().maxTargetCount() < targets.size()) {
+            throw new IllegalArgumentException("Maximum number of targets (" +
+                    capabilities().maxTargetCount() + ") is not met. Targets specified: [" +
+                    String.join(",", targetVars) + "]");
+        }
+
         this.targetNames = targets.toArray(new String[0]);
         this.targetTypes = targets.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
         this.targetLevels = new HashMap<>();

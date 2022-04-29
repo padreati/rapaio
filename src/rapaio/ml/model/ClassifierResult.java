@@ -29,6 +29,9 @@ import java.util.Map;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarBinary;
+import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.printer.Printable;
@@ -50,7 +53,7 @@ public class ClassifierResult implements Printable {
     private final boolean hasClasses;
     private final boolean hasDensities;
     private final Map<String, List<String>> dictionaries = new HashMap<>();
-    private final Map<String, VarNominal> classes = new HashMap<>();
+    private final Map<String, Var> classes = new HashMap<>();
     private final Map<String, Frame> densities = new HashMap<>();
 
     // builder
@@ -59,7 +62,8 @@ public class ClassifierResult implements Printable {
         return new ClassifierResult(model, df, withClasses, withDensities);
     }
 
-    public static ClassifierResult copy(ClassifierModel<?, ?, ?> model, Frame df, boolean withClasses, boolean withDensities, ClassifierResult from) {
+    public static ClassifierResult copy(ClassifierModel<?, ?, ?> model, Frame df, boolean withClasses, boolean withDensities,
+            ClassifierResult from) {
         ClassifierResult result = new ClassifierResult(model, df, withClasses, withDensities);
         for (String key : result.classes.keySet()) {
             result.classes.put(key, from.classes.get(key));
@@ -78,15 +82,21 @@ public class ClassifierResult implements Printable {
         this.hasClasses = hasClasses;
         this.hasDensities = hasDensities;
 
-        for (String target : model.targetNames()) {
-            targetNames.add(target);
-            List<String> targetLevels = new ArrayList<>(model.targetLevels(target));
-            dictionaries.put(target, targetLevels);
+        for (int i = 0; i < model.targetNames().length; i++) {
+            String targetName = model.targetNames()[i];
+            targetNames.add(targetName);
+            List<String> targetLevels = new ArrayList<>(model.targetLevels(targetName));
+            dictionaries.put(targetName, targetLevels);
             if (hasClasses) {
-                classes.put(target, VarNominal.empty(df.rowCount(), targetLevels).name(target));
+                switch (model.targetTypes()[i]) {
+                    case NOMINAL -> classes.put(targetName, VarNominal.empty(df.rowCount(), targetLevels).name(targetName));
+                    case BINARY -> classes.put(targetName, VarBinary.empty(df.rowCount()).name(targetName));
+                    case INT -> classes.put(targetName, VarInt.empty(df.rowCount()).name(targetName));
+                }
+
             }
             if (hasDensities) {
-                densities.put(target, SolidFrame.matrix(df.rowCount(), targetLevels));
+                densities.put(targetName, SolidFrame.matrix(df.rowCount(), targetLevels));
             }
         }
     }
@@ -151,7 +161,7 @@ public class ClassifierResult implements Printable {
      *
      * @return map with nominal variables as predicted classes
      */
-    public Map<String, VarNominal> classes() {
+    public Map<String, Var> classes() {
         return classes;
     }
 
@@ -160,7 +170,7 @@ public class ClassifierResult implements Printable {
      *
      * @return nominal variable with predicted classes
      */
-    public VarNominal firstClasses() {
+    public Var firstClasses() {
         return classes.get(firstTargetName());
     }
 
@@ -170,7 +180,7 @@ public class ClassifierResult implements Printable {
      * @param targetVar given target variable name
      * @return nominal variable with predicted classes
      */
-    public VarNominal classes(String targetVar) {
+    public Var classes(String targetVar) {
         return classes.get(targetVar);
     }
 

@@ -567,4 +567,13 @@ public class DoubleSVDecomposition implements java.io.Serializable {
         }
         return r;
     }
+
+    /**
+     * Computes the absolute value of the determinant from singular values.
+     *
+     * @return absolute value of determinant
+     */
+    public double absDet() {
+        return singularValues().prod();
+    }
 }

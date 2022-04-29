@@ -36,8 +36,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
+import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.data.VarType;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 
@@ -87,15 +89,16 @@ public class BaggingModeTest {
 
     private ClassifierResult buildResult(double... probabilities) {
 
-        ClassifierModel model = mock(ClassifierModel.class);
+        ClassifierModel<?, ?, ?> model = mock(ClassifierModel.class);
         Frame df = mock(Frame.class);
 
-        when(model.targetNames()).thenReturn(new String[]{"y"});
+        when(model.targetNames()).thenReturn(new String[] {"y"});
+        when(model.targetTypes()).thenReturn(new VarType[] {VarType.NOMINAL});
         when(model.targetLevels(anyString())).thenReturn(dictionary);
         when(df.rowCount()).thenReturn(1);
 
         ClassifierResult result = ClassifierResult.build(model, df, true, true);
-        VarNominal firstClasses = result.firstClasses();
+        Var firstClasses = result.firstClasses();
         Frame firstDensity = result.firstDensity();
 
         int max = 0;

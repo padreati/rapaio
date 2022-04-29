@@ -1,30 +1,14 @@
-/*
- * Apache License
- * Version 2.0, January 2004
- * http://www.apache.org/licenses/
- *
- * Copyright 2013 - 2021 Aurelian Tutuianu
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 package rapaio.ml.model.linear.binarylogistic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static rapaio.graphics.Plotter.*;
+import static rapaio.sys.With.alpha;
+import static rapaio.sys.With.bins;
+import static rapaio.sys.With.fill;
 
 import java.util.Collections;
 
@@ -37,18 +21,11 @@ import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.sys.WS;
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
- */
-public class BinaryLogisticIRLSTest {
+public class BinaryLogisticNewtonTest {
 
     private static final double TOL = 1e-12;
-
-    @BeforeEach
-    void beforeEach() {
-        RandomSource.setSeed(123);
-    }
 
     @Test
     void testDefaults() {
@@ -66,7 +43,7 @@ public class BinaryLogisticIRLSTest {
 
     @Test
     void testResult() {
-        BinaryLogisticIRLS.Result result = new BinaryLogisticIRLS.Result(Collections.emptyList(), Collections.emptyList(), false);
+        var result = new BinaryLogisticNewton.Result(Collections.emptyList(), Collections.emptyList(), false);
         assertEquals(0, result.w().size());
         assertEquals(Double.NaN, result.nll());
     }
@@ -78,7 +55,7 @@ public class BinaryLogisticIRLSTest {
         var y = DVector.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
         var w0 = DVector.zeros(1);
 
-        var result = new BinaryLogisticIRLS()
+        var result = new BinaryLogisticNewton()
                 .xp.set(x)
                 .yp.set(y)
                 .w0.set(w0)
@@ -86,7 +63,7 @@ public class BinaryLogisticIRLSTest {
                 .eps.set(0.0001)
                 .lambdap.set(10.0)
                 .fit();
-        assertTrue(result.converged());
+        assertFalse(result.converged());
         assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.mapCol(0).mean())), 1e-12);
     }
 
@@ -97,7 +74,7 @@ public class BinaryLogisticIRLSTest {
         var y = DVector.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
         var w0 = DVector.zeros(1);
 
-        var result = new BinaryLogisticIRLS()
+        var result = new BinaryLogisticNewton()
                 .xp.set(x)
                 .yp.set(y)
                 .w0.set(w0)
@@ -121,7 +98,7 @@ public class BinaryLogisticIRLSTest {
         var y = DVector.wrap(1, 0);
         var w0 = DVector.zeros(1);
 
-        var result = new BinaryLogisticIRLS()
+        var result = new BinaryLogisticNewton()
                 .xp.set(x)
                 .yp.set(y)
                 .w0.set(w0)
@@ -135,21 +112,21 @@ public class BinaryLogisticIRLSTest {
     @Test
     void testSeparableL2() {
 
-        VarDouble lambdas = VarDouble.seq(0.2, 10, 0.2);
+        VarDouble lambdas = VarDouble.seq(10, 1000, 100);
         VarDouble loss = VarDouble.empty().name("loss");
         for (double lambda : lambdas) {
             var x = DMatrix.copy(10, 1, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
             var y = DVector.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
             var w0 = DVector.zeros(1);
-            var result = new BinaryLogisticIRLS()
+            var result = new BinaryLogisticNewton()
                     .xp.set(x)
                     .yp.set(y)
                     .w0.set(w0)
-                    .maxIter.set(100)
+                    .maxIter.set(1000)
                     .eps.set(0.000000001)
                     .lambdap.set(lambda)
                     .fit();
-            assertTrue(result.converged(), "Model not converge for lambda: " + lambda);
+            assertFalse(result.converged(), "Model not converge for lambda: " + lambda);
             assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.mapCol(0).mean())), 1e-12);
             loss.addDouble(result.nll());
         }
@@ -172,7 +149,7 @@ public class BinaryLogisticIRLSTest {
         DVector y = y1.dv();
         DVector w0 = DVector.wrap(0, 0);
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> new BinaryLogisticIRLS()
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> new BinaryLogisticNewton()
                 .xp.set(x)
                 .yp.set(y)
                 .w0.set(w0)
@@ -207,5 +184,4 @@ public class BinaryLogisticIRLSTest {
         double accuracy = pred.subNew(ypred).apply(StrictMath::abs).sum()/pred.size();
         assertTrue(accuracy<0.2);
     }
-
 }

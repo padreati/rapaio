@@ -25,14 +25,17 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
+import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.model.ClassifierModel;
@@ -40,6 +43,9 @@ import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.linear.binarylogistic.BinaryLogisticIRLS;
 import rapaio.ml.model.linear.binarylogistic.BinaryLogisticNewton;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
@@ -55,14 +61,14 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
     /**
      * Defines the scaling value of the intercept, by default being 1. If the configured value
-     * for the intercept is 0, than no intercept is added to the input features.
+     * for the intercept is 0, then no intercept is added to the input features.
      */
     public final ValueParam<Double, BinaryLogistic> intercept = new ValueParam<>(this, 1.0, "intercept");
 
     /**
      * Initialization method is used to give initial weights at the first iteration.
      */
-    public final ValueParam<Initialize, BinaryLogistic> init = new ValueParam<>(this, Initialize.EXPECTED_LOG_VAR, "init");
+    public final ValueParam<Initialize, BinaryLogistic> init = new ValueParam<>(this, Initialize.ZERO, "init");
     /**
      * Gets the nominal level used in one vs all strategy. If the target variable
      * is a nominal variable with more than 2 levels (ignoring missing value level),
@@ -80,12 +86,12 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     /**
      * L1 regularization factor
      */
-    public final ValueParam<Double, BinaryLogistic> l1Factor = new ValueParam<>(this, 0.0, "l1factor");
+    public final ValueParam<Double, BinaryLogistic> l1penalty = new ValueParam<>(this, 0.0, "l1penalty");
 
     /**
      * L2 regularization factor
      */
-    public final ValueParam<Double, BinaryLogistic> l2Factor = new ValueParam<>(this, 0.0, "l2factor");
+    public final ValueParam<Double, BinaryLogistic> l2penalty = new ValueParam<>(this, 0.0, "l2penalty");
 
     /**
      * Tolerance threshold used to signal when fit iterative procedure converged
@@ -94,20 +100,23 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
     // learning artifacts
 
-    /**
-     * True if the model is trained and it has converged to a solution in less than
-     * maximum number of iterations (runs), false otherwise.
-     */
+    // True if the model is trained and has converged to a solution in less than maximum number of iterations (runs), false otherwise.
     private boolean converged = false;
+
+    // true if the fitted model had an intercept
+    private boolean hasIntercept;
+
+    // fitted labels
+    private String positiveLabel;
+    private String negativeLabel;
+
+    // Coefficients for the model
     private VarDouble w;
-    /**
-     * List of coefficients computed at each iteration.
-     */
+
+    // List of coefficients computed at each iteration.
     private List<DVector> iterationWeights;
 
-    /**
-     * List of loss function values evaluated after each iteration.
-     */
+    // List of loss function values evaluated after each iteration.
     private List<Double> iterationLoss;
 
     private BinaryLogistic() {
@@ -127,11 +136,11 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         return converged;
     }
 
-    public List<DVector> getIterationWeights() {
+    public List<DVector> iterationWeights() {
         return iterationWeights;
     }
 
-    public List<Double> getIterationLoss() {
+    public List<Double> iterationLoss() {
         return iterationLoss;
     }
 
@@ -154,12 +163,12 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
                 BinaryLogisticIRLS.Result irlsResult = new BinaryLogisticIRLS()
                         .eps.set(eps.get())
                         .maxIter.set(runs.get())
-                        .lambda.set(l2Factor.get())
-                        .x.set(x)
-                        .y.set(y)
+                        .lambdap.set(l2penalty.get())
+                        .xp.set(x)
+                        .yp.set(y)
                         .w0.set(w0)
                         .fit();
-                w = irlsResult.getW().dv();
+                w = irlsResult.w().dv();
                 iterationLoss = new ArrayList<>(irlsResult.nlls());
                 iterationWeights = new ArrayList<>(irlsResult.ws());
                 converged = irlsResult.converged();
@@ -168,13 +177,13 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
                 BinaryLogisticNewton.Result newtonResult = new BinaryLogisticNewton()
                         .eps.set(eps.get())
                         .maxIter.set(runs.get())
-                        .lambda.set(l2Factor.get())
-                        .x.set(x)
-                        .y.set(y)
+                        .lambdap.set(l2penalty.get())
+                        .xp.set(x)
+                        .yp.set(y)
                         .w0.set(w0)
                         .fit();
                 w = newtonResult.w().dv();
-                iterationLoss = new ArrayList<>(newtonResult.nll());
+                iterationLoss = new ArrayList<>(newtonResult.nlls());
                 iterationWeights = new ArrayList<>(newtonResult.ws());
                 converged = newtonResult.converged();
             }
@@ -184,20 +193,25 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
     private DVector computeTargetVector(Var target) {
         switch (target.type()) {
-            case BINARY:
+            case BINARY -> {
+                positiveLabel = "1";
+                negativeLabel = "0";
                 return target.dv();
-            case NOMINAL:
+            }
+            case NOMINAL -> {
                 DVector result = DVector.zeros(target.size());
-                if (targetLevels.get(firstTargetName()).size() == 3) {
-                    for (int i = 0; i < target.size(); i++) {
-                        result.set(i, target.getInt(i) - 1);
+                positiveLabel = !Objects.equals(nominalLevel.get(), "") ? nominalLevel.get() : targetLevels.get(firstTargetName()).get(1);
+                negativeLabel = firstTargetLevels().stream()
+                        .filter(label -> !label.equals(positiveLabel))
+                        .filter(label -> !label.equals("?")).findFirst().orElse("?");
+                for (int i = 0; i < target.size(); i++) {
+                    if (target.isMissing(i)) {
+                        throw new IllegalArgumentException("Target variable does not allow missing values.");
                     }
-                } else {
-                    for (int i = 0; i < target.size(); i++) {
-                        result.set(i, target.getLabel(i).equals(nominalLevel.get()) ? 1 : 0);
-                    }
+                    result.set(i, positiveLabel.equals(target.getLabel(i)) ? 1 : 0);
                 }
                 return result;
+            }
         }
         return null;
     }
@@ -205,12 +219,15 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     private DMatrix computeInputMatrix(Frame df, String targetName) {
         List<Var> variables = new ArrayList<>();
         if (intercept.get() != 0) {
+            hasIntercept = true;
             variables.add(VarDouble.fill(df.rowCount(), intercept.get()).name("Intercept"));
+        } else {
+            hasIntercept = false;
         }
         df.varStream()
-                .filter(v -> !firstTargetName().equals(v.name()))
+                .filter(v -> !targetName.equals(v.name()))
                 .forEach(variables::add);
-        return DMatrix.copy(variables.toArray(Var[]::new));
+        return DMatrixDenseC.copy(variables.toArray(Var[]::new));
     }
 
     @Override
@@ -221,23 +238,22 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
 
-        int offset = intercept.get() == 0 ? 0 : 1;
+        int offset = hasIntercept ? 1 : 0;
 
-        DVector p = DVector.fill(df.rowCount(), intercept.get() * w.getDouble(0));
+        DVector p = DVector.fill(df.rowCount(), hasIntercept ? intercept.get() * w.getDouble(0) : 0);
         for (int i = 0; i < inputNames.length; i++) {
-            double wvalue = w.getDouble(i + offset);
-            DVector z = df.rvar(inputName(i)).dvNew().apply(v -> 1 / (1 + Math.exp(-v * wvalue)));
-            p.add(z);
+            p.addMul(w.getDouble(i + offset), df.rvar(inputName(i)).dv());
         }
+        p.apply(MathTools::logistic);
 
         for (int r = 0; r < df.rowCount(); r++) {
             double pi = p.get(r);
             if (withClasses) {
-                cr.firstClasses().setInt(r, pi < 0.5 ? 1 : 2);
+                cr.firstClasses().setLabel(r, pi > 0.5 ? positiveLabel : negativeLabel);
             }
             if (withDistributions) {
-                cr.firstDensity().setDouble(r, 1, 1 - pi);
-                cr.firstDensity().setDouble(r, 2, pi);
+                cr.firstDensity().setDouble(r, 1, pi);
+                cr.firstDensity().setDouble(r, 2, 1 - pi);
             }
         }
         return cr;
@@ -251,7 +267,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     public enum Initialize implements Serializable {
         ZERO(v -> 0.0),
         ONE(v -> 1.0),
-        EXPECTED_LOG_VAR(v -> Math.log(v.mean() * (1 - v.mean())));
+        EXPECTED_LOG_VAR(v -> Math.log(Math.min(1e-12, v.mean() * (1 - v.mean()))));
 
         private static final long serialVersionUID = 8945270404852488614L;
         private final Function<DVector, Double> function;
@@ -263,5 +279,62 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         public Function<DVector, Double> getFunction() {
             return function;
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(fullName());
+        sb.append(", hasLearned=").append(hasLearned());
+        if (hasLearned()) {
+            sb.append(", converged=").append(converged);
+            sb.append(", iterations=").append(iterationLoss.size());
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String toSummary(Printer printer, POption<?>... options) {
+
+        var opts = printer.getOptions().bind(options);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(fullNameSummary());
+        sb.append(capabilitiesSummary());
+        sb.append(inputVarsSummary(printer, options));
+        sb.append(targetVarsSummary());
+
+        sb.append("Learning data:\n");
+        sb.append("> has learned: ").append(hasLearned()).append("\n");
+        if (hasLearned()) {
+            sb.append("> has intercept: ").append(hasIntercept).append("\n");
+            if (hasIntercept) {
+                sb.append("> intercept factor: ").append(opts.floatFormat().format(intercept.get())).append("\n");
+            }
+            sb.append("> coefficients:\n");
+            TextTable tt = TextTable.empty(w.size() + 1, 2, 1, 1);
+            tt.textCenter(0, 0, "Name");
+            tt.textCenter(0, 1, "Value");
+            for (int i = 0; i < w.size(); i++) {
+                tt.textRight(i, 0, hasIntercept ? (i == 0 ? "intercept" : inputName(i - 1)) : inputName(i));
+                tt.floatString(i, 1, opts.floatFormat().format(w.getDouble(i)));
+            }
+            sb.append(tt.getDynamicText(printer, options));
+            sb.append("> converged: ").append(converged).append("\n");
+            sb.append("> iterations: ").append(iterationLoss.size()).append("\n");
+
+
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String toContent(Printer printer, POption<?>... options) {
+        return toSummary(printer, options);
+    }
+
+    @Override
+    public String toFullContent(Printer printer, POption<?>... options) {
+        return toSummary(printer, options);
     }
 }

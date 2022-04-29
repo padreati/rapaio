@@ -48,7 +48,7 @@ public class AdaBoostTest {
         assertEquals(10, model.getLearners().size());
         assertEquals(10, model.getAlphas().size());
 
-        assertEquals("AdaBoost{model=CTree,runs=10}; fitted=true, fitted trees=10", model.toString());
+        assertEquals("AdaBoost{model=CTree}; fitted=true, fitted trees=10", model.toString());
 
         var result = model.predict(spam, true, true);
 

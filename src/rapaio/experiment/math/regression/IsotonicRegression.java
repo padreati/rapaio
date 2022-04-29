@@ -21,61 +21,84 @@
 
 package rapaio.experiment.math.regression;
 
+import static rapaio.sys.With.textWidth;
+
+import rapaio.data.Frame;
+import rapaio.data.VarBinary;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.datasets.Datasets;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
+import rapaio.ml.model.linear.BinaryLogistic;
+import rapaio.sys.With;
+
 /**
- * Taken from
- * <p>
- * http://tullo.ch/articles/speeding-up-isotonic-regression/
- * <p>
- * and translated to java
+ * Inspired by <a href="http://tullo.ch/articles/speeding-up-isotonic-regression/"></a>.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/5/16.
  */
 public class IsotonicRegression {
 
-    public double[] isotonic_regression(double[] y, double[] weight) {
-        double[] solution = new double[y.length];
+    public DVector isotonic_regression(DVector y, DVector weight) {
 
-        double numerator, denominator;
-        int i, n, k;
-
-        n = y.length;
+        int n = y.size();
 
         // The algorithm proceeds by iteratively updating the solution array.
 
-        for (i = 0; i < n; i++) {
-            solution[i] = y[i];
-        }
+        DVectorDense solution = DVectorDense.copy(y);
 
-        if (n <= 1)
+        if (n <= 1) {
             return solution;
+        }
 
         n -= 1;
         boolean pooled = true;
         while (pooled) {
             // repeat until there are no more adjacent violators.
-            i = 0;
+            int i = 0;
             pooled = false;
             while (i < n) {
-                k = i;
-                while (k < n && solution[k] >= solution[k + 1])
+                int k = i;
+                while (k < n && solution.get(k) >= solution.get(k + 1)) {
                     k += 1;
-                if (solution[i] != solution[k]) {
+                }
+                if (solution.get(i) != solution.get(k)) {
                     // solution[i:k + 1] is a decreasing subsequence, so
                     // replace each point in the subsequence with the
                     // weighted average of the subsequence.
-                    numerator = 0.0;
-                    denominator = 0.0;
+                    double numerator = 0.0;
+                    double denominator = 0.0;
                     for (int j = i; j < k + 1; j++) {
-                        numerator += solution[j] * weight[j];
-                        denominator += weight[j];
+                        numerator += solution.get(j) * weight.get(j);
+                        denominator += weight.get(j);
                     }
-                    for (int j = i; j < k + 1; j++)
-                        solution[j] = numerator / denominator;
+                    for (int j = i; j < k + 1; j++) {
+                        solution.set(j, numerator / denominator);
+                    }
                     pooled = true;
                 }
                 i = k + 1;
             }
         }
         return solution;
+    }
+
+    public static void main(String[] args) {
+
+        Frame iris = Datasets.loadIrisDataset()
+                .stream().filter(s -> !s.getLabel("class").equals("virginica")).toMappedFrame();
+        VarNominal clazz = VarNominal.from(iris.rowCount(), row -> iris.rvar("class").getLabel(row)).name("clazz");
+        Frame df = iris.removeVars("class").bindVars(clazz).copy();
+
+
+        df.printSummary(textWidth(-1));
+
+        df = df.mapVars("sepal-length","clazz");
+
+        BinaryLogistic lr = BinaryLogistic.newModel();
+        lr.fit(df, "clazz").printFullContent();
+
+        lr.predict(df, true, true).printSummary();
     }
 }
