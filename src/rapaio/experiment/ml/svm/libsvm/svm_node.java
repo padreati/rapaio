@@ -21,8 +21,9 @@
 
 package rapaio.experiment.ml.svm.libsvm;
 
-public class svm_node implements java.io.Serializable
-{
+import java.io.Serializable;
+
+public class svm_node implements Serializable {
     public int index;
     public double value;
 }

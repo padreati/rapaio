@@ -23,7 +23,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import rapaio.ml.common.kernel.Kernel;
 
-public class svm_parameter implements java.io.Serializable {
+public class SvmParameter implements java.io.Serializable {
     /* svm_type */
     public static final int C_SVC = 0;
     public static final int NU_SVC = 1;
@@ -47,8 +47,8 @@ public class svm_parameter implements java.io.Serializable {
     public int shrinking;    // use the shrinking heuristics
     public int probability; // do probability estimates
 
-    public svm_parameter copy() {
-        svm_parameter copy = new svm_parameter();
+    public SvmParameter copy() {
+        SvmParameter copy = new SvmParameter();
         copy.svmType = svmType;
         copy.kernel = kernel;
         copy.cacheSize = cacheSize;

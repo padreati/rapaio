@@ -29,15 +29,15 @@ package rapaio.ml.model.svm.libsvm;
 public final class SolverNU extends SolverC {
     private Svm.SolutionInfo si;
 
-    public void solve(int len, AbstractKernelMatrix q, double[] p, byte[] y,
-            double[] alpha, double cp, double cn, double eps,
+    public void solve(int len, AbstractKernelMatrix q, double[] p, byte[] y, double[] alpha, double cp, double cn, double eps,
             Svm.SolutionInfo si, int shrinking) {
         this.si = si;
         super.solve(len, q, p, y, alpha, cp, cn, eps, si, shrinking);
     }
 
     // return 1 if already optimal, return 0 otherwise
-    int select_working_set(int[] workingSet) {
+    @Override
+    WorkingSet selectWorkingSet() {
         // return i,j such that y_i = y_j and
         // i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
         // j: minimizes the decrease of obj value
@@ -77,6 +77,7 @@ public final class SolverNU extends SolverC {
         int in = gmaxnIdx;
         double[] qip = null;
         double[] qin = null;
+
         // null Q_ip not accessed: Gmaxp=-INF if ip=-1
         if (ip != -1) {
             qip = q.getQ(ip, activeSize);
@@ -132,37 +133,22 @@ public final class SolverNU extends SolverC {
         }
 
         if (Math.max(gmaxp + gmaxp2, gmaxn + gmaxn2) < eps || Gmin_idx == -1) {
-            return 1;
+            return null;
         }
-
-        if (y[Gmin_idx] == +1) {
-            workingSet[0] = gmaxpIdx;
-        } else {
-            workingSet[0] = gmaxnIdx;
-        }
-        workingSet[1] = Gmin_idx;
-
-        return 0;
+        return new WorkingSet(y[Gmin_idx] == +1 ? gmaxpIdx : gmaxnIdx, Gmin_idx);
     }
 
-    private boolean be_shrunk(int i, double gmax1, double gmax2, double gmax3, double gmax4) {
+    private boolean beShrunk(int i, double gmax1, double gmax2, double gmax3, double gmax4) {
         if (isUpperBound(i)) {
-            if (y[i] == +1) {
-                return (-grad[i] > gmax1);
-            } else {
-                return (-grad[i] > gmax4);
-            }
+            return y[i] == 1 ? (-grad[i] > gmax1) : (-grad[i] > gmax4);
         } else if (isLowerBound(i)) {
-            if (y[i] == +1) {
-                return (grad[i] > gmax2);
-            } else {
-                return (grad[i] > gmax3);
-            }
+            return (y[i] == 1) ? (grad[i] > gmax2) : (grad[i] > gmax3);
         } else {
-            return (false);
+            return false;
         }
     }
 
+    @Override
     void doShrinking() {
         double Gmax1 = Double.NEGATIVE_INFINITY;    // max { -y_i * grad(f)_i | y_i = +1, i in I_up(\alpha) }
         double Gmax2 = Double.NEGATIVE_INFINITY;    // max { y_i * grad(f)_i | y_i = +1, i in I_low(\alpha) }
@@ -173,7 +159,7 @@ public final class SolverNU extends SolverC {
         int i;
         for (i = 0; i < activeSize; i++) {
             if (!isUpperBound(i)) {
-                if (y[i] == +1) {
+                if (y[i] == 1) {
                     if (-grad[i] > Gmax1) {
                         Gmax1 = -grad[i];
                     }
@@ -182,7 +168,7 @@ public final class SolverNU extends SolverC {
                 }
             }
             if (!isLowerBound(i)) {
-                if (y[i] == +1) {
+                if (y[i] == 1) {
                     if (grad[i] > Gmax2) {
                         Gmax2 = grad[i];
                     }
@@ -199,10 +185,10 @@ public final class SolverNU extends SolverC {
         }
 
         for (i = 0; i < activeSize; i++) {
-            if (be_shrunk(i, Gmax1, Gmax2, Gmax3, Gmax4)) {
+            if (beShrunk(i, Gmax1, Gmax2, Gmax3, Gmax4)) {
                 activeSize--;
                 while (activeSize > i) {
-                    if (!be_shrunk(activeSize, Gmax1, Gmax2, Gmax3, Gmax4)) {
+                    if (!beShrunk(activeSize, Gmax1, Gmax2, Gmax3, Gmax4)) {
                         swapIndex(i, activeSize);
                         break;
                     }
@@ -212,6 +198,7 @@ public final class SolverNU extends SolverC {
         }
     }
 
+    @Override
     double calculateRho() {
         int nrFree1 = 0;
         int nrFree2 = 0;
@@ -223,13 +210,13 @@ public final class SolverNU extends SolverC {
         double sumFree2 = 0;
 
         for (int i = 0; i < activeSize; i++) {
-            if (y[i] == +1) {
+            if (y[i] == 1) {
                 if (isUpperBound(i)) {
                     lb1 = Math.max(lb1, grad[i]);
                 } else if (isLowerBound(i)) {
                     ub1 = Math.min(ub1, grad[i]);
                 } else {
-                    ++nrFree1;
+                    nrFree1++;
                     sumFree1 += grad[i];
                 }
             } else {
@@ -238,25 +225,14 @@ public final class SolverNU extends SolverC {
                 } else if (isLowerBound(i)) {
                     ub2 = Math.min(ub2, grad[i]);
                 } else {
-                    ++nrFree2;
+                    nrFree2++;
                     sumFree2 += grad[i];
                 }
             }
         }
 
-        double r1;
-        double r2;
-        if (nrFree1 > 0) {
-            r1 = sumFree1 / nrFree1;
-        } else {
-            r1 = (ub1 + lb1) / 2;
-        }
-
-        if (nrFree2 > 0) {
-            r2 = sumFree2 / nrFree2;
-        } else {
-            r2 = (ub2 + lb2) / 2;
-        }
+        double r1 = (nrFree1 > 0) ? sumFree1 / nrFree1 : (ub1 + lb1) / 2;
+        double r2 = (nrFree2 > 0) ? sumFree2 / nrFree2 : (ub2 + lb2) / 2;
 
         si.r = (r1 + r2) / 2;
         return (r1 - r2) / 2;

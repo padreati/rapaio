@@ -45,7 +45,7 @@ public class ModelInfo {
         public double probB;
     }
 
-    private static record SupportVector(int index, int levelIndex, double coefficient) {
+    private record SupportVector(int index, int levelIndex, double coefficient) {
     }
 
     public ModelInfo(ProblemInfo pi) {

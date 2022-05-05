@@ -171,7 +171,7 @@ public class MathTools {
      * Used in golden-ratio search.
      * Somehow inputting the number directly improves accuracy
      */
-    public static final double kInvGoldRatio =
+    public static final double SQR_INV_GOLDEN_RATIO =
             0.38196601125010515179541316563436188227969082019423713786455137729473953718109755029279279581060886251524591192461310824;
 
     public static final double SMALL_ERR = 1e-10;

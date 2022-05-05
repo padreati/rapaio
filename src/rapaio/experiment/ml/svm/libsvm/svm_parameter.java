@@ -21,7 +21,9 @@
 
 package rapaio.experiment.ml.svm.libsvm;
 
-public class svm_parameter implements Cloneable, java.io.Serializable {
+import java.io.Serializable;
+
+public class svm_parameter implements Cloneable, Serializable {
     /* svm_type */
     public static final int C_SVC = 0;
     public static final int NU_SVC = 1;

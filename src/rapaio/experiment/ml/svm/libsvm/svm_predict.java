@@ -26,13 +26,13 @@ import java.io.IOException;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 
-class svm_predict {
+public class svm_predict {
 
     static void info(String s) {
         System.out.println(s);
     }
 
-    public static record Prediction(double[] classes, DMatrix density) {
+    public record Prediction(double[] classes, DMatrix density) {
     }
 
     public static Prediction predict(svm_model model, DMatrix xs, int predict_probability) throws IOException {

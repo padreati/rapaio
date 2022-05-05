@@ -27,7 +27,7 @@ import java.util.Vector;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 
-class svm_train {
+public class svm_train {
     private svm_parameter param;        // set by parse_command_line
     private svm_problem prob;        // set by read_problem
     private svm_model model;

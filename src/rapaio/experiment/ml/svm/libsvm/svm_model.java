@@ -22,8 +22,9 @@
 package rapaio.experiment.ml.svm.libsvm;
 
 
-public class svm_model implements java.io.Serializable
-{
+import java.io.Serializable;
+
+public class svm_model implements Serializable {
     public svm_parameter param;	// parameter
     public int nr_class;		// number of classes, = 2 in regression/one class svm
     public int l;			// total #SV

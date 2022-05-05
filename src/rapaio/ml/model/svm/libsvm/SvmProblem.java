@@ -23,7 +23,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import rapaio.math.linear.DVector;
 
-public class svm_problem implements java.io.Serializable {
+public class SvmProblem implements java.io.Serializable {
     public int len;
     public DVector[] xs;
     public double[] y;

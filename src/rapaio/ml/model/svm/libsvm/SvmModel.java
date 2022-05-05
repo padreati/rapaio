@@ -21,11 +21,13 @@
 
 package rapaio.ml.model.svm.libsvm;
 
+import java.io.Serializable;
+
 import rapaio.math.linear.DVector;
 
-public class svm_model implements java.io.Serializable {
+public class SvmModel implements Serializable {
 
-    public svm_parameter param;    // parameter
+    public SvmParameter param;    // parameter
     public int nr_class;        // number of classes, = 2 in regression/one class svm
     public int l;            // total #SV
     public DVector[] SV;    // SVs (SV[l])

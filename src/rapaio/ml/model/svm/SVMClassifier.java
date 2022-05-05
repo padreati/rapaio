@@ -44,7 +44,7 @@ import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.svm.libsvm.ModelInfo;
 import rapaio.ml.model.svm.libsvm.ProblemInfo;
 import rapaio.ml.model.svm.libsvm.Svm;
-import rapaio.ml.model.svm.libsvm.svm_model;
+import rapaio.ml.model.svm.libsvm.SvmModel;
 import rapaio.util.collection.DoubleArrays;
 
 public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResult, RunInfo<SVMClassifier>> {
@@ -112,8 +112,7 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
      */
     public final MultiParam<String, Double, SVMClassifier> wi = new MultiParam<>(this, Map.of(), "wi", Objects::nonNull);
 
-
-    private svm_model svm_model;
+    private SvmModel svm_model;
     private ProblemInfo problemInfo;
     private ModelInfo modelInfo;
 
@@ -200,64 +199,4 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
         }
         return result;
     }
-
-    /*
-    protected void predictValues() {
-        int nr_class = model.nr_class;
-        int l = model.l;
-
-        double[] kvalue = new double[l];
-        for (i = 0; i < l; i++) {
-            kvalue[i] = model.param.kernel.compute(x, model.SV[i]);
-        }
-
-        int[] start = new int[nr_class];
-        start[0] = 0;
-        for (i = 1; i < nr_class; i++) {
-            start[i] = start[i - 1] + model.nSV[i - 1];
-        }
-
-        int[] vote = new int[nr_class];
-
-        int p = 0;
-        for (i = 0; i < nr_class; i++) {
-            for (int j = i + 1; j < nr_class; j++) {
-                double sum = 0;
-                int si = start[i];
-                int sj = start[j];
-                int ci = model.nSV[i];
-                int cj = model.nSV[j];
-
-                int k;
-                double[] coef1 = model.sv_coef[j - 1];
-                double[] coef2 = model.sv_coef[i];
-                for (k = 0; k < ci; k++) {
-                    sum += coef1[si + k] * kvalue[si + k];
-                }
-                for (k = 0; k < cj; k++) {
-                    sum += coef2[sj + k] * kvalue[sj + k];
-                }
-                sum -= model.rho[p];
-                decisionValues[p] = sum;
-
-                if (decisionValues[p] > 0) {
-                    ++vote[i];
-                } else {
-                    ++vote[j];
-                }
-                p++;
-            }
-        }
-
-        int vote_max_idx = 0;
-        for (i = 1; i < nr_class; i++) {
-            if (vote[i] > vote[vote_max_idx]) {
-                vote_max_idx = i;
-            }
-        }
-
-        return model.label[vote_max_idx];
-    }
-     */
-
 }

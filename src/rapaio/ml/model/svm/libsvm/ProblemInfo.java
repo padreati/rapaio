@@ -87,8 +87,8 @@ public record ProblemInfo(DVector[] xs, double[] y,
                 parent.nu.get(), parent.p.get(), parent.shrinking.get(), parent.probability.get());
     }
 
-    public svm_parameter computeParameters() {
-        svm_parameter param = new svm_parameter();
+    public SvmParameter computeParameters() {
+        SvmParameter param = new SvmParameter();
         param.svmType = type == SVMClassifier.Penalty.C ? 0 : 1;
         param.kernel = kernel;
 
@@ -121,8 +121,8 @@ public record ProblemInfo(DVector[] xs, double[] y,
         return param;
     }
 
-    public svm_problem computeProblem() {
-        svm_problem prob = new svm_problem();
+    public SvmProblem computeProblem() {
+        SvmProblem prob = new SvmProblem();
         prob.len = xs.length;
         prob.xs = xs;
         prob.y = y;

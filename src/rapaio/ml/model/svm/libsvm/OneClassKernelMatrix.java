@@ -28,7 +28,7 @@ class OneClassKernelMatrix extends AbstractKernelMatrix {
     private final Cache cache;
     private final double[] qd;
 
-    OneClassKernelMatrix(svm_problem prob, svm_parameter param) {
+    OneClassKernelMatrix(SvmProblem prob, SvmParameter param) {
         super(prob.xs, param.kernel);
         cache = new Cache(prob.len, param.cacheSize * (1 << 20));
         qd = new double[prob.len];

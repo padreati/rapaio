@@ -47,9 +47,9 @@ import rapaio.util.collection.TArrays;
 public class SolverC {
     private static final Logger LOGGER = Logger.getLogger(SolverC.class.getName());
 
-    static final byte ALPHA_STATUS_LOWER_BOUND = 0;
-    static final byte ALPHA_STATUS_UPPER_BOUND = 1;
-    static final byte ALPHA_STATUS_FREE = 2;
+    private static final byte ALPHA_STATUS_LOWER_BOUND = 0;
+    private static final byte ALPHA_STATUS_UPPER_BOUND = 1;
+    private static final byte ALPHA_STATUS_FREE = 2;
 
     int activeSize;
     byte[] y;
@@ -68,10 +68,10 @@ public class SolverC {
     boolean unshrink;    // XXX
 
     double getC(int i) {
-        return (y[i] > 0) ? cp : cn;
+        return y[i] > 0 ? cp : cn;
     }
 
-    void update_alpha_status(int i) {
+    void updateAlphaStatus(int i) {
         if (alpha[i] >= getC(i)) {
             alphaStatus[i] = ALPHA_STATUS_UPPER_BOUND;
         } else if (alpha[i] <= 0) {
@@ -153,7 +153,7 @@ public class SolverC {
     void initializeAlphaStatus(int trainingSize) {
         alphaStatus = new byte[trainingSize];
         for (int i = 0; i < trainingSize; i++) {
-            update_alpha_status(i);
+            updateAlphaStatus(i);
         }
     }
 
@@ -341,8 +341,8 @@ public class SolverC {
 
             boolean ui = isUpperBound(i);
             boolean uj = isUpperBound(j);
-            update_alpha_status(i);
-            update_alpha_status(j);
+            updateAlphaStatus(i);
+            updateAlphaStatus(j);
             int k;
             if (ui != isUpperBound(i)) {
                 qi = Q.getQ(i, len);
@@ -378,7 +378,7 @@ public class SolverC {
                 activeSize = len;
                 LOGGER.info("*");
             }
-            System.err.print("\nWARNING: reaching max number of iterations\n");
+            LOGGER.severe("\nWARNING: reaching max number of iterations\n");
         }
 
         // calculate rho
@@ -501,10 +501,10 @@ public class SolverC {
 
     private boolean needsShrinking(int i, double gradMax1, double gradMax2) {
         if (isUpperBound(i)) {
-            return (y[i] == +1) ? -grad[i] > gradMax1 : -grad[i] > gradMax2;
+            return (y[i] == 1) ? -grad[i] > gradMax1 : -grad[i] > gradMax2;
         }
         if (isLowerBound(i)) {
-            return (y[i] == +1) ? grad[i] > gradMax2 : grad[i] > gradMax1;
+            return (y[i] == 1) ? grad[i] > gradMax2 : grad[i] > gradMax1;
         }
         return (false);
     }

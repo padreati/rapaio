@@ -30,10 +30,12 @@ import rapaio.util.collection.TArrays;
  * Kernel cache.
  */
 public class Cache {
+
     /**
      * Number of training dataset instances.
      */
     private final int len;
+
     /**
      * Number of entries available in cache. An entry is a value slot in any position.
      * When we add entries to cache we should remove others which are already there.
@@ -47,10 +49,6 @@ public class Cache {
 
         public int len() {
             return data == null ? 0 : data.length;
-        }
-
-        public boolean isEmpty() {
-            return data == null;
         }
     }
 
@@ -69,7 +67,7 @@ public class Cache {
     }
 
     private void lruUnlink(Entry h) {
-        if (h.isEmpty()) {
+        if (h.len() == 0) {
             return;
         }
         // delete from current location
@@ -78,7 +76,7 @@ public class Cache {
     }
 
     private void lruLink(Entry h) {
-        if (h.isEmpty()) {
+        if (h.len() == 0) {
             return;
         }
         // insert to last position
