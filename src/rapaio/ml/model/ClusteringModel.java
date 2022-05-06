@@ -194,9 +194,9 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
         return new FitSetup(df, weights);
     }
 
-    public abstract M coreFit(Frame df, Var weights);
+    protected abstract M coreFit(Frame df, Var weights);
 
-    public abstract R corePredict(Frame df, boolean withScores);
+    protected abstract R corePredict(Frame df, boolean withScores);
 
     private record FitSetup(Frame df, Var weights) {
     }

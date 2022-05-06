@@ -36,7 +36,7 @@ import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.RBFKernel;
-import rapaio.ml.model.svm.SVMClassifier;
+import rapaio.ml.model.svm.SvmClassifier;
 import rapaio.sys.Experimental;
 import rapaio.sys.WS;
 
@@ -48,12 +48,12 @@ public class SvmClassifierTest {
         double gamma = 50;
         double c = 1;
 
-        SVMClassifier svm1 = new SVMClassifier()
+        SvmClassifier svm1 = new SvmClassifier()
                 .kernel.set(new RBFKernel(gamma))
                 .c.set(c)
                 .probability.set(true);
 
-        SVMClassifier svm2 = new SVMClassifier()
+        SvmClassifier svm2 = new SvmClassifier()
                 .kernel.set(new RBFKernel(gamma))
                 .c.set(c)
                 .probability.set(false);
@@ -85,7 +85,7 @@ public class SvmClassifierTest {
         WS.draw(grid);
     }
 
-    private static VectorDataGrid computMesh(SVMClassifier svm1, Var x1, Var x2) {
+    private static VectorDataGrid computMesh(SvmClassifier svm1, Var x1, Var x2) {
         VectorDataGrid mg = new VectorDataGrid(3, x1.dv().min(), x1.dv().max(), x2.dv().min(), x2.dv().max(), 0.005);
         var x = mg.getXRange();
         var y = mg.getYRange();

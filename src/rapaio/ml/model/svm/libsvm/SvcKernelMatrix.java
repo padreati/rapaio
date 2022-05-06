@@ -24,6 +24,7 @@ package rapaio.ml.model.svm.libsvm;
 import java.util.Arrays;
 
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
@@ -33,25 +34,21 @@ import rapaio.util.collection.TArrays;
  */
 class SvcKernelMatrix extends AbstractKernelMatrix {
     private final byte[] y;
-    private final Cache cache;
-    private final double[] qd;
 
     public SvcKernelMatrix(int l, DVector[] xs, Kernel kernel, long cacheSize, byte[] y) {
-        super(xs, kernel);
+        super(xs, kernel, new Cache(l, cacheSize * (1 << 20)), new double[l]);
         this.y = Arrays.copyOf(y, y.length);
-        this.cache = new Cache(l, cacheSize * (1 << 20));
-        this.qd = new double[l];
         for (int i = 0; i < l; i++) {
             this.qd[i] = kernel.compute(xs[i], xs[i]);
         }
     }
 
-    double[] getQ(int i, int len) {
-        Reference<double[]> data = new Reference<>();
+    DVectorDense getQ(int i, int len) {
+        Reference<DVectorDense> data = new Reference<>();
         int start = cache.getData(i, data, len);
         if (start < len) {
             for (int j = start; j < len; j++) {
-                data.get()[j] = y[i] * y[j] * kernel.compute(xs[i], xs[j]);
+                data.get().set(j, y[i] * y[j] * kernel.compute(xs[i], xs[j]));
             }
         }
         return data.get();

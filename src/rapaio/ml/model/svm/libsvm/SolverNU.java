@@ -21,6 +21,8 @@
 
 package rapaio.ml.model.svm.libsvm;
 
+import rapaio.math.linear.dense.DVectorDense;
+
 /**
  * Solver for nu-svm classification and regression.
  * <p>
@@ -56,7 +58,7 @@ public final class SolverNU extends SolverC {
         double obj_diff_min = Double.POSITIVE_INFINITY;
 
         for (int t = 0; t < activeSize; t++) {
-            if (y[t] == +1) {
+            if (y[t] == 1) {
                 if (!isUpperBound(t)) {
                     if (-grad[t] >= gmaxp) {
                         gmaxp = -grad[t];
@@ -75,8 +77,8 @@ public final class SolverNU extends SolverC {
 
         int ip = gmaxpIdx;
         int in = gmaxnIdx;
-        double[] qip = null;
-        double[] qin = null;
+        DVectorDense qip = null;
+        DVectorDense qin = null;
 
         // null Q_ip not accessed: Gmaxp=-INF if ip=-1
         if (ip != -1) {
@@ -87,7 +89,7 @@ public final class SolverNU extends SolverC {
         }
 
         for (int j = 0; j < activeSize; j++) {
-            if (y[j] == +1) {
+            if (y[j] == 1) {
                 if (!isLowerBound(j)) {
                     double gradDiff = gmaxp + grad[j];
                     if (grad[j] >= gmaxp2) {
@@ -95,7 +97,7 @@ public final class SolverNU extends SolverC {
                     }
                     if (gradDiff > 0) {
                         double objDiff;
-                        double quadCoef = qd[ip] + qd[j] - 2 * qip[j];
+                        double quadCoef = qd[ip] + qd[j] - 2 * qip.get(j);
                         if (quadCoef > 0) {
                             objDiff = -(gradDiff * gradDiff) / quadCoef;
                         } else {
@@ -116,7 +118,7 @@ public final class SolverNU extends SolverC {
                     }
                     if (gradDiff > 0) {
                         double objDiff;
-                        double quadCoef = qd[in] + qd[j] - 2 * qin[j];
+                        double quadCoef = qd[in] + qd[j] - 2 * qin.get(j);
                         if (quadCoef > 0) {
                             objDiff = -(gradDiff * gradDiff) / quadCoef;
                         } else {
@@ -135,7 +137,7 @@ public final class SolverNU extends SolverC {
         if (Math.max(gmaxp + gmaxp2, gmaxn + gmaxn2) < eps || Gmin_idx == -1) {
             return null;
         }
-        return new WorkingSet(y[Gmin_idx] == +1 ? gmaxpIdx : gmaxnIdx, Gmin_idx);
+        return new WorkingSet(y[Gmin_idx] == 1 ? gmaxpIdx : gmaxnIdx, Gmin_idx);
     }
 
     private boolean beShrunk(int i, double gmax1, double gmax2, double gmax3, double gmax4) {
@@ -178,7 +180,7 @@ public final class SolverNU extends SolverC {
             }
         }
 
-        if (!unshrink && Math.max(Gmax1 + Gmax2, Gmax3 + Gmax4) <= eps * 10) {
+        if (!unshrink && StrictMath.max(Gmax1 + Gmax2, Gmax3 + Gmax4) <= eps * 10) {
             unshrink = true;
             reconstruct_gradient();
             activeSize = len;

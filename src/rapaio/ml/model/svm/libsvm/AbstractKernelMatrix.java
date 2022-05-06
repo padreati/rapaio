@@ -24,22 +24,27 @@ package rapaio.ml.model.svm.libsvm;
 import java.util.Arrays;
 
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.util.collection.TArrays;
 
-abstract class AbstractKernelMatrix {
+public abstract class AbstractKernelMatrix {
 
     protected final DVector[] xs;
     protected final Kernel kernel;
+    protected final Cache cache;
+    protected final double[] qd;
 
-    AbstractKernelMatrix(DVector[] xs, Kernel kernel) {
+    AbstractKernelMatrix(DVector[] xs, Kernel kernel, Cache cache, double[] qd) {
         this.kernel = kernel;
         this.xs = Arrays.copyOf(xs, xs.length);
+        this.cache = cache;
+        this.qd = qd;
     }
 
     abstract double[] getQD();
 
-    abstract double[] getQ(int column, int len);
+    abstract DVectorDense getQ(int column, int len);
 
     void swapIndex(int i, int j) {
         TArrays.swap(xs, i, j);

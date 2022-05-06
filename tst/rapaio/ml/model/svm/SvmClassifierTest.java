@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
@@ -22,7 +23,7 @@ import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.sys.WS;
 
-public class SVMClassifierTest {
+public class SvmClassifierTest {
 
     private static final double TOL = 1e-16;
 
@@ -48,14 +49,16 @@ public class SVMClassifierTest {
                 "-g", "0.7",
                 "-c", "10",
                 "-b", "1"};
+        RandomSource.setSeed(42);
         svm_model model = t.run(xs, ys, argv);
         svm_predict.Prediction pred = svm_predict.predict(model, xs, 1);
 
-        SVMClassifier c = new SVMClassifier()
-                .type.set(SVMClassifier.Penalty.C)
+        SvmClassifier c = new SvmClassifier()
+                .type.set(SvmClassifier.Penalty.C)
                 .c.set(10.0)
                 .probability.set(true)
                 .kernel.set(new RBFKernel(0.7));
+        RandomSource.setSeed(42);
         ClassifierResult cpred = c.fit(iris, "class").predict(iris);
         DMatrix cdensity = DMatrix.copy(cpred.firstDensity()).removeCols(0);
 
@@ -74,15 +77,17 @@ public class SVMClassifierTest {
                 "-g", "0.7",
                 "-c", "10",
                 "-b", "0"};
+        RandomSource.setSeed(42);
         svm_model model = t.run(xs, ys, argv);
         svm_predict.Prediction pred = svm_predict.predict(model, xs, 1);
 
-        SVMClassifier c = new SVMClassifier()
-                .type.set(SVMClassifier.Penalty.C)
+        SvmClassifier c = new SvmClassifier()
+                .type.set(SvmClassifier.Penalty.C)
                 .c.set(10.0)
                 .probability.set(false)
                 .kernel.set(new RBFKernel(0.7));
 
+        RandomSource.setSeed(42);
         ClassifierResult cpred = c.fit(iris, "class").predict(iris, true, true);
         for (int i = 0; i < pred.classes().length; i++) {
             int cls = (int) pred.classes()[i];
@@ -99,13 +104,15 @@ public class SVMClassifierTest {
                 "-n", "0.1",
                 "-b", "1"};
         svm_model model = t.run(xs, ys, argv);
+        RandomSource.setSeed(42);
         svm_predict.Prediction pred = svm_predict.predict(model, xs, 1);
 
-        SVMClassifier c = new SVMClassifier()
-                .type.set(SVMClassifier.Penalty.NU)
+        SvmClassifier c = new SvmClassifier()
+                .type.set(SvmClassifier.Penalty.NU)
                 .nu.set(.1)
                 .probability.set(true)
                 .kernel.set(new RBFKernel(0.7));
+        RandomSource.setSeed(42);
         ClassifierResult cpred = c.fit(iris, "class").predict(iris);
         DMatrix cdensity = DMatrix.copy(cpred.firstDensity()).removeCols(0);
 
@@ -127,8 +134,8 @@ public class SVMClassifierTest {
         svm_model model = t.run(xs, ys, argv);
         svm_predict.Prediction pred = svm_predict.predict(model, xs, 1);
 
-        SVMClassifier c = new SVMClassifier()
-                .type.set(SVMClassifier.Penalty.NU)
+        SvmClassifier c = new SvmClassifier()
+                .type.set(SvmClassifier.Penalty.NU)
                 .nu.set(.1)
                 .probability.set(false)
                 .kernel.set(new RBFKernel(0.7));

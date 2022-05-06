@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.StringTokenizer;
 
+import rapaio.core.RandomSource;
+
 //
 // Kernel Cache
 //
@@ -386,7 +388,7 @@ class Solver {
     int l;
     boolean unshrink;    // XXX
 
-    static final double INF = java.lang.Double.POSITIVE_INFINITY;
+    static final double INF = Double.POSITIVE_INFINITY;
 
     double get_C(int i) {
         return (y[i] > 0) ? Cp : Cn;
@@ -1362,14 +1364,14 @@ public class svm {
     // construct and solve various formulations
     //
     public static final int LIBSVM_VERSION = 325;
-    public static Random rand = new Random();
+    public static Random rand = RandomSource.getRandom();
     private static svm_print_interface svm_print_stdout = new svm_print_interface() {
         public void print(String s) {
-            System.out.print(s);
-            System.out.flush();
+//            System.out.print(s);
+//            System.out.flush();
         }
     };
-    private static svm_print_interface svm_print_string = svm_print_stdout;
+    private static svm_print_interface svm_print_string = s -> {};
 
     static void info(String s) {
         svm_print_string.print(s);
@@ -1803,7 +1805,6 @@ public class svm {
 
     // Cross-validation decision values for probability estimates
     private static void svm_binary_svc_probability(svm_problem prob, svm_parameter param, double Cp, double Cn, double[] probAB) {
-        rand = new Random(42);
         int i;
         int nr_fold = 5;
         int[] perm = new int[prob.l];

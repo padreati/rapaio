@@ -212,6 +212,25 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
     DVector copy();
 
     /**
+     * Creates a dense copy of the same size.
+     *
+     * @return new dense vector copy
+     */
+    default DVectorDense denseCopy() {
+        return denseCopy(size());
+    }
+
+    /**
+     * Creates a dense copy with a new length. If the length is less than the actual size of the vector a new dense copy is created
+     * having only the first {@code len} values. If the length is greater or equal with the actual size, a dense vector copy is created
+     * having the first {@code len} values as in the original vector, while the remaining values are zero padded.
+     *
+     * @param len length of new vector
+     * @return new dense vector copy
+     */
+    DVectorDense denseCopy(int len);
+
+    /**
      * Gets value from zero-based position index.
      *
      * @param i given position
@@ -238,6 +257,24 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param value value to be set
      */
     DVector fill(double value);
+
+    /**
+     * Swap values from positions {@code i} and {@code j}.
+     *
+     * @param i position of the first value.
+     * @param j position of the second value.
+     */
+    void swap(int i, int j);
+
+    /**
+     * Swap value from two intervals. First interval starts at position {@code i}, second
+     * interval starts at position {@code j}, both intervals having length {@code len}.
+     *
+     * @param i   start position of the first interval
+     * @param j   start postion of the second interval
+     * @param len length of the intervals
+     */
+    void swap(int i, int j, int len);
 
     /**
      * Adds value {@param x} to all vector elements.

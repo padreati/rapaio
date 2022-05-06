@@ -21,12 +21,9 @@
 
 package rapaio.ml.model.svm;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -47,53 +44,50 @@ import rapaio.ml.model.svm.libsvm.Svm;
 import rapaio.ml.model.svm.libsvm.SvmModel;
 import rapaio.util.collection.DoubleArrays;
 
-public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResult, RunInfo<SVMClassifier>> {
-
-    private static final Logger LOGGER = Logger.getLogger(SVMClassifier.class.getName());
+public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResult, RunInfo<SvmClassifier>> {
 
     public enum Penalty {
         C,
         NU
     }
 
-    public final ValueParam<Penalty, SVMClassifier> type = new ValueParam<>(this, Penalty.C, "penalty");
+    public final ValueParam<Penalty, SvmClassifier> type = new ValueParam<>(this, Penalty.C, "penalty");
 
     /**
-     * Kernel function.
+     * Kernel function (default rbf(1)).
      */
-    public final ValueParam<Kernel, SVMClassifier> kernel = new ValueParam<>(this, new RBFKernel(1), "kernel");
+    public final ValueParam<Kernel, SvmClassifier> kernel = new ValueParam<>(this, new RBFKernel(1), "kernel");
 
     /**
-     * -c cost : set the parameter c of c-SVC, epsilon-SVR, and nu-SVR (default 1).
+     * Parameter C of c-SVC, epsilon-SVR, and nu-SVR (default 1).
      */
-    public final ValueParam<Double, SVMClassifier> c = new ValueParam<>(this, 1.0, "cost", value -> Double.isFinite(value) && value > 0);
+    public final ValueParam<Double, SvmClassifier> c = new ValueParam<>(this, 1.0, "cost", value -> Double.isFinite(value) && value > 0);
 
     /**
-     * -n nu : set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5)
+     * Parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5).
      */
-    public final ValueParam<Double, SVMClassifier> nu = new ValueParam<>(this, 0.5, "nu", v -> Double.isFinite(v) && v > 0 && v < 1);
+    public final ValueParam<Double, SvmClassifier> nu = new ValueParam<>(this, 0.5, "nu", v -> Double.isFinite(v) && v > 0 && v < 1);
 
     /**
-     * -p epsilon : set the epsilon in loss function of epsilon-SVR (default 0.1)
+     * Cache size in MB (default 100MB).
      */
-    public final ValueParam<Double, SVMClassifier> p = new ValueParam<>(this, 0.1, "p", v -> Double.isFinite(v) && v >= 0);
-
-    public final ValueParam<Long, SVMClassifier> cacheSize = new ValueParam<>(this, 100L, "cacheSize", size -> size > 0);
+    public final ValueParam<Long, SvmClassifier> cacheSize = new ValueParam<>(this, 100L, "cacheSize", size -> size > 0);
 
     /**
-     * -e epsilon : set tolerance of termination criterion (default 0.001)
+     * Tolerance of termination criterion (default 0.001).
      */
-    public final ValueParam<Double, SVMClassifier> eps = new ValueParam<>(this, 0.001, "eps", value -> Double.isFinite(value) && value > 0);
+    public final ValueParam<Double, SvmClassifier> tolerance = new ValueParam<>(this, 0.001,
+            "tolerance", value -> Double.isFinite(value) && value > 0);
 
     /**
-     * -h shrinking : whether to use the shrinking heuristics, 0 or 1 (default 1).
+     * Flag for use of shrinking heuristics (default true).
      */
-    public final ValueParam<Boolean, SVMClassifier> shrinking = new ValueParam<>(this, true, "shrinking");
+    public final ValueParam<Boolean, SvmClassifier> shrinking = new ValueParam<>(this, true, "shrinking");
 
     /**
-     * -b probability_estimates : whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0).
+     * Whether to train a SVC or SVR model for probability estimates (default false).
      */
-    public final ValueParam<Boolean, SVMClassifier> probability = new ValueParam<>(this, false, "probability");
+    public final ValueParam<Boolean, SvmClassifier> probability = new ValueParam<>(this, false, "probability");
 
     /**
      * Training levels used for classification. If this is not specified than the training levels are determined
@@ -101,7 +95,7 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
      * <p>
      * If one specifies explicitly the training levels here, only those levels will be used for classification.
      */
-    public final ListParam<String, SVMClassifier> levels = new ListParam<>(this, List.of(), "levels", (l1, l2) -> l2 != null);
+    public final ListParam<String, SvmClassifier> levels = new ListParam<>(this, List.of(), "levels", (l1, l2) -> l2 != null);
 
     /**
      * Weighting specific for each training level. The effect will be that the penalty coefficient for each target level
@@ -110,15 +104,15 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
      * specified in {@link #targetLevels}, than a default value of {@code 1} is considered. The default value for this
      * parameter is an empty map, which is equivalent with all weighting equal {@code 1}.
      */
-    public final MultiParam<String, Double, SVMClassifier> wi = new MultiParam<>(this, Map.of(), "wi", Objects::nonNull);
+    public final MultiParam<String, Double, SvmClassifier> wi = new MultiParam<>(this, Map.of(), "wi", Objects::nonNull);
 
     private SvmModel svm_model;
     private ProblemInfo problemInfo;
     private ModelInfo modelInfo;
 
     @Override
-    public ClassifierModel<SVMClassifier, ClassifierResult, RunInfo<SVMClassifier>> newInstance() {
-        return new SVMClassifier().copyParameterValues(this);
+    public ClassifierModel<SvmClassifier, ClassifierResult, RunInfo<SvmClassifier>> newInstance() {
+        return new SvmClassifier().copyParameterValues(this);
     }
 
     @Override
@@ -163,9 +157,6 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
                 double[] prob = new double[k];
                 double score = Svm.svm_predict_probability(svm_model, xs.mapRow(i), prob);
 
-                LOGGER.finest("i:%d, score:%f, values:%s".formatted(
-                        i, score, Arrays.stream(prob).mapToObj(String::valueOf).collect(Collectors.joining(","))));
-
                 result.firstClasses().setLabel(i, problemInfo.levels().get((int) score));
                 for (int j = 0; j < k; j++) {
                     result.firstDensity().setDouble(i, j + 1, prob[j]);
@@ -173,9 +164,6 @@ public class SVMClassifier extends ClassifierModel<SVMClassifier, ClassifierResu
             } else {
                 double[] values = new double[k * (k - 1) / 2];
                 double score = Svm.svm_predict_values(svm_model, xs.mapRow(i), values);
-
-                LOGGER.finest("i:%d, score:%f, values:%s".formatted(
-                        i, score, Arrays.stream(values).mapToObj(String::valueOf).collect(Collectors.joining(","))));
 
                 result.firstClasses().setLabel(i, problemInfo.levels().get((int) score));
                 for (int j = 0; j < k; j++) {

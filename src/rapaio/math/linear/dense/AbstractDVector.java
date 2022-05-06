@@ -61,6 +61,29 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
+    public DVectorDense denseCopy(int len) {
+        double[] copy = new double[len];
+        for (int i = 0; i < Math.min(size(), len); i++) {
+            copy[i] = get(i);
+        }
+        return new DVectorDense(0, len, copy);
+    }
+
+    @Override
+    public void swap(final int a, final int b) {
+        final double t = get(a);
+        set(a, get(b));
+        set(b, t);
+    }
+
+    @Override
+    public void swap(int a, int b, final int n) {
+        for (int i = 0; i < n; i++, a++, b++) {
+            swap(a, b);
+        }
+    }
+
+    @Override
     public DVector add(double x) {
         for (int i = 0; i < size(); i++) {
             inc(i, x);
@@ -567,18 +590,6 @@ public abstract class AbstractDVector implements DVector {
             if (m != i) {
                 swap(m, i);
             }
-        }
-    }
-
-    private void swap(final int a, final int b) {
-        final double t = get(a);
-        set(a, get(b));
-        set(b, t);
-    }
-
-    private void swap(int a, int b, final int n) {
-        for (int i = 0; i < n; i++, a++, b++) {
-            swap(a, b);
         }
     }
 

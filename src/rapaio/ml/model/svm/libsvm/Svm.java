@@ -24,6 +24,7 @@ package rapaio.ml.model.svm.libsvm;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import rapaio.core.RandomSource;
 import rapaio.experiment.ml.svm.libsvm.svm_parameter;
 import rapaio.math.linear.DVector;
 import rapaio.util.collection.IntArrays;
@@ -33,7 +34,7 @@ public class Svm {
 
     private static final Logger LOGGER = Logger.getLogger(Svm.class.getName());
 
-    public static Random rand = new Random();
+    public static final Random rand = RandomSource.getRandom();
 
     private static SolutionInfo solve_c_svc(SvmProblem prob, SvmParameter param, double[] alpha, double cp, double cn) {
         int l = prob.len;
@@ -248,7 +249,7 @@ public class Svm {
         return new Decision(alpha, si.rho);
     }
 
-    // Platt's binary SVM Probablistic Output: an improvement from Lin et al.
+    // Platt's binary SVM Probabilistic Output: an improvement from Lin et al.
     public static double[] sigmoid_train(int l, double[] decisionValues, double[] labels) {
         double a;
         double b;
@@ -436,16 +437,12 @@ public class Svm {
 
     // Cross-validation decision values for probability estimates
     public static double[] svm_binary_svc_probability(SvmProblem prob, SvmParameter param, double cp, double cn) {
-        rand = new Random(42);
         int i;
         int nr_fold = 5;
-        int[] perm = new int[prob.len];
+        int[] perm = IntArrays.newSeq(0, prob.len);
         double[] dec_values = new double[prob.len];
 
         // random shuffle
-        for (i = 0; i < prob.len; i++) {
-            perm[i] = i;
-        }
         for (i = 0; i < prob.len; i++) {
             int j = i + rand.nextInt(prob.len - i);
             TArrays.swap(perm, i, j);
@@ -1088,7 +1085,7 @@ public class Svm {
     record Decision(double[] alpha, double rho) {
     }
 
-    static class SolutionInfo {
+    public static class SolutionInfo {
         double obj;
         double rho;
         double pUpperBound;

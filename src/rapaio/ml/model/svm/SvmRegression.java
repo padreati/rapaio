@@ -21,11 +21,12 @@
 
 package rapaio.ml.model.svm;
 
-import java.util.List;
+import java.util.logging.Logger;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.math.linear.DMatrix;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.kernel.Kernel;
@@ -33,11 +34,14 @@ import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
-import rapaio.sys.Experimental;
+import rapaio.ml.model.svm.libsvm.ModelInfo;
+import rapaio.ml.model.svm.libsvm.ProblemInfo;
+import rapaio.ml.model.svm.libsvm.Svm;
+import rapaio.ml.model.svm.libsvm.SvmModel;
 
-@Deprecated
-@Experimental
 public class SvmRegression extends RegressionModel<SvmRegression, RegressionResult, RunInfo<SvmRegression>> {
+
+    private static final Logger LOGGER = Logger.getLogger(SvmRegression.class.getName());
 
     public enum Penalty {
         C,
@@ -62,24 +66,28 @@ public class SvmRegression extends RegressionModel<SvmRegression, RegressionResu
     public final ValueParam<Double, SvmRegression> nu = new ValueParam<>(this, 0.5, "nu", v -> Double.isFinite(v) && v > 0 && v < 1);
 
     /**
-     * -p epsilon : set the epsilon in loss function of epsilon-SVR (default 0.1)
+     * Parameter epsilon in loss function of epsilon-SVR (default 0.1)
      */
-    public final ValueParam<Double, SvmRegression> p = new ValueParam<>(this, 0.1, "p", v -> Double.isFinite(v) && v >= 0);
+    public final ValueParam<Double, SvmRegression> epsilon = new ValueParam<>(this, 0.1, "epsilon", v -> Double.isFinite(v) && v >= 0);
 
+    /**
+     * Cache size in MB (default 100MB).
+     */
     public final ValueParam<Long, SvmRegression> cacheSize = new ValueParam<>(this, 100L, "cacheSize", size -> size > 0);
 
     /**
-     * -e epsilon : set tolerance of termination criterion (default 0.001)
+     * Tolerance of termination criterion (default 0.001).
      */
-    public final ValueParam<Double, SvmRegression> eps = new ValueParam<>(this, 0.001, "eps", value -> Double.isFinite(value) && value > 0);
+    public final ValueParam<Double, SvmRegression> tolerance = new ValueParam<>(this, 0.001,
+            "tolerance", value -> Double.isFinite(value) && value > 0);
 
     /**
-     * -h shrinking : whether to use the shrinking heuristics, 0 or 1 (default 1).
+     * Flag for use of shrinking heuristics (default true).
      */
     public final ValueParam<Boolean, SvmRegression> shrinking = new ValueParam<>(this, true, "shrinking");
 
     /**
-     * -b probability_estimates : whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0).
+     * Whether to train a SVC or SVR model for probability estimates (default false).
      */
     public final ValueParam<Boolean, SvmRegression> probability = new ValueParam<>(this, false, "probability");
 
@@ -102,13 +110,38 @@ public class SvmRegression extends RegressionModel<SvmRegression, RegressionResu
                 .targets(1, 1, false, VarType.DOUBLE, VarType.BINARY, VarType.INT);
     }
 
+    private SvmModel svm_model;
+    private ProblemInfo problemInfo;
+    private ModelInfo modelInfo;
+
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        return false;
+        DMatrix x = DMatrix.copy(df.mapVars(inputNames));
+        Var target = df.rvar(firstTargetName());
+
+        ProblemInfo pi = ProblemInfo.from(x, target, this);
+
+        pi.checkValidProblem();
+
+        svm_model = Svm.svm_train(pi.computeProblem(), pi.computeParameters());
+        problemInfo = pi;
+
+        modelInfo = new ModelInfo(pi);
+
+        return true;
     }
 
     @Override
     protected RegressionResult corePredict(Frame df, boolean withResiduals, double[] quantiles) {
-        return null;
+        RegressionResult result = RegressionResult.build(this, df, withResiduals, quantiles);
+        DMatrix xs = DMatrix.copy(df.mapVars(inputNames));
+        for (int i = 0; i < xs.rows(); i++) {
+            double score = Svm.svm_predict(svm_model, xs.mapRow(i));
+
+            LOGGER.finest("i:%d, score:%f".formatted(i, score));
+
+            result.firstPrediction().setDouble(i, score);
+        }
+        return result;
     }
 }

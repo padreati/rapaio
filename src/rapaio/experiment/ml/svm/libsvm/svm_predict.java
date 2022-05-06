@@ -29,7 +29,7 @@ import rapaio.math.linear.DVector;
 public class svm_predict {
 
     static void info(String s) {
-        System.out.println(s);
+//        System.out.println(s);
     }
 
     public record Prediction(double[] classes, DMatrix density) {

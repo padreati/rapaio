@@ -22,6 +22,7 @@
 package rapaio.ml.model.svm.libsvm;
 
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
@@ -29,18 +30,18 @@ import rapaio.util.collection.TArrays;
 class SvrKernelMatrix extends AbstractKernelMatrix {
 
     private final int l;
-    private final Cache cache;
     private final byte[] sign;
     private final int[] index;
     private int nextBuffer;
-    private final double[][] buffer;
-    private final double[] qd;
+    private final DVectorDense[] buffer;
 
     SvrKernelMatrix(int len, DVector[] xs, Kernel kernel, long cacheSize) {
-        super(xs, kernel);
+        super(xs, kernel, new Cache(len, cacheSize * (1 << 20)), new double[2 * len]);
         this.l = len;
-        cache = new Cache(len, cacheSize * (1 << 20));
-        qd = new double[2 * len];
+        buffer = new DVectorDense[] {
+                new DVectorDense(2 * len),
+                new DVectorDense(2 * len)
+        };
         sign = new byte[2 * len];
         index = new int[2 * len];
         for (int k = 0; k < len; k++) {
@@ -51,7 +52,6 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
             qd[k] = kernel.compute(xs[k], xs[k]);
             qd[k + len] = qd[k];
         }
-        buffer = new double[2][2 * len];
         nextBuffer = 0;
     }
 
@@ -61,20 +61,20 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
         TArrays.swap(qd, i, j);
     }
 
-    double[] getQ(int i, int len) {
-        Reference<double[]> data = new Reference<>();
+    DVectorDense getQ(int i, int len) {
+        Reference<DVectorDense> data = new Reference<>();
         if (cache.getData(index[i], data, l) < l) {
             for (int j = 0; j < l; j++) {
-                data.get()[j] = kernel.compute(xs[index[i]], xs[j]);
+                data.get().set(j, kernel.compute(xs[index[i]], xs[j]));
             }
         }
 
         // reorder and copy
-        double[] buf = buffer[nextBuffer];
+        DVectorDense buf = buffer[nextBuffer];
         nextBuffer = 1 - nextBuffer;
         byte si = sign[i];
         for (int j = 0; j < len; j++) {
-            buf[j] = si * sign[j] * data.get()[index[j]];
+            buf.set(j, si * sign[j] * data.get().get(index[j]));
         }
         return buf;
     }

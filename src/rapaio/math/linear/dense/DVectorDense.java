@@ -210,6 +210,13 @@ public final class DVectorDense extends AbstractStoreDVector {
     }
 
     @Override
+    public DVectorDense denseCopy(int len) {
+        double[] copy = new double[len];
+        System.arraycopy(array, offset, copy, 0, Math.min(size, len));
+        return new DVectorDense(0, copy.length, copy);
+    }
+
+    @Override
     public DVector add(double x) {
         int i = 0;
         DoubleVector va = DoubleVector.broadcast(species, x);

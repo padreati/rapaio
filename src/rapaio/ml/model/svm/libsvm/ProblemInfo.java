@@ -32,14 +32,16 @@ import rapaio.data.mapping.ArrayMapping;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.Kernel;
-import rapaio.ml.model.svm.SVMClassifier;
+import rapaio.ml.model.svm.OneClassSvm;
+import rapaio.ml.model.svm.SvmClassifier;
+import rapaio.ml.model.svm.SvmRegression;
 
 public record ProblemInfo(DVector[] xs, double[] y,
                           List<String> levels, Map<String, Integer> index, Map<String, Mapping> map,
-                          SVMClassifier.Penalty type, Kernel kernel, long cacheSize, double eps,
+                          SvmClassifier.Penalty cType, SvmRegression.Penalty rType, Kernel kernel, long cacheSize, double eps,
                           double c, Map<String, Double> weighting, double nu, double p, boolean shrinking, boolean probability) {
 
-    public static ProblemInfo from(DMatrix x, Var target, SVMClassifier parent) {
+    public static ProblemInfo from(DMatrix x, Var target, SvmClassifier parent) {
         DVector[] xs = new DVector[x.rows()];
         for (int i = 0; i < xs.length; i++) {
             xs[i] = x.mapRow(i);
@@ -82,14 +84,64 @@ public record ProblemInfo(DVector[] xs, double[] y,
         // default parameter values taken from classifier
 
         return new ProblemInfo(xs, y, levels, index, map,
-                parent.type.get(), parent.kernel.get(), parent.cacheSize.get(),
-                parent.eps.get(), parent.c.get(), new HashMap<>(parent.wi.get()),
-                parent.nu.get(), parent.p.get(), parent.shrinking.get(), parent.probability.get());
+                parent.type.get(), null, parent.kernel.get(), parent.cacheSize.get(),
+                parent.tolerance.get(), parent.c.get(), new HashMap<>(parent.wi.get()),
+                parent.nu.get(), 0.0, parent.shrinking.get(), parent.probability.get());
+    }
+
+    public static ProblemInfo from(DMatrix x, Var target, SvmRegression parent) {
+        DVector[] xs = new DVector[x.rows()];
+        for (int i = 0; i < xs.length; i++) {
+            xs[i] = x.mapRow(i);
+        }
+        double[] y = new double[x.rows()];
+        for (int i = 0; i < x.rows(); i++) {
+            switch (target.type()) {
+                case BINARY, INT -> y[i] = target.getInt(i);
+                case DOUBLE -> y[i] = target.getDouble(i);
+                default -> throw new IllegalArgumentException("Not implemented");
+            }
+        }
+
+        // default parameter values taken from classifier
+
+        return new ProblemInfo(xs, y, List.of(), Map.of(), Map.of(),
+                null, parent.type.get(), parent.kernel.get(), parent.cacheSize.get(),
+                parent.tolerance.get(), parent.c.get(), Map.of(),
+                parent.nu.get(), parent.epsilon.get(), parent.shrinking.get(), parent.probability.get());
+    }
+
+    public static ProblemInfo from(DMatrix x, Var target, OneClassSvm parent) {
+        DVector[] xs = new DVector[x.rows()];
+        for (int i = 0; i < xs.length; i++) {
+            xs[i] = x.mapRow(i);
+        }
+        double[] y = new double[x.rows()];
+        for (int i = 0; i < x.rows(); i++) {
+            switch (target.type()) {
+                case BINARY, INT -> y[i] = target.getInt(i);
+                case DOUBLE -> y[i] = target.getDouble(i);
+                default -> throw new IllegalArgumentException("Not implemented");
+            }
+        }
+
+        // default parameter values taken from classifier
+
+        return new ProblemInfo(xs, y, List.of(), Map.of(), Map.of(),
+                null, null, parent.kernel.get(), parent.cacheSize.get(),
+                parent.tolerance.get(), 0.0, Map.of(),
+                parent.nu.get(), 0.0, parent.shrinking.get(), false);
     }
 
     public SvmParameter computeParameters() {
         SvmParameter param = new SvmParameter();
-        param.svmType = type == SVMClassifier.Penalty.C ? 0 : 1;
+        if (cType != null) {
+            param.svmType = cType == SvmClassifier.Penalty.C ? 0 : 1;
+        } else if (rType != null) {
+            param.svmType = rType == SvmRegression.Penalty.C ? 3 : 4;
+        } else {
+            param.svmType = 2;
+        }
         param.kernel = kernel;
 
         param.cacheSize = cacheSize;
@@ -140,17 +192,17 @@ public record ProblemInfo(DVector[] xs, double[] y,
     public boolean checkValidProblem() {
 
         // nu-svc check
-        if (type == SVMClassifier.Penalty.NU) {
-            for (int i = 0; i < levels.size(); i++) {
-                int ni = map.get(levels.get(i)).size();
-                for (int j = i + 1; j < levels.size(); j++) {
-                    int nj = map.get(levels.get(j)).size();
-                    if (nu * (ni + nj) / 2 > Math.min(ni, nj)) {
-                        throw new IllegalArgumentException("NU_SVC problem is not feasible.");
-                    }
-                }
-            }
-        }
+//        if (type == SVMClassifier.Penalty.NU) {
+//            for (int i = 0; i < levels.size(); i++) {
+//                int ni = map.get(levels.get(i)).size();
+//                for (int j = i + 1; j < levels.size(); j++) {
+//                    int nj = map.get(levels.get(j)).size();
+//                    if (nu * (ni + nj) / 2 > Math.min(ni, nj)) {
+//                        throw new IllegalArgumentException("NU_SVC problem is not feasible.");
+//                    }
+//                }
+//            }
+//        }
 
         return true;
     }

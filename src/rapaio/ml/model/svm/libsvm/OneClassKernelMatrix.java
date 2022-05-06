@@ -21,28 +21,25 @@
 
 package rapaio.ml.model.svm.libsvm;
 
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
 
 class OneClassKernelMatrix extends AbstractKernelMatrix {
-    private final Cache cache;
-    private final double[] qd;
 
     OneClassKernelMatrix(SvmProblem prob, SvmParameter param) {
-        super(prob.xs, param.kernel);
-        cache = new Cache(prob.len, param.cacheSize * (1 << 20));
-        qd = new double[prob.len];
+        super(prob.xs, param.kernel, new Cache(prob.len, param.cacheSize * (1 << 20)), new double[prob.len]);
         for (int i = 0; i < prob.len; i++) {
             qd[i] = kernel.compute(xs[i], xs[i]);
         }
     }
 
-    double[] getQ(int i, int len) {
-        Reference<double[]> data = new Reference<>();
+    DVectorDense getQ(int i, int len) {
+        Reference<DVectorDense> data = new Reference<>();
         int start = cache.getData(i, data, len);
         if (start < len) {
             for (int j = start; j < len; j++) {
-                data.get()[j] = kernel.compute(xs[i], xs[j]);
+                data.get().set(j, kernel.compute(xs[i], xs[j]));
             }
         }
         return data.get();

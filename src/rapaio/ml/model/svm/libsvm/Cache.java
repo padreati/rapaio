@@ -23,6 +23,8 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.Arrays;
 
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
 
@@ -45,10 +47,10 @@ public class Cache {
     private static final class Entry {
         private Entry prev;
         private Entry next;
-        private double[] data;
+        private DVectorDense data;
 
         public int len() {
-            return data == null ? 0 : data.length;
+            return data == null ? 0 : data.size();
         }
     }
 
@@ -61,7 +63,7 @@ public class Cache {
         for (int i = 0; i < len; i++) {
             entries[i] = new Entry();
         }
-        this.size = Math.max(size, 2L * len);
+        this.size = Math.max(size, 4L * len);
         lruEntry = new Entry();
         lruEntry.next = lruEntry.prev = lruEntry;
     }
@@ -91,24 +93,24 @@ public class Cache {
      * the position until it is computed, starting from 0. The other positions will be filled by
      * the caller and the values will remain in cache since data is passed as reference.
      */
-    public int getData(int index, Reference<double[]> data, int len) {
+    public int getData(int index, Reference<DVectorDense> data, int len) {
         Entry h = entries[index];
 
         lruUnlink(h);
         int oldLen = h.len();
         int more = len - h.len();
 
-        if (len > h.len()) {
-            // free old space
+        if (more > 0) {
+            // since we increase the current entry data, we have to remove some
+            // lru entries to keep the constraint that the total size to be less than size
             while (size < more) {
                 Entry old = lruEntry.next;
                 lruUnlink(old);
                 size += old.len();
                 old.data = null;
             }
-
             // allocate new space
-            h.data = (h.data == null) ? new double[len] : Arrays.copyOf(h.data, len);
+            h.data = (h.data == null) ? new DVectorDense(len) : h.data.denseCopy(len);
             size -= more;
         }
 
@@ -129,7 +131,7 @@ public class Cache {
         lruUnlink(entries[i]);
         lruUnlink(entries[j]);
 
-        double[] buf = entries[i].data;
+        DVectorDense buf = entries[i].data;
         entries[i].data = entries[j].data;
         entries[j].data = buf;
 
@@ -139,7 +141,7 @@ public class Cache {
         for (Entry h = lruEntry.next; h != lruEntry; h = h.next) {
             if (h.len() > i) {
                 if (h.len() > j) {
-                    TArrays.swap(h.data, i, j);
+                    h.data.swap(i, j);
                 } else {
                     // give up
                     lruUnlink(h);

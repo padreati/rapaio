@@ -37,9 +37,7 @@ public class svm_train {
     private int cross_validation;
     private int nr_fold;
 
-    private static svm_print_interface svm_print_null = new svm_print_interface() {
-        public void print(String s) {
-        }
+    private static svm_print_interface svm_print_null = s -> {
     };
 
     private static void exit_with_help() {

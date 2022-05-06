@@ -76,6 +76,7 @@ open module rapaio {
     exports rapaio.ml.model.rvm;
     exports rapaio.ml.model.simple;
     exports rapaio.ml.model.svm;
+    exports rapaio.ml.model.svm.libsvm;
     exports rapaio.ml.model.tree;
     exports rapaio.ml.model.tree.ctree;
     exports rapaio.ml.model.tree.rtree;
@@ -94,7 +95,6 @@ open module rapaio {
     exports rapaio.util.collection;
     exports rapaio.util.function;
     exports rapaio.util.hash;
-    exports rapaio.ml.model.svm.libsvm;
     exports rapaio.experiment.core;
     exports rapaio.printer.idea;
     exports rapaio.math.linear.base;

@@ -23,6 +23,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.logging.Logger;
 
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.util.collection.TArrays;
 
 /**
@@ -51,21 +52,21 @@ public class SolverC {
     private static final byte ALPHA_STATUS_UPPER_BOUND = 1;
     private static final byte ALPHA_STATUS_FREE = 2;
 
-    int activeSize;
-    byte[] y;
-    double[] grad;        // gradient of objective function
-    byte[] alphaStatus;    // LOWER_BOUND, UPPER_BOUND, FREE
-    double[] alpha;
-    AbstractKernelMatrix q;
-    double[] qd;
-    double eps;
-    double cp;
-    double cn;
-    double[] p;
-    int[] activeSet;
-    double[] gradBar;        // gradient, if we treat free variables as 0
-    int len;
-    boolean unshrink;    // XXX
+    protected int activeSize;
+    protected byte[] y;
+    protected double[] grad;        // gradient of objective function
+    protected byte[] alphaStatus;    // LOWER_BOUND, UPPER_BOUND, FREE
+    protected double[] alpha;
+    protected AbstractKernelMatrix q;
+    protected double[] qd;
+    protected double eps;
+    protected double cp;
+    protected double cn;
+    protected double[] p;
+    protected int[] activeSet;
+    protected double[] gradBar;        // gradient, if we treat free variables as 0
+    protected int len;
+    protected boolean unshrink;    // XXX
 
     double getC(int i) {
         return y[i] > 0 ? cp : cn;
@@ -130,20 +131,20 @@ public class SolverC {
 
         if (nr_free * len > 2 * activeSize * (len - activeSize)) {
             for (i = activeSize; i < len; i++) {
-                double[] Q_i = q.getQ(i, activeSize);
+                DVectorDense Q_i = q.getQ(i, activeSize);
                 for (j = 0; j < activeSize; j++) {
                     if (is_free(j)) {
-                        grad[i] += alpha[j] * Q_i[j];
+                        grad[i] += alpha[j] * Q_i.get(j);
                     }
                 }
             }
         } else {
             for (i = 0; i < activeSize; i++) {
                 if (is_free(i)) {
-                    double[] Q_i = q.getQ(i, len);
+                    DVectorDense Q_i = q.getQ(i, len);
                     double alpha_i = alpha[i];
                     for (j = activeSize; j < len; j++) {
-                        grad[j] += alpha_i * Q_i[j];
+                        grad[j] += alpha_i * Q_i.get(j);
                     }
                 }
             }
@@ -174,15 +175,15 @@ public class SolverC {
         }
         for (int i = 0; i < trainingSize; i++) {
             if (!isLowerBound(i)) {
-                double[] Q_i = q.getQ(i, trainingSize);
+                DVectorDense Q_i = q.getQ(i, trainingSize);
                 double alpha_i = alpha[i];
                 int j;
                 for (j = 0; j < trainingSize; j++) {
-                    grad[j] += alpha_i * Q_i[j];
+                    grad[j] += alpha_i * Q_i.get(j);
                 }
                 if (isUpperBound(i)) {
                     for (j = 0; j < trainingSize; j++) {
-                        gradBar[j] += getC(i) * Q_i[j];
+                        gradBar[j] += getC(i) * Q_i.get(j);
                     }
                 }
             }
@@ -253,8 +254,8 @@ public class SolverC {
 
             // update alpha[i] and alpha[j], handle bounds carefully
 
-            double[] qi = Q.getQ(i, activeSize);
-            double[] qj = Q.getQ(j, activeSize);
+            DVectorDense qi = Q.getQ(i, activeSize);
+            DVectorDense qj = Q.getQ(j, activeSize);
 
             double ci = getC(i);
             double cj = getC(j);
@@ -263,7 +264,7 @@ public class SolverC {
             double old_alpha_j = alpha[j];
 
             if (y[i] != y[j]) {
-                double quad_coef = qd[i] + qd[j] + 2 * qi[j];
+                double quad_coef = qd[i] + qd[j] + 2 * qi.get(j);
                 if (quad_coef <= 0) {
                     quad_coef = 1e-12;
                 }
@@ -295,7 +296,7 @@ public class SolverC {
                     }
                 }
             } else {
-                double quad_coef = qd[i] + qd[j] - 2 * qi[j];
+                double quad_coef = qd[i] + qd[j] - 2 * qi.get(j);
                 if (quad_coef <= 0) {
                     quad_coef = 1e-12;
                 }
@@ -334,7 +335,7 @@ public class SolverC {
             double delta_alpha_j = alpha[j] - old_alpha_j;
 
             for (int k = 0; k < activeSize; k++) {
-                grad[k] += qi[k] * delta_alpha_i + qj[k] * delta_alpha_j;
+                grad[k] += qi.get(k) * delta_alpha_i + qj.get(k) * delta_alpha_j;
             }
 
             // update alpha_status and G_bar
@@ -348,11 +349,11 @@ public class SolverC {
                 qi = Q.getQ(i, len);
                 if (ui) {
                     for (k = 0; k < len; k++) {
-                        gradBar[k] -= ci * qi[k];
+                        gradBar[k] -= ci * qi.get(k);
                     }
                 } else {
                     for (k = 0; k < len; k++) {
-                        gradBar[k] += ci * qi[k];
+                        gradBar[k] += ci * qi.get(k);
                     }
                 }
             }
@@ -361,11 +362,11 @@ public class SolverC {
                 qj = Q.getQ(j, len);
                 if (uj) {
                     for (k = 0; k < len; k++) {
-                        gradBar[k] -= cj * qj[k];
+                        gradBar[k] -= cj * qj.get(k);
                     }
                 } else {
                     for (k = 0; k < len; k++) {
-                        gradBar[k] += cj * qj[k];
+                        gradBar[k] += cj * qj.get(k);
                     }
                 }
             }
@@ -422,7 +423,7 @@ public class SolverC {
         double obj_diff_min = Double.POSITIVE_INFINITY;
 
         for (int t = 0; t < activeSize; t++) {
-            if (y[t] == +1) {
+            if (y[t] == 1) {
                 if (!isUpperBound(t)) {
                     if (-grad[t] >= gradMax1) {
                         gradMax1 = -grad[t];
@@ -440,14 +441,14 @@ public class SolverC {
         }
 
         int i = Gmax_idx;
-        double[] Q_i = null;
+        DVectorDense Q_i = null;
         // null Q_i not accessed: Gmax=-INF if i=-1
         if (i != -1) {
             Q_i = q.getQ(i, activeSize);
         }
 
         for (int j = 0; j < activeSize; j++) {
-            if (y[j] == +1) {
+            if (y[j] == 1) {
                 if (!isLowerBound(j)) {
                     double grad_diff = gradMax1 + grad[j];
                     if (grad[j] >= gradMax2) {
@@ -455,7 +456,7 @@ public class SolverC {
                     }
                     if (grad_diff > 0) {
                         double obj_diff;
-                        double quad_coef = qd[i] + qd[j] - 2.0 * y[i] * Q_i[j];
+                        double quad_coef = qd[i] + qd[j] - 2.0 * y[i] * Q_i.get(j);
                         if (quad_coef > 0) {
                             obj_diff = -(grad_diff * grad_diff) / quad_coef;
                         } else {
@@ -476,7 +477,7 @@ public class SolverC {
                     }
                     if (grad_diff > 0) {
                         double obj_diff;
-                        double quad_coef = qd[i] + qd[j] + 2.0 * y[i] * Q_i[j];
+                        double quad_coef = qd[i] + qd[j] + 2.0 * y[i] * Q_i.get(j);
                         if (quad_coef > 0) {
                             obj_diff = -(grad_diff * grad_diff) / quad_coef;
                         } else {
@@ -506,7 +507,7 @@ public class SolverC {
         if (isLowerBound(i)) {
             return (y[i] == 1) ? grad[i] > gradMax2 : grad[i] > gradMax1;
         }
-        return (false);
+        return false;
     }
 
     void doShrinking() {
@@ -516,7 +517,7 @@ public class SolverC {
 
         // find maximal violating pair first
         for (i = 0; i < activeSize; i++) {
-            if (y[i] == +1) {
+            if (y[i] == 1) {
                 if (!isUpperBound(i)) {
                     if (-grad[i] >= gradMax1) {
                         gradMax1 = -grad[i];

@@ -29,6 +29,8 @@ import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
+import rapaio.core.RandomSource;
+
 public class Murmur3Test {
 
     @Test
@@ -58,7 +60,7 @@ public class Murmur3Test {
         }
     }
 
-    static int[] answers32 = new int[]{
+    static int[] answers32 = new int[] {
             0x11fd02eb, 0x8dd65a73, 0x29b074ba, 0xcbcd43ce, 0xb6463881, 0xf6228557, 0x3d55c634, 0xa1bb9072,
             0x448402c6, 0xb12bf3d4, 0x18a71ccb, 0x6ae5f185, 0x9a482256, 0xc686d7f2, 0x8e8984d8, 0x68a2491d,
             0xcc29b0e6, 0x3e9130bd, 0xc90defb3, 0xf81c5978, 0x15ff7f63, 0x4ec16a7a, 0xa08aa899, 0x7317ffee,
@@ -69,7 +71,7 @@ public class Murmur3Test {
             0xe1acfb60, 0xc8b4d4b7, 0xf1ec49ba, 0xedbb8cc1, 0xdc5b3ab1, 0x7c7778ae, 0x52bf68d, 0xe0bb4148,
             0xfea36521, 0xa0696ca5, 0xf28df752, 0xd82dccb6};
 
-    static long[] answers128 = new long[]{
+    static long[] answers128 = new long[] {
             0x6e54d3ad2be8e9a2L, 0xd99e452d1cfc7decL, 0x609c35d060cf37c1L, 0x4ba03e78929b6807L,
             0xf4865522a8838216L, 0xef8dc0ad3f5a0581L, 0x8513b05a329d04ecL, 0x2295dbef5a603ebcL,
             0xd0259c75fa8711b2L, 0x311f78657cb7ecb9L, 0x771d03baa6accef1L, 0x596d9c3bde77e873L,
@@ -124,6 +126,7 @@ public class Murmur3Test {
         assertEquals(hash1, hash2);
     }
 
+    @Test
     public void testStringHash() {
         doString("hello!");
         doString("ABCD");
@@ -131,7 +134,7 @@ public class Murmur3Test {
         doString("\u2345");
         doString("\u2345\u1234");
 
-        Random r = new Random();
+        Random r = RandomSource.getRandom();
         StringBuilder sb = new StringBuilder(40);
         for (int i = 0; i < 100000; i++) {
             sb.setLength(0);
@@ -147,20 +150,13 @@ public class Murmur3Test {
             for (int j = 0; j < len; j++) {
                 int codePoint;
                 do {
-                    int max = 0;
-                    switch (r.nextInt() & 0x3) {
-                        case 0:
-                            max = 0x80;
-                            break;   // 1 UTF8 bytes
-                        case 1:
-                            max = 0x800;
-                            break;  // up to 2 bytes
-                        case 2:
-                            max = 0xffff + 1;
-                            break; // up to 3 bytes
-                        case 3:
-                            max = Character.MAX_CODE_POINT + 1; // up to 4 bytes
-                    }
+                    int max = switch (r.nextInt() & 0x3) {
+                        case 0 -> 0x80;   // 1 UTF8 bytes
+                        case 1 -> 0x800;  // up to 2 bytes
+                        case 2 -> 0xffff + 1; // up to 3 bytes
+                        case 3 -> Character.MAX_CODE_POINT + 1;
+                        default -> 0; // up to 4 bytes
+                    };
 
                     codePoint = r.nextInt(max);
                 } while (codePoint < 0xffff && (Character.isHighSurrogate((char) codePoint) || Character.isLowSurrogate((char) codePoint)));
