@@ -34,7 +34,8 @@ public class OneClassSvm extends ClusteringModel<OneClassSvm, ClusteringResult<O
     /**
      * Tolerance of termination criterion (default 0.001).
      */
-    public final ValueParam<Double, OneClassSvm> tolerance = new ValueParam<>(this, 0.001, "tolerance", value -> Double.isFinite(value) && value > 0);
+    public final ValueParam<Double, OneClassSvm> tolerance =
+            new ValueParam<>(this, 0.001, "tolerance", value -> Double.isFinite(value) && value > 0);
 
     /**
      * Parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5).
@@ -64,7 +65,7 @@ public class OneClassSvm extends ClusteringModel<OneClassSvm, ClusteringResult<O
         return "OneClassSvm";
     }
 
-    private SvmModel svm_model;
+    private SvmModel model;
     private ProblemInfo problemInfo;
     private ModelInfo modelInfo;
 
@@ -73,21 +74,30 @@ public class OneClassSvm extends ClusteringModel<OneClassSvm, ClusteringResult<O
         DMatrix x = DMatrix.copy(df.mapVars(inputNames));
         ProblemInfo pi = ProblemInfo.from(x, VarDouble.empty(df.rowCount()), this);
         pi.checkValidProblem();
-        svm_model = Svm.svm_train(pi.computeProblem(), pi.computeParameters());
+        model = Svm.svm_train(pi.computeProblem(), pi.computeParameters());
         problemInfo = pi;
         modelInfo = new ModelInfo(pi);
+        learned = true;
         return this;
     }
 
     @Override
     protected ClusteringResult<OneClassSvm> corePredict(Frame df, boolean withScores) {
-        VarInt assign = VarInt.empty(df.rowCount()).name("clusters");
         DMatrix xs = DMatrix.copy(df.mapVars(inputNames));
-        for (int i = 0; i < xs.rows(); i++) {
-            double score = Svm.svm_predict(svm_model, xs.mapRow(i));
-            LOGGER.finest("i:%d, score:%f".formatted(i, score));
+
+        VarInt assign = VarInt.empty(df.rowCount()).name("clusters");
+        VarDouble scores = VarDouble.empty(df.rowCount()).name("scores");
+
+        double[] svCoef = model.svCoef[0];
+        Kernel k = kernel.get();
+        for (int i = 0; i < assign.size(); i++) {
+            double score = -model.rho[0];
+            for (int j = 0; j < model.l; j++) {
+                score += svCoef[j] * k.compute(xs.mapRow(i), model.SV[j]);
+            }
             assign.setInt(i, score > 0 ? 1 : 0);
+            scores.setDouble(i, score);
         }
-        return new ClusteringResult<>(this, df, assign);
+        return new ClusteringResult<>(this, df, assign, scores);
     }
 }

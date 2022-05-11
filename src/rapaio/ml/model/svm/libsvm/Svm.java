@@ -627,7 +627,7 @@ public class Svm {
             model.nSV = null;
             model.probA = null;
             model.probB = null;
-            model.sv_coef = new double[1][];
+            model.svCoef = new double[1][];
 
             if (param.probability == 1 && (param.svmType == svm_parameter.EPSILON_SVR || param.svmType == svm_parameter.NU_SVR)) {
                 model.probA = new double[1];
@@ -647,13 +647,13 @@ public class Svm {
             }
             model.l = nSV;
             model.SV = new DVector[nSV];
-            model.sv_coef[0] = new double[nSV];
+            model.svCoef[0] = new double[nSV];
             model.sv_indices = new int[nSV];
             int j = 0;
             for (i = 0; i < prob.len; i++) {
                 if (Math.abs(f.alpha[i]) > 0) {
                     model.SV[j] = prob.xs[i];
-                    model.sv_coef[0][j] = f.alpha[i];
+                    model.svCoef[0][j] = f.alpha[i];
                     model.sv_indices[j] = i + 1;
                     ++j;
                 }
@@ -812,9 +812,9 @@ public class Svm {
                 nz_start[i] = nz_start[i - 1] + nz_count[i - 1];
             }
 
-            model.sv_coef = new double[nr_class - 1][];
+            model.svCoef = new double[nr_class - 1][];
             for (int i = 0; i < nr_class - 1; i++) {
-                model.sv_coef[i] = new double[total_sv];
+                model.svCoef[i] = new double[total_sv];
             }
 
             p = 0;
@@ -831,13 +831,13 @@ public class Svm {
                     int k;
                     for (k = 0; k < count[i]; k++) {
                         if (nonzero[si + k]) {
-                            model.sv_coef[j - 1][q++] = f[p].alpha[k];
+                            model.svCoef[j - 1][q++] = f[p].alpha[k];
                         }
                     }
                     q = nz_start[j];
                     for (k = 0; k < count[j]; k++) {
                         if (nonzero[sj + k]) {
-                            model.sv_coef[i][q++] = f[p].alpha[count[i] + k];
+                            model.svCoef[i][q++] = f[p].alpha[count[i] + k];
                         }
                     }
                     p++;
@@ -972,7 +972,7 @@ public class Svm {
         if (model.param.svmType == SvmParameter.ONE_CLASS ||
                 model.param.svmType == SvmParameter.EPSILON_SVR ||
                 model.param.svmType == SvmParameter.NU_SVR) {
-            double[] sv_coef = model.sv_coef[0];
+            double[] sv_coef = model.svCoef[0];
             double sum = 0;
             for (int i = 0; i < model.l; i++) {
                 sum += sv_coef[i] * model.param.kernel.compute(x, model.SV[i]);
@@ -1012,8 +1012,8 @@ public class Svm {
                     int cj = model.nSV[j];
 
                     int k;
-                    double[] coef1 = model.sv_coef[j - 1];
-                    double[] coef2 = model.sv_coef[i];
+                    double[] coef1 = model.svCoef[j - 1];
+                    double[] coef2 = model.svCoef[i];
                     for (k = 0; k < ci; k++) {
                         sum += coef1[si + k] * kvalue[si + k];
                     }

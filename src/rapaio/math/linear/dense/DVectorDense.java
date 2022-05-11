@@ -35,13 +35,12 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.base.DVectorBase;
 import rapaio.util.DoubleComparator;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
-public final class DVectorDense extends AbstractStoreDVector {
+public final class DVectorDense extends AbstractDVectorStore {
 
     public static DVectorDense empty(int n) {
         return new DVectorDense(0, n, new double[n]);
@@ -75,7 +74,7 @@ public final class DVectorDense extends AbstractStoreDVector {
         if (v instanceof DVectorDense vd) {
             return vd.copy();
         }
-        if (v instanceof DVectorStore vs) {
+        if (v instanceof AbstractDVectorStore vs) {
             double[] copy = vs.solidArrayCopy();
             return DVectorDense.wrap(copy);
         }
@@ -88,35 +87,22 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Serial
     private static final long serialVersionUID = 5763094452899116225L;
-    private static final VectorSpecies<Double> species = DoubleVector.SPECIES_PREFERRED;
-    private static final int speciesLen = species.length();
 
     private final int offset;
     private final int size;
     private final double[] array;
     private final VectorMask<Double> loopMask;
-    private final int loopBound;
 
     public DVectorDense(int size) {
         this(0, size, new double[size]);
     }
 
     public DVectorDense(int offset, int size, double[] array) {
+        super(size);
         this.offset = offset;
         this.size = size;
         this.array = array;
-        this.loopMask = species.indexInRange(species.loopBound(size), size);
-        this.loopBound = species.loopBound(size);
-    }
-
-    @Override
-    public VectorSpecies<Double> species() {
-        return species;
-    }
-
-    @Override
-    public int speciesLen() {
-        return speciesLen;
+        this.loopMask = species.indexInRange(loopBound, size);
     }
 
     @Override
@@ -141,11 +127,6 @@ public final class DVectorDense extends AbstractStoreDVector {
     @Override
     public DoubleVector loadVector(int i, VectorMask<Double> m) {
         return DoubleVector.fromArray(species, array, offset + i, m);
-    }
-
-    @Override
-    public int loopBound() {
-        return loopBound;
     }
 
     @Override
@@ -266,7 +247,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector addTo(DVector to, DVector b) {
-        if (b instanceof DVectorStore bs) {
+        if (b instanceof AbstractDVectorStore bs) {
             if (to instanceof DVectorDense tos) {
                 checkConformance(b);
                 int i = 0;
@@ -335,7 +316,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector subTo(DVector to, DVector b) {
-        if (b instanceof DVectorStore bs) {
+        if (b instanceof AbstractDVectorStore bs) {
             if (to instanceof DVectorDense tos) {
                 checkConformance(b);
                 int i = 0;
@@ -404,7 +385,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector mulTo(DVector to, DVector b) {
-        if (b instanceof DVectorStore bs) {
+        if (b instanceof AbstractDVectorStore bs) {
             if (to instanceof DVectorDense tos) {
                 checkConformance(b);
                 int i = 0;
@@ -473,7 +454,7 @@ public final class DVectorDense extends AbstractStoreDVector {
 
     @Override
     public DVector divTo(DVector to, DVector b) {
-        if (b instanceof DVectorStore bs) {
+        if (b instanceof AbstractDVectorStore bs) {
             if (to instanceof DVectorDense tos) {
                 checkConformance(b);
                 int i = 0;

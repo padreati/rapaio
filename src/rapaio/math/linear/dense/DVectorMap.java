@@ -31,33 +31,19 @@ import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
 import rapaio.util.collection.DoubleArrays;
 
-public class DVectorMap extends AbstractStoreDVector {
-
-    private final static VectorSpecies<Double> species = DoubleVector.SPECIES_PREFERRED;
-    private final static int speciesLen = species.length();
+public class DVectorMap extends AbstractDVectorStore {
 
     private final int offset;
     private final int[] indexes;
     private final double[] array;
     private final VectorMask<Double> loopMask;
-    private final int loopBound;
 
     public DVectorMap(int offset, int[] indexes, double[] array) {
+        super(indexes.length);
         this.offset = offset;
         this.indexes = indexes;
         this.array = array;
-        this.loopMask = species.indexInRange(species.loopBound(indexes.length), indexes.length);
-        this.loopBound = species.loopBound(indexes.length);
-    }
-
-    @Override
-    public VectorSpecies<Double> species() {
-        return species;
-    }
-
-    @Override
-    public int speciesLen() {
-        return speciesLen;
+        this.loopMask = species.indexInRange(loopBound, indexes.length);
     }
 
     @Override
@@ -93,11 +79,6 @@ public class DVectorMap extends AbstractStoreDVector {
     @Override
     public DoubleVector loadVector(int i, VectorMask<Double> m) {
         return DoubleVector.fromArray(species, array, offset, indexes, i, m);
-    }
-
-    @Override
-    public int loopBound() {
-        return loopBound;
     }
 
     @Override

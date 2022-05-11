@@ -22,6 +22,7 @@
 package rapaio.ml.model;
 
 import rapaio.data.Frame;
+import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.Printable;
 
@@ -33,22 +34,32 @@ public class ClusteringResult<M extends ClusteringModel<?, ?, ?>> implements Pri
     protected final M model;
     protected final Frame df;
     protected final VarInt assignment;
+    protected final VarDouble scores;
 
     public ClusteringResult(M model, Frame df, VarInt assignment) {
+        this(model, df, assignment, null);
+    }
+
+    public ClusteringResult(M model, Frame df, VarInt assignment, VarDouble scores) {
         this.model = model;
         this.df = df;
         this.assignment = assignment;
+        this.scores = scores;
     }
 
-    public M getModel() {
+    public M model() {
         return model;
     }
 
-    public Frame getDf() {
+    public Frame df() {
         return df;
     }
 
-    public VarInt getAssignment() {
+    public VarInt assignment() {
         return assignment;
+    }
+
+    public VarDouble scores() {
+        return scores;
     }
 }

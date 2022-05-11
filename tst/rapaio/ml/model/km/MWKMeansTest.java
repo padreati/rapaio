@@ -89,7 +89,7 @@ public class MWKMeansTest {
         assertEquals(4, model.getCentroidsMatrix().cols());
 
         MWKMeansResult result = model.predict(iris);
-        var prediction = result.getAssignment();
+        var prediction = result.assignment();
 
         assertTrue(RandIndex.from(target, prediction).getRandIndex()>0.6);
     }
@@ -113,7 +113,7 @@ public class MWKMeansTest {
         assertEquals(4, model.getCentroidsMatrix().cols());
 
         MWKMeansResult result = model.predict(iris);
-        var prediction = result.getAssignment();
+        var prediction = result.assignment();
 
         assertTrue(RandIndex.from(target, prediction).getRandIndex()>0.6);
     }

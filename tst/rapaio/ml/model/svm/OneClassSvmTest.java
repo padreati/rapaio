@@ -11,7 +11,6 @@ import static rapaio.sys.With.pch;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,17 +22,17 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
 import rapaio.experiment.ml.svm.libsvm.svm_model;
 import rapaio.experiment.ml.svm.libsvm.svm_predict;
 import rapaio.experiment.ml.svm.libsvm.svm_train;
+import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.Gradient;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
-import rapaio.sys.With;
 import rapaio.util.collection.DoubleArrays;
 
 public class OneClassSvmTest {
@@ -70,7 +69,6 @@ public class OneClassSvmTest {
     @Test
     void testOneClass() throws IOException {
 
-
         svm_train t = new svm_train();
         String[] argv = new String[] {"-s", "2",
                 "-t", "2",
@@ -89,6 +87,6 @@ public class OneClassSvmTest {
 
 
         assertArrayEquals(DVector.wrap(pred.classes()).apply(v -> v < 0 ? 0 : 1).denseCopy().array(),
-                DoubleArrays.newFrom(0, pred.classes().length, i -> result.getAssignment().getDouble(i)));
+                DoubleArrays.newFrom(0, pred.classes().length, i -> result.assignment().getDouble(i)));
     }
 }

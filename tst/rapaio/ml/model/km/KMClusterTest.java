@@ -164,8 +164,8 @@ public class KMClusterTest {
         kmeans.fit(df);
         kmedians.fit(df);
 
-        VarInt kmeansAssignment = kmeans.predict(df).getAssignment();
-        VarInt kmediansAssignment = kmedians.predict(df).getAssignment();
+        VarInt kmeansAssignment = kmeans.predict(df).assignment();
+        VarInt kmediansAssignment = kmedians.predict(df).assignment();
 
         DMatrix kmeansC = kmeans.getCentroidsMatrix();
         DMatrix kmediansC = kmedians.getCentroidsMatrix();
@@ -213,8 +213,8 @@ public class KMClusterTest {
 
         km.fit(df);
 
-        var assignment1 = km.predict(df).getAssignment();
-        var assignment2 = km.newInstance().fit(df).predict(df).getAssignment();
+        var assignment1 = km.predict(df).assignment();
+        var assignment2 = km.newInstance().fit(df).predict(df).assignment();
 
         assertTrue(assignment1.deepEquals(assignment2));
 

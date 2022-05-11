@@ -27,9 +27,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
+import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
@@ -173,6 +175,22 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
      */
     public R predict(Frame df) {
         return predict(df, true);
+    }
+
+    public R predict(DVector x) {
+        return predict(x, true);
+    }
+
+    public R predict(DVector x, boolean withScores) {
+        if(!hasLearned()) {
+            throw new IllegalStateException("Model was not fit on data, cannot predict.");
+        }
+        Var[] vars = new Var[inputTypes.length];
+        for (int i = 0; i < inputTypes.length; i++) {
+            vars[i] = inputType(i).newInstance(1).name(inputName(i));
+            vars[i].setDouble(0, x.get(i));
+        }
+        return predict(SolidFrame.byVars(vars), withScores);
     }
 
     /**

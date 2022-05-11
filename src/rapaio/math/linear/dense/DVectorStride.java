@@ -30,10 +30,7 @@ import jdk.incubator.vector.VectorSpecies;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
 
-public class DVectorStride extends AbstractStoreDVector {
-
-    private final static VectorSpecies<Double> species = DoubleVector.SPECIES_PREFERRED;
-    private final static int speciesLen = species.length();
+public class DVectorStride extends AbstractDVectorStore {
 
     private final int offset;
     private final int stride;
@@ -41,30 +38,19 @@ public class DVectorStride extends AbstractStoreDVector {
     private final int[] loopIndexes;
     private final double[] array;
     private final VectorMask<Double> loopMask;
-    private final int loopBound;
 
     public DVectorStride(int offset, int stride, int size, double[] array) {
+        super(size);
         this.offset = offset;
         this.stride = stride;
         this.size = size;
         this.array = array;
-        this.loopMask = species.indexInRange(species.loopBound(size), size);
-        this.loopBound = species.loopBound(size);
+        this.loopMask = species.indexInRange(loopBound, size);
 
         this.loopIndexes = new int[speciesLen];
         for (int i = 0; i < loopIndexes.length; i++) {
             loopIndexes[i] = i * stride;
         }
-    }
-
-    @Override
-    public VectorSpecies<Double> species() {
-        return species;
-    }
-
-    @Override
-    public int speciesLen() {
-        return speciesLen;
     }
 
     @Override
@@ -100,11 +86,6 @@ public class DVectorStride extends AbstractStoreDVector {
     @Override
     public DoubleVector loadVector(int i, VectorMask<Double> m) {
         return DoubleVector.fromArray(species, array, offset + i * stride, loopIndexes, 0, m);
-    }
-
-    @Override
-    public int loopBound() {
-        return loopBound;
     }
 
     @Override

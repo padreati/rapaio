@@ -21,12 +21,8 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import java.util.Arrays;
-
-import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.util.Reference;
-import rapaio.util.collection.TArrays;
 
 /**
  * Kernel cache.

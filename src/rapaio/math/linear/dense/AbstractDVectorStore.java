@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2022 Aurelian Tutuianu
+ * Copyright 2013 - 2021 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,48 +23,24 @@ package rapaio.math.linear.dense;
 
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
-import rapaio.math.linear.DVector;
 
-public interface DVectorStore extends DVector {
+public abstract class AbstractDVectorStore extends AbstractDVector {
 
-    VectorSpecies<Double> species();
+    public static final VectorSpecies<Double> species = DoubleVector.SPECIES_PREFERRED;
+    public static final int speciesLen = species.length();
 
-    int speciesLen();
+    public final int loopBound;
 
-    /**
-     * @return number of double values modeled in this store
-     */
-    int size();
+    public AbstractDVectorStore(int size) {
+        loopBound = species.loopBound(size);
+    }
 
     /**
      * @return double array where elements are stored.
      */
-    double[] array();
-
-    /**
-     * Returns element stored at position {@param i}.
-     *
-     * @param i position of the element
-     * @return value of the element at given position
-     */
-    double get(int i);
-
-    /**
-     * Set value of the element at the given position.
-     *
-     * @param i     position of the element
-     * @param value new value which will be stored
-     */
-    void set(int i, double value);
-
-    /**
-     * Increments the value of the element at given position.
-     *
-     * @param i     position of the element which will be incremented
-     * @param value increment value
-     */
-    void inc(int i, double value);
+    public abstract double[] array();
 
     /**
      * Loads a vector with values where the first value is at the given position.
@@ -77,7 +53,7 @@ public interface DVectorStore extends DVector {
      * @param i position of the first element from the store
      * @return vector of elements from store
      */
-    DoubleVector loadVector(int i);
+    public abstract DoubleVector loadVector(int i);
 
     /**
      * Loads a vector with values where the first value is at the given position and
@@ -94,20 +70,14 @@ public interface DVectorStore extends DVector {
      * @param m mask for element loading
      * @return vector of elements from store
      */
-    DoubleVector loadVector(int i, VectorMask<Double> m);
+    public abstract DoubleVector loadVector(int i, VectorMask<Double> m);
 
-    /**
-     * Precomputed loop bound used in vector operations loops.
-     *
-     * @return precomputed loop bound
-     */
-    int loopBound();
     /**
      * Precomputed mask used as the end loop mask for vector operations.
      *
      * @return precomputed mask used as end loop mask for vector operations
      */
-    VectorMask<Double> loopMask();
+    public abstract VectorMask<Double> loopMask();
 
     /**
      * Stores elements from the vector into store with the first element to the
@@ -119,7 +89,7 @@ public interface DVectorStore extends DVector {
      * @param v vector of elements to be stored.
      * @param i position in store of the first element
      */
-    void storeVector(DoubleVector v, int i);
+    public abstract void storeVector(DoubleVector v, int i);
 
     /**
      * Stores elements from the vector into store with the first element to the
@@ -132,7 +102,7 @@ public interface DVectorStore extends DVector {
      * @param v vector of elements to be stored.
      * @param i position in store of the first element
      */
-    void storeVector(DoubleVector v, int i, VectorMask<Double> m);
+    public abstract void storeVector(DoubleVector v, int i, VectorMask<Double> m);
 
     /**
      * Creates a new array of values which contains a copy of the stored values.
@@ -147,5 +117,55 @@ public interface DVectorStore extends DVector {
      *
      * @return new dense solid copy array of values
      */
-    double[] solidArrayCopy();
+    public abstract double[] solidArrayCopy();
+
+    @Override
+    public double sum() {
+        DoubleVector aggr = DoubleVector.zero(species);
+        int i = 0;
+        for (; i < loopBound; i += speciesLen) {
+            DoubleVector xv = loadVector(i);
+            aggr = aggr.add(xv);
+        }
+        double sum = aggr.reduceLanes(VectorOperators.ADD);
+        for (; i < size(); i++) {
+            sum += get(i);
+        }
+        return sum;
+    }
+
+    @Override
+    public double nansum() {
+        int i = 0;
+        VectorMask<Double> m;
+        DoubleVector sum = DoubleVector.zero(species);
+        for (; i < loopBound; i += speciesLen) {
+            DoubleVector xv = loadVector(i);
+            m = xv.test(VectorOperators.IS_NAN).not();
+            sum = sum.add(xv, m);
+        }
+        double result = sum.reduceLanes(VectorOperators.ADD);
+        for (; i < size(); i++) {
+            double value = get(i);
+            if (!Double.isNaN(value)) {
+                result = result + value;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public double prod() {
+        int i = 0;
+        DoubleVector aggr = DoubleVector.broadcast(species, 1);
+        for (; i < loopBound; i += speciesLen) {
+            DoubleVector xv = loadVector(i);
+            aggr = aggr.mul(xv);
+        }
+        double result = aggr.reduceLanes(VectorOperators.MUL);
+        for (; i < size(); i++) {
+            result = result * get(i);
+        }
+        return result;
+    }
 }

@@ -85,8 +85,8 @@ public class KMedoidsTest {
 
         KMedoids pam = KMedoids.newPAMModel(3);
         ClusteringResult<KMedoids> resultPAM = pam.fit(df).predict(df);
-        assertTrue(RandIndex.from(target, resultAlternate.getAssignment()).getRandIndex() <
-                RandIndex.from(target, resultPAM.getAssignment()).getRandIndex());
+        assertTrue(RandIndex.from(target, resultAlternate.assignment()).getRandIndex() <
+                RandIndex.from(target, resultPAM.assignment()).getRandIndex());
     }
 
     @Test
@@ -100,8 +100,8 @@ public class KMedoidsTest {
 
         KMedoids pam = KMedoids.newPAMModel(3);
         ClusteringResult<KMedoids> resultPAM = pam.fit(df).predict(df);
-        assertTrue(RandIndex.from(target, resultAlternate.getAssignment()).getRandIndex() <
-                RandIndex.from(target, resultPAM.getAssignment()).getRandIndex());
+        assertTrue(RandIndex.from(target, resultAlternate.assignment()).getRandIndex() <
+                RandIndex.from(target, resultPAM.assignment()).getRandIndex());
     }
 
     @Test
