@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        java-version: [ 18 ]
+        java-version: [ 17 ]
         distro: [ 'temurin' ]
     runs-on: ${{ matrix.os }}
 
