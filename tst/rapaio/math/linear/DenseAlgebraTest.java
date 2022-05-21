@@ -23,6 +23,7 @@ package rapaio.math.linear;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -320,7 +321,7 @@ public class DenseAlgebraTest {
                     [1] 0.7142857142857143  0.8571428571428571 1                   1.1428571428571428\s
                     [2] 1.2857142857142858  1.4285714285714286 1.5714285714285714  1.7142857142857142\s
                     [3] 1.8571428571428572  2                  2.142857142857143   2.2857142857142856\s
-                    """, mf.newMatrix(4,4).div(7).toContent());
+                    """, mf.newMatrix(4, 4).div(7).toContent());
 
             assertEquals("""
                           [0]   [1]   [2]   [3]\s
@@ -328,7 +329,7 @@ public class DenseAlgebraTest {
                     [1] 0.714 0.857 1.000 1.143\s
                     [2] 1.286 1.429 1.571 1.714\s
                     [3] 1.857 2.000 2.143 2.286\s
-                    """, mf.newMatrix(4,4).div(7).toContent(floatFormat(Format.formatDecShort)));
+                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.formatDecShort)));
 
             assertEquals("""
                               [0]       [1]       [2]       [3]\s
@@ -336,7 +337,7 @@ public class DenseAlgebraTest {
                     [1] 0.7142857 0.8571429 1.0000000 1.1428571\s
                     [2] 1.2857143 1.4285714 1.5714286 1.7142857\s
                     [3] 1.8571429 2.0000000 2.1428571 2.2857143\s
-                    """, mf.newMatrix(4,4).div(7).toContent(floatFormat(Format.formatDecMedium)));
+                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.formatDecMedium)));
 
             assertEquals("""
                                                      [0]                              [1]                              [2]\s
@@ -351,7 +352,7 @@ public class DenseAlgebraTest {
                     [2] 1.714285714285714200000000000000\s
                     [3] 2.285714285714285600000000000000\s
                                         
-                    """, mf.newMatrix(4,4).div(7).toContent(floatFormat(Format.formatDecLong)));
+                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.formatDecLong)));
         }
     }
 
@@ -383,7 +384,8 @@ public class DenseAlgebraTest {
                 test1matrix1vector(mf, vf, (m, v) -> assertTrue(m.divNew(v, 1).deepEquals(m.div(v, 1)), message));
                 test1matrix1vector(mf, vf, (m, v) -> assertTrue(m.dot(v).deepEquals(m.copy().dot(v.copy())), message));
 
-                test1matrix1vector(mf, vf, (m, v) -> assertThrows(IllegalArgumentException.class, () -> m.dot(new DVectorDense(v.size()-1))));
+                test1matrix1vector(mf, vf,
+                        (m, v) -> assertThrows(IllegalArgumentException.class, () -> m.dot(new DVectorDense(v.size() - 1))));
             }
         }
     }
@@ -448,6 +450,212 @@ public class DenseAlgebraTest {
             test1vector(vf, v -> assertTrue(v.divNew(10).deepEquals(v.div(10))));
 
             test1vector(vf, v -> assertTrue(DVectorDense.fill(11, 7).deepEquals(v.copy().fill(7))));
+
+            test1vector(vf, v -> {
+                double[] array1 = v.logNew().denseCopy().array();
+                double[] array2 = v.denseCopy().log().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.log(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.log1pNew().denseCopy().array();
+                double[] array2 = v.denseCopy().log1p().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.log1p(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.log10New().denseCopy().array();
+                double[] array2 = v.denseCopy().log10().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.log10(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.absNew().denseCopy().array();
+                double[] array2 = v.denseCopy().abs().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.abs(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.negNew().denseCopy().array();
+                double[] array2 = v.denseCopy().neg().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = -copy[i];
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.cosNew().denseCopy().array();
+                double[] array2 = v.denseCopy().cos().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.cos(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.acosNew().denseCopy().array();
+                double[] array2 = v.denseCopy().acos().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.acos(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.coshNew().denseCopy().array();
+                double[] array2 = v.denseCopy().cosh().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.cosh(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.sinNew().denseCopy().array();
+                double[] array2 = v.denseCopy().sin().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.sin(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.sinhNew().denseCopy().array();
+                double[] array2 = v.denseCopy().sinh().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.sinh(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.asinNew().denseCopy().array();
+                double[] array2 = v.denseCopy().asin().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.asin(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.tanNew().denseCopy().array();
+                double[] array2 = v.denseCopy().tan().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.tan(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.tanhNew().denseCopy().array();
+                double[] array2 = v.denseCopy().tanh().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.tanh(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.atanNew().denseCopy().array();
+                double[] array2 = v.denseCopy().atan().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.atan(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.expNew().denseCopy().array();
+                double[] array2 = v.denseCopy().exp().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.exp(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.expm1New().denseCopy().array();
+                double[] array2 = v.denseCopy().expm1().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.expm1(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.sqrtNew().denseCopy().array();
+                double[] array2 = v.denseCopy().sqrt().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.sqrt(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+            test1vector(vf, v -> {
+                double[] array1 = v.cbrtNew().denseCopy().array();
+                double[] array2 = v.denseCopy().cbrt().array();
+                double[] copy = v.denseCopy().solidArrayCopy();
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = StrictMath.cbrt(copy[i]);
+                }
+                assertArrayEquals(array1, copy, 1e-15);
+                assertArrayEquals(array2, copy, 1e-15);
+            });
+
+            test1vector(vf, v -> assertTrue(v.cutNew(Double.NaN, 0.5).deepEquals(v.cut(Double.NaN, 0.5))));
+            test1vector(vf, v -> assertTrue(v.cutNew(0.5, Double.NaN).deepEquals(v.cut(0.5, Double.NaN))));
+            test1vector(vf, v -> assertTrue(v.cutNew(0.1, 0.5).deepEquals(v.cut(0.1, 0.5))));
+            test1vector(vf, v -> assertTrue(v.cutNew(Double.NaN, Double.NaN).deepEquals(v.cut(Double.NaN, Double.NaN)), message));
+
+            test1vector(vf, v -> {
+                boolean before = false;
+                boolean after = false;
+
+                for (double value : v) {
+                    if (value < 5 || value > 7) {
+                        before = true;
+                        break;
+                    }
+                }
+                v.cut(5, 7);
+                for (double value : v) {
+                    if (value < 5 || value > 7) {
+                        after = true;
+                        break;
+                    }
+                }
+                assertNotEquals(before, after);
+            });
 
             test1vector(vf, v -> assertEquals(v.norm(1), v.sum()));
             test1vector(vf, v -> assertEquals(11, v.norm(Double.POSITIVE_INFINITY)));
@@ -550,7 +758,7 @@ public class DenseAlgebraTest {
 
             test1vector(vf, v -> v.dv().deepEquals(VarDouble.seq(1, 10)));
 
-            test1vector(vf, v -> assertThrows(IllegalArgumentException.class, () -> v.dot(DVectorDense.fill(v.size()-1, 0))));
+            test1vector(vf, v -> assertThrows(IllegalArgumentException.class, () -> v.dot(DVectorDense.fill(v.size() - 1, 0))));
         }
     }
 
@@ -581,7 +789,7 @@ public class DenseAlgebraTest {
                 test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.mulTo(v2, 10).deepEquals(v1.mulNew(10)), msg));
                 test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.divTo(v2, 10).deepEquals(v1.divNew(10)), msg));
 
-                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.addMulNew(10, v2).deepEquals(v1.addMul(10, v2)), msg));
+                test2vector(vf1, vf2, (v1, v2) -> assertTrue(v1.fmaNew(10, v2).deepEquals(v1.fma(10, v2)), msg));
 
                 test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dot(v2), msg));
                 test2vector(vf1, vf2, (v1, v2) -> assertEquals(506.0, v1.dotBilinear(DMatrix.eye(11), v2), msg));

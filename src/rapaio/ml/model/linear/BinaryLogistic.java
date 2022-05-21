@@ -242,7 +242,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
         DVector p = DVector.fill(df.rowCount(), hasIntercept ? intercept.get() * w.getDouble(0) : 0);
         for (int i = 0; i < inputNames.length; i++) {
-            p.addMul(w.getDouble(i + offset), df.rvar(inputName(i)).dv());
+            p.fma(w.getDouble(i + offset), df.rvar(inputName(i)).dv());
         }
         p.apply(MathTools::logistic);
 

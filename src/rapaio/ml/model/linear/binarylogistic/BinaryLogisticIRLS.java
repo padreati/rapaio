@@ -120,20 +120,16 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
     }
 
     private double negativeLogLikelihood(DVector y, DVector ny, DVector w, double lambda, DVector p, DVector np) {
-        DVector logp = p.applyNew(this::cut).apply(StrictMath::log);
-        DVector lognp = np.applyNew(this::cut).apply(StrictMath::log);
+        DVector logp = p.cutNew(1e-6, Double.NaN).log();
+        DVector lognp = np.cutNew(1e-6, Double.NaN).log();
 
         return -logp.dot(y) - lognp.dot(ny) + lambda * w.norm(2) / 2;
-    }
-
-    private double cut(double value) {
-        return Math.max(1e-6, value);
     }
 
     private DVector iterate(DVector w, DMatrix x, DVector y, double lambda, DVector p, DVector np) {
 
         // p(1-p) diag from p diag
-        DVector pvar = p.mulNew(np).apply(this::cut);
+        DVector pvar = p.mulNew(np).cut(1e-6, Double.NaN);
 
         // H = X^t * I{p(1-p)} * X + I_lambda
         DMatrix xta = x.t().mulNew(pvar, 0);

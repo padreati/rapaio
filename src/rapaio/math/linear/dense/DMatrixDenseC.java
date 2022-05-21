@@ -546,7 +546,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
         stream.forEach(s -> {
             DVectorDense slice = new DVectorDense(rows);
             for (int j = s * SLICE_SIZE; j < Math.min(cols, (s + 1) * SLICE_SIZE); j++) {
-                slice.addMul(b.get(j), mapCol(j));
+                slice.fma(b.get(j), mapCol(j));
             }
             cslices[s] = slice;
         });

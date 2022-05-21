@@ -73,13 +73,6 @@ public abstract class AbstractDVectorStore extends AbstractDVector {
     public abstract DoubleVector loadVector(int i, VectorMask<Double> m);
 
     /**
-     * Precomputed mask used as the end loop mask for vector operations.
-     *
-     * @return precomputed mask used as end loop mask for vector operations
-     */
-    public abstract VectorMask<Double> loopMask();
-
-    /**
      * Stores elements from the vector into store with the first element to the
      * given positions.
      * <p>

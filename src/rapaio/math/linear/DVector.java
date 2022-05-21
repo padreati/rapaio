@@ -276,6 +276,150 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      */
     void swap(int i, int j, int len);
 
+    DVector log();
+
+    DVector logTo(DVector to);
+
+    default DVector logNew() {
+        return logTo(new DVectorDense(size()));
+    }
+
+    DVector log1p();
+
+    DVector log1pTo(DVector to);
+
+    default DVector log1pNew() {
+        return log1pTo(new DVectorDense(size()));
+    }
+
+    DVector log10();
+
+    DVector log10To(DVector to);
+
+    default DVector log10New() {
+        return log10To(new DVectorDense(size()));
+    }
+
+    DVector abs();
+
+    DVector absTo(DVector to);
+
+    default DVector absNew() {
+        return absTo(new DVectorDense(size()));
+    }
+
+    DVector neg();
+
+    DVector negTo(DVector to);
+
+    default DVector negNew() {
+        return negTo(new DVectorDense(size()));
+    }
+
+    DVector cos();
+
+    DVector cosTo(DVector to);
+
+    default DVector cosNew() {
+        return cosTo(new DVectorDense(size()));
+    }
+
+    DVector cosh();
+
+    DVector coshTo(DVector to);
+
+    default DVector coshNew() {
+        return coshTo(new DVectorDense(size()));
+    }
+
+    DVector acos();
+
+    DVector acosTo(DVector to);
+
+    default DVector acosNew() {
+        return acosTo(new DVectorDense(size()));
+    }
+
+    DVector sin();
+
+    DVector sinTo(DVector to);
+
+    default DVector sinNew() {
+        return sinTo(new DVectorDense(size()));
+    }
+
+    DVector sinh();
+
+    DVector sinhTo(DVector to);
+
+    default DVector sinhNew() {
+        return sinhTo(new DVectorDense(size()));
+    }
+
+    DVector asin();
+
+    DVector asinTo(DVector to);
+
+    default DVector asinNew() {
+        return asinTo(new DVectorDense(size()));
+    }
+
+    DVector tan();
+
+    DVector tanTo(DVector to);
+
+    default DVector tanNew() {
+        return tanTo(new DVectorDense(size()));
+    }
+
+    DVector tanh();
+
+    DVector tanhTo(DVector to);
+
+    default DVector tanhNew() {
+        return tanhTo(new DVectorDense(size()));
+    }
+
+    DVector atan();
+
+    DVector atanTo(DVector to);
+
+    default DVector atanNew() {
+        return atanTo(new DVectorDense(size()));
+    }
+
+    DVector exp();
+
+    DVector expTo(DVector to);
+
+    default DVector expNew() {
+        return expTo(new DVectorDense(size()));
+    }
+
+    DVector expm1();
+
+    DVector expm1To(DVector to);
+
+    default DVector expm1New() {
+        return expm1To(new DVectorDense(size()));
+    }
+
+    DVector sqrt();
+
+    DVector sqrtTo(DVector to);
+
+    default DVector sqrtNew() {
+        return sqrtTo(new DVectorDense(size()));
+    }
+
+    DVector cbrt();
+
+    DVector cbrtTo(DVector to);
+
+    default DVector cbrtNew() {
+        return cbrtTo(new DVectorDense(size()));
+    }
+
     /**
      * Adds value {@param x} to all vector elements.
      *
@@ -300,8 +444,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @return new vector which contains the result
      */
     default DVector addNew(double x) {
-        DVectorDense copy = new DVectorDense(0, size(), new double[size()]);
-        return addTo(copy, x);
+        return addTo(new DVectorDense(size()), x);
     }
 
     /**
@@ -510,7 +653,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param y vector
      * @return new vector which contains the result of {@code this[i] <- this[i] + a * y[i]}
      */
-    DVector addMul(double a, DVector y);
+    DVector fma(double a, DVector y);
 
     /**
      * Creates a new {@link DVector} which contains the result of {@code this + a * y},
@@ -522,7 +665,52 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @param y vector
      * @return new vector which contains the result of {@code this[i] <- this[i] + a * y[i]}
      */
-    DVector addMulNew(double a, DVector y);
+    DVector fmaNew(double a, DVector y);
+
+    /**
+     * Cuts the vector values to be in interval [low,high]. In other words a value
+     * {@code v} is transformed into {@code max(low, min(high, v))}.
+     * <p>
+     * If {@code low} is {@link Double#NaN} than values are not cut downside.
+     * <p>
+     * If {@code high} is {@link Double#NaN} than values are not cut upside.
+     *
+     * @param low  minimum value after cut operation, if {@link Double#NaN} minimum is not applied.
+     * @param high maximum value after cut operation, if {@link Double#NaN} maximum is not applied.
+     * @return initial vector with modified values
+     */
+    DVector cut(double low, double high);
+
+    /**
+     * Store into {@code to} vector the cut values in interval [low,high]. In other words a value
+     * {@code v} is transformed into {@code max(low, min(high, v))}.
+     * <p>
+     * If {@code low} is {@link Double#NaN} than values are not cut downside.
+     * <p>
+     * If {@code high} is {@link Double#NaN} than values are not cut upside.
+     *
+     * @param to   vector which will store the values
+     * @param low  minimum value after cut operation, if {@link Double#NaN} minimum is not applied.
+     * @param high maximum value after cut operation, if {@link Double#NaN} maximum is not applied.
+     * @return {@code to} vector with modified values
+     */
+    DVector cutTo(DVector to, double low, double high);
+
+    /**
+     * Store into new vector the cut values in interval [low,high]. In other words a value
+     * {@code v} is transformed into {@code max(low, min(high, v))}.
+     * <p>
+     * If {@code low} is {@link Double#NaN} than values are not cut downside.
+     * <p>
+     * If {@code high} is {@link Double#NaN} than values are not cut upside.
+     *
+     * @param low  minimum value after cut operation, if {@link Double#NaN} minimum is not applied.
+     * @param high maximum value after cut operation, if {@link Double#NaN} maximum is not applied.
+     * @return {@code to} vector with modified values
+     */
+    default DVector cutNew(double low, double high) {
+        return cutTo(denseCopy(), low, high);
+    }
 
     /**
      * Dot product between two vectors is equal to the sum of the

@@ -125,20 +125,16 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
     }
 
     private double negativeLogLikelihood(DVector y, DVector ny, DVector w, double lambda, DVector p, DVector np) {
-        DVector logp = p.applyNew(this::cut).apply(StrictMath::log);
-        DVector lognp = np.applyNew(this::cut).apply(StrictMath::log);
+        DVector logp = p.cutNew(1e-6, Double.NaN).apply(StrictMath::log);
+        DVector lognp = np.cutNew(1e-6, Double.NaN).apply(StrictMath::log);
 
         return -logp.dot(y) - lognp.dot(ny) + lambda * w.norm(2) / 2;
-    }
-
-    private double cut(double value) {
-        return Math.max(1e-6, value);
     }
 
     private DVector iterate(DVector w, DMatrix x, DVector y, DVector ny, double lambda, DVector p, DVector np) {
 
         // p(1-p) diag from p diag
-        DVector pvar = p.mulNew(np).apply(this::cut);
+        DVector pvar = p.mulNew(np).cut(1e-6, Double.NaN);
 
         // H = X^t * I{p(1-p)} * X + I_lambda
         DMatrix xta = x.t().mulNew(pvar, 0);
@@ -163,14 +159,14 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
 
         double factor = 1.0;
         double decrease = 0.9;
-        DVector wc = w.addMulNew(factor, d);
+        DVector wc = w.fmaNew(factor, d);
         DVector pp = x.dot(wc).apply(MathTools::logistic);
         DVector nnp = pp.applyNew(v -> 1 - v);
 
         double nll = negativeLogLikelihood(y, ny, wc, lambda, pp, nnp);
 
         while (true) {
-            var wcnew = w.addMulNew(factor * decrease, d);
+            var wcnew = w.fmaNew(factor * decrease, d);
             pp = x.dot(wcnew).apply(MathTools::logistic);
             nnp = pp.applyNew(v -> 1 - v);
             double nllNew = negativeLogLikelihood(y, ny, wc, lambda, pp, nnp);

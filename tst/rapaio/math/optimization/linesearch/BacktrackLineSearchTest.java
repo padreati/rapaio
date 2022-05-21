@@ -56,7 +56,7 @@ public class BacktrackLineSearchTest {
             DVector p = df.apply(x0).mul(-1);
             double t = BacktrackLineSearch.newSearch().search(f, df, x0, p);
             double fx0 = f.apply(x0);
-            double fx1 = f.apply(x0.addMulNew(t, p));
+            double fx1 = f.apply(x0.fmaNew(t, p));
             assertTrue(fx0 >= fx1);
             assertEquals(0.7, t);
         }
@@ -75,7 +75,7 @@ public class BacktrackLineSearchTest {
             DVector p = df.apply(x0).mul(-1);
             double alpha = BacktrackLineSearch.newSearch().search(f, df, x0, p, 100_000.0);
             double fx0 = f.apply(x0);
-            double fx1 = f.apply(x0.addMulNew(alpha, p));
+            double fx1 = f.apply(x0.fmaNew(alpha, p));
             assertTrue(fx0 >= fx1);
         }
     }

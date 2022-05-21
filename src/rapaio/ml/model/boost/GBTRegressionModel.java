@@ -23,7 +23,6 @@ package rapaio.ml.model.boost;
 
 import java.io.Serial;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -151,7 +150,7 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
 
             // add next prediction to the predict values
             var pred = tree.predict(df, false).firstPrediction();
-            VarDouble nextFit = fitValues.dvNew().addMul(shrinkage.get(), pred.dv()).dv();
+            VarDouble nextFit = fitValues.dvNew().fma(shrinkage.get(), pred.dv()).dv();
 
             double initScore = loss.get().errorScore(y, fitValues);
             double nextScore = loss.get().errorScore(y, nextFit);
@@ -178,7 +177,7 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
         prediction.apply(v -> 0);
         prediction.add(initModel.get().predict(df, false).firstPrediction().dv());
         for (var tree : trees) {
-            prediction.addMul(shrinkage.get(), tree.predict(df, false).firstPrediction().dv());
+            prediction.fma(shrinkage.get(), tree.predict(df, false).firstPrediction().dv());
         }
         result.buildComplete();
         return result;

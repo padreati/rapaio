@@ -37,7 +37,6 @@ public class DVectorStride extends AbstractDVectorStore {
     private final int size;
     private final int[] loopIndexes;
     private final double[] array;
-    private final VectorMask<Double> loopMask;
 
     public DVectorStride(int offset, int stride, int size, double[] array) {
         super(size);
@@ -45,7 +44,6 @@ public class DVectorStride extends AbstractDVectorStore {
         this.stride = stride;
         this.size = size;
         this.array = array;
-        this.loopMask = species.indexInRange(loopBound, size);
 
         this.loopIndexes = new int[speciesLen];
         for (int i = 0; i < loopIndexes.length; i++) {
@@ -89,11 +87,6 @@ public class DVectorStride extends AbstractDVectorStore {
     }
 
     @Override
-    public VectorMask<Double> loopMask() {
-        return loopMask;
-    }
-
-    @Override
     public void storeVector(DoubleVector v, int i) {
         v.intoArray(array, offset + i * stride, loopIndexes, 0);
     }
@@ -109,6 +102,7 @@ public class DVectorStride extends AbstractDVectorStore {
         for (int i = 0; i < loopBound; i += speciesLen) {
             loadVector(i).intoArray(copy, i);
         }
+        VectorMask<Double> loopMask = species.indexInRange(loopBound, size);
         loadVector(loopBound, loopMask).intoArray(copy, loopBound, loopMask);
         return copy;
     }

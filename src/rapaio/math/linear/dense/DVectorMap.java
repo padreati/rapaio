@@ -36,14 +36,12 @@ public class DVectorMap extends AbstractDVectorStore {
     private final int offset;
     private final int[] indexes;
     private final double[] array;
-    private final VectorMask<Double> loopMask;
 
     public DVectorMap(int offset, int[] indexes, double[] array) {
         super(indexes.length);
         this.offset = offset;
         this.indexes = indexes;
         this.array = array;
-        this.loopMask = species.indexInRange(loopBound, indexes.length);
     }
 
     @Override
@@ -82,11 +80,6 @@ public class DVectorMap extends AbstractDVectorStore {
     }
 
     @Override
-    public VectorMask<Double> loopMask() {
-        return loopMask;
-    }
-
-    @Override
     public void storeVector(DoubleVector v, int i) {
         v.intoArray(array, offset, indexes, i);
     }
@@ -102,6 +95,7 @@ public class DVectorMap extends AbstractDVectorStore {
         for (int i = 0; i < loopBound; i += speciesLen) {
             loadVector(i).intoArray(copy, i);
         }
+        VectorMask<Double> loopMask = species.indexInRange(loopBound, indexes.length);
         loadVector(loopBound, loopMask).intoArray(copy, loopBound, loopMask);
         return copy;
     }

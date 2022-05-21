@@ -84,6 +84,294 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
+    public DVector log() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.log(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector logTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.log(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector log1p() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.log1p(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector log1pTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.log1p(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector log10() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.log10(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector log10To(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.log10(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector abs() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.abs(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector absTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.abs(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector neg() {
+        for (int i = 0; i < size(); i++) {
+            set(i, -get(i));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector negTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, -get(i));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector cos() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.cos(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector cosTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.cos(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector cosh() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.cosh(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector coshTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.cosh(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector acos() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.acos(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector acosTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.acos(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector sin() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.sin(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector sinTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.sin(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector sinh() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.sinh(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector sinhTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.sinh(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector asin() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.asin(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector asinTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.asin(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector tan() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.tan(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector tanTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.tan(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector tanh() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.tanh(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector tanhTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.tanh(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector atan() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.atan(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector atanTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.atan(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector exp() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.exp(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector expTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.exp(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector expm1() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.expm1(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector expm1To(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.expm1(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector sqrt() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.sqrt(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector sqrtTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.sqrt(get(i)));
+        }
+        return to;
+    }
+
+    @Override
+    public DVector cbrt() {
+        for (int i = 0; i < size(); i++) {
+            set(i, StrictMath.cbrt(get(i)));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector cbrtTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, StrictMath.cbrt(get(i)));
+        }
+        return to;
+    }
+
+    @Override
     public DVector add(double x) {
         for (int i = 0; i < size(); i++) {
             inc(i, x);
@@ -220,7 +508,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector addMul(double a, DVector y) {
+    public DVector fma(double a, DVector y) {
         checkConformance(y);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) + a * y.get(i));
@@ -229,13 +517,43 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector addMulNew(double a, DVector y) {
+    public DVector fmaNew(double a, DVector y) {
         checkConformance(y);
         double[] copy = new double[size()];
         for (int i = 0; i < size(); i++) {
             copy[i] = a * get(i) + y.get(i);
         }
         return new DVectorDense(0, copy.length, copy);
+    }
+
+    @Override
+    public DVector cut(double low, double high) {
+        for (int i = 0; i < size(); i++) {
+            double v = get(i);
+            if (!Double.isNaN(low)) {
+                v = Math.max(low, v);
+            }
+            if (!Double.isNaN(high)) {
+                v = Math.min(high, v);
+            }
+            set(i, v);
+        }
+        return this;
+    }
+
+    @Override
+    public DVector cutTo(DVector to, double low, double high) {
+        for (int i = 0; i < size(); i++) {
+            double v = get(i);
+            if (!Double.isNaN(low)) {
+                v = Math.min(low, v);
+            }
+            if (!Double.isNaN(high)) {
+                v = Math.min(high, v);
+            }
+            to.set(i, v);
+        }
+        return this;
     }
 
     @Override
