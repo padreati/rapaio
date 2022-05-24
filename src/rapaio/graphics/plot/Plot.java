@@ -39,10 +39,9 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VSort;
 import rapaio.graphics.Figure;
-import rapaio.graphics.opt.Gradient;
-import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.artist.ABLine;
 import rapaio.graphics.plot.artist.BarPlot;
 import rapaio.graphics.plot.artist.BoxPlot;
@@ -203,11 +202,11 @@ public class Plot implements Figure {
     @Override
     public void paint(Graphics2D g2d, Rectangle rect) {
 
-        g2d.setColor(ColorPalette.STANDARD.getColor(255));
+        g2d.setColor(Palette.standard().getColor(255));
         g2d.fill(rect);
 
-        g2d.setBackground(ColorPalette.STANDARD.getColor(255));
-        g2d.setColor(ColorPalette.STANDARD.getColor(0));
+        g2d.setBackground(Palette.standard().getColor(255));
+        g2d.setColor(Palette.standard().getColor(0));
 
         if (title != null) {
             g2d.setFont(TITLE_FONT);
@@ -511,18 +510,18 @@ public class Plot implements Figure {
     }
 
 
-    public Plot isoCurves(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
-        add(new IsoCurves(grid, true, true, gradient, levels, opts));
+    public Plot isoCurves(GridData grid, double[] levels, GOption<?>... opts) {
+        add(new IsoCurves(grid, true, true, levels, opts));
         return this;
     }
 
-    public Plot isoLines(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
-        add(new IsoCurves(grid, true, false, gradient, levels, opts));
+    public Plot isoLines(GridData grid, double[] levels, GOption<?>... opts) {
+        add(new IsoCurves(grid, true, false, levels, opts));
         return this;
     }
 
-    public Plot isoBands(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
-        add(new IsoCurves(grid, false, true, gradient, levels, opts));
+    public Plot isoBands(GridData grid, double[] levels, GOption<?>... opts) {
+        add(new IsoCurves(grid, false, true, levels, opts));
         return this;
     }
 

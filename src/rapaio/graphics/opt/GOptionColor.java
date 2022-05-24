@@ -53,7 +53,7 @@ public class GOptionColor implements GOption<Color[]> {
         function = opt -> {
             Color[] colors = new Color[color.size()];
             for (int i = 0; i < colors.length; i++) {
-                colors[i] = opt.getPalette().getColor(color.getInt(i));
+                colors[i] = opt.getPalette().getColor(color.getDouble(i));
             }
             return colors;
         };

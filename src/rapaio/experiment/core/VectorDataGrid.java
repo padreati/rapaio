@@ -21,11 +21,13 @@
 
 package rapaio.experiment.core;
 
+import static rapaio.sys.With.palette;
+
 import java.util.function.BiFunction;
 
 import rapaio.core.tools.GridData;
 import rapaio.data.VarDouble;
-import rapaio.graphics.opt.Gradient;
+import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.linear.DVector;
 import rapaio.sys.Experimental;
@@ -40,7 +42,7 @@ public class VectorDataGrid {
     private final VarDouble xRange;
     private final VarDouble yRange;
 
-    private DVector[] values;
+    private final DVector[] values;
 
     public VectorDataGrid(int channels, double xMin, double xMax, double yMin, double yMax, double step) {
         this.channels = channels;
@@ -108,7 +110,7 @@ public class VectorDataGrid {
             }
             q[q.length-1] *= 1.0001;
 
-            p.isoBands(grid, Gradient.newMonoHueGradient(hues[ch], 0f, 1f, 0.8f, min, max), q);
+            p.isoBands(grid, q, palette(Palette.hueMono(hues[ch], 0f, 1f, 0.8f, min, max)));
 //            p.isoLines(grid, () -> {
 //                Color[] colors = new Color[100];
 //                for (int i = 0; i < colors.length; i++) {

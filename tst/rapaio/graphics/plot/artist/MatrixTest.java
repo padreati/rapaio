@@ -16,6 +16,7 @@ import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.artist.AbstractArtistTest;
 import rapaio.image.ImageTools;
@@ -49,7 +50,7 @@ public class MatrixTest extends AbstractArtistTest {
         grid.add(matrix(cov));
         grid.add(corrGram(dm));
 
-        grid.add(matrix(cov, color(0)));
+        grid.add(matrix(cov, color(NColor.black)));
         grid.add(matrix(DMatrixDenseC.random(60, 80)));
 
         assertTest(grid, "matrix-test");

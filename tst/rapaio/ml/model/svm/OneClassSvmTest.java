@@ -1,12 +1,6 @@
 package rapaio.ml.model.svm;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.With.color;
-import static rapaio.sys.With.fill;
-import static rapaio.sys.With.pch;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -17,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
-import rapaio.core.tools.GridData;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -25,12 +18,8 @@ import rapaio.data.VarDouble;
 import rapaio.experiment.ml.svm.libsvm.svm_model;
 import rapaio.experiment.ml.svm.libsvm.svm_predict;
 import rapaio.experiment.ml.svm.libsvm.svm_train;
-import rapaio.graphics.Plotter;
-import rapaio.graphics.opt.Gradient;
-import rapaio.graphics.plot.GridLayer;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 import rapaio.util.collection.DoubleArrays;

@@ -49,10 +49,9 @@ public class GOptions implements Serializable {
 
     static {
         defaults = new GOptions();
-        defaults.palette = new GOptionPalette(ColorPalette.TABLEAU21);
+        defaults.palette = new GOptionPalette(Palette.tableau21());
         defaults.color = new GOptionColor(Color.BLACK);
         defaults.fill = new GOptionFill(-1);
-        defaults.gradient = new GOptionGradient(Gradient.newHueGradient(0, 256));
         defaults.lwd = new GOptionLwd(1.0f);
         defaults.sz = new GOptionSz(VarDouble.scalar(3));
         defaults.pch = new GOptionPch(VarInt.scalar(0));
@@ -78,7 +77,6 @@ public class GOptions implements Serializable {
     private GOptionPalette palette;
     private GOptionColor color;
     private GOptionFill fill;
-    private GOptionGradient gradient;
     private GOptionLwd lwd;
     private GOptionSz sz;
     private GOptionPch pch;
@@ -108,7 +106,6 @@ public class GOptions implements Serializable {
                 palette,
                 color,
                 fill,
-                gradient,
                 lwd,
                 sz,
                 pch,
@@ -144,7 +141,7 @@ public class GOptions implements Serializable {
      * Color palette
      */
 
-    public ColorPalette getPalette() {
+    public Palette getPalette() {
         if (palette == null) {
             return parent != null ? parent.getPalette() : defaults.palette.apply(this);
         }
@@ -191,21 +188,6 @@ public class GOptions implements Serializable {
 
     public void setFill(GOptionFill fill) {
         this.fill = fill;
-    }
-
-    public Gradient getGradient() {
-        if (gradient == null) {
-            if (parent != null) {
-                return parent.getGradient();
-            } else {
-                return defaults.gradient.apply(this);
-            }
-        }
-        return gradient.apply(this);
-    }
-
-    public void setGradient(GOptionGradient gradient) {
-        this.gradient = gradient;
     }
 
     /*

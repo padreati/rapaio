@@ -32,8 +32,8 @@ import rapaio.core.correlation.CorrPearson;
 import rapaio.core.correlation.CorrSpearman;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionGradient;
-import rapaio.graphics.opt.Gradient;
+import rapaio.graphics.opt.GOptionPalette;
+import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
@@ -67,7 +67,7 @@ public class CorrGram extends Artist {
         this.grid = grid;
         this.d = d;
 
-        this.options.setGradient(new GOptionGradient(Gradient.newHueGradient(0, 240, -1, 1)));
+        this.options.setPalette(new GOptionPalette(Palette.hue(0, 240, -1, 1)));
         this.options.bind(opts);
     }
 
@@ -104,7 +104,7 @@ public class CorrGram extends Artist {
         for (int i = 0; i < d.length(); i++) {
             for (int j = 0; j < d.length(); j++) {
                 if (i != j) {
-                    g2d.setColor(options.getGradient().getColor(d.get(i, j)));
+                    g2d.setColor(options.getPalette().getColor(d.get(i, j)));
                     g2d.fill(new Rectangle2D.Double(
                             xScale(j),
                             yScale(d.length() - i),

@@ -11,13 +11,14 @@ import rapaio.core.tools.GridData;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.graphics.opt.Gradient;
+import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.model.svm.OneClassSvm;
 import rapaio.sys.WS;
+import rapaio.sys.With;
 
 public class OneClassSvmDemo {
 
@@ -47,7 +48,7 @@ public class OneClassSvmDemo {
         Frame df = SolidFrame.byVars(x1, x2);
         DMatrix xs = DMatrix.copy(df);
 
-        VarDouble gammas = VarDouble.seq(0.001, 0.075, 0.005);
+        VarDouble gammas = VarDouble.seq(0.001, 0.075, 0.01);
 
         int len = (int) (Math.floor(Math.sqrt(gammas.size())) + 1);
         GridLayer gl = GridLayer.of(len, len);
@@ -58,12 +59,12 @@ public class OneClassSvmDemo {
                     .nu.set(0.1).fit(df);
 
             GridData gd = GridData.fromFunction((v1, v2) -> ocs.predict(DVector.wrap(v1, v2))
-                    .scores().getDouble(0), x1.dv().min(), x1.dv().max(), x2.dv().min(), x2.dv().max(), 128);
+                    .scores().getDouble(0), x1.dv().min(), x1.dv().max(), x2.dv().min(), x2.dv().max(), 64);
 
             double min = gd.minValue() * 1.1;
             double max = gd.maxValue() * 1.1;
-            gl.add(isoBands(gd, Gradient.newHueGradient(0, 240, min, max),
-                            VarDouble.seq(min, max, 0.5).elements())
+            gl.add(isoBands(gd, VarDouble.seq(min, max, 1).elements(),
+                            With.palette(Palette.hue(0, 240, min, max)))
 //                    .points(x1, x2)
             );
         }

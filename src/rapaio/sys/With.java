@@ -29,13 +29,11 @@ import java.text.DecimalFormat;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOptionAlpha;
 import rapaio.graphics.opt.GOptionBins;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.opt.GOptionFill;
 import rapaio.graphics.opt.GOptionFont;
-import rapaio.graphics.opt.GOptionGradient;
 import rapaio.graphics.opt.GOptionHAlign;
 import rapaio.graphics.opt.GOptionHeights;
 import rapaio.graphics.opt.GOptionHorizontal;
@@ -52,7 +50,7 @@ import rapaio.graphics.opt.GOptionSz;
 import rapaio.graphics.opt.GOptionTop;
 import rapaio.graphics.opt.GOptionVAlign;
 import rapaio.graphics.opt.GOptionWidths;
-import rapaio.graphics.opt.Gradient;
+import rapaio.graphics.opt.Palette;
 import rapaio.printer.opt.POptionTextWidth;
 import rapaio.printer.opt.POtpionFloatFormat;
 
@@ -71,7 +69,7 @@ public final class With {
 
     // Graphical options
 
-    public static GOptionPalette palette(ColorPalette colorPalette) {
+    public static GOptionPalette palette(Palette colorPalette) {
         return new GOptionPalette(colorPalette);
     }
 
@@ -97,10 +95,6 @@ public final class With {
 
     public static GOptionFill fill(Var color) {
         return new GOptionFill(color);
-    }
-
-    public static GOptionGradient gradient(Gradient colorRange) {
-        return new GOptionGradient(colorRange);
     }
 
     public static GOptionLwd lwd(float lwd) {

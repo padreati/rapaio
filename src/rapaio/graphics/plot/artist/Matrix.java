@@ -25,14 +25,12 @@ import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Composite;
 import java.awt.Graphics2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
 import java.io.Serial;
 
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionGradient;
-import rapaio.graphics.opt.Gradient;
+import rapaio.graphics.opt.GOptionPalette;
+import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.math.linear.DMatrix;
@@ -50,7 +48,7 @@ public class Matrix extends Artist {
     public Matrix(DMatrix m, GOption<?>... opts) {
         this.m = m;
         this.options.setColor(With.color(-1));
-        this.options.setGradient(new GOptionGradient(Gradient.newHueGradient()));
+        this.options.setPalette(new GOptionPalette(Palette.hue(0, 240, m.min(0).min(), m.max(0).max())));
         this.options.bind(opts);
     }
 
@@ -75,11 +73,6 @@ public class Matrix extends Artist {
         Composite oldComposite = g2d.getComposite();
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
 
-        double max = m.max(0).max();
-        double min = m.min(0).min();
-
-        Gradient colorRange = options.getGradient().forRange(min, max);
-
         final double eps = 1 / (xScale(1) - xScale(0));
 
         for (int i = 0; i < m.rows(); i++) {
@@ -92,7 +85,7 @@ public class Matrix extends Artist {
                 path.lineTo(xScale(j), yScale(m.rows() - i - 1 - eps));
                 path.lineTo(xScale(j), yScale(m.rows() - i));
 
-                g2d.setColor(colorRange.getColor(m.get(i, j)));
+                g2d.setColor(options.getPalette().getColor(m.get(i, j)));
                 g2d.setStroke(new BasicStroke());
                 g2d.fill(path);
             }

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rapaio.graphics.Figure;
-import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.Palette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
 import rapaio.util.collection.DoubleArrays;
@@ -159,11 +159,11 @@ public class GridLayer implements Figure {
     @Override
     public void paint(Graphics2D g2d, Rectangle r) {
 
-        g2d.setColor(ColorPalette.STANDARD.getColor(255));
+        g2d.setColor(Palette.standard().getColor(255));
         g2d.fill(r);
 
-        g2d.setBackground(ColorPalette.STANDARD.getColor(255));
-        g2d.setColor(ColorPalette.STANDARD.getColor(0));
+        g2d.setBackground(Palette.standard().getColor(255));
+        g2d.setColor(Palette.standard().getColor(0));
 
         if (title != null) {
             g2d.setFont(TITLE_FONT);
@@ -184,7 +184,7 @@ public class GridLayer implements Figure {
         }
     }
 
-    static record G(int row, int col, int width, int height, Plot plot) implements Serializable {
+    record G(int row, int col, int width, int height, Plot plot) implements Serializable {
         @Serial
         private static final long serialVersionUID = -2763424578024274986L;
     }

@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.Palette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -85,7 +85,7 @@ public class Lines extends Artist {
     public void paint(Graphics2D g2d) {
 
         g2d.setStroke(new BasicStroke(options.getLwd()));
-        g2d.setBackground(ColorPalette.STANDARD.getColor(255));
+        g2d.setBackground(Palette.standard().getColor(255));
 
         for (int i = 1; i < x.size(); i++) {
             g2d.setColor(options.getColor(i));

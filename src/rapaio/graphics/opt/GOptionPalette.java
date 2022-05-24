@@ -26,7 +26,7 @@ import java.io.Serial;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public record GOptionPalette(ColorPalette palette) implements GOption<ColorPalette> {
+public record GOptionPalette(Palette palette) implements GOption<Palette> {
 
     @Serial
     private static final long serialVersionUID = -353977248937212431L;
@@ -37,7 +37,7 @@ public record GOptionPalette(ColorPalette palette) implements GOption<ColorPalet
     }
 
     @Override
-    public ColorPalette apply(GOptions gOpts) {
+    public Palette apply(GOptions gOpts) {
         return palette;
     }
 }

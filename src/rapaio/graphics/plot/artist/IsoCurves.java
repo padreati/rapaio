@@ -41,7 +41,6 @@ import java.util.List;
 import rapaio.core.tools.GridData;
 import rapaio.data.Var;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.Gradient;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -53,14 +52,12 @@ public class IsoCurves extends Artist {
     @Serial
     private static final long serialVersionUID = -642370269224702175L;
     private final GridData grid;
-    private final Gradient gradient;
     private final double[] levels;
     private final boolean contour;
     private final boolean fill;
 
-    public IsoCurves(GridData grid, boolean contour, boolean fill, Gradient gradient, double[] levels, GOption<?>... opts) {
+    public IsoCurves(GridData grid, boolean contour, boolean fill, double[] levels, GOption<?>... opts) {
         this.grid = grid;
-        this.gradient = gradient.forRange(0, levels.length);
         this.levels = levels;
         this.contour = contour;
         this.fill = fill;
@@ -95,10 +92,7 @@ public class IsoCurves extends Artist {
         if (plot.yAxis().domain().hasHardMin() && y < plot.yAxis().min()) {
             return false;
         }
-        if (plot.yAxis().domain().hasHardMax() && y < plot.yAxis().max()) {
-            return false;
-        }
-        return true;
+        return !plot.yAxis().domain().hasHardMax() || !(y < plot.yAxis().max());
     }
 
     @Override
@@ -113,13 +107,13 @@ public class IsoCurves extends Artist {
         BasicStroke contourStroke = new BasicStroke(options.getLwd(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
         if (fill) {
-            visitEach(g2d, x, y, fillStroke, contourStroke, (fillPoints, fillIndexes, levelIndex) -> {
+            visitEach(g2d, x, y, fillStroke, contourStroke, (fillPoints, fillIndexes, levelValue) -> {
 
                 if (fillPoints.size() > 2) {
-                    g2d.setColor(gradient.getColor(levelIndex));
+                    g2d.setColor(options.getPalette().getColor(levelValue));
                     g2d.setStroke(fillStroke);
                     Path2D.Double path = new Path2D.Double();
-                    if(!isInside(fillPoints.get(0).x, fillPoints.get(0).y)) {
+                    if (!isInside(fillPoints.get(0).x, fillPoints.get(0).y)) {
                         return;
                     }
                     path.moveTo(fillPoints.get(fillPoints.size() - 1).x, fillPoints.get(fillPoints.size() - 1).y);
@@ -132,13 +126,13 @@ public class IsoCurves extends Artist {
             });
         }
         if (contour) {
-            visitEach(g2d, x, y, fillStroke, contourStroke, (fillPoints, fillIndexes, levelIndex) -> {
+            visitEach(g2d, x, y, fillStroke, contourStroke, (fillPoints, fillIndexes, levelValue) -> {
 
                 g2d.setColor(options.getColor(0));
                 g2d.setStroke(contourStroke);
 
                 if (fillPoints.size() > 2) {
-                    if(!isInside(fillPoints.get(0).x, fillPoints.get(0).y)) {
+                    if (!isInside(fillPoints.get(0).x, fillPoints.get(0).y)) {
                         return;
                     }
                     fillPoints.add(fillPoints.get(0));
@@ -160,7 +154,7 @@ public class IsoCurves extends Artist {
 
     @FunctionalInterface
     private interface Painter {
-        void painter(List<Point2D.Double> fillStroke, List<Integer> contourStroke, Integer index);
+        void painter(List<Point2D.Double> fillStroke, List<Integer> contourStroke, double levelValue);
     }
 
     private void visitEach(Graphics2D g2d, Var x, Var y, BasicStroke fillStroke, BasicStroke contourStroke, Painter consumer) {
@@ -298,7 +292,7 @@ public class IsoCurves extends Artist {
                         fillIndexes.add(q);
                     }
 
-                    consumer.painter(fillPoints, fillIndexes, l);
+                    consumer.painter(fillPoints, fillIndexes, (levels[l]+levels[l+1])/2);
                 }
             }
         }

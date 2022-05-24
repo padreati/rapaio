@@ -30,7 +30,6 @@ import rapaio.core.tools.GridData;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.graphics.opt.Gradient;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
@@ -191,16 +190,16 @@ public final class Plotter {
         return plot().add(new Matrix(m, opts));
     }
 
-    public static Plot isoCurves(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
-        return plot().add(new IsoCurves(grid, true, true, gradient, levels, opts));
+    public static Plot isoCurves(GridData grid, double[] levels, GOption<?>... opts) {
+        return plot().add(new IsoCurves(grid, true, true, levels, opts));
     }
 
-    public static Plot isoLines(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
-        return plot().add(new IsoCurves(grid, true, false, gradient, levels, opts));
+    public static Plot isoLines(GridData grid, double[] levels, GOption<?>... opts) {
+        return plot().add(new IsoCurves(grid, true, false, levels, opts));
     }
 
-    public static Plot isoBands(GridData grid, Gradient gradient, double[] levels, GOption<?>... opts) {
-        return plot().add(new IsoCurves(grid, false, true, gradient, levels, opts));
+    public static Plot isoBands(GridData grid, double[] levels, GOption<?>... opts) {
+        return plot().add(new IsoCurves(grid, false, true, levels, opts));
     }
 
     public static Plot silhouette(ClusterSilhouette silhouette, GOption<?>... opts) {

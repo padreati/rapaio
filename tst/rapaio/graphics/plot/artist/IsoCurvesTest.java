@@ -3,6 +3,9 @@ package rapaio.graphics.plot.artist;
 import static java.lang.StrictMath.pow;
 
 import static rapaio.graphics.Plotter.*;
+import static rapaio.graphics.opt.Palette.bicolor;
+import static rapaio.graphics.opt.Palette.hue;
+import static rapaio.sys.With.palette;
 
 import java.io.IOException;
 import java.util.function.BiFunction;
@@ -12,14 +15,10 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
 import rapaio.core.tools.GridData;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
 import rapaio.data.VarDouble;
-import rapaio.datasets.Datasets;
-import rapaio.graphics.opt.Gradient;
 import rapaio.graphics.opt.NColor;
+import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.GridLayer;
-import rapaio.graphics.plot.artist.AbstractArtistTest;
 import rapaio.image.ImageTools;
 
 public class IsoCurvesTest extends AbstractArtistTest {
@@ -42,11 +41,11 @@ public class IsoCurvesTest extends AbstractArtistTest {
         double[] p = VarDouble.seq(0, 1, 1. / levelCount).elements();
         double[] levels = gd.quantiles(p);
 
-        grid.add(isoCurves(gd, Gradient.newBiColorGradient(NColor.darkred, NColor.dodgerblue, gd.minValue(), gd.maxValue()), levels));
-        grid.add(isoBands(gd, Gradient.newHueGradient(), levels));
+        grid.add(isoCurves(gd, levels, palette(bicolor(NColor.darkred, NColor.dodgerblue, gd.minValue(), gd.maxValue()))));
+        grid.add(isoBands(gd, levels, palette(hue(0, 240, gd.minValue(), gd.maxValue()))));
 
-        grid.add(isoLines(gd, Gradient.newHueGradient(), levels));
-        grid.add(isoCurves(gd, Gradient.newHueGradient(), levels).xLim(-2,2).yLim(-4, 4));
+        grid.add(isoLines(gd, levels, palette(hue())));
+        grid.add(isoCurves(gd, levels, palette(hue())).xLim(-2,2).yLim(-4, 4));
 
         assertTest(grid, "isocurves-test");
     }
