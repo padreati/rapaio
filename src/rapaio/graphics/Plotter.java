@@ -48,6 +48,7 @@ import rapaio.graphics.plot.artist.Matrix;
 import rapaio.graphics.plot.artist.Points;
 import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
+import rapaio.graphics.plot.artist.PolyPath;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Text;
 import rapaio.math.linear.DMatrix;
@@ -104,6 +105,10 @@ public final class Plotter {
 
     public static Plot polyfill(Var x, Var y, GOption<?>... opts) {
         return plot().add(new PolyFill(x, y, opts));
+    }
+
+    public static Plot polyfill(PolyPath polyPath, GOption<?>... opts) {
+        return plot().add(new PolyFill(polyPath, opts));
     }
 
     public static Plot densityLine(Var var, GOption<?>... opts) {

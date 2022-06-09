@@ -24,6 +24,7 @@ package rapaio.ml.model.bayes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -91,7 +92,20 @@ public class NaiveBayesTest {
 
         var copy = nb.newInstance();
 
-        assertEquals("NaiveBayes{prior=Uniform{value=0.3333333,targetLevels=[virginica,setosa,versicolor]},estimators=[]}", copy.fullName());
+        assertEquals(
+                "NaiveBayes{prior=Uniform{value=0.3333333,"
+                        + "targetLevels=[virginica,setosa,versicolor]},estimators=["
+                        + "Gaussian{test=sepal-length, values=[virginica:Normal(mu=6.588, sd=0.6294887), "
+                        + "setosa:Normal(mu=5.006, sd=0.348947), "
+                        + "versicolor:Normal(mu=5.936, sd=0.5109834)]},"
+                        + "Gaussian{test=sepal-width, values=[virginica:Normal(mu=2.974, sd=0.3192554), "
+                        + "setosa:Normal(mu=3.428, sd=0.3752546), "
+                        + "versicolor:Normal(mu=2.77, sd=0.3106445)]},"
+                        + "Gaussian{test=petal-length, values=[virginica:Normal(mu=5.552, sd=0.5463479), "
+                        + "setosa:Normal(mu=1.462, sd=0.1719186), versicolor:Normal(mu=4.26, sd=0.4651881)]},"
+                        + "Gaussian{test=petal-width, values=[virginica:Normal(mu=2.026, sd=0.2718897), "
+                        + "setosa:Normal(mu=0.246, sd=0.1043264), versicolor:Normal(mu=1.326, sd=0.1957652)]}]}",
+                copy.fullName());
     }
 
     @Test
@@ -124,6 +138,7 @@ public class NaiveBayesTest {
     void testPrediction() {
 
         Estimator estimator = new Estimator() {
+            @Serial
             private static final long serialVersionUID = 5459709521908513314L;
 
             @Override

@@ -24,6 +24,7 @@ package rapaio.math.linear.decomposition;
 import static java.lang.Math.abs;
 import static java.lang.Math.hypot;
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 
 import static rapaio.math.MathTools.*;
@@ -35,16 +36,14 @@ import rapaio.math.linear.dense.DVectorDense;
 /**
  * Calculates the compact Singular Value Decomposition of a matrix.
  * <p>
- * The Singular Value Decomposition of matrix A is a set of three matrices: U,
- * &Sigma; and V such that A = U &times; &Sigma; &times; V<sup>T</sup>.
+ * The Singular Value Decomposition of matrix A is a set of three matrices: U, Sigma and V such that A = U x Sigma x V^T.
  * <p>
- * Let A be a m &times; n matrix, then U is a m &times; p orthogonal matrix,
- * &Sigma; is a p &times; p diagonal matrix with positive or null elements,
- * V is a p &times; n orthogonal matrix (hence V<sup>T</sup> is also orthogonal) where
- * {@code p=min(m,n)}.
+ * Let A be a m x n matrix, then
+ * U is a m x p orthogonal matrix,
+ * Sigma; is a p x p diagonal matrix with positive or null elements,
+ * V is a p x n orthogonal matrix (hence V^T is also orthogonal) where p=min(m,n).
  * </p>
- * The singular values, sigma[k] = S[k][k], are ordered so that sigma[0] >=
- * sigma[1] >= ... >= sigma[n-1].
+ * The singular values, sigma[k] = S[k][k], are ordered so that sigma[0] >= sigma[1] >= ... >= sigma[n-1].
  * <p>
  * The singular value decomposition always exists, so the constructor will never
  * fail. The matrix condition number and the effective numerical rank can be
@@ -55,6 +54,7 @@ import rapaio.math.linear.dense.DVectorDense;
  */
 public class DoubleSVDecomposition implements java.io.Serializable {
 
+    private static final double SAFE_MIN = Double.longBitsToDouble((1023L - 1022L) << 52);
     /**
      * Absolute threshold for small singular values.
      */
@@ -107,7 +107,7 @@ public class DoubleSVDecomposition implements java.io.Serializable {
         // Reduce A to bidiagonal form, storing the diagonal elements
         // in s and the super-diagonal elements in e.
 
-        int nct = Math.min(m - 1, n);
+        int nct = min(m - 1, n);
         int nrt = max(0, n - 2);
         for (int k = 0; k < max(nct, nrt); k++) {
             if (k < nct) {
@@ -476,7 +476,7 @@ public class DoubleSVDecomposition implements java.io.Serializable {
             }
         }
 
-        tol = max(m * s.get(0) * DBL_EPSILON, sqrt(Double.MIN_NORMAL));
+        tol = max(m * s.get(0) * DBL_EPSILON, sqrt(SAFE_MIN));
     }
 
     /**

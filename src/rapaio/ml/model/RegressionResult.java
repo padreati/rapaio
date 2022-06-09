@@ -188,7 +188,7 @@ public class RegressionResult implements Printable {
      *
      * @return numeric variable with predicted values
      */
-    public VarDouble[] firstPredictionQuantiles() {
+    public VarDouble[] firstQuantiles() {
         return predictionQuantiles.get(firstTargetName());
     }
 

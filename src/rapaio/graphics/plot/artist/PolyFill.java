@@ -39,6 +39,10 @@ public class PolyFill extends BasePoly {
     @Serial
     private static final long serialVersionUID = 8507830080358347197L;
 
+    public PolyFill(PolyPath polyPath, GOption<?>...options) {
+        super(polyPath.getPath().v1, polyPath.getPath().v2, options);
+    }
+
     public PolyFill(Var x, Var y, GOption<?>... options) {
         super(x, y, options);
     }

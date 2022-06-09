@@ -47,6 +47,7 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
         this.name = name;
         this.validator = validator;
         set(defaultValues);
+        params.registerParameter(this);
     }
 
     @Override
@@ -131,6 +132,6 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
     @SuppressWarnings("unchecked")
     @Override
     public void copyFrom(Param<?, ?> param) {
-        set((List<T>) param);
+        set((List<T>) ((ListParam<?, ?>) param).values);
     }
 }

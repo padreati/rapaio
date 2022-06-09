@@ -44,7 +44,9 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ListParam;
+import rapaio.ml.common.ParametricEquals;
 import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
@@ -69,81 +71,208 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         ONLINE_PRUNING
     }
 
-    public record Factory(
-            String key,
-            int index,
-            DVector phii,
-            Supplier<DVector> trainingFeature,
-            Function<DVector, Double> testingFeature) {
+
+    @Serial
+    private static final long serialVersionUID = 9165148257709665706L;
+
+    /**
+     * Feature factory providers.
+     * <p>
+     * Those providers are used to produce features learned by RVM model
+     */
+    public ListParam<FeatureProvider, RVMRegression> providers = new ListParam<>(this,
+            List.of(new InterceptProvider(), new RBFProvider(VarDouble.wrap(1), 1)), "providers", (fp1, fp2) -> true);
+
+    /**
+     * Method used to fit model
+     */
+    public ValueParam<Method, RVMRegression> method = new ValueParam<>(this, Method.FAST_TIPPING, "method");
+
+    /**
+     * Fit threshold used in convergence criteria.
+     */
+    public ValueParam<Double, RVMRegression> fitThreshold = new ValueParam<>(this, 1e-10, "fitThreshold");
+
+    /**
+     * Fit threshold for setting an alpha weight's prior to infinity.
+     */
+    public ValueParam<Double, RVMRegression> alphaThreshold = new ValueParam<>(this, 1e9, "alphaThreshold");
+
+    /**
+     * Max number of iterations
+     */
+    public ValueParam<Integer, RVMRegression> maxIter = new ValueParam<>(this, 10_000, "maxIter");
+
+    /**
+     * Maximum number of failures for a feature, before it is pruned.
+     */
+    public ValueParam<Integer, RVMRegression> maxFailures = new ValueParam<>(this, 10_000, "maxFailures");
+
+    /**
+     * RVM regression feature. Features are produuced by {@link FeatureProvider} implementations.
+     *
+     * @param name       feature name for printing puurposes
+     * @param trainIndex observation's index used to build feature, -1 if the feature is not based on any observation
+     * @param xi         original training observation
+     * @param phii       kernelized feature supplier {@code [k(x,xi)]^T}
+     * @param kernel     kernel function with second argument provided by internal training observation
+     */
+    public record Feature(String name, int trainIndex, DVector xi, Supplier<DVector> phii, Function<DVector, Double> kernel) {
     }
 
-    public interface FactoryProvider {
-        Factory[] generateFactories(DMatrix x);
+    public interface FeatureProvider extends ParametricEquals<FeatureProvider> {
+        Feature[] generateFeatures(DMatrix x);
     }
 
-    public record InterceptProvider() implements FactoryProvider {
+    /**
+     * Feature provider for the intercept feature
+     */
+    public record InterceptProvider() implements FeatureProvider {
 
         @Override
-        public Factory[] generateFactories(DMatrix x) {
+        public boolean equalOnParams(FeatureProvider object) {
+            return object instanceof InterceptProvider;
+        }
+
+        @Override
+        public Feature[] generateFeatures(DMatrix x) {
             DVector mean = DVector.from(x.cols(), col -> x.mapCol(col).mean());
-            return new Factory[] {new Factory("intercept", -1, mean, () -> DVector.fill(x.rows(), 1.0), v -> 1.0)};
+            return new Feature[] {new Feature("intercept", -1, mean, () -> DVector.fill(x.rows(), 1.0), v -> 1.0)};
         }
     }
 
-    public record RBFProvider(VarDouble sigmas, double p) implements FactoryProvider {
+    /**
+     * RBF kernel feature provider.
+     *
+     * @param gammas possible values for gamma parameter (inverse of squared variance)
+     * @param p      percentage of generated features, 1 for all, 0 for none
+     */
+    public record RBFProvider(VarDouble gammas, double p) implements FeatureProvider {
 
         @Override
-        public Factory[] generateFactories(DMatrix x) {
-            int len = Math.max(1, (int) (x.rows() * sigmas.size() * p));
-            int[] selection = SamplingTools.sampleWOR(x.rows() * sigmas.size(), len);
-            Factory[] factories = new Factory[selection.length];
+        public boolean equalOnParams(FeatureProvider object) {
+            if (object instanceof RBFProvider rbfProvider) {
+                return gammas.deepEquals(rbfProvider.gammas) && p == rbfProvider.p;
+            }
+            return false;
+        }
+
+        public RBFProvider {
+            if (p < 0 || p > 1) {
+                throw new IllegalArgumentException("Percentage value p=%s is not in interval [0,1].".formatted(Format.floatFlex(p)));
+            }
+            if (gammas == null || gammas.size() == 0) {
+                throw new IllegalArgumentException("Sigma vector cannot be empty.");
+            }
+        }
+
+        public RBFProvider(VarDouble gammas) {
+            this(gammas, 1.0);
+        }
+
+        @Override
+        public Feature[] generateFeatures(DMatrix x) {
+            int len = (int) (x.rows() * gammas.size() * p);
+            int[] selection = SamplingTools.sampleWOR(x.rows() * gammas.size(), len);
+            Feature[] factories = new Feature[selection.length];
             IntArrays.quickSort(selection);
             int pp = 0;
-            for (int i = 0; i < sigmas.size(); i++) {
-                for (int j = 0; j < x.rows(); j++) {
-                    int pos = i * x.rows() + j;
-                    if (pp >= selection.length) {
-                        break;
-                    }
-                    if (selection[pp] != pos) {
-                        continue;
-                    }
-                    int jj = j;
-                    RBFKernel kernel = new RBFKernel(sigmas.getDouble(i));
-                    factories[pp++] = new Factory(
-                            String.format("RBF sigma:%s, index: %d", Format.floatFlex(sigmas.getDouble(i)), jj),
-                            jj,
-                            x.mapRowNew(jj),
-                            () -> DVector.from(x.rows(), r -> kernel.compute(x.mapRow(jj), x.mapRow(r))),
-                            vector -> kernel.compute(vector, x.mapRow(jj))
-                    );
-                }
+            for (int pos : selection) {
+                int sigmaIndex = pos / x.rows();
+                int rowIndex = pos % x.rows();
+                DVector xrow = x.mapRowNew(rowIndex);
+                double gamma = gammas.getDouble(sigmaIndex);
+                RBFKernel kernel = new RBFKernel(gamma);
+                factories[pp++] = new Feature(
+                        String.format("%s, vector: %s, train trainIndex: %d", kernel.name(), xrow.toString(), rowIndex),
+                        rowIndex,
+                        xrow,
+                        () -> DVector.from(x.rows(), r -> kernel.compute(xrow, x.mapRow(r))),
+                        vector -> kernel.compute(vector, xrow)
+                );
+            }
+            return factories;
+        }
+
+        @Override
+        public String toString() {
+            return "RBFProvider{gammas=[%s],p=%s}".formatted(
+                    gammas.stream().map(s -> Format.floatFlex(s.getDouble())).collect(Collectors.joining(",")),
+                    Format.floatFlex(p));
+        }
+    }
+
+    /**
+     * Generic kernel feature provider
+     *
+     * @param kernel kernel function
+     * @param p      percentage of the generated features
+     */
+    public record KernelProvider(Kernel kernel, double p) implements FeatureProvider {
+
+        public KernelProvider(Kernel kernel) {
+            this(kernel, 1.0);
+        }
+
+        @Override
+        public boolean equalOnParams(FeatureProvider object) {
+            if (object instanceof KernelProvider kernelProvider) {
+                return kernel.name().equals(kernelProvider.kernel.name()) && p == kernelProvider.p;
+            }
+            return false;
+        }
+
+        @Override
+        public Feature[] generateFeatures(DMatrix x) {
+            int len = Math.max(1, (int) (x.rows() * p));
+            int[] selection = SamplingTools.sampleWOR(x.rows(), len);
+            Feature[] factories = new Feature[selection.length];
+            IntArrays.quickSort(selection);
+            int pp = 0;
+            for (int rowIndex : selection) {
+                DVector xrow = x.mapRowNew(rowIndex);
+                factories[pp++] = new Feature(
+                        String.format("%s, vector: %s, train trainIndex: %d", kernel.name(), xrow.toString(), rowIndex),
+                        rowIndex,
+                        xrow,
+                        () -> DVector.from(x.rows(), r -> kernel.compute(xrow, x.mapRow(r))),
+                        vector -> kernel.compute(vector, xrow)
+                );
             }
             return factories;
         }
     }
 
-    public record RandomRBFProvider(VarDouble sigmas, double p, Distribution noise) implements FactoryProvider {
+    public record RandomRBFProvider(VarDouble gammas, double p, Distribution noise) implements FeatureProvider {
 
         @Override
-        public Factory[] generateFactories(DMatrix x) {
-            int len = Math.min(1, (int) (sigmas.size() * x.rows() * p));
-            Factory[] factories = new Factory[len];
+        public boolean equalOnParams(FeatureProvider object) {
+            if (object instanceof RandomRBFProvider randomRBFProvider) {
+                return gammas.deepEquals(randomRBFProvider.gammas) && p == randomRBFProvider.p && noise.name()
+                        .equals(randomRBFProvider.noise.name());
+            }
+            return false;
+        }
+
+        @Override
+        public Feature[] generateFeatures(DMatrix x) {
+            int len = Math.max(1, (int) (gammas.size() * x.rows() * p));
+            Feature[] factories = new Feature[len];
             for (int i = 0; i < len; i++) {
                 factories[i] = nextFactory(x);
             }
             return factories;
         }
 
-        public Factory nextFactory(DMatrix x) {
-            double sigma = sigmas.getDouble(RandomSource.nextInt(sigmas.size()));
+        public Feature nextFactory(DMatrix x) {
+            double sigma = gammas.getDouble(RandomSource.nextInt(gammas.size()));
             RBFKernel kernel = new RBFKernel(sigma);
             DVector out = DVector.fill(x.cols(), 0);
             for (int j = 0; j < out.size(); j++) {
                 out.set(j, x.get(RandomSource.nextInt(x.rows()), j) + noise.sampleNext());
             }
-            return new Factory(
-                    String.format("RBF sigma:%s, index: %s", Format.floatFlex(sigma), out),
+            return new Feature(
+                    String.format("%s, trainIndex: %s", kernel.name(), out),
                     -1,
                     out,
                     () -> DVector.from(x.rows(), r -> kernel.compute(out, x.mapRow(r))),
@@ -167,41 +296,6 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
     }
 
-    @Serial
-    private static final long serialVersionUID = 9165148257709665706L;
-
-    /**
-     * Feature factory providers. Those providers are used to produce features learned by RVM model
-     */
-    public ListParam<FactoryProvider, RVMRegression> providers = new ListParam<>(this,
-            List.of(new InterceptProvider(), new RBFProvider(VarDouble.wrap(1), 1)), "providers", (fp1, fp2) -> true);
-
-    /**
-     * Method used to fit model
-     */
-    public ValueParam<Method, RVMRegression> method = new ValueParam<>(this, Method.EVIDENCE_APPROXIMATION,
-            "method");
-
-    /**
-     * Fit threshold used in convergence criteria.
-     */
-    public ValueParam<Double, RVMRegression> fitThreshold = new ValueParam<>(this, 1e-10, "fitThreshold");
-
-    /**
-     * Fit threshold for setting an alpha weight's prior to infinity.
-     */
-    public ValueParam<Double, RVMRegression> alphaThreshold = new ValueParam<>(this, 1e9, "alphaThreshold");
-
-    /**
-     * Max number of iterations
-     */
-    public ValueParam<Integer, RVMRegression> maxIter = new ValueParam<>(this, 10_000, "maxIter");
-
-    /**
-     * Maximum number of failures for a feature, before it is pruned.
-     */
-    public ValueParam<Integer, RVMRegression> maxFailures = new ValueParam<>(this, 10_000, "maxFailures");
-
     private int[] featureIndexes;
     private int[] trainingIndexes;
     private DMatrix relevanceVectors;
@@ -218,7 +312,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
     private int iterations;
 
     private MethodImpl methodImpl;
-    private List<Factory> factories;
+    private List<Feature> features;
 
     private RVMRegression() {
     }
@@ -242,35 +336,43 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         return "RVMRegression";
     }
 
-    public int[] getFeatureIndexes() {
+    public int[] featureIndexes() {
         return featureIndexes;
     }
 
-    public String[] getFeatureKeys() {
-        return IntStream.of(featureIndexes).mapToObj(i -> factories.get(i).key).toArray(String[]::new);
+    public String[] featureNames() {
+        return IntStream.of(featureIndexes).mapToObj(i -> features.get(i).name).toArray(String[]::new);
     }
 
-    public int[] getTrainingIndexes() {
+    public Feature[] features() {
+        return IntStream.of(featureIndexes).mapToObj(i -> features.get(i)).toArray(Feature[]::new);
+    }
+
+    public int[] trainingIndexes() {
         return trainingIndexes;
     }
 
-    public DMatrix getRelevanceVectors() {
+    public DMatrix relevanceVectors() {
         return relevanceVectors;
     }
 
-    public DVector getM() {
+    public DVector m() {
         return m;
     }
 
-    public DMatrix getSigma() {
+    public DMatrix sigma() {
         return sigma;
     }
 
-    public double getBeta() {
+    public double beta() {
         return beta;
     }
 
-    public int getIterations() {
+    public DVector alpha() {
+        return alpha;
+    }
+
+    public int iterations() {
         return iterations;
     }
 
@@ -289,7 +391,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
     /**
      * @return Numbers of fitted relevant vectors count, -1 if model is not fitted.
      */
-    public int getVectorCount() {
+    public int rvCount() {
         return hasLearned ? relevanceVectors.rows() : -1;
     }
 
@@ -299,9 +401,9 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         DMatrix x = buildInput(df);
         DVector y = buildTarget(df);
 
-        factories = new ArrayList<>();
-        for (FactoryProvider fp : providers.get()) {
-            factories.addAll(Arrays.asList(fp.generateFactories(x)));
+        features = new ArrayList<>();
+        for (FeatureProvider fp : providers.get()) {
+            features.addAll(Arrays.asList(fp.generateFeatures(x)));
         }
         methodImpl = switch (method.get()) {
             case EVIDENCE_APPROXIMATION -> new EvidenceApproximation(this, x, y);
@@ -324,12 +426,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
     }
 
     protected DVector buildTarget(Frame df) {
-        DVector t = DVector.zeros(df.rowCount());
-        int index = df.varIndex(targetNames[0]);
-        for (int i = 0; i < df.rowCount(); i++) {
-            t.set(i, df.getDouble(i, index));
-        }
-        return t;
+        return df.rvar(targetNames[0]).dv().denseCopy();
     }
 
     @Override
@@ -339,19 +436,19 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = 0;
             for (int j = 0; j < m.size(); j++) {
-                pred += factories.get(featureIndexes[j]).testingFeature.apply(feat.mapRow(i)) * m.get(j);
+                pred += features.get(featureIndexes[j]).kernel.apply(feat.mapRow(i)) * m.get(j);
             }
             prediction.prediction(firstTargetName()).setDouble(i, pred);
             if (quantiles != null && quantiles.length > 0) {
                 DVector phi_m = DVector.zeros(m.size());
                 for (int j = 0; j < m.size(); j++) {
-                    phi_m.set(j, factories.get(featureIndexes[j]).testingFeature.apply(feat.mapRow(i)));
+                    phi_m.set(j, features.get(featureIndexes[j]).kernel.apply(feat.mapRow(i)));
                 }
                 double variance = 1.0 / beta + sigma.dot(phi_m).dot(phi_m);
                 Normal normal = Normal.of(pred, Math.sqrt(variance));
                 for (int j = 0; j < quantiles.length; j++) {
                     double q = normal.quantile(quantiles[j]);
-                    prediction.firstPredictionQuantiles()[j].setDouble(i, q);
+                    prediction.firstQuantiles()[j].setDouble(i, q);
                 }
             }
         }
@@ -438,9 +535,9 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         protected DMatrix buildPhi() {
-            DVector[] vectors = new DVector[parent.factories.size()];
-            for (int i = 0; i < parent.factories.size(); i++) {
-                vectors[i] = parent.factories.get(i).trainingFeature.get();
+            DVector[] vectors = new DVector[parent.features.size()];
+            for (int i = 0; i < parent.features.size(); i++) {
+                vectors[i] = parent.features.get(i).phii.get();
             }
             return DMatrix.copy(false, vectors);
         }
@@ -476,9 +573,9 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         public boolean fit() {
             n = x.rows();
-            fcount = parent.factories.size();
+            fcount = parent.features.size();
             phi = buildPhi();
-            indexes = IntArrays.newSeq(0, parent.factories.size());
+            indexes = IntArrays.newSeq(0, parent.features.size());
             phi_t_phi = phi.t().dot(phi);
             phi_t_y = phi.t().dot(y);
 
@@ -547,7 +644,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 throw new RuntimeException("All vectors pruned.");
             }
 
-            // recreate the index
+            // recreate the trainIndex
             int[] newIndex = new int[indexes.length - pruningCount];
             int[] keep = new int[indexes.length - pruningCount];
             int pos = 0;
@@ -586,9 +683,10 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         private void updateResults(RVMRegression parent, boolean convergent, int iterations) {
             parent.featureIndexes = indexes;
-            parent.trainingIndexes = IntStream.of(indexes).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
+            parent.trainingIndexes =
+                    IntStream.of(indexes).map(i -> parent.features.get(i).trainIndex).filter(i -> i >= 0).distinct().toArray();
             parent.relevanceVectors =
-                    DMatrix.copy(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
+                    DMatrix.copy(true, IntStream.of(indexes).mapToObj(i -> parent.features.get(i).xi).toArray(DVector[]::new));
             parent.m = m.copy();
             parent.sigma = sigma.copy();
             parent.alpha = alpha.copy();
@@ -620,7 +718,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             phi_dot_y = phi.t().dot(y);
 
             n = phi.rows();
-            fcount = parent.factories.size();
+            fcount = parent.features.size();
             ss = new double[fcount];
             qq = new double[fcount];
             s = new double[fcount];
@@ -718,14 +816,14 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         private void initialize() {
             beta = 1.0 / (y.variance() * 0.1);
-            alpha = DVector.fill(parent.factories.size(), Double.POSITIVE_INFINITY);
+            alpha = DVector.fill(parent.features.size(), Double.POSITIVE_INFINITY);
 
             // select one alpha
 
             int best_index = 0;
             double best_projection = phi_dot_y.get(0) / phi_hat.get(0, 0);
 
-            for (int i = 1; i < parent.factories.size(); i++) {
+            for (int i = 1; i < parent.features.size(); i++) {
                 double projection = phi_dot_y.get(i) / phi_hat.get(i, i);
                 if (projection >= best_projection) {
                     best_projection = projection;
@@ -776,9 +874,10 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         private void updateResults(RVMRegression parent, boolean convergent, int iterations) {
             parent.featureIndexes = indexes;
-            parent.trainingIndexes = IntStream.of(indexes).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
+            parent.trainingIndexes =
+                    IntStream.of(indexes).map(i -> parent.features.get(i).trainIndex).filter(i -> i >= 0).distinct().toArray();
             parent.relevanceVectors =
-                    DMatrix.copy(true, IntStream.of(indexes).mapToObj(i -> parent.factories.get(i).phii).toArray(DVector[]::new));
+                    DMatrix.copy(true, IntStream.of(indexes).mapToObj(i -> parent.features.get(i).xi).toArray(DVector[]::new));
             parent.m = m.copy();
             parent.sigma = sigma.copy();
             parent.alpha = alpha.mapNew(indexes);
@@ -871,7 +970,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         private void initialize() {
 
-            fcount = parent.factories.size();
+            fcount = parent.features.size();
             for (int i = 0; i < fcount; i++) {
                 candidates.add(i);
             }
@@ -894,13 +993,13 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             // select one alpha
 
             int bestIndex = 0;
-            DVector bestVector = parent.factories.get(0).trainingFeature.get();
+            DVector bestVector = parent.features.get(0).phii.get();
             phiiDotPhii.set(0, bestVector.dot(bestVector));
             phiiDotY.set(0, bestVector.dot(y));
             double bestProjection = phiiDotY.get(0) / phiiDotPhii.get(0);
 
             for (int i = 1; i < fcount; i++) {
-                DVector phii = parent.factories.get(i).trainingFeature.get();
+                DVector phii = parent.features.get(i).phii.get();
                 phiiDotPhii.set(i, phii.dot(phii));
                 phiiDotY.set(i, phii.dot(y));
                 double projection = phiiDotY.get(i) / phiiDotPhii.get(i);
@@ -954,7 +1053,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
             // if not full from cache, then regenerate the vector and fill missing values, do that also in cache
             if (!full) {
-                DVector phii = parent.factories.get(i).trainingFeature.get();
+                DVector phii = parent.features.get(i).phii.get();
                 for (int j = 0; j < v.size(); j++) {
                     if (Double.isNaN(v.get(j))) {
                         double value = active.get(j).vector.dot(phii);
@@ -1063,9 +1162,9 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         private void addActiveFeature(int index, double _alpha) {
             alpha.set(index, _alpha);
 
-            // add activeFlag feature to the index
+            // add activeFlag feature to the trainIndex
 
-            DVector phii = parent.factories.get(index).trainingFeature.get();
+            DVector phii = parent.features.get(index).phii.get();
             active.add(new ActiveFeature(index, phii));
 
             // adjust phiHat by adding a new row and column
@@ -1116,7 +1215,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
             // if pos == -1 it means we want to remove a feature which is not activeFlag
             if (pos == -1) {
-                throw new IllegalStateException("Try to remove activeFlag feature with index: " + index);
+                throw new IllegalStateException("Try to remove activeFlag feature with trainIndex: " + index);
             }
 
             // now remove from activeFlag features
@@ -1151,10 +1250,15 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         private void updateResults(RVMRegression parent, boolean convergent, int iterations) {
             parent.featureIndexes = active.stream().mapToInt(a -> a.index).toArray();
             parent.trainingIndexes =
-                    active.stream().mapToInt(a -> a.index).map(i -> parent.factories.get(i).index).filter(i -> i >= 0).distinct().toArray();
+                    active.stream()
+                            .mapToInt(a -> a.index)
+                            .map(i -> parent.features.get(i).trainIndex)
+                            .filter(i -> i >= 0)
+                            .distinct()
+                            .toArray();
             parent.relevanceVectors = DMatrix.copy(true, active
                     .stream().mapToInt(a -> a.index)
-                    .mapToObj(i -> parent.factories.get(i).phii)
+                    .mapToObj(i -> parent.features.get(i).xi)
                     .toArray(DVector[]::new));
             parent.m = m.copy();
             parent.sigma = sigma.copy();

@@ -57,6 +57,7 @@ import rapaio.graphics.plot.artist.Matrix;
 import rapaio.graphics.plot.artist.Points;
 import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
+import rapaio.graphics.plot.artist.PolyPath;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment;
 import rapaio.graphics.plot.artist.Silhouette;
@@ -409,6 +410,11 @@ public class Plot implements Figure {
 
     public Plot polyfill(Var x, Var y, GOption<?>... opts) {
         add(new PolyFill(x, y, opts));
+        return this;
+    }
+
+    public Plot polyfill(PolyPath polyPath, GOption<?>... opts) {
+        add(new PolyFill(polyPath, opts));
         return this;
     }
 
