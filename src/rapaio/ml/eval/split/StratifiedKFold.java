@@ -57,7 +57,7 @@ public record StratifiedKFold(int rounds, int folds, String strata) implements S
 
     private List<Mapping> buildStrata(Frame df, String strataName) {
         List<String> dict = df.rvar(strataName).levels();
-        List<Mapping> rows = dict.stream().map(name -> Mapping.empty()).collect(Collectors.toList());
+        List<Mapping> rows = dict.stream().map(name -> Mapping.empty()).toList();
         for (int i = 0; i < df.rowCount(); i++) {
             rows.get(df.getInt(i, strataName)).add(i);
         }

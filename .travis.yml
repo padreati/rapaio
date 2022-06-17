@@ -1,7 +1,7 @@
 language: java
 script: mvn test
 jdk:
-  - openjdk17
+  - openjdk18
 notifications:
   email: false
 before_install:

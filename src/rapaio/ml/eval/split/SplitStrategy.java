@@ -27,6 +27,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 
 /**
+ * Interface which models how a data set is split in order to perform evaluation.
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
 public interface SplitStrategy {

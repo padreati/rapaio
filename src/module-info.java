@@ -4,6 +4,12 @@ open module rapaio {
     requires java.logging;
     requires java.sql;
 
+    requires javafx.base;
+    requires javafx.controls;
+    requires javafx.graphics;
+    requires javafx.fxml;
+    requires javafx.swing;
+
     requires jdk.incubator.vector;
 
     exports rapaio.core;

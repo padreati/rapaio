@@ -60,7 +60,7 @@ public class RegressionResultEvaluationTest {
         var model = L2Regression.newModel();
         RegressionMetric metric = RMSE.newMetric();
 
-        RegressionEvaluation eval = RegressionEvaluation.newEval()
+        RegressionEval eval = RegressionEval.newEval()
                 .df.set(df)
                 .model.set(model)
                 .splitStrategy.set(splitStrategy)

@@ -47,10 +47,10 @@ import rapaio.ml.model.RegressionResult;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/6/19.
  */
-public class RegressionEvaluation extends ParamSet<RegressionEvaluation> {
+public class RegressionEval extends ParamSet<RegressionEval> {
 
-    public static RegressionEvaluation newEval() {
-        return new RegressionEvaluation();
+    public static RegressionEval newEval() {
+        return new RegressionEval();
     }
 
     @Serial
@@ -59,45 +59,45 @@ public class RegressionEvaluation extends ParamSet<RegressionEvaluation> {
     /**
      * Regression model.
      */
-    public final ValueParam<RegressionModel<?, ?, ?>, RegressionEvaluation> model = new ValueParam<>(this, null, "model");
+    public final ValueParam<RegressionModel<?, ?, ?>, RegressionEval> model = new ValueParam<>(this, null, "model");
 
     /**
      * Data set.
      */
-    public final ValueParam<Frame, RegressionEvaluation> df = new ValueParam<>(this, null, "df");
+    public final ValueParam<Frame, RegressionEval> df = new ValueParam<>(this, null, "df");
 
     /**
      * Instance weights
      */
-    public final ValueParam<Var, RegressionEvaluation> weights = new ValueParam<>(this, null, "weights");
+    public final ValueParam<Var, RegressionEval> weights = new ValueParam<>(this, null, "weights");
 
     /**
      * Target variable name
      */
-    public final ValueParam<String, RegressionEvaluation> targetName = new ValueParam<>(this, null, "target");
+    public final ValueParam<String, RegressionEval> targetName = new ValueParam<>(this, null, "target");
 
     /**
      * Strategy used to build training and testing data sets.
      */
-    public final ValueParam<SplitStrategy, RegressionEvaluation> splitStrategy = new ValueParam<>(this, new KFold(10), "splitStrategy");
+    public final ValueParam<SplitStrategy, RegressionEval> splitStrategy = new ValueParam<>(this, new KFold(10), "splitStrategy");
 
     /**
      * Number of threads used at evaluation
      */
-    public final ValueParam<Integer, RegressionEvaluation> threads = new ValueParam<>(this,
+    public final ValueParam<Integer, RegressionEval> threads = new ValueParam<>(this,
             Runtime.getRuntime().availableProcessors() - 1, "threads");
 
     /**
      * Metrics used at evaluation.
      */
-    public final ListParam<RegressionMetric, RegressionEvaluation> metrics = new ListParam<>(this, List.of(), "metrics", (in, out) -> true);
+    public final ListParam<RegressionMetric, RegressionEval> metrics = new ListParam<>(this, List.of(), "metrics", (in, out) -> true);
 
     /**
      * If evaluation is used in debug mode or not.
      */
-    public final ValueParam<Boolean, RegressionEvaluation> debug = new ValueParam<>(this, false, "debug");
+    public final ValueParam<Boolean, RegressionEval> debug = new ValueParam<>(this, false, "debug");
 
-    private RegressionEvaluation() {
+    private RegressionEval() {
     }
 
     public RegressionEvaluationResult run() {
@@ -115,16 +115,15 @@ public class RegressionEvaluation extends ParamSet<RegressionEvaluation> {
 
 
         ExecutorService pool = Executors.newFixedThreadPool(threads.get());
-        List<Future<Run>> futures = null;
         try {
-            futures = pool.invokeAll(tasks);
+            List<Future<Run>> futures = pool.invokeAll(tasks);
 
             // collect results
 
             while (!futures.isEmpty()) {
-                Iterator<Future<RegressionEvaluation.Run>> iterator = futures.iterator();
+                Iterator<Future<RegressionEval.Run>> iterator = futures.iterator();
                 while (iterator.hasNext()) {
-                    Future<RegressionEvaluation.Run> future = iterator.next();
+                    Future<RegressionEval.Run> future = iterator.next();
                     if (future.isDone()) {
                         try {
                             var run = future.get();
@@ -162,15 +161,15 @@ public class RegressionEvaluation extends ParamSet<RegressionEvaluation> {
     private record Run(Split split, RegressionResult trainResult, RegressionResult testResult) {
     }
 
-    private record Task(RegressionModel model, String targetName, Split split) implements Callable<RegressionEvaluation.Run> {
+    private record Task(RegressionModel<?,?,?> model, String targetName, Split split) implements Callable<RegressionEval.Run> {
 
         @Override
-        public Run call() throws Exception {
+        public Run call() {
             var m = model.newInstance();
             m.fit(split.trainDf(), targetName);
             var trainResult = m.predict(split.trainDf());
             var testResult = m.predict(split.testDf());
-            return new RegressionEvaluation.Run(split, trainResult, testResult);
+            return new RegressionEval.Run(split, trainResult, testResult);
         }
     }
 }

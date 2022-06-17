@@ -1,0 +1,178 @@
+package rapaio.experiment.fx;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import javafx.animation.Animation;
+import javafx.animation.RotateTransition;
+import javafx.application.Application;
+import javafx.geometry.Point3D;
+import javafx.scene.Camera;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.ParallelCamera;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
+import javafx.scene.shape.CullFace;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Sphere;
+import javafx.scene.shape.TriangleMesh;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Scale;
+import javafx.scene.transform.Translate;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
+import rapaio.graphics.opt.NColor;
+
+public class SampleScatterPlot extends Application {
+
+    public static final String TV = "TV";
+    public static final String Radio = "Radio";
+    public static final String Sales = "Sales";
+
+    PhongMaterial material(java.awt.Color color) {
+        var boxMaterial = new PhongMaterial();
+        boxMaterial.setDiffuseColor(Color.rgb(color.getRed(), color.getGreen(), color.getBlue()));
+        boxMaterial.setSpecularColor(Color.WHITESMOKE);
+        return boxMaterial;
+    }
+
+    PerspectiveCamera addCamera(Scene scene) {
+        PerspectiveCamera perspectiveCamera = new PerspectiveCamera(true);
+        scene.setCamera(perspectiveCamera);
+        return perspectiveCamera;
+    }
+
+
+    double scale = 1;
+
+    double anchorX;
+    double anchorY;
+
+    double xAngle = 0;
+    double yAngle = 0;
+    double xAngleDelta = 0;
+    double yAngleDelta = 0;
+    Rotate xRotation = new Rotate(xAngle, new Point3D(1, 0, 0));
+    Rotate yRotation = new Rotate(yAngle, new Point3D(0, 1, 0));
+
+    Mode mode = Mode.NONE;
+
+    private enum Mode {
+        NONE,
+        ROTATE
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
+        Frame df = Datasets.loadISLAdvertising();
+
+        int aw = 3;
+
+        Point3D pmin = new Point3D(df.rvar(TV).dv().min(), df.rvar(Sales).dv().min(), df.rvar(Radio).dv().min());
+        Point3D pmax = new Point3D(df.rvar(TV).dv().max(), df.rvar(Sales).dv().max(), df.rvar(Radio).dv().max());
+
+        Point3D plen = pmax.subtract(pmin);
+
+        Point3D pmid = pmin.midpoint(pmax);
+
+        Point3D pminBound = pmin.subtract(plen.multiply(0.2));
+        Point3D pmaxBound = pmax.add(plen.multiply(0.2));
+        Point3D plenBound = pmaxBound.subtract(pminBound);
+        Point3D pmidBound = pminBound.midpoint(pmaxBound);
+
+        scale = Math.min(Screen.getPrimary().getBounds().getWidth()/plenBound.getX(),
+                Screen.getPrimary().getBounds().getHeight()/plenBound.getY());
+
+        var xAxis = new Box(plen.getX(), aw, aw);
+        xAxis.setMaterial(material(NColor.green));
+        xAxis.setTranslateX(pmid.getX());
+
+        var yAxis = new Box(aw, plen.getY(), aw);
+        yAxis.setMaterial(material(NColor.red));
+        yAxis.setTranslateY(pmid.getY());
+
+        var zAxis = new Box(aw, aw, plen.getZ());
+        zAxis.setMaterial(material(NColor.blue));
+        zAxis.setTranslateZ(pmid.getZ());
+
+        var zero = new Sphere(2);
+        zero.setMaterial(material(NColor.black));
+
+        Group root = new Group(zero, xAxis, yAxis, zAxis);
+        root.getChildren().addAll(loadPoints(df));
+
+
+        Scene scene = new Scene(root, plenBound.getX(), plenBound.getY(), true,
+                SceneAntialiasing.BALANCED);
+        PerspectiveCamera camera = addCamera(scene);
+        Translate camPosition = new Translate(pmid.getX(), pmin.getY(), -Math.max(plen.getX(), plen.getY()));
+        camera.getTransforms().add(camPosition);
+        camera.setFieldOfView(90);
+        camera.setNearClip(0.01);
+        camera.setFarClip(1e3);
+
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("3D Example");
+
+        scene.setOnKeyPressed(event -> mode = (event.getCode() == KeyCode.CONTROL) ? Mode.ROTATE : Mode.NONE);
+        scene.setOnKeyReleased(event -> mode = Mode.NONE);
+        scene.setOnMousePressed(event -> {
+
+            anchorX = event.getSceneX();
+            anchorY = event.getSceneY();
+
+            xAngleDelta = 0;
+            yAngleDelta = 0;
+        });
+
+        scene.setOnMouseDragged(event -> {
+            if (mode == Mode.ROTATE) {
+                xAngleDelta = (anchorY - event.getSceneY()) / 10;
+                xRotation = new Rotate(xAngle + xAngleDelta, pmid.getX(), pmid.getY(), pmid.getZ(), new Point3D(1, 0, 0));
+                yAngleDelta = (anchorX - event.getSceneX()) / 10;
+                yRotation = new Rotate(yAngle + yAngleDelta, pmid.getX(), pmid.getY(), pmid.getZ(), new Point3D(0, 1, 0));
+                camera.getTransforms().clear();
+                camera.getTransforms().addAll(camPosition, xRotation, yRotation);
+            }
+        });
+
+        scene.setOnMouseReleased(event -> {
+            xAngle += xAngleDelta;
+            yAngle += yAngleDelta;
+        });
+
+
+        primaryStage.show();
+    }
+
+    private List<Node> loadPoints(Frame df) {
+
+        List<Node> list = new ArrayList<>();
+        for (int i = 0; i < df.rowCount(); i++) {
+            PhongMaterial material = material(NColor.steelblue);
+            Sphere sphere = new Sphere(3);
+            sphere.setMaterial(material);
+            sphere.setCullFace(CullFace.BACK);
+            sphere.setTranslateX(df.getDouble(i, TV));
+            sphere.setTranslateZ(df.getDouble(i, Radio));
+            sphere.setTranslateY(df.getDouble(i, Sales));
+            list.add(sphere);
+        }
+        return list;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
