@@ -43,9 +43,11 @@ import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.linear.binarylogistic.BinaryLogisticIRLS;
 import rapaio.ml.model.linear.binarylogistic.BinaryLogisticNewton;
+import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POtpionFloatFormat;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
@@ -296,7 +298,9 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
 
-        var opts = printer.getOptions().bind(options);
+        var opts = printer.getOptions();
+        opts.setFloatFormat(new POtpionFloatFormat(Format.formatDecFlex));
+        opts.bind(options);
 
         StringBuilder sb = new StringBuilder();
         sb.append(fullNameSummary());

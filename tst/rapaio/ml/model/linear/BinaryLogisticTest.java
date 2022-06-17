@@ -214,10 +214,10 @@ public class BinaryLogisticTest {
                 > has intercept: true
                 > intercept factor: 1
                 > coefficients:
-                  intercept -6.148532672578894 \s
-                sepal-width  3.2716831036980767\s
-                petal-width -4.855396133117295 \s
-                                               \s
+                  intercept -6.1485327\s
+                sepal-width  3.2716831\s
+                petal-width -4.8553961\s
+                                      \s
                 > converged: true
                 > iterations: 7
                 """, irls.toSummary());
@@ -258,10 +258,10 @@ public class BinaryLogisticTest {
                 > has intercept: true
                 > intercept factor: 1
                 > coefficients:
-                  intercept -6.148532672579171\s
-                sepal-width  3.271683103698174\s
-                petal-width -4.855396133117332\s
-                                              \s
+                  intercept -6.1485327\s
+                sepal-width  3.2716831\s
+                petal-width -4.8553961\s
+                                      \s
                 > converged: true
                 > iterations: 7
                 """, newton.toSummary());
