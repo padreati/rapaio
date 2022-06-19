@@ -3,13 +3,13 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,14 +24,11 @@ package rapaio.experiment.math.regression;
 import static rapaio.sys.With.textWidth;
 
 import rapaio.data.Frame;
-import rapaio.data.VarBinary;
-import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.ml.model.linear.BinaryLogistic;
-import rapaio.sys.With;
 
 /**
  * Inspired by <a href="http://tullo.ch/articles/speeding-up-isotonic-regression/"></a>.

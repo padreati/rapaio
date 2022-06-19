@@ -3,13 +3,13 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -87,20 +87,12 @@ public class VApply implements VFilter {
     @Override
     public Var apply(Var var) {
         switch (type) {
-            case SPOT:
-                var.stream().forEach(spotConsumer);
-                break;
-            case DOUBLE:
-                var.stream().forEach(s -> s.setDouble(doubleFunction.applyAsDouble(s.getDouble())));
-                break;
-            case INT:
-                var.stream().forEach(s -> s.setInt(intFunction.applyAsInt(s.getInt())));
-                break;
-            case LABEL:
-                var.stream().forEach(s -> s.setLabel(stringFunction.apply(s.getLabel())));
-                break;
-            default:
-
+            case SPOT -> var.stream().forEach(spotConsumer);
+            case DOUBLE -> var.stream().forEach(s -> s.setDouble(doubleFunction.applyAsDouble(s.getDouble())));
+            case INT -> var.stream().forEach(s -> s.setInt(intFunction.applyAsInt(s.getInt())));
+            case LABEL -> var.stream().forEach(s -> s.setLabel(stringFunction.apply(s.getLabel())));
+            default -> {
+            }
         }
         return var;
     }

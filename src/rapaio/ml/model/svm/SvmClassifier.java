@@ -3,13 +3,13 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -166,8 +166,10 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
                 double score = Svm.svm_predict_values(svm_model, xs.mapRow(i), values);
 
                 result.firstClasses().setLabel(i, problemInfo.levels().get((int) score));
-                for (int j = 0; j < k; j++) {
-                    result.firstDensity().setDouble(i, j + 1, values[j]);
+                if(withDistributions) {
+                    for (int j = 0; j < k; j++) {
+                        result.firstDensity().setDouble(i, j + 1, values[j]);
+                    }
                 }
 
                 double[] dist = DoubleArrays.newFill(k, Double.NEGATIVE_INFINITY);
@@ -180,8 +182,10 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
                     }
                 }
                 result.firstClasses().setLabel(i, problemInfo.levels().get((int) score));
-                for (int j = 0; j < k; j++) {
-                    result.firstDensity().setDouble(i, j + 1, dist[j]);
+                if(withDistributions) {
+                    for (int j = 0; j < k; j++) {
+                        result.firstDensity().setDouble(i, j + 1, dist[j]);
+                    }
                 }
             }
         }

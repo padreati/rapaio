@@ -3,13 +3,13 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -167,29 +167,19 @@ public class HoughTransform extends ParamSet<HoughTransform> {
             double fx_y0 = fx.apply(y0);
             double fx_y1 = fx.apply(y1);
 
+            double v = (x1 - x0) * fy_x0 / (fy_x0 - fy_x1);
             if ((fy_x0 - y0) * (fy_x1 - y0) < 0) {
-                points.add(new Point2D.Double(
-                        (x1 - x0) * fy_x0 / (fy_x0 - fy_x1),
-                        y0
-                ));
+                points.add(new Point2D.Double(v,y0));
             }
             if ((fy_x0 - y1) * (fy_x1 - y1) < 0) {
-                points.add(new Point2D.Double(
-                        (x1 - x0) * fy_x0 / (fy_x0 - fy_x1),
-                        y1
-                ));
+                points.add(new Point2D.Double(v,y1));
             }
+            double v1 = (y1 - y0) * fx_y0 / (fx_y0 - fx_y1);
             if ((fx_y0 - x0) * (fx_y1 - x0) < 0) {
-                points.add(new Point2D.Double(
-                        x0,
-                        (y1 - y0) * fx_y0 / (fx_y0 - fx_y1)
-                ));
+                points.add(new Point2D.Double(x0,v1));
             }
             if ((fx_y0 - x1) * (fx_y1 - x1) < 0) {
-                points.add(new Point2D.Double(
-                        x1,
-                        (y1 - y0) * fx_y0 / (fx_y0 - fx_y1)
-                ));
+                points.add(new Point2D.Double(x1,v1));
             }
             return new Line2D.Double(points.get(0), points.get(1));
         }

@@ -3,13 +3,13 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ class Cache {
     private final int l;
     private long size;
 
-    private final class head_t {
+    private static final class head_t {
         head_t prev, next;    // a cicular list
         double[] data;
         int len;        // data[0,len) is cached in this entry
@@ -228,20 +228,14 @@ abstract class Kernel extends QMatrix {
     }
 
     double kernel_function(int i, int j) {
-        switch (kernel_type) {
-            case svm_parameter.LINEAR:
-                return dot(x[i], x[j]);
-            case svm_parameter.POLY:
-                return powi(gamma * dot(x[i], x[j]) + coef0, degree);
-            case svm_parameter.RBF:
-                return Math.exp(-gamma * dotSquare(x[i], x[j]));
-            case svm_parameter.SIGMOID:
-                return Math.tanh(gamma * dot(x[i], x[j]) + coef0);
-            case svm_parameter.PRECOMPUTED:
-                return x[i][(int) (x[j][0].value)].value;
-            default:
-                return 0;    // Unreachable
-        }
+        return switch (kernel_type) {
+            case svm_parameter.LINEAR -> dot(x[i], x[j]);
+            case svm_parameter.POLY -> powi(gamma * dot(x[i], x[j]) + coef0, degree);
+            case svm_parameter.RBF -> Math.exp(-gamma * dotSquare(x[i], x[j]));
+            case svm_parameter.SIGMOID -> Math.tanh(gamma * dot(x[i], x[j]) + coef0);
+            case svm_parameter.PRECOMPUTED -> x[i][(int) (x[j][0].value)].value;
+            default -> 0;    // Unreachable
+        };
     }
 
     static double dotSquare(svm_node[] x, svm_node[] y) {
@@ -1365,11 +1359,9 @@ public class svm {
     //
     public static final int LIBSVM_VERSION = 325;
     public static Random rand = RandomSource.getRandom();
-    private static svm_print_interface svm_print_stdout = new svm_print_interface() {
-        public void print(String s) {
+    private static final svm_print_interface svm_print_stdout = s -> {
 //            System.out.print(s);
 //            System.out.flush();
-        }
     };
     private static svm_print_interface svm_print_string = s -> {};
 
@@ -1571,21 +1563,11 @@ public class svm {
         double[] alpha = new double[prob.l];
         Solver.SolutionInfo si = new Solver.SolutionInfo();
         switch (param.svm_type) {
-            case svm_parameter.C_SVC:
-                solve_c_svc(prob, param, alpha, si, Cp, Cn);
-                break;
-            case svm_parameter.NU_SVC:
-                solve_nu_svc(prob, param, alpha, si);
-                break;
-            case svm_parameter.ONE_CLASS:
-                solve_one_class(prob, param, alpha, si);
-                break;
-            case svm_parameter.EPSILON_SVR:
-                solve_epsilon_svr(prob, param, alpha, si);
-                break;
-            case svm_parameter.NU_SVR:
-                solve_nu_svr(prob, param, alpha, si);
-                break;
+            case svm_parameter.C_SVC -> solve_c_svc(prob, param, alpha, si, Cp, Cn);
+            case svm_parameter.NU_SVC -> solve_nu_svc(prob, param, alpha, si);
+            case svm_parameter.ONE_CLASS -> solve_one_class(prob, param, alpha, si);
+            case svm_parameter.EPSILON_SVR -> solve_epsilon_svr(prob, param, alpha, si);
+            case svm_parameter.NU_SVR -> solve_nu_svr(prob, param, alpha, si);
         }
 
         svm.info("obj = " + si.obj + ", rho = " + si.rho + "\n");
@@ -2541,7 +2523,7 @@ public class svm {
     static final String[] kernel_type_table = {"linear", "polynomial", "rbf", "sigmoid", "precomputed"};
 
     private static double atof(String s) {
-        return Double.valueOf(s).doubleValue();
+        return Double.valueOf(s);
     }
 
     private static int atoi(String s) {
@@ -2564,7 +2546,7 @@ public class svm {
                 if (cmd.startsWith("svm_type")) {
                     int i;
                     for (i = 0; i < svm_type_table.length; i++) {
-                        if (arg.indexOf(svm_type_table[i]) != -1) {
+                        if (arg.contains(svm_type_table[i])) {
                             param.svm_type = i;
                             break;
                         }
@@ -2576,7 +2558,7 @@ public class svm {
                 } else if (cmd.startsWith("kernel_type")) {
                     int i;
                     for (i = 0; i < kernel_type_table.length; i++) {
-                        if (arg.indexOf(kernel_type_table[i]) != -1) {
+                        if (arg.contains(kernel_type_table[i])) {
                             param.kernel_type = i;
                             break;
                         }

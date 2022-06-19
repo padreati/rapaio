@@ -3,13 +3,13 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -126,7 +126,7 @@ public class SolverC {
         }
 
         if (2 * nr_free < activeSize) {
-            LOGGER.info("\nWARNING: using -h 0 may be faster\n");
+            LOGGER.info("using shrinking may be faster\n");
         }
 
         if (nr_free * len > 2 * activeSize * (len - activeSize)) {
@@ -229,7 +229,6 @@ public class SolverC {
                 if (shrinking != 0) {
                     doShrinking();
                 }
-                LOGGER.info(".");
             }
 
             WorkingSet ws = selectWorkingSet();
@@ -238,7 +237,6 @@ public class SolverC {
                 reconstruct_gradient();
                 // reset active set size and check
                 activeSize = len;
-                LOGGER.info("*");
                 ws = selectWorkingSet();
                 if (ws == null) {
                     break;
@@ -377,9 +375,8 @@ public class SolverC {
                 // reconstruct the whole gradient to calculate objective value
                 reconstruct_gradient();
                 activeSize = len;
-                LOGGER.info("*");
             }
-            LOGGER.severe("\nWARNING: reaching max number of iterations\n");
+            LOGGER.warning("Reaching max number of iterations\n");
         }
 
         // calculate rho
@@ -402,7 +399,7 @@ public class SolverC {
         si.pUpperBound = Cp;
         si.nUpperBound = Cn;
 
-        LOGGER.info("\noptimization finished, #iter = " + iter + "\n");
+        LOGGER.fine("Optimization finished, #iter = " + iter + "\n");
     }
 
     /**
@@ -546,7 +543,6 @@ public class SolverC {
             unshrink = true;
             reconstruct_gradient();
             activeSize = len;
-            LOGGER.info("*");
         }
 
         for (i = 0; i < activeSize; i++) {

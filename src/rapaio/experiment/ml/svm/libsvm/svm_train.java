@@ -3,13 +3,13 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -127,7 +127,7 @@ public class svm_train {
     }
 
     private static double atof(String s) {
-        double d = Double.valueOf(s).doubleValue();
+        double d = Double.valueOf(s);
         if (Double.isNaN(d) || Double.isInfinite(d)) {
             System.err.print("NaN or Infinity in input\n");
             System.exit(1);
@@ -171,74 +171,49 @@ public class svm_train {
                 exit_with_help();
             }
             switch (argv[i - 1].charAt(1)) {
-                case 's':
-                    param.svm_type = atoi(argv[i]);
-                    break;
-                case 't':
-                    param.kernel_type = atoi(argv[i]);
-                    break;
-                case 'd':
-                    param.degree = atoi(argv[i]);
-                    break;
-                case 'g':
-                    param.gamma = atof(argv[i]);
-                    break;
-                case 'r':
-                    param.coef0 = atof(argv[i]);
-                    break;
-                case 'n':
-                    param.nu = atof(argv[i]);
-                    break;
-                case 'm':
-                    param.cache_size = atof(argv[i]);
-                    break;
-                case 'c':
-                    param.C = atof(argv[i]);
-                    break;
-                case 'e':
-                    param.eps = atof(argv[i]);
-                    break;
-                case 'p':
-                    param.p = atof(argv[i]);
-                    break;
-                case 'h':
-                    param.shrinking = atoi(argv[i]);
-                    break;
-                case 'b':
-                    param.probability = atoi(argv[i]);
-                    break;
-                case 'q':
+                case 's' -> param.svm_type = atoi(argv[i]);
+                case 't' -> param.kernel_type = atoi(argv[i]);
+                case 'd' -> param.degree = atoi(argv[i]);
+                case 'g' -> param.gamma = atof(argv[i]);
+                case 'r' -> param.coef0 = atof(argv[i]);
+                case 'n' -> param.nu = atof(argv[i]);
+                case 'm' -> param.cache_size = atof(argv[i]);
+                case 'c' -> param.C = atof(argv[i]);
+                case 'e' -> param.eps = atof(argv[i]);
+                case 'p' -> param.p = atof(argv[i]);
+                case 'h' -> param.shrinking = atoi(argv[i]);
+                case 'b' -> param.probability = atoi(argv[i]);
+                case 'q' -> {
                     print_func = svm_print_null;
                     i--;
-                    break;
-                case 'v':
+                }
+                case 'v' -> {
                     cross_validation = 1;
                     nr_fold = atoi(argv[i]);
                     if (nr_fold < 2) {
                         System.err.print("n-fold cross validation: n must >= 2\n");
                         exit_with_help();
                     }
-                    break;
-                case 'w':
+                }
+                case 'w' -> {
                     ++param.nr_weight;
-                {
-                    int[] old = param.weight_label;
-                    param.weight_label = new int[param.nr_weight];
-                    System.arraycopy(old, 0, param.weight_label, 0, param.nr_weight - 1);
+                    {
+                        int[] old = param.weight_label;
+                        param.weight_label = new int[param.nr_weight];
+                        System.arraycopy(old, 0, param.weight_label, 0, param.nr_weight - 1);
+                    }
+                    {
+                        double[] old = param.weight;
+                        param.weight = new double[param.nr_weight];
+                        System.arraycopy(old, 0, param.weight, 0, param.nr_weight - 1);
+                    }
+                    param.weight_label[param.nr_weight - 1] = atoi(argv[i - 1].substring(2));
+                    param.weight[param.nr_weight - 1] = atof(argv[i]);
                 }
-
-                {
-                    double[] old = param.weight;
-                    param.weight = new double[param.nr_weight];
-                    System.arraycopy(old, 0, param.weight, 0, param.nr_weight - 1);
-                }
-
-                param.weight_label[param.nr_weight - 1] = atoi(argv[i - 1].substring(2));
-                param.weight[param.nr_weight - 1] = atof(argv[i]);
-                break;
-                default:
+                default -> {
                     System.err.print("Unknown option: " + argv[i - 1] + "\n");
                     exit_with_help();
+                }
             }
         }
 

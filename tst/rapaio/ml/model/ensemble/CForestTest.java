@@ -1,21 +1,23 @@
 /*
- * Apache License
- * Version 2.0, January 2004
- * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  * Apache License
+ *  * Version 2.0, January 2004
+ *  * http://www.apache.org/licenses/
+ *  *
+ *  * Copyright 2013 - 2022 Aurelian Tutuianu
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *  http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
  *
  */
 
@@ -28,7 +30,10 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
+import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
+import rapaio.ml.common.VarSelector;
+import rapaio.ml.model.tree.CTree;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/14/20.
@@ -188,25 +193,39 @@ public class CForestTest {
                                 
                 Frequency Variable Importance:
                         name      mean      sd     scaled score\s
-                [0]  petal-width 161.17 78.1405177 100         \s
-                [1] petal-length 155.01 83.1465173  96.1779487 \s
-                [2] sepal-length  58.05 66.9203318  36.0178693 \s
-                [3]  sepal-width  17.58 26.9448295  10.9077372 \s
+                [0] petal-length 166.69 86.101267  100         \s
+                [1]  petal-width 150.06 85.7041918  90.0233967 \s
+                [2] sepal-length  58.35 65.31298    35.0050993 \s
+                [3]  sepal-width  21.01 30.8520402  12.6042354 \s
                                 
                 Gain Variable Importance:
                         name        mean        sd     scaled score\s
-                [0]  petal-width 44.7711325 26.8683991 100         \s
-                [1] petal-length 44.4125996 27.6972606  99.1991873 \s
-                [2] sepal-length  7.3720466 12.2324536  16.4660714 \s
-                [3]  sepal-width  2.0400213  3.6450592   4.556555  \s
+                [0] petal-length 46.9523204 29.788375  100         \s
+                [1]  petal-width 40.7144453 29.0353834  86.7144477 \s
+                [2] sepal-length  8.9181379 13.3880186  18.9940302 \s
+                [3]  sepal-width  1.9476964  3.3916004   4.148243  \s
                                 
                 Permutation Variable Importance:
                         name        mean        sd     scaled score\s
-                [0]  petal-width 44.7711325 26.8683991 100         \s
-                [1] petal-length 44.4125996 27.6972606  99.1991873 \s
-                [2] sepal-length  7.3720466 12.2324536  16.4660714 \s
-                [3]  sepal-width  2.0400213  3.6450592   4.556555  \s
+                [0] petal-length 46.9523204 29.788375  100         \s
+                [1]  petal-width 40.7144453 29.0353834  86.7144477 \s
+                [2] sepal-length  8.9181379 13.3880186  18.9940302 \s
+                [3]  sepal-width  1.9476964  3.3916004   4.148243  \s
                                 
                 """, model.toFullContent());
+    }
+
+
+    @Test
+    void testParallelism() {
+        var iris = Datasets.loadIrisDataset();
+        String target = "class";
+        RandomSource.setSeed(42);
+        for (int i = 0; i < 100; i++) {
+            var rf = CForest.newModel()
+                    .runs.set(100)
+                    .poolSize.set(3);
+            rf.fit(iris, target);
+        }
     }
 }

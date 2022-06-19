@@ -3,13 +3,13 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,7 @@ public class Svm {
         double sumAlpha = DVector.wrap(alpha).sum();
 
         if (cp == cn) {
-            LOGGER.info("nu = " + sumAlpha / (cp * prob.len) + "\n");
+            LOGGER.fine("nu = " + sumAlpha / (cp * prob.len) + "\n");
         }
 
         for (int i = 0; i < l; i++) {
@@ -104,7 +104,7 @@ public class Svm {
                 alpha, 1.0, 1.0, param.eps, si, param.shrinking);
         double r = si.r;
 
-        LOGGER.info("c = " + 1 / r + "\n");
+        LOGGER.fine("c = " + 1 / r + "\n");
 
         for (i = 0; i < l; i++) {
             alpha[i] *= y[i] / r;
@@ -175,7 +175,7 @@ public class Svm {
             alpha[i] = alpha2[i] - alpha2[i + l];
             sum_alpha += Math.abs(alpha[i]);
         }
-        LOGGER.info("nu = " + sum_alpha / (param.c * l) + "\n");
+        LOGGER.fine("nu = " + sum_alpha / (param.c * l) + "\n");
         return si;
     }
 
@@ -204,7 +204,7 @@ public class Svm {
         s.solve(2 * l, new SvrKernelMatrix(prob.len, prob.xs, param.kernel, param.cacheSize), linear_term, y,
                 alpha2, C, C, param.eps, si, param.shrinking);
 
-        LOGGER.info("epsilon = " + (-si.r) + "\n");
+        LOGGER.fine("epsilon = " + (-si.r) + "\n");
 
         for (i = 0; i < l; i++) {
             alpha[i] = alpha2[i] - alpha2[i + l];
@@ -223,7 +223,7 @@ public class Svm {
             default -> new SolutionInfo();
         };
 
-        LOGGER.info("obj = " + si.obj + ", rho = " + si.rho + "\n");
+        LOGGER.fine("obj = " + si.obj + ", rho = " + si.rho + "\n");
 
         // output SVs
 
@@ -244,7 +244,7 @@ public class Svm {
             }
         }
 
-        LOGGER.info("nSV = " + nSV + ", nBSV = " + nBSV + "\n");
+        LOGGER.fine("nSV = " + nSV + ", nBSV = " + nBSV + "\n");
 
         return new Decision(alpha, si.rho);
     }
@@ -358,13 +358,13 @@ public class Svm {
             }
 
             if (stepsize < minStep) {
-                LOGGER.info("Line search fails in two-class probability estimates\n");
+                LOGGER.fine("Line search fails in two-class probability estimates\n");
                 break;
             }
         }
 
         if (iter >= maxIter) {
-            LOGGER.info("Reaching maximal iterations in two-class probability estimates\n");
+            LOGGER.fine("Reaching maximal iterations in two-class probability estimates\n");
         }
         return new double[] {a, b};
     }
@@ -431,7 +431,7 @@ public class Svm {
             }
         }
         if (iter >= max_iter) {
-            LOGGER.info("Exceeds max_iter in multiclass_prob\n");
+            LOGGER.fine("Exceeds max_iter in multiclass_prob\n");
         }
     }
 
@@ -539,7 +539,7 @@ public class Svm {
             }
         }
         mae /= (prob.len - count);
-        LOGGER.info("Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma="
+        LOGGER.fine("Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma="
                 + mae + "\n");
         return mae;
     }
@@ -675,7 +675,7 @@ public class Svm {
             int[] count = tmp_count[0];
 
             if (nr_class == 1) {
-                LOGGER.info("WARNING: training data in only one class. See README for details.\n");
+                LOGGER.warning("training data in only one class. See README for details.\n");
             }
 
             DVector[] x = new DVector[l];
@@ -793,7 +793,7 @@ public class Svm {
                 nz_count[i] = nSV;
             }
 
-            LOGGER.info("Total nSV = " + total_sv + "\n");
+            LOGGER.fine("Total nSV = " + total_sv + "\n");
 
             model.l = total_sv;
             model.SV = new DVector[total_sv];

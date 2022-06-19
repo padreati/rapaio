@@ -3,13 +3,13 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,6 +29,7 @@ import java.util.Map;
 
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarRange;
@@ -93,8 +94,48 @@ public class FOneHotEncoding extends AbstractFFilter {
     }
 
     public Frame apply(Frame df) {
-        FApplyCommon fOneApplyHotEncoding = new FApplyCommon();
+        if (varNames == null || varNames.length == 0) {
+            return df;
+        }
 
-        return fOneApplyHotEncoding.applyHotEncoding(df,varNames,levels,useNa,lessOne);
+        // list of variables with encoding
+        List<Var> vars = new ArrayList<>();
+
+        for (String varName : df.varNames()) {
+
+            // if the variable has been learned
+            if (levels.containsKey(varName)) {
+
+                // get the learned dictionary
+                List<String> dict = levels.get(varName);
+                if (!useNa) {
+                    dict = dict.subList(1, dict.size());
+                }
+                if (lessOne) {
+                    dict = dict.subList(1, dict.size());
+                }
+
+                List<Var> oneHotVars = new ArrayList<>();
+                Map<String, Var> index = new HashMap<>();
+
+                // create a new numeric var for each level, filled with 0
+                for (String token : dict) {
+                    Var v = VarBinary.fill(df.rowCount(), 0).name(varName + "." + token);
+                    oneHotVars.add(v);
+                    index.put(token, v);
+                }
+                // populate encoding variables
+                for (int i = 0; i < df.rowCount(); i++) {
+                    String level = df.getLabel(i, varName);
+                    if (index.containsKey(level)) {
+                        index.get(level).setInt(i, 1);
+                    }
+                }
+                vars.addAll(oneHotVars);
+            } else {
+                vars.add(df.rvar(varName));
+            }
+        }
+        return SolidFrame.byVars(vars);
     }
 }

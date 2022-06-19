@@ -3,13 +3,13 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
+import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
@@ -109,8 +110,8 @@ public class SplitClassifierModel
             throw new IllegalArgumentException("there are uncovered cases by splits, learning failed");
         }
 
-        List<Frame> frames = maps.stream().map(df::mapRows).collect(Collectors.toList());
-        List<Var> weightList = maps.stream().map(weights::mapRows).collect(Collectors.toList());
+        List<Frame> frames = maps.stream().map(df::mapRows).toList();
+        List<MappedVar> weightList = maps.stream().map(weights::mapRows).toList();
 
         for (int i = 0; i < splits.size(); i++) {
             Split split = splits.get(i);

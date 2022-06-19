@@ -3,13 +3,13 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2021 Aurelian Tutuianu
+ * Copyright 2013 - 2022 Aurelian Tutuianu
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,6 @@ package rapaio.ml.model.tree;
 
 import java.io.Serial;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -207,17 +206,15 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
     protected boolean coreFit(Frame df, Var weights) {
 
         additionalValidation(df);
-        this.varSelector.get().withVarNames(inputNames());
-
-        int rows = df.rowCount();
+        VarSelector nodeVarSelector = this.varSelector.get().withVarNames(inputNames());
 
         // create the root node
         AtomicInteger idGenerator = new AtomicInteger();
         idGenerator.set(0);
         root = new Node(null, idGenerator.get(), 0, "root", RowPredicate.all());
 
-        Queue<Triple> queue = new ConcurrentLinkedQueue<>();
-        queue.add(new Triple(root, df, weights));
+        Queue<QueueNode> queue = new ConcurrentLinkedQueue<>();
+        queue.add(new QueueNode(root, df, weights, nodeVarSelector));
 
         while (!queue.isEmpty()) {
             var t = queue.poll();
@@ -226,13 +223,12 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
             Frame nodeDf = t.df;
             Var weightsDf = t.weight;
 
-            learnNode(node, nodeDf, weightsDf);
+            learnNode(node, nodeDf, weightsDf, t.varSelector);
 
             if (node.leaf) {
                 continue;
             }
             Candidate bestCandidate = node.bestCandidate;
-            String testName = bestCandidate.testName();
 
             // now that we have a best candidate, do the effective split
             Pair<List<Frame>, List<Var>> frames = splitter.get().performSplit(nodeDf, weightsDf,
@@ -245,7 +241,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
             }
             for (int i = 0; i < node.children.size(); i++) {
                 var child = node.children.get(i);
-                queue.add(new Triple(child, frames.v1.get(i), frames.v2.get(i)));
+                queue.add(new QueueNode(child, frames.v1.get(i), frames.v2.get(i), t.varSelector.newInstance()));
             }
         }
 
@@ -253,7 +249,9 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
         return true;
     }
 
-    private void learnNode(Node node, Frame df, Var weights) {
+    record QueueNode(Node node, Frame df, Var weight, VarSelector varSelector){}
+
+    private void learnNode(Node node, Frame df, Var weights, VarSelector nodeVarSelector) {
         node.density = DensityVector.fromLevelWeights(false, df.rvar(firstTargetName()), weights);
         node.counter = DensityVector.fromLevelCounts(false, df.rvar(firstTargetName()));
         node.bestLabel = node.density.findBestLabel();
@@ -271,7 +269,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
         List<Candidate> candidateList = new ArrayList<>();
         Queue<String> exhaustList = new ConcurrentLinkedQueue<>();
 
-        int m = varSelector.get().mCount();
+        int m = nodeVarSelector.mCount();
         for (String testCol : nextVarNames) {
             if (m <= 0) {
                 continue;
@@ -303,7 +301,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
 
         node.leaf = false;
         node.bestCandidate = candidateList.get(0);
-        varSelector.get().removeVarNames(exhaustList);
+        nodeVarSelector.removeVarNames(exhaustList);
     }
 
     public void prune(Frame df) {
