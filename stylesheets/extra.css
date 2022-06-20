@@ -3,20 +3,16 @@ body {
 }
 
 .md-typeset {
-    font-size: .7rem;
-    line-height: 1.2;
+    font-size: .8rem;
+    line-height: 1.4;
     -webkit-print-color-adjust: exact;
     color-adjust: exact;
 }
 
 .md-nav {
-    font-size: .75rem;
+    font-size: .8rem;
 }
 
 .md-typeset pre > code {
-    font-size: 0.75rem;
-}
-
-.md-grid {
-    max-width: 1800px;
+    font-size: 0.65rem;
 }
