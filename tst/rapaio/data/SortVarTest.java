@@ -1,23 +1,21 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
@@ -37,8 +35,8 @@ import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.data.filter.VRefSort;
-import rapaio.data.filter.VSort;
+import rapaio.data.preprocessing.VarRefSort;
+import rapaio.data.preprocessing.VarSort;
 import rapaio.io.Csv;
 
 /**
@@ -49,17 +47,17 @@ public class SortVarTest {
     @Test
     void smokeTest() {
         Var v = VarInt.empty();
-        Var sorted = new VRefSort(integerComparator(v, true)).fapply(v);
+        Var sorted = VarRefSort.from(integerComparator(v, true)).fapply(v);
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
         v = VarDouble.empty();
-        sorted = new VRefSort(doubleComparator(v, true)).fapply(v);
+        sorted = VarRefSort.from(doubleComparator(v, true)).fapply(v);
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
         v = VarNominal.empty(0);
-        sorted = new VRefSort(labelComparator(v, true)).fapply(v);
+        sorted = VarRefSort.from(labelComparator(v, true)).fapply(v);
         assertFalse(sorted.type().isNumeric());
         assertTrue(sorted.type().isNominal());
     }
@@ -72,17 +70,17 @@ public class SortVarTest {
         index.setInt(0, 1);
 
         assertEquals(10, index.size());
-        Var sort = VSort.ascending().fapply(index);
+        Var sort = VarSort.ascending().fapply(index);
         for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getInt(i - 1) <= sort.getInt(i));
         }
 
-        sort = new VSort(false).fapply(index);
+        sort = VarSort.descending().fapply(index);
         for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getInt(i - 1) >= sort.getInt(i));
         }
 
-        Var second = VSort.ascending().fapply(index);
+        Var second = VarSort.ascending().fapply(index);
         for (int i = 1; i < second.size(); i++) {
             assertTrue(second.getInt(i - 1) <= second.getInt(i));
         }
@@ -93,17 +91,17 @@ public class SortVarTest {
         Var numeric = VarDouble.copy(2., 4., 1.2, 1.3, 1.2, 0., 100.);
 
         assertEquals(7, numeric.size());
-        Var sort = new VSort(true).fapply(numeric);
+        Var sort = VarSort.ascending().fapply(numeric);
         for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getDouble(i - 1) <= sort.getDouble(i));
         }
 
-        sort = new VSort(false).fapply(numeric);
+        sort = VarSort.descending().fapply(numeric);
         for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getDouble(i - 1) >= sort.getDouble(i));
         }
 
-        Var second = new VSort(true).fapply(numeric);
+        Var second = VarSort.ascending().fapply(numeric);
         for (int i = 1; i < second.size(); i++) {
             assertTrue(second.getInt(i - 1) <= second.getInt(i));
         }
@@ -122,17 +120,17 @@ public class SortVarTest {
         nominal.setMissing(4);
         nominal.setMissing(5);
 
-        Var sort = new VSort(true).fapply(nominal);
+        Var sort = VarSort.ascending().fapply(nominal);
         for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getLabel(i - 1).compareTo(sort.getLabel(i)) <= 0);
         }
 
-        sort = new VSort(false).fapply(nominal);
+        sort = VarSort.descending().fapply(nominal);
         for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getLabel(i - 1).compareTo(sort.getLabel(i)) >= 0);
         }
 
-        Var second = new VSort(true).fapply(nominal);
+        Var second = VarSort.ascending().fapply(nominal);
         for (int i = 1; i < second.size(); i++) {
             assertTrue(second.getLabel(i - 1).compareTo(second.getLabel(i)) <= 0);
         }
@@ -158,7 +156,7 @@ public class SortVarTest {
         transform.put("b", "a");
         transform.put("c", "b");
         transform.put("d", "d");
-        Var sort = VSort.ascending().fapply(nominal);
+        Var sort = VarSort.ascending().fapply(nominal);
         for (int i = 0; i < sort.size(); i++) {
             sort.setLabel(i, transform.get(sort.getLabel(i)));
         }
@@ -181,7 +179,7 @@ public class SortVarTest {
 
         // numeric
 
-        sort = VSort.ascending().fapply(numeric);
+        sort = VarSort.ascending().fapply(numeric);
         for (int i = 0; i < sort.size(); i++) {
             sort.setDouble(i, sort.getDouble(i) + Math.E);
         }
@@ -193,7 +191,7 @@ public class SortVarTest {
 
         // index
 
-        sort = VSort.ascending().fapply(index);
+        sort = VarSort.ascending().fapply(index);
         for (int i = 0; i < sort.size(); i++) {
             sort.setDouble(i, sort.getInt(i) + 10);
         }
@@ -206,7 +204,7 @@ public class SortVarTest {
     @Test
     void testMissing() {
         Var v = VarInt.seq(1, 10);
-        v = new VRefSort(integerComparator(v, true)).fapply(v);
+        v = VarRefSort.from(integerComparator(v, true)).fapply(v);
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);
         }

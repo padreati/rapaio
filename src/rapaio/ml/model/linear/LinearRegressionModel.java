@@ -25,7 +25,7 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.filter.FIntercept;
+import rapaio.data.preprocessing.AddIntercept;
 import rapaio.math.linear.DMatrix;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
@@ -59,7 +59,7 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
     @Override
     protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
         // add intercept variable
-        Frame transformed = intercept.get() ? FIntercept.filter().apply(df) : df;
+        Frame transformed = intercept.get() ? AddIntercept.transform().apply(df) : df;
 
         // collect standard information
         return super.prepareFit(transformed, weights, targetVarNames);

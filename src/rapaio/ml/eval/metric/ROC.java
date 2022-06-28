@@ -31,7 +31,7 @@ import rapaio.data.RowComparators;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.data.filter.VRefSort;
+import rapaio.data.preprocessing.VarRefSort;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -137,7 +137,7 @@ public class ROC implements Printable, Serializable {
         double tp = 0;
         auc = 0;
 
-        Var rows = new VRefSort(RowComparators.doubleComparator(score, false)).fapply(VarInt.seq(score.size()));
+        Var rows = VarRefSort.from(RowComparators.doubleComparator(score, false)).fapply(VarInt.seq(score.size()));
         int len = 1;
         double prev = Double.MIN_VALUE;
         for (int i = 0; i < rows.size(); i++) {

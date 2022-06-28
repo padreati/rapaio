@@ -28,7 +28,7 @@ import java.util.logging.Level;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
-import rapaio.core.tools.GridData;
+import rapaio.core.tools.Grid2D;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
@@ -79,7 +79,7 @@ public class OneClassSvmDemo {
                     .kernel.set(RBFKernel.fromGamma(gamma))
                     .nu.set(0.1).fit(df);
 
-            GridData gd = GridData.fromFunction((v1, v2) -> ocs.predict(DVector.wrap(v1, v2))
+            Grid2D gd = Grid2D.fromFunction((v1, v2) -> ocs.predict(DVector.wrap(v1, v2))
                     .scores().getDouble(0), x1.dv().min(), x1.dv().max(), x2.dv().min(), x2.dv().max(), 64);
 
             double min = gd.minValue() * 1.1;

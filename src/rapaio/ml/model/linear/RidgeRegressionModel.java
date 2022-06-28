@@ -28,7 +28,7 @@ import java.util.Objects;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.filter.FIntercept;
+import rapaio.data.preprocessing.AddIntercept;
 import rapaio.math.linear.DMatrix;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
@@ -86,7 +86,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
     @Override
     protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
         // add intercept variable
-        Frame transformed = intercept.get() ? FIntercept.filter().apply(df) : df;
+        Frame transformed = intercept.get() ? AddIntercept.transform().apply(df) : df;
 
         // collect standard information
         FitSetup fitSetup = super.prepareFit(transformed, weights, targetVarNames);
@@ -97,7 +97,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
         targetScale = new HashMap<>();
 
         for (String inputName : inputNames) {
-            if (FIntercept.INTERCEPT.equals(inputName)) {
+            if (AddIntercept.INTERCEPT.equals(inputName)) {
                 inputMean.put(inputName, 0.0);
                 inputScale.put(inputName, 1.0);
             } else {
@@ -119,7 +119,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
         String[] selNames = new String[inputNames.length - (intercept.get() ? 1 : 0)];
         int pos = 0;
         for (int i = 0; i < inputNames.length; i++) {
-            if (FIntercept.INTERCEPT.equals(inputNames[i])) {
+            if (AddIntercept.INTERCEPT.equals(inputNames[i])) {
                 interceptIndex = i;
                 continue;
             }
@@ -176,7 +176,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
                 String targetName = targetName(i);
                 double targetScale = this.targetScale.get(targetName);
                 for (int j = 0; j < inputNames.length; j++) {
-                    if (FIntercept.INTERCEPT.equals(inputNames[j])) {
+                    if (AddIntercept.INTERCEPT.equals(inputNames[j])) {
                         double interceptValue = targetMean.get(targetName);
                         for (int k = 0; k < inputNames.length; k++) {
                             if (k == j) {

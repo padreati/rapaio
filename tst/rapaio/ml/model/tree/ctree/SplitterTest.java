@@ -1,23 +1,21 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
@@ -35,7 +33,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.VApply;
+import rapaio.data.preprocessing.VarApply;
 import rapaio.ml.model.tree.RowPredicate;
 import rapaio.util.Pair;
 
@@ -54,7 +52,7 @@ public class SplitterTest {
     void beforeEach() {
         VarDouble values = VarDouble.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
         df = SolidFrame.byVars(values.copy().name("x"));
-        w = values.fapply(VApply.onDouble(x -> Double.isNaN(x) ? 1 : Math.abs(x))).name("w");
+        w = values.fapply(VarApply.onDouble(x -> Double.isNaN(x) ? 1 : Math.abs(x))).name("w");
         c = new Candidate(1, "test");
         c.addGroup(RowPredicate.numGreater("x", 0));
         c.addGroup(RowPredicate.numLess("x", 0));

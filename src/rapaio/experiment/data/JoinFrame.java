@@ -119,6 +119,9 @@ public class JoinFrame extends AbstractFrame {
 
     @Override
     public Var rvar(String name) {
+        if(!varIndexTree.containsKey(name)) {
+            return null;
+        }
         int pos = varIndexTree.get(name);
         Mapping mapping = Mapping.wrap(side[pos] ? leftRows : rightRows);
         return MappedVar.byRows(side[pos]

@@ -22,7 +22,7 @@
 package rapaio.core.tests;
 
 import rapaio.data.Var;
-import rapaio.data.filter.VSort;
+import rapaio.data.preprocessing.VarSort;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -49,8 +49,8 @@ public class KSTestTwoSamples implements HTest {
     }
 
     private KSTestTwoSamples(Var sample1, Var sample2) {
-        this.v1 = VSort.ascending().fapply(sample1);
-        this.v2 = VSort.ascending().fapply(sample2);
+        this.v1 = VarSort.ascending().fapply(sample1);
+        this.v2 = VarSort.ascending().fapply(sample2);
 
         D = 0;
         double fn1 = 0.0;

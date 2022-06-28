@@ -26,7 +26,7 @@ import java.util.Objects;
 
 import rapaio.data.Frame;
 import rapaio.data.VarType;
-import rapaio.data.filter.FIntercept;
+import rapaio.data.preprocessing.AddIntercept;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
@@ -76,7 +76,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
 
     @Override
     protected PredSetup preparePredict(Frame df, boolean withResiduals, final double[] quantiles) {
-        Frame transformed = intercept.get() ? FIntercept.filter().apply(df) : df;
+        Frame transformed = intercept.get() ? AddIntercept.transform().apply(df) : df;
         return super.preparePredict(transformed, withResiduals, quantiles);
     }
 
@@ -89,7 +89,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
                 double fit = 0.0;
                 for (int k = 0; k < inputNames().length; k++) {
                     String inputName = inputNames[k];
-                    if (FIntercept.INTERCEPT.equals(inputName)) {
+                    if (AddIntercept.INTERCEPT.equals(inputName)) {
                         fit += beta.get(k, i);
                     } else {
                         fit += beta.get(k, i) * df.getDouble(j, inputName);

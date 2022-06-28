@@ -32,7 +32,7 @@ import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.filter.VRefSort;
+import rapaio.data.preprocessing.VarRefSort;
 
 /**
  * Spearman's rank correlation coefficient.
@@ -104,7 +104,7 @@ public class CorrSpearman extends AbstractCorrelation {
 
         for (int i = 0; i < sorted.length; i++) {
             VarInt index = VarInt.seq(vars[i].size());
-            sorted[i] = new VRefSort(RowComparators.doubleComparator(vars[i], true)).fapply(index);
+            sorted[i] = VarRefSort.from(RowComparators.doubleComparator(vars[i], true)).fapply(index);
             ranks[i] = VarDouble.fill(vars[i].size());
         }
 

@@ -1,23 +1,21 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
@@ -36,10 +34,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.RandomSource;
-import rapaio.data.filter.VApply;
-import rapaio.data.filter.VRefSort;
-import rapaio.data.filter.VSort;
-import rapaio.data.filter.VStandardize;
+import rapaio.data.preprocessing.VarApply;
+import rapaio.data.preprocessing.VarRefSort;
+import rapaio.data.preprocessing.VarSort;
+import rapaio.data.preprocessing.VarStandardScaler;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -76,7 +74,7 @@ public class VarTest {
         double[] src = IntStream.range(0, 100_000).mapToDouble(x -> x).toArray();
         Var x = VarDouble.wrap(src);
         Var y = Arrays.stream(src).boxed().parallel().collect(VarDouble.collector());
-        y = VSort.ascending().fapply(y);
+        y = VarSort.ascending().fapply(y);
 
         assertTrue(x.deepEquals(y));
     }
@@ -86,7 +84,7 @@ public class VarTest {
         int[] src = IntStream.range(0, 100_000).toArray();
         Var x = VarInt.wrap(src);
         Var y = Arrays.stream(src).boxed().parallel().collect(VarInt.collector());
-        y = VSort.ascending().fapply(y);
+        y = VarSort.ascending().fapply(y);
 
         assertTrue(x.deepEquals(y));
     }
@@ -121,15 +119,15 @@ public class VarTest {
         double[] log1px = Arrays.stream(x).map(Math::log1p).toArray();
 
         VarDouble vx = VarDouble.wrap(x);
-        Var vlog1px = vx.copy().fapply(VApply.onDouble(Math::log1p));
+        Var vlog1px = vx.copy().fapply(VarApply.onDouble(Math::log1p));
 
         assertTrue(vx.deepEquals(VarDouble.wrap(x)));
         assertTrue(vlog1px.deepEquals(VarDouble.wrap(log1px)));
 
-        VStandardize filter = VStandardize.filter();
+        VarStandardScaler filter = VarStandardScaler.filter();
         filter.fit(vx);
         Var fit1 = vx.copy().apply(filter);
-        Var fit2 = vx.copy().fapply(VStandardize.filter());
+        Var fit2 = vx.copy().fapply(VarStandardScaler.filter());
 
         assertTrue(fit1.deepEquals(fit2));
     }
@@ -137,25 +135,25 @@ public class VarTest {
     @Test
     void testRefComparator() {
         Var varDouble = VarDouble.from(100, RandomSource::nextDouble);
-        varDouble = varDouble.fapply(VRefSort.from(varDouble.refComparator()));
+        varDouble = varDouble.fapply(VarRefSort.from(varDouble.refComparator()));
         for (int i = 1; i < varDouble.size(); i++) {
             assertTrue(varDouble.getDouble(i - 1) <= varDouble.getDouble(i));
         }
 
         Var varLong = VarLong.from(100, row -> (long) RandomSource.nextInt(100));
-        varLong = varLong.fapply(VRefSort.from(varLong.refComparator()));
+        varLong = varLong.fapply(VarRefSort.from(varLong.refComparator()));
         for (int i = 1; i < varLong.size(); i++) {
             assertTrue(varLong.getLong(i - 1) <= varLong.getLong(i));
         }
 
         Var varInt = VarInt.from(100, row -> RandomSource.nextInt(100));
-        varInt = varInt.fapply(VRefSort.from(varInt.refComparator()));
+        varInt = varInt.fapply(VarRefSort.from(varInt.refComparator()));
         for (int i = 1; i < varInt.size(); i++) {
             assertTrue(varInt.getInt(i - 1) <= varInt.getInt(i));
         }
 
         Var varNominal = VarNominal.from(100, row -> String.valueOf(RandomSource.nextInt(100)));
-        varNominal = varNominal.fapply(VRefSort.from(varNominal.refComparator()));
+        varNominal = varNominal.fapply(VarRefSort.from(varNominal.refComparator()));
         for (int i = 1; i < varNominal.size(); i++) {
             assertTrue(varNominal.getLabel(i - 1).compareTo(varNominal.getLabel(i)) <= 0);
         }

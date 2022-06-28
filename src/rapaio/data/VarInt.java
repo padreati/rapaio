@@ -38,12 +38,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.IntStream;
 
-import rapaio.core.RandomSource;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.IntIterator;
-import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Int2IntFunction;
 
 /**
@@ -438,15 +436,6 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     @Override
     public VarInt copy() {
         return (VarInt) super.copy();
-    }
-
-    public VarInt shuffle() {
-        return shuffle(0, rows);
-    }
-
-    public VarInt shuffle(int start, int end) {
-        IntArrays.shuffle(data, start, end, RandomSource.getRandom());
-        return this;
     }
 
     @Serial

@@ -21,11 +21,11 @@
 
 package rapaio.experiment.core;
 
-import static rapaio.sys.With.palette;
+import static rapaio.sys.With.*;
 
 import java.util.function.BiFunction;
 
-import rapaio.core.tools.GridData;
+import rapaio.core.tools.Grid2D;
 import rapaio.data.VarDouble;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Plot;
@@ -78,9 +78,9 @@ public class VectorDataGrid {
         for (int i = 0; i < channels; i++) {
             hues[i] = (float) i / channels;
         }
-        GridData[] grids = new GridData[channels];
+        Grid2D[] grids = new Grid2D[channels];
         for (int ch = 0; ch < channels; ch++) {
-            GridData grid = new GridData(xRange, yRange);
+            Grid2D grid = new Grid2D(xRange, yRange);
             grid.fill(Double.NaN);
             grids[ch] = grid;
         }
@@ -96,7 +96,7 @@ public class VectorDataGrid {
         }
 
         for (int ch = 0; ch < channels; ch++) {
-            GridData grid = grids[ch];
+            Grid2D grid = grids[ch];
 
             double[] aminmax = grid.quantiles(0, 1);
             min = Double.isNaN(min) ? aminmax[0] : min;

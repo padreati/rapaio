@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import rapaio.data.filter.VRefSort;
 import rapaio.data.group.GroupFun;
 import rapaio.data.group.function.GroupFunCount;
 import rapaio.data.group.function.GroupFunKurtosis;
@@ -40,6 +39,7 @@ import rapaio.data.group.function.GroupFunNUnique;
 import rapaio.data.group.function.GroupFunSkewness;
 import rapaio.data.group.function.GroupFunStd;
 import rapaio.data.group.function.GroupFunSum;
+import rapaio.data.preprocessing.VarRefSort;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -221,7 +221,7 @@ public class Group implements Printable {
             groupUniqueIds.add(groupIdToLastLevelIndex.get(i).getLevelIds(new int[pkNamesList.size() + 1]));
             sortedGroupIds.addInt(i);
         }
-        sortedGroupIds = (VarInt) sortedGroupIds.fapply(VRefSort.from((i1, i2) -> {
+        sortedGroupIds = (VarInt) sortedGroupIds.fapply(VarRefSort.from((i1, i2) -> {
             int[] gui1 = groupUniqueIds.get(i1);
             int[] gui2 = groupUniqueIds.get(i2);
             for (int i = 0; i < gui1.length; i++) {

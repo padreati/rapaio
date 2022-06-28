@@ -21,7 +21,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.sys.With.position;
+import static rapaio.sys.With.*;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;

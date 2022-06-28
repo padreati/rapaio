@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rapaio.graphics.Figure;
-import rapaio.graphics.opt.Palette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.Palette;
 import rapaio.util.collection.DoubleArrays;
 
 /**

@@ -32,7 +32,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.VRefSort;
+import rapaio.data.preprocessing.VarRefSort;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
@@ -68,7 +68,7 @@ public class ADTestGoodness implements HTest {
 
     private ADTestGoodness(Var x, double mu, double sigma) {
         Var xx = x.stream().complete().toMappedVar().copy();
-        this.x = xx.fapply(new VRefSort(xx.refComparator())).copy();
+        this.x = xx.fapply(VarRefSort.from(xx.refComparator())).copy();
 
         this.mu = mu;
         this.sigma = sigma;
@@ -177,8 +177,20 @@ public class ADTestGoodness implements HTest {
         sb.append("given sd  : ").append(floatFlex(sigma)).append(", used sd   : ").append(floatFlex(sigmaHat)).append("\n");
         sb.append("\n");
 
-        sb.append("A^2  statistic: ").append(floatFlex(a2)).append(", p-value: ").append(floatFlex(pValue)).append(" ").append(pValueStars(pValue)).append("\n");
-        sb.append("A*^2 statistic: ").append(floatFlex(a2star)).append(", p-value: ").append(floatFlex(pValueStar)).append(" ").append(pValueStars(pValueStar)).append("\n");
+        sb.append("A^2  statistic: ")
+                .append(floatFlex(a2))
+                .append(", p-value: ")
+                .append(floatFlex(pValue))
+                .append(" ")
+                .append(pValueStars(pValue))
+                .append("\n");
+        sb.append("A*^2 statistic: ")
+                .append(floatFlex(a2star))
+                .append(", p-value: ")
+                .append(floatFlex(pValueStar))
+                .append(" ")
+                .append(pValueStars(pValueStar))
+                .append("\n");
         sb.append("\n");
         return sb.toString();
     }

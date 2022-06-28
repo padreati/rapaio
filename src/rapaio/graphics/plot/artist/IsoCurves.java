@@ -38,7 +38,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import rapaio.core.tools.GridData;
+import rapaio.core.tools.Grid2D;
 import rapaio.data.Var;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
@@ -51,12 +51,12 @@ public class IsoCurves extends Artist {
 
     @Serial
     private static final long serialVersionUID = -642370269224702175L;
-    private final GridData grid;
+    private final Grid2D grid;
     private final double[] levels;
     private final boolean contour;
     private final boolean fill;
 
-    public IsoCurves(GridData grid, boolean contour, boolean fill, double[] levels, GOption<?>... opts) {
+    public IsoCurves(Grid2D grid, boolean contour, boolean fill, double[] levels, GOption<?>... opts) {
         this.grid = grid;
         this.levels = levels;
         this.contour = contour;
@@ -76,8 +76,8 @@ public class IsoCurves extends Artist {
 
     @Override
     public void updateDataRange(Graphics2D g2d) {
-        Var x = grid.getX();
-        Var y = grid.getY();
+        Var x = grid.x();
+        Var y = grid.y();
         union(x.getDouble(0), y.getDouble(0));
         union(x.getDouble(x.size() - 1), y.getDouble(y.size() - 1));
     }
@@ -100,8 +100,8 @@ public class IsoCurves extends Artist {
         Composite old = g2d.getComposite();
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
 
-        Var x = grid.getX();
-        Var y = grid.getY();
+        Var x = grid.x();
+        Var y = grid.y();
 
         BasicStroke fillStroke = new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
         BasicStroke contourStroke = new BasicStroke(options.getLwd(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -307,38 +307,38 @@ public class IsoCurves extends Artist {
         @Serial
         private static final long serialVersionUID = -2138677255967203689L;
 
-        private final GridData g;
+        private final Grid2D g;
         private final double low;
         private final double high;
         private final int[] sides;
 
-        public MeshStripe(GridData g, double low, double high) {
+        public MeshStripe(Grid2D g, double low, double high) {
             this.g = g;
             this.low = low;
             this.high = high;
 
-            this.sides = new int[g.getX().size() * g.getY().size()];
-            for (int i = 0; i < g.getX().size(); i++) {
-                for (int j = 0; j < g.getY().size(); j++) {
-                    if (g.getValue(i, j) < low) {
-                        sides[i * g.getY().size() + j] = 0;
+            this.sides = new int[g.x().size() * g.y().size()];
+            for (int i = 0; i < g.x().size(); i++) {
+                for (int j = 0; j < g.y().size(); j++) {
+                    if (g.value(i, j) < low) {
+                        sides[i * g.y().size() + j] = 0;
                         continue;
                     }
-                    if (g.getValue(i, j) > high) {
-                        sides[i * g.getY().size() + j] = 2;
+                    if (g.value(i, j) > high) {
+                        sides[i * g.y().size() + j] = 2;
                         continue;
                     }
-                    sides[i * g.getY().size() + j] = 1;
+                    sides[i * g.y().size() + j] = 1;
                 }
             }
         }
 
         public Var x() {
-            return g.getX();
+            return g.x();
         }
 
         public Var y() {
-            return g.getY();
+            return g.y();
         }
 
         /**
@@ -349,7 +349,7 @@ public class IsoCurves extends Artist {
          * @return 0 if below isoBand, 1 if inside isoBand, 2 if above isoBand
          */
         public int side(int i, int j) {
-            return sides[i * g.getY().size() + j];
+            return sides[i * g.y().size() + j];
         }
 
         /**
@@ -362,8 +362,8 @@ public class IsoCurves extends Artist {
          */
         public double xLow(int i, int j) {
             if ((side(i, j) == 0 && side(i + 1, j) >= 1) || (side(i, j) >= 1 && side(i + 1, j) == 0)) {
-                double value = x().getDouble(i) + abs(x().getDouble(i + 1) - x().getDouble(i)) * abs(low - g.getValue(i, j))
-                        / abs(g.getValue(i + 1, j) - g.getValue(i, j));
+                double value = x().getDouble(i) + abs(x().getDouble(i + 1) - x().getDouble(i)) * abs(low - g.value(i, j))
+                        / abs(g.value(i + 1, j) - g.value(i, j));
                 return max(x().getDouble(i), min(x().getDouble(i + 1), value));
             }
             return Double.NaN;
@@ -379,8 +379,8 @@ public class IsoCurves extends Artist {
          */
         public double xHigh(int i, int j) {
             if ((side(i, j) <= 1 && side(i + 1, j) == 2) || (side(i, j) == 2 && side(i + 1, j) <= 1)) {
-                double value = x().getDouble(i) + abs(x().getDouble(i + 1) - x().getDouble(i)) * abs(high - g.getValue(i, j))
-                        / abs(g.getValue(i + 1, j) - g.getValue(i, j));
+                double value = x().getDouble(i) + abs(x().getDouble(i + 1) - x().getDouble(i)) * abs(high - g.value(i, j))
+                        / abs(g.value(i + 1, j) - g.value(i, j));
                 return max(x().getDouble(i), min(x().getDouble(i + 1), value));
             }
             return Double.NaN;
@@ -396,8 +396,8 @@ public class IsoCurves extends Artist {
          */
         public double yLow(int i, int j) {
             if ((side(i, j) == 0 && side(i, j + 1) >= 1) || (side(i, j) >= 1 && side(i, j + 1) == 0)) {
-                double value = y().getDouble(j) + abs(y().getDouble(j + 1) - y().getDouble(j)) * abs(g.getValue(i, j) - low)
-                        / abs(g.getValue(i, j + 1) - g.getValue(i, j));
+                double value = y().getDouble(j) + abs(y().getDouble(j + 1) - y().getDouble(j)) * abs(g.value(i, j) - low)
+                        / abs(g.value(i, j + 1) - g.value(i, j));
                 return max(y().getDouble(j), min(y().getDouble(j + 1), value));
             }
             return Double.NaN;
@@ -413,8 +413,8 @@ public class IsoCurves extends Artist {
          */
         public double yHigh(int i, int j) {
             if ((side(i, j) <= 1 && side(i, j + 1) == 2) || (side(i, j) == 2 && side(i, j + 1) <= 1)) {
-                double value = y().getDouble(j) + abs(y().getDouble(j + 1) - y().getDouble(j)) * abs(high - g.getValue(i, j))
-                        / abs(g.getValue(i, j + 1) - g.getValue(i, j));
+                double value = y().getDouble(j) + abs(y().getDouble(j + 1) - y().getDouble(j)) * abs(high - g.value(i, j))
+                        / abs(g.value(i, j + 1) - g.value(i, j));
                 return max(y().getDouble(j), min(y().getDouble(j + 1), value));
             }
             return Double.NaN;

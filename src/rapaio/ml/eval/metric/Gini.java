@@ -26,8 +26,8 @@ import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.filter.VCumSum;
-import rapaio.data.filter.VRefSort;
+import rapaio.data.preprocessing.VarCumSum;
+import rapaio.data.preprocessing.VarRefSort;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -72,12 +72,12 @@ public class Gini implements Printable {
         IntComparator cmp = RowComparators.from(
                 RowComparators.doubleComparator(fit, false),
                 RowComparators.integerComparator(index, true));
-        Var sol = new VRefSort(cmp).fapply(actual).copy();
+        Var sol = VarRefSort.from(cmp).fapply(actual).copy();
 
         int n = sol.size();
 
         double totalLosses = Sum.of(sol).value();
-        double giniSum = Sum.of(VCumSum.filter().fapply(sol)).value() / totalLosses;
+        double giniSum = Sum.of(VarCumSum.transform().fapply(sol)).value() / totalLosses;
         giniSum -= (actual.size() + 1) / 2.;
         return giniSum / actual.size();
     }
@@ -87,13 +87,14 @@ public class Gini implements Printable {
         IntComparator cmp = RowComparators.from(
                 RowComparators.doubleComparator(fit, false),
                 RowComparators.integerComparator(index, true));
-        Var sol = new VRefSort(cmp).fapply(actual).copy();
-        Var w = new VRefSort(cmp).fapply(weights).copy();
+        Var sol = VarRefSort.from(cmp).fapply(actual).copy();
+        Var w = VarRefSort.from(cmp).fapply(weights).copy();
 
         double wsum = Sum.of(w).value();
-        Var random = VCumSum.filter().fapply(VarDouble.from(w, value -> value / wsum).copy());
+        Var random = VarCumSum.transform().fapply(VarDouble.from(w, value -> value / wsum).copy());
         double totalPositive = Sum.of(VarDouble.from(actual.size(), row -> sol.getDouble(row) * w.getDouble(row))).value();
-        Var lorentz = new VCumSum().fapply(VarDouble.from(actual.size(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
+        Var lorentz =
+                VarCumSum.transform().fapply(VarDouble.from(actual.size(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
 
         double g = 0.0;
         for (int i = 0; i < actual.size() - 1; i++) {
@@ -113,14 +114,10 @@ public class Gini implements Printable {
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("> Gini").append(weighted ? " (Weighted):\n" : ":\n");
-        sb.append("\n");
-        sb.append("gini coefficient: ").append(Format.floatFlex(gini)).append("\n");
-        sb.append("normalized gini coefficient: ").append(Format.floatFlex(normalizedGini)).append("\n");
-        sb.append("\n");
-
-        return sb.toString();
+        return "> Gini" + (weighted ? " (Weighted):\n" : ":\n")
+                + "\n"
+                + "gini coefficient: " + Format.floatFlex(gini) + "\n"
+                + "normalized gini coefficient: " + Format.floatFlex(normalizedGini) + "\n"
+                + "\n";
     }
 }

@@ -1,39 +1,28 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.With.HALIGN_CENTER;
-import static rapaio.sys.With.VALIGN_CENTER;
-import static rapaio.sys.With.alpha;
-import static rapaio.sys.With.color;
-import static rapaio.sys.With.fill;
-import static rapaio.sys.With.font;
-import static rapaio.sys.With.hAlign;
-import static rapaio.sys.With.heights;
-import static rapaio.sys.With.lwd;
-import static rapaio.sys.With.vAlign;
+import static rapaio.sys.With.*;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -46,10 +35,6 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.graphics.Figure;
 import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.artist.AbstractArtistTest;
-import rapaio.graphics.plot.artist.PolyFill;
-import rapaio.graphics.plot.artist.PolyLine;
-import rapaio.graphics.plot.artist.Text;
 import rapaio.image.ImageTools;
 
 /**
@@ -119,7 +104,7 @@ public class RapaioLogoTest extends AbstractArtistTest {
         down.bottomMarkers(false);
 
         down.add(new Text(0.5, 0.6, "rapaio", font("DejaVu Sans", Font.BOLD, 110),
-                hAlign(HALIGN_CENTER), vAlign(VALIGN_CENTER), color(Color.decode("0x096b87"))));
+                halign(HALIGN_CENTER), valign(VALIGN_CENTER), color(Color.decode("0x096b87"))));
         down.xLim(0, 1);
         down.yLim(0, 1);
 

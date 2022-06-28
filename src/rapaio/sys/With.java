@@ -26,6 +26,7 @@ import java.awt.Font;
 import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
 
+import rapaio.core.tools.Grid2D;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
@@ -68,6 +69,24 @@ public final class With {
     }
 
     // Graphical options
+
+    public interface palette {
+        static GOptionPalette hue() {
+            return new GOptionPalette(Palette.hue());
+        }
+
+        static GOptionPalette hue(double start, double end) {
+            return new GOptionPalette(Palette.hue(start, end));
+        }
+
+        static GOptionPalette hue(double start, double end, double rangeFrom, double rangeTo) {
+            return new GOptionPalette(Palette.hue(start, end, rangeFrom, rangeTo));
+        }
+
+        static GOptionPalette hue(double start, double end, Grid2D gridData) {
+            return new GOptionPalette(Palette.hue(start, end, gridData.minValue(), gridData.maxValue()));
+        }
+    }
 
     public static GOptionPalette palette(Palette colorPalette) {
         return new GOptionPalette(colorPalette);
@@ -145,6 +164,48 @@ public final class With {
         return new GOptionPch(pch);
     }
 
+    public interface pch {
+        static GOptionPch circleWire() {
+            return new GOptionPch(VarInt.scalar(PCH_CIRCLE_WIRE));
+        }
+
+        static GOptionPch circleFill() {
+            return new GOptionPch(VarInt.scalar(PCH_CIRCLE_FILL));
+        }
+
+        static GOptionPch circleFull() {
+            return new GOptionPch(VarInt.scalar(PCH_CIRCLE_FULL));
+        }
+
+        static GOptionPch crossWire() {
+            return new GOptionPch(VarInt.scalar(PCH_CROSS_WIRE));
+        }
+
+        static GOptionPch triangleWire() {
+            return new GOptionPch(VarInt.scalar(PCH_TRIANGLE_WIRE));
+        }
+
+        static GOptionPch triangleFill() {
+            return new GOptionPch(VarInt.scalar(PCH_TRIANGLE_FILL));
+        }
+
+        static GOptionPch triangleFull() {
+            return new GOptionPch(VarInt.scalar(PCH_TRIANGLE_FULL));
+        }
+
+        static GOptionPch squareWire() {
+            return new GOptionPch(VarInt.scalar(PCH_SQUARE_WIRE));
+        }
+
+        static GOptionPch squareFill() {
+            return new GOptionPch(VarInt.scalar(PCH_SQUARE_FILL));
+        }
+
+        static GOptionPch squareFull() {
+            return new GOptionPch(VarInt.scalar(PCH_SQUARE_FULL));
+        }
+    }
+
     public static GOptionPch pch(int pch) {
         return new GOptionPch(VarInt.scalar(pch));
     }
@@ -181,16 +242,18 @@ public final class With {
         return new GOptionSort(sort);
     }
 
-    public static GOptionSort sortAsc() {
-        return new GOptionSort(SORT_ASC);
-    }
+    public interface sort {
+        static GOptionSort asc() {
+            return new GOptionSort(SORT_ASC);
+        }
 
-    public static GOptionSort sortNone() {
-        return new GOptionSort(SORT_NONE);
-    }
+        static GOptionSort none() {
+            return new GOptionSort(SORT_NONE);
+        }
 
-    public static GOptionSort sortDesc() {
-        return new GOptionSort(SORT_DESC);
+        static GOptionSort desc() {
+            return new GOptionSort(SORT_DESC);
+        }
     }
 
     public static GOptionHorizontal horizontal(boolean horizontal) {
@@ -221,16 +284,42 @@ public final class With {
     public static final int HALIGN_CENTER = 0;
     public static final int HALIGN_RIGHT = 1;
 
-    public static GOptionHAlign hAlign(int hAlign) {
+    public static GOptionHAlign halign(int hAlign) {
         return new GOptionHAlign(hAlign);
+    }
+
+    public interface halign {
+        static GOptionHAlign left() {
+            return new GOptionHAlign(HALIGN_LEFT);
+        }
+
+        static GOptionHAlign center() {
+            return new GOptionHAlign(HALIGN_CENTER);
+        }
+
+        static GOptionHAlign right() {
+            return new GOptionHAlign(HALIGN_RIGHT);
+        }
     }
 
     public static final int VALIGN_TOP = -1;
     public static final int VALIGN_CENTER = 0;
     public static final int VALIGN_BOTTOM = 1;
 
-    public static GOptionVAlign vAlign(int vAlign) {
+    public static GOptionVAlign valign(int vAlign) {
         return new GOptionVAlign(vAlign);
+    }
+
+    public interface valign {
+        static GOptionVAlign top() {
+            return new GOptionVAlign(VALIGN_TOP);
+        }
+        static GOptionVAlign center() {
+            return new GOptionVAlign(VALIGN_CENTER);
+        }
+        static GOptionVAlign bottom() {
+            return new GOptionVAlign(VALIGN_BOTTOM);
+        }
     }
 
     public static GOptionFont font(Font font) {

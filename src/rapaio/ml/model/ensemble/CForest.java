@@ -43,9 +43,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.data.filter.FRefSort;
-import rapaio.data.filter.VShuffle;
 import rapaio.data.sample.RowSampler;
+import rapaio.data.preprocessing.RefSort;
 import rapaio.math.linear.DMatrix;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
@@ -173,7 +172,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
         }
         double maxScore = Maximum.of(score).value();
         Var scaled = VarDouble.from(score.size(), row -> 100.0 * score.getDouble(row) / maxScore).name("scaled score");
-        return SolidFrame.byVars(name, score, sd, scaled).fapply(FRefSort.by(score.refComparator(false))).copy();
+        return SolidFrame.byVars(name, score, sd, scaled).fapply(RefSort.by(score.refComparator(false))).copy();
     }
 
     public Frame getFreqVIInfo() {
@@ -204,7 +203,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
             pvalues.addDouble(pvalue);
         }
         return SolidFrame.byVars(name, score, sds, zscores, pvalues)
-                .fapply(FRefSort.by(zscores.refComparator(false))).copy();
+                .fapply(RefSort.by(zscores.refComparator(false))).copy();
     }
 
     @Override
@@ -273,7 +272,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
         for (String varName : inputNames()) {
 
             // shuffle values from variable
-            Var shuffled = oobFrame.rvar(varName).fapply(VShuffle.filter());
+            Var shuffled = oobFrame.rvar(varName).shuffle();
 
             // build oob frame with shuffled variable
             Frame oobReduced = oobFrame.removeVars(VarRange.of(varName)).bindVars(shuffled);

@@ -32,7 +32,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.data.filter.VApply;
+import rapaio.data.preprocessing.VarApply;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
@@ -112,7 +112,7 @@ public class CBinaryLogisticStacking extends ClassifierModel<CBinaryLogisticStac
 
         List<Var> quadratic = vars.stream()
                 .map(v -> v.copy()
-                        .fapply(VApply.onDouble(x -> x * x))
+                        .fapply(VarApply.onDouble(x -> x * x))
                         .name(v.name() + "^2")).toList();
         vars.addAll(quadratic);
 
@@ -144,7 +144,7 @@ public class CBinaryLogisticStacking extends ClassifierModel<CBinaryLogisticStac
         }).toList().forEach(var -> vars.add(var.copy().name("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.copy().fapply(VApply.onDouble(x -> x * x)).name(v.name() + "^2")).toList();
+                .map(v -> v.copy().fapply(VarApply.onDouble(x -> x * x)).name(v.name() + "^2")).toList();
         vars.addAll(quadratic);
         return PredSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);
     }

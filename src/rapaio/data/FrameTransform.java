@@ -21,17 +21,17 @@
 
 package rapaio.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import rapaio.data.filter.FFilter;
-import rapaio.ml.common.ListParam;
+import rapaio.data.preprocessing.Transform;
 
 /**
- * Frame transformation composed from a list of frame filters {@link FFilter}.
+ * Frame transformation composed from a chain of frame filters {@link Transform}.
  * <p>
  * Collects the list of transformation which can be applied
- * over a frame. A frame filter has two lifecycle phases: fit and apply. In the fit phase the
+ * over a frame. A frame transform has two lifecycle phases: fit and apply. In the fit phase the
  * filter learns the eventual parameters of transformation from frame data. In the {@link #apply(Frame)}  phase
  * it produce changes to the frame according to the learned parameters. If one wants to pass through
  * both phases it can use {@link #fapply(Frame)} method.
@@ -45,13 +45,10 @@ import rapaio.ml.common.ListParam;
  *     <li>apply</li> the same transformation to any test data set and do predictions
  * </ul>
  * The first two steps can be applied also using {@link #fapply(Frame)} to make a single step.
- * <p>
- * The list of transformation can be configured using the {@link #filters} parameters using
- * methods like {@link ListParam#add}, {@link ListParam#clear}.
  */
-public final class FrameTransform {
+public final class FrameTransform implements Serializable {
 
-    public static FrameTransform newTransform(FFilter... filters) {
+    public static FrameTransform newTransform(Transform... filters) {
         var transform = new FrameTransform();
         transform.clear();
         for (var filter : filters) {
@@ -60,7 +57,7 @@ public final class FrameTransform {
         return transform;
     }
 
-    private final List<FFilter> filters = new ArrayList<>();
+    private final List<Transform> transformations = new ArrayList<>();
     private boolean fitted = false;
 
     private FrameTransform() {
@@ -68,24 +65,24 @@ public final class FrameTransform {
 
     public FrameTransform newInstance() {
         FrameTransform copy = FrameTransform.newTransform();
-        for (var ffilter : filters) {
-            copy.add(ffilter.newInstance());
+        for (var transform : transformations) {
+            copy.add(transform.newInstance());
         }
         return copy;
     }
 
-    public FrameTransform add(FFilter filter) {
-        filters.add(filter);
+    public FrameTransform add(Transform filter) {
+        transformations.add(filter);
         return this;
     }
 
     public FrameTransform clear() {
-        filters.clear();
+        transformations.clear();
         return this;
     }
 
-    public List<FFilter> filters() {
-        return filters;
+    public List<Transform> transformers() {
+        return transformations;
     }
 
     public Frame apply(Frame df) {
@@ -93,7 +90,7 @@ public final class FrameTransform {
             throw new IllegalStateException("Transformation not fitted on data before applying it.");
         }
         Frame result = df;
-        for (FFilter ff : filters) {
+        for (var ff : transformations) {
             result = ff.apply(result);
         }
         return result;
@@ -101,7 +98,7 @@ public final class FrameTransform {
 
     public Frame fapply(Frame df) {
         Frame result = df;
-        for (FFilter ff : filters) {
+        for (var ff : transformations) {
             result = ff.fapply(result);
         }
         fitted = true;

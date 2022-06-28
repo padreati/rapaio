@@ -25,7 +25,6 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;

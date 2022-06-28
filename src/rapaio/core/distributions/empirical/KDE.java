@@ -27,7 +27,7 @@ import java.util.Arrays;
 
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
-import rapaio.data.filter.VSort;
+import rapaio.data.preprocessing.VarSort;
 
 /**
  * Kernel density estimator.
@@ -89,7 +89,7 @@ public class KDE implements Serializable {
     private final double bandwidth;
 
     private KDE(Var values, KFunc kernel, double bandwidth) {
-        this.values = VSort.ascending().fapply(values).stream().filter(s -> !s.isMissing()).mapToDouble().toArray();
+        this.values = VarSort.ascending().fapply(values).stream().filter(s -> !s.isMissing()).mapToDouble().toArray();
         this.kernel = kernel;
         this.bandwidth = bandwidth;
     }

@@ -21,7 +21,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.sys.With.points;
+import static rapaio.sys.With.*;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -49,7 +49,7 @@ public class FunLine extends Artist {
     public FunLine(Double2DoubleFunction f, GOption<?>... opts) {
         this.f = f;
         // apply default values for function line
-        this.options.bind(points(1024 * 64));
+        this.options.bind(points(1024));
         this.options.bind(opts);
     }
 

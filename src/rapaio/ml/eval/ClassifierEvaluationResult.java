@@ -34,8 +34,8 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.FRefSort;
 import rapaio.data.group.GroupFun;
+import rapaio.data.preprocessing.RefSort;
 import rapaio.ml.eval.metric.ClassifierMetric;
 import rapaio.ml.eval.split.Split;
 import rapaio.ml.model.ClassifierResult;
@@ -106,7 +106,7 @@ public class ClassifierEvaluationResult implements Printable {
                 trainScores.setDouble(lastRow, metric.getName(),
                         metric.compute(split.trainDf().rvar(eval.targetName.get()), trainResult).getScore().value());
             }
-            trainScores = trainScores.fapply(FRefSort.by(
+            trainScores = trainScores.fapply(RefSort.by(
                     trainScores.rvar(FIELD_ROUND).refComparator(),
                     trainScores.rvar(FIELD_FOLD).refComparator()
             )).copy();
@@ -120,7 +120,7 @@ public class ClassifierEvaluationResult implements Printable {
                         metric.getName(), metric.compute(split.testDf().rvar(eval.targetName.get()), testResult).getScore().value());
             }
 
-            testScores = testScores.fapply(FRefSort.by(
+            testScores = testScores.fapply(RefSort.by(
                     testScores.rvar(FIELD_ROUND).refComparator(),
                     testScores.rvar(FIELD_FOLD).refComparator()
             )).copy();

@@ -21,7 +21,7 @@ open module rapaio {
     exports rapaio.core.tools;
 
     exports rapaio.data;
-    exports rapaio.data.filter;
+    exports rapaio.data.preprocessing;
     exports rapaio.data.format;
     exports rapaio.data.group;
     exports rapaio.data.group.function;

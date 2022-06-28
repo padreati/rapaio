@@ -1,23 +1,21 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
@@ -38,7 +36,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
-import rapaio.data.filter.FStandardize;
+import rapaio.data.preprocessing.StandardScaler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.kernel.CauchyKernel;
 import rapaio.ml.common.kernel.ExponentialKernel;
@@ -76,7 +74,7 @@ public class BinarySMOTest {
     @Test
     void testLinear() throws IOException {
         Frame df = Datasets.loadSonar();
-        df.copy().fapply(FStandardize.on(VarRange.all()));
+        df.copy().fapply(StandardScaler.on(VarRange.all()));
 
         BinarySMO smo1 = BinarySMO.newModel()
                 .kernel.set(new PolyKernel(1))
@@ -84,7 +82,7 @@ public class BinarySMOTest {
         RandomSource.setSeed(1);
 
         var result = ClassifierEvaluation
-                .eval(df.fapply(FStandardize.on(VarRange.all())), "Class", smo1, Accuracy.newMetric(true))
+                .eval(df.fapply(StandardScaler.on(VarRange.all())), "Class", smo1, Accuracy.newMetric(true))
                 .splitStrategy.set(new StratifiedKFold(10, "Class"))
                 .run();
         assertEquals(0.8953094777562862, result.getMeanTrainScore(Accuracy.newMetric(true).getName()), 1e-7);
@@ -123,7 +121,7 @@ public class BinarySMOTest {
             BinarySMO smo = BinarySMO.newModel()
                     .kernel.set(k)
                     .maxRuns.set(10);
-            df = df.fapply(FStandardize.on(VarRange.all()));
+            df = df.fapply(StandardScaler.on(VarRange.all()));
             double s = ClassifierEvaluation.cv(df, "Class", smo, 3, Accuracy.newMetric())
                     .run()
                     .getMeanTestScore(Accuracy.newMetric().getName());

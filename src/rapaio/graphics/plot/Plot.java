@@ -33,11 +33,11 @@ import java.util.List;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
-import rapaio.core.tools.GridData;
+import rapaio.core.tools.Grid2D;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.VSort;
+import rapaio.data.preprocessing.VarSort;
 import rapaio.graphics.Figure;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
@@ -502,7 +502,7 @@ public class Plot implements Figure {
     }
 
     public Plot qqplot(Var points, Distribution distribution, GOption<?>... opts) {
-        Var x = VSort.ascending().fapply(points);
+        Var x = VarSort.ascending().fapply(points);
         Var y = VarDouble.empty(x.size());
         for (int i = 0; i < y.size(); i++) {
             double p = (i + 1) / (y.size() + 1.);
@@ -516,17 +516,17 @@ public class Plot implements Figure {
     }
 
 
-    public Plot isoCurves(GridData grid, double[] levels, GOption<?>... opts) {
+    public Plot isoCurves(Grid2D grid, double[] levels, GOption<?>... opts) {
         add(new IsoCurves(grid, true, true, levels, opts));
         return this;
     }
 
-    public Plot isoLines(GridData grid, double[] levels, GOption<?>... opts) {
+    public Plot isoLines(Grid2D grid, double[] levels, GOption<?>... opts) {
         add(new IsoCurves(grid, true, false, levels, opts));
         return this;
     }
 
-    public Plot isoBands(GridData grid, double[] levels, GOption<?>... opts) {
+    public Plot isoBands(Grid2D grid, double[] levels, GOption<?>... opts) {
         add(new IsoCurves(grid, false, true, levels, opts));
         return this;
     }

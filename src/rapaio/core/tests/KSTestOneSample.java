@@ -25,7 +25,7 @@ import static rapaio.printer.Format.floatFlex;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
-import rapaio.data.filter.VSort;
+import rapaio.data.preprocessing.VarSort;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -62,7 +62,7 @@ public class KSTestOneSample implements HTest {
     }
 
     private KSTestOneSample(Var sample, Distribution cdf) {
-        this.v = VSort.ascending().fapply(sample);
+        this.v = VarSort.ascending().fapply(sample);
         this.cdf = cdf;
 
         D = 0;

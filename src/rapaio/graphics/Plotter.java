@@ -26,7 +26,7 @@ import java.awt.image.BufferedImage;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.tools.DistanceMatrix;
-import rapaio.core.tools.GridData;
+import rapaio.core.tools.Grid2D;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
@@ -195,15 +195,15 @@ public final class Plotter {
         return plot().add(new Matrix(m, opts));
     }
 
-    public static Plot isoCurves(GridData grid, double[] levels, GOption<?>... opts) {
+    public static Plot isoCurves(Grid2D grid, double[] levels, GOption<?>... opts) {
         return plot().add(new IsoCurves(grid, true, true, levels, opts));
     }
 
-    public static Plot isoLines(GridData grid, double[] levels, GOption<?>... opts) {
+    public static Plot isoLines(Grid2D grid, double[] levels, GOption<?>... opts) {
         return plot().add(new IsoCurves(grid, true, false, levels, opts));
     }
 
-    public static Plot isoBands(GridData grid, double[] levels, GOption<?>... opts) {
+    public static Plot isoBands(Grid2D grid, double[] levels, GOption<?>... opts) {
         return plot().add(new IsoCurves(grid, false, true, levels, opts));
     }
 

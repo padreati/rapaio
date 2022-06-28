@@ -21,7 +21,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.sys.With.color;
+import static rapaio.sys.With.*;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

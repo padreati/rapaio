@@ -30,7 +30,7 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.FIntercept;
+import rapaio.data.preprocessing.AddIntercept;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
@@ -107,8 +107,8 @@ public class LinearRegressionResult extends RegressionResult {
                 Frame features = df;
                 Set<String> availableFeatures = new HashSet<>(Arrays.asList(df.varNames()));
                 for (String inputName : model.inputNames()) {
-                    if (FIntercept.INTERCEPT.equals(inputName) && !availableFeatures.contains(inputName)) {
-                        features = df.bindVars(VarDouble.fill(df.rowCount(), 1).name(FIntercept.INTERCEPT)).copy();
+                    if (AddIntercept.INTERCEPT.equals(inputName) && !availableFeatures.contains(inputName)) {
+                        features = df.bindVars(VarDouble.fill(df.rowCount(), 1).name(AddIntercept.INTERCEPT)).copy();
                     }
                 }
                 DMatrix X = DMatrix.copy(features.mapVars(model.inputNames()));

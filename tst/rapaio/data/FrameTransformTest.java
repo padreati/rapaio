@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.data.filter.FApply;
-import rapaio.data.filter.FIntercept;
+import rapaio.data.preprocessing.AddIntercept;
+import rapaio.data.preprocessing.ApplyTransform;
 import rapaio.datasets.Datasets;
 
 public class FrameTransformTest {
@@ -40,11 +40,11 @@ public class FrameTransformTest {
     @Test
     void testBuilder() {
         var transform = FrameTransform.newTransform(
-                FIntercept.filter(),
-                FIntercept.filter());
-        assertEquals(2, transform.filters().size());
-        assertTrue(transform.filters().get(0) instanceof FIntercept);
-        assertTrue(transform.filters().get(0) instanceof FIntercept);
+                AddIntercept.transform(),
+                AddIntercept.transform());
+        assertEquals(2, transform.transformers().size());
+        assertTrue(transform.transformers().get(0) instanceof AddIntercept);
+        assertTrue(transform.transformers().get(0) instanceof AddIntercept);
     }
 
     @Test
@@ -64,8 +64,8 @@ public class FrameTransformTest {
     void testSequence() {
         var iris = Datasets.loadIrisDataset();
         var transform = FrameTransform.newTransform()
-                .add(FApply.onDouble(x -> x + 10, VarRange.onlyTypes(VarType.DOUBLE)))
-                .add(FApply.onLabel(cl -> cl + "-x", VarRange.of("class")));
+                .add(ApplyTransform.onDouble(x -> x + 10, VarRange.onlyTypes(VarType.DOUBLE)))
+                .add(ApplyTransform.onLabel(cl -> cl + "-x", VarRange.of("class")));
 
         var transformed = transform.fapply(iris.copy());
 
@@ -82,7 +82,7 @@ public class FrameTransformTest {
     void testApplyBeforeFit() {
         var iris = Datasets.loadIrisDataset();
         var transform = FrameTransform.newTransform()
-                .add(FApply.onDouble(x -> x+10, VarRange.onlyTypes(VarType.DOUBLE)));
+                .add(ApplyTransform.onDouble(x -> x+10, VarRange.onlyTypes(VarType.DOUBLE)));
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> transform.apply(iris));
         assertEquals("Transformation not fitted on data before applying it.", ex.getMessage());
     }

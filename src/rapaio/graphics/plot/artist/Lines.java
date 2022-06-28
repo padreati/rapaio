@@ -32,8 +32,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.graphics.opt.Palette;
 import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -89,6 +89,7 @@ public class Lines extends Artist {
 
         for (int i = 1; i < x.size(); i++) {
             g2d.setColor(options.getColor(i));
+            g2d.setStroke(new BasicStroke(options.getLwd()));
             double x1 = x.getDouble(i - 1);
             double y1 = y.getDouble(i - 1);
             double x2 = x.getDouble(i);

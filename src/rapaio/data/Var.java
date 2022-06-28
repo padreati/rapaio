@@ -31,7 +31,8 @@ import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
-import rapaio.data.filter.VFilter;
+import rapaio.core.SamplingTools;
+import rapaio.data.preprocessing.VarTransform;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.math.linear.DVector;
@@ -424,9 +425,9 @@ public interface Var extends Serializable, Printable {
      * @param filters filters to be applied
      * @return transformed variable after the given variable filter are applied successively
      */
-    default Var fapply(VFilter... filters) {
+    default Var fapply(VarTransform... filters) {
         Var var = this;
-        for (VFilter filter : filters) {
+        for (VarTransform filter : filters) {
             var = filter.fapply(var);
         }
         return var;
@@ -440,12 +441,16 @@ public interface Var extends Serializable, Printable {
      * @param filters array of filters
      * @return transformed variable after the given variable filter are applied successively
      */
-    default Var apply(VFilter... filters) {
+    default Var apply(VarTransform... filters) {
         Var var = this;
-        for (VFilter filter : filters) {
-            var = filter.fapply(var);
+        for (VarTransform filter : filters) {
+            var = filter.apply(var);
         }
         return var;
+    }
+
+    default Var shuffle() {
+        return mapRows(SamplingTools.sampleWOR(size(), size()));
     }
 
     default IntComparator refComparator() {

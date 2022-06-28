@@ -1,23 +1,21 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
@@ -35,7 +33,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
-import rapaio.data.filter.FRefSort;
+import rapaio.data.preprocessing.RefSort;
 
 
 /**
@@ -77,9 +75,9 @@ public class JoinTest {
     void rightJoinTest() {
 
         Frame a1 = Join.leftJoin(df1, df2);
-        a1 = a1.fapply(FRefSort.by(a1.rvar(0).refComparator(), a1.rvar(0).refComparator()));
+        a1 = a1.fapply(RefSort.by(a1.rvar(0).refComparator(), a1.rvar(0).refComparator()));
         Frame b1 = Join.rightJoin(df2, df1);
-        b1 = b1.fapply(FRefSort.by(b1.rvar(0).refComparator(), b1.rvar(0).refComparator()));
+        b1 = b1.fapply(RefSort.by(b1.rvar(0).refComparator(), b1.rvar(0).refComparator()));
         assertTrue(a1.deepEquals(b1));
 
         assertTrue(Join.rightJoin(df1, df2).deepEquals(Join.leftJoin(df2, df1)));

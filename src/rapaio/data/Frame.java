@@ -32,10 +32,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import rapaio.data.filter.FFilter;
-import rapaio.data.filter.FRefSort;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
+import rapaio.data.preprocessing.RefSort;
+import rapaio.data.preprocessing.Transform;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 
@@ -509,13 +509,13 @@ public interface Frame extends Serializable, Printable {
      * transform the frame, second filter transform the transformed frame and so on,
      * until in the end the last transformed filter in the chain is returned.
      *
-     * @param filters list of frame filters
+     * @param transforms list of frame filters
      * @return transformed frame
      */
-    default Frame fapply(FFilter... filters) {
+    default Frame fapply(Transform... transforms) {
         Frame df = this;
-        for (FFilter filter : filters) {
-            df = filter.fapply(df);
+        for (var transform : transforms) {
+            df = transform.fapply(df);
         }
         return df;
     }
@@ -526,13 +526,13 @@ public interface Frame extends Serializable, Printable {
      * transform the frame, second filter transform the transformed frame and so on,
      * until in the end the last transformed filter in the chain is returned.
      *
-     * @param filters list of frame filters
+     * @param transforms list of frame filters
      * @return transformed frame
      */
-    default Frame apply(FFilter... filters) {
+    default Frame apply(Transform... transforms) {
         Frame df = this;
-        for (FFilter filter : filters) {
-            df = filter.apply(df);
+        for (var transform : transforms) {
+            df = transform.apply(df);
         }
         return df;
     }
@@ -552,7 +552,7 @@ public interface Frame extends Serializable, Printable {
         for (int i = 0; i < names.length; i++) {
             comparators[i] = this.rvar(names[i]).refComparator(asc);
         }
-        return this.fapply(FRefSort.by(comparators));
+        return this.fapply(RefSort.by(comparators));
     }
 
     String head();

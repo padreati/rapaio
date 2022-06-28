@@ -36,7 +36,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarType;
-import rapaio.data.filter.VSort;
+import rapaio.data.preprocessing.VarSort;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
@@ -119,7 +119,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
                     means[assignment[i]].addDouble(instances.get(i, j));
                 }
                 for (int i = 0; i < k; i++) {
-                    Var sorted = means[i].apply(VSort.ascending());
+                    Var sorted = means[i].fapply(VarSort.ascending());
                     c.set(i, j, sorted.getDouble(sorted.size() / 2));
                 }
             }

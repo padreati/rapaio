@@ -21,7 +21,7 @@
 
 package rapaio.experiment.math.regression;
 
-import static rapaio.sys.With.textWidth;
+import static rapaio.sys.With.*;
 
 import rapaio.data.Frame;
 import rapaio.data.VarNominal;

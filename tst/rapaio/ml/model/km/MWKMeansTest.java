@@ -1,23 +1,21 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
@@ -38,7 +36,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.data.filter.FJitter;
+import rapaio.data.preprocessing.Jitter;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DVector;
 import rapaio.ml.eval.RandIndex;
@@ -75,7 +73,7 @@ public class MWKMeansTest {
     @Test
     void irisTestGlobalWeights() {
         Frame iris = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
-        iris = iris.fapply(FJitter.on(1, VarRange.all()));
+        iris = iris.fapply(Jitter.on(1, VarRange.all()));
         Var target = Datasets.loadIrisDataset().rvar(4);
 
         double p = 3;
@@ -99,7 +97,7 @@ public class MWKMeansTest {
     @Test
     void irisTestLocalWeights() {
         Frame iris = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
-        iris = iris.fapply(FJitter.on(1, VarRange.all()));
+        iris = iris.fapply(Jitter.on(1, VarRange.all()));
         Var target = Datasets.loadIrisDataset().rvar(4);
 
         double p = 3;
@@ -123,7 +121,7 @@ public class MWKMeansTest {
     @Test
     void testPrinting() {
         Frame iris = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
-        iris = iris.fapply(FJitter.on(1, VarRange.all()));
+        iris = iris.fapply(Jitter.on(1, VarRange.all()));
 
         double p = 3;
         MWKMeans model = MWKMeans.newMWKMeans()

@@ -22,9 +22,7 @@
 package rapaio.experiment.core;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.With.PCH_CIRCLE_FULL;
-import static rapaio.sys.With.fill;
-import static rapaio.sys.With.pch;
+import static rapaio.sys.With.*;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
