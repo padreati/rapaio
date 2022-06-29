@@ -64,7 +64,7 @@ public class Jitter extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         for (String varName : varNames) {
             int varIndex = df.varIndex(varName);
             for (int i = 0; i < df.rowCount(); i++) {

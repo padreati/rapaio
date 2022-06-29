@@ -83,7 +83,7 @@ public class RandomProjection extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
 
         DMatrix X = DMatrix.copy(df.mapVars(varNames));
         DMatrix p = X.dot(rp);

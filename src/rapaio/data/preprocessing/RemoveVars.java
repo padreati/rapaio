@@ -52,7 +52,7 @@ public class RemoveVars extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         return df.removeVars(VarRange.of(varNames));
     }
 }

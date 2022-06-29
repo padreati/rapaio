@@ -59,9 +59,6 @@ public class ImputeClassifierTest {
 
         Frame df = SolidFrame.byVars(x, y);
 
-        xfilter.fit(df);
-        yfilter.fit(df);
-
         Frame copy = df.copy().fapply(xfilter, yfilter);
 
         for (int i = 0; i < 100; i++) {

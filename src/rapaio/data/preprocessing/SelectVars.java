@@ -54,7 +54,7 @@ public class SelectVars extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         return df.mapVars(varNames);
     }
 }

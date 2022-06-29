@@ -30,7 +30,7 @@ public abstract class AbstractVarTransform implements VarTransform {
     @Override
     public final AbstractVarTransform fit(Var var) {
         if(isFit) {
-            throw new IllegalStateException("Already fitted transfomation cannot be fit again.");
+            throw new IllegalStateException("Already fit transfom cannot be fit again.");
         }
         AbstractVarTransform transform = coreFit(var);
         isFit = true;
@@ -44,7 +44,7 @@ public abstract class AbstractVarTransform implements VarTransform {
     @Override
     public final Var apply(Var var) {
         if(!isFit) {
-            throw new IllegalStateException("Cannot apply a variable which is not fitted on data.");
+            throw new IllegalStateException("Cannot apply a variable which was not fit on data.");
         }
         return coreApply(var);
     }

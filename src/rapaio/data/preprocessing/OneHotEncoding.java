@@ -92,7 +92,7 @@ public class OneHotEncoding extends AbstractTransform {
         }
     }
 
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         if (varNames == null || varNames.length == 0) {
             return df;
         }

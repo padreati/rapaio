@@ -62,7 +62,7 @@ public class RenameVars extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         List<Var> vars = new ArrayList<>();
         df.varStream().forEach(var -> {
             if (inputVarNamesIndex.containsKey(var.name())) {

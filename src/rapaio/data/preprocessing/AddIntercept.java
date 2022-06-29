@@ -60,7 +60,8 @@ public class AddIntercept extends AbstractTransform {
     public void coreFit(Frame df) {
     }
 
-    public Frame apply(Frame df) {
+    @Override
+    public Frame coreApply(Frame df) {
         List<String> names = df.varStream().map(Var::name).toList();
         if (names.contains(INTERCEPT)) {
             return df;

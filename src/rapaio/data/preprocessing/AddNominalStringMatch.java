@@ -81,7 +81,7 @@ public class AddNominalStringMatch extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
 
         // validation
         if (varNames != null && varNames.length != 1) {

@@ -86,7 +86,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
     @Override
     protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
         // add intercept variable
-        Frame transformed = intercept.get() ? AddIntercept.transform().apply(df) : df;
+        Frame transformed = intercept.get() ? AddIntercept.transform().fapply(df) : df;
 
         // collect standard information
         FitSetup fitSetup = super.prepareFit(transformed, weights, targetVarNames);

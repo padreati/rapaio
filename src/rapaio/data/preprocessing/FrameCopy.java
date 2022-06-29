@@ -38,16 +38,16 @@ public class FrameCopy extends AbstractTransform {
     }
 
     @Override
+    public FrameCopy newInstance() {
+        return new FrameCopy();
+    }
+
+    @Override
     protected void coreFit(Frame df) {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         return df.mapVars(varNames).copy();
-    }
-
-    @Override
-    public FrameCopy newInstance() {
-        return new FrameCopy();
     }
 }

@@ -82,7 +82,7 @@ public class QuantileTransform extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
 
         Var[] vars = new Var[df.varCount()];
         int pos = 0;

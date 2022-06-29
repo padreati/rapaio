@@ -76,7 +76,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
 
     @Override
     protected PredSetup preparePredict(Frame df, boolean withResiduals, final double[] quantiles) {
-        Frame transformed = intercept.get() ? AddIntercept.transform().apply(df) : df;
+        Frame transformed = intercept.get() ? AddIntercept.transform().fapply(df) : df;
         return super.preparePredict(transformed, withResiduals, quantiles);
     }
 

@@ -47,13 +47,23 @@ public abstract class AbstractTransform implements Transform {
     }
 
     @Override
-    public void fit(Frame df) {
-        if(isTrained) {
+    public final void fit(Frame df) {
+        if (isTrained) {
             throw new IllegalStateException("Transformation cannot be fitted twice. Use a new unfitted instance for that purpose.");
         }
         varNames = varRange.parseVarNames(df).toArray(new String[0]);
         coreFit(df);
+        isTrained = true;
     }
 
     protected abstract void coreFit(Frame df);
+
+    public final Frame apply(Frame df) {
+        if (!isTrained) {
+            throw new IllegalStateException("Cannot apply a transformation if it is not fitted on data.");
+        }
+        return coreApply(df);
+    }
+
+    protected abstract Frame coreApply(Frame df);
 }

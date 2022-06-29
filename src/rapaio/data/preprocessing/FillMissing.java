@@ -69,7 +69,7 @@ public class FillMissing extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         for (String name : varNames) {
             var var = df.rvar(name);
             for (int i = 0; i < var.size(); i++) {

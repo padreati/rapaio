@@ -33,13 +33,13 @@ import rapaio.data.preprocessing.AddIntercept;
 import rapaio.data.preprocessing.ApplyTransform;
 import rapaio.datasets.Datasets;
 
-public class FrameTransformTest {
+public class PreprocessingTest {
 
     private static final double TOL = 1e-12;
 
     @Test
     void testBuilder() {
-        var transform = FrameTransform.newTransform(
+        var transform = Preprocessing.newProcess(
                 AddIntercept.transform(),
                 AddIntercept.transform());
         assertEquals(2, transform.transformers().size());
@@ -50,7 +50,7 @@ public class FrameTransformTest {
     @Test
     void testEmptyTransformation() {
 
-        var transform = FrameTransform.newTransform();
+        var transform = Preprocessing.newProcess();
         var df = SolidFrame.byVars(VarDouble.empty(10).name("x"), VarNominal.empty(10, "a", "b").name("c"));
         var dft = transform.fapply(df);
 
@@ -63,7 +63,7 @@ public class FrameTransformTest {
     @Test
     void testSequence() {
         var iris = Datasets.loadIrisDataset();
-        var transform = FrameTransform.newTransform()
+        var transform = Preprocessing.newProcess()
                 .add(ApplyTransform.onDouble(x -> x + 10, VarRange.onlyTypes(VarType.DOUBLE)))
                 .add(ApplyTransform.onLabel(cl -> cl + "-x", VarRange.of("class")));
 
@@ -81,7 +81,7 @@ public class FrameTransformTest {
     @Test
     void testApplyBeforeFit() {
         var iris = Datasets.loadIrisDataset();
-        var transform = FrameTransform.newTransform()
+        var transform = Preprocessing.newProcess()
                 .add(ApplyTransform.onDouble(x -> x+10, VarRange.onlyTypes(VarType.DOUBLE)));
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> transform.apply(iris));
         assertEquals("Transformation not fitted on data before applying it.", ex.getMessage());

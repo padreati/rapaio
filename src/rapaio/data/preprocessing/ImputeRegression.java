@@ -57,7 +57,7 @@ public class ImputeRegression extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         var toFill = df.stream().filter(s -> s.isMissing(targetName)).toMappedFrame();
         RegressionResult result = model.predict(toFill, false);
         Var prediction = result.firstPrediction();

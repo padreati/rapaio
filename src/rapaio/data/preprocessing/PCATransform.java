@@ -30,7 +30,34 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.analysis.PCA;
 
-public class FFPCA extends AbstractTransform {
+/**
+ * Transforms a data frame
+ */
+public class PCATransform extends AbstractTransform {
+
+    public static PCATransform featureCount(int max) {
+        return featureCount(max, VarRange.all());
+    }
+
+    public static PCATransform featureCount(int max, VarRange varRange) {
+        return new PCATransform((values, vectors) -> Math.min(values.size(), max), varRange);
+    }
+
+    public static PCATransform coverVariance(double minPercentage) {
+        return coverVariance(minPercentage, VarRange.all());
+    }
+
+    public static PCATransform coverVariance(double minPercentage, VarRange varRange) {
+        return new PCATransform((values, vectors) -> {
+            var coverage = values.copy().cumsum().div(values.sum());
+            for (int i = 0; i < coverage.size(); i++) {
+                if (coverage.get(i) >= minPercentage) {
+                    return i + 1;
+                }
+            }
+            return values.size();
+        }, varRange);
+    }
 
     @Serial
     private static final long serialVersionUID = 2797285371357486124L;
@@ -38,14 +65,14 @@ public class FFPCA extends AbstractTransform {
     final BiFunction<DVector, DMatrix, Integer> kFun;
     private PCA pca;
 
-    public FFPCA(BiFunction<DVector, DMatrix, Integer> kFun, VarRange varRange) {
+    private PCATransform(BiFunction<DVector, DMatrix, Integer> kFun, VarRange varRange) {
         super(varRange);
         this.kFun = kFun;
     }
 
     @Override
-    public FFPCA newInstance() {
-        return new FFPCA(kFun, varRange);
+    public PCATransform newInstance() {
+        return new PCATransform(kFun, varRange);
     }
 
     @Override
@@ -55,10 +82,10 @@ public class FFPCA extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         Frame rest = df.removeVars(VarRange.of(varNames));
         int k = kFun.apply(pca.getValues(), pca.getVectors());
         Frame trans = pca.transform(df.mapVars(varNames), k);
-        return rest.bindVars(trans);
+        return rest.varCount() == 0 ? trans : rest.bindVars(trans);
     }
 }

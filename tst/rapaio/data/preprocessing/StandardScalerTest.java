@@ -41,7 +41,7 @@ public class StandardScalerTest {
         StandardScaler filter = StandardScaler.on(VarRange.all());
         filter.fit(src);
 
-        Frame std1 = src.copy().fapply(filter);
+        Frame std1 = src.copy().apply(filter);
         Frame std2 = src.copy().fapply(StandardScaler.on(VarRange.onlyTypes(VarType.DOUBLE)).newInstance());
 
         assertTrue(std1.deepEquals(std2));

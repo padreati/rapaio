@@ -58,7 +58,7 @@ public class BoxCoxTransform extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         for (String name : varNames) {
             bct.fapply(df.rvar(name));
         }

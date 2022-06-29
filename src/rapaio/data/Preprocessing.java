@@ -46,10 +46,10 @@ import rapaio.data.preprocessing.Transform;
  * </ul>
  * The first two steps can be applied also using {@link #fapply(Frame)} to make a single step.
  */
-public final class FrameTransform implements Serializable {
+public final class Preprocessing implements Serializable {
 
-    public static FrameTransform newTransform(Transform... filters) {
-        var transform = new FrameTransform();
+    public static Preprocessing newProcess(Transform... filters) {
+        var transform = new Preprocessing();
         transform.clear();
         for (var filter : filters) {
             transform.add(filter);
@@ -60,29 +60,38 @@ public final class FrameTransform implements Serializable {
     private final List<Transform> transformations = new ArrayList<>();
     private boolean fitted = false;
 
-    private FrameTransform() {
+    private Preprocessing() {
     }
 
-    public FrameTransform newInstance() {
-        FrameTransform copy = FrameTransform.newTransform();
+    public Preprocessing newInstance() {
+        Preprocessing copy = Preprocessing.newProcess();
         for (var transform : transformations) {
             copy.add(transform.newInstance());
         }
         return copy;
     }
 
-    public FrameTransform add(Transform filter) {
+    public Preprocessing add(Transform filter) {
         transformations.add(filter);
         return this;
     }
 
-    public FrameTransform clear() {
+    public Preprocessing clear() {
         transformations.clear();
         return this;
     }
 
     public List<Transform> transformers() {
         return transformations;
+    }
+
+    public Frame fapply(Frame df) {
+        Frame result = df;
+        for (var ff : transformations) {
+            result = ff.fapply(result);
+        }
+        fitted = true;
+        return result;
     }
 
     public Frame apply(Frame df) {
@@ -93,15 +102,6 @@ public final class FrameTransform implements Serializable {
         for (var ff : transformations) {
             result = ff.apply(result);
         }
-        return result;
-    }
-
-    public Frame fapply(Frame df) {
-        Frame result = df;
-        for (var ff : transformations) {
-            result = ff.fapply(result);
-        }
-        fitted = true;
         return result;
     }
 }

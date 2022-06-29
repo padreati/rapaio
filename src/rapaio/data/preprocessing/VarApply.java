@@ -31,12 +31,19 @@ import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2IntFunction;
 
 /**
- * Apply a given consumer function over each spot of the variable.
- * The consumer can use all the methods from spot, which includes
+ * Apply a function over each value of the variable.
+ * <p>
+ * The applied function can use all the methods from spot, which includes
  * updating the underlying values. Thus, a variable can be modified
  * after this call, to not update the original variable a copy of
  * the variable must be created before.
  * <p>
+ * There are also variants which works directly with some specific representation.
+ * For example {@link VarApply#onDouble(Double2DoubleFunction)} updates the value
+ * of the variable through the double representation, aka. using {@link Var#getDouble(int)}
+ * and {@link Var#setDouble(int, double)}. The variable itself does not have to be
+ * of type {@link rapaio.data.VarType#DOUBLE}.
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
 public class VarApply extends AbstractVarTransform {
@@ -73,10 +80,10 @@ public class VarApply extends AbstractVarTransform {
     private final Function<String, String> stringFunction;
 
     private VarApply(Type type,
-                   Consumer<VSpot> spotConsumer,
-                   Double2DoubleFunction doubleFunction,
-                   Int2IntFunction intFunction,
-                   Function<String, String> stringFunction) {
+            Consumer<VSpot> spotConsumer,
+            Double2DoubleFunction doubleFunction,
+            Int2IntFunction intFunction,
+            Function<String, String> stringFunction) {
         this.type = type;
         this.spotConsumer = spotConsumer;
         this.doubleFunction = doubleFunction;

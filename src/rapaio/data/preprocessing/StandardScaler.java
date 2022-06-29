@@ -74,7 +74,7 @@ public class StandardScaler extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         for (String varName : df.varNames()) {
             if (filters.containsKey(varName)) {
                 filters.get(varName).apply(df.rvar(varName));

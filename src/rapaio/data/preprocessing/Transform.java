@@ -24,12 +24,13 @@ package rapaio.data.preprocessing;
 import java.io.Serializable;
 
 import rapaio.data.Frame;
+import rapaio.data.Preprocessing;
 
 /**
  * Transform data frame into another one with added value.
  * <p>
  * {@link Transform} is implemented by all frame transformation useful in the process
- * of feature engineering. The transformations are collected into {@link rapaio.data.FrameTransform} collections
+ * of feature engineering. The transformations are collected into {@link Preprocessing} collections
  * whih could be used to tranform data into features.
  * <p>
  * The two main operations a transform has are fit and apply. In the fit operation the transformation

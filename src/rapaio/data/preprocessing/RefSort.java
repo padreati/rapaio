@@ -59,7 +59,7 @@ public final class RefSort extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         int[] rowArray = IntArrays.newSeq(0, df.rowCount());
         IntArrays.quickSort(rowArray, 0, df.rowCount(), aggregateComparator);
         return MappedFrame.byRow(df, Mapping.wrap(rowArray));

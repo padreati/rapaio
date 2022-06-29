@@ -56,7 +56,7 @@ public class ShuffleRows extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         int[] mapping = IntStream.range(0, df.rowCount()).toArray();
         IntArrays.shuffle(mapping, RandomSource.getRandom());
         return df.mapRows(Mapping.wrap(mapping));

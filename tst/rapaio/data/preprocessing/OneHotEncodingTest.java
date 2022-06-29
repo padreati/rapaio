@@ -53,7 +53,7 @@ public class OneHotEncodingTest {
         Frame f1 = df.fapply(OneHotEncoding.on(VarRange.onlyTypes(VarType.DOUBLE)));
         assertTrue(f1.deepEquals(df));
 
-        Frame f2 = df.apply(OneHotEncoding.on("v1,v2"));
+        Frame f2 = df.fapply(OneHotEncoding.on("v1,v2"));
         assertTrue(f2.deepEquals(df));
     }
 

@@ -60,7 +60,7 @@ public class ToDoubleTransform extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
         Var[] vars = new Var[df.varCount()];
         for (int i = 0; i < vars.length; i++) {

@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.data.FrameTransform;
+import rapaio.data.Preprocessing;
 import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 
@@ -36,7 +36,7 @@ public class FrameCopyTest {
     @Test
     void testCopy() {
         var iris = Datasets.loadIrisDataset();
-        var transform = FrameTransform.newTransform(FrameCopy.transform());
+        var transform = Preprocessing.newProcess(FrameCopy.transform());
 
         var copy = transform.fapply(iris);
 

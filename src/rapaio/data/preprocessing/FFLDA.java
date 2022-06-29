@@ -55,7 +55,7 @@ public class FFLDA extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         return lda.predict(df, kFun);
     }
 }

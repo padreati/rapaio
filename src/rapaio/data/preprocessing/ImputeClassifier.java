@@ -57,7 +57,7 @@ public class ImputeClassifier extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         var toFill = df.stream().filter(s -> s.isMissing(targetName)).toMappedFrame();
         ClassifierResult result = model.predict(toFill, true, false);
         Var prediction = result.firstClasses();

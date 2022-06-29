@@ -92,7 +92,7 @@ public class ApplyTransform extends AbstractTransform {
     }
 
     @Override
-    public Frame apply(Frame df) {
+    public Frame coreApply(Frame df) {
         if (type == Type.SPOT) {
             df.stream().forEach(spotConsumer);
             return df;
