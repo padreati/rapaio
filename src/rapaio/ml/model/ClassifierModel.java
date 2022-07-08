@@ -38,8 +38,8 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.param.ParamSet;
+import rapaio.ml.common.param.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -80,7 +80,7 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
      * For example for CForest the number of runs is used to specify
      * the number of decision trees to be built.
      */
-    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 10, "runs", x -> x > 0
+    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 100, "runs", x -> x > 0
     );
 
     /**

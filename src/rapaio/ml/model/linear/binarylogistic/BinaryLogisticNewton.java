@@ -31,8 +31,8 @@ import rapaio.math.MathTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.DoubleCholeskyDecomposition;
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.param.ParamSet;
+import rapaio.ml.common.param.ValueParam;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.

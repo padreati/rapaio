@@ -76,7 +76,7 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
     }
 
     private Var normalize(Group group, Var agg) {
-        int count = group.getGroupCount();
+        int count = group.getNumberOfGroups();
 
         var groupIndex = group.getGroupIdToLastLevelIndex();
 
@@ -93,7 +93,7 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
 
         // accumulate at higher group
 
-        for (int i = 0; i < group.getGroupCount(); i++) {
+        for (int i = 0; i < group.getNumberOfGroups(); i++) {
             double value = agg.getDouble(i);
             if (Double.isNaN(value) || Double.isInfinite(value)) {
                 continue;
@@ -105,7 +105,7 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
         // normalize
 
         VarDouble normalized = VarDouble.empty(count).name(agg.name() + "_N" + normalizeLevel);
-        for (int i = 0; i < group.getGroupCount(); i++) {
+        for (int i = 0; i < group.getNumberOfGroups(); i++) {
             double value = agg.getDouble(i);
             if (Double.isNaN(value) || Double.isInfinite(value)) {
                 continue;

@@ -27,7 +27,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.param.ValueParam;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;

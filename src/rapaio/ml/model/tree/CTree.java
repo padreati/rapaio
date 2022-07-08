@@ -36,10 +36,10 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.common.MultiParam;
-import rapaio.ml.common.ParametricEquals;
-import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.VarSelector;
+import rapaio.ml.common.param.MultiParam;
+import rapaio.ml.common.param.ParametricEquals;
+import rapaio.ml.common.param.ValueParam;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
@@ -112,7 +112,10 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
     private static final long serialVersionUID = 1203926824359387358L;
 
     /**
-     * Minimum number of instances from a leaf node.
+     * Minimum number of instances a leaf node required for a leaf node.
+     * If this condition is not met, no split is tried.
+     *
+     * The default value is 1.
      */
     public final ValueParam<Integer, CTree> minCount = new ValueParam<>(this, 1, "minCount", x -> x != null && x >= 1);
 

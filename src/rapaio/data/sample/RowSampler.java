@@ -22,6 +22,9 @@
 package rapaio.data.sample;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -70,22 +73,14 @@ public interface RowSampler extends Serializable {
      * <p>
      * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
      */
-    final record Sample(Frame df, Var weights, Mapping mapping, int originalRowCount) {
+    record Sample(Frame df, Var weights, Mapping mapping, int originalRowCount) {
 
         public Mapping getComplementMapping() {
-            boolean[] in = new boolean[originalRowCount];
-            int[] elements = mapping.elements();
-            int len = 0;
-            for (int i = 0; i < mapping.size(); i++) {
-                if (!in[elements[i]]) {
-                    len++;
-                }
-                in[elements[i]] = true;
-            }
+            Set<Integer> inSet = Arrays.stream(mapping.elements()).boxed().collect(Collectors.toSet());
+            int[] complement = new int[originalRowCount - inSet.size()];
             int pos = 0;
-            int[] complement = new int[len];
             for (int i = 0; i < df.rowCount(); i++) {
-                if (!in[i]) {
+                if (!inSet.contains(i)) {
                     complement[pos++] = i;
                 }
             }

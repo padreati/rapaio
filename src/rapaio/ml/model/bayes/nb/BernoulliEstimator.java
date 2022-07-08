@@ -114,10 +114,10 @@ public class BernoulliEstimator extends AbstractEstimator {
         if (!df.type(testName).equals(VarType.BINARY)) {
             return false;
         }
-        var density = DensityTable.fromLevelCounts(true, df, testName, targetName);
+        var density = DensityTable.fromLabels(true, df, testName, targetName, null);
         for (String targetLevel : density.colIndex().getValues()) {
             for (String testLevel : density.rowIndex().getValues()) {
-                density.increment(testLevel, targetLevel, laplaceSmoother);
+                density.inc(testLevel, targetLevel, laplaceSmoother);
             }
         }
         this.density = density.normalizeOnRows();

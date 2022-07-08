@@ -21,24 +21,16 @@
 
 package rapaio.ml.model.rule;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static rapaio.sys.With.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarNominal;
+import rapaio.data.*;
 import rapaio.datasets.Datasets;
 import rapaio.ml.model.rule.onerule.HolteBinning;
 import rapaio.sys.WS;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static rapaio.sys.With.textWidth;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -232,7 +224,7 @@ public class OneRuleTest {
                 > classes : NOMINAL [?,p,e]
 
                 BestRuleSet {var=odor, acc=0.9852289512555391}
-                > NominalRule {value=?, class=e, errors=0, total=0, acc=0}
+                > NominalRule {value=?, class=p, errors=0, total=0, acc=0}
                 > NominalRule {value=p, class=p, errors=0, total=256, acc=1}
                 > NominalRule {value=a, class=e, errors=0, total=400, acc=1}
                 > NominalRule {value=l, class=e, errors=0, total=400, acc=1}
@@ -249,7 +241,7 @@ public class OneRuleTest {
         assertEquals(modelMushrooms.toFullContent(), modelMushrooms.toSummary());
 
         assertEquals("OneRule{}, fitted=true, rule set: RuleSet {var=odor, acc=0.9852289512555391}, " +
-                        "NominalRule {value=?, class=e, errors=0, total=0, acc=0}, " +
+                        "NominalRule {value=?, class=p, errors=0, total=0, acc=0}, " +
                         "NominalRule {value=p, class=p, errors=0, total=256, acc=1}, " +
                         "NominalRule {value=a, class=e, errors=0, total=400, acc=1}, " +
                         "NominalRule {value=l, class=e, errors=0, total=400, acc=1}, " +

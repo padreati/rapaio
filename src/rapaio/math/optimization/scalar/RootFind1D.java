@@ -26,8 +26,8 @@ import static java.lang.StrictMath.sqrt;
 import java.io.Serial;
 import java.io.Serializable;
 
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.param.ParamSet;
+import rapaio.ml.common.param.ValueParam;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**

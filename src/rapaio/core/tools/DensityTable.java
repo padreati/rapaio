@@ -36,110 +36,110 @@ import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 /**
- * Distribution table.
+ * Two way table which holds frequencies between two discrete variables.
  * <p>
- * Table tool class to facilitate various operations on two variables regarding frequencies.
+ * For each variable we have a set of labels, one row oriented and the other column oriented.
+ * Density table facilitates various computations on the two way tables.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class DensityTable<U, V> implements Printable, Serializable {
 
     /**
-     * Builds a table with given test columns and target columns.
+     * Builds a table with given row labels and column labels.
      *
-     * @param rowLevels labels for rows
-     * @param colLevels labels for columns
      * @param useFirst  true if using the first row and col, false otherwise
+     * @param rowLabels labels for rows
+     * @param colLabels labels for columns
      */
-    public static DensityTable<String, String> emptyByLabel(boolean useFirst, List<String> rowLevels, List<String> colLevels) {
-        var rowIndex = IndexLabel.fromLabelValues(useFirst ? rowLevels : rowLevels.subList(1, rowLevels.size()));
-        var colIndex = IndexLabel.fromLabelValues(useFirst ? colLevels : colLevels.subList(1, colLevels.size()));
+    public static DensityTable<String, String> empty(boolean useFirst, List<String> rowLabels, List<String> colLabels) {
+        var rowIndex = IndexLabel.fromLabelValues(useFirst ? rowLabels : rowLabels.subList(1, rowLabels.size()));
+        var colIndex = IndexLabel.fromLabelValues(useFirst ? colLabels : colLabels.subList(1, colLabels.size()));
         return new DensityTable<>(rowIndex, colIndex);
     }
 
-
-    // private constructors
-
     /**
-     * Builds a density table from two nominal vectors built from counts.
+     * Builds a count table from two variables using label representation.
+     * <p>
+     * The values from density table are number of instances if the weights are null. Otherwise,
+     * the values are the corresponding weights.
+     * <p>
+     * The variable types must be {@link rapaio.data.VarType#NOMINAL} or {@link rapaio.data.VarType#BINARY}.
      *
      * @param withMissing true if using the first row and col, false otherwise
-     * @param rowVar      var on vertical axis
-     * @param colVar      var on horizontal axis
+     * @param df          source data frame
+     * @param rowName     row variable name
+     * @param colName     col variable name
+     * @param weights     weights used instead of counts, if not null
      */
-    public static DensityTable<String, String> fromLevelCounts(boolean withMissing, Var rowVar, Var colVar) {
-        var rowIndex = IndexLabel.fromVarLevels(withMissing, rowVar);
-        var colIndex = IndexLabel.fromVarLevels(withMissing, colVar);
-        var dt = new DensityTable<>(rowIndex, colIndex);
-        for (int i = 0; i < min(rowVar.size(), colVar.size()); i++) {
-            if (rowIndex.containsValue(rowVar, i) && colIndex.containsValue(colVar, i)) {
-                dt.increment(rowIndex.getIndex(rowVar, i), colIndex.getIndex(colVar, i), 1);
-            }
-        }
-        return dt;
+    public static DensityTable<String, String> fromLabels(boolean withMissing, Frame df, String rowName, String colName, Var weights) {
+        return fromLabels(withMissing, df.rvar(rowName), df.rvar(colName), weights);
     }
 
     /**
-     * Builds a density table from two nominal vectors.
-     * If not null, weights are used instead of counts.
+     * Builds a density table from two variables using label representation.
+     * <p>
+     * The values from density table are number of instances if the weights are null. Otherwise,
+     * the values are the corresponding weights.
+     * <p>
+     * The variable types must be {@link rapaio.data.VarType#NOMINAL} or {@link rapaio.data.VarType#BINARY}.
      *
      * @param withMissing true if using the first row and col, false otherwise
      * @param rowVar      row var
      * @param colVar      col var
      * @param weights     weights used instead of counts, if not null
      */
-    public static DensityTable<String, String> fromLevelWeights(boolean withMissing, Var rowVar, Var colVar, Var weights) {
+    public static DensityTable<String, String> fromLabels(boolean withMissing, Var rowVar, Var colVar, Var weights) {
         var rowIndex = IndexLabel.fromVarLevels(withMissing, rowVar);
         var colIndex = IndexLabel.fromVarLevels(withMissing, colVar);
         var dt = new DensityTable<>(rowIndex, colIndex);
         for (int i = 0; i < min(rowVar.size(), colVar.size()); i++) {
             if (rowIndex.containsValue(rowVar, i) && colIndex.containsValue(colVar, i)) {
-                dt.increment(rowIndex.getIndex(rowVar, i), colIndex.getIndex(colVar, i), weights.getDouble(i));
+                dt.inc(rowIndex.getIndex(rowVar, i), colIndex.getIndex(colVar, i), weights != null ? weights.getDouble(i) : 1);
             }
         }
         return dt;
     }
 
     /**
-     * Builds a density table from two nominal vectors built from counts.
+     * Builds a density table with a binary split on rows from two variables.
+     * The first row contains instances which have label equal with given row level.
+     * The second row contains instances which have label not equal with the given row level.
+     * <p>
+     * If the weights parameter is null, the instance count is used instead, otherwise the
+     * values are weights.
      *
-     * @param withMissing true if using the first row and col, false otherwise
+     * @param withMissing true if using the first labels, false otherwise
      * @param df          source data frame
-     * @param rowVarName  var on vertical axis
-     * @param colVarName  var on horizontal axis
+     * @param rowVarName  row variable name
+     * @param colVarName  col variable name
+     * @param weights     if not null, weights used instead of counts
+     * @param rowLevel    row label used for binary split
      */
-    public static DensityTable<String, String> fromLevelCounts(boolean withMissing, Frame df, String rowVarName, String colVarName) {
-        return fromLevelCounts(withMissing, df.rvar(rowVarName), df.rvar(colVarName));
+    public static DensityTable<String, String> fromBinaryLevelWeights(boolean withMissing, Frame df, String rowVarName, String colVarName,
+            Var weights, String rowLevel) {
+        return fromBinaryLevelWeights(withMissing, df.rvar(rowVarName), df.rvar(colVarName), weights, rowLevel);
     }
 
     /**
-     * Builds a density table from two nominal vectors.
-     * If not null, weights are used instead of counts.
-     *
-     * @param missing true if using the first row and col, false otherwise
-     * @param df          source data frame
-     * @param rowName  row var
-     * @param colName  col var
-     * @param weights     weights used instead of counts, if not null
-     */
-    public static DensityTable<String, String> fromLevelWeights(boolean missing, Frame df, String rowName, String colName, Var weights) {
-        return fromLevelWeights(missing, df.rvar(rowName), df.rvar(colName), weights);
-    }
-
-    /**
-     * Builds a density table with a binary split, from two nominal vectors.
-     * The first row contains instances which have test label equal with given testLabel,
-     * second row contains frequencies for the rest of the instances.
+     * Builds a density table with a binary split on rows from two variables.
+     * The first row contains instances which have label equal with given row level.
+     * The second row contains instances which have label not equal with the given row level.
+     * <p>
+     * If the weights parameter is null, the instance count is used instead, otherwise the
+     * values are weights.
      *
      * @param withMissing true if using the first row and col, false otherwise
-     * @param rowVar      row var
-     * @param colVar      col var
+     * @param rowVar      row variable
+     * @param colVar      col variable
      * @param weights     if not null, weights used instead of counts
      * @param rowLevel    row label used for binary split
      */
@@ -162,26 +162,9 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                     continue;
                 }
             }
-            dt.increment(rowId, colIndex.getIndex(colVar, i), weights != null ? weights.getDouble(i) : 1);
+            dt.inc(rowId, colIndex.getIndex(colVar, i), weights != null ? weights.getDouble(i) : 1);
         }
         return dt;
-    }
-
-    /**
-     * Builds a density table with a binary split, from two nominal vectors.
-     * The first row contains instances which have test label equal with given testLabel,
-     * second row contains frequencies for the rest of the instances.
-     *
-     * @param withMissing true if using the first row and col, false otherwise
-     * @param df          source data frame
-     * @param rowVarName  row var
-     * @param colVarName  col var
-     * @param weights     if not null, weights used instead of counts
-     * @param rowLevel    row label used for binary split
-     */
-    public static DensityTable<String, String> fromBinaryLevelWeights(boolean withMissing, Frame df, String rowVarName, String colVarName,
-            Var weights, String rowLevel) {
-        return fromBinaryLevelWeights(withMissing, df.rvar(rowVarName), df.rvar(colVarName), weights, rowLevel);
     }
 
     @Serial
@@ -192,24 +175,19 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     private final Index<U> rowIndex;
     private final Index<V> colIndex;
 
-    // table with frequencies
-    private final double[][] values;
+    private final DMatrix values;
 
-    private DensityTable(Index<U> rowIndex, Index<V> colIndex) {
+    public DensityTable(Index<U> rowIndex, Index<V> colIndex) {
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
-        this.values = new double[rowIndex.size()][colIndex.size()];
+        this.values = DMatrixDenseC.fill(rowIndex.size(), colIndex.size(), 0);
     }
 
-    public DensityTable<U, V> newInstance() {
-        return new DensityTable<>(rowIndex, colIndex);
-    }
-
-    public int rowCount() {
+    public int rows() {
         return rowIndex.size();
     }
 
-    public int colCount() {
+    public int cols() {
         return colIndex.size();
     }
 
@@ -222,117 +200,61 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     public double get(int row, int col) {
-        return values[row][col];
+        return values.get(row, col);
     }
 
     public double get(U row, V col) {
-        return values[rowIndex.getIndex(row)][colIndex.getIndex(col)];
+        return values.get(rowIndex.getIndex(row), colIndex.getIndex(col));
     }
 
-    public void increment(int row, int col, double weight) {
-        values[row][col] += weight;
+    public void inc(int row, int col, double weight) {
+        values.inc(row, col, weight);
     }
 
-    public void increment(U row, V col, double weight) {
-        values[rowIndex.getIndex(row)][colIndex.getIndex(col)] += weight;
+    public void inc(U row, V col, double weight) {
+        values.inc(rowIndex.getIndex(row), colIndex.getIndex(col), weight);
     }
 
-    /**
-     * Computes the number of columns which have totals equal or greater than minWeight.
-     *
-     * @return number of columns which meet criteria
-     */
-    public boolean hasColsWithMinimumCount(double minWeight, int minCounts) {
-        int count = 0;
-        for (int i = 0; i < rowIndex.size(); i++) {
-            double total = 0;
-            for (int j = 1; j < colIndex.size(); j++) {
-                total += values[i][j];
-            }
-            if (total >= minWeight) {
-                count++;
-                if (count >= minCounts) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public double total() {
+        return values.sum();
     }
 
     public double[] rowTotals() {
-        double[] totals = new double[rowIndex.size()];
-        for (int i = 0; i < rowIndex.size(); i++) {
-            for (int j = 0; j < colIndex.size(); j++) {
-                totals[i] += values[i][j];
-            }
-        }
-        return totals;
+        return values.sum(1).denseCopy().array();
     }
 
     public double[] colTotals() {
-        double[] totals = new double[colIndex.size()];
+        return values.sum(0).denseCopy().array();
+    }
+
+    private DensityTable<U, V> copy() {
+        var copy = new DensityTable<>(rowIndex, colIndex);
         for (int i = 0; i < rowIndex.size(); i++) {
-            for (int j = 0; j < colIndex.size(); j++) {
-                totals[j] += values[i][j];
+            for (int j=0; j<colIndex.size(); j++) {
+                copy.values.set(i, j, values.get(i, j));
             }
         }
-        return totals;
+        return copy;
     }
 
     public DensityTable<U, V> normalizeOverall() {
-        var norm = newInstance();
-        double total = 0;
-        for (int i = 0; i < rowIndex.size(); i++) {
-            for (int j = 0; j < colIndex.size(); j++) {
-                norm.values[i][j] = values[i][j];
-                total += values[i][j];
-            }
-        }
+        var norm = copy();
+        double total = norm.total();
         if (total > 0) {
-            for (int i = 0; i < rowIndex.size(); i++) {
-                for (int j = 0; j < colIndex.size(); j++) {
-                    norm.values[i][j] /= total;
-                }
-            }
+            norm.values.div(total);
         }
         return norm;
     }
 
     public DensityTable<U, V> normalizeOnRows() {
-        var norm = newInstance();
-        double[] rowTotals = new double[rowIndex.size()];
-        for (int i = 0; i < rowIndex.size(); i++) {
-            for (int j = 0; j < colIndex.size(); j++) {
-                norm.values[i][j] = values[i][j];
-                rowTotals[i] += values[i][j];
-            }
-        }
-        for (int i = 0; i < rowIndex.size(); i++) {
-            if (rowTotals[i] > 0) {
-                for (int j = 0; j < colIndex.size(); j++) {
-                    norm.values[i][j] /= rowTotals[i];
-                }
-            }
-        }
+        var norm = copy();
+        norm.values.div(norm.values.sum(1), 1);
         return norm;
     }
 
     public DensityTable<U, V> normalizeOnCols() {
-        var norm = newInstance();
-        double[] colTotals = new double[colIndex.size()];
-        for (int i = 0; i < rowIndex.size(); i++) {
-            for (int j = 0; j < colIndex.size(); j++) {
-                norm.values[i][j] = values[i][j];
-                colTotals[j] += values[i][j];
-            }
-        }
-        for (int i = 0; i < colIndex.size(); i++) {
-            if (colTotals[i] > 0) {
-                for (int j = 0; j < rowIndex.size(); j++) {
-                    norm.values[j][i] /= colTotals[i];
-                }
-            }
-        }
+        var norm = copy();
+        norm.values.div(norm.values.sum(0), 0);
         return norm;
     }
 
@@ -356,6 +278,28 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         return tt.getDynamicText(printer, options);
     }
 
+    /**
+     * Computes the number of columns which have totals equal or greater than minWeight.
+     *
+     * @return number of columns which meet criteria
+     */
+    public boolean hasColsWithMinimumCount(double minWeight, int minCounts) {
+        int count = 0;
+        for (int i = 0; i < rowIndex.size(); i++) {
+            double total = 0;
+            for (int j = 1; j < colIndex.size(); j++) {
+                total += values.get(i,j);
+            }
+            if (total >= minWeight) {
+                count++;
+                if (count >= minCounts) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void putLevels(TextTable tt) {
         for (int i = 0; i < rowIndex.size(); i++) {
             tt.textRight(i + 1, 0, rowIndex.getValueString(i));
@@ -368,7 +312,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     private void putValues(TextTable tt) {
         for (int i = 0; i < rowIndex.size(); i++) {
             for (int j = 0; j < colIndex.size(); j++) {
-                tt.floatFlex(i + 1, j + 1, values[i][j]);
+                tt.floatFlex(i + 1, j + 1, values.get(i,j));
             }
         }
     }
@@ -396,49 +340,40 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     private double giniGain(boolean splitByRows) {
-        double[] rowTotals = new double[rowIndex.size()];
-        double[] colTotals = new double[colIndex.size()];
-        double total = 0.0;
-        for (int i = 0; i < rowIndex.size(); i++) {
-            for (int j = 0; j < colIndex.size(); j++) {
-                rowTotals[i] += values[i][j];
-                colTotals[j] += values[i][j];
-                total += values[i][j];
-            }
-        }
+        double total = values.sum();
         if (total <= 0) {
             return 1;
         }
 
-        double[] splitByTotals = splitByRows ? rowTotals : colTotals;
-        double[] straightTotals = splitByRows ? colTotals : rowTotals;
+        var rowTotals = values.sum(1);
+        var colTotals = values.sum(0);
 
-        double gini = 1.0;
-        for (double straightTotal : straightTotals) {
-            gini -= pow(straightTotal / total, 2);
-        }
+        var splitByTotals = splitByRows ? rowTotals : colTotals;
+        var straightTotals = splitByRows ? colTotals : rowTotals;
 
-        for (int i = 0; i < splitByTotals.length; i++) {
+        double gini = 1.0 - straightTotals.copy().div(total).sqr().sum();
+
+        for (int i = 0; i < splitByTotals.size(); i++) {
             double ginik = 1;
-            for (int j = 0; j < straightTotals.length; j++) {
-                if (splitByTotals[i] > 0) {
-                    var value = splitByRows ? values[i][j] : values[j][i];
-                    ginik -= pow(value / splitByTotals[i], 2);
+            for (int j = 0; j < straightTotals.size(); j++) {
+                if (splitByTotals.get(i) > 0) {
+                    var value = splitByRows ? values.get(i,j) : values.get(j,i);
+                    ginik -= pow(value / splitByTotals.get(i), 2);
                 }
             }
-            gini -= ginik * splitByTotals[i] / total;
+            gini -= ginik * splitByTotals.get(i) / total;
         }
 
         return gini;
     }
 
     private final DensityTableFunction concreteRowAverageEntropy = new DensityTableFunction(this, true,
-            (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
+            (double total, double[] totals, DMatrix values, int rowLength, int colLength) -> {
                 double gain = 0;
                 for (int i = 0; i < rowLength; i++) {
                     for (int j = 0; j < colLength; j++) {
-                        if (values[i][j] > 0) {
-                            gain += -log2(values[i][j] / totals[i]) * values[i][j] / total;
+                        if (values.get(i,j) > 0) {
+                            gain += -log2(values.get(i,j) / totals[i]) * values.get(i,j) / total;
                         }
                     }
                 }
@@ -446,7 +381,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
             });
 
     private final DensityTableFunction concreteRowIntrinsicInfo = new DensityTableFunction(this, true,
-            (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
+            (double total, double[] totals, DMatrix values, int rowLength, int colLength) -> {
                 double splitInfo = 0;
                 for (double val : totals) {
                     if (val > 0) {
@@ -456,7 +391,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                 return splitInfo;
             });
     private final DensityTableFunction concreteTotalColEntropy = new DensityTableFunction(this, false,
-            (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
+            (double total, double[] totals, DMatrix values, int rowLength, int colLength) -> {
                 double entropy = 0;
                 for (double val : totals) {
                     if (val > 0) {
@@ -472,7 +407,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
             double[] totals = new double[onRow ? dt.rowIndex.size() : dt.colIndex.size()];
             for (int i = 0; i < dt.rowIndex.size(); i++) {
                 for (int j = 0; j < dt.colIndex.size(); j++) {
-                    totals[onRow ? i : j] += dt.values[i][j];
+                    totals[onRow ? i : j] += dt.values.get(i,j);
                 }
             }
             double total = nanSum(totals, 0, totals.length);
@@ -482,7 +417,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
 
     @FunctionalInterface
     interface Function {
-        double apply(double total, double[] totals, double[][] values, int rowLength, int colLength);
+        double apply(double total, double[] totals, DMatrix values, int rowLength, int colLength);
     }
 }
 

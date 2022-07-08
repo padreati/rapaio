@@ -39,9 +39,9 @@ public class PreprocessingTest {
 
     @Test
     void testBuilder() {
-        var transform = Preprocessing.newProcess(
-                AddIntercept.transform(),
-                AddIntercept.transform());
+        var transform = Preprocessing.newProcess()
+                .add(AddIntercept.transform())
+                .add(AddIntercept.transform());
         assertEquals(2, transform.transformers().size());
         assertTrue(transform.transformers().get(0) instanceof AddIntercept);
         assertTrue(transform.transformers().get(0) instanceof AddIntercept);

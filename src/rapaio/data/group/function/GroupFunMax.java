@@ -39,7 +39,7 @@ public class GroupFunMax extends DefaultSingleGroupFun {
 
     @Override
     public Var buildVar(Group group, String varName) {
-        return group.getFrame().type(varName).newInstance(group.getGroupCount()).name(varName + SEPARATOR + name);
+        return group.getFrame().type(varName).newInstance(group.getNumberOfGroups()).name(varName + SEPARATOR + name);
     }
 
     @Override

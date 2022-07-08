@@ -404,6 +404,14 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
         return expm1To(new DVectorDense(size()));
     }
 
+    DVector sqr();
+
+    DVector sqrTo(DVector to);
+
+    default DVector sqrNew() {
+        return sqrTo(new DVectorDense(size()));
+    }
+
     DVector sqrt();
 
     DVector sqrtTo(DVector to);

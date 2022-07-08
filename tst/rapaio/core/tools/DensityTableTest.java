@@ -1,23 +1,21 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
@@ -45,13 +43,13 @@ public class DensityTableTest {
 
     @Test
     void testBuilders() {
-        var dt = DensityTable.emptyByLabel(true, Arrays.asList("a", "b"), Arrays.asList("c", "d", "e"));
-        assertEquals(2, dt.rowCount());
+        var dt = DensityTable.empty(true, Arrays.asList("a", "b"), Arrays.asList("c", "d", "e"));
+        assertEquals(2, dt.rows());
         assertEquals(Arrays.asList("a", "b"), dt.rowIndex().getValues());
-        assertEquals(3, dt.colCount());
+        assertEquals(3, dt.cols());
         assertEquals(Arrays.asList("c", "d", "e"), dt.colIndex().getValues());
 
-        dt = DensityTable.emptyByLabel(false, Arrays.asList("a", "b"), Arrays.asList("c", "d", "e"));
+        dt = DensityTable.empty(false, Arrays.asList("a", "b"), Arrays.asList("c", "d", "e"));
         assertEquals(Collections.singletonList("b"), dt.rowIndex().getValues());
         assertEquals(Arrays.asList("d", "e"), dt.colIndex().getValues());
 
@@ -62,7 +60,7 @@ public class DensityTableTest {
 
         Frame df = SolidFrame.byVars(x, y);
 
-        dt = DensityTable.fromLevelCounts(false, x, y);
+        dt = DensityTable.fromLabels(false, x, y, null);
         assertEquals(Arrays.asList("a", "b", "c"), dt.rowIndex().getValues());
         assertEquals(Arrays.asList("d", "e"), dt.colIndex().getValues());
         assertEquals(0, dt.get("a", "e"));
@@ -70,7 +68,7 @@ public class DensityTableTest {
         assertEquals(1, dt.get("b", "e"));
         assertEquals(1, dt.get("c", "e"));
 
-        dt = DensityTable.fromLevelCounts(false, df, "x", "y");
+        dt = DensityTable.fromLabels(false, df, "x", "y", null);
         assertEquals(Arrays.asList("a", "b", "c"), dt.rowIndex().getValues());
         assertEquals(Arrays.asList("d", "e"), dt.colIndex().getValues());
         assertEquals(0, dt.get("a", "e"));
@@ -78,7 +76,7 @@ public class DensityTableTest {
         assertEquals(1, dt.get("b", "e"));
         assertEquals(1, dt.get("c", "e"));
 
-        dt = DensityTable.fromLevelWeights(false, x, y, w);
+        dt = DensityTable.fromLabels(false, x, y, w);
         assertEquals(Arrays.asList("a", "b", "c"), dt.rowIndex().getValues());
         assertEquals(Arrays.asList("d", "e"), dt.colIndex().getValues());
         assertEquals(0, dt.get("a", "e"));
@@ -86,7 +84,7 @@ public class DensityTableTest {
         assertEquals(2, dt.get("b", "e"));
         assertEquals(4, dt.get("c", "e"));
 
-        dt = DensityTable.fromLevelWeights(false, df, "x", "y", w);
+        dt = DensityTable.fromLabels(false, df, "x", "y", w);
         assertEquals(Arrays.asList("a", "b", "c"), dt.rowIndex().getValues());
         assertEquals(Arrays.asList("d", "e"), dt.colIndex().getValues());
         assertEquals(0, dt.get("a", "e"));
@@ -118,12 +116,12 @@ public class DensityTableTest {
 
         Frame df = Datasets.loadPlay();
 
-        var id = DensityTable.fromLevelCounts(false, df.rvar("outlook"), df.rvar("class"));
+        var id = DensityTable.fromLabels(false, df.rvar("outlook"), df.rvar("class"), null);
         assertEquals(0.694, id.splitByRowAverageEntropy(), 1e-3);
         assertEquals(0.246, id.splitByRowInfoGain(), 1e-3);
         assertEquals(0.156, id.splitByRowGainRatio(), 1e-3);
 
-        id = DensityTable.fromLevelCounts(false, df.rvar("windy"), df.rvar("class"));
+        id = DensityTable.fromLabels(false, df.rvar("windy"), df.rvar("class"), null);
         assertEquals(0.892, id.splitByRowAverageEntropy(), 1e-3);
         assertEquals(0.048, id.splitByRowInfoGain(), 1e-3);
         assertEquals(0.048, id.splitByRowGainRatio(), 1e-3);
@@ -135,7 +133,7 @@ public class DensityTableTest {
         Frame df = Datasets.loadPlay();
         df.rvar("outlook").setMissing(5);
 
-        var id = DensityTable.fromLevelCounts(false, df.rvar("outlook"), df.rvar("class"));
+        var id = DensityTable.fromLabels(false, df.rvar("outlook"), df.rvar("class"), null);
 
         assertEquals(0.747, id.splitByRowAverageEntropy(), 1e-3);
         assertEquals(0.214, id.splitByRowInfoGain(), 1e-3);
@@ -145,25 +143,25 @@ public class DensityTableTest {
 
     @Test
     void testEntropy() {
-        var dt1 = DensityTable.emptyByLabel(false, Arrays.asList("?", "a", "b"), Arrays.asList("?", "x", "y", "z"));
+        var dt1 = DensityTable.empty(false, Arrays.asList("?", "a", "b"), Arrays.asList("?", "x", "y", "z"));
 
-        dt1.increment(0, 0, 10);
-        dt1.increment(0, 1, 7);
-        dt1.increment(0, 2, 6);
+        dt1.inc(0, 0, 10);
+        dt1.inc(0, 1, 7);
+        dt1.inc(0, 2, 6);
 
-        dt1.increment(1, 0, 8);
-        dt1.increment(1, 1, 19);
-        dt1.increment(1, 2, 12);
+        dt1.inc(1, 0, 8);
+        dt1.inc(1, 1, 19);
+        dt1.inc(1, 2, 12);
 
-        var dt2 = DensityTable.emptyByLabel(true, Arrays.asList("a", "b"), Arrays.asList("x", "y", "z"));
+        var dt2 = DensityTable.empty(true, Arrays.asList("a", "b"), Arrays.asList("x", "y", "z"));
 
-        dt2.increment(0, 0, 10);
-        dt2.increment(0, 1, 7);
-        dt2.increment(0, 2, 6);
+        dt2.inc(0, 0, 10);
+        dt2.inc(0, 1, 7);
+        dt2.inc(0, 2, 6);
 
-        dt2.increment(1, 0, 8);
-        dt2.increment(1, 1, 19);
-        dt2.increment(1, 2, 12);
+        dt2.inc(1, 0, 8);
+        dt2.inc(1, 1, 19);
+        dt2.inc(1, 2, 12);
 
         assertEquals(dt1.splitByRowAverageEntropy(), dt2.splitByRowAverageEntropy(), 1e-30);
         assertEquals(dt1.splitByRowInfoGain(), dt2.splitByRowInfoGain(), 1e-30);
@@ -174,15 +172,15 @@ public class DensityTableTest {
 
     @Test
     void testNormalization() {
-        var dt2 = DensityTable.emptyByLabel(true, Arrays.asList("a", "b"), Arrays.asList("x", "y", "z"));
+        var dt2 = DensityTable.empty(true, Arrays.asList("a", "b"), Arrays.asList("x", "y", "z"));
 
-        dt2.increment(0, 0, 10);
-        dt2.increment(0, 1, 7);
-        dt2.increment(0, 2, 6);
+        dt2.inc(0, 0, 10);
+        dt2.inc(0, 1, 7);
+        dt2.inc(0, 2, 6);
 
-        dt2.increment("b", "x", 8);
-        dt2.increment(1, 1, 19);
-        dt2.increment(1, 2, 12);
+        dt2.inc("b", "x", 8);
+        dt2.inc(1, 1, 19);
+        dt2.inc(1, 2, 12);
 
         assertEquals("              x         y         z     total \n" +
                 "    a 0.5555556 0.2692308 0.3333333 1.1581197 \n" +

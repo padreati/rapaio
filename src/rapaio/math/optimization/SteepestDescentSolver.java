@@ -33,8 +33,8 @@ import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.param.ParamSet;
+import rapaio.ml.common.param.ValueParam;
 
 /**
  * Implements the gradient descend optimization algorithm. Gradient descent is an optimization

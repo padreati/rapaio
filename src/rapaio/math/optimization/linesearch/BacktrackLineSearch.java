@@ -26,8 +26,8 @@ import java.io.Serial;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.param.ParamSet;
+import rapaio.ml.common.param.ValueParam;
 
 /**
  * Backtracking strategy for line search.

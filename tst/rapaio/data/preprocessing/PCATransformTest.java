@@ -61,4 +61,17 @@ public class PCATransformTest {
         var pca = PCATransform.featureCount(3);
         assertTrue(pca.fapply(df).deepEquals(pca.newInstance().fapply(df)));
     }
+
+    @Test
+    void testPrefix() {
+        var tdf1 = PCATransform.featureCount(3).fapply(df);
+        for (var v : tdf1.varList()) {
+            assertTrue(v.name().startsWith("pca_"));
+        }
+
+        var tdf2 = PCATransform.featureCount("prefix_", 3).fapply(df);
+        for (var v : tdf2.varList()) {
+            assertTrue(v.name().startsWith("prefix_"));
+        }
+    }
 }

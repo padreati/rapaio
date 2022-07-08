@@ -52,7 +52,7 @@ public final class ChiSqIndependence implements HTest {
      * @return result object
      */
     public static ChiSqIndependence from(Var x, Var y, boolean yates) {
-        return new ChiSqIndependence(DensityTable.fromLevelCounts(false, x, y), yates);
+        return new ChiSqIndependence(DensityTable.fromLabels(false, x, y, null), yates);
     }
 
     public static ChiSqIndependence from(DMatrix m, boolean yates) {
@@ -74,10 +74,10 @@ public final class ChiSqIndependence implements HTest {
         if (m.cols() != colLevels.size()) {
             throw new IllegalArgumentException("Col levels length is different than matrix cols.");
         }
-        var dt = DensityTable.emptyByLabel(true, rowLevels, colLevels);
+        var dt = DensityTable.empty(true, rowLevels, colLevels);
         for (int i = 0; i < m.rows(); i++) {
             for (int j = 0; j < m.cols(); j++) {
-                dt.increment(i, j, m.get(i, j));
+                dt.inc(i, j, m.get(i, j));
             }
         }
         return from(dt, yates);
@@ -87,30 +87,30 @@ public final class ChiSqIndependence implements HTest {
         return new ChiSqIndependence(dt, yates);
     }
 
-    private final DensityTable<String, String> dt;
+    private final DensityTable<String, String> observed;
     private final DensityTable<String, String> expected;
     private final boolean yates;
     private final int df; // degrees of freedom
     private final double chiValue; // chi-square statistic's value
     private final double pValue;
 
-    private ChiSqIndependence(DensityTable<String, String> dt, boolean yates) {
+    private ChiSqIndependence(DensityTable<String, String> observed, boolean yates) {
         this.yates = yates;
-        this.dt = dt;
-        df = (dt.rowCount() - 1) * (dt.colCount() - 1);
+        this.observed = observed;
+        df = (observed.rows() - 1) * (observed.cols() - 1);
 
-        expected = dt.newInstance();
+        expected = new DensityTable<>(observed.rowIndex(), observed.colIndex());
 
-        double[] rowTotals = dt.rowTotals();
-        double[] colTotals = dt.colTotals();
+        double[] rowTotals = observed.rowTotals();
+        double[] colTotals = observed.colTotals();
         double total = Arrays.stream(rowTotals).sum();
 
         double sum = 0.0;
-        for (int i = 0; i < dt.rowCount(); i++) {
-            for (int j = 0; j < dt.colCount(); j++) {
+        for (int i = 0; i < observed.rows(); i++) {
+            for (int j = 0; j < observed.cols(); j++) {
                 double exp = rowTotals[i] * colTotals[j] / total;
-                expected.increment(i, j, exp);
-                sum += Math.pow(Math.abs(dt.get(i, j) - exp) - (yates ? 0.5 : 0.0), 2) / exp;
+                expected.inc(i, j, exp);
+                sum += Math.pow(Math.abs(observed.get(i, j) - exp) - (yates ? 0.5 : 0.0), 2) / exp;
             }
         }
         chiValue = sum;
@@ -142,23 +142,19 @@ public final class ChiSqIndependence implements HTest {
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("> ChiSqIndependence\n");
-        sb.append("\n");
 
-        sb.append("Pearson's Chi-squared test").append(yates ? " with Yates' continuity correction" : "").append("\n");
-        sb.append("\n");
-        sb.append("X-squared = ").append(Format.floatFlex(chiValue))
-                .append(", df = ").append(df)
-                .append(", p-value = ").append(Format.pValue(pValue))
-                .append("\n");
-        sb.append("\n");
-
-        sb.append("Observed data:\n");
-        sb.append(dt.toSummary(printer, options)).append("\n");
-
-        sb.append("Expected data:\n");
-        sb.append(expected.toSummary(printer, options)).append("\n");
-        return sb.toString();
+        return "> ChiSqIndependence\n"
+                + "\n"
+                + "Pearson's Chi-squared test" + (yates ? " with Yates' continuity correction" : "") + "\n"
+                + "\n"
+                + "X-squared = " + Format.floatFlex(chiValue)
+                + ", df = " + df
+                + ", p-value = " + Format.pValue(pValue)
+                + "\n"
+                + "\n"
+                + "Observed data:\n"
+                + observed.toSummary(printer, options) + "\n"
+                + "Expected data:\n"
+                + expected.toSummary(printer, options) + "\n";
     }
 }

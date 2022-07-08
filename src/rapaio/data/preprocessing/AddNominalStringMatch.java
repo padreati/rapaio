@@ -46,18 +46,20 @@ import rapaio.util.Pair;
 public class AddNominalStringMatch extends AbstractTransform {
 
     @SafeVarargs
-    public static AddNominalStringMatch filter(String sourceVarName, String targetVarName, boolean useBreaks,
+    public static AddNominalStringMatch filter(String sourceName, String targetName, boolean useBreaks,
             Pair<String, List<String>>... matchList) {
-        return new AddNominalStringMatch(matchList, useBreaks, targetVarName, VarRange.of(sourceVarName));
+        return new AddNominalStringMatch(matchList, useBreaks, sourceName, targetName);
     }
 
-    private final String newVarName;
+    private final String sourceName;
+    private final String targetName;
     private final Pair<String, List<String>>[] matchList;
     private final boolean useBreaks;
 
-    private AddNominalStringMatch(Pair<String, List<String>>[] matchList, boolean useBreaks, String newVarName, VarRange varRange) {
-        super(varRange);
-        this.newVarName = newVarName;
+    private AddNominalStringMatch(Pair<String, List<String>>[] matchList, boolean useBreaks, String sourceName, String targetName) {
+        super(VarRange.all());
+        this.sourceName = sourceName;
+        this.targetName = targetName;
         this.matchList = matchList;
         this.useBreaks = useBreaks;
     }
@@ -70,7 +72,7 @@ public class AddNominalStringMatch extends AbstractTransform {
     private String match(String value) {
         for (var entry : matchList) {
             for (String regex : entry.v2) {
-                String expression = useBreaks ? "\\b" + regex + "\\b" : regex;
+                String expression = useBreaks ? ".*\\b" + regex + "\\b.*" : ".*" + regex + ".*";
                 if (value.matches(expression)) {
                     return entry.v1;
                 }
@@ -84,24 +86,20 @@ public class AddNominalStringMatch extends AbstractTransform {
     public Frame coreApply(Frame df) {
 
         // validation
-        if (varNames != null && varNames.length != 1) {
-            throw new IllegalArgumentException(
-                    "Cannot fit data since there are more than one matched variable.");
-        }
-        if (df.rvar(newVarName) != null) {
-            throw new IllegalArgumentException("Frame contains already a variable with name: %s".formatted(newVarName));
+        if (df.rvar(targetName) != null) {
+            throw new IllegalArgumentException("Frame contains already a variable with name: %s".formatted(targetName));
         }
 
-        Var v = df.rvar(varNames[0]);
+        Var v = df.rvar(sourceName);
         if (v == null) {
-            throw new IllegalArgumentException("Frame does not contain variable with name: %s".formatted(varNames[0]));
+            throw new IllegalArgumentException("Frame does not contain variable with name: %s".formatted(sourceName));
         }
-        Var newVar = VarNominal.from(df.rowCount(), row -> match(df.getLabel(row, varNames[0]))).name(newVarName);
+        Var newVar = VarNominal.from(df.rowCount(), row -> match(df.getLabel(row, sourceName))).name(targetName);
         return df.bindVars(newVar);
     }
 
     @Override
     public AddNominalStringMatch newInstance() {
-        return new AddNominalStringMatch(matchList, useBreaks, newVarName, varRange);
+        return new AddNominalStringMatch(matchList, useBreaks, sourceName, targetName);
     }
 }

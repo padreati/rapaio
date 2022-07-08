@@ -40,17 +40,11 @@ public class GroupFunCount extends DefaultSingleGroupFun {
 
     @Override
     public Var buildVar(Group group, String varName) {
-        return VarInt.empty(group.getGroupCount()).name(varName + SEPARATOR + name);
+        return VarInt.empty(group.getNumberOfGroups()).name(varName + SEPARATOR + name);
     }
 
     @Override
     public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, Mapping rows) {
-        int count = 0;
-        for (int row : rows) {
-            if (!df.isMissing(row, varIndex)) {
-                count++;
-            }
-        }
-        aggregate.setInt(aggregateRow, count);
+        aggregate.setInt(aggregateRow, rows.size());
     }
 }

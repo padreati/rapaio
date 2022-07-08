@@ -41,7 +41,7 @@ public class GroupFunSkewness extends DefaultSingleGroupFun {
 
     @Override
     public Var buildVar(Group group, String varName) {
-        return VarDouble.empty(group.getGroupCount()).name(varName + SEPARATOR + name);
+        return VarDouble.empty(group.getNumberOfGroups()).name(varName + SEPARATOR + name);
     }
 
     @Override

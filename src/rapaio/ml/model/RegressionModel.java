@@ -38,8 +38,8 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.param.ParamSet;
+import rapaio.ml.common.param.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.printer.TextTable;
 
@@ -74,7 +74,7 @@ public abstract class RegressionModel<M extends RegressionModel<M, R, H>, R exte
     /**
      * Number of iterations for iterative iterations or number of sub ensembles.
      */
-    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1, "runs", x -> x > 0
+    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 100, "runs", x -> x > 0
     );
 
     /**

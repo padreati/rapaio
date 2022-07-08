@@ -36,7 +36,7 @@ public class FrameCopyTest {
     @Test
     void testCopy() {
         var iris = Datasets.loadIrisDataset();
-        var transform = Preprocessing.newProcess(FrameCopy.transform());
+        var transform = Preprocessing.newProcess().add(FrameCopy.transform());
 
         var copy = transform.fapply(iris);
 

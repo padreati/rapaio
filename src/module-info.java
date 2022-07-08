@@ -104,4 +104,5 @@ open module rapaio {
     exports rapaio.experiment.core;
     exports rapaio.printer.idea;
     exports rapaio.math.linear.base;
+    exports rapaio.ml.common.param;
 }

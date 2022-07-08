@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.preprocessing.AddIntercept;
 import rapaio.math.linear.DMatrix;
-import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.param.ValueParam;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**

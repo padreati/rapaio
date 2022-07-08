@@ -1,49 +1,37 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.ml.model.linear;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VarBinary;
-import rapaio.data.VarDouble;
-import rapaio.data.VarNominal;
-import rapaio.data.VarType;
+import rapaio.data.*;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.model.ClassifierResult;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/22/20.
@@ -187,17 +175,17 @@ public class BinaryLogisticTest {
                 .solver.set(BinaryLogistic.Method.IRLS)
                 .runs.set(100);
 
-        assertEquals("BinaryLogistic{runs=100}, hasLearned=false", irls.toString());
+        assertEquals("BinaryLogistic{}, hasLearned=false", irls.toString());
 
         irls.fit(df, "clazz");
 
-        assertEquals("BinaryLogistic{runs=100}, hasLearned=true, converged=true, iterations=7", irls.toString());
+        assertEquals("BinaryLogistic{}, hasLearned=true, converged=true, iterations=7", irls.toString());
         assertEquals("""
                 BinaryLogistic model
                 ================
                                 
                 Description:
-                BinaryLogistic{runs=100}
+                BinaryLogistic{}
                                 
                 Capabilities:
                 types inputs/targets: BINARY,INT,DOUBLE/NOMINAL,BINARY
@@ -231,17 +219,17 @@ public class BinaryLogisticTest {
                 .solver.set(BinaryLogistic.Method.NEWTON)
                 .runs.set(100);
 
-        assertEquals("BinaryLogistic{runs=100,solver=NEWTON}, hasLearned=false", newton.toString());
+        assertEquals("BinaryLogistic{solver=NEWTON}, hasLearned=false", newton.toString());
 
         newton.fit(df, "clazz");
 
-        assertEquals("BinaryLogistic{runs=100,solver=NEWTON}, hasLearned=true, converged=true, iterations=7", newton.toString());
+        assertEquals("BinaryLogistic{solver=NEWTON}, hasLearned=true, converged=true, iterations=7", newton.toString());
         assertEquals("""
                 BinaryLogistic model
                 ================
                                 
                 Description:
-                BinaryLogistic{runs=100,solver=NEWTON}
+                BinaryLogistic{solver=NEWTON}
                                 
                 Capabilities:
                 types inputs/targets: BINARY,INT,DOUBLE/NOMINAL,BINARY

@@ -25,7 +25,7 @@ import java.io.Serializable;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.ml.common.ParametricEquals;
+import rapaio.ml.common.param.ParametricEquals;
 
 /**
  * Regression loss / objective function.

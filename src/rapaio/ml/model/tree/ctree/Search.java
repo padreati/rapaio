@@ -59,14 +59,14 @@ public enum Search implements Serializable {
 
             double testValue = df.getDouble(split, testName);
 
-            var dt = DensityTable.emptyByLabel(false, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
+            var dt = DensityTable.empty(false, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
             int missingWeights = 0;
             for (int i = 0; i < df.rowCount(); i++) {
                 if (df.isMissing(i, testName)) {
                     missingWeights += w.getDouble(i);
                     continue;
                 }
-                dt.increment(df.getDouble(i, testName) <= testValue ? 0 : 1, df.getInt(i, targetName) - 1, w.getDouble(i));
+                dt.inc(df.getDouble(i, testName) <= testValue ? 0 : 1, df.getInt(i, targetName) - 1, w.getDouble(i));
             }
 
             double score = function.compute(dt);
@@ -89,7 +89,7 @@ public enum Search implements Serializable {
 
             int testIndex = df.varIndex(testName);
             int targetIndex = df.varIndex(targetName);
-            var dt = DensityTable.emptyByLabel(false, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
+            var dt = DensityTable.empty(false, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
 
             int[] rows = new int[df.rowCount()];
             double missingWeight = 0;
@@ -100,7 +100,7 @@ public enum Search implements Serializable {
                     continue;
                 }
                 rows[len++] = i;
-                dt.increment(1, dt.colIndex().getIndex(df, targetName, i), weights.getDouble(i));
+                dt.inc(1, dt.colIndex().getIndex(df, targetName, i), weights.getDouble(i));
             }
 
             double[] values = df.rvar(testIndex).stream().mapToDouble().toArray();
@@ -114,8 +114,8 @@ public enum Search implements Serializable {
                 int index = df.getInt(rows[i], targetIndex) - 1;
 
                 double w = weights.getDouble(rows[i]);
-                dt.increment(0, index, +w);
-                dt.increment(1, index, -w);
+                dt.inc(0, index, +w);
+                dt.inc(1, index, -w);
 
                 if (i >= c.minCount.get() && i < len - c.minCount.get() && values[rows[i]] < values[rows[i + 1]]) {
                     double currentScore = function.compute(dt);
@@ -149,7 +149,7 @@ public enum Search implements Serializable {
 
             Var test = df.rvar(testName);
             Var target = df.rvar(targetName);
-            var dt = DensityTable.fromLevelCounts(false, test, target);
+            var dt = DensityTable.fromLabels(false, test, target, null);
             if (!(dt.hasColsWithMinimumCount(c.minCount.get(), 2))) {
                 return null;
             }
@@ -176,11 +176,11 @@ public enum Search implements Serializable {
     NominalFull {
         @Override
         public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
-            var counts = DensityTable.fromLevelCounts(false, df, testName, targetName);
+            var counts = DensityTable.fromLabels(false, df, testName, targetName, null);
             if (!counts.hasColsWithMinimumCount(c.minCount.get(), 2)) {
                 return null;
             }
-            var dt = DensityTable.fromLevelWeights(false, df, testName, targetName, weights);
+            var dt = DensityTable.fromLabels(false, df, testName, targetName, weights);
             double score = function.compute(dt);
             Candidate candidate = new Candidate(score, testName);
             df.levels(testName).stream().skip(1).forEach(label -> candidate.addGroup(RowPredicate.nomEqual(testName, label)));
@@ -191,12 +191,12 @@ public enum Search implements Serializable {
         @Override
         public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
 
-            var dtCounts = DensityTable.fromLevelCounts(false, df, testName, targetName);
+            var dtCounts = DensityTable.fromLabels(false, df, testName, targetName, null);
             if (!(dtCounts.hasColsWithMinimumCount(c.minCount.get(), 2))) {
                 return null;
             }
 
-            var dtWeights = DensityTable.fromLevelWeights(false, df, testName, targetName, weights);
+            var dtWeights = DensityTable.fromLabels(false, df, testName, targetName, weights);
 
             double[] rowCounts = dtCounts.rowTotals();
             double totalRows = DoubleArrays.nanSum(rowCounts, 0, rowCounts.length);
@@ -204,13 +204,13 @@ public enum Search implements Serializable {
             List<String> targetLevels = df.levels(targetName);
             targetLevels = targetLevels.subList(1, targetLevels.size());
 
-            var dt = DensityTable.emptyByLabel(true, List.of("testLevel", "other"), targetLevels);
+            var dt = DensityTable.empty(true, List.of("testLevel", "other"), targetLevels);
             double bestScore = Double.NaN;
 
             // prepare dt
             double[] colTotals = dtWeights.colTotals();
             for (int i = 0; i < colTotals.length; i++) {
-                dt.increment(1, i, colTotals[i]);
+                dt.inc(1, i, colTotals[i]);
             }
 
             if (targetLevels.size() == 2) {
@@ -218,7 +218,7 @@ public enum Search implements Serializable {
                 Set<String> bestSet = null;
 
                 // sort in descending order of the first class
-                int[] levelIdx = IntArrays.newSeq(0, dtWeights.rowCount());
+                int[] levelIdx = IntArrays.newSeq(0, dtWeights.rows());
                 IntArrays.quickSort(levelIdx, 0, levelIdx.length, (k1, k2) -> Double.compare(dtWeights.get(k2, 0), dtWeights.get(k1, 0)));
 
                 int leftRowCounts = 0;
@@ -233,8 +233,8 @@ public enum Search implements Serializable {
 
                     // update dt
                     for (int j = 0; j < targetLevels.size(); j++) {
-                        dt.increment(0, j, dtWeights.get(i, j));
-                        dt.increment(1, j, -dtWeights.get(i, j));
+                        dt.inc(0, j, dtWeights.get(i, j));
+                        dt.inc(1, j, -dtWeights.get(i, j));
                     }
 
                     // check conditions on min count
@@ -270,13 +270,13 @@ public enum Search implements Serializable {
                     }
 
                     for (int j = 0; j < targetLevels.size(); j++) {
-                        dt.increment(0, j, +dtWeights.get(i, j));
-                        dt.increment(1, j, -dtWeights.get(i, j));
+                        dt.inc(0, j, +dtWeights.get(i, j));
+                        dt.inc(1, j, -dtWeights.get(i, j));
                     }
                     double currentScore = function.compute(dt);
                     for (int j = 0; j < targetLevels.size(); j++) {
-                        dt.increment(0, j, -dtWeights.get(i, j));
-                        dt.increment(1, j, +dtWeights.get(i, j));
+                        dt.inc(0, j, -dtWeights.get(i, j));
+                        dt.inc(1, j, +dtWeights.get(i, j));
                     }
 
                     if (Double.isNaN(bestScore) || bestScore < currentScore) {

@@ -1,23 +1,21 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
@@ -79,7 +77,7 @@ public class PCATest {
             }
         }
 
-        Frame prediction = pca.transform(df.removeVars(VarRange.of("y")), 3);
+        Frame prediction = pca.transform("pca_", df.removeVars(VarRange.of("y")), 3);
         double[] first_row = new double[]{-0.77536344, -1.00011356, 1.61721809};
         for (int i = 0; i < first_row.length; i++) {
             assertEquals(Math.abs(first_row[i]), Math.abs(prediction.getDouble(0, i)), 1e-6);
@@ -91,8 +89,8 @@ public class PCATest {
         PCA pca1 = PCA.newModel().center.set(true).standardize.set(true);
         PCA pca2 = PCA.newModel().center.set(true).standardize.set(false);
 
-        var out1 = pca1.fit(df).transform(df, 3).mapRows(0);
-        var out2 = pca2.fit(df).transform(df, 3).mapRows(0);
+        var out1 = pca1.fit(df).transform("pca_", df, 3).mapRows(0);
+        var out2 = pca2.fit(df).transform("pca_", df, 3).mapRows(0);
 
         for (int i = 0; i < out1.varCount(); i++) {
             assertNotEquals(out1.getDouble(0, i), out2.getDouble(0, i));
@@ -112,8 +110,8 @@ public class PCATest {
         PCA pca = PCA.newModel();
         pca.fit(x);
 
-        Frame pca2 = pca.transform(x, 2).bindVars(iris.rvar("class"));
-        Frame pca4 = pca.transform(x, 4).bindVars(iris.rvar("class"));
+        Frame pca2 = pca.transform("pca_", x, 2).bindVars(iris.rvar("class"));
+        Frame pca4 = pca.transform("pca_", x, 4).bindVars(iris.rvar("class"));
 
         CForest rf2 = CForest.newModel().poolSize.set(0).runs.set(20);
         CForest rf4 = CForest.newModel().poolSize.set(0).runs.set(20);

@@ -1,23 +1,21 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
@@ -75,13 +73,15 @@ public class BaggingModeTest {
 
     @Test
     void votingTest() {
-        BaggingMode.VOTING.computeDensity(dictionary, results, classes, densities);
+        // TODO: improve testing for class weights
+        BaggingMode.HARD_VOTE.computeDensity(dictionary, null, results, classes, densities);
         assertEquals("a", classes.getLabel(0));
     }
 
     @Test
     void distributionTest() {
-        BaggingMode.DISTRIBUTION.computeDensity(dictionary, results, classes, densities);
+        // TODO: improve testing for class weights
+        BaggingMode.SOFT_VOTE.computeDensity(dictionary, null, results, classes, densities);
         assertEquals(1.1 / 3, densities.getDouble(0, "a"));
         assertEquals(0.2 / 3, densities.getDouble(0, "b"));
         assertEquals(1.7 / 3, densities.getDouble(0, "c"), 1e-12);

@@ -154,10 +154,10 @@ public class MultinoulliEstimator extends AbstractEstimator {
     }
 
     private boolean fitNominal(Frame df, String targetName) {
-        DensityTable<String, String> dt = DensityTable.fromLevelCounts(true, df, getTestNames().get(0), targetName);
-        for (int i = 0; i < dt.rowCount(); i++) {
-            for (int j = 0; j < dt.colCount(); j++) {
-                dt.increment(i, j, laplaceSmoother);
+        DensityTable<String, String> dt = DensityTable.fromLabels(true, df, getTestNames().get(0), targetName, null);
+        for (int i = 0; i < dt.rows(); i++) {
+            for (int j = 0; j < dt.cols(); j++) {
+                dt.inc(i, j, laplaceSmoother);
             }
         }
         density = dt.normalizeOnCols();
@@ -167,12 +167,12 @@ public class MultinoulliEstimator extends AbstractEstimator {
     private boolean fitBinary(Frame df, String targetName) {
         List<String> fullTestVarNames = new ArrayList<>(getTestNames());
 
-        DensityTable<String, String> dt = DensityTable.emptyByLabel(true, fullTestVarNames, df.levels(targetName));
+        DensityTable<String, String> dt = DensityTable.empty(true, fullTestVarNames, df.levels(targetName));
 
         // increment lapace smoother
-        for (int i = 0; i < dt.rowCount(); i++) {
-            for (int j = 0; j < dt.colCount(); j++) {
-                dt.increment(i, j, laplaceSmoother);
+        for (int i = 0; i < dt.rows(); i++) {
+            for (int j = 0; j < dt.cols(); j++) {
+                dt.inc(i, j, laplaceSmoother);
             }
         }
 
@@ -188,7 +188,7 @@ public class MultinoulliEstimator extends AbstractEstimator {
             if (testName.isEmpty()) {
                 throw new IllegalArgumentException("No binary value equals 1, from all candidate values.");
             }
-            dt.increment(testName, df.getLabel(i, targetName), 1);
+            dt.inc(testName, df.getLabel(i, targetName), 1);
         }
         density = dt.normalizeOnCols();
         return true;

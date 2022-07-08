@@ -155,10 +155,10 @@ public class Group implements Printable {
     private final Frame df;
 
     // list of primary key variable names
-    private final List<String> pkNamesList;
+    private final List<String> pkNames;
 
     // other than pk var names from source frame
-    private final List<String> featureNamesList;
+    private final List<String> featureNames;
 
     // maps rows to group ids
     private final Int2IntOpenHashMap rowToGroupId = new Int2IntOpenHashMap();
@@ -170,31 +170,42 @@ public class Group implements Printable {
     private VarInt sortedGroupIds = VarInt.empty();
 
     private Group(Frame df, List<String> groupVarNames) {
+
+        // source data frame
         this.df = df;
-        this.pkNamesList = groupVarNames;
-        HashSet<String> pkVarNamesSet = new HashSet<>(pkNamesList);
-        List<Unique> groupByUniques =
-                this.pkNamesList.stream().map(varName -> Unique.of(df.rvar(varName), true)).collect(Collectors.toList());
-        this.featureNamesList = new ArrayList<>();
+
+        // names of the primary keys
+        this.pkNames = groupVarNames;
+        HashSet<String> pkVarNamesSet = new HashSet<>(pkNames);
+        if(pkNames.size()!=pkVarNamesSet.size()) {
+            throw new IllegalArgumentException("Group var names contains duplicates.");
+        }
+
+        // unique values for each primary key
+        List<Unique> groupByUniques = this.pkNames.stream().map(varName -> Unique.of(df.rvar(varName), true)).toList();
+
+
+        this.featureNames = new ArrayList<>();
         for (String varName : df.varNames()) {
             if (pkVarNamesSet.contains(varName)) {
                 continue;
             }
-            featureNamesList.add(varName);
+            featureNames.add(varName);
         }
+
         IndexNode root = new IndexNode(null, "", "", -1, -1);
 
         //populate rows
         int groupId = 0;
         for (int i = 0; i < df.rowCount(); i++) {
             IndexNode node = root;
-            for (int j = 0; j < pkNamesList.size(); j++) {
-                String levelName = pkNamesList.get(j);
+            for (int j = 0; j < pkNames.size(); j++) {
+                String levelName = pkNames.get(j);
                 String levelValue = df.getLabel(i, levelName);
                 int levelUniqueId = groupByUniques.get(j).idByRow(i);
                 IndexNode child = node.getChildNode(levelUniqueId);
                 if (child == null) {
-                    if (j != pkNamesList.size() - 1) {
+                    if (j != pkNames.size() - 1) {
                         child = new IndexNode(node, levelName, levelValue, levelUniqueId, -1);
                     } else {
                         child = new IndexNode(node, levelName, levelValue, levelUniqueId, groupId);
@@ -207,7 +218,7 @@ public class Group implements Printable {
                     node = child;
                 } else {
                     node = child;
-                    if (j == pkNamesList.size() - 1) {
+                    if (j == pkNames.size() - 1) {
                         child.addRow(i);
                         rowToGroupId.put(i, child.getGroupId());
                     }
@@ -217,8 +228,8 @@ public class Group implements Printable {
 
         // sort group ids
         List<int[]> groupUniqueIds = new ArrayList<>();
-        for (int i = 0; i < getGroupCount(); i++) {
-            groupUniqueIds.add(groupIdToLastLevelIndex.get(i).getLevelIds(new int[pkNamesList.size() + 1]));
+        for (int i = 0; i < getNumberOfGroups(); i++) {
+            groupUniqueIds.add(groupIdToLastLevelIndex.get(i).getLevelIds(new int[pkNames.size()+1]));
             sortedGroupIds.addInt(i);
         }
         sortedGroupIds = (VarInt) sortedGroupIds.fapply(VarRefSort.from((i1, i2) -> {
@@ -238,14 +249,14 @@ public class Group implements Printable {
      * @return list of variable names which acts as primary keys in group by
      */
     public List<String> getGroupByNameList() {
-        return pkNamesList;
+        return pkNames;
     }
 
     /**
      * @return list of variable names on which the aggregation is realized
      */
     public List<String> getFeatureNameList() {
-        return featureNamesList;
+        return featureNames;
     }
 
     public HashMap<Integer, IndexNode> getGroupIdToLastLevelIndex() {
@@ -270,7 +281,7 @@ public class Group implements Printable {
     /**
      * @return count of groups
      */
-    public int getGroupCount() {
+    public int getNumberOfGroups() {
         return groupIdToLastLevelIndex.size();
     }
 
@@ -373,7 +384,7 @@ public class Group implements Printable {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("GroupBy{");
-        sb.append("keys:[").append(String.join(",", pkNamesList)).append("], ");
+        sb.append("keys:[").append(String.join(",", pkNames)).append("], ");
         sb.append("group count:").append(groupIdToLastLevelIndex.size()).append(", ");
         sb.append("row count:").append(df.rowCount());
         sb.append("}");
@@ -387,19 +398,19 @@ public class Group implements Printable {
         }
         StringBuilder sb = new StringBuilder();
 
-        sb.append("group by: ").append(String.join(", ", pkNamesList)).append("\n");
+        sb.append("group by: ").append(String.join(", ", pkNames)).append("\n");
         sb.append("group count: ").append(groupIdToLastLevelIndex.size()).append("\n\n");
 
-        TextTable tt = TextTable.empty(40 + 1, pkNamesList.size() + featureNamesList.size() + 2, 1, pkNamesList.size() + 2);
+        TextTable tt = TextTable.empty(40 + 1, pkNames.size() + featureNames.size() + 2, 1, pkNames.size() + 2);
 
         // group header
-        for (int i = 0; i < pkNamesList.size(); i++) {
-            tt.textLeft(0, i + 1, pkNamesList.get(i));
+        for (int i = 0; i < pkNames.size(); i++) {
+            tt.textLeft(0, i + 1, pkNames.get(i));
         }
-        tt.textLeft(0, pkNamesList.size() + 1, "row");
+        tt.textLeft(0, pkNames.size() + 1, "row");
         // feature header
-        for (int i = 0; i < featureNamesList.size(); i++) {
-            tt.textLeft(0, i + pkNamesList.size() + 2, featureNamesList.get(i));
+        for (int i = 0; i < featureNames.size(); i++) {
+            tt.textLeft(0, i + pkNames.size() + 2, featureNames.get(i));
         }
         // row numbers
         for (int i = 0; i < 30; i++) {
@@ -424,7 +435,7 @@ public class Group implements Printable {
         for (int j = 0; j < _groupValues.size(); j++) {
             tt.textLeft(31, j + 1, "...");
         }
-        for (int j = 0; j < featureNamesList.size(); j++) {
+        for (int j = 0; j < featureNames.size(); j++) {
             tt.textLeft(31, j + _groupValues.size() + 2, "...");
         }
         for (int i = 31; i < 40; i++) {
@@ -443,8 +454,8 @@ public class Group implements Printable {
             tt.textLeft(i + 1, j + 1, groupValues.get(j));
         }
         tt.textLeft(i + 1, groupValues.size() + 1, String.format("%d  -> ", r));
-        for (int j = 0; j < featureNamesList.size(); j++) {
-            tt.textType(i + 1, j + groupValues.size() + 2, df, r, featureNamesList.get(j));
+        for (int j = 0; j < featureNames.size(); j++) {
+            tt.textType(i + 1, j + groupValues.size() + 2, df, r, featureNames.get(j));
         }
     }
 
@@ -452,19 +463,19 @@ public class Group implements Printable {
     public String toFullContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("group by: ").append(String.join(", ", pkNamesList)).append("\n");
+        sb.append("group by: ").append(String.join(", ", pkNames)).append("\n");
         sb.append("group count: ").append(groupIdToLastLevelIndex.size()).append("\n\n");
 
-        TextTable tt = TextTable.empty(df.rowCount() + 1, pkNamesList.size() + featureNamesList.size() + 2, 1, pkNamesList.size() + 2);
+        TextTable tt = TextTable.empty(df.rowCount() + 1, pkNames.size() + featureNames.size() + 2, 1, pkNames.size() + 2);
 
         // group header
-        for (int i = 0; i < pkNamesList.size(); i++) {
-            tt.textLeft(0, i + 1, pkNamesList.get(i));
+        for (int i = 0; i < pkNames.size(); i++) {
+            tt.textLeft(0, i + 1, pkNames.get(i));
         }
-        tt.textLeft(0, pkNamesList.size() + 1, "row");
+        tt.textLeft(0, pkNames.size() + 1, "row");
         // feature header
-        for (int i = 0; i < featureNamesList.size(); i++) {
-            tt.textLeft(0, i + pkNamesList.size() + 2, featureNamesList.get(i));
+        for (int i = 0; i < featureNames.size(); i++) {
+            tt.textLeft(0, i + pkNames.size() + 2, featureNames.get(i));
         }
         // row numbers
         for (int i = 0; i < df.rowCount(); i++) {
@@ -483,8 +494,8 @@ public class Group implements Printable {
                     tt.textLeft(pos, i + 1, groupValues.get(i));
                 }
                 tt.textLeft(pos, groupValues.size() + 1, String.format("%d  -> ", row));
-                for (int i = 0; i < featureNamesList.size(); i++) {
-                    tt.textType(pos, i + groupValues.size() + 2, df, row, featureNamesList.get(i));
+                for (int i = 0; i < featureNames.size(); i++) {
+                    tt.textType(pos, i + groupValues.size() + 2, df, row, featureNames.get(i));
                 }
                 pos++;
             }
@@ -663,7 +674,7 @@ public class Group implements Printable {
                     sb.append(", ");
             }
             sb.append("\n");
-            sb.append("group count: ").append(group.getGroupCount()).append("\n");
+            sb.append("group count: ").append(group.getNumberOfGroups()).append("\n");
             sb.append("group by functions: ");
             for (int i = 0; i < funs.size(); i++) {
                 sb.append(funs.get(i).toString());
@@ -686,7 +697,7 @@ public class Group implements Printable {
                 selectedGroupIds.addAllInt(sortedGroupIds.iterator());
                 full = true;
             } else {
-                selectedGroupIds.addAllInt(sortedGroupIds.iterator(0, headRows));
+                 selectedGroupIds.addAllInt(sortedGroupIds.iterator(0, headRows));
                 selectedGroupIds.addAllInt(sortedGroupIds.iterator(sortedGroupIds.size() - tailRows, sortedGroupIds.size()));
             }
 
@@ -744,7 +755,7 @@ public class Group implements Printable {
 
         @Override
         public String toFullContent(Printer printer, POption<?>... options) {
-            return selectedContent(printer, options, group.getGroupCount(), 0);
+            return selectedContent(printer, options, group.getNumberOfGroups(), 0);
         }
     }
 }

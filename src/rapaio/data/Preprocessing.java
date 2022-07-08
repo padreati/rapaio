@@ -48,13 +48,8 @@ import rapaio.data.preprocessing.Transform;
  */
 public final class Preprocessing implements Serializable {
 
-    public static Preprocessing newProcess(Transform... filters) {
-        var transform = new Preprocessing();
-        transform.clear();
-        for (var filter : filters) {
-            transform.add(filter);
-        }
-        return transform;
+    public static Preprocessing newProcess() {
+        return new Preprocessing();
     }
 
     private final List<Transform> transformations = new ArrayList<>();

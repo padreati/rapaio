@@ -35,8 +35,8 @@ import rapaio.math.linear.DVector;
 import rapaio.math.optimization.Solver;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.param.ParamSet;
+import rapaio.ml.common.param.ValueParam;
 
 /**
  * Steepest descent for L1 norm

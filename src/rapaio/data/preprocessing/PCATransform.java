@@ -36,19 +36,35 @@ import rapaio.ml.analysis.PCA;
 public class PCATransform extends AbstractTransform {
 
     public static PCATransform featureCount(int max) {
-        return featureCount(max, VarRange.all());
+        return featureCount("pca_", max, VarRange.all());
+    }
+
+    public static PCATransform featureCount(String prefix, int max) {
+        return featureCount(prefix, max, VarRange.all());
     }
 
     public static PCATransform featureCount(int max, VarRange varRange) {
-        return new PCATransform((values, vectors) -> Math.min(values.size(), max), varRange);
+        return new PCATransform("pca_", (values, vectors) -> Math.min(values.size(), max), varRange);
+    }
+
+    public static PCATransform featureCount(String prefix, int max, VarRange varRange) {
+        return new PCATransform(prefix, (values, vectors) -> Math.min(values.size(), max), varRange);
     }
 
     public static PCATransform coverVariance(double minPercentage) {
-        return coverVariance(minPercentage, VarRange.all());
+        return coverVariance("pca_", minPercentage, VarRange.all());
+    }
+
+    public static PCATransform coverVariance(String prefix, double minPercentage) {
+        return coverVariance(prefix, minPercentage, VarRange.all());
     }
 
     public static PCATransform coverVariance(double minPercentage, VarRange varRange) {
-        return new PCATransform((values, vectors) -> {
+        return coverVariance("pca_", minPercentage, varRange);
+    }
+
+    public static PCATransform coverVariance(String prefix, double minPercentage, VarRange varRange) {
+        return new PCATransform(prefix, (values, vectors) -> {
             var coverage = values.copy().cumsum().div(values.sum());
             for (int i = 0; i < coverage.size(); i++) {
                 if (coverage.get(i) >= minPercentage) {
@@ -62,17 +78,19 @@ public class PCATransform extends AbstractTransform {
     @Serial
     private static final long serialVersionUID = 2797285371357486124L;
 
+    final String prefix;
     final BiFunction<DVector, DMatrix, Integer> kFun;
     private PCA pca;
 
-    private PCATransform(BiFunction<DVector, DMatrix, Integer> kFun, VarRange varRange) {
+    private PCATransform(String prefix, BiFunction<DVector, DMatrix, Integer> kFun, VarRange varRange) {
         super(varRange);
+        this.prefix = prefix;
         this.kFun = kFun;
     }
 
     @Override
     public PCATransform newInstance() {
-        return new PCATransform(kFun, varRange);
+        return new PCATransform(prefix, kFun, varRange);
     }
 
     @Override
@@ -85,7 +103,7 @@ public class PCATransform extends AbstractTransform {
     public Frame coreApply(Frame df) {
         Frame rest = df.removeVars(VarRange.of(varNames));
         int k = kFun.apply(pca.getValues(), pca.getVectors());
-        Frame trans = pca.transform(df.mapVars(varNames), k);
+        Frame trans = pca.transform(prefix, df.mapVars(varNames), k);
         return rest.varCount() == 0 ? trans : rest.bindVars(trans);
     }
 }

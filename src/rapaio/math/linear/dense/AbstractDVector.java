@@ -340,6 +340,22 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
+    public DVector sqr() {
+        for (int i = 0; i < size(); i++) {
+            set(i, get(i) * get(i));
+        }
+        return this;
+    }
+
+    @Override
+    public DVector sqrTo(DVector to) {
+        for (int i = 0; i < size(); i++) {
+            to.set(i, get(i) * get(i));
+        }
+        return to;
+    }
+
+    @Override
     public DVector sqrt() {
         for (int i = 0; i < size(); i++) {
             set(i, StrictMath.sqrt(get(i)));

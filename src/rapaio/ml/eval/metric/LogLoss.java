@@ -31,19 +31,29 @@ import rapaio.ml.model.ClassifierResult;
  */
 public class LogLoss extends AbstractClassifierMetric {
 
-    public static LogLoss newMetric(double eps) {
-        return new LogLoss(eps);
+    public static LogLoss newMetric() {
+        return new LogLoss(1e-15, true);
+    }
+
+    public static LogLoss newMetric(boolean normalize) {
+        return new LogLoss(1e-15, normalize);
+    }
+
+    public static LogLoss newMetric(double eps, boolean normalize) {
+        return new LogLoss(eps, normalize);
     }
 
     @Serial
     private static final long serialVersionUID = 8850076650664844719L;
     private static final String NAME = "LogLoss";
 
+    private final boolean normalize;
     private final double eps;
 
-    private LogLoss(double eps) {
+    private LogLoss(double eps, boolean normalize) {
         super(NAME);
         this.eps = eps;
+        this.normalize = normalize;
     }
 
     @Override
@@ -52,7 +62,7 @@ public class LogLoss extends AbstractClassifierMetric {
         for (int i = 0; i < actual.size(); i++) {
             logloss -= Math.log(Math.max(eps, Math.min(1 - eps, result.firstDensity().getDouble(i, actual.getLabel(i)))));
         }
-        score = new ClassifierScore(logloss);
+        score = new ClassifierScore(normalize ? logloss / actual.size() : logloss);
         return this;
     }
 }

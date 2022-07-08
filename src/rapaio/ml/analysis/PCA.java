@@ -34,8 +34,8 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.param.ParamSet;
+import rapaio.ml.common.param.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -152,11 +152,23 @@ public class PCA extends ParamSet<PCA> implements Printable {
     /**
      * Transforms a given matrix into projections of the first k principal components.
      *
-     * @param df initial data frame
-     * @param k  number of principal components used
+     * @param df     initial data frame
+     * @param k      number of principal components used
      * @return transformed input
      */
     public Frame transform(Frame df, int k) {
+        return transform("pca_", df, k);
+    }
+
+    /**
+     * Transforms a given matrix into projections of the first k principal components.
+     *
+     * @param prefix prefix used for generated variables
+     * @param df     initial data frame
+     * @param k      number of principal components used
+     * @return transformed input
+     */
+    public Frame transform(String prefix, Frame df, int k) {
 
         DMatrix x = DMatrix.copy(df.mapVars(inputNames));
 
@@ -169,7 +181,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
 
         String[] names = new String[k];
         for (int i = 0; i < k; i++) {
-            names[i] = "pca_" + (i + 1);
+            names[i] = prefix + (i + 1);
         }
 
         DMatrix result = x.dot(eigenVectors.rangeCols(0, k));

@@ -22,7 +22,6 @@
 package rapaio.core.tools;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.pow;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -33,10 +32,10 @@ import java.util.function.DoublePredicate;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -219,47 +218,11 @@ public class DensityVector<T> implements Printable, Serializable {
      * @return index of the greatest value
      */
     public int findBestIndex() {
-        double n = 1;
-        int bestIndex = 0;
-        double best = values[0];
-        for (int i = 1; i < values.length; i++) {
-            if (values[i] > best) {
-                best = values[i];
-                bestIndex = i;
-                n = 1;
-                continue;
-            }
-            if (values[i] == best) {
-                if (RandomSource.nextDouble() > n / (n + 1)) {
-                    best = values[i];
-                    bestIndex = i;
-                }
-                n++;
-            }
-        }
-        return bestIndex;
+        return DVectorDense.wrap(values).argmax();
     }
 
     public String findBestLabel() {
-        double n = 1;
-        String bestLabel = index.getValueString(0);
-        double best = values[0];
-        for (int i = 1; i < values.length; i++) {
-            if (values[i] > best) {
-                best = values[i];
-                bestLabel = index.getValueString(i);
-                n = 1;
-                continue;
-            }
-            if (values[i] == best) {
-                if (RandomSource.nextDouble() > n / (n + 1)) {
-                    best = values[i];
-                    bestLabel = index.getValueString(i);
-                }
-                n++;
-            }
-        }
-        return bestLabel;
+        return index.getValueString(DVectorDense.wrap(values).argmax());
     }
 
     /**
@@ -274,17 +237,12 @@ public class DensityVector<T> implements Printable, Serializable {
      * Normalize values from density vector to sum of powers.
      */
     public DensityVector<T> normalize(double pow) {
-        total = 0.0;
-        for (double value : values) {
-            total += pow(value, pow);
-        }
-        if (total == 0) {
+        var vector = DVectorDense.wrap(values);
+        double sum = vector.copy().apply(x -> Math.pow(x, pow)).sum();
+        if (sum == 0) {
             return this;
         }
-        for (int i = 0; i < values.length; i++) {
-            values[i] /= total;
-        }
-        total = 1.0;
+        vector.div(sum);
         return this;
     }
 

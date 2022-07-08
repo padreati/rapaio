@@ -126,7 +126,7 @@ public class SolverC {
         }
 
         if (2 * nr_free < activeSize) {
-            LOGGER.info("using shrinking may be faster\n");
+            LOGGER.fine("using shrinking may be faster\n");
         }
 
         if (nr_free * len > 2 * activeSize * (len - activeSize)) {

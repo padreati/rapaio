@@ -21,8 +21,8 @@
 
 package rapaio.experiment.algos.edit;
 
-import rapaio.ml.common.ParamSet;
-import rapaio.ml.common.ValueParam;
+import rapaio.ml.common.param.ParamSet;
+import rapaio.ml.common.param.ValueParam;
 import rapaio.util.collection.IntArrays;
 
 /**
