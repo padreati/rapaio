@@ -25,6 +25,7 @@ import java.io.Serial;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -97,6 +98,8 @@ public class RegressionEval extends ParamSet<RegressionEval> {
      */
     public final ValueParam<Boolean, RegressionEval> debug = new ValueParam<>(this, false, "debug");
 
+    public final ValueParam<Long, RegressionEval> seed = new ValueParam<>(this, 0L, "seed");
+
     private RegressionEval() {
     }
 
@@ -105,7 +108,7 @@ public class RegressionEval extends ParamSet<RegressionEval> {
 
         // create features for parallel execution
 
-        List<Split> splits = splitStrategy.get().generateSplits(df.get(), weights.get());
+        List<Split> splits = splitStrategy.get().generateSplits(df.get(), weights.get(), getRandom());
 
         for (Split split : splits) {
             tasks.add(new Task(model.get(), targetName.get(), split));
@@ -161,7 +164,7 @@ public class RegressionEval extends ParamSet<RegressionEval> {
     private record Run(Split split, RegressionResult trainResult, RegressionResult testResult) {
     }
 
-    private record Task(RegressionModel<?,?,?> model, String targetName, Split split) implements Callable<RegressionEval.Run> {
+    private record Task(RegressionModel<?, ?, ?> model, String targetName, Split split) implements Callable<RegressionEval.Run> {
 
         @Override
         public Run call() {
@@ -171,5 +174,9 @@ public class RegressionEval extends ParamSet<RegressionEval> {
             var testResult = m.predict(split.testDf());
             return new RegressionEval.Run(split, trainResult, testResult);
         }
+    }
+
+    protected Random getRandom() {
+        return seed.get() == 0 ? new Random() : new Random(seed.get());
     }
 }

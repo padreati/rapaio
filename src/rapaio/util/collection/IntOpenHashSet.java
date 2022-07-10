@@ -21,7 +21,7 @@
 
 package rapaio.util.collection;
 
-import static rapaio.util.hash.Murmur3.murmur3A;
+import static rapaio.util.hash.Murmur3.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.IntStream;
 
-import rapaio.core.RandomSource;
 import rapaio.util.IntIterable;
 import rapaio.util.IntIterator;
 
@@ -41,23 +40,29 @@ public class IntOpenHashSet implements Serializable, IntIterable {
     @Serial
     private static final long serialVersionUID = 8709214224656233765L;
 
+    public static final int DEFAULT_SEEED = 42;
     public static final double DEFAULT_LOAD_FACTOR = 0.75;
     public static final int DEFAULT_ALLOCATION = 16;
     public static final Probing DEFAULT_PROBING = Probing.QUADRATIC;
 
     public static final int MISSING = Integer.MIN_VALUE;
 
-    private final int seed = RandomSource.nextInt();
+    private final int seed;
     private final double loadFactor;
     private final Probing probing;
     private int size;
     private int[] array;
 
     public IntOpenHashSet() {
-        this(DEFAULT_LOAD_FACTOR, DEFAULT_ALLOCATION, DEFAULT_PROBING);
+        this(DEFAULT_SEEED, DEFAULT_LOAD_FACTOR, DEFAULT_ALLOCATION, DEFAULT_PROBING);
     }
 
-    public IntOpenHashSet(double loadFactor, int allocation, Probing probing) {
+    public IntOpenHashSet(int seed) {
+        this(seed, DEFAULT_LOAD_FACTOR, DEFAULT_ALLOCATION, DEFAULT_PROBING);
+    }
+
+    public IntOpenHashSet(int seed, double loadFactor, int allocation, Probing probing) {
+        this.seed = seed;
         this.loadFactor = loadFactor;
         this.probing = probing;
         this.array = IntArrays.newFill(allocation, MISSING);
@@ -213,7 +218,8 @@ public class IntOpenHashSet implements Serializable, IntIterable {
             public int step(int round) {
                 return round;
             }
-        }, QUADRATIC {
+        },
+        QUADRATIC {
             @Override
             public int step(int round) {
                 return round * round;

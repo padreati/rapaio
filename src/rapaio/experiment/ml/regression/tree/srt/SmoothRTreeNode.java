@@ -21,6 +21,7 @@
 
 package rapaio.experiment.ml.regression.tree.srt;
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rapaio.data.Frame;
@@ -65,7 +66,7 @@ public class SmoothRTreeNode {
         return rightNode;
     }
 
-    public void coreFit(SmoothRTree tree, Frame df, Var weights) {
+    public void coreFit(SmoothRTree tree, Frame df, Var weights, Random random) {
 
         String targetName = tree.firstTargetName();
         int maxDepth = tree.getMaxDepth();
@@ -78,7 +79,7 @@ public class SmoothRTreeNode {
 //        this.factors.add(1.0);
 //        Var residual = VarDouble.from(df.rowCount(), r -> y.getDouble(r) - prediction.getDouble(r)).withName(y.name());
 //        this.coreNodeFit(df, weights, residual, tree, 1);
-        this.coreNodeFit(df, weights, y, tree, 1);
+        this.coreNodeFit(df, weights, y, tree, 1, random);
     }
 
     private double composeWeight(double originalWeight, double newWeight) {
@@ -93,13 +94,13 @@ public class SmoothRTreeNode {
         return originalWeight * newWeight;
     }
 
-    private void coreNodeFit(Frame df, Var weights, Var y, SmoothRTree tree, int depth) {
+    private void coreNodeFit(Frame df, Var weights, Var y, SmoothRTree tree, int depth, Random random) {
 
         VarSelector varSelector = tree.getVarSelector().newInstance();
         varSelector.withVarNames(tree.inputNames());
 
         // find best fit function
-        String[] testVarNames = varSelector.nextVarNames();
+        String[] testVarNames = varSelector.nextVarNames(random);
 
         double errorScore = tree.getLoss().residualErrorScore(y);
 
@@ -166,11 +167,11 @@ public class SmoothRTreeNode {
         leftNode.coreNodeFit(
                 df.mapRows(leftRows).copy(),
                 leftW,
-                leftY, tree, depth + 1);
+                leftY, tree, depth + 1, random);
         rightNode.coreNodeFit(
                 df.mapRows(rightRows).copy(),
                 rightW,
-                rightY, tree, depth + 1);
+                rightY, tree, depth + 1, random);
     }
 
     public double predict(Frame df, int row, SmoothRTree tree, double w) {

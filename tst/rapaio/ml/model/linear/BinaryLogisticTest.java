@@ -21,26 +21,35 @@
 
 package rapaio.ml.model.linear;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
+
 import rapaio.core.distributions.Normal;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VarBinary;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.model.ClassifierResult;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/22/20.
  */
 public class BinaryLogisticTest {
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(42);
+        random = new Random(42);
     }
 
     @Test
@@ -144,8 +153,8 @@ public class BinaryLogisticTest {
         int n = 20;
 
         VarDouble x = VarDouble.empty(2 * n).name("x");
-        Normal.of(0, 0.5).sample(n).dv().addTo(x.dv().range(0, n), 0);
-        Normal.of(0.75, 0.5).sample(n).dv().addTo(x.dv().range(n, 2 * n), 0);
+        Normal.of(0, 0.5).sample(random, n).dv().addTo(x.dv().range(0, n), 0);
+        Normal.of(0.75, 0.5).sample(random, n).dv().addTo(x.dv().range(n, 2 * n), 0);
 
         VarNominal y = VarNominal.from(2 * n, i -> i < n ? "1" : "0").name("y");
 
@@ -167,8 +176,8 @@ public class BinaryLogisticTest {
         Frame df = iris.removeVars("petal-length", "sepal-length", "class").bindVars(clazz).copy();
 
         Normal normal = Normal.of(0, 0.5);
-        df.rvar(0).dv().apply(v -> v + normal.sampleNext());
-        df.rvar(1).dv().apply(v -> v + normal.sampleNext());
+        df.rvar(0).dv().apply(v -> v + normal.sampleNext(random));
+        df.rvar(1).dv().apply(v -> v + normal.sampleNext(random));
 
 
         var irls = BinaryLogistic.newModel()
@@ -289,8 +298,8 @@ public class BinaryLogisticTest {
     void testLearningArtifacts() {
         int n = 100;
         VarDouble x = VarDouble.empty(2 * n).name("x");
-        Normal.of(0, 1).sample(n).dv().addTo(x.dv().range(0, n), 0);
-        Normal.of(2, 1).sample(n).dv().addTo(x.dv().range(n, 2 * n), 0);
+        Normal.of(0, 1).sample(random, n).dv().addTo(x.dv().range(0, n), 0);
+        Normal.of(2, 1).sample(random, n).dv().addTo(x.dv().range(n, 2 * n), 0);
 
         VarNominal y = VarNominal.from(2 * n, i -> i < n ? "1" : "2").name("y");
 

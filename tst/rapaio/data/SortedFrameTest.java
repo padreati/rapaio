@@ -21,19 +21,16 @@
 
 package rapaio.data;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static rapaio.data.RowComparators.doubleComparator;
-import static rapaio.data.RowComparators.labelComparator;
+import static rapaio.data.RowComparators.*;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.preprocessing.RefSort;
 import rapaio.io.Csv;
 import rapaio.util.IntComparator;
@@ -43,10 +40,12 @@ import rapaio.util.IntComparator;
  */
 public class SortedFrameTest {
 
+    private Random random;
     private Frame df;
 
     @BeforeEach
     void init() throws IOException {
+        random = new Random(1);
         df = Csv.instance()
                 .quotes.set(false)
                 .types.add(VarType.DOUBLE, "z")
@@ -57,19 +56,18 @@ public class SortedFrameTest {
 
     @Test
     void testMultipleStressSortedLayers() {
-        RandomSource.setSeed(1);
         Var[] vars = new Var[1_000];
         for (int i = 0; i < 1_000; i++) {
             vars[i] = VarDouble.fill(1_000).name("v" + i);
             for (int j = 0; j < 1_000; j++) {
-                vars[i].setDouble(j, RandomSource.nextDouble());
+                vars[i].setDouble(j, random.nextDouble());
             }
         }
         Frame sorted = SolidFrame.byVars(1_000, vars);
 
         for (int i = 0; i < 100; i++) {
-            int col = RandomSource.nextInt(sorted.varCount());
-            boolean asc = RandomSource.nextDouble() >= .5;
+            int col = random.nextInt(sorted.varCount());
+            boolean asc = random.nextDouble() >= .5;
             sorted = RefSort.by(doubleComparator(sorted.rvar(col), asc)).fapply(sorted);
         }
 
@@ -146,8 +144,8 @@ public class SortedFrameTest {
         Frame sorted = df;
 
         for (int i = 0; i < 10_000; i++) {
-            int col = RandomSource.nextInt(sorted.varCount());
-            boolean asc = RandomSource.nextDouble() >= .5;
+            int col = random.nextInt(sorted.varCount());
+            boolean asc = random.nextDouble() >= .5;
             IntComparator comp = sorted.rvar(col).type().isNominal() ?
                     labelComparator(sorted.rvar(0), asc) :
                     doubleComparator(sorted.rvar(0), asc);

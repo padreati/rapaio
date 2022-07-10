@@ -1,58 +1,29 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.util.collection;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static rapaio.util.collection.DoubleArrays.add;
-import static rapaio.util.collection.DoubleArrays.addMul;
-import static rapaio.util.collection.DoubleArrays.addTo;
-import static rapaio.util.collection.DoubleArrays.copy;
-import static rapaio.util.collection.DoubleArrays.div;
-import static rapaio.util.collection.DoubleArrays.divTo;
-import static rapaio.util.collection.DoubleArrays.ensureCapacity;
-import static rapaio.util.collection.DoubleArrays.forceCapacity;
-import static rapaio.util.collection.DoubleArrays.grow;
-import static rapaio.util.collection.DoubleArrays.mean;
-import static rapaio.util.collection.DoubleArrays.mul;
-import static rapaio.util.collection.DoubleArrays.multTo;
-import static rapaio.util.collection.DoubleArrays.nanCount;
-import static rapaio.util.collection.DoubleArrays.nanMean;
-import static rapaio.util.collection.DoubleArrays.nanSum;
-import static rapaio.util.collection.DoubleArrays.nanVariance;
-import static rapaio.util.collection.DoubleArrays.newFill;
-import static rapaio.util.collection.DoubleArrays.newFrom;
-import static rapaio.util.collection.DoubleArrays.newSeq;
-import static rapaio.util.collection.DoubleArrays.sub;
-import static rapaio.util.collection.DoubleArrays.subTo;
-import static rapaio.util.collection.DoubleArrays.sum;
-import static rapaio.util.collection.DoubleArrays.trim;
-import static rapaio.util.collection.DoubleArrays.variance;
+import static rapaio.util.collection.DoubleArrays.*;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -63,7 +34,6 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
@@ -79,9 +49,11 @@ public class DoubleArraysTest {
     private static final double TOL = 1e-12;
     private final Normal normal = Normal.std();
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(1234);
+        random = new Random(1234);
     }
 
     @Test
@@ -98,7 +70,7 @@ public class DoubleArraysTest {
 
     @Test
     void testIterator() {
-        double[] array = newFrom(0, 100, row -> normal.sampleNext());
+        double[] array = newFrom(0, 100, row -> normal.sampleNext(random));
         DoubleIterator it1 = DoubleArrays.iterator(array, 0, 10);
         for (int i = 0; i < 10; i++) {
             assertTrue(it1.hasNext());
@@ -116,7 +88,7 @@ public class DoubleArraysTest {
 
     @Test
     void testCounts() {
-        double[] array1 = newFrom(0, 100, row -> row % 7 == 0 ? Double.NaN : normal.sampleNext());
+        double[] array1 = newFrom(0, 100, row -> row % 7 == 0 ? Double.NaN : normal.sampleNext(random));
         assertEquals(4, nanCount(array1, 0, 5));
         assertEquals(6, nanCount(array1, 10, 7));
         assertEquals(85, nanCount(array1, 0, 100));
@@ -124,13 +96,13 @@ public class DoubleArraysTest {
 
     @Test
     void testSums() {
-        double[] array1 = newFrom(0, 100, row -> row % 7 == 0 ? Double.NaN : normal.sampleNext());
+        double[] array1 = newFrom(0, 100, row -> row % 7 == 0 ? Double.NaN : normal.sampleNext(random));
         double[] array2 = newFrom(0, 100, row -> normal.sampleNext());
 
         for (int i = 0; i < 100; i++) {
-            int start = RandomSource.nextInt(30);
-            int mid = RandomSource.nextInt(30) + start;
-            int end = RandomSource.nextInt(40) + mid;
+            int start = random.nextInt(30);
+            int mid = random.nextInt(30) + start;
+            int end = random.nextInt(40) + mid;
 
             assertEquals(sum(array1, start, mid - start) + sum(array1, mid, end - mid), sum(array1, start, end - start), TOL);
             assertEquals(nanSum(array1, start, mid - start) + nanSum(array1, mid, end - mid), nanSum(array1, start, end - start), TOL);
@@ -146,9 +118,9 @@ public class DoubleArraysTest {
         double[] array2 = newFrom(0, 100, row -> normal.sampleNext());
 
         for (int i = 0; i < 1000; i++) {
-            int start = RandomSource.nextInt(20) + 10;
-            int mid = RandomSource.nextInt(19) + start + 10;
-            int end = RandomSource.nextInt(29) + mid + 10;
+            int start = random.nextInt(20) + 10;
+            int mid = random.nextInt(19) + start + 10;
+            int end = random.nextInt(29) + mid + 10;
 
             assertEquals(mean(array1, start, mid - start) * (mid - start) + mean(array1, mid, end - mid) * (end - mid),
                     sum(array1, start, end - start) * (end - start), TOL);
@@ -175,8 +147,8 @@ public class DoubleArraysTest {
         double[] array2 = newFrom(0, 100, row -> row);
 
         for (int i = 0; i < 1000; i++) {
-            int start = RandomSource.nextInt(50);
-            int end = RandomSource.nextInt(49) + 51;
+            int start = random.nextInt(50);
+            int end = random.nextInt(49) + 51;
             int len = end - start;
 
             assertEquals(nanVariance(array1, start, len), Variance.of(VarDouble.wrap(Arrays.copyOfRange(array1, start, end))).value(), TOL);
@@ -192,8 +164,8 @@ public class DoubleArraysTest {
         double[] array1 = newFrom(0, 100, row -> row);
 
         for (int i = 0; i < 100; i++) {
-            int start = RandomSource.nextInt(50);
-            int len = 50 + RandomSource.nextInt(50) - start;
+            int start = random.nextInt(50);
+            int len = 50 + random.nextInt(50) - start;
 
             double[] array2 = copy(array1, start, len);
             DoubleArrays.add(array2, 0, 10, len);
@@ -221,8 +193,8 @@ public class DoubleArraysTest {
         double[] array1 = newFrom(0, 100, row -> row);
 
         for (int i = 0; i < 100; i++) {
-            int start = RandomSource.nextInt(50);
-            int len = RandomSource.nextInt(50);
+            int start = random.nextInt(50);
+            int len = random.nextInt(50);
 
             double[] array2 = copy(array1, start, len);
             sub(array2, 0, 10, len);
@@ -250,8 +222,8 @@ public class DoubleArraysTest {
         double[] array1 = newFrom(0, 100, row -> row);
 
         for (int i = 0; i < 100; i++) {
-            int start = RandomSource.nextInt(50);
-            int end = 50 + RandomSource.nextInt(50);
+            int start = random.nextInt(50);
+            int end = 50 + random.nextInt(50);
             int len = end - start;
 
             double[] array2 = copy(array1, start, len);
@@ -281,8 +253,8 @@ public class DoubleArraysTest {
         double[] array2 = newFrom(0, 100, row -> 2);
 
         for (int i = 0; i < 100; i++) {
-            int start = RandomSource.nextInt(50);
-            int end = 50 + RandomSource.nextInt(50);
+            int start = random.nextInt(50);
+            int end = 50 + random.nextInt(50);
             int len = end - start;
 
             double[] array3 = copy(array1, start, len);
@@ -297,8 +269,8 @@ public class DoubleArraysTest {
         double[] array1 = newFrom(0, 100, row -> row);
 
         for (int i = 0; i < 100; i++) {
-            int start = RandomSource.nextInt(50);
-            int len = 50 + RandomSource.nextInt(50) - start;
+            int start = random.nextInt(50);
+            int len = 50 + random.nextInt(50) - start;
 
             double[] array2 = copy(array1, start, len);
             div(array2, 0, 10, len);

@@ -22,6 +22,7 @@
 package rapaio.data.preprocessing;
 
 import java.io.Serial;
+import java.util.Random;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
@@ -34,29 +35,43 @@ import rapaio.data.VarRange;
 public class Jitter extends AbstractTransform {
 
     public static Jitter on(VarRange varRange) {
-        return new Jitter(Normal.of(0, 0.1), varRange);
+        return on(new Random(), Normal.of(0, 0.1), varRange);
+    }
+
+    public static Jitter on(Random random, VarRange varRange) {
+        return new Jitter(random, Normal.of(0, 0.1), varRange);
     }
 
     public static Jitter on(double sd, VarRange varRange) {
-        return new Jitter(Normal.of(0, sd), varRange);
+        return on(new Random(), Normal.of(0, sd), varRange);
+    }
+
+    public static Jitter on(Random random, double sd, VarRange varRange) {
+        return new Jitter(random, Normal.of(0, sd), varRange);
     }
 
     public static Jitter on(Distribution d, VarRange varRange) {
-        return new Jitter(d, varRange);
+        return new Jitter(new Random(), d, varRange);
+    }
+
+    public static Jitter on(Random random, Distribution d, VarRange varRange) {
+        return new Jitter(random, d, varRange);
     }
 
     @Serial
     private static final long serialVersionUID = 33367007274996702L;
+    private final Random random;
     private final Distribution d;
 
-    private Jitter(Distribution d, VarRange varRange) {
+    private Jitter(Random random, Distribution d, VarRange varRange) {
         super(varRange);
+        this.random = random;
         this.d = d;
     }
 
     @Override
     public Jitter newInstance() {
-        return new Jitter(d, varRange);
+        return new Jitter(random, d, varRange);
     }
 
     @Override
@@ -68,7 +83,7 @@ public class Jitter extends AbstractTransform {
         for (String varName : varNames) {
             int varIndex = df.varIndex(varName);
             for (int i = 0; i < df.rowCount(); i++) {
-                df.setDouble(i, varIndex, df.getDouble(i, varIndex) + d.sampleNext());
+                df.setDouble(i, varIndex, df.getDouble(i, varIndex) + d.sampleNext(random));
             }
         }
         return df;

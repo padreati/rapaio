@@ -25,6 +25,7 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -111,6 +112,7 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, RunInf
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
+        Random random = getRandom();
         Var w = weights.dvNew().div(weights.dv().nansum()).dv();
         double k = firstTargetLevels().size() - 1;
 
@@ -118,7 +120,7 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, RunInf
         alphas.clear();
 
         for (int i = 0; i < runs.get(); i++) {
-            if (!learnRound(df, w, k)) {
+            if (!learnRound(random, df, w, k)) {
                 break;
             }
             if (runningHook.get() != null) {
@@ -128,11 +130,11 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, RunInf
         return true;
     }
 
-    private boolean learnRound(Frame df, Var w, double k) {
+    private boolean learnRound(Random random, Frame df, Var w, double k) {
 
         ClassifierModel<?, ?, ?> hh = model.get().newInstance();
 
-        RowSampler.Sample sample = rowSampler.get().nextSample(df, w);
+        RowSampler.Sample sample = rowSampler.get().nextSample(random, df, w);
         hh.fit(sample.df(), sample.weights(), targetNames());
 
         var predict = hh.predict(df, true, false).firstClasses();

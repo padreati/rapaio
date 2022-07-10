@@ -21,12 +21,12 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.util.Random;
+
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -38,17 +38,13 @@ public class VarBoxCoxTransformTest {
 
     private static final double TOL = 1e-20;
 
-    @BeforeEach
-    void beforeEach() {
-        RandomSource.setSeed(1233);
-    }
-
     @Test
     void testDouble() {
         Normal normal = Normal.of(1, 10);
+        Random random = new Random(1233);
         double[] values = new double[100];
         for (int i = 0; i < values.length; i++) {
-            values[i] = normal.sampleNext();
+            values[i] = normal.sampleNext(random);
         }
         Var x = VarDouble.wrap(values);
 

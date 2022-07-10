@@ -21,30 +21,31 @@
 
 package rapaio.graphics.plot.artist;
 
-import static java.lang.StrictMath.sqrt;
+import static java.lang.StrictMath.*;
 
 import static rapaio.graphics.Plotter.*;
 import static rapaio.sys.With.*;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.image.ImageTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DMatrixDenseC;
 
 public class MatrixTest extends AbstractArtistTest {
 
+    private Random random;
+
     @BeforeEach
     void setUp() throws Exception {
-        RandomSource.setSeed(1234);
+        random = new Random(1234);
         ImageTools.setBestRenderingHints();
     }
 
@@ -54,20 +55,20 @@ public class MatrixTest extends AbstractArtistTest {
 
         int n = 6;
 
-        DMatrix random = DMatrix.random(n, n);
-        DVector mean = random.mean(0);
-        DVector sd = random.sd(0).mul(sqrt(n-1));
+        DMatrix randomm = DMatrix.random(random, n, n);
+        DVector mean = randomm.mean(0);
+        DVector sd = randomm.sd(0).mul(sqrt(n - 1));
 
-        random.sub(mean, 0).div(sd, 0);
+        randomm.sub(mean, 0).div(sd, 0);
 
-        DMatrix cov = random.t().dot(random).roundValues(15);
+        DMatrix cov = randomm.t().dot(randomm).roundValues(15);
 
         DistanceMatrix dm = DistanceMatrix.empty(n).fill(cov::get);
         grid.add(matrix(cov));
         grid.add(corrGram(dm));
 
         grid.add(matrix(cov, color(NColor.black)));
-        grid.add(matrix(DMatrixDenseC.random(60, 80)));
+        grid.add(matrix(DMatrix.random(60, 80)));
 
         assertTest(grid, "matrix-test");
     }

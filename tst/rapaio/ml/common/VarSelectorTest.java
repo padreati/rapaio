@@ -1,38 +1,35 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.ml.common;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -45,9 +42,11 @@ import rapaio.math.linear.DVector;
  */
 public class VarSelectorTest {
 
-    private final String[] varNames = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
+    private final String[] varNames = new String[] {"a", "b", "c", "d", "e", "f", "g", "h"};
     private Frame df;
     private String classColName;
+
+    private Random random;
 
     @BeforeEach
     void setUp() {
@@ -63,7 +62,8 @@ public class VarSelectorTest {
                 VarInt.scalar(1).name("h"),
                 VarInt.scalar(1).name("class"));
         classColName = "class";
-        RandomSource.setSeed(1234);
+
+        random = new Random(42);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class VarSelectorTest {
             int mcols = 5;
             VarSelector colSelector = VarSelector.fixed(mcols);
             colSelector.withVarNames(varNames);
-            String[] selectedVarNames = colSelector.nextVarNames();
+            String[] selectedVarNames = colSelector.nextVarNames(random);
             assertEquals(mcols, selectedVarNames.length);
             for (String varName : selectedVarNames) {
                 if (!counter.containsKey(varName)) {
@@ -99,7 +99,7 @@ public class VarSelectorTest {
         HashMap<String, Integer> counter = new HashMap<>();
         for (int i = 0; i < 1_000; i++) {
             VarSelector colSelector = VarSelector.auto().withVarNames(varNames);
-            String[] selectedVarNames = colSelector.nextVarNames();
+            String[] selectedVarNames = colSelector.nextVarNames(random);
             for (String varName : selectedVarNames) {
                 if (!counter.containsKey(varName)) {
                     counter.put(varName, 0);
@@ -125,7 +125,7 @@ public class VarSelectorTest {
         for (int i = 0; i < 1_000; i++) {
             VarSelector colSelector = VarSelector.all();
             colSelector.withVarNames(varNames);
-            String[] selectedVarNames = colSelector.nextVarNames();
+            String[] selectedVarNames = colSelector.nextVarNames(random);
             assertEquals(varNames.length, selectedVarNames.length);
             for (String varName : selectedVarNames) {
                 if (!counter.containsKey(varName)) {

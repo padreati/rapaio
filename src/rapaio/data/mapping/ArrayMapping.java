@@ -23,9 +23,9 @@ package rapaio.data.mapping;
 
 import java.io.Serial;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.stream.IntStream;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Mapping;
 import rapaio.util.IntIterator;
 import rapaio.util.collection.IntArrayList;
@@ -107,8 +107,8 @@ public final class ArrayMapping implements Mapping {
     }
 
     @Override
-    public void shuffle() {
-        IntArrays.shuffle(data.elements(), 0, data.size(), RandomSource.getRandom());
+    public void shuffle(Random random) {
+        IntArrays.shuffle(data.elements(), 0, data.size(), random);
     }
 
     @Override

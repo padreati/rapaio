@@ -24,9 +24,9 @@ package rapaio.ml.model.km;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
-import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.ml.common.distance.Distance;
@@ -41,18 +41,18 @@ import rapaio.util.collection.IntArrays;
 public enum KMClusterInit implements Serializable {
 
     Forgy {
-        public DMatrix init(Distance distance, DMatrix m, int k) {
-            return m.mapRowsNew(SamplingTools.sampleWOR(m.rows(), k));
+        public DMatrix init(Random random, Distance distance, DMatrix m, int k) {
+            return m.mapRowsNew(SamplingTools.sampleWOR(random, m.rows(), k));
         }
     },
     PlusPlus {
         @Override
-        public DMatrix init(Distance distance, DMatrix m, int k) {
+        public DMatrix init(final Random random, Distance distance, DMatrix m, int k) {
 
             int[] centroids = IntArrays.newFill(k, -1);
 
-            centroids[0] = RandomSource.nextInt(m.rows());
-            Set<Integer> ids = new HashSet<>();//new IntOpenHashSet();
+            centroids[0] = random.nextInt(m.rows());
+            Set<Integer> ids = new HashSet<>();
             ids.add(centroids[0]);
 
             double[] p = new double[m.rows()];
@@ -73,7 +73,7 @@ public enum KMClusterInit implements Serializable {
                 double sum = DoubleArrays.sum(p, 0, p.length);
                 DoubleArrays.div(p, 0, sum, p.length);
 
-                int next = SamplingTools.sampleWeightedWR(1, p)[0];
+                int next = SamplingTools.sampleWeightedWR(random, 1, p)[0];
                 centroids[i] = next;
                 ids.add(next);
             }
@@ -82,5 +82,5 @@ public enum KMClusterInit implements Serializable {
         }
     };
 
-    public abstract DMatrix init(Distance distance, DMatrix m, int k);
+    public abstract DMatrix init(Random random, Distance distance, DMatrix m, int k);
 }

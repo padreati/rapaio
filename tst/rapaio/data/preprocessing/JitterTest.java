@@ -21,13 +21,12 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -68,20 +67,17 @@ public class JitterTest {
 
     @Test
     void testDouble() {
-        Frame df = SolidFrame.byVars(VarDouble.from(100, RandomSource::nextDouble).name("x"));
+        Frame df = SolidFrame.byVars(VarDouble.from(100, () -> new Random().nextDouble()).name("x"));
 
-        RandomSource.setSeed(111);
-        Frame df1 = df.copy().fapply(Jitter.on(VarRange.all()));
-        RandomSource.setSeed(111);
-        Frame df2 = df.copy().fapply(Jitter.on(0.1, VarRange.all()));
-        RandomSource.setSeed(111);
-        Frame df3 = df.copy().fapply(Jitter.on(Normal.of(0.0, 0.1), VarRange.all()));
+        Frame df1 = df.copy().fapply(Jitter.on(new Random(111), VarRange.all()));
+        Frame df2 = df.copy().fapply(Jitter.on(new Random(111), 0.1, VarRange.all()));
+        Frame df3 = df.copy().fapply(Jitter.on(new Random(111), Normal.of(0.0, 0.1), VarRange.all()));
 
         assertTrue(df1.deepEquals(df2));
         assertTrue(df2.deepEquals(df3));
 
         var ff = Jitter.on(0.1, VarRange.all());
         ff.fit(df);
-        assertArrayEquals(new String[]{"x"}, ff.varNames());
+        assertArrayEquals(new String[] {"x"}, ff.varNames());
     }
 }

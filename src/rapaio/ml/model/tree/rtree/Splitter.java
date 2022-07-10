@@ -24,10 +24,10 @@ package rapaio.ml.model.tree.rtree;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -53,7 +53,7 @@ public enum Splitter implements Serializable {
      */
     Ignore {
         @Override
-        public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates) {
+        public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates, Random random) {
             List<Mapping> mapList = createMapList(df.rowCount(), groupPredicates);
             for (int row = 0; row < df.rowCount(); row++) {
                 int group = getMatchedPredicate(df, row, groupPredicates);
@@ -70,7 +70,7 @@ public enum Splitter implements Serializable {
      */
     Majority {
         @Override
-        public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates) {
+        public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates, Random random) {
             List<Mapping> mapList = createMapList(df.rowCount(), groupPredicates);
             double[] w = new double[mapList.size()];
             Mapping missing = Mapping.empty();
@@ -90,7 +90,7 @@ public enum Splitter implements Serializable {
                     continue;
                 }
                 if (w[i] == maxW) {
-                    if (RandomSource.nextDouble() > 0.5) {
+                    if (random.nextDouble() > 0.5) {
                         maxW = w[i];
                         indexW = i;
                     }
@@ -111,13 +111,13 @@ public enum Splitter implements Serializable {
      */
     Random {
         @Override
-        public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groups) {
+        public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groups, Random random) {
             int[] maps = new int[df.rowCount()];
             int[] counts = new int[groups.size()];
             for (int i = 0; i < df.rowCount(); i++) {
                 int group = getMatchedPredicate(df, i, groups);
                 if (group == -1) {
-                    group = RandomSource.nextInt(groups.size());
+                    group = random.nextInt(groups.size());
                 }
                 maps[i] = group;
                 counts[group]++;
@@ -144,7 +144,7 @@ public enum Splitter implements Serializable {
      * @param groupPredicates predicates used for splitting
      * @return a list of mappings, one for each rule
      */
-    public abstract List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates);
+    public abstract List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates, Random random);
 
     private static List<Mapping> createMapList(int capacity, List<RowPredicate> groupPredicates) {
         return IntStream.range(0, groupPredicates.size()).boxed().map(i -> new ArrayMapping()).collect(Collectors.toList());

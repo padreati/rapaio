@@ -21,10 +21,11 @@
 
 package rapaio.data.sample;
 
-import static rapaio.printer.Format.floatFlex;
+import static rapaio.printer.Format.*;
 
 import java.io.Serial;
 import java.util.Objects;
+import java.util.Random;
 
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
@@ -48,8 +49,8 @@ final class Bootstrap implements RowSampler {
     }
 
     @Override
-    public Sample nextSample(Frame df, Var weights) {
-        Mapping map = Mapping.wrap(SamplingTools.sampleWR(df.rowCount(), (int) (percent * df.rowCount())));
+    public Sample nextSample(final Random random, Frame df, Var weights) {
+        Mapping map = Mapping.wrap(SamplingTools.sampleWR(random, df.rowCount(), (int) (percent * df.rowCount())));
         return new Sample(df.mapRows(map), weights.mapRows(map), map, df.rowCount());
     }
 

@@ -1,37 +1,33 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.math.linear.decomposition;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DMatrixDenseC;
@@ -42,15 +38,17 @@ public class DoubleCholeskyDecompositionTest {
     private static final double TOL = 1e-12;
     private static final int TIMES = 100;
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(1234);
+        random = new Random(1234);
     }
 
     @Test
     void testBasic() {
         for (int i = 0; i < TIMES; i++) {
-            DMatrix a = DMatrix.random(30, 30);
+            DMatrix a = DMatrix.random(random, 30, 30);
             DMatrix b = a.t().dot(a);
 
             DoubleCholeskyDecomposition cholesky = b.cholesky();
@@ -64,7 +62,7 @@ public class DoubleCholeskyDecompositionTest {
     @Test
     void testNonSPD() {
         for (int i = 0; i < TIMES; i++) {
-            DMatrix a = DMatrix.random(30, 30);
+            DMatrix a = DMatrix.random(random, 30, 30);
             DoubleCholeskyDecomposition cholesky = a.cholesky();
             assertFalse(cholesky.isSPD());
 
@@ -72,7 +70,7 @@ public class DoubleCholeskyDecompositionTest {
             assertEquals("Matrix is not symmetric positive definite.", ex.getMessage());
         }
 
-        DMatrix a = DMatrix.random(10, 3);
+        DMatrix a = DMatrix.random(random, 10, 3);
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, a::cholesky);
         assertEquals("Only square matrices can have Cholesky decomposition.", ex.getMessage());
     }
@@ -130,7 +128,7 @@ public class DoubleCholeskyDecompositionTest {
     @Test
     void testLeftRight() {
 
-        DMatrix a = DMatrixDenseC.random(4, 4);
+        DMatrix a = DMatrixDenseC.random(random, 4, 4);
         DMatrix ata = a.t().dot(a);
 
         var chl = ata.cholesky();

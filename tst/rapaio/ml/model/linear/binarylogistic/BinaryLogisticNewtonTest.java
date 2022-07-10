@@ -1,35 +1,32 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.ml.model.linear.binarylogistic;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
+import java.util.Random;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
@@ -41,6 +38,13 @@ import rapaio.math.linear.DVector;
 public class BinaryLogisticNewtonTest {
 
     private static final double TOL = 1e-12;
+
+    private Random random;
+
+    @BeforeEach
+    void beforeEach() {
+        random = new Random(42);
+    }
 
     @Test
     void testDefaults() {
@@ -155,8 +159,8 @@ public class BinaryLogisticNewtonTest {
     @Test
     public void testIllConditionedInputs() {
         Normal normal = Normal.of(10, 2);
-        VarDouble x1 = VarDouble.from(100, normal::sampleNext).name("x1");
-        VarDouble x2 = VarDouble.from(x1, v -> v + normal.sampleNext() / 1e8).name("x2");
+        VarDouble x1 = VarDouble.from(100, () -> normal.sampleNext(random)).name("x1");
+        VarDouble x2 = VarDouble.from(x1, v -> v + normal.sampleNext(random) / 1e8).name("x2");
 
         VarDouble y1 = VarDouble.from(100, row -> row > 50 ? 1. : 0);
 

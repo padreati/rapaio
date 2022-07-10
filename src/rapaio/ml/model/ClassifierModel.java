@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import rapaio.data.Frame;
@@ -86,7 +87,8 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     /**
      * Lambda call hook called after each sub-component or iteration at training time.
      */
-    public final ValueParam<SConsumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {}, "runningHook", Objects::nonNull);
+    public final ValueParam<SConsumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {
+    }, "runningHook", Objects::nonNull);
 
     /**
      * Lambda call hook which can be used to implement a criteria used to stop running
@@ -94,6 +96,8 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
      * stopped, if true it continues until the algorithm stops itself.
      */
     public ValueParam<SFunction<H, Boolean>, M> stoppingHook = new ValueParam<>((M) this, h -> false, "stoppingHook", Objects::nonNull);
+
+    public ValueParam<Long, M> seed = new ValueParam<>((M) this, 0L, "seed");
 
     // learning artifacts
 
@@ -418,5 +422,15 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
             setup.withDistributions = withDistributions;
             return setup;
         }
+    }
+
+    protected int computeThreads() {
+        return (poolSize.get() < 0)
+                ? Math.max(Runtime.getRuntime().availableProcessors() - 1, 1)
+                : Math.max(1, poolSize.get());
+    }
+
+    protected Random getRandom() {
+        return seed.get() == 0 ? new Random() : new Random(seed.get());
     }
 }

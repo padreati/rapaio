@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -89,6 +90,7 @@ public abstract class RegressionModel<M extends RegressionModel<M, R, H>, R exte
     public ValueParam<Function<H, Boolean>, M> stoppingHook =
             new ValueParam<>((M) this, DEFAULT_STOPPING_HOOK, "stopHook", Objects::nonNull);
 
+    public ValueParam<Long, M> seed = new ValueParam<>((M) this, 0L, "seed");
     // model artifacts
 
     protected boolean hasLearned;
@@ -331,6 +333,16 @@ public abstract class RegressionModel<M extends RegressionModel<M, R, H>, R exte
             setup.quantiles = quantiles;
             return setup;
         }
+    }
+
+    protected int computeThreads() {
+        return (poolSize.get() < 0)
+                ? Math.max(Runtime.getRuntime().availableProcessors() - 1, 1)
+                : Math.max(1, poolSize.get());
+    }
+
+    protected Random getRandom() {
+        return seed.get() == 0 ? new Random() : new Random(seed.get());
     }
 
     public String headerSummary() {

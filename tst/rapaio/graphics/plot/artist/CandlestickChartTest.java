@@ -28,11 +28,11 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.finance.data.FinBar;
 import rapaio.finance.data.FinBarSize;
@@ -40,9 +40,11 @@ import rapaio.image.ImageTools;
 
 public class CandlestickChartTest extends AbstractArtistTest {
 
+    private Random random;
+
     @BeforeEach
     void setUp() throws Exception {
-        RandomSource.setSeed(1234);
+        random = new Random(1234);
         ImageTools.setBestRenderingHints();
     }
 
@@ -58,11 +60,11 @@ public class CandlestickChartTest extends AbstractArtistTest {
 
                 mean = mean + Math.round(Normal.std().sampleNext() * 300) / 100.;
 
-                double high = mean + Math.round(RandomSource.nextDouble()*300)/100.;
-                double low = mean - Math.round(RandomSource.nextDouble()*300)/100.;
+                double high = mean + Math.round(random.nextDouble() * 300) / 100.;
+                double low = mean - Math.round(random.nextDouble() * 300) / 100.;
 
-                double open = (high - low)*RandomSource.nextDouble()+low;
-                double close = (high-low)*RandomSource.nextDouble()+low;
+                double open = (high - low) * random.nextDouble() + low;
+                double close = (high - low) * random.nextDouble() + low;
 
                 FinBar bar = new FinBar(date, high, low, open, close, 0., 0, 0);
                 bars.add(bar);

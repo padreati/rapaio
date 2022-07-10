@@ -1,41 +1,32 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.util.collection;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static rapaio.util.collection.IntArrays.ensureCapacity;
-import static rapaio.util.collection.IntArrays.forceCapacity;
-import static rapaio.util.collection.IntArrays.grow;
-import static rapaio.util.collection.IntArrays.newFill;
-import static rapaio.util.collection.IntArrays.newSeq;
-import static rapaio.util.collection.IntArrays.trim;
+import static rapaio.util.collection.IntArrays.*;
 
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -43,7 +34,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.util.IntComparator;
 import rapaio.util.IntComparators;
 import rapaio.util.IntIterator;
@@ -53,17 +43,19 @@ import rapaio.util.IntIterator;
  */
 public class IntArraysTest {
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(1234);
+        random = new Random(1234);
     }
 
     @Test
     void buildersTest() {
-        assertArrayEquals(new int[]{10, 10, 10}, IntArrays.newFill(3, 10));
-        assertArrayEquals(new int[]{10, 11, 12}, IntArrays.newSeq(10, 13));
-        assertArrayEquals(new int[]{4, 9, 16}, IntArrays.newFrom(new int[]{1, 2, 3, 4, 5}, 1, 4, x -> x * x));
-        assertArrayEquals(new int[]{3, 5}, IntArrays.newCopy(new int[]{1, 3, 5, 7}, 1, 2));
+        assertArrayEquals(new int[] {10, 10, 10}, IntArrays.newFill(3, 10));
+        assertArrayEquals(new int[] {10, 11, 12}, IntArrays.newSeq(10, 13));
+        assertArrayEquals(new int[] {4, 9, 16}, IntArrays.newFrom(new int[] {1, 2, 3, 4, 5}, 1, 4, x -> x * x));
+        assertArrayEquals(new int[] {3, 5}, IntArrays.newCopy(new int[] {1, 3, 5, 7}, 1, 2));
     }
 
     private void testEqualArrays(int[] actual, int... expected) {
@@ -75,7 +67,7 @@ public class IntArraysTest {
     void testIterator() {
         int[] array = new int[1000];
         for (int i = 0; i < array.length; i++) {
-            array[i] = RandomSource.nextInt(100);
+            array[i] = random.nextInt(100);
         }
         IntIterator it1 = IntArrays.iterator(array, 0, 10);
         for (int i = 0; i < 10; i++) {

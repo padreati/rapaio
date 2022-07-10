@@ -1,37 +1,33 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.ml.model.rvm;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
@@ -46,9 +42,11 @@ import rapaio.ml.model.linear.LinearRegressionModel;
  */
 public class RVMRegressionTest {
 
+    private Random random;
+
     @BeforeEach
     public void beforeEach() {
-        RandomSource.setSeed(42);
+        random = new Random(42);
     }
 
     @Test
@@ -134,7 +132,7 @@ public class RVMRegressionTest {
         assertFalse(provider.equalOnParams(new RVMRegression.RBFProvider(VarDouble.wrap(1))));
 
         DMatrix x = DMatrix.eye(10);
-        RVMRegression.Feature[] features = provider.generateFeatures(x);
+        RVMRegression.Feature[] features = provider.generateFeatures(random, x);
         assertEquals(1, features.length);
         assertEquals("intercept", features[0].name());
     }
@@ -158,7 +156,7 @@ public class RVMRegressionTest {
         assertEquals("Percentage value p=-1 is not in interval [0,1].", ex.getMessage());
 
         DMatrix x = DMatrix.eye(10);
-        RVMRegression.Feature[] features = provider.generateFeatures(x);
+        RVMRegression.Feature[] features = provider.generateFeatures(random, x);
         assertEquals(10, features.length);
 
         for (RVMRegression.Feature feature : features) {
@@ -175,7 +173,7 @@ public class RVMRegressionTest {
         assertFalse(provider.equalOnParams(new RVMRegression.KernelProvider(new LinearKernel(1))));
         assertTrue(provider.equalOnParams(new RVMRegression.KernelProvider(new LinearKernel(1), 0.5)));
 
-        RVMRegression.Feature[] features = provider.generateFeatures(DMatrix.eye(10));
+        RVMRegression.Feature[] features = provider.generateFeatures(random, DMatrix.eye(10));
         assertEquals(5, features.length);
         for (RVMRegression.Feature feature : features) {
             assertTrue(feature.name().startsWith("LinearKernel"));
@@ -193,7 +191,7 @@ public class RVMRegressionTest {
         assertFalse(provider.equalOnParams(new RVMRegression.InterceptProvider()));
 
         DMatrix x = DMatrix.eye(10);
-        RVMRegression.Feature[] features = provider.generateFeatures(x);
+        RVMRegression.Feature[] features = provider.generateFeatures(random, x);
         assertEquals(15, features.length);
         for (RVMRegression.Feature feature : features) {
             assertTrue(feature.name().startsWith("RBF"));
@@ -214,7 +212,7 @@ public class RVMRegressionTest {
         VarDouble[] quantiles = rvmResult.firstQuantiles();
         VarDouble prediction = rvmResult.firstPrediction();
 
-        for(VarDouble quantile : quantiles) {
+        for (VarDouble quantile : quantiles) {
             assertEquals(prediction.size(), quantile.size());
         }
 

@@ -22,9 +22,9 @@
 package rapaio.data.preprocessing;
 
 import java.io.Serial;
+import java.util.Random;
 import java.util.stream.IntStream;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.VarRange;
@@ -35,20 +35,23 @@ import rapaio.util.collection.IntArrays;
  */
 public class ShuffleRows extends AbstractTransform {
 
-    public static ShuffleRows filter() {
-        return new ShuffleRows();
+    public static ShuffleRows filter(Random random) {
+        return new ShuffleRows(random);
     }
 
     @Serial
     private static final long serialVersionUID = 3868876807602578584L;
 
-    private ShuffleRows() {
+    private final Random random;
+
+    private ShuffleRows(final Random random) {
         super(VarRange.all());
+        this.random = random;
     }
 
     @Override
     public ShuffleRows newInstance() {
-        return new ShuffleRows();
+        return new ShuffleRows(random);
     }
 
     @Override
@@ -58,7 +61,7 @@ public class ShuffleRows extends AbstractTransform {
     @Override
     public Frame coreApply(Frame df) {
         int[] mapping = IntStream.range(0, df.rowCount()).toArray();
-        IntArrays.shuffle(mapping, RandomSource.getRandom());
+        IntArrays.shuffle(mapping, random);
         return df.mapRows(Mapping.wrap(mapping));
     }
 }

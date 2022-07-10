@@ -1,40 +1,34 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.data;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import rapaio.core.RandomSource;
 
 
 /**
@@ -43,17 +37,19 @@ import rapaio.core.RandomSource;
 public class VarStringTest {
 
     private String[] largeValues;
-    private String[] shortValues = new String[]{"Ana", "are", "mere"};
+    private final String[] shortValues = new String[] {"Ana", "are", "mere"};
+
+    private Random random;
 
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
         largeValues = new String[100];
         for (int i = 0; i < 100; i++) {
             StringBuilder sb = new StringBuilder();
-            int len = RandomSource.nextInt(20) + 1;
+            int len = random.nextInt(20) + 1;
             for (int j = 0; j < len; j++) {
-                sb.append((char) ('a' + RandomSource.nextInt(26)));
+                sb.append((char) ('a' + random.nextInt(26)));
             }
             largeValues[i] = sb.toString();
         }
@@ -87,7 +83,9 @@ public class VarStringTest {
         VarString copy3 = copy2.copy();
         assertTrue(copy2.deepEquals(copy3));
 
-        assertEquals("VarText [name:\"copy\", rowCount:100, values: omt, hyhvnlwuznrcbaqk, iyedusfwdkelqbxete, ovascfqio, maajxky, rnlrytgkbgic, ahcbrqdsxv, hpfqgtmdypsbzxvf, oeygjbumaa, k, ..., ldif, tciudeieeo]", copy2.toString());
+        assertEquals(
+                "VarText [name:\"copy\", rowCount:100, values: omt, hyhvnlwuznrcbaqk, iyedusfwdkelqbxete, ovascfqio, maajxky, rnlrytgkbgic, ahcbrqdsxv, hpfqgtmdypsbzxvf, oeygjbumaa, k, ..., ldif, tciudeieeo]",
+                copy2.toString());
     }
 
     @Test
@@ -158,7 +156,7 @@ public class VarStringTest {
 
     @Test
     void testSetLevels() {
-        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).setLevels(new String[]{}));
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).setLevels(new String[] {}));
     }
 
     @Test

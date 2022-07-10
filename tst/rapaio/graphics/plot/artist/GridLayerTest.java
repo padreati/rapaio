@@ -30,7 +30,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -44,7 +43,6 @@ public class GridLayerTest extends AbstractArtistTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        RandomSource.setSeed(1234);
         df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
         ImageTools.setBestRenderingHints();
     }

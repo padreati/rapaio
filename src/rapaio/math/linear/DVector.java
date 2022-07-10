@@ -24,6 +24,7 @@ package rapaio.math.linear;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.DoubleStream;
@@ -105,6 +106,17 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
     }
 
     /**
+     * Build a dense vector with random values drawn from a standard normal
+     * distribution.
+     *
+     * @param size size of the vector
+     * @return dense vector with random values
+     */
+    static DVectorDense random(Random random, int size) {
+        return random(random, size, Normal.std());
+    }
+
+    /**
      * Builds a random vector with random values drawn from the distribution
      * given as parameter.
      *
@@ -113,7 +125,19 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @return dense vector with random values
      */
     static DVectorDense random(int size, Distribution distribution) {
-        return DVectorDense.random(size, distribution);
+        return random(new Random(), size, distribution);
+    }
+
+    /**
+     * Builds a random vector with random values drawn from the distribution
+     * given as parameter.
+     *
+     * @param size         size of the vector
+     * @param distribution distribution which generates the values
+     * @return dense vector with random values
+     */
+    static DVectorDense random(Random random, int size, Distribution distribution) {
+        return DVectorDense.random(random, size, distribution);
     }
 
     static DVectorDense wrap(double... values) {

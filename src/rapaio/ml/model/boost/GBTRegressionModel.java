@@ -25,6 +25,7 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -121,6 +122,7 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
 
         trees = new ArrayList<>();
 
+        Random random = getRandom();
         Var y = df.rvar(firstTargetName());
         Frame x = df.removeVars(VarRange.of(firstTargetName()));
 
@@ -137,7 +139,7 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
 
             // frame sampling
 
-            Mapping sampleRows = rowSampler.get().nextSample(xm, weights).mapping();
+            Mapping sampleRows = rowSampler.get().nextSample(random, xm, weights).mapping();
             Frame xmLearn = xm.mapRows(sampleRows);
 
             // build regions

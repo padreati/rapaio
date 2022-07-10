@@ -21,8 +21,9 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -60,7 +61,7 @@ public class ApplyTransformTest {
 
     @Test
     void testDouble() {
-        Frame df = TransformTestUtil.allDoubles(100, 2);
+        Frame df = TransformTestUtil.allDoubles(new Random(), 100, 2);
         Frame sign = df.copy().fapply(ApplyTransform.onDouble(Math::signum, VarRange.all()));
 
         for (int i = 0; i < df.varCount(); i++) {

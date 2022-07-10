@@ -21,11 +21,11 @@
 
 package rapaio.core.distributions;
 
-import static java.lang.StrictMath.sqrt;
+import static java.lang.StrictMath.*;
 
 import java.io.Serializable;
+import java.util.Random;
 
-import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
 
 /**
@@ -91,8 +91,17 @@ public interface Distribution extends Serializable {
      *
      * @return new random value
      */
+    default double sampleNext(Random random) {
+        return quantile(random.nextDouble());
+    }
+
+    /**
+     * Generates a random value from this distribution
+     *
+     * @return new random value
+     */
     default double sampleNext() {
-        return quantile(RandomSource.nextDouble());
+        return quantile(new Random().nextDouble());
     }
 
     /**
@@ -103,6 +112,16 @@ public interface Distribution extends Serializable {
      */
     default VarDouble sample(final int n) {
         return VarDouble.from(n, i -> sampleNext());
+    }
+
+    /**
+     * Generate a sample for this distribution with the given size
+     *
+     * @param n number of elements in sample
+     * @return sample values
+     */
+    default VarDouble sample(final Random random, final int n) {
+        return VarDouble.from(n, i -> sampleNext(random));
     }
 
     /**

@@ -23,6 +23,7 @@ package rapaio.ml.eval.split;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -40,11 +41,11 @@ public record StratifiedKFold(int rounds, int folds, String strata) implements S
     }
 
     @Override
-    public List<Split> generateSplits(Frame df, Var weights) {
+    public List<Split> generateSplits(Frame df, Var weights, Random random) {
 
         List<Split> splits = new ArrayList<>();
         for (int round = 0; round < rounds; round++) {
-            List<Mapping> mappings = buildStrata(df, strata);
+            List<Mapping> mappings = buildStrata(df, strata, random);
             for (int i = 0; i < mappings.size(); i++) {
                 Mapping mapping = mappings.get(i);
                 splits.add(new Split(round, i,
@@ -55,7 +56,7 @@ public record StratifiedKFold(int rounds, int folds, String strata) implements S
         return splits;
     }
 
-    private List<Mapping> buildStrata(Frame df, String strataName) {
+    private List<Mapping> buildStrata(Frame df, String strataName, Random random) {
         List<String> dict = df.rvar(strataName).levels();
         List<Mapping> rows = dict.stream().map(name -> Mapping.empty()).toList();
         for (int i = 0; i < df.rowCount(); i++) {
@@ -63,7 +64,7 @@ public record StratifiedKFold(int rounds, int folds, String strata) implements S
         }
         Mapping shuffle = Mapping.empty();
         for (int i = 0; i < dict.size(); i++) {
-            rows.get(i).shuffle();
+            rows.get(i).shuffle(random);
             shuffle.addAll(rows.get(i).iterator());
         }
         List<Mapping> strata = IntStream.range(0, folds).mapToObj(i -> Mapping.empty()).collect(Collectors.toList());

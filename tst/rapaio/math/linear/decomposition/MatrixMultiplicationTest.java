@@ -1,37 +1,34 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.math.linear.decomposition;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
@@ -41,17 +38,19 @@ public class MatrixMultiplicationTest {
 
     private static final double TOL = 1e-12;
 
+    private Random random;
+
     @BeforeEach
     void setUp() {
-        RandomSource.setSeed(1234);
+        random = new Random(1234);
     }
 
     @Test
     void basicTestMM() {
 
         Normal normal = Normal.std();
-        DMatrix A = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
-        DMatrix B = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix A = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext(random));
+        DMatrix B = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext(random));
 
         DMatrix c1 = A.dot(B);
         DMatrix c2 = MatrixMultiplication.ikjAlgorithm(A, B);
@@ -64,8 +63,8 @@ public class MatrixMultiplicationTest {
     void testDifferentMethods() {
 
         Normal normal = Normal.std();
-        DMatrix A = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
-        DMatrix B = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix A = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext(random));
+        DMatrix B = DMatrix.fill(100, 100, (r, c) -> normal.sampleNext(random));
 
         DMatrix c = A.dot(B);
 

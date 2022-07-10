@@ -21,21 +21,25 @@
 
 package rapaio.ml.model.ensemble;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/14/20.
@@ -43,10 +47,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CForestTest {
 
     private final Frame iris = Datasets.loadIrisDataset();
+    private Random random;
 
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
     }
 
     @Test
@@ -110,19 +115,20 @@ public class CForestTest {
                 .viFreq.set(true)
                 .viGain.set(true)
                 .viPerm.set(true)
-                .runs.set(100);
+                .runs.set(100)
+                .seed.set(123L);
 
         assertEquals("CForest", model.name());
-        assertEquals("CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),viPerm=true}", model.fullName());
+        assertEquals("CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),seed=123,viPerm=true}", model.fullName());
 
-        assertEquals("CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),viPerm=true}; fitted:false",
+        assertEquals("CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),seed=123,viPerm=true}; fitted:false",
                 model.toString());
         assertEquals("""
                 CForest
                 =======
 
                 Description:
-                CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),viPerm=true}
+                CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),seed=123,viPerm=true}
 
                 Capabilities:
                 types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL,BINARY
@@ -137,20 +143,20 @@ public class CForestTest {
         model.fit(iris, "class");
 
         assertEquals(
-                "CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),viPerm=true}; fitted:true, fitted trees:100",
+                "CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),seed=123,viPerm=true}; fitted:true, fitted trees:100",
                 model.toString());
         assertEquals("""
                 CForest
                 =======
-
+                                
                 Description:
-                CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),viPerm=true}
-
+                CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),seed=123,viPerm=true}
+                                
                 Capabilities:
                 types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL,BINARY
                 counts inputs/targets: [1,1000000] / [1,1]
                 missing inputs/targets: true/false
-
+                                
                 Model fitted: true.
                 Learned model:
                 input vars:\s
@@ -158,14 +164,14 @@ public class CForestTest {
                 1.  sepal-width : DOUBLE  |\s
                 2. petal-length : DOUBLE  |\s
                 3.  petal-width : DOUBLE  |\s
-
+                                
                 target vars:
                 > class : NOMINAL [?,setosa,versicolor,virginica]
-
-
+                                
+                                
                 Fitted trees:100
                 oob enabled:true
-                oob error:0.06
+                oob error:0.0466667
                 """, model.toSummary());
         assertEquals(model.toSummary(), model.toContent());
         assertEquals("""
@@ -173,7 +179,7 @@ public class CForestTest {
                 =======
                                 
                 Description:
-                CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),viPerm=true}
+                CForest{freqVI=true,gainVI=true,oob=true,rowSampler=Bootstrap(p=1),seed=123,viPerm=true}
                                 
                 Capabilities:
                 types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL,BINARY
@@ -194,28 +200,28 @@ public class CForestTest {
                                 
                 Fitted trees:100
                 oob enabled:true
-                oob error:0.06
+                oob error:0.0466667
                                 
                 Frequency Variable Importance:
                         name      mean      sd     scaled score\s
-                [0] petal-length 171.9  80.9065429 100         \s
-                [1]  petal-width 147.12 80.2665106  85.5846422 \s
-                [2] sepal-length  53.94 60.5216081  31.3787086 \s
-                [3]  sepal-width  19.18 28.6512926  11.1576498 \s
+                [0]  petal-width 160.61 77.5364229 100         \s
+                [1] petal-length 151.65 76.6744891  94.4212689 \s
+                [2] sepal-length  66.9  68.4402711  41.6536953 \s
+                [3]  sepal-width  23.89 29.5213995  14.8745408 \s
                                 
                 Gain Variable Importance:
                         name        mean        sd     scaled score\s
-                [0] petal-length 50.2866309 28.4715939 100         \s
-                [1]  petal-width 39.6799336 27.1741106  78.9075206 \s
-                [2] sepal-length  6.3155996 11.3414621  12.559202  \s
-                [3]  sepal-width  2.0329692  3.2285884   4.0427628 \s
+                [0]  petal-width 43.6611601 27.5449726 100         \s
+                [1] petal-length 42.5856186 27.7044274  97.5366172 \s
+                [2] sepal-length  9.2340389 13.4677241  21.149321  \s
+                [3]  sepal-width  2.7973776  4.8615338   6.4070161 \s
                                 
                 Permutation Variable Importance:
                         name        mean        sd     scaled score\s
-                [0] petal-length 50.2866309 28.4715939 100         \s
-                [1]  petal-width 39.6799336 27.1741106  78.9075206 \s
-                [2] sepal-length  6.3155996 11.3414621  12.559202  \s
-                [3]  sepal-width  2.0329692  3.2285884   4.0427628 \s
+                [0]  petal-width 43.6611601 27.5449726 100         \s
+                [1] petal-length 42.5856186 27.7044274  97.5366172 \s
+                [2] sepal-length  9.2340389 13.4677241  21.149321  \s
+                [3]  sepal-width  2.7973776  4.8615338   6.4070161 \s
                                 
                 """, model.toFullContent());
     }
@@ -225,11 +231,11 @@ public class CForestTest {
     void testParallelism() {
         var iris = Datasets.loadIrisDataset();
         String target = "class";
-        RandomSource.setSeed(42);
         for (int i = 0; i < 100; i++) {
             var rf = CForest.newModel()
                     .runs.set(100)
-                    .poolSize.set(3);
+                    .poolSize.set(3)
+                    .seed.set(123L);
             rf.fit(iris, target);
         }
     }
@@ -264,7 +270,7 @@ public class CForestTest {
                         .types.add(VarType.NOMINAL, "target")
                         .read(new ByteArrayInputStream(data(times + 1 + i)));
                 var testClasses = model.predict(test).firstClasses();
-                var testFrame = SolidFrame.byVars(test.rvar("id"),testClasses.name("class"));
+                var testFrame = SolidFrame.byVars(test.rvar("id"), testClasses.name("class"));
                 double score = compare(refFrame, testFrame);
                 assertEquals(1.0, score, 1e-16);
             }
@@ -274,16 +280,16 @@ public class CForestTest {
     private double compare(SolidFrame refFrame, SolidFrame testFrame) {
         Map<Integer, String> refLabels = new HashMap<>();
         for (int i = 0; i < refFrame.rowCount(); i++) {
-            refLabels.put(refFrame.getInt(i, "id"), refFrame.getLabel(i,"class"));
+            refLabels.put(refFrame.getInt(i, "id"), refFrame.getLabel(i, "class"));
         }
         double score = 0;
         for (int i = 0; i < testFrame.rowCount(); i++) {
             String refLabel = refLabels.get(testFrame.getInt(i, "id"));
-            if(refLabel.equals(testFrame.getLabel(i, "class"))) {
+            if (refLabel.equals(testFrame.getLabel(i, "class"))) {
                 score++;
             }
         }
-        return score/refFrame.rowCount();
+        return score / refFrame.rowCount();
     }
 
     private byte[] data(int seed) {
@@ -302,17 +308,17 @@ public class CForestTest {
     void multithreadedConsistency() {
         var df = Datasets.loadIrisDataset();
 
-        RandomSource.setSeed(42);
         CForest rf1 = CForest.newModel()
-                .poolSize.set(0)
-                .runs.set(10);
+                .poolSize.set(2)
+                .runs.set(10)
+                .seed.set(123L);
 
         var density1 = rf1.fit(df, "class").predict(df).firstDensity();
 
-        RandomSource.setSeed(42);
         CForest rf2 = CForest.newModel()
-                .poolSize.set(0)
-                .runs.set(10);
+                .poolSize.set(2)
+                .runs.set(10)
+                .seed.set(123L);
         var density2 = rf2.fit(df, "class").predict(df).firstDensity();
 
         assertTrue(density1.deepEquals(density2));

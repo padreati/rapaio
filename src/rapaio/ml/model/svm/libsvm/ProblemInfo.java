@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -36,7 +37,7 @@ import rapaio.ml.model.svm.OneClassSvm;
 import rapaio.ml.model.svm.SvmClassifier;
 import rapaio.ml.model.svm.SvmRegression;
 
-public record ProblemInfo(DVector[] xs, double[] y,
+public record ProblemInfo(Random random, DVector[] xs, double[] y,
                           List<String> levels, Map<String, Integer> index, Map<String, Mapping> map,
                           SvmClassifier.Penalty cType, SvmRegression.Penalty rType, Kernel kernel, long cacheSize, double eps,
                           double c, Map<String, Double> weighting, double nu, double p, boolean shrinking, boolean probability) {
@@ -83,7 +84,7 @@ public record ProblemInfo(DVector[] xs, double[] y,
 
         // default parameter values taken from classifier
 
-        return new ProblemInfo(xs, y, levels, index, map,
+        return new ProblemInfo(new Random(parent.seed.get()), xs, y, levels, index, map,
                 parent.type.get(), null, parent.kernel.get(), parent.cacheSize.get(),
                 parent.tolerance.get(), parent.c.get(), new HashMap<>(parent.wi.get()),
                 parent.nu.get(), 0.0, parent.shrinking.get(), parent.probability.get());
@@ -105,7 +106,7 @@ public record ProblemInfo(DVector[] xs, double[] y,
 
         // default parameter values taken from classifier
 
-        return new ProblemInfo(xs, y, List.of(), Map.of(), Map.of(),
+        return new ProblemInfo(new Random(parent.seed.get()), xs, y, List.of(), Map.of(), Map.of(),
                 null, parent.type.get(), parent.kernel.get(), parent.cacheSize.get(),
                 parent.tolerance.get(), parent.c.get(), Map.of(),
                 parent.nu.get(), parent.epsilon.get(), parent.shrinking.get(), parent.probability.get());
@@ -127,7 +128,7 @@ public record ProblemInfo(DVector[] xs, double[] y,
 
         // default parameter values taken from classifier
 
-        return new ProblemInfo(xs, y, List.of(), Map.of(), Map.of(),
+        return new ProblemInfo(new Random(parent.seed.get()), xs, y, List.of(), Map.of(), Map.of(),
                 null, null, parent.kernel.get(), parent.cacheSize.get(),
                 parent.tolerance.get(), 0.0, Map.of(),
                 parent.nu.get(), 0.0, parent.shrinking.get(), false);
@@ -175,6 +176,7 @@ public record ProblemInfo(DVector[] xs, double[] y,
 
     public SvmProblem computeProblem() {
         SvmProblem prob = new SvmProblem();
+        prob.random = random;
         prob.len = xs.length;
         prob.xs = xs;
         prob.y = y;

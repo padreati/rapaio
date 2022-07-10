@@ -1,38 +1,32 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.ml.model.km;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.function.BiFunction;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
@@ -45,11 +39,6 @@ import rapaio.math.linear.DVector;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/1/20.
  */
 public class KMClusterTest {
-
-    @BeforeEach
-    void beforeEach() {
-        RandomSource.setSeed(42);
-    }
 
     @Test
     void irisTest() {
@@ -64,7 +53,8 @@ public class KMClusterTest {
                     .k.set(k)
                     .nstart.set(100)
                     .init.set(KMClusterInit.PlusPlus)
-                    .runs.set(100);
+                    .runs.set(100)
+                    .seed.set(42L);
             inertia.addDouble(model.fit(df).getError());
         }
 
@@ -86,7 +76,8 @@ public class KMClusterTest {
     @Test
     void testKMeansDegenerate() {
         Frame df = SolidFrame.byVars(VarDouble.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0).name("x"));
-        KMCluster clustering = KMCluster.newKMeans().k.set(2).nstart.set(100).fit(df);
+        KMCluster clustering = KMCluster.newKMeans().k.set(2).nstart.set(100).seed.set(42L)
+                .fit(df);
 
         Frame c = clustering.getCentroids().refSort("x");
         assertTrue(c.deepEquals(SolidFrame.byVars(VarDouble.copy(0, 1).name("x"))));
@@ -101,7 +92,8 @@ public class KMClusterTest {
     @Test
     void testKMedoidsDegenerate() {
         Frame df = SolidFrame.byVars(VarDouble.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0).name("x"));
-        KMCluster clustering = KMCluster.newKMedians().k.set(2).nstart.set(100).fit(df);
+        KMCluster clustering = KMCluster.newKMedians().k.set(2).nstart.set(100).seed.set(42L)
+                .fit(df);
 
         Frame c = clustering.getCentroids().refSort("x");
         assertTrue(c.deepEquals(SolidFrame.byVars(VarDouble.copy(0, 1).name("x"))));
@@ -120,12 +112,13 @@ public class KMClusterTest {
                 .k.set(2)
                 .nstart.set(100)
                 .init.set(KMClusterInit.PlusPlus)
-                .runs.set(100);
+                .runs.set(100)
+                .seed.set(42L);
 
-        assertEquals("KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100}, fitted=false", model.toString());
-        assertEquals("KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100}", model.fullName());
+        assertEquals("KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100,seed=42}, fitted=false", model.toString());
+        assertEquals("KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100,seed=42}", model.fullName());
         assertEquals("""
-                KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100}
+                KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100,seed=42}
                 Model fitted=false
                 """, model.toSummary());
         assertEquals(model.toContent(), model.toSummary());
@@ -133,10 +126,10 @@ public class KMClusterTest {
 
         model.fit(df);
 
-        assertEquals("KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100}, fitted=true", model.toString());
-        assertEquals("KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100}", model.fullName());
+        assertEquals("KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100,seed=42}, fitted=true", model.toString());
+        assertEquals("KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100,seed=42}", model.fullName());
         assertEquals("""
-                KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100}
+                KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100,seed=42}
                 Model fitted=true
                 Inertia:8901.768720947213
                 Iterations:3
@@ -144,7 +137,7 @@ public class KMClusterTest {
                 """, model.toSummary());
         assertEquals(model.toContent(), model.toSummary());
         assertEquals("""
-                KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100}
+                KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100,seed=42}
                 Model fitted=true
                 Inertia:8901.768720947213
                 Iterations:3
@@ -160,8 +153,8 @@ public class KMClusterTest {
     @Test
     void MethodsTest() {
         var df = Datasets.loadOldFaithful();
-        KMCluster kmeans = KMCluster.newKMeans().k.set(2);
-        KMCluster kmedians = KMCluster.newKMedians().k.set(2);
+        KMCluster kmeans = KMCluster.newKMeans().k.set(2).seed.set(42L);
+        KMCluster kmedians = KMCluster.newKMedians().k.set(2).seed.set(42L);
 
         kmeans.fit(df);
         kmedians.fit(df);
@@ -184,17 +177,17 @@ public class KMClusterTest {
             kmediansErr += dist.apply(instances.mapRow(i), kmediansC.mapRow(kmediansAssignment.getInt(i)));
         }
         // the errors are a little bit different, under one percent
-        assertTrue(Math.abs(kmeansErr-kmediansErr)/kmediansErr < 0.01);
+        assertTrue(Math.abs(kmeansErr - kmediansErr) / kmediansErr < 0.01);
 
 
         double intersection = 0;
         for (int i = 0; i < df.rowCount(); i++) {
-            if(kmeansAssignment.getInt(i)==kmediansAssignment.getInt(i)) {
+            if (kmeansAssignment.getInt(i) == kmediansAssignment.getInt(i)) {
                 intersection++;
             }
         }
         // for k=2 we have the same assignment
-        assertEquals(1.0, intersection/df.rowCount());
+        assertEquals(1.0, intersection / df.rowCount());
 
         // still centroids are not the same
         assertFalse(kmeansC.deepEquals(kmediansC));
@@ -210,7 +203,7 @@ public class KMClusterTest {
 
     @Test
     void predictTest() {
-        var km = KMCluster.newKMeans().k.set(2);
+        var km = KMCluster.newKMeans().k.set(2).seed.set(42L);
         var df = Datasets.loadOldFaithful();
 
         km.fit(df);

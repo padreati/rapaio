@@ -25,6 +25,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Random;
 import java.util.stream.Stream;
 
 import rapaio.core.SamplingTools;
@@ -84,12 +85,12 @@ public class VarSelector implements Serializable {
         return "VarSelector[" + mVars + "]";
     }
 
-    public String[] nextVarNames() {
+    public String[] nextVarNames(Random random) {
         if (mVars == M_ALL) {
             return Arrays.copyOf(varNames, varNames.length);
         }
         int m = Math.min(mCount, varNames.length);
-        int[] indexes = SamplingTools.sampleWOR(varNames.length, m);
+        int[] indexes = SamplingTools.sampleWOR(random, varNames.length, m);
         String[] result = new String[m];
         for (int i = 0; i < indexes.length; i++) {
             result[i] = varNames[indexes[i]];

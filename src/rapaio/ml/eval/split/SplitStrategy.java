@@ -22,6 +22,7 @@
 package rapaio.ml.eval.split;
 
 import java.util.List;
+import java.util.Random;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -33,5 +34,5 @@ import rapaio.data.Var;
  */
 public interface SplitStrategy {
 
-    List<Split> generateSplits(Frame df, Var weights);
+    List<Split> generateSplits(Frame df, Var weights, Random random);
 }

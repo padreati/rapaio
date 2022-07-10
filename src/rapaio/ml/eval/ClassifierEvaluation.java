@@ -22,13 +22,12 @@
 package rapaio.ml.eval;
 
 import java.io.Serial;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+
+import com.pivovarit.collectors.ParallelCollectors;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -43,7 +42,6 @@ import rapaio.ml.eval.split.SplitStrategy;
 import rapaio.ml.eval.split.StratifiedKFold;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
-import rapaio.sys.WS;
 
 /**
  * Classifier evaluation tool.
@@ -86,75 +84,58 @@ public class ClassifierEvaluation extends ParamSet<ClassifierEvaluation> {
     /**
      * Instance weights
      */
-    public final ValueParam<Var, ClassifierEvaluation> weights = new ValueParam<>(this,null, "weights");
+    public final ValueParam<Var, ClassifierEvaluation> weights = new ValueParam<>(this, null, "weights");
 
     /**
      * Target variable name
      */
-    public final ValueParam<String, ClassifierEvaluation> targetName = new ValueParam<>(this,null, "target");
+    public final ValueParam<String, ClassifierEvaluation> targetName = new ValueParam<>(this, null, "target");
 
     /**
      * Split strategy used to obtain train and validation data sets.
      */
-    public final ValueParam<SplitStrategy, ClassifierEvaluation> splitStrategy = new ValueParam<>(this,new KFold(10), "splitStrategy");
+    public final ValueParam<SplitStrategy, ClassifierEvaluation> splitStrategy = new ValueParam<>(this, new KFold(10), "splitStrategy");
 
     /**
      * Number of threads used for evaluation.
      */
-    public final ValueParam<Integer, ClassifierEvaluation> threads = new ValueParam<>(this,1, "threads");
+    public final ValueParam<Integer, ClassifierEvaluation> threads = new ValueParam<>(this, 1, "threads");
+
+    public final ValueParam<Long, ClassifierEvaluation> seed = new ValueParam<>(this, 0L, "random");
 
     /**
      * Metrics used at evaluation time.
      */
-    public final ListParam<ClassifierMetric, ClassifierEvaluation> metrics = new ListParam<>(this,List.of(Accuracy.newMetric()), "metrics", (in, out) -> true);
+    public final ListParam<ClassifierMetric, ClassifierEvaluation> metrics =
+            new ListParam<>(this, List.of(Accuracy.newMetric()), "metrics", (in, out) -> true);
 
     public ClassifierEvaluationResult run() {
-        ExecutorService executorService = Executors.newFixedThreadPool(threads.get());
-        List<Future<Run>> futures = new LinkedList<>();
 
-        // create features for parallel execution
+        int th = Math.max(1, threads.get() < 0 ? Runtime.getRuntime().availableProcessors() - 1 : threads.get());
+        ExecutorService executorService = Executors.newWorkStealingPool(th);
 
-        List<Split> splits = splitStrategy.get().generateSplits(data.get(), weights.get());
-
-        for (Split split : splits) {
-            Future<Run> futureRun = executorService.submit(() -> {
-                var m = model.get().newInstance();
-                m.fit(split.trainDf(), targetName.get());
-                var trainResult = m.predict(split.trainDf(), true, true);
-                var testResult = m.predict(split.testDf(), true, true);
-                return new Run(split, trainResult, testResult);
-            });
-            futures.add(futureRun);
-        }
-
+        List<Split> splits = splitStrategy.get().generateSplits(data.get(), weights.get(), getRandom());
         ClassifierEvaluationResult result = new ClassifierEvaluationResult(this);
 
-        // collect results
-        while (!futures.isEmpty()) {
-            Iterator<Future<Run>> iterator = futures.iterator();
-            while (iterator.hasNext()) {
-                Future<Run> future = iterator.next();
-                if (future.isDone()) {
-                    try {
-                        var run = future.get();
-                        result.appendRun(run.split, run.trainResult, run.testResult);
-                        iterator.remove();
-                    } catch (InterruptedException | ExecutionException e) {
-                        // do nothing
-                        WS.println("ERROR:" + e.getMessage());
-                        e.printStackTrace();
-                        futures.clear();
-                        break;
-                    }
-                }
-            }
-        }
-
+        splits.stream().collect(ParallelCollectors.parallelToOrderedStream(split -> {
+                    var m = model.get().newInstance();
+                    m.fit(split.trainDf(), targetName.get());
+                    var trainResult = m.predict(split.trainDf(), true, true);
+                    var testResult = m.predict(split.testDf(), true, true);
+                    return new Run(split, trainResult, testResult);
+                }, executorService, th))
+                .forEach(run -> {
+                    result.appendRun(run.split, run.trainResult, run.testResult);
+                });
         // shut down executor
         executorService.shutdownNow();
         return result;
     }
 
     private record Run(Split split, ClassifierResult trainResult, ClassifierResult testResult) {
+    }
+
+    protected Random getRandom() {
+        return (seed.get() == 0) ? new Random() : new Random(seed.get());
     }
 }

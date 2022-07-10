@@ -22,6 +22,7 @@
 package rapaio.data.preprocessing;
 
 import java.io.Serial;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import rapaio.core.SamplingTools;
@@ -39,16 +40,16 @@ import rapaio.math.linear.DVector;
  */
 public class RandomProjection extends AbstractTransform {
 
-    public static RandomProjection newGaussianSd(int k, VarRange varRange) {
-        return new RandomProjection(k, gaussian(k), varRange);
+    public static RandomProjection newGaussianSd(Random random, int k, VarRange varRange) {
+        return new RandomProjection(random, k, gaussian(k), varRange);
     }
 
-    public static RandomProjection newAchlioptas(int k, VarRange varRange) {
-        return new RandomProjection(k, achlioptas(3), varRange);
+    public static RandomProjection newAchlioptas(Random random, int k, VarRange varRange) {
+        return new RandomProjection(random, k, achlioptas(3), varRange);
     }
 
-    public static RandomProjection newAchlioptas(int k, double s, VarRange varRange) {
-        return new RandomProjection(k, achlioptas(s), varRange);
+    public static RandomProjection newAchlioptas(Random random, int k, double s, VarRange varRange) {
+        return new RandomProjection(random, k, achlioptas(s), varRange);
     }
 
     @Serial
@@ -56,17 +57,19 @@ public class RandomProjection extends AbstractTransform {
 
     private final int k;
     private final Method method;
+    private final Random random;
     private DMatrix rp;
 
-    private RandomProjection(int k, Method method, VarRange varRange) {
+    private RandomProjection(Random random, int k, Method method, VarRange varRange) {
         super(varRange);
+        this.random = random;
         this.k = k;
         this.method = method;
     }
 
     @Override
     public RandomProjection newInstance() {
-        return new RandomProjection(k, method, varRange);
+        return new RandomProjection(random, k, method, varRange);
     }
 
     @Override
@@ -75,7 +78,7 @@ public class RandomProjection extends AbstractTransform {
 
         rp = DMatrix.empty(varNames.length, k);
         for (int i = 0; i < k; i++) {
-            DVector v = method.projection(varNames.length);
+            DVector v = method.projection(random, varNames.length);
             for (int j = 0; j < varNames.length; j++) {
                 rp.set(j, i, v.get(j));
             }
@@ -94,15 +97,15 @@ public class RandomProjection extends AbstractTransform {
     }
 
     public interface Method {
-        DVector projection(int rowCount);
+        DVector projection(Random random, int rowCount);
     }
 
     private static Method gaussian(int k) {
-        return rowCount -> {
+        return (random, rowCount) -> {
             Normal norm = Normal.std();
             DVector v = DVector.zeros(rowCount);
             for (int i = 0; i < v.size(); i++) {
-                v.set(i, norm.sampleNext() / Math.sqrt(k));
+                v.set(i, norm.sampleNext(random) / Math.sqrt(k));
             }
             v.normalize(2);
             return v;
@@ -117,8 +120,8 @@ public class RandomProjection extends AbstractTransform {
 
         double sqrt = Math.sqrt(s);
 
-        return rowCount -> {
-            int[] sample = SamplingTools.sampleWeightedWR(rowCount, p);
+        return (random, rowCount) -> {
+            int[] sample = SamplingTools.sampleWeightedWR(random, rowCount, p);
             DVector v = DVector.zeros(rowCount);
             for (int i = 0; i < sample.length; i++) {
                 if (sample[i] == 0) {

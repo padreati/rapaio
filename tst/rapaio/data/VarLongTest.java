@@ -1,44 +1,38 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.data;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import rapaio.core.RandomSource;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/19/18.
@@ -47,9 +41,11 @@ public class VarLongTest {
 
     private static final double TOL = 1e-20;
 
+    private Random random;
+
     @BeforeEach
     void setUp() {
-        RandomSource.setSeed(134);
+        random = new Random(134);
     }
 
     @Test
@@ -69,7 +65,7 @@ public class VarLongTest {
 
     @Test
     void testStaticBuilders() {
-        int[] sourceIntArray = IntStream.range(0, 100).map(i -> (i % 10 == 0) ? Integer.MIN_VALUE : RandomSource.nextInt(100)).toArray();
+        int[] sourceIntArray = IntStream.range(0, 100).map(i -> (i % 10 == 0) ? Integer.MIN_VALUE : random.nextInt(100)).toArray();
         List<Integer> sourceIntList = Arrays.stream(sourceIntArray).boxed().collect(Collectors.toList());
 
         VarLong copy = VarLong.copy(sourceIntArray);
@@ -81,8 +77,9 @@ public class VarLongTest {
         assertTrue(copy.deepEquals(VarLong.copy(copy)));
         assertTrue(copy.deepEquals(VarLong.copy(VarInt.wrap(sourceIntArray))));
 
-        long[] sourceLongArray = IntStream.range(0, 100).mapToLong(i -> (i % 10 == 0) ? Long.MIN_VALUE : RandomSource.nextInt(100)).toArray();
-        List<Long> sourceLongList = Arrays.stream(sourceLongArray).boxed().collect(Collectors.toList());
+        long[] sourceLongArray =
+                IntStream.range(0, 100).mapToLong(i -> (i % 10 == 0) ? Long.MIN_VALUE : random.nextInt(100)).toArray();
+        List<Long> sourceLongList = Arrays.stream(sourceLongArray).boxed().toList();
 
         VarLong dcopy = VarLong.copy(sourceLongArray);
         assertEquals(100, dcopy.size());
@@ -167,7 +164,7 @@ public class VarLongTest {
 
     @Test
     void testSetLeveles() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarLong.scalar(10).setLevels(new String[]{}));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarLong.scalar(10).setLevels(new String[] {}));
         assertEquals("Operation not available for long variable", ex.getMessage());
     }
 
@@ -272,7 +269,7 @@ public class VarLongTest {
         var.addLabel("-10");
         var.addLabel("+10");
 
-        long[] expected = new long[]{
+        long[] expected = new long[] {
                 VarLong.MISSING_VALUE, 0, -10, 10,
                 VarLong.MISSING_VALUE, 0, -10, 10};
         for (int i = 0; i < expected.length; i++) {
@@ -284,7 +281,7 @@ public class VarLongTest {
     void testCollector() {
         List<Long> list = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            list.add((long) RandomSource.nextDouble() * 100);
+            list.add((long) (random.nextDouble() * 100));
         }
         VarLong copy = list.stream().parallel().collect(VarLong.collector());
         long sum1 = 0;

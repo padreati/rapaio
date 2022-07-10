@@ -1,37 +1,34 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.math.linear.decomposition;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.math.linear.DMatrix;
@@ -44,9 +41,11 @@ public class DoubleQRDecompositionTest {
 
     final int n = 10;
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(1234);
+        random = new Random(1234);
     }
 
     @Test
@@ -55,9 +54,9 @@ public class DoubleQRDecompositionTest {
 
             // generate a random matrix
 
-            int off = RandomSource.nextInt(n);
+            int off = random.nextInt(n);
 
-            DMatrix a = DMatrix.random(n + off, n);
+            DMatrix a = DMatrix.random(random, n + off, n);
             DoubleQRDecomposition qr = a.qr();
 
             DMatrix q = qr.q();
@@ -95,7 +94,7 @@ public class DoubleQRDecompositionTest {
 
             // generate a random matrix
 
-            DMatrix a = DMatrix.random(n, n);
+            DMatrix a = DMatrix.random(random, n, n);
             DoubleQRDecomposition qr = a.qr();
 
             DMatrix h = qr.h();
@@ -126,9 +125,9 @@ public class DoubleQRDecompositionTest {
             DMatrix b = DMatrix.empty(rows, 1);
 
             for (int i = 0; i < rows; i++) {
-                double x1 = unif.sampleNext();
-                double x2 = unif.sampleNext();
-                double e = normal.sampleNext();
+                double x1 = unif.sampleNext(random);
+                double x2 = unif.sampleNext(random);
+                double e = normal.sampleNext(random);
                 double y = 3 + 2 * x1 - 2 * x2 + e;
 
                 a.set(i, 0, 1);

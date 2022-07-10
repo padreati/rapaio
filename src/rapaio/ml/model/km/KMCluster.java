@@ -25,9 +25,9 @@ import java.io.Serial;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.IntStream;
 
-import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -201,20 +201,21 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
     @Override
     public KMCluster coreFit(Frame initialDf, Var weights) {
 
+        Random random = getRandom();
         DMatrix m = DMatrix.copy(initialDf);
-        c = initializeClusters(m);
+        c = initializeClusters(random, m);
 
         int[] assignment = IntArrays.newFill(m.rows(), -1);
         errors = VarDouble.empty().name("errors");
 
         assignToCentroids(m, assignment, true);
-        repairEmptyClusters(m, assignment);
+        repairEmptyClusters(random, m, assignment);
 
         int rounds = runs.get();
         while (rounds-- > 0) {
             method.get().recomputeCentroids(k.get(), c, m, assignment);
             assignToCentroids(m, assignment, true);
-            repairEmptyClusters(m, assignment);
+            repairEmptyClusters(random, m, assignment);
 
             if (runningHook != null) {
                 learned = true;
@@ -231,15 +232,15 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         return this;
     }
 
-    private DMatrix initializeClusters(DMatrix m) {
-        DMatrix bestCentroids = init.get().init(method.get().distance(), m, k.get());
+    private DMatrix initializeClusters(Random random, DMatrix m) {
+        DMatrix bestCentroids = init.get().init(random, method.get().distance(), m, k.get());
         double bestError = computeInitError(m, bestCentroids);
 
         // compute initial restarts if nstart is greater than 1
         // the best restart is kept as initial centroids
 
         for (int i = 1; i < nstart.get(); i++) {
-            DMatrix nextCentroids = init.get().init(method.get().distance(), m, k.get());
+            DMatrix nextCentroids = init.get().init(random, method.get().distance(), m, k.get());
             double nextError = computeInitError(m, nextCentroids);
             if (nextError < bestError) {
                 bestCentroids = nextCentroids;
@@ -287,7 +288,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         return cluster;
     }
 
-    private void repairEmptyClusters(DMatrix df, int[] assignment) {
+    private void repairEmptyClusters(Random random, DMatrix df, int[] assignment) {
         // check for empty clusters, if any is found then
         // select random points to be new clusters, different than
         // existing clusters
@@ -310,7 +311,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         while (it.hasNext()) {
             int next = it.next();
             while (true) {
-                int selection = RandomSource.nextInt(df.rows());
+                int selection = random.nextInt(df.rows());
                 boolean found = false;
 
                 // check if it does not collide with existent valid clusters

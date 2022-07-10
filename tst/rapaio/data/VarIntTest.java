@@ -21,18 +21,15 @@
 
 package rapaio.data;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import static rapaio.sys.With.*;
 
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.stat.Sum;
 import rapaio.sys.WS;
 
@@ -77,7 +74,7 @@ public class VarIntTest {
 
     @Test
     void testNotImplementedSetLevels() {
-        var ex = assertThrows(IllegalStateException.class, () -> VarInt.seq(10).setLevels(new String[]{"a", "b"}));
+        var ex = assertThrows(IllegalStateException.class, () -> VarInt.seq(10).setLevels(new String[] {"a", "b"}));
         assertEquals("Operation not available for integer variables.", ex.getMessage());
     }
 
@@ -115,8 +112,9 @@ public class VarIntTest {
             assertFalse(index.isMissing(i));
         }
         for (int i = 0; i < index.size(); i++) {
-            if (i % 2 == 0)
+            if (i % 2 == 0) {
                 index.setMissing(i);
+            }
         }
         for (int i = 0; i < index.size(); i++) {
             assertEquals(i % 2 == 0, index.isMissing(i));
@@ -163,7 +161,7 @@ public class VarIntTest {
             assertEquals(i + 1, seq1.getInt(i));
         }
 
-        int[] src = new int[]{1, 2, 3, 4};
+        int[] src = new int[] {1, 2, 3, 4};
         VarInt x1 = VarInt.copy(src);
         VarInt x2 = VarInt.wrap(src);
         VarInt x3 = VarInt.seq(4);
@@ -205,7 +203,7 @@ public class VarIntTest {
 
     @Test
     void testLabels() {
-        int[] array = new int[]{1, 2, 3, VarInt.MISSING_VALUE, 5, 6, VarInt.MISSING_VALUE};
+        int[] array = new int[] {1, 2, 3, VarInt.MISSING_VALUE, 5, 6, VarInt.MISSING_VALUE};
 
         VarInt int1 = VarInt.empty();
         for (int val : array) {
@@ -236,7 +234,7 @@ public class VarIntTest {
         assertEquals("10", x3.getLabel(0));
         assertEquals("3", x3.getLabel(1));
 
-        String[] stringValues = new String[]{"?", "-4", "4", "?"};
+        String[] stringValues = new String[] {"?", "-4", "4", "?"};
         VarInt x4 = VarInt.empty();
         for (String str : stringValues) {
             x4.addLabel(str);
@@ -251,7 +249,7 @@ public class VarIntTest {
     @Test
     void testDouble() {
 
-        double[] values = new double[]{0, 1, Double.NaN, 3, 4, Double.NaN, 6, 7, -8, -100};
+        double[] values = new double[] {0, 1, Double.NaN, 3, 4, Double.NaN, 6, 7, -8, -100};
         VarInt int1 = VarInt.empty();
         for (double val : values) {
             int1.addDouble(val);
@@ -328,7 +326,7 @@ public class VarIntTest {
         for (int i = 0; i < int1.size(); i++) {
             assertEquals(int1.getInt(i), int1.elements()[i]);
         }
-        int[] values = new int[]{0, 1, Integer.MIN_VALUE, 3, 4};
+        int[] values = new int[] {0, 1, Integer.MIN_VALUE, 3, 4};
         int1.setElements(values, values.length);
 
         assertTrue(VarInt.wrap(values).deepEquals(int1));
@@ -344,9 +342,9 @@ public class VarIntTest {
 
         WS.getPrinter().withOptions(textWidth(100));
 
-        RandomSource.setSeed(123);
+        Random random = new Random(123);
         for (int i = 0; i < 200; i++) {
-            x.addInt(RandomSource.nextInt(1000));
+            x.addInt(random.nextInt(1000));
         }
 
         assertEquals("""

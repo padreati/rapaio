@@ -23,10 +23,10 @@ package rapaio.experiment.ml.feature;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-import rapaio.core.RandomSource;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
@@ -47,6 +47,7 @@ public class CBinaryRelief {
 
     private double p = 0.1;
     private int runs = 10;
+    private Random random = new Random();
     private final ReliefDistanceFunction distFun = ReliefDistanceFunction.l2();
     private final ReliefDifferenceFunction diffFun = ReliefDifferenceFunction.standard();
     private BiConsumer<CBinaryRelief, Integer> runningHook = null;
@@ -78,6 +79,11 @@ public class CBinaryRelief {
 
     public CBinaryRelief withRuns(int runs) {
         this.runs = runs;
+        return this;
+    }
+
+    public CBinaryRelief withRandom(Random random) {
+        this.random = random;
         return this;
     }
 
@@ -138,7 +144,7 @@ public class CBinaryRelief {
             for (int i = 0; i < seq.length; i++) {
                 seq[i] = i;
             }
-            IntArrays.shuffle(seq, RandomSource.getRandom());
+            IntArrays.shuffle(seq, random);
 
             int[] rows = new int[(int) (df.rowCount() * p)];
             int rlen = rows.length;

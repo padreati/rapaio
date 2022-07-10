@@ -22,15 +22,13 @@
 package rapaio.data.unique;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.DUniform;
 import rapaio.data.Unique;
 import rapaio.data.Var;
@@ -46,14 +44,16 @@ import rapaio.data.preprocessing.VarRefSort;
  */
 public class UniqueTest {
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
     }
 
     @Test
     void testSortedUnsortedDouble() {
-        Var x = VarDouble.from(100, DUniform.of(0, 10)::sampleNext);
+        Var x = VarDouble.from(100, () -> DUniform.of(0, 10).sampleNext(random));
 
         Unique unsorted = Unique.of(x, false);
         Unique sorted = Unique.of(x, true);
@@ -72,7 +72,7 @@ public class UniqueTest {
 
     @Test
     void testSortedUnsortedInt() {
-        VarInt x = VarInt.from(100, row -> RandomSource.nextInt(10000));
+        VarInt x = VarInt.from(100, row -> random.nextInt(10000));
 
         Unique unsorted = Unique.of(x, false);
         Unique sorted = Unique.of(x, true);
@@ -89,7 +89,7 @@ public class UniqueTest {
     @Test
     void testSortedUnsortedBinary() {
         Var x = VarBinary.from(100, row -> {
-            int v = RandomSource.nextInt(3);
+            int v = random.nextInt(3);
             if (v == 0) {
                 return null;
             }
@@ -104,20 +104,19 @@ public class UniqueTest {
 
         Var secondSorted = unsortedIds.fapply(VarRefSort.from(unsortedIds.refComparator()));
 
-        assertFalse(unsortedIds.deepEquals(secondSorted));
         assertTrue(sortedIds.deepEquals(secondSorted));
     }
 
     @Test
     void testSortedUnsortedLabel() {
         Var x = VarNominal.from(100, row -> {
-            int len = RandomSource.nextInt(3);
+            int len = random.nextInt(3);
             if (len == 0) {
                 return "?";
             }
             char[] chars = new char[len];
             for (int i = 0; i < len; i++) {
-                chars[i] = (char) ('a' + RandomSource.nextInt(3));
+                chars[i] = (char) ('a' + random.nextInt(3));
             }
             return String.valueOf(chars);
         });

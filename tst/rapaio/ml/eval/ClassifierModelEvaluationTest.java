@@ -1,36 +1,34 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.ml.eval;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarNominal;
@@ -45,13 +43,15 @@ import rapaio.ml.model.rule.ZeroRule;
  */
 public class ClassifierModelEvaluationTest {
 
-    private final SplitStrategy splitStrategy = (df, weights) -> List.of(new Split(0, 0, df, df), new Split(0, 1, df, df));
+    private final SplitStrategy splitStrategy = (df, weights, __) -> List.of(new Split(0, 0, df, df), new Split(0, 1, df, df));
 
     private final String targetName = "target";
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
     }
 
     @Test
@@ -62,6 +62,7 @@ public class ClassifierModelEvaluationTest {
 
         var eval = ClassifierEvaluation.eval(df, targetName, model, metric)
                 .splitStrategy.set(splitStrategy)
+                .seed.set(123L)
                 .threads.set(1);
 
         var result = eval.run();

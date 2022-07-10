@@ -23,6 +23,7 @@ package rapaio.math.linear.dense;
 
 import java.io.Serial;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.DoubleStream;
@@ -59,13 +60,21 @@ public final class DVectorDense extends AbstractDVectorStore {
     }
 
     public static DVectorDense random(int size) {
-        return random(size, Normal.std());
+        return random(new Random(), size);
+    }
+
+    public static DVectorDense random(Random random, int size) {
+        return random(random, size, Normal.std());
     }
 
     public static DVectorDense random(int size, Distribution distribution) {
+        return random(new Random(), size, distribution);
+    }
+
+    public static DVectorDense random(Random random, int size, Distribution distribution) {
         double[] array = new double[size];
         for (int i = 0; i < size; i++) {
-            array[i] = distribution.sampleNext();
+            array[i] = distribution.sampleNext(random);
         }
         return new DVectorDense(0, array.length, array);
     }

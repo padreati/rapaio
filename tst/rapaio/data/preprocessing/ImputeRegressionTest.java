@@ -21,12 +21,13 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
@@ -44,17 +45,19 @@ public class ImputeRegressionTest {
 
     private Normal normal;
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
         normal = Normal.std();
     }
 
     @Test
     void testBasic() {
 
-        VarDouble x = VarDouble.from(100, row -> row % 7 == 0 ? Double.NaN : normal.sampleNext()).name("x");
-        VarDouble y = VarDouble.from(100, row -> row % 9 == 0 ? Double.NaN : normal.sampleNext()).name("y");
+        VarDouble x = VarDouble.from(100, row -> row % 7 == 0 ? Double.NaN : normal.sampleNext(random)).name("x");
+        VarDouble y = VarDouble.from(100, row -> row % 9 == 0 ? Double.NaN : normal.sampleNext(random)).name("y");
 
         double xm = Mean.of(x).value();
         double ym = Mean.of(y).value();

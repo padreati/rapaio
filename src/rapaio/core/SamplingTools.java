@@ -21,12 +21,12 @@
 
 package rapaio.core;
 
-import static java.lang.StrictMath.log;
-import static java.lang.StrictMath.pow;
+import static java.lang.StrictMath.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -48,15 +48,24 @@ public final class SamplingTools {
      * Nothing special, just using the uniform discrete sampler offered by the system.
      */
     public static int[] sampleWR(final int populationSize, int sampleSize) {
+        return sampleWR(new Random(), populationSize, sampleSize);
+    }
+
+
+    /**
+     * Discrete sampling with repetition. Nothing special, just using the uniform discrete sampler offered by the system.
+     * For a deterministic sampling use random parameter with a given seed.
+     */
+    public static int[] sampleWR(final Random random, final int populationSize, int sampleSize) {
         int[] sample = new int[sampleSize];
         for (int i = 0; i < sampleSize; i++) {
-            sample[i] = RandomSource.nextInt(populationSize);
+            sample[i] = random.nextInt(populationSize);
         }
         return sample;
     }
 
     /**
-     * Draws an uniform discrete sample without replacement.
+     * Draws uniform discrete sample without replacement.
      * <p>
      * Implements reservoir sampling.
      *
@@ -65,6 +74,19 @@ public final class SamplingTools {
      * @return sampling indexes
      */
     public static int[] sampleWOR(final int populationSize, final int sampleSize) {
+        return sampleWOR(new Random(), populationSize, sampleSize);
+    }
+
+    /**
+     * Draws uniform discrete sample without replacement.
+     * <p>
+     * Implements reservoir sampling.
+     *
+     * @param populationSize population size
+     * @param sampleSize     sample size
+     * @return sampling indexes
+     */
+    public static int[] sampleWOR(final Random random, final int populationSize, final int sampleSize) {
         if (sampleSize > populationSize) {
             throw new IllegalArgumentException("Can't draw a sample without replacement bigger than population size.");
         }
@@ -73,14 +95,14 @@ public final class SamplingTools {
             sample[i] = i;
         }
         for (int i = sampleSize; i > 1; i--) {
-            int j = RandomSource.nextInt(i);
+            int j = random.nextInt(i);
             int tmp = sample[i - 1];
             sample[i - 1] = sample[j];
             sample[j] = tmp;
         }
 
         for (int i = sampleSize; i < populationSize; i++) {
-            int j = RandomSource.nextInt(i + 1);
+            int j = random.nextInt(i + 1);
             if (j < sampleSize) {
                 sample[j] = i;
             }
@@ -99,6 +121,20 @@ public final class SamplingTools {
      * @return sampling indexes
      */
     public static int[] sampleWeightedWR(final int sampleSize, final double[] freq) {
+        return sampleWeightedWR(new Random(), sampleSize, freq);
+    }
+
+    /**
+     * Generate discrete weighted random samples with replacement (same values might occur)
+     * with building aliases according to the new probabilities.
+     * <p>
+     * Implementation based on Vose alias-method algorithm
+     *
+     * @param sampleSize sample size
+     * @param freq       sampling probabilities
+     * @return sampling indexes
+     */
+    public static int[] sampleWeightedWR(final Random random, final int sampleSize, final double[] freq) {
 
         normalize(freq);
 
@@ -112,8 +148,8 @@ public final class SamplingTools {
 
         int[] sample = new int[sampleSize];
         for (int i = 0; i < sampleSize; i++) {
-            int column = RandomSource.nextInt(prob.length);
-            sample[i] = RandomSource.nextDouble() < prob[column] ? column : alias[column];
+            int column = random.nextInt(prob.length);
+            sample[i] = random.nextDouble() < prob[column] ? column : alias[column];
         }
         return sample;
     }
@@ -131,6 +167,22 @@ public final class SamplingTools {
      * @see "http://link.springer.com/content/pdf/10.1007/978-0-387-30162-4_478.pdf"
      */
     public static int[] sampleWeightedWOR(final int sampleSize, final double[] freq) {
+        return sampleWeightedWOR(new Random(), sampleSize, freq);
+    }
+
+    /**
+     * Draw m <= n weighted random samples, weight by probabilities
+     * without replacement.
+     * <p>
+     * Weighted random sampling without replacement.
+     * Implements Efraimidis-Spirakis method.
+     *
+     * @param sampleSize number of samples
+     * @param freq       var of probabilities
+     * @return sampling indexes
+     * @see "http://link.springer.com/content/pdf/10.1007/978-0-387-30162-4_478.pdf"
+     */
+    public static int[] sampleWeightedWOR(final Random random, final int sampleSize, final double[] freq) {
         // validation
         if (sampleSize > freq.length) {
             throw new IllegalArgumentException("Required sample size is bigger than population size.");
@@ -163,7 +215,7 @@ public final class SamplingTools {
         // fill heap base
         for (int i = 0; i < sampleSize; i++) {
             heap[i + len / 2] = i;
-            k[i] = pow(RandomSource.nextDouble(), 1. / freq[i]);
+            k[i] = pow(random.nextDouble(), 1. / freq[i]);
             result[i] = i;
         }
 
@@ -187,7 +239,7 @@ public final class SamplingTools {
         // exhaust the source
         int pos = sampleSize;
         while (pos < freq.length) {
-            double r = RandomSource.nextDouble();
+            double r = random.nextDouble();
             double xw = log(r) / log(k[heap[1]]);
 
             double acc = 0;
@@ -199,11 +251,13 @@ public final class SamplingTools {
                 }
                 break;
             }
-            if (pos == freq.length) break;
+            if (pos == freq.length) {
+                break;
+            }
 
             // min replaced with the new selected value
             double tw = pow(k[heap[1]], freq[pos]);
-            double r2 = RandomSource.nextDouble() * (1. - tw) + tw;
+            double r2 = random.nextDouble() * (1. - tw) + tw;
             double ki = pow(r2, 1 / freq[pos]);
 
             k[heap[1]] = ki;
@@ -295,12 +349,16 @@ public final class SamplingTools {
     }
 
     public static Frame[] randomSampleSlices(Frame frame, double... freq) {
+        return randomSampleSlices(new Random(), frame, freq);
+    }
+
+    public static Frame[] randomSampleSlices(final Random random, Frame frame, double... freq) {
         normalize(freq);
         int[] rows = new int[frame.rowCount()];
         for (int i = 0; i < rows.length; i++) {
             rows[i] = i;
         }
-        IntArrays.shuffle(rows, RandomSource.getRandom());
+        IntArrays.shuffle(rows, random);
 
         Frame[] result = new Frame[freq.length];
         int start = 0;
@@ -315,8 +373,8 @@ public final class SamplingTools {
         return result;
     }
 
-    public static Frame[] randomSampleStratifiedSplit(Frame df, String strataName, double... freq) {
-        Mapping[] maps = getMappingsForStratifiedSplit(df, strataName, freq);
+    public static Frame[] randomSampleStratifiedSplit(Random random, Frame df, String strataName, double... freq) {
+        Mapping[] maps = getMappingsForStratifiedSplit(random, df, strataName, freq);
 
         Frame[] list = new Frame[freq.length];
         for (int i = 0; i < freq.length; i++) {
@@ -325,7 +383,7 @@ public final class SamplingTools {
         return list;
     }
 
-    private static Mapping[] getMappingsForStratifiedSplit(Frame df, String strataName, double[] freq) {
+    private static Mapping[] getMappingsForStratifiedSplit(Random random, Frame df, String strataName, double[] freq) {
         normalize(freq);
         List<Mapping> groups = new ArrayList<>();
         for (int i = 0; i < df.levels(strataName).size(); i++) {
@@ -340,7 +398,7 @@ public final class SamplingTools {
 
         int mapPos = 0;
         for (Mapping group : groups) {
-            group.shuffle();
+            group.shuffle(random);
             IntIterator it = group.iterator();
             while (it.hasNext()) {
                 maps[mapPos++].add(it.nextInt());
@@ -350,7 +408,7 @@ public final class SamplingTools {
             }
         }
         for (int i = 0; i < freq.length; i++) {
-            maps[i].shuffle();
+            maps[i].shuffle(random);
         }
         return maps;
     }
@@ -362,6 +420,10 @@ public final class SamplingTools {
         return trainTestSplit(df, null, p, true, null);
     }
 
+    public static TrainTestSplit trainTestSplit(Random random, Frame df, double p) {
+        return trainTestSplit(random, df, null, p, true, null);
+    }
+
     public static TrainTestSplit trainTestSplit(Frame df, Var w, double p) {
         return trainTestSplit(df, w, p, true, null);
     }
@@ -371,6 +433,10 @@ public final class SamplingTools {
     }
 
     public static TrainTestSplit trainTestSplit(Frame df, Var w, double p, boolean shuffle, String strata) {
+        return trainTestSplit(new Random(), df, w, p, shuffle, strata);
+    }
+
+    public static TrainTestSplit trainTestSplit(final Random random, Frame df, Var w, double p, boolean shuffle, String strata) {
 
         int trainSize = (int) (df.rowCount() * p);
         int testSize = df.rowCount() - trainSize;
@@ -382,14 +448,14 @@ public final class SamplingTools {
         if (strata == null) {
             int[] rows = IntArrays.newSeq(0, df.rowCount());
             if (shuffle) {
-                IntArrays.shuffle(rows, RandomSource.getRandom());
+                IntArrays.shuffle(rows, random);
             }
             var trainMapping = Mapping.wrap(IntArrays.newCopy(rows, 0, trainSize));
             var testMapping = Mapping.wrap(IntArrays.newCopy(rows, trainSize, testSize));
             return new TrainTestSplit(df.mapRows(trainMapping), w.mapRows(trainMapping), df.mapRows(testMapping), w.mapRows(testMapping));
         }
 
-        var mappings = getMappingsForStratifiedSplit(df, strata, new double[]{p, 1 - p});
+        var mappings = getMappingsForStratifiedSplit(random, df, strata, new double[] {p, 1 - p});
         return new TrainTestSplit(df.mapRows(mappings[0]), w.mapRows(mappings[0]), df.mapRows(mappings[1]), w.mapRows(mappings[1]));
     }
 }

@@ -21,19 +21,17 @@
 
 package rapaio.data;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.preprocessing.VarApply;
 import rapaio.data.preprocessing.VarRefSort;
 import rapaio.data.preprocessing.VarSort;
@@ -44,9 +42,11 @@ import rapaio.data.preprocessing.VarStandardScaler;
  */
 public class VarTest {
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(42);
+        random = new Random(42);
     }
 
     @Test
@@ -134,25 +134,25 @@ public class VarTest {
 
     @Test
     void testRefComparator() {
-        Var varDouble = VarDouble.from(100, RandomSource::nextDouble);
+        Var varDouble = VarDouble.from(100, () -> random.nextDouble());
         varDouble = varDouble.fapply(VarRefSort.from(varDouble.refComparator()));
         for (int i = 1; i < varDouble.size(); i++) {
             assertTrue(varDouble.getDouble(i - 1) <= varDouble.getDouble(i));
         }
 
-        Var varLong = VarLong.from(100, row -> (long) RandomSource.nextInt(100));
+        Var varLong = VarLong.from(100, row -> (long) random.nextInt(100));
         varLong = varLong.fapply(VarRefSort.from(varLong.refComparator()));
         for (int i = 1; i < varLong.size(); i++) {
             assertTrue(varLong.getLong(i - 1) <= varLong.getLong(i));
         }
 
-        Var varInt = VarInt.from(100, row -> RandomSource.nextInt(100));
+        Var varInt = VarInt.from(100, row -> random.nextInt(100));
         varInt = varInt.fapply(VarRefSort.from(varInt.refComparator()));
         for (int i = 1; i < varInt.size(); i++) {
             assertTrue(varInt.getInt(i - 1) <= varInt.getInt(i));
         }
 
-        Var varNominal = VarNominal.from(100, row -> String.valueOf(RandomSource.nextInt(100)));
+        Var varNominal = VarNominal.from(100, row -> String.valueOf(random.nextInt(100)));
         varNominal = varNominal.fapply(VarRefSort.from(varNominal.refComparator()));
         for (int i = 1; i < varNominal.size(); i++) {
             assertTrue(varNominal.getLabel(i - 1).compareTo(varNominal.getLabel(i)) <= 0);

@@ -1,43 +1,42 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.ml.model.svm;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.logging.Level;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.experiment.ml.svm.libsvm.svm;
 import rapaio.experiment.ml.svm.libsvm.svm_model;
 import rapaio.experiment.ml.svm.libsvm.svm_predict;
 import rapaio.experiment.ml.svm.libsvm.svm_train;
@@ -61,7 +60,6 @@ public class OneClassSvmTest {
     @BeforeEach
     void beforeEach() {
         WS.initLog(Level.SEVERE);
-        RandomSource.setSeed(42);
 
         Normal normal1 = Normal.of(0, 2);
         Normal normal2 = Normal.of(1, 3);
@@ -87,14 +85,15 @@ public class OneClassSvmTest {
                 "-g", "0.01",
                 "-n", "0.1",
                 "-b", "0"};
-        RandomSource.setSeed(42);
+        svm.rand = new Random(42);
         svm_model model = t.run(xs, DVector.fill(LEN, 0), argv);
         svm_predict.Prediction pred = svm_predict.predict(model, xs, 1);
 
         OneClassSvm ocs = OneClassSvm
                 .newModel()
                 .kernel.set(new RBFKernel(0.01))
-                .nu.set(0.1);
+                .nu.set(0.1)
+                .seed.set(42L);
         var result = ocs.fit(df, null).predict(df);
 
 

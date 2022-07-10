@@ -22,17 +22,15 @@
 package rapaio.ml.model.svm;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
@@ -66,11 +64,6 @@ import rapaio.ml.eval.split.StratifiedKFold;
  */
 public class BinarySMOTest {
 
-    @BeforeEach
-    void beforeEach() {
-        RandomSource.setSeed(42);
-    }
-
     @Test
     void testLinear() throws IOException {
         Frame df = Datasets.loadSonar();
@@ -78,12 +71,13 @@ public class BinarySMOTest {
 
         BinarySMO smo1 = BinarySMO.newModel()
                 .kernel.set(new PolyKernel(1))
-                .c.set(.1);
-        RandomSource.setSeed(1);
+                .c.set(.1)
+                .seed.set(1L);
 
         var result = ClassifierEvaluation
                 .eval(df.fapply(StandardScaler.on(VarRange.all())), "Class", smo1, Accuracy.newMetric(true))
                 .splitStrategy.set(new StratifiedKFold(10, "Class"))
+                .seed.set(1L)
                 .run();
         assertEquals(0.8953094777562862, result.getMeanTrainScore(Accuracy.newMetric(true).getName()), 1e-7);
     }
@@ -116,13 +110,13 @@ public class BinarySMOTest {
         kernels.add(new RationalQuadraticKernel(1));
 
         for (Kernel k : kernels) {
-//            System.out.println(k.name());
-            RandomSource.setSeed(1);
             BinarySMO smo = BinarySMO.newModel()
                     .kernel.set(k)
-                    .maxRuns.set(10);
+                    .maxRuns.set(10)
+                    .seed.set(2L);
             df = df.fapply(StandardScaler.on(VarRange.all()));
             double s = ClassifierEvaluation.cv(df, "Class", smo, 3, Accuracy.newMetric())
+                    .seed.set(42L)
                     .run()
                     .getMeanTestScore(Accuracy.newMetric().getName());
             assertTrue(s > 0.4, String.format("kernel: %s, accuracy: %.3f", k.name(), s));
@@ -141,20 +135,21 @@ public class BinarySMOTest {
                 .firstLabel.set("versicolor")
                 .secondLabel.set("setosa")
                 .kernel.set(new LogKernel(1))
-                .maxRuns.set(200);
+                .maxRuns.set(200)
+                .seed.set(1L);
 
-        var tts = SamplingTools.trainTestSplit(iris, 0.7);
+        var tts = SamplingTools.trainTestSplit(new Random(1), iris, 0.7);
 
         assertEquals("BinarySMO{c=17,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=200," +
-                        "secondLabel=setosa}, fitted=false",
+                        "secondLabel=setosa,seed=1}, fitted=false",
                 smo.toString());
         assertEquals("BinarySMO{c=17,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=200," +
-                        "secondLabel=setosa}",
+                        "secondLabel=setosa,seed=1}",
                 smo.fullName());
         assertEquals("""
                 BinarySMO model
                 ===============
-                BinarySMO{c=17,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=200,secondLabel=setosa}
+                BinarySMO{c=17,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=200,secondLabel=setosa,seed=1}
                 fitted: false.
                 """, smo.toSummary());
         assertEquals(smo.toSummary(), smo.toContent());
@@ -163,48 +158,48 @@ public class BinarySMOTest {
         smo.c.set(100.0).maxRuns.set(10);
         smo.fit(tts.trainDf(), "class");
 
-        assertEquals("BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=10,secondLabel=setosa}, " +
-                        "fitted=true, support vectors=7",
+        assertEquals("BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=10,secondLabel=setosa,seed=1}, " +
+                        "fitted=true, support vectors=6",
                 smo.toString());
         assertEquals("BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=10," +
-                        "secondLabel=setosa}",
+                        "secondLabel=setosa,seed=1}",
                 smo.fullName());
         assertEquals("""
                 BinarySMO model
                 ===============
-                BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=10,secondLabel=setosa}
-                fitted: true, support vectors=7
+                BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=10,secondLabel=setosa,seed=1}
+                fitted: true, support vectors=6
                 Decision function:
-                   0.2350233 * <[4.5,2.3,1.3,0.3], x>
-                 - 0.4245273 * <[5.1,2.5,3,1.1], x>
-                 + 0.2851721 * <[5,3.6,1.4,0.2], x>
-                 - 0.1193596 * <[7,3.2,4.7,1.4], x>
-                 + 0.189504 * <[5.4,3.9,1.7,0.4], x>
-                 + 0.1193596 * <[5.1,3.3,1.7,0.5], x>
-                 - 0.2851721 * <[5.7,2.6,3.5,1], x>
-                 - 0.0408851""", smo.toSummary());
+                   0.2643514 * <[4.5,2.3,1.3,0.3], x>
+                 - 0.1108114 * <[5.9,3.2,4.8,1.8], x>
+                 - 0.4685095 * <[4.9,2.4,3.3,1], x>
+                 - 0.1656843 * <[5.8,2.7,4.1,1], x>
+                 + 0.192999 * <[5,3,1.6,0.2], x>
+                 + 0.2876547 * <[5.4,3.9,1.7,0.4], x>
+                 - 0.0594024""", smo.toSummary());
         assertEquals(smo.toSummary(), smo.toContent());
         assertEquals(smo.toSummary(), smo.toFullContent());
 
         smo.kernel.set(new PolyKernel(1));
         smo.fit(tts.trainDf(), "class");
 
-        assertEquals("BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa}, " +
-                "fitted=true, fitted weights=4", smo.toString());
-        assertEquals("BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa}",
+        assertEquals(
+                "BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=1}, " +
+                        "fitted=true, fitted weights=4", smo.toString());
+        assertEquals("BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=1}",
                 smo.fullName());
         assertEquals("""
                 BinarySMO model
                 ===============
-                BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa}
+                BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=1}
                 fitted: true, fitted weights=4
                 Decision function:
                 Linear support vector: use attribute weights folding.
-                   0 * [sepal-length]
-                 + 0.5838084 * [sepal-width]
-                 - 0.9486886 * [petal-length]
-                 - 0.4378563 * [petal-width]
-                 + 0.9450398""", smo.toSummary());
+                   0.0393929 * [sepal-length]
+                 + 0.4876855 * [sepal-width]
+                 - 0.9204967 * [petal-length]
+                 - 0.5183925 * [petal-width]
+                 + 0.9250336""", smo.toSummary());
     }
 
     @Test

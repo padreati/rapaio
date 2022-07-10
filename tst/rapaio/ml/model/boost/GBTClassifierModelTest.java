@@ -21,26 +21,28 @@
 
 package rapaio.ml.model.boost;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
+import java.util.Random;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
+
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.model.tree.RTree;
-
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.
  */
 public class GBTClassifierModelTest {
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(133);
+        random = new Random(133);
     }
 
     @Test
@@ -50,7 +52,8 @@ public class GBTClassifierModelTest {
         var model = GBTClassifierModel.newModel()
                 .model.set(RTree.newC45().minCount.set(4).maxDepth.set(3).varSelector.set(VarSelector.fixed(10)))
                 .debug.set(true)
-                .runs.set(10);
+                .runs.set(10)
+                .seed.set(133L);
 
         String target = "spam";
         model.fit(spam, target);
@@ -60,7 +63,7 @@ public class GBTClassifierModelTest {
         assertEquals(10, model.getTrees().get(1).size());
 
         assertEquals("GBTClassifier{debug=true,model=RTree{maxDepth=3,minCount=4,splitter=Random," +
-                "varSelector=VarSelector[10]},runs=10}; fitted=true, fitted trees=10", model.toString());
+                "varSelector=VarSelector[10]},runs=10,seed=133}; fitted=true, fitted trees=10", model.toString());
 
         var result = model.predict(spam, true, true);
 
@@ -72,7 +75,8 @@ public class GBTClassifierModelTest {
     void newInstanceTest() {
         var model = GBTClassifierModel.newModel()
                 .model.set(RTree.newC45().minCount.set(4).maxDepth.set(5).varSelector.set(VarSelector.fixed(10)))
-                .runs.set(10);
+                .runs.set(10)
+                .seed.set(133L);
 
         var copy = model.newInstance();
 

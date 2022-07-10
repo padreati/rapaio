@@ -21,13 +21,13 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.correlation.CorrPearson;
 import rapaio.core.correlation.CorrSpearman;
 import rapaio.core.distributions.Normal;
@@ -40,14 +40,16 @@ import rapaio.data.VarDouble;
  */
 public class VarPowerTransformTest {
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(1);
+        random = new Random(1);
     }
 
     @Test
     void testTransformPositiveLambda() {
-        Var x = Normal.std().sample(1000).stream().mapToDouble(s -> Math.pow(s.getDouble(), 2)).boxed().collect(VarDouble.collector());
+        Var x = Normal.std().sample(random, 1000).stream().mapToDouble(s -> Math.pow(s.getDouble(), 2)).boxed().collect(VarDouble.collector());
         Var y = x.copy().fapply(VarPowerTransform.with(0.2));
 
         assertEquals(1.459663, Variance.of(x).sdValue(), 1e-6);
@@ -59,7 +61,7 @@ public class VarPowerTransformTest {
 
     @Test
     void testTransformZeroLambda() {
-        Var x = Normal.std().sample(1000).stream().mapToDouble(s -> Math.pow(s.getDouble(), 2)).boxed().collect(VarDouble.collector());
+        Var x = Normal.std().sample(random, 1000).stream().mapToDouble(s -> Math.pow(s.getDouble(), 2)).boxed().collect(VarDouble.collector());
         Var y = x.copy().fapply(VarPowerTransform.with(0));
 
         assertEquals(1.459663, Variance.of(x).sdValue(), 1e-6);

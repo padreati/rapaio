@@ -21,15 +21,14 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
@@ -41,14 +40,16 @@ public class OneHotEncodingTest {
 
     private static final double TOL = 1e-20;
 
+    private Random random;
+
     @BeforeEach
     void setUp() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
     }
 
     @Test
     void testDouble() {
-        Frame df = TransformTestUtil.allDoubleNominal(100, 2, 2);
+        Frame df = TransformTestUtil.allDoubleNominal(random, 100, 2, 2);
 
         Frame f1 = df.fapply(OneHotEncoding.on(VarRange.onlyTypes(VarType.DOUBLE)));
         assertTrue(f1.deepEquals(df));
@@ -59,7 +60,7 @@ public class OneHotEncodingTest {
 
     @Test
     void testNominal() {
-        Frame df = TransformTestUtil.allDoubleNominal(100, 2, 2).mapVars(VarRange.of(2));
+        Frame df = TransformTestUtil.allDoubleNominal(random, 100, 2, 2).mapVars(VarRange.of(2));
 
         List<String> levels = df.rvar(0).levels();
 

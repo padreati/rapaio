@@ -1,36 +1,33 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.core.distributions;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.stat.Sum;
 import rapaio.data.Var;
 
@@ -41,9 +38,11 @@ public class BernoulliTest {
 
     private static final double TOL = 1e-12;
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(1234);
+        random = new Random(1234);
     }
 
     @Test
@@ -55,10 +54,10 @@ public class BernoulliTest {
         Bernoulli b10 = Bernoulli.of(0.1);
 
         int N = 10_000;
-        Var x90 = b90.sample(N);
-        Var x80 = b80.sample(N);
-        Var x50 = b50.sample(N);
-        Var x10 = b10.sample(N);
+        Var x90 = b90.sample(random, N);
+        Var x80 = b80.sample(random, N);
+        Var x50 = b50.sample(random, N);
+        Var x10 = b10.sample(random, N);
 
         assertEquals(9024, Sum.of(x90).value(), TOL);
         assertEquals(8075, Sum.of(x80).value(), TOL);

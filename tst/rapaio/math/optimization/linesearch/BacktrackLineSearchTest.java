@@ -1,35 +1,33 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.math.optimization.linesearch;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Random;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
@@ -38,6 +36,13 @@ import rapaio.math.linear.DVector;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/31/21.
  */
 public class BacktrackLineSearchTest {
+
+    private Random random;
+
+    @BeforeEach
+    void beforeEach() {
+        random = new Random(42);
+    }
 
     @Test
     void validationTest() {
@@ -53,7 +58,7 @@ public class BacktrackLineSearchTest {
         RDerivative df = (DVector x) -> x.copy().mul(2.0);
 
         for (int i = 0; i < 1_000; i++) {
-            double next = (RandomSource.nextDouble() - 0.5) * 100;
+            double next = (random.nextDouble() - 0.5) * 100;
             DVector x0 = DVector.wrap(next);
             DVector p = df.apply(x0).mul(-1);
             double t = BacktrackLineSearch.newSearch().search(f, df, x0, p);
@@ -72,7 +77,7 @@ public class BacktrackLineSearchTest {
         RDerivative df = (DVector x) -> DVector.wrap(Math.exp(-x.get(0) * x.get(0)) * 2 * x.get(0));
 
         for (int i = 0; i < 1_000; i++) {
-            double next = (RandomSource.nextDouble() - 0.5);
+            double next = (random.nextDouble() - 0.5);
             DVector x0 = DVector.wrap(next);
             DVector p = df.apply(x0).mul(-1);
             double alpha = BacktrackLineSearch.newSearch().search(f, df, x0, p, 100_000.0);
@@ -85,7 +90,7 @@ public class BacktrackLineSearchTest {
     @Test
     void documentedTests() {
 
-        T[] tests = new T[]{
+        T[] tests = new T[] {
                 new T(
                         // this test is taken from Algorithms for Optimization, p.58
                         v -> v.get(0) * v.get(0) + v.get(0) * v.get(1) + v.get(1) * v.get(1),

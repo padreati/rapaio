@@ -24,9 +24,9 @@ package rapaio.ml.model.tree.rtree;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.IntStream;
 
-import rapaio.core.RandomSource;
 import rapaio.core.stat.WeightedOnlineStat;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -49,7 +49,8 @@ public enum Search implements Serializable {
      */
     Ignore {
         @Override
-        public Optional<Candidate> computeCandidate(RTree c, Frame df, Var weights, String testVarName, String targetVarName) {
+        public Optional<Candidate> computeCandidate(RTree c, Frame df, Var weights, String testVarName, String targetVarName,
+                Random random) {
             return Optional.empty();
         }
     },
@@ -59,7 +60,7 @@ public enum Search implements Serializable {
      */
     NumericBinary {
         @Override
-        public Optional<Candidate> computeCandidate(RTree c, Frame df, Var weights, String testName, String targetName) {
+        public Optional<Candidate> computeCandidate(RTree c, Frame df, Var weights, String testName, String targetName, Random random) {
 
             int testIndex = df.varIndex(testName);
             int targetIndex = df.varIndex(targetName);
@@ -102,7 +103,9 @@ public enum Search implements Serializable {
             p.totalWeight = rightWeight[0];
 
             for (int i = c.minCount.get(); i < rows.length - c.minCount.get() - 1; i++) {
-                if (df.getDouble(rows[i], testIndex) == df.getDouble(rows[i + 1], testIndex)) continue;
+                if (df.getDouble(rows[i], testIndex) == df.getDouble(rows[i + 1], testIndex)) {
+                    continue;
+                }
 
                 p.splitVar[0] = leftVar[i];
                 p.splitWeight[0] = leftWeight[i];
@@ -113,7 +116,7 @@ public enum Search implements Serializable {
                 if (score < bestScore) {
                     continue;
                 }
-                if (score == bestScore && RandomSource.nextDouble() < 0.5) {
+                if (score == bestScore && random.nextDouble() < 0.5) {
                     continue;
                 }
                 bestScore = score;
@@ -132,7 +135,7 @@ public enum Search implements Serializable {
      */
     NominalFull {
         @Override
-        public Optional<Candidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName) {
+        public Optional<Candidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName, Random random) {
 
             int testNameIndex = df.varIndex(testName);
             int targetNameIndex = df.varIndex(targetName);
@@ -150,8 +153,9 @@ public enum Search implements Serializable {
             // compute weighted statistics
 
             for (int i = 0; i < df.rowCount(); i++) {
-                if (df.isMissing(i, testNameIndex))
+                if (df.isMissing(i, testNameIndex)) {
                     continue;
+                }
                 int index = df.getInt(i, testNameIndex);
                 onlineStats[index - 1].update(df.getDouble(i, targetNameIndex), w.getDouble(i));
             }
@@ -197,7 +201,7 @@ public enum Search implements Serializable {
      */
     NominalBinary {
         @Override
-        public Optional<Candidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName) {
+        public Optional<Candidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName, Random random) {
 
             int testNameIndex = df.varIndex(testName);
             int targetIndex = df.varIndex(targetName);
@@ -212,8 +216,9 @@ public enum Search implements Serializable {
 
             // compute weighted statistics
             for (int i = 0; i < df.rowCount(); i++) {
-                if (df.isMissing(i, testNameIndex))
+                if (df.isMissing(i, testNameIndex)) {
                     continue;
+                }
                 int index = df.getInt(i, testNameIndex);
                 onlineStats[index - 1].update(df.getDouble(i, targetIndex), w.getDouble(i));
             }
@@ -236,8 +241,9 @@ public enum Search implements Serializable {
                 // compute remaining stats
                 WeightedOnlineStat wosRemain = WeightedOnlineStat.empty();
                 for (int j = 0; j < len; j++) {
-                    if (j != i)
+                    if (j != i) {
                         wosRemain.update(onlineStats[j]);
+                    }
                 }
 
                 // build payload to compute score
@@ -277,5 +283,6 @@ public enum Search implements Serializable {
      * @param targetVarName target variable name
      * @return the best candidate
      */
-    public abstract Optional<Candidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName);
+    public abstract Optional<Candidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName,
+            Random random);
 }

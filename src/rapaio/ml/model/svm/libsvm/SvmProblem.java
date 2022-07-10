@@ -21,9 +21,12 @@
 
 package rapaio.ml.model.svm.libsvm;
 
+import java.util.Random;
+
 import rapaio.math.linear.DVector;
 
 public class SvmProblem implements java.io.Serializable {
+    public Random random;
     public int len;
     public DVector[] xs;
     public double[] y;

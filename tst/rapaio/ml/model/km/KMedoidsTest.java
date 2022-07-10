@@ -1,42 +1,37 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.ml.model.km;
 
-import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.*;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -56,10 +51,11 @@ import rapaio.util.collection.DoubleArrays;
 
 public class KMedoidsTest {
 
+    private Random random;
 
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(2);
+        random = new Random(2);
     }
 
     @Test
@@ -82,10 +78,10 @@ public class KMedoidsTest {
         }
         Frame df = SolidFrame.byVars(x1, x2);
 
-        KMedoids alternate = KMedoids.newAlternateModel(3);
+        KMedoids alternate = KMedoids.newAlternateModel(3).seed.set(42L);
         ClusteringResult<KMedoids> resultAlternate = alternate.fit(df).predict(df);
 
-        KMedoids pam = KMedoids.newPAMModel(3);
+        KMedoids pam = KMedoids.newPAMModel(3).seed.set(42L);
         ClusteringResult<KMedoids> resultPAM = pam.fit(df).predict(df);
         assertTrue(RandIndex.from(target, resultAlternate.assignment()).getRandIndex() <
                 RandIndex.from(target, resultPAM.assignment()).getRandIndex());
@@ -97,10 +93,10 @@ public class KMedoidsTest {
         Frame df = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
         Var target = Datasets.loadIrisDataset().rvar(4);
 
-        KMedoids alternate = KMedoids.newAlternateModel(3);
+        KMedoids alternate = KMedoids.newAlternateModel(3).seed.set(42L);
         ClusteringResult<KMedoids> resultAlternate = alternate.fit(df).predict(df);
 
-        KMedoids pam = KMedoids.newPAMModel(3);
+        KMedoids pam = KMedoids.newPAMModel(3).seed.set(42L);
         ClusteringResult<KMedoids> resultPAM = pam.fit(df).predict(df);
         assertTrue(RandIndex.from(target, resultAlternate.assignment()).getRandIndex() <
                 RandIndex.from(target, resultPAM.assignment()).getRandIndex());
@@ -108,7 +104,7 @@ public class KMedoidsTest {
 
     @Test
     void testNewInstance() {
-        KMedoids km = KMedoids.newPAMModel(3).maxIt.set(10);
+        KMedoids km = KMedoids.newPAMModel(3).maxIt.set(10).seed.set(42L);
         KMedoids copy = km.newInstance();
         assertEquals(km.toString(), copy.toString());
         KMedoids altered = km.newInstance().distance.set(new MinkowskiDistance(1)).newInstance();
@@ -121,7 +117,7 @@ public class KMedoidsTest {
     void testErrorWithinCluster() {
         DMatrix x = DMatrix.copy(VarDouble.seq(10));
 
-        KMedoids km = KMedoids.newAlternateModel(2);
+        KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
         assertEquals(10, km.errorWithinCluster(x, 0, List.of(0, 1, 2, 3, 4), cache));
         assertEquals(0, km.errorWithinCluster(x, 0, null, cache));
@@ -131,7 +127,7 @@ public class KMedoidsTest {
     void computeAssignmentTest() {
         DMatrix x = DMatrix.copy(VarDouble.from(100, () -> Normal.std().sampleNext()));
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
-        KMedoids km = KMedoids.newAlternateModel(2);
+        KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
 
         int imin = x.mapCol(0).argmin();
         int imax = x.mapCol(0).argmax();
@@ -148,7 +144,7 @@ public class KMedoidsTest {
     @Test
     void computeErrorTest() {
         DMatrix x = DMatrix.copy(VarDouble.seq(10));
-        KMedoids km = KMedoids.newAlternateModel(2);
+        KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
 
         double error = 0;
@@ -161,7 +157,7 @@ public class KMedoidsTest {
     @Test
     void updateNewClosestTest() {
         DMatrix x = DMatrix.copy(VarDouble.seq(21));
-        KMedoids km = KMedoids.newAlternateModel(2);
+        KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
 
         double[] dv = DoubleArrays.newFill(x.rows(), Double.NaN);

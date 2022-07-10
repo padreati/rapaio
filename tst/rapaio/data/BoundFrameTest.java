@@ -1,42 +1,35 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.data;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.datasets.Datasets;
 
 /**
@@ -73,9 +66,11 @@ public class BoundFrameTest {
             VarDouble.wrap(1 / 7.).name("1/x")
     );
 
+    private Random random;
+
     @BeforeEach
-    void befoeEach() {
-        RandomSource.setSeed(1234);
+    void beforeEach() {
+        random = new Random(1234);
     }
 
     @Test
@@ -97,7 +92,7 @@ public class BoundFrameTest {
     @Test
     void testBuildersByVars() {
 
-        Var[] vars = new Var[]{
+        Var[] vars = new Var[] {
                 VarDouble.wrap(1, 2, 3, Double.NaN).name("a"),
                 VarInt.wrap(1, 2, 3, Integer.MIN_VALUE).name("b"),
                 VarLong.wrap(1, 2, 3, Long.MIN_VALUE).name("c"),
@@ -116,7 +111,7 @@ public class BoundFrameTest {
         assertTrue(df.deepEquals(bound1));
         assertTrue(df.deepEquals(bound2));
 
-        Frame empty = BoundFrame.byVars(new Frame[]{});
+        Frame empty = BoundFrame.byVars(new Frame[] {});
 
         assertEquals(0, empty.varCount());
         assertEquals(0, empty.rowCount());
@@ -145,7 +140,7 @@ public class BoundFrameTest {
     @SuppressWarnings("unchecked")
     void testBuildersByRows() {
 
-        Frame source = Datasets.loadRandom();
+        Frame source = Datasets.loadRandom(random);
 
         Frame df1 = source.mapRows(Mapping.range(0, 20)).copy();
         Frame df2 = source.mapRows(Mapping.range(20, 100)).copy();
@@ -153,16 +148,16 @@ public class BoundFrameTest {
         Frame bound = BoundFrame.byRows(df1, df2);
         assertTrue(bound.deepEquals(source));
 
-        VarType[] types = new VarType[]{VarType.BINARY, VarType.DOUBLE, VarType.INT, VarType.LONG, VarType.NOMINAL};
-        String[] names = new String[]{"boolean", "double", "int", "long", "nominal"};
-        var verifyIndex = new BiConsumer[]{
+        VarType[] types = new VarType[] {VarType.BINARY, VarType.DOUBLE, VarType.INT, VarType.LONG, VarType.NOMINAL};
+        String[] names = new String[] {"boolean", "double", "int", "long", "nominal"};
+        var verifyIndex = new BiConsumer[] {
                 (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, (int) j)),
                 (i, j) -> assertEquals(source.getDouble((int) i, (int) j), bound.getDouble((int) i, (int) j), TOL),
                 (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, (int) j)),
                 (i, j) -> assertEquals(source.getLong((int) i, (int) j), bound.getLong((int) i, (int) j)),
                 (i, j) -> assertEquals(source.getLabel((int) i, (int) j), bound.getLabel((int) i, (int) j)),
         };
-        var verifyName = new BiConsumer[]{
+        var verifyName = new BiConsumer[] {
                 (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, names[(int) j])),
                 (i, j) -> assertEquals(source.getDouble((int) i, (int) j), bound.getDouble((int) i, names[(int) j]), TOL),
                 (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, names[(int) j])),
@@ -204,7 +199,7 @@ public class BoundFrameTest {
             assertSame(types[i], bound.type(names[i]));
         }
 
-        String[] levels = new String[]{"?", "c", "d", "b", "a", "e", "xx", "yy"};
+        String[] levels = new String[] {"?", "c", "d", "b", "a", "e", "xx", "yy"};
         assertArrayEquals(levels, bound.levels("nominal").toArray(new String[0]));
 
         // test build from an empty frame
@@ -299,20 +294,20 @@ public class BoundFrameTest {
 
     @Test
     void testInvalidVarName() {
-        Frame df = Datasets.loadRandom();
+        Frame df = Datasets.loadRandom(random);
         assertNull(BoundFrame.byVars(df).rvar("uu"));
     }
 
     @Test
     void testInvalidClearRows() {
-        Frame df = Datasets.loadRandom();
+        Frame df = Datasets.loadRandom(random);
         var ex = assertThrows(IllegalStateException.class, () -> BoundFrame.byVars(df).addRows(10));
         assertEquals("This operation is not available for bound frames.", ex.getMessage());
     }
 
     @Test
     void testInvalidAddRows() {
-        Frame df = Datasets.loadRandom();
+        Frame df = Datasets.loadRandom(random);
         var ex = assertThrows(IllegalStateException.class, () -> BoundFrame.byVars(df).clearRows());
         assertEquals("This operation is not available for bound frames.", ex.getMessage());
     }

@@ -26,10 +26,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Printable;
@@ -103,13 +103,15 @@ public class MarkovChain implements Printable {
                 .collect(Collectors.toList());
 
         for (List<String> chain : chains) {
-            if (chain.isEmpty())
+            if (chain.isEmpty()) {
                 continue;
+            }
 
             int pos = revert.get(chain.get(0));
             p.set(pos, p.get(pos) + 1);
             for (int i = 1; i < chain.size(); i++) {
-                m.set(revert.get(chain.get(i - 1)), revert.get(chain.get(i)), m.get(revert.get(chain.get(i - 1)), revert.get(chain.get(i))) + 1.0);
+                m.set(revert.get(chain.get(i - 1)), revert.get(chain.get(i)),
+                        m.get(revert.get(chain.get(i - 1)), revert.get(chain.get(i))) + 1.0);
             }
         }
 
@@ -120,10 +122,10 @@ public class MarkovChain implements Printable {
         }
     }
 
-    public List<String> generateChain(Predicate<List<String>> tokenCondition) {
+    public List<String> generateChain(Random random, Predicate<List<String>> tokenCondition) {
         List<String> result = new ArrayList<>();
 
-        double c = RandomSource.nextDouble();
+        double c = random.nextDouble();
 
         int last = -1;
         for (int i = 0; i < p.size(); i++) {
@@ -156,14 +158,15 @@ public class MarkovChain implements Printable {
             }
 
             double[] row = cache.get(last);
-            c = RandomSource.nextDouble();
+            c = random.nextDouble();
 
             int i = Arrays.binarySearch(row, c);
             if (i < 0) {
                 i = -i - 1;
             }
-            if (i == states.size())
+            if (i == states.size()) {
                 i--;
+            }
             result.add(states.get(i));
             last = i;
 
@@ -173,15 +176,13 @@ public class MarkovChain implements Printable {
         }
     }
 
-    public String generateSentence(Predicate<List<String>> endCondition) {
-        List<String> list = generateChain(endCondition);
+    public String generateSentence(Random random, Predicate<List<String>> endCondition) {
+        List<String> list = generateChain(random, endCondition);
         return adapter.restore(list);
     }
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
-
-        RandomSource.setSeed(1);
 
         StringBuilder sb = new StringBuilder();
         sb.append("MarkovChain model\n");
@@ -197,8 +198,9 @@ public class MarkovChain implements Printable {
             }
             buff.append("'").append(state).append("',");
         }
-        if (buff.length() > 0)
+        if (buff.length() > 0) {
             sb.append(buff).append("\n");
+        }
 
         sb.append("Priors: \n");
         sb.append(p.toSummary(printer, options));

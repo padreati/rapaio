@@ -23,6 +23,7 @@ package rapaio.data.mapping;
 
 import java.io.Serial;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import rapaio.data.Mapping;
@@ -117,10 +118,10 @@ public final class IntervalMapping implements Mapping {
     }
 
     @Override
-    public void shuffle() {
+    public void shuffle(Random random) {
         onList = true;
         listMapping = new ArrayMapping(start, end);
-        listMapping.shuffle();
+        listMapping.shuffle(random);
     }
 
     @Override

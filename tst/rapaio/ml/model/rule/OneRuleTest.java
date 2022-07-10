@@ -21,16 +21,21 @@
 
 package rapaio.ml.model.rule;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import static rapaio.sys.With.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
-import rapaio.data.*;
+
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.ml.model.rule.onerule.HolteBinning;
 import rapaio.sys.WS;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.sys.With.textWidth;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -55,8 +60,6 @@ public class OneRuleTest {
         classVar.setLabel(5, "False");
 
         heightVar = VarDouble.copy(0.1, 0.3, 0.5, 10, 10.3, 10.5).name("height");
-
-        RandomSource.setSeed(1);
     }
 
     @Test

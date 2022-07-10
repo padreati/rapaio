@@ -21,10 +21,11 @@
 
 package rapaio.data.sample;
 
-import static rapaio.printer.Format.floatFlex;
+import static rapaio.printer.Format.*;
 
 import java.io.Serial;
 import java.util.Objects;
+import java.util.Random;
 
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
@@ -42,8 +43,8 @@ final record SubSampler(double percent) implements RowSampler {
     private static final long serialVersionUID = -7987373317949449262L;
 
     @Override
-    public Sample nextSample(Frame df, Var weights) {
-        Mapping map = Mapping.wrap(SamplingTools.sampleWOR(df.rowCount(), (int) (percent * df.rowCount())));
+    public Sample nextSample(final Random random, final Frame df, final Var weights) {
+        Mapping map = Mapping.wrap(SamplingTools.sampleWOR(random, df.rowCount(), (int) (percent * df.rowCount())));
         return new Sample(df.mapRows(map), weights.mapRows(map), map, df.rowCount());
     }
 

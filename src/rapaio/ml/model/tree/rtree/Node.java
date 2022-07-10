@@ -25,6 +25,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -63,7 +64,7 @@ public class Node implements Serializable {
         this.depth = depth;
     }
 
-    public void boostUpdate(Frame x, Var y, Var fx, Loss loss, Splitter splitter) {
+    public void boostUpdate(Frame x, Var y, Var fx, Loss loss, Splitter splitter, Random random) {
         if (leaf) {
             value = loss.additiveScalarMinimizer(y, fx);
             return;
@@ -74,14 +75,14 @@ public class Node implements Serializable {
             groupPredicates.add(child.predicate);
         }
 
-        List<Mapping> mappings = splitter.performSplitMapping(x, VarDouble.fill(x.rowCount(), 1), groupPredicates);
+        List<Mapping> mappings = splitter.performSplitMapping(x, VarDouble.fill(x.rowCount(), 1), groupPredicates, random);
 
         for (int i = 0; i < children.size(); i++) {
             children.get(i).boostUpdate(
                     x.mapRows(mappings.get(i)),
                     y.mapRows(mappings.get(i)),
                     fx.mapRows(mappings.get(i)),
-                    loss, splitter);
+                    loss, splitter, random);
         }
     }
 }

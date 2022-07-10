@@ -21,12 +21,10 @@
 
 package rapaio.core.distributions;
 
-import static java.lang.StrictMath.log;
-import static java.lang.StrictMath.sqrt;
+import static java.lang.StrictMath.*;
 
 import java.io.Serial;
-
-import rapaio.core.RandomSource;
+import java.util.Random;
 
 /**
  * Bernoulli distribution
@@ -62,19 +60,23 @@ public final class Bernoulli implements Distribution {
 
     @Override
     public double pdf(double x) {
-        if (x == 0)
+        if (x == 0) {
             return 1 - prob;
-        if (x == 1)
+        }
+        if (x == 1) {
             return prob;
+        }
         return 0;
     }
 
     @Override
     public double cdf(double x) {
-        if (x < 0)
+        if (x < 0) {
             return 0;
-        if (x < 1)
+        }
+        if (x < 1) {
             return 1 - prob;
+        }
         return 1;
     }
 
@@ -126,6 +128,11 @@ public final class Bernoulli implements Distribution {
 
     @Override
     public double sampleNext() {
-        return RandomSource.nextDouble() <= prob ? 1 : 0;
+        return new Random().nextDouble() <= prob ? 1 : 0;
+    }
+
+    @Override
+    public double sampleNext(final Random random) {
+        return random.nextDouble() <= prob ? 1 : 0;
     }
 }

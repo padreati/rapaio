@@ -24,9 +24,9 @@ package rapaio.ml.model.tree.ctree;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
-import rapaio.core.RandomSource;
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -44,17 +44,17 @@ public enum Search implements Serializable {
 
     Ignore {
         @Override
-        public Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, Purity function) {
+        public Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, Purity function, Random random) {
             return null;
         }
     },
     NumericRandom {
         @Override
-        public Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, Purity function) {
+        public Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, Purity function, Random random) {
 
             int split;
             do {
-                split = RandomSource.nextInt(df.rowCount());
+                split = random.nextInt(df.rowCount());
             } while (df.isMissing(split, testName));
 
             double testValue = df.getDouble(split, testName);
@@ -85,7 +85,7 @@ public enum Search implements Serializable {
     },
     NumericBinary {
         @Override
-        public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
+        public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function, Random random) {
 
             int testIndex = df.varIndex(testName);
             int targetIndex = df.varIndex(targetName);
@@ -145,7 +145,7 @@ public enum Search implements Serializable {
         @Override
         public Candidate computeCandidate(
                 CTree c, Frame df, Var w, String testName, String targetName,
-                Purity function) {
+                Purity function, Random random) {
 
             Var test = df.rvar(testName);
             Var target = df.rvar(targetName);
@@ -175,7 +175,8 @@ public enum Search implements Serializable {
     },
     NominalFull {
         @Override
-        public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
+        public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function,
+                Random random) {
             var counts = DensityTable.fromLabels(false, df, testName, targetName, null);
             if (!counts.hasColsWithMinimumCount(c.minCount.get(), 2)) {
                 return null;
@@ -189,7 +190,8 @@ public enum Search implements Serializable {
     },
     NominalBinary {
         @Override
-        public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
+        public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function,
+                Random random) {
 
             var dtCounts = DensityTable.fromLabels(false, df, testName, targetName, null);
             if (!(dtCounts.hasColsWithMinimumCount(c.minCount.get(), 2))) {
@@ -296,5 +298,6 @@ public enum Search implements Serializable {
         }
     };
 
-    public abstract Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, Purity function);
+    public abstract Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, Purity function,
+            Random random);
 }

@@ -21,17 +21,16 @@
 
 package rapaio.data.unique;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import static rapaio.sys.With.*;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.sys.WS;
@@ -42,9 +41,11 @@ import rapaio.util.collection.IntArrays;
  */
 public class UniqueIntTest {
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
     }
 
     @Test
@@ -52,7 +53,7 @@ public class UniqueIntTest {
         final int N = 100;
         int[] values = new int[N];
         for (int i = 0; i < N; i++) {
-            values[i] = RandomSource.nextInt(1_000_000);
+            values[i] = random.nextInt(1_000_000);
         }
         VarDouble x = VarDouble.copy(values);
         Arrays.sort(values);
@@ -79,11 +80,11 @@ public class UniqueIntTest {
 
     @Test
     void testDuplicatesUnsorted() {
-        int[] sample = new int[]{3, 1, 7, 5, VarInt.MISSING_VALUE};
+        int[] sample = new int[] {3, 1, 7, 5, VarInt.MISSING_VALUE};
         final int N = 100;
         int[] values = new int[N];
         for (int i = 0; i < N; i++) {
-            values[i] = sample[RandomSource.nextInt(sample.length)];
+            values[i] = sample[random.nextInt(sample.length)];
         }
         VarInt x = VarInt.copy(values);
         IntArrays.quickSort(values, 0, N, Integer::compare);
@@ -114,50 +115,61 @@ public class UniqueIntTest {
     @Test
     void testString() {
 
-        int oldTextWidth = WS.getPrinter().getOptions().textWidth();
         WS.getPrinter().withOptions(textWidth(100));
-        int[] sample = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        int[] sample = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
                 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, VarInt.MISSING_VALUE};
         final int N = 200;
-        VarInt x1 = VarInt.from(N, row -> sample[RandomSource.nextInt(sample.length)]);
+        VarInt x1 = VarInt.from(N, row -> sample[random.nextInt(sample.length)]);
         UniqueInt ui1 = UniqueInt.of(x1, true);
 
         assertEquals("UniqueInt{count=43, values=[?:6,1:3,2:2,3:5,4:6,5:6,6:4,7:5,8:3,9:1,..]}", ui1.toString());
-        assertEquals("Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage \n" +
-                "    ?     6      0.030     8     3      0.015    16     7      0.035    24     2      0.010    35     6      0.030 \n" +
-                "    1     3      0.015     9     1      0.005    17     4      0.020    25     3      0.015    36     7      0.035 \n" +
-                "    2     2      0.010    10     6      0.030    18     3      0.015    26     5      0.025    37     3      0.015 \n" +
-                "    3     5      0.025    11     3      0.015    19     5      0.025    27     8      0.040    38     4      0.020 \n" +
-                "    4     6      0.030    12     4      0.020    20    11      0.055    28     8      0.040    39     4      0.020 \n" +
-                "    5     6      0.030    13     4      0.020    21     3      0.015    29     3      0.015    40     3      0.015 \n" +
-                "    6     4      0.020    14     8      0.040    22     5      0.025  ...   ...                41     7      0.035 \n" +
-                "    7     5      0.025    15     4      0.020    23     5      0.025    34     3      0.015    42     3      0.015 \n", ui1.toContent());
-        assertEquals("Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage \n" +
-                "    ?     6      0.030     9     1      0.005    18     3      0.015    27     8      0.040    36     7      0.035 \n" +
-                "    1     3      0.015    10     6      0.030    19     5      0.025    28     8      0.040    37     3      0.015 \n" +
-                "    2     2      0.010    11     3      0.015    20    11      0.055    29     3      0.015    38     4      0.020 \n" +
-                "    3     5      0.025    12     4      0.020    21     3      0.015    30     5      0.025    39     4      0.020 \n" +
-                "    4     6      0.030    13     4      0.020    22     5      0.025    31     4      0.020    40     3      0.015 \n" +
-                "    5     6      0.030    14     8      0.040    23     5      0.025    32     4      0.020    41     7      0.035 \n" +
-                "    6     4      0.020    15     4      0.020    24     2      0.010    33     5      0.025    42     3      0.015 \n" +
-                "    7     5      0.025    16     7      0.035    25     3      0.015    34     3      0.015 \n" +
-                "    8     3      0.015    17     4      0.020    26     5      0.025    35     6      0.030 \n", ui1.toFullContent());
+        assertEquals(
+                """
+                        Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage\s
+                            ?     6      0.030     8     3      0.015    16     7      0.035    24     2      0.010    35     6      0.030\s
+                            1     3      0.015     9     1      0.005    17     4      0.020    25     3      0.015    36     7      0.035\s
+                            2     2      0.010    10     6      0.030    18     3      0.015    26     5      0.025    37     3      0.015\s
+                            3     5      0.025    11     3      0.015    19     5      0.025    27     8      0.040    38     4      0.020\s
+                            4     6      0.030    12     4      0.020    20    11      0.055    28     8      0.040    39     4      0.020\s
+                            5     6      0.030    13     4      0.020    21     3      0.015    29     3      0.015    40     3      0.015\s
+                            6     4      0.020    14     8      0.040    22     5      0.025  ...   ...                41     7      0.035\s
+                            7     5      0.025    15     4      0.020    23     5      0.025    34     3      0.015    42     3      0.015\s
+                        """,
+                ui1.toContent());
+        assertEquals(
+                """
+                        Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage\s
+                            ?     6      0.030     9     1      0.005    18     3      0.015    27     8      0.040    36     7      0.035\s
+                            1     3      0.015    10     6      0.030    19     5      0.025    28     8      0.040    37     3      0.015\s
+                            2     2      0.010    11     3      0.015    20    11      0.055    29     3      0.015    38     4      0.020\s
+                            3     5      0.025    12     4      0.020    21     3      0.015    30     5      0.025    39     4      0.020\s
+                            4     6      0.030    13     4      0.020    22     5      0.025    31     4      0.020    40     3      0.015\s
+                            5     6      0.030    14     8      0.040    23     5      0.025    32     4      0.020    41     7      0.035\s
+                            6     4      0.020    15     4      0.020    24     2      0.010    33     5      0.025    42     3      0.015\s
+                            7     5      0.025    16     7      0.035    25     3      0.015    34     3      0.015\s
+                            8     3      0.015    17     4      0.020    26     5      0.025    35     6      0.030\s
+                        """,
+                ui1.toFullContent());
         assertEquals(ui1.toString(), ui1.toSummary());
 
-        VarInt x2 = VarInt.from(N, row -> sample[RandomSource.nextInt(5)]);
+        VarInt x2 = VarInt.from(N, row -> sample[random.nextInt(5)]);
         int[] values2 = x2.stream().mapToInt().toArray();
         Arrays.sort(values2);
         UniqueInt ui2 = UniqueInt.of(x2, true);
 
-        assertEquals("UniqueInt{count=5, values=[1:44,2:50,3:50,4:31,5:25]}", ui2.toString());
-        assertEquals("Value Count Percentage Value Count Percentage \n" +
-                "    1    44      0.220     4    31      0.155 \n" +
-                "    2    50      0.250     5    25      0.125 \n" +
-                "    3    50      0.250 \n", ui2.toContent());
-        assertEquals("Value Count Percentage Value Count Percentage \n" +
-                "    1    44      0.220     4    31      0.155 \n" +
-                "    2    50      0.250     5    25      0.125 \n" +
-                "    3    50      0.250 \n", ui2.toFullContent());
+        assertEquals("UniqueInt{count=5, values=[1:43,2:50,3:50,4:31,5:26]}", ui2.toString());
+        assertEquals("""
+                Value Count Percentage Value Count Percentage\s
+                    1    43      0.215     4    31      0.155\s
+                    2    50      0.250     5    26      0.130\s
+                    3    50      0.250\s
+                """, ui2.toContent());
+        assertEquals("""
+                Value Count Percentage Value Count Percentage\s
+                    1    43      0.215     4    31      0.155\s
+                    2    50      0.250     5    26      0.130\s
+                    3    50      0.250\s
+                """, ui2.toFullContent());
         assertEquals(ui2.toString(), ui2.toSummary());
     }
 }

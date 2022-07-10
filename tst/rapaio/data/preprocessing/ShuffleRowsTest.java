@@ -21,7 +21,9 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,11 +36,12 @@ public class ShuffleRowsTest {
 
     @Test
     void testDouble() {
+        Random random = new Random(42);
 
-        Frame orig = TransformTestUtil.allDoubles(100, 1);
+        Frame orig = TransformTestUtil.allDoubles(random, 100, 1);
         Frame[] shuffles = new Frame[10];
         for (int i = 0; i < shuffles.length; i++) {
-            shuffles[i] = orig.fapply(ShuffleRows.filter().newInstance());
+            shuffles[i] = orig.fapply(ShuffleRows.filter(random).newInstance());
         }
         for (int i = 1; i < shuffles.length; i++) {
             assertFalse(shuffles[i - 1].deepEquals(shuffles[i]));

@@ -25,6 +25,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -54,6 +56,8 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
      */
     @SuppressWarnings("unchecked")
     public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1_000, "runs", x -> x > 0);
+
+    public final ValueParam<Long, M> seed = new ValueParam<>((M) this, 0L, "seed", Objects::nonNull);
 
     /**
      * Running hook.
@@ -182,7 +186,7 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
     }
 
     public R predict(DVector x, boolean withScores) {
-        if(!hasLearned()) {
+        if (!hasLearned()) {
             throw new IllegalStateException("Model was not fit on data, cannot predict.");
         }
         Var[] vars = new Var[inputTypes.length];
@@ -217,5 +221,9 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
     protected abstract R corePredict(Frame df, boolean withScores);
 
     private record FitSetup(Frame df, Var weights) {
+    }
+
+    protected Random getRandom() {
+        return seed.get() == 0 ? new Random() : new Random(seed.get());
     }
 }

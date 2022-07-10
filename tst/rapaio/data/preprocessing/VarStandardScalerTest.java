@@ -21,7 +21,9 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +44,8 @@ public class VarStandardScalerTest {
     void testDouble() {
 
         Distribution d = Gamma.of(0.5, 2);
-        VarDouble x = VarDouble.from(1000, d::sampleNext);
+        Random random = new Random(42);
+        VarDouble x = VarDouble.from(1000, () -> d.sampleNext(random));
 
         double mean = Mean.of(x).value();
         double sd = Variance.of(x).sdValue();

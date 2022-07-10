@@ -21,14 +21,14 @@
 
 package rapaio.ml.model.tree.ctree;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -46,7 +46,7 @@ public enum Splitter implements Serializable {
      */
     Ignore {
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> p) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> p, Random random) {
             List<Mapping> mappings = new ArrayList<>(p.size());
             for (int i = 0; i < p.size(); i++) {
                 mappings.add(Mapping.empty());
@@ -68,7 +68,7 @@ public enum Splitter implements Serializable {
     },
     Majority {
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> p) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> p, Random random) {
             List<Mapping> mappings = new ArrayList<>(p.size());
             for (int i = 0; i < p.size(); i++) {
                 mappings.add(Mapping.empty());
@@ -84,8 +84,9 @@ public enum Splitter implements Serializable {
                         break;
                     }
                 }
-                if (!consumed)
+                if (!consumed) {
                     missingSpots.add(row);
+                }
             }
             List<Integer> lens = mappings.stream().map(Mapping::size).collect(toList());
             Collections.shuffle(lens);
@@ -112,7 +113,7 @@ public enum Splitter implements Serializable {
      */
     Weighted {
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> pred) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> pred, Random random) {
 
             List<Mapping> mappings = new ArrayList<>();
             List<Var> weighting = new ArrayList<>();
@@ -162,7 +163,7 @@ public enum Splitter implements Serializable {
      */
     Random {
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> pred) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> pred, Random random) {
             // first we collect the prediction category for each observation
             // and the counts from each category,
             // missing values are placed randomly
@@ -179,7 +180,7 @@ public enum Splitter implements Serializable {
                     }
                 }
                 if (!consumed) {
-                    int next = RandomSource.nextInt(pred.size());
+                    int next = random.nextInt(pred.size());
                     to[row] = next;
                     counts[next]++;
                 }
@@ -215,7 +216,8 @@ public enum Splitter implements Serializable {
      * @param df         initial data set
      * @param weights    initial weights
      * @param predicates rules/criteria used to perform the splitting
+     * @param random
      * @return a pair with a list of frames and a list of weights
      */
-    public abstract Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> predicates);
+    public abstract Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> predicates, Random random);
 }

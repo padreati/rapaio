@@ -1,36 +1,32 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.data.stream;
 
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -38,7 +34,6 @@ import java.util.stream.LongStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.stat.Sum;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -55,9 +50,11 @@ public class FSpotsTest {
 
     private static final double TOL = 1e-12;
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
     }
 
     @Test
@@ -69,7 +66,7 @@ public class FSpotsTest {
 
     @Test
     void testDouble() {
-        Frame x = SolidFrame.byVars(VarDouble.from(100, RandomSource::nextDouble));
+        Frame x = SolidFrame.byVars(VarDouble.from(100, () -> random.nextDouble()));
         assertEquals(100, x.stream().count());
 
         assertTrue(x.deepEquals(x.stream().toMappedFrame()));
@@ -84,10 +81,10 @@ public class FSpotsTest {
         assertArrayEquals(a1, a2, TOL);
 
         int[] a3 = VarInt.seq(10).stream().skip(1).limit(2).mapToInt().toArray();
-        assertArrayEquals(new int[]{1, 2}, a3);
+        assertArrayEquals(new int[] {1, 2}, a3);
 
         List<Double> l1 = new ArrayList<>();
-        VarDouble.from(100, RandomSource::nextDouble).stream().sorted().forEachOrdered(s -> l1.add(s.getDouble()));
+        VarDouble.from(100, () -> random.nextDouble()).stream().sorted().forEachOrdered(s -> l1.add(s.getDouble()));
         for (int i = 1; i < l1.size(); i++) {
             assertTrue(l1.get(i - 1) <= l1.get(i));
         }
@@ -96,7 +93,7 @@ public class FSpotsTest {
 
     @Test
     void testFilter() {
-        VarDouble x = VarDouble.from(100, () -> RandomSource.nextDouble() - 0.5);
+        VarDouble x = VarDouble.from(100, () -> random.nextDouble() - 0.5);
         x.stream().filter(s -> s.getDouble() >= 0).forEach(s -> assertTrue(s.getDouble() >= 0));
         x.stream().unordered().filterValue(v -> v >= 0).forEach(s -> assertTrue(s.getDouble() >= 0.0));
     }
@@ -138,7 +135,7 @@ public class FSpotsTest {
 
     @Test
     void testSpliterator() {
-        VarDouble x = VarDouble.from(10_000, RandomSource::nextDouble);
+        VarDouble x = VarDouble.from(10_000, () -> random.nextDouble());
         double sum1 = x.stream().parallel().mapToDouble().sum();
         double sum3 = x.stream().sequential().mapToDouble().sum();
         double sum2 = Sum.of(x).value();
@@ -194,7 +191,7 @@ public class FSpotsTest {
 
         String[] levels1 = spot.levels(1).toArray(new String[0]);
         String[] levels2 = spot.levels("y").toArray(new String[0]);
-        String[] levels3 = new String[]{"?", "a", "b"};
+        String[] levels3 = new String[] {"?", "a", "b"};
 
         assertArrayEquals(levels1, levels2);
         assertArrayEquals(levels2, levels3);

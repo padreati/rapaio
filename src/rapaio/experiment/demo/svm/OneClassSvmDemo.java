@@ -25,7 +25,6 @@ import static rapaio.graphics.Plotter.*;
 
 import java.util.logging.Level;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.core.tools.Grid2D;
@@ -53,7 +52,6 @@ public class OneClassSvmDemo {
     void run() {
 
         WS.initLog(Level.SEVERE);
-        RandomSource.setSeed(42);
 
         Normal normal1 = Normal.of(0, 2);
         Normal normal2 = Normal.of(1, 3);
@@ -77,7 +75,9 @@ public class OneClassSvmDemo {
             OneClassSvm ocs = OneClassSvm
                     .newModel()
                     .kernel.set(RBFKernel.fromGamma(gamma))
-                    .nu.set(0.1).fit(df);
+                    .nu.set(0.1)
+                    .seed.set(42L)
+                    .fit(df);
 
             Grid2D gd = Grid2D.fromFunction((v1, v2) -> ocs.predict(DVector.wrap(v1, v2))
                     .scores().getDouble(0), x1.dv().min(), x1.dv().max(), x2.dv().min(), x2.dv().max(), 64);

@@ -21,12 +21,13 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarNominal;
@@ -38,19 +39,21 @@ import rapaio.ml.model.rule.OneRule;
  */
 public class ImputeClassifierTest {
 
-    private static final String[] xd = new String[]{"a", "b", "c", "d", "?"};
-    private static final String[] yd = new String[]{"x", "y", "?"};
+    private static final String[] xd = new String[] {"a", "b", "c", "d", "?"};
+    private static final String[] yd = new String[] {"x", "y", "?"};
+
+    private Random random;
 
     @BeforeEach
     void setUp() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
     }
 
     @Test
     void testBasic() {
 
-        VarNominal x = VarNominal.from(100, row -> xd[RandomSource.nextInt(xd.length)]).name("x");
-        VarNominal y = VarNominal.from(100, row -> yd[RandomSource.nextInt(yd.length)]).name("y");
+        VarNominal x = VarNominal.from(100, row -> xd[random.nextInt(xd.length)]).name("x");
+        VarNominal y = VarNominal.from(100, row -> yd[random.nextInt(yd.length)]).name("y");
 
         var model = OneRule.newModel();
 

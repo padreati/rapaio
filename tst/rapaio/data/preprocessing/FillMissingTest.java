@@ -21,13 +21,11 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
@@ -44,7 +42,6 @@ public class FillMissingTest {
 
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(123);
         df = SolidFrame.byVars(
                 VarDouble.wrap(1, VarDouble.MISSING_VALUE, 3, 4).name("a"),
                 VarInt.wrap(1, 2, VarInt.MISSING_VALUE, 4).name("b"),

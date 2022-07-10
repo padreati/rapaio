@@ -29,14 +29,12 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.image.ImageTools;
 
 public class TextTest extends AbstractArtistTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        RandomSource.setSeed(1234);
         ImageTools.setBestRenderingHints();
     }
 

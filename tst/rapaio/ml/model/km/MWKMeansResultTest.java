@@ -21,12 +21,12 @@
 
 package rapaio.ml.model.km;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.util.Random;
+
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
@@ -35,69 +35,65 @@ import rapaio.datasets.Datasets;
 
 public class MWKMeansResultTest {
 
-    @BeforeEach
-    void beforeEach() {
-        RandomSource.setSeed(42);
-    }
-
     @Test
     void printTest() {
         Frame iris = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
-        iris = iris.fapply(Jitter.on(1, VarRange.all()));
+        iris = iris.fapply(Jitter.on(new Random(42), 1, VarRange.all()));
 
         double p = 3;
         MWKMeans model = MWKMeans.newMWKMeans()
                 .subspace.set(true)
                 .k.set(3)
                 .p.set(p)
-                .nstart.set(3);
+                .nstart.set(3)
+                .seed.set(42L);
         var result = model.fit(iris).predict(iris);
 
         assertEquals("MWKMeansResult{}", result.toString());
         assertEquals("""
                 Overall errors:\s
                 > count: 150
-                > mean: 0.1433928
-                > var: 0.0103899
-                > sd: 0.1019307
-                > inertia/error: 9.6013022
-                > iterations: 11
+                > mean: 0.1786952
+                > var: 0.0169075
+                > sd: 0.130029
+                > inertia/error: 13.4395791
+                > iterations: 10
                                 
                 Per cluster:\s
                     ID count   mean       var    var/total    sd    \s
-                [0]  1    61 0.1390899 0.0113295 1.0904405 0.1064402\s
-                [1]  3    53 0.1614438 0.0121037 1.164952  0.1100168\s
-                [2]  2    36 0.1241089 0.0059183 0.5696208 0.0769304\s
+                [0]  2    69 0.2152954 0.0212316 1.2557452 0.1457106\s
+                [1]  1    42 0.1520472 0.0132631 0.7844516 0.1151657\s
+                [2]  3    39 0.1426389 0.0094403 0.558347  0.0971611\s
                 """, result.toSummary());
         assertEquals("""
                 Overall errors:\s
                 > count: 150
-                > mean: 0.1433928
-                > var: 0.0103899
-                > sd: 0.1019307
-                > inertia/error: 9.6013022
-                > iterations: 11
+                > mean: 0.1786952
+                > var: 0.0169075
+                > sd: 0.130029
+                > inertia/error: 13.4395791
+                > iterations: 10
                                 
                 Per cluster:\s
                     ID count   mean       var    var/total    sd    \s
-                [0]  1    61 0.1390899 0.0113295 1.0904405 0.1064402\s
-                [1]  3    53 0.1614438 0.0121037 1.164952  0.1100168\s
-                [2]  2    36 0.1241089 0.0059183 0.5696208 0.0769304\s
+                [0]  2    69 0.2152954 0.0212316 1.2557452 0.1457106\s
+                [1]  1    42 0.1520472 0.0132631 0.7844516 0.1151657\s
+                [2]  3    39 0.1426389 0.0094403 0.558347  0.0971611\s
                 """, result.toContent());
         assertEquals("""
                 Overall errors:\s
                 > count: 150
-                > mean: 0.1433928
-                > var: 0.0103899
-                > sd: 0.1019307
-                > inertia/error: 9.6013022
-                > iterations: 11
+                > mean: 0.1786952
+                > var: 0.0169075
+                > sd: 0.130029
+                > inertia/error: 13.4395791
+                > iterations: 10
                                 
                 Per cluster:\s
                     ID count   mean       var    var/total    sd    \s
-                [0]  1    61 0.1390899 0.0113295 1.0904405 0.1064402\s
-                [1]  3    53 0.1614438 0.0121037 1.164952  0.1100168\s
-                [2]  2    36 0.1241089 0.0059183 0.5696208 0.0769304\s
+                [0]  2    69 0.2152954 0.0212316 1.2557452 0.1457106\s
+                [1]  1    42 0.1520472 0.0132631 0.7844516 0.1151657\s
+                [2]  3    39 0.1426389 0.0094403 0.558347  0.0971611\s
                 """, result.toFullContent());
     }
 }

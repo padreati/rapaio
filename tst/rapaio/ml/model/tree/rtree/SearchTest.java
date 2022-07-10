@@ -21,11 +21,10 @@
 
 package rapaio.ml.model.tree.rtree;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +59,7 @@ public class SearchTest {
     void ignoreTest() {
 
         Search m = Search.Ignore;
-        Optional<Candidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET);
+        Optional<Candidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET, new Random());
         assertFalse(cs.isPresent());
     }
 
@@ -68,7 +67,7 @@ public class SearchTest {
     void nominalFullTest() {
 
         Search m = Search.NominalFull;
-        Optional<Candidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET);
+        Optional<Candidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET, new Random());
 
         assertTrue(cs.isPresent());
 
@@ -86,13 +85,13 @@ public class SearchTest {
 
     @Test
     void nominalFullTestFailed() {
-        Optional<Candidate> cs = Search.NominalFull.computeCandidate(tree, df.mapRows(1), w.mapRows(1), NOM_TEST, TARGET);
+        Optional<Candidate> cs = Search.NominalFull.computeCandidate(tree, df.mapRows(1), w.mapRows(1), NOM_TEST, TARGET, new Random());
         assertFalse(cs.isPresent());
     }
 
     @Test
     void nominalBinaryTest() {
-        Optional<Candidate> cs = Search.NominalBinary.computeCandidate(tree, df, w, NOM_TEST, TARGET);
+        Optional<Candidate> cs = Search.NominalBinary.computeCandidate(tree, df, w, NOM_TEST, TARGET, new Random());
         assertTrue(cs.isPresent());
         assertEquals("Candidate{score=4.318367346938771, testName='outlook', predicates=[outlook='overcast', outlook!='overcast']}",
                 cs.get().toString());
@@ -104,7 +103,7 @@ public class SearchTest {
         Var test = df.rvar(NUM_TEST).fapply(VarRefSort.from(df.rvar(NUM_TEST).refComparator()));
         Var weights = w.fapply(VarRefSort.from(df.rvar(NUM_TEST).refComparator()));
 
-        Optional<Candidate> c = Search.NumericBinary.computeCandidate(tree, df, w, NUM_TEST, TARGET);
+        Optional<Candidate> c = Search.NumericBinary.computeCandidate(tree, df, w, NUM_TEST, TARGET, new Random());
 
         assertTrue(c.isPresent());
         assertEquals(32.657653061224515, c.get().getScore(), 1e-12);

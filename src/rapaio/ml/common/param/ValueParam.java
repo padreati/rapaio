@@ -75,8 +75,8 @@ public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
         if (defaultValue == null) {
             return value == null;
         }
-        if (defaultValue instanceof ParametricEquals) {
-            return ((ParametricEquals<T>) defaultValue).equalOnParams(value);
+        if (defaultValue instanceof ParametricEquals dvi) {
+            return dvi.equalOnParams(value);
         }
         return defaultValue().equals(value);
     }

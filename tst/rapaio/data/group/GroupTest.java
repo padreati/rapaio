@@ -22,28 +22,19 @@
 package rapaio.data.group;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static rapaio.data.Group.count;
-import static rapaio.data.Group.kurtosis;
-import static rapaio.data.Group.max;
-import static rapaio.data.Group.mean;
-import static rapaio.data.Group.min;
-import static rapaio.data.Group.nunique;
-import static rapaio.data.Group.skewness;
-import static rapaio.data.Group.std;
-import static rapaio.data.Group.sum;
+import static rapaio.data.Group.*;
 import static rapaio.sys.With.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Group;
 import rapaio.data.SolidFrame;
@@ -61,10 +52,11 @@ public class GroupTest {
     private Frame iris;
     private Frame play;
     private int textWidth = 0;
+    private Random random;
 
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(1234);
+        random = new Random(1234);
         play = Datasets.loadPlay();
         iris = Datasets.loadIrisDataset();
         textWidth = WS.getPrinter().getOptions().textWidth();
@@ -177,7 +169,9 @@ public class GroupTest {
         Group group1 = Group.from(iris, "class");
         Group.Aggregate agg1 = group1.aggregate(count("petal-width"));
 
-        assertEquals("Group.Aggregate{group=GroupBy{keys:[class], group count:3, row count:150}, funs=[GroupByFunction{name=count,varNames=[petal-width]}]}", agg1.toString());
+        assertEquals(
+                "Group.Aggregate{group=GroupBy{keys:[class], group count:3, row count:150}, funs=[GroupByFunction{name=count,varNames=[petal-width]}]}",
+                agg1.toString());
         assertEquals("""
                 group by: class
                 group count: 3
@@ -251,11 +245,11 @@ public class GroupTest {
     void testNominalAggregate() {
 
         final int N = 100;
-        String[] groupLevels = new String[]{"alpha", "beta", "gamma", "delta", "iota", "niu", "miu"};
-        String[] fieldLevels = new String[]{"x", "y", "z", "t", "a", "b", "d", "c", "f", "m", "n", "p", "q", "w", "e", "j", "k"};
+        String[] groupLevels = new String[] {"alpha", "beta", "gamma", "delta", "iota", "niu", "miu"};
+        String[] fieldLevels = new String[] {"x", "y", "z", "t", "a", "b", "d", "c", "f", "m", "n", "p", "q", "w", "e", "j", "k"};
 
-        VarNominal varGroup = VarNominal.from(N, row -> groupLevels[RandomSource.nextInt(groupLevels.length)], groupLevels).name("group");
-        VarNominal field = VarNominal.from(N, row -> fieldLevels[RandomSource.nextInt(fieldLevels.length)], fieldLevels).name("field");
+        VarNominal varGroup = VarNominal.from(N, row -> groupLevels[random.nextInt(groupLevels.length)], groupLevels).name("group");
+        VarNominal field = VarNominal.from(N, row -> fieldLevels[random.nextInt(fieldLevels.length)], fieldLevels).name("field");
 
         Frame df = SolidFrame.byVars(varGroup, field);
 

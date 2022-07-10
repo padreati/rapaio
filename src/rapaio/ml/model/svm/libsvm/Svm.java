@@ -21,11 +21,8 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import java.util.Random;
 import java.util.logging.Logger;
 
-import rapaio.core.RandomSource;
-import rapaio.experiment.ml.svm.libsvm.svm_parameter;
 import rapaio.math.linear.DVector;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.TArrays;
@@ -33,8 +30,6 @@ import rapaio.util.collection.TArrays;
 public class Svm {
 
     private static final Logger LOGGER = Logger.getLogger(Svm.class.getName());
-
-    public static final Random rand = RandomSource.getRandom();
 
     private static SolutionInfo solve_c_svc(SvmProblem prob, SvmParameter param, double[] alpha, double cp, double cn) {
         int l = prob.len;
@@ -444,7 +439,7 @@ public class Svm {
 
         // random shuffle
         for (i = 0; i < prob.len; i++) {
-            int j = i + rand.nextInt(prob.len - i);
+            int j = i + prob.random.nextInt(prob.len - i);
             TArrays.swap(perm, i, j);
         }
         for (i = 0; i < nr_fold; i++) {
@@ -619,8 +614,7 @@ public class Svm {
         SvmModel model = new SvmModel();
         model.param = param;
 
-        if (param.svmType == svm_parameter.ONE_CLASS || param.svmType == svm_parameter.EPSILON_SVR
-                || param.svmType == svm_parameter.NU_SVR) {
+        if (param.svmType == SvmParameter.ONE_CLASS || param.svmType == SvmParameter.EPSILON_SVR || param.svmType == SvmParameter.NU_SVR) {
             // regression or one-class-svm
             model.nr_class = 2;
             model.label = null;
@@ -629,7 +623,7 @@ public class Svm {
             model.probB = null;
             model.svCoef = new double[1][];
 
-            if (param.probability == 1 && (param.svmType == svm_parameter.EPSILON_SVR || param.svmType == svm_parameter.NU_SVR)) {
+            if (param.probability == 1 && (param.svmType == SvmParameter.EPSILON_SVR || param.svmType == SvmParameter.NU_SVR)) {
                 model.probA = new double[1];
                 model.probA[0] = svm_svr_probability(prob, param);
             }
@@ -720,6 +714,7 @@ public class Svm {
                     SvmProblem sub_prob = new SvmProblem();
                     int si = start[i], sj = start[j];
                     int ci = count[i], cj = count[j];
+                    sub_prob.random = prob.random;
                     sub_prob.len = ci + cj;
                     sub_prob.xs = new DVector[sub_prob.len];
                     sub_prob.y = new double[sub_prob.len];
@@ -878,7 +873,7 @@ public class Svm {
             }
             for (c = 0; c < nr_class; c++) {
                 for (i = 0; i < count[c]; i++) {
-                    int j = i + rand.nextInt(count[c] - i);
+                    int j = i + prob.random.nextInt(count[c] - i);
                     IntArrays.swap(index, start[c] + i, start[c] + j);
                 }
             }
@@ -911,7 +906,7 @@ public class Svm {
                 perm[i] = i;
             }
             for (i = 0; i < l; i++) {
-                int j = i + rand.nextInt(l - i);
+                int j = i + prob.random.nextInt(l - i);
                 IntArrays.swap(perm, i, j);
             }
             for (i = 0; i <= nrFold; i++) {

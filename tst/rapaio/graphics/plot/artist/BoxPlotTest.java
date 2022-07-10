@@ -21,9 +21,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 import static rapaio.graphics.Plotter.*;
 import static rapaio.sys.With.*;
@@ -33,10 +31,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
@@ -47,11 +43,6 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.GridLayer;
 
 public class BoxPlotTest extends AbstractArtistTest {
-
-    @BeforeEach
-    void beforeEach() {
-        RandomSource.setSeed(42);
-    }
 
     @Test
     void testBoxPlot() throws IOException {
@@ -67,7 +58,7 @@ public class BoxPlotTest extends AbstractArtistTest {
         Var[] vars = Arrays.stream(names).map(name -> VarDouble.copy(map.get(name)).name(name)).toArray(Var[]::new);
         grid.add(boxplot(vars, fill(2, 3, 4)));
 
-        grid.add(boxplot(SolidFrame.byVars(vars), fill(1,2,3)));
+        grid.add(boxplot(SolidFrame.byVars(vars), fill(1, 2, 3)));
 
         grid.add(boxplot(vars[0], fill(3)));
 

@@ -21,10 +21,9 @@
 
 package rapaio.ml.model.km;
 
-import static java.lang.StrictMath.abs;
-import static java.lang.StrictMath.max;
-import static java.lang.StrictMath.pow;
+import static java.lang.StrictMath.*;
 
+import java.util.Random;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
@@ -123,10 +122,10 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         return x.subNew(y).mul(w).apply(v -> pow(abs(v), p)).sum();
     }
 
-    private DMatrix initializeCentroids(DMatrix x) {
+    private DMatrix initializeCentroids(Random random, DMatrix x) {
 
         Distance d = new MinkowskiDistance(p.get());
-        DMatrix bestCentroids = init.get().init(d, x, k.get());
+        DMatrix bestCentroids = init.get().init(random, d, x, k.get());
         double bestError = computeError(x, bestCentroids);
         LOGGER.fine("Initialization of centroids round 1 computed error: " + bestError);
 
@@ -135,7 +134,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
 
         if (nstart.get() > 1) {
             for (int i = 1; i < nstart.get(); i++) {
-                DMatrix nextCentroids = init.get().init(d, x, k.get());
+                DMatrix nextCentroids = init.get().init(random, d, x, k.get());
                 double nextError = computeError(x, nextCentroids);
                 LOGGER.fine("Initialization of centroids, round %d, computed error: %f"
                         .formatted(i + 1, nextError));
@@ -161,8 +160,10 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         // initialize design matrix
         DMatrix x = DMatrix.copy(df.mapVars(inputNames));
 
+        Random random = getRandom();
+
         // initialize centroids
-        c = initializeCentroids(x);
+        c = initializeCentroids(random, x);
 
         // assign instances to centroids and compute error
         int[] assign = computeAssignmentAndError(x, true);

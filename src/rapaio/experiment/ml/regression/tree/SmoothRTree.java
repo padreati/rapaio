@@ -152,7 +152,7 @@ public class SmoothRTree extends GBTRtree<SmoothRTree, RegressionResult, RunInfo
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         this.root = new SmoothRTreeNode(null);
-        root.coreFit(this, df, weights);
+        root.coreFit(this, df, weights, getRandom());
         return true;
     }
 

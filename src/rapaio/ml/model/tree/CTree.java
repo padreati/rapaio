@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -208,6 +209,8 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
+        Random random = getRandom();
+
         additionalValidation(df);
         VarSelector nodeVarSelector = this.varSelector.get().withVarNames(inputNames());
 
@@ -226,7 +229,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
             Frame nodeDf = t.df;
             Var weightsDf = t.weight;
 
-            learnNode(node, nodeDf, weightsDf, t.varSelector);
+            learnNode(node, nodeDf, weightsDf, t.varSelector, random);
 
             if (node.leaf) {
                 continue;
@@ -235,7 +238,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
 
             // now that we have a best candidate, do the effective split
             Pair<List<Frame>, List<Var>> frames = splitter.get().performSplit(nodeDf, weightsDf,
-                    bestCandidate.groupPredicates());
+                    bestCandidate.groupPredicates(), random);
 
             for (RowPredicate predicate : bestCandidate.groupPredicates()) {
                 var child = new Node(node,
@@ -254,7 +257,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
 
     record QueueNode(Node node, Frame df, Var weight, VarSelector varSelector){}
 
-    private void learnNode(Node node, Frame df, Var weights, VarSelector nodeVarSelector) {
+    private void learnNode(Node node, Frame df, Var weights, VarSelector nodeVarSelector, Random random) {
         node.density = DensityVector.fromLevelWeights(false, df.rvar(firstTargetName()), weights);
         node.counter = DensityVector.fromLevelCounts(false, df.rvar(firstTargetName()));
         node.bestLabel = node.density.findBestLabel();
@@ -268,7 +271,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
             return;
         }
 
-        String[] nextVarNames = varSelector.get().nextVarNames();
+        String[] nextVarNames = varSelector.get().nextVarNames(random);
         List<Candidate> candidateList = new ArrayList<>();
         Queue<String> exhaustList = new ConcurrentLinkedQueue<>();
 
@@ -284,8 +287,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
                 throw new IllegalArgumentException("No test for given variable type: " + testCol + " [" + df.type(testCol).name() + "]");
             }
             var test = searchMap.get().get(df.type(testCol));
-            var candidate = test.computeCandidate(
-                    this, df, weights, testCol, firstTargetName(), purity.get());
+            var candidate = test.computeCandidate(this, df, weights, testCol, firstTargetName(), purity.get(), random);
             if (candidate != null) {
                 candidateList.add(candidate);
                 m--;

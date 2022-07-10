@@ -23,6 +23,7 @@ package rapaio.data.sample;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public interface RowSampler extends Serializable {
      * @param df source data frame
      * @return new sample
      */
-    Sample nextSample(Frame df, Var weight);
+    Sample nextSample(final Random random, final Frame df, final Var weight);
 
     static RowSampler identity() {
         return new Identity();

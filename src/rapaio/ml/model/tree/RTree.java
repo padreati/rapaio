@@ -21,7 +21,7 @@
 
 package rapaio.ml.model.tree;
 
-import static rapaio.printer.Format.floatFlex;
+import static rapaio.printer.Format.*;
 
 import java.io.Serial;
 import java.util.Arrays;
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Stream;
 
@@ -183,6 +184,7 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
+        Random random = getRandom();
         capabilities().checkAtLearnPhase(df, weights, targetNames);
 
         int id = 1;
@@ -207,7 +209,7 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
             int lastId = last.id;
             Frame lastDf = frameMap.get(lastId);
             Var lastWeights = weightsMap.get(lastId);
-            learnNode(last, lastDf, lastWeights);
+            learnNode(last, lastDf, lastWeights, random);
 
             if (last.leaf) {
                 continue;
@@ -215,7 +217,7 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
             // now that we have a best candidate,do the effective split
 
             List<RowPredicate> predicates = last.bestCandidate.getGroupPredicates();
-            List<Mapping> mappings = splitter.get().performSplitMapping(lastDf, lastWeights, predicates);
+            List<Mapping> mappings = splitter.get().performSplitMapping(lastDf, lastWeights, predicates, random);
 
             for (int i = 0; i < predicates.size(); i++) {
                 RowPredicate predicate = predicates.get(i);
@@ -234,7 +236,7 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
         return true;
     }
 
-    private void learnNode(Node node, Frame df, Var weights) {
+    private void learnNode(Node node, Frame df, Var weights, Random random) {
 
         node.leaf = true;
         node.value = loss.get().scalarMinimizer(df.rvar(firstTargetName()), weights);
@@ -249,14 +251,14 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
             return;
         }
 
-        Stream<String> stream = Arrays.stream(varSelector.get().nextVarNames());
+        Stream<String> stream = Arrays.stream(varSelector.get().nextVarNames(random));
         if (runs.get() > 1) {
             stream = stream.parallel();
         }
 
         List<Candidate> candidates = stream
                 .map(testCol -> test.get(df.type(testCol))
-                        .computeCandidate(this, df, weights, testCol, firstTargetName())
+                        .computeCandidate(this, df, weights, testCol, firstTargetName(), random)
                         .orElse(null))
                 .filter(Objects::nonNull)
                 .toList();
@@ -377,6 +379,6 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
      * @param lossFunction loss function used to compute additive gradient
      */
     public void boostUpdate(Frame x, Var y, Var fx, Loss lossFunction) {
-        root.boostUpdate(x, y, fx, lossFunction, splitter.get());
+        root.boostUpdate(x, y, fx, lossFunction, splitter.get(), getRandom());
     }
 }

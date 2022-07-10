@@ -1,35 +1,30 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.ml.model.bayes.nb;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
@@ -40,14 +35,7 @@ import rapaio.data.VarNominal;
 public class PriorMLETest {
 
     private static final double TOL = 1e-12;
-
-    private static final int N = 10_000;
     private static final String TARGET = "target";
-
-    @BeforeEach
-    void beforeEach() {
-        RandomSource.setSeed(1234);
-    }
 
     @Test
     void testNaming() {
@@ -67,8 +55,8 @@ public class PriorMLETest {
         prior.fitPriors(SolidFrame.byVars(target), VarDouble.fill(6, 1), TARGET);
 
         assertEquals(0.5, prior.computePrior("a"), TOL);
-        assertEquals(1./3, prior.computePrior("b"), TOL);
-        assertEquals(1./6, prior.computePrior("c"), TOL);
+        assertEquals(1. / 3, prior.computePrior("b"), TOL);
+        assertEquals(1. / 6, prior.computePrior("c"), TOL);
         assertEquals(Double.NaN, prior.computePrior("d"), TOL);
     }
 

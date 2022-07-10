@@ -21,7 +21,7 @@
 
 package rapaio.experiment.ml.regression.nnet;
 
-import rapaio.core.RandomSource;
+import java.util.Random;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -35,7 +35,9 @@ public enum TFunction {
         }
 
         public double differential(double value) {
-            if (value == 0) return RandomSource.nextDouble() / 100;
+            if (value == 0) {
+                return new Random().nextDouble() / 100;
+            }
             return value * (1. - value);
         }
     },

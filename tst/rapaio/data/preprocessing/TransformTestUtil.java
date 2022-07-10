@@ -21,7 +21,8 @@
 
 package rapaio.data.preprocessing;
 
-import rapaio.core.RandomSource;
+import java.util.Random;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -33,28 +34,28 @@ import rapaio.data.VarNominal;
  */
 public class TransformTestUtil {
 
-    public static Frame allDoubles(int n, int k) {
+    public static Frame allDoubles(Random random, int n, int k) {
         Var[] vars = new Var[k];
         for (int i = 0; i < k; i++) {
-            vars[i] = VarDouble.from(n, row -> RandomSource.nextDouble() - 0.5).name("V" + (i + 1));
+            vars[i] = VarDouble.from(n, row -> random.nextDouble() - 0.5).name("V" + (i + 1));
         }
         return SolidFrame.byVars(vars);
     }
 
-    public static Frame allDoubleNominal(int n, int dCount, int nomCunt) {
+    public static Frame allDoubleNominal(Random random, int n, int dCount, int nomCunt) {
         int len = dCount + nomCunt;
         Var[] vars = new Var[len];
 
-        String[] words = new String[]{
+        String[] words = new String[] {
                 "a", "factor", "base", "spectrum", "glance", "point", "shuffle", "bias"
         };
 
         for (int i = 0; i < len; i++) {
             if (i < dCount) {
-                vars[i] = VarDouble.from(n, row -> RandomSource.nextDouble() - 0.5)
+                vars[i] = VarDouble.from(n, row -> random.nextDouble() - 0.5)
                         .name("v" + (i + 1));
             } else {
-                vars[i] = VarNominal.from(n, row -> words[RandomSource.nextInt(words.length)])
+                vars[i] = VarNominal.from(n, row -> words[random.nextInt(words.length)])
                         .name("v" + (i + 1));
             }
         }

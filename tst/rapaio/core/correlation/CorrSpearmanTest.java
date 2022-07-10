@@ -21,15 +21,15 @@
 
 package rapaio.core.correlation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import static rapaio.sys.With.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.SolidFrame;
@@ -48,9 +48,11 @@ public class CorrSpearmanTest {
     private final Var iq = VarDouble.copy(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
     private final Var tvHours = VarDouble.copy(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
     }
 
     @Test
@@ -61,8 +63,8 @@ public class CorrSpearmanTest {
 
     @Test
     void testUnequalRowCount() {
-        Var x = VarDouble.from(100, Normal.std()::sampleNext);
-        Var y = VarDouble.from(10, Normal.std()::sampleNext);
+        Var x = VarDouble.from(100, () -> Normal.std().sampleNext(random));
+        Var y = VarDouble.from(10, () -> Normal.std().sampleNext(random));
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> CorrSpearman.of(x, y));
         assertEquals("Variables does not have the same size.", ex.getMessage());
@@ -98,8 +100,8 @@ public class CorrSpearmanTest {
     @Test
     void randomTest() {
         Normal norm = Normal.of(0, 12);
-        VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).name("x");
-        VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).name("y");
+        VarDouble x = VarDouble.from(10_000, () -> norm.sampleNext(random)).name("x");
+        VarDouble y = VarDouble.from(10_000, () -> norm.sampleNext(random)).name("y");
 
         CorrSpearman cp = CorrSpearman.of(x, y);
         assertEquals(0.023296211476962116, cp.singleValue(), TOL);
@@ -108,8 +110,8 @@ public class CorrSpearmanTest {
     @Test
     void testNonLinearCorr() {
         Normal norm = Normal.of(0, 12);
-        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).name("x");
-        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).name("y");
+        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext(random)).name("x");
+        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext(random)).name("y");
 
         CorrSpearman cp = CorrSpearman.of(x, y);
         assertEquals(0.8789432182134321, cp.singleValue(), TOL);
@@ -118,9 +120,9 @@ public class CorrSpearmanTest {
     @Test
     void testMultipleVarsNonLinear() {
         Normal norm = Normal.of(0, 12);
-        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).name("x");
-        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).name("y");
-        VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).name("z");
+        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext(random)).name("x");
+        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext(random)).name("y");
+        VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext(random)).name("z");
 
         DMatrix exp = DMatrix.copy(3, 3,
                 1, 0.8789432182134321, 0.8789431613694316,
@@ -158,8 +160,8 @@ public class CorrSpearmanTest {
     @Test
     void testSummary() {
 
-        Var x1 = VarDouble.from(100, Normal.std()::sampleNext);
-        Var x2 = VarDouble.from(100, Normal.std()::sampleNext);
+        Var x1 = VarDouble.from(100, () -> Normal.std().sampleNext(random));
+        Var x2 = VarDouble.from(100, () -> Normal.std().sampleNext(random));
         Var x3 = VarDouble.seq(99);
 
         assertEquals("""
@@ -181,7 +183,7 @@ public class CorrSpearmanTest {
         int K = 10;
         Var[] vars = new Var[K];
         for (int i = 0; i < K; i++) {
-            vars[i] = VarDouble.from(100, Normal.std()::sampleNext).name("Var_" + (i + 1));
+            vars[i] = VarDouble.from(100, () -> Normal.std().sampleNext(random)).name("Var_" + (i + 1));
         }
 
         WS.getPrinter().withOptions(textWidth(100));

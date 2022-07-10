@@ -21,9 +21,9 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ public class QuantileTransformTest {
 
     @Test
     void testDouble() {
-        Frame src = TransformTestUtil.allDoubleNominal(100, 2, 2);
+        Frame src = TransformTestUtil.allDoubleNominal(new Random(), 100, 2, 2);
 
         Frame q1 = src.fapply(QuantileTransform.on(VarRange.all(), 0.5));
         Frame q2 = src.fapply(QuantileTransform.split(VarRange.onlyTypes(VarType.DOUBLE), 2).newInstance());
@@ -48,14 +48,14 @@ public class QuantileTransformTest {
 
     @Test
     void testInvalidSplit() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> TransformTestUtil.allDoubleNominal(100, 2, 2)
+        var ex = assertThrows(IllegalArgumentException.class, () -> TransformTestUtil.allDoubleNominal(new Random(), 100, 2, 2)
                 .fapply(QuantileTransform.split(VarRange.all(), 1)));
         assertEquals("Frame quantile discrete filter allows only splits greater than 1.", ex.getMessage());
     }
 
     @Test
     void testInvalidProbabilities() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> TransformTestUtil.allDoubleNominal(100, 2, 2)
+        var ex = assertThrows(IllegalArgumentException.class, () -> TransformTestUtil.allDoubleNominal(new Random(), 100, 2, 2)
                 .fapply(QuantileTransform.on(VarRange.all())));
         assertEquals("Frame quantile discrete filter requires at least one probability.", ex.getMessage());
     }

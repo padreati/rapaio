@@ -27,12 +27,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
@@ -121,7 +121,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
     }
 
     public interface FeatureProvider extends ParametricEquals<FeatureProvider> {
-        Feature[] generateFeatures(DMatrix x);
+        Feature[] generateFeatures(Random random, DMatrix x);
     }
 
     /**
@@ -135,7 +135,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         @Override
-        public Feature[] generateFeatures(DMatrix x) {
+        public Feature[] generateFeatures(Random random, DMatrix x) {
             DVector mean = DVector.from(x.cols(), col -> x.mapCol(col).mean());
             return new Feature[] {new Feature("intercept", -1, mean, () -> DVector.fill(x.rows(), 1.0), v -> 1.0)};
         }
@@ -171,7 +171,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         @Override
-        public Feature[] generateFeatures(DMatrix x) {
+        public Feature[] generateFeatures(Random random, DMatrix x) {
             int len = (int) (x.rows() * gammas.size() * p);
             int[] selection = SamplingTools.sampleWOR(x.rows() * gammas.size(), len);
             Feature[] factories = new Feature[selection.length];
@@ -223,7 +223,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         @Override
-        public Feature[] generateFeatures(DMatrix x) {
+        public Feature[] generateFeatures(Random random, DMatrix x) {
             int len = Math.max(1, (int) (x.rows() * p));
             int[] selection = SamplingTools.sampleWOR(x.rows(), len);
             Feature[] factories = new Feature[selection.length];
@@ -255,21 +255,21 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         @Override
-        public Feature[] generateFeatures(DMatrix x) {
+        public Feature[] generateFeatures(Random random, DMatrix x) {
             int len = Math.max(1, (int) (gammas.size() * x.rows() * p));
             Feature[] factories = new Feature[len];
             for (int i = 0; i < len; i++) {
-                factories[i] = nextFactory(x);
+                factories[i] = nextFactory(random, x);
             }
             return factories;
         }
 
-        public Feature nextFactory(DMatrix x) {
-            double sigma = gammas.getDouble(RandomSource.nextInt(gammas.size()));
+        public Feature nextFactory(Random random, DMatrix x) {
+            double sigma = gammas.getDouble(random.nextInt(gammas.size()));
             RBFKernel kernel = new RBFKernel(sigma);
             DVector out = DVector.fill(x.cols(), 0);
             for (int j = 0; j < out.size(); j++) {
-                out.set(j, x.get(RandomSource.nextInt(x.rows()), j) + noise.sampleNext());
+                out.set(j, x.get(random.nextInt(x.rows()), j) + noise.sampleNext());
             }
             return new Feature(
                     String.format("%s, trainIndex: %s", kernel.name(), out),
@@ -397,13 +397,13 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-
+        Random random = getRandom();
         DMatrix x = buildInput(df);
         DVector y = buildTarget(df);
 
         features = new ArrayList<>();
         for (FeatureProvider fp : providers.get()) {
-            features.addAll(Arrays.asList(fp.generateFeatures(x)));
+            features.addAll(Arrays.asList(fp.generateFeatures(random, x)));
         }
         methodImpl = switch (method.get()) {
             case EVIDENCE_APPROXIMATION -> new EvidenceApproximation(this, x, y);
@@ -678,7 +678,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         private void initializeAlphaBeta() {
             beta = 1.0 / (y.variance() * 0.1);
-            alpha = DVector.from(phi.cols(), row -> Math.abs(RandomSource.nextDouble() / 10));
+            alpha = DVector.from(phi.cols(), row -> Math.abs(parent.getRandom().nextDouble() / 10));
         }
 
         private void updateResults(RVMRegression parent, boolean convergent, int iterations) {

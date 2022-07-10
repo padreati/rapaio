@@ -1,36 +1,34 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.core.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.util.Random;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.StudentT;
 import rapaio.core.distributions.Uniform;
@@ -43,9 +41,15 @@ import rapaio.datasets.Datasets;
  */
 public class KSTestTest {
 
+    private Random random;
+
+    @BeforeEach
+    void beforeEach() {
+        random = new Random(1);
+    }
+
     @Test
     void testPearson() throws IOException {
-        RandomSource.setSeed(1);
         Frame df = Datasets.loadPearsonHeightDataset();
         KSTestTwoSamples test = KSTestTwoSamples.from(df.rvar("Son"), df.rvar("Father"));
 
@@ -55,9 +59,8 @@ public class KSTestTest {
 
     @Test
     void testNormal() {
-        RandomSource.setSeed(1);
         Normal d = Normal.std();
-        VarDouble sample = d.sample(1000);
+        VarDouble sample = d.sample(random, 1000);
         KSTestOneSample test = KSTestOneSample.from(sample, d);
         assertTrue(test.d() < 0.4);
         assertTrue(test.pValue() > 0.08);
@@ -65,8 +68,7 @@ public class KSTestTest {
 
     @Test
     void testUniform() {
-        RandomSource.setSeed(1);
-        VarDouble sample = Uniform.of(0, 1).sample(1_000);
+        VarDouble sample = Uniform.of(0, 1).sample(random, 1_000);
         KSTestOneSample test = KSTestOneSample.from(sample, Normal.std());
         assertTrue(test.d() > 0.4);
         assertTrue(test.pValue() < 0.001);
@@ -74,9 +76,8 @@ public class KSTestTest {
 
     @Test
     void testStudentT() {
-        RandomSource.setSeed(1);
         StudentT d = StudentT.of(3, 0, 1);
-        VarDouble sample = d.sample(1000);
+        VarDouble sample = d.sample(random, 1000);
         KSTestOneSample test = KSTestOneSample.from(sample, Normal.std());
         assertTrue(test.d() > 0.04);
         assertTrue(test.pValue() < 0.05);

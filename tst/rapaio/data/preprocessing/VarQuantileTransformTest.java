@@ -21,14 +21,12 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
@@ -66,7 +64,8 @@ public class VarQuantileTransformTest {
             assertTrue(x.getInt(i - 1) <= x.getInt(i));
         }
 
-        Var y = VarDouble.from(100, row -> row % 7 == 0 ? Double.NaN : RandomSource.nextDouble());
+        Random random = new Random();
+        Var y = VarDouble.from(100, row -> row % 7 == 0 ? Double.NaN : random.nextDouble());
         Var qy = y.fapply(VarQuantileTransform.split(10));
         for (int i = 0; i < y.size(); i++) {
             if (y.isMissing(i)) {

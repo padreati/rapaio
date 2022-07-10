@@ -21,11 +21,10 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
@@ -37,7 +36,6 @@ public class VarRefSortTest {
 
     @Test
     void testSortRef() {
-        RandomSource.setSeed(1);
         Var x1 = VarNominal.copy("z", "q", "a", "b", "d", "c");
         Var x2 = VarDouble.copy(7, 6, 1, 2, 5, 4);
         Var x3 = x2.copy().fapply(VarRefSort.from());

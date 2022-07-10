@@ -21,9 +21,13 @@
 
 package rapaio.ml.model.boost;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
+
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
@@ -31,17 +35,16 @@ import rapaio.ml.loss.L2Loss;
 import rapaio.ml.model.tree.RTree;
 import rapaio.ml.model.tree.rtree.Splitter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/20.
  */
 public class GBTRegressionResultTest {
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(1234);
+        random = new Random(1234);
     }
 
     @Test
@@ -63,7 +66,8 @@ public class GBTRegressionResultTest {
                     double e = loss.errorScore(advertise.rvar("Sales"),
                             info.model().predict(advertise).firstPrediction());
                     err.addDouble(e);
-                });
+                })
+                .seed.set(1234L);
 
         model.fit(advertise, "Sales");
 
@@ -79,21 +83,22 @@ public class GBTRegressionResultTest {
         var advertise = Datasets.loadISLAdvertising().removeVars("ID");
         var model = GBTRegressionModel.newModel()
                 .runs.set(100)
-                .model.set(RTree.newDecisionStump());
+                .model.set(RTree.newDecisionStump())
+                .seed.set(1234L);
 
         assertEquals("GBTRegression", model.name());
 
         assertEquals("GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority," +
-                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}}", model.fullName());
+                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},seed=1234}", model.fullName());
 
         assertEquals("GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority," +
-                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}}; fitted=false", model.toString());
+                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},seed=1234}; fitted=false", model.toString());
 
         assertEquals("""
                 Regression predict summary
                 =======================
                 Model class: GBTRegression
-                Model instance: GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}}
+                Model instance: GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},seed=1234}
                 > model not trained.
 
                 """, model.toSummary());
@@ -107,17 +112,17 @@ public class GBTRegressionResultTest {
 
         assertEquals("GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority," +
                 "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary," +
-                "STRING=Ignore}}}", model.fullName());
+                "STRING=Ignore}},seed=1234}", model.fullName());
 
         assertEquals("GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority," +
-                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}}; " +
+                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},seed=1234}; " +
                 "fitted=true, fitted trees:100", model.toString());
 
         assertEquals("""
                 Regression predict summary
                 =======================
                 Model class: GBTRegression
-                Model instance: GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}}
+                Model instance: GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},seed=1234}
                 > model is trained.
                 > input variables:\s
                 1. TV        dbl\s

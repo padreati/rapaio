@@ -21,15 +21,13 @@
 
 package rapaio.util.collection;
 
-import static rapaio.util.hash.Murmur3.murmur3A;
+import static rapaio.util.hash.Murmur3.*;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import rapaio.core.RandomSource;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.
@@ -45,7 +43,8 @@ public class Int2IntOpenHashMap implements Serializable {
             public int step(int round) {
                 return round;
             }
-        }, QUADRATIC {
+        },
+        QUADRATIC {
             @Override
             public int step(int round) {
                 return round * round;
@@ -59,8 +58,9 @@ public class Int2IntOpenHashMap implements Serializable {
     public static final int DEFAULT_ALLOCATION = 12;
     public static final double DEFAULT_LOAD_FACTOR = 0.75;
     public static final Probing DEFAULT_PROBING = Probing.QUADRATIC;
+    public static final int DEFAULT_SEED = 42;
 
-    private final int seed = RandomSource.nextInt();
+    private final int seed;
     private final double loadFactor;
     private final Probing probing;
 
@@ -68,10 +68,15 @@ public class Int2IntOpenHashMap implements Serializable {
     private int size;
 
     public Int2IntOpenHashMap() {
-        this(DEFAULT_LOAD_FACTOR, DEFAULT_ALLOCATION, DEFAULT_PROBING);
+        this(DEFAULT_SEED, DEFAULT_LOAD_FACTOR, DEFAULT_ALLOCATION, DEFAULT_PROBING);
     }
 
-    public Int2IntOpenHashMap(double loadFactor, int allocation, Probing probing) {
+    public Int2IntOpenHashMap(int seed) {
+        this(seed, DEFAULT_LOAD_FACTOR, DEFAULT_ALLOCATION, DEFAULT_PROBING);
+    }
+
+    public Int2IntOpenHashMap(int seed, double loadFactor, int allocation, Probing probing) {
+        this.seed = seed;
         this.loadFactor = loadFactor;
         this.probing = probing;
 
@@ -181,7 +186,7 @@ public class Int2IntOpenHashMap implements Serializable {
     }
 
     public IntOpenHashSet keySet() {
-        IntOpenHashSet set = new IntOpenHashSet(IntOpenHashSet.DEFAULT_LOAD_FACTOR,
+        IntOpenHashSet set = new IntOpenHashSet(IntOpenHashSet.DEFAULT_SEEED, IntOpenHashSet.DEFAULT_LOAD_FACTOR,
                 Math.max(IntOpenHashSet.DEFAULT_ALLOCATION, (int) Math.ceil(size * IntOpenHashSet.DEFAULT_LOAD_FACTOR)),
                 IntOpenHashSet.DEFAULT_PROBING);
         for (int i = 0; i < array.length; i += 2) {

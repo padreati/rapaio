@@ -21,9 +21,10 @@
 
 package rapaio.ml.model.tree;
 
-import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
+
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
@@ -31,17 +32,10 @@ import rapaio.datasets.Datasets;
 import rapaio.ml.model.tree.ctree.Candidate;
 import rapaio.ml.model.tree.ctree.Node;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.
  */
 public class CTreeTest {
-
-    @BeforeEach
-    void beforeEach() {
-        RandomSource.setSeed(123);
-    }
 
     @Test
     void candidateTest() {
@@ -66,7 +60,7 @@ public class CTreeTest {
     void testBuilderDecisionStump() {
         Frame df = Datasets.loadIrisDataset();
 
-        CTree tree = CTree.newDecisionStump();
+        CTree tree = CTree.newDecisionStump().seed.set(123L);
         assertEquals(1, tree.maxDepth.get());
 
         tree.fit(df, "class");
@@ -89,7 +83,7 @@ public class CTreeTest {
     @Test
     void testPredictorStandard() {
         Frame df = Datasets.loadIrisDataset();
-        CTree tree = CTree.newCART().maxDepth.set(10000).minCount.set(1);
+        CTree tree = CTree.newCART().maxDepth.set(10000).minCount.set(1).seed.set(123L);
         tree.fit(df, "class");
 
         var pred = tree.predict(df, true, true);
@@ -112,14 +106,14 @@ public class CTreeTest {
     void printingTest() {
 
         var iris = Datasets.loadIrisDataset();
-        var model = CTree.newCART().fit(iris, "class");
+        var model = CTree.newCART().fit(iris, "class").seed.set(123L);
 
         assertEquals("""
                 CTree model
                 ================
                                 
                 Description:
-                CTree{purity=GiniGain,splitter=Random,varSelector=VarSelector[ALL]}
+                CTree{purity=GiniGain,seed=123,splitter=Random,varSelector=VarSelector[ALL]}
                                 
                 Capabilities:
                 types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL
@@ -155,6 +149,6 @@ public class CTreeTest {
         assertEquals(model.toContent(), model.toSummary());
         assertEquals(model.toFullContent(), model.toSummary());
 
-        assertEquals("CTree{purity=GiniGain,splitter=Random,varSelector=VarSelector[ALL]}", model.toString());
+        assertEquals("CTree{purity=GiniGain,seed=123,splitter=Random,varSelector=VarSelector[ALL]}", model.toString());
     }
 }

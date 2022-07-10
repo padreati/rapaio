@@ -21,17 +21,14 @@
 
 package rapaio.core.distributions;
 
-import static java.lang.StrictMath.abs;
-import static java.lang.StrictMath.exp;
-import static java.lang.StrictMath.log;
-import static java.lang.StrictMath.sqrt;
+import static java.lang.StrictMath.*;
 
 import static rapaio.math.MathTools.*;
-import static rapaio.printer.Format.floatFlex;
+import static rapaio.printer.Format.*;
 
 import java.io.Serial;
+import java.util.Random;
 
-import rapaio.core.RandomSource;
 import rapaio.printer.Format;
 
 /**
@@ -94,9 +91,10 @@ public record Gamma(double alpha, double beta) implements Distribution {
      * @throws IllegalArgumentException if <tt>alpha <= 0.0 || beta <= 0.0</tt>.
      */
     public Gamma {
-        if (alpha <= 0 || beta <= 0)
+        if (alpha <= 0 || beta <= 0) {
             throw new IllegalArgumentException("Value parameters alpha (" + Format.floatFlex(alpha) +
                     ") and beta (" + Format.floatFlex(beta) + ") parameters should be strictly positive.");
+        }
     }
 
     @Override
@@ -113,18 +111,21 @@ public record Gamma(double alpha, double beta) implements Distribution {
      * Returns the probability distribution function.
      */
     public double pdf(double x) {
-        if (x < 0)
+        if (x < 0) {
             return Double.NaN;
+        }
         if (x == 0) {
-            if (alpha == 1.0)
+            if (alpha == 1.0) {
                 return 1.0 / beta;
+            }
             if (alpha < 1.0) {
                 return Double.POSITIVE_INFINITY;
             }
             return 0.0;
         }
-        if (alpha == 1.0)
+        if (alpha == 1.0) {
             return exp(-x / beta) / beta;
+        }
         return exp((alpha - 1.0) * log(x / beta) - x / beta - lnGamma(alpha)) / beta;
     }
 
@@ -132,19 +133,22 @@ public record Gamma(double alpha, double beta) implements Distribution {
      * Returns the cumulative distribution function.
      */
     public double cdf(double x) {
-        if (x < 0.0)
+        if (x < 0.0) {
             return 0.0;
+        }
         return incGamma(alpha, x / beta);
     }
 
     @Override
     public double quantile(double p) {
-        if (p == 1)
+        if (p == 1) {
             return Double.POSITIVE_INFINITY;
+        }
 
         double cdf0 = cdf(0);
-        if (p <= cdf0)
+        if (p <= cdf0) {
             return 0;
+        }
 
         // unbounded binary search
         double low = 0;
@@ -160,15 +164,18 @@ public record Gamma(double alpha, double beta) implements Distribution {
             double mid = (low + up) / 2;
             double cdf_mid = cdf(mid);
             double err = abs(up - low);
-            if (err <= 1e-20)
+            if (err <= 1e-20) {
                 return up;
+            }
             if (cdf_mid < p) {
-                if (low >= mid)
+                if (low >= mid) {
                     return up;
+                }
                 low = mid;
             } else {
-                if (up <= mid)
+                if (up <= mid) {
                     return up;
+                }
                 up = mid;
             }
         }
@@ -186,6 +193,11 @@ public record Gamma(double alpha, double beta) implements Distribution {
 
     @Override
     public double sampleNext() {
+        return sampleNext(new Random());
+    }
+
+    @Override
+    public double sampleNext(final Random random) {
         /* **********************************************************************
          * * Gamma Distribution - Acceptance Rejection combined with Acceptance Complement * *
          * ***************************************************************** *
@@ -241,17 +253,19 @@ public record Gamma(double alpha, double beta) implements Distribution {
             b = 1.0 + 0.36788794412 * a;
             // Step 1
             for (; ; ) {
-                p = b * RandomSource.nextDouble();
+                p = b * random.nextDouble();
                 if (p <= 1.0) {
                     // Step 2. Case gds <= 1
                     gds = exp(Math.log(p) / a);
-                    if (log(RandomSource.nextDouble()) <= -gds)
+                    if (log(random.nextDouble()) <= -gds) {
                         return (gds / beta1);
+                    }
                 } else {
                     // Step 3. Case gds > 1
                     gds = -log((b - p) / a);
-                    if (log(RandomSource.nextDouble()) <= ((a - 1.0) * log(gds)))
+                    if (log(random.nextDouble()) <= ((a - 1.0) * log(gds))) {
                         return (gds / beta1);
+                    }
                 }
             }
         } else {
@@ -262,20 +276,22 @@ public record Gamma(double alpha, double beta) implements Distribution {
             d = 5.656854249 - 12.0 * s;
             // Step 2. Normal deviate
             do {
-                v1 = 2.0 * RandomSource.nextDouble() - 1.0;
-                v2 = 2.0 * RandomSource.nextDouble() - 1.0;
+                v1 = 2.0 * random.nextDouble() - 1.0;
+                v2 = 2.0 * random.nextDouble() - 1.0;
                 v12 = v1 * v1 + v2 * v2;
             } while (v12 > 1.0);
             t = v1 * sqrt(-2.0 * log(v12) / v12);
             x = s + 0.5 * t;
             gds = x * x;
-            if (t >= 0.0)
+            if (t >= 0.0) {
                 return (gds / beta1); // Immediate acceptance
+            }
 
             // Step 3. Uniform random number
-            u = RandomSource.nextDouble();
-            if (d * u <= t * t * t)
+            u = random.nextDouble();
+            if (d * u <= t * t * t) {
                 return (gds / beta1); // Squeeze acceptance
+            }
 
             // Step 4. Set-up for hat case
             if (a != aaa) {
@@ -309,14 +325,15 @@ public record Gamma(double alpha, double beta) implements Distribution {
                             * ((((((((a9 * v + a8) * v + a7) * v + a6) * v + a5) * v + a4) * v + a3) * v + a2) * v + a1)
                             * v;
                 } // Step 7. Quotient acceptance
-                if (log(1.0 - u) <= q)
+                if (log(1.0 - u) <= q) {
                     return (gds / beta1);
+                }
             }
 
             for (; ; ) { // Step 8. Double exponential deviate t
                 do {
-                    e = -log(RandomSource.nextDouble());
-                    u = RandomSource.nextDouble();
+                    e = -log(random.nextDouble());
+                    u = random.nextDouble();
                     u = u + u - 1.0;
                     sign_u = (u > 0) ? 1.0 : -1.0;
                     t = b + (e * si) * sign_u;
@@ -332,8 +349,9 @@ public record Gamma(double alpha, double beta) implements Distribution {
                             * ((((((((a9 * v + a8) * v + a7) * v + a6) * v + a5) * v + a4) * v + a3) * v + a2) * v + a1)
                             * v;
                 }
-                if (q <= 0.0)
+                if (q <= 0.0) {
                     continue; // Step 11.
+                }
                 if (q > 0.5) {
                     w = exp(q) - 1.0;
                 } else {

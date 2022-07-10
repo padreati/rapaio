@@ -30,7 +30,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
@@ -48,7 +47,6 @@ public class QQPlotTest extends AbstractArtistTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        RandomSource.setSeed(1234);
         df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
         ImageTools.setBestRenderingHints();
     }

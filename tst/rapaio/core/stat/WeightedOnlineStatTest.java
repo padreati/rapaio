@@ -1,33 +1,32 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.core.stat;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Var;
@@ -43,12 +42,12 @@ public class WeightedOnlineStatTest {
     @Test
     void reverseTest() {
 
-        RandomSource.setSeed(124);
+        Random random = new Random(124);
         Uniform unif = Uniform.of(0, 1);
 
         Var x = VarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 10, 20);
 
-        VarDouble w = VarDouble.from(x.size(), row -> unif.sampleNext());
+        VarDouble w = VarDouble.from(x.size(), () -> unif.sampleNext(random));
 
         // normalize w
         w.dv().mul(1.0 / w.dv().nansum());
@@ -69,10 +68,10 @@ public class WeightedOnlineStatTest {
     @Test
     void weightedTest() {
 
-        RandomSource.setSeed(123);
+        Random random = new Random(123);
 
         Normal normal = Normal.of(0, 100);
-        VarDouble x = VarDouble.from(100, normal::sampleNext);
+        VarDouble x = VarDouble.from(100, () -> normal.sampleNext(random));
         VarDouble w = VarDouble.fill(100, 1);
 
         VarDouble wnorm = w.copy();
@@ -104,12 +103,12 @@ public class WeightedOnlineStatTest {
 
         WeightedOnlineStat wosTotal = WeightedOnlineStat.empty();
 
-        RandomSource.setSeed(1234L);
+        Random random = new Random(1234L);
         Normal normal = Normal.of(0, 1);
         Uniform uniform = Uniform.of(0, 1);
 
-        VarDouble x = VarDouble.from(100, normal::sampleNext);
-        VarDouble w = VarDouble.from(100, uniform::sampleNext);
+        VarDouble x = VarDouble.from(100, () -> normal.sampleNext(random));
+        VarDouble w = VarDouble.from(100, () -> uniform.sampleNext(random));
 
         double wsum = Sum.of(w).value();
         for (int i = 0; i < w.size(); i++) {

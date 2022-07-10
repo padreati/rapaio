@@ -1,34 +1,30 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.math.optimization.scalar;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
@@ -36,14 +32,9 @@ import rapaio.util.function.Double2DoubleFunction;
  */
 public class RootFind1DTest {
 
-    @BeforeEach
-    public void beforeEach() {
-        RandomSource.setSeed(42);
-    }
-
-    private final double[] as = new double[]{1, 1, 0, 10 * Math.PI / 180};
-    private final double[] bs = new double[]{2, 2, 3, 280 * Math.PI / 180};
-    private final Double2DoubleFunction[] fs = new Double2DoubleFunction[]{
+    private final double[] as = new double[] {1, 1, 0, 10 * Math.PI / 180};
+    private final double[] bs = new double[] {2, 2, 3, 280 * Math.PI / 180};
+    private final Double2DoubleFunction[] fs = new Double2DoubleFunction[] {
             x -> x * x * x - x - 2,
             x -> x * x * x - x - 3,
             x -> x * x - x - 2,
@@ -52,7 +43,7 @@ public class RootFind1DTest {
 
     @Test
     void testBracketingMethods() {
-        RootFind1D.Method[] methods = new RootFind1D.Method[]{
+        RootFind1D.Method[] methods = new RootFind1D.Method[] {
                 RootFind1D.Method.Bisection,
                 RootFind1D.Method.RegulaFalsi,
                 RootFind1D.Method.Bisection,

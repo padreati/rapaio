@@ -23,8 +23,8 @@ package rapaio.ml.eval.split;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -40,7 +40,7 @@ public record KFold(int rounds, int folds) implements SplitStrategy {
     }
 
     @Override
-    public List<Split> generateSplits(Frame df, Var weights) {
+    public List<Split> generateSplits(Frame df, Var weights, Random random) {
         if (folds > df.rowCount()) {
             throw new IllegalArgumentException("Cannot generate more folds than actual number of observations.");
         }
@@ -56,7 +56,7 @@ public record KFold(int rounds, int folds) implements SplitStrategy {
 
             // distribute rows in folds
             int[] rows = IntArrays.newSeq(0, df.rowCount());
-            IntArrays.shuffle(rows, RandomSource.getRandom());
+            IntArrays.shuffle(rows, random);
             int pos = 0;
             for (int row : rows) {
                 mappings[pos++].add(row);

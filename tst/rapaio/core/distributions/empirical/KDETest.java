@@ -1,35 +1,33 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.core.distributions.empirical;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.data.Var;
@@ -40,13 +38,14 @@ public class KDETest {
     private static final double TOL = 1e-5;
 
     private Var sample;
-    private Var x = VarDouble.seq(-20, 20, 0.01);
+    private final Var x = VarDouble.seq(-20, 20, 0.01);
     private Var y;
+    private Random random;
 
     @BeforeEach
     public void beforeEach() {
-        RandomSource.setSeed(1234);
-        sample = Normal.of(0, 1).sample(1_000);
+        random = new Random(1234);
+        sample = Normal.of(0, 1).sample(random, 1_000);
         y = VarDouble.from(x, Normal.of(0, 1)::pdf);
     }
 
@@ -95,7 +94,7 @@ public class KDETest {
 
     @Test
     void testBuilders() {
-        VarDouble sample = VarDouble.from(100, Normal.std()::sampleNext);
+        VarDouble sample = VarDouble.from(100, () -> Normal.std().sampleNext(random));
 
         assertEquals("KFuncGaussian", KDE.of(sample).kernel().toSummary());
         assertEquals("KFuncGaussian", KDE.of(sample, 10).kernel().toSummary());

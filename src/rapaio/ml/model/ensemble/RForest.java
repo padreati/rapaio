@@ -21,18 +21,16 @@
 
 package rapaio.ml.model.ensemble;
 
+import static com.pivovarit.collectors.ParallelCollectors.*;
+
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Queue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.IntStream;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -114,31 +112,29 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         regressions.clear();
-        Queue<Future<RegressionModel<?, ?, ?>>> futures = new LinkedList<>();
-        for (int i = 0; i < runs.get(); i++) {
-            RowSampler.Sample sample = rowSampler.get().nextSample(df, weights);
-            RegressionModel<?, ?, ?> m = model.get().newInstance();
-            Future<RegressionModel<?, ?, ?>> future = ForkJoinPool.commonPool().submit(new FitTask(sample, m, targetNames));
-            futures.add(future);
-        }
-
-        int run = 1;
-        while (!futures.isEmpty()) {
-            Iterator<Future<RegressionModel<?, ?, ?>>> it = futures.iterator();
-            while (it.hasNext()) {
-                Future<RegressionModel<?, ?, ?>> future = it.next();
-                if (future.isDone()) {
-                    try {
-                        RegressionModel<?, ?, ?> m = future.get();
-                        regressions.add(m);
-                        runningHook.get().accept(RunInfo.forRegression(this, run++));
-                        it.remove();
-                    } catch (InterruptedException | ExecutionException ignored) {
-                    }
-                }
-            }
-        }
+        Random random = getRandom();
+        Random[] randomSources = IntStream.range(0, runs.get())
+                .mapToObj(i -> new Random(random.nextLong()))
+                .toArray(Random[]::new);
+        int threads = computeThreads();
+        ExecutorService executor = Executors.newWorkStealingPool(threads);
+        IntStream.range(0, runs.get()).boxed()
+                .collect(parallelToOrderedStream(s -> buildWeakPredictor(df, weights, s, randomSources[s]), executor, threads))
+                .forEach(info -> {
+                    regressions.add(info.model);
+                    runningHook.get().accept(RunInfo.forRegression(this, info.run));
+                });
+        executor.shutdownNow();
         return true;
+    }
+
+    private record WeakPredictorInfo(RegressionModel<?, ?, ?> model, int run) {
+    }
+
+    private WeakPredictorInfo buildWeakPredictor(Frame df, Var weights, int run, Random random) {
+        RowSampler.Sample sample = rowSampler.get().nextSample(random, df, weights);
+        RegressionModel<?, ?, ?> m = model.get().newInstance();
+        return new WeakPredictorInfo(m.fit(sample.df(), sample.weights(), targetNames), run);
     }
 
     public List<RegressionModel<?, ?, ?>> getFittedModels() {
@@ -161,18 +157,6 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
             fit.buildComplete();
         }
         return fit;
-    }
-
-    private record FitTask(RowSampler.Sample sample, RegressionModel<?, ?, ?> model, String[] targetNames)
-            implements Callable<RegressionModel<?, ?, ?>>, Serializable {
-
-        @Serial
-        private static final long serialVersionUID = -5432992679557031337L;
-
-        @Override
-        public RegressionModel<?, ?, ?> call() {
-            return model.fit(sample.df(), sample.weights(), targetNames);
-        }
     }
 
     @Override

@@ -21,11 +21,10 @@
 
 package rapaio.graphics.plot.artist;
 
-import static java.lang.StrictMath.pow;
+import static java.lang.StrictMath.*;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.Palette.bicolor;
-import static rapaio.graphics.opt.Palette.hue;
+import static rapaio.graphics.opt.Palette.*;
 import static rapaio.sys.With.*;
 
 import java.io.IOException;
@@ -34,7 +33,6 @@ import java.util.function.BiFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.tools.Grid2D;
 import rapaio.data.VarDouble;
 import rapaio.graphics.opt.NColor;
@@ -45,7 +43,6 @@ public class IsoCurvesTest extends AbstractArtistTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        RandomSource.setSeed(1234);
         ImageTools.setBestRenderingHints();
     }
 
@@ -65,7 +62,7 @@ public class IsoCurvesTest extends AbstractArtistTest {
         grid.add(isoBands(gd, levels, palette(hue(0, 240, gd.minValue(), gd.maxValue()))));
 
         grid.add(isoLines(gd, levels, palette(hue())));
-        grid.add(isoCurves(gd, levels, palette(hue())).xLim(-2,2).yLim(-4, 4));
+        grid.add(isoCurves(gd, levels, palette(hue())).xLim(-2, 2).yLim(-4, 4));
 
         assertTest(grid, "isocurves-test");
     }

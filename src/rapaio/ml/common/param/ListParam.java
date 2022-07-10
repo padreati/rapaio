@@ -100,8 +100,8 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
             return false;
         }
         for (int i = 0; i < defaultValues.size(); i++) {
-            if (defaultValues.get(i) instanceof ParametricEquals) {
-                boolean eq = ((ParametricEquals<T>) defaultValues.get(i)).equalOnParams(values.get(i));
+            if (defaultValues.get(i) instanceof ParametricEquals dvi) {
+                boolean eq = dvi.equalOnParams(values.get(i));
                 if (!eq) {
                     return false;
                 }

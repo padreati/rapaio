@@ -21,12 +21,13 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.correlation.CorrPearson;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
@@ -37,15 +38,17 @@ import rapaio.datasets.Datasets;
  */
 public class RandomProjectionTest {
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(1);
+        random = new Random(1);
     }
 
     @Test
     void gausianSDTest() {
 
-        RandomProjection rp = RandomProjection.newGaussianSd(3, VarRange.all()).newInstance();
+        RandomProjection rp = RandomProjection.newGaussianSd(random, 3, VarRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
 
         assertEquals(3, df.varCount());
@@ -60,7 +63,7 @@ public class RandomProjectionTest {
     @Test
     void achioptasTest() {
 
-        RandomProjection rp = RandomProjection.newAchlioptas(3, VarRange.all()).newInstance();
+        RandomProjection rp = RandomProjection.newAchlioptas(random, 3, VarRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
 
         assertEquals(3, df.varCount());
@@ -75,9 +78,7 @@ public class RandomProjectionTest {
 
     @Test
     void achioptas5Test() {
-
-        RandomSource.setSeed(1);
-        RandomProjection rp = RandomProjection.newAchlioptas(3, 5, VarRange.all()).newInstance();
+        RandomProjection rp = RandomProjection.newAchlioptas(random, 3, 5, VarRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
 
         assertEquals(3, df.varCount());

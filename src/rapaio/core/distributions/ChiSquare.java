@@ -21,17 +21,13 @@
 
 package rapaio.core.distributions;
 
-import static java.lang.StrictMath.abs;
-import static java.lang.StrictMath.exp;
-import static java.lang.StrictMath.log;
-import static java.lang.StrictMath.max;
-import static java.lang.StrictMath.sqrt;
+import static java.lang.StrictMath.*;
 
 import static rapaio.math.MathTools.*;
 
 import java.io.Serial;
+import java.util.Random;
 
-import rapaio.core.RandomSource;
 import rapaio.printer.Format;
 
 /**
@@ -75,15 +71,17 @@ public final class ChiSquare implements Distribution {
 
     @Override
     public double pdf(double x) {
-        if (x < 0.0)
+        if (x < 0.0) {
             return 0;
+        }
         return exp((df / 2.0 - 1.0) * log(x / 2.0) - x / 2.0 - lnGamma(df / 2.0)) / 2.0;
     }
 
     @Override
     public double cdf(double x) {
-        if (x < 0.0)
+        if (x < 0.0) {
             return 0.0;
+        }
         return incGamma(df / 2.0, x / 2.0);
     }
 
@@ -155,6 +153,11 @@ public final class ChiSquare implements Distribution {
 
     @Override
     public double sampleNext() {
+        return sampleNext(new Random());
+    }
+
+    @Override
+    public double sampleNext(final Random random) {
         /* *********************************************************************
          * * Chi Distribution - Ratio of Uniforms with shift * *
          * ***************************************************************** *
@@ -171,35 +174,43 @@ public final class ChiSquare implements Distribution {
 
         if (df == 1.0) {
             for (; ; ) {
-                u = RandomSource.nextDouble();
-                v = RandomSource.nextDouble() * 0.857763884960707;
+                u = random.nextDouble();
+                v = random.nextDouble() * 0.857763884960707;
                 z = v / u;
                 zz = z * z;
                 r = 2.5 - zz;
-                if (u < r * 0.3894003915)
+                if (u < r * 0.3894003915) {
                     return (z * z);
-                if (zz > (1.036961043 / u + 1.4))
+                }
+                if (zz > (1.036961043 / u + 1.4)) {
                     continue;
-                if (2.0 * log(u) < (-zz * 0.5))
+                }
+                if (2.0 * log(u) < (-zz * 0.5)) {
                     return (z * z);
+                }
             }
         } else {
             for (; ; ) {
-                u = RandomSource.nextDouble();
-                v = RandomSource.nextDouble() * vd + vm;
+                u = random.nextDouble();
+                v = random.nextDouble() * vd + vm;
                 z = v / u;
-                if (z < -b)
+                if (z < -b) {
                     continue;
+                }
                 zz = z * z;
                 r = 2.5 - zz;
-                if (z < 0.0)
+                if (z < 0.0) {
                     r = r + zz * z / (3.0 * (z + b));
-                if (u < r * 0.3894003915)
+                }
+                if (u < r * 0.3894003915) {
                     return ((z + b) * (z + b));
-                if (zz > (1.036961043 / u + 1.4))
+                }
+                if (zz > (1.036961043 / u + 1.4)) {
                     continue;
-                if (2.0 * log(u) < (log(1.0 + z / b) * b * b - zz * 0.5 - z * b))
+                }
+                if (2.0 * log(u) < (log(1.0 + z / b) * b * b - zz * 0.5 - z * b)) {
                     return ((z + b) * (z + b));
+                }
             }
         }
     }

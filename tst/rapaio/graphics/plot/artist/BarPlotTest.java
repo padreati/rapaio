@@ -25,11 +25,11 @@ import static rapaio.graphics.Plotter.*;
 import static rapaio.sys.With.*;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
@@ -41,9 +41,11 @@ import rapaio.graphics.plot.GridLayer;
 
 public class BarPlotTest extends AbstractArtistTest {
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(42);
+        random = new Random(42);
     }
 
     @Test
@@ -72,21 +74,21 @@ public class BarPlotTest extends AbstractArtistTest {
                     String[] categories = new String[] {"categ1", "categ2"};
                     VarNominal v = VarNominal.empty(0, "category");
                     for (int i = 0; i < size; i++) {
-                        v.addLabel(categories[RandomSource.nextInt(categories.length)]);
+                        v.addLabel(categories[random.nextInt(categories.length)]);
                     }
                     return v;
                 },
                 size -> {
                     VarBinary categories = VarBinary.empty().name("category");
                     for (int i = 0; i < size; i++) {
-                        categories.addInt(RandomSource.nextDouble() > 0.5 ? 1 : 0);
+                        categories.addInt(random.nextDouble() > 0.5 ? 1 : 0);
                     }
                     return categories;
                 },
                 size -> {
                     VarInt categories = VarInt.empty().name("categories");
                     for (int i = 0; i < size; i++) {
-                        categories.addInt(RandomSource.nextInt(4) + 1);
+                        categories.addInt(random.nextInt(4) + 1);
                     }
                     return categories;
                 }
@@ -97,21 +99,21 @@ public class BarPlotTest extends AbstractArtistTest {
                     String[] categories = new String[] {"cond1", "cond2", "cond3"};
                     VarNominal v = VarNominal.empty(0, "condition");
                     for (int i = 0; i < size; i++) {
-                        v.addLabel(categories[RandomSource.nextInt(categories.length)]);
+                        v.addLabel(categories[random.nextInt(categories.length)]);
                     }
                     return v;
                 },
                 size -> {
                     VarBinary categories = VarBinary.empty().name("condition");
                     for (int i = 0; i < size; i++) {
-                        categories.addInt(RandomSource.nextDouble() > 0.5 ? 1 : 0);
+                        categories.addInt(random.nextDouble() > 0.5 ? 1 : 0);
                     }
                     return categories;
                 },
                 size -> {
                     VarInt categories = VarInt.empty().name("condition");
                     for (int i = 0; i < size; i++) {
-                        categories.addInt(RandomSource.nextInt(4) + 1);
+                        categories.addInt(random.nextInt(4) + 1);
                     }
                     return categories;
                 }

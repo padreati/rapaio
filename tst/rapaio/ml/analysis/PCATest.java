@@ -22,15 +22,14 @@
 package rapaio.ml.analysis;
 
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
@@ -49,10 +48,16 @@ public class PCATest {
     private static final double TOL = 1e-8;
     private static Frame df;
 
+    private Random random;
+
     @BeforeAll
     static void beforeAll() throws Exception {
-        RandomSource.setSeed(123);
         df = Csv.instance().read(PCATest.class.getResourceAsStream("pca.csv")).removeVars("y");
+    }
+
+    @BeforeEach
+    void beforeEach() {
+        random = new Random(42);
     }
 
     @Test
@@ -63,10 +68,10 @@ public class PCATest {
         PCA pca = PCA.newModel().center.set(true);
         pca.fit(df);
 
-        assertArrayEquals(new double[]{1.67100943, 0.83832597, 0.68195393},
+        assertArrayEquals(new double[] {1.67100943, 0.83832597, 0.68195393},
                 pca.getValues().valueStream().toArray(), TOL);
 
-        double[][] eigenvectors = new double[][]{
+        double[][] eigenvectors = new double[][] {
                 {-0.49210223, -0.64670286, 0.58276136},
                 {-0.47927902, -0.35756937, -0.8015209},
                 {-0.72672348, 0.67373552, 0.13399043}
@@ -78,7 +83,7 @@ public class PCATest {
         }
 
         Frame prediction = pca.transform("pca_", df.removeVars(VarRange.of("y")), 3);
-        double[] first_row = new double[]{-0.77536344, -1.00011356, 1.61721809};
+        double[] first_row = new double[] {-0.77536344, -1.00011356, 1.61721809};
         for (int i = 0; i < first_row.length; i++) {
             assertEquals(Math.abs(first_row[i]), Math.abs(prediction.getDouble(0, i)), 1e-6);
         }
@@ -113,15 +118,17 @@ public class PCATest {
         Frame pca2 = pca.transform("pca_", x, 2).bindVars(iris.rvar("class"));
         Frame pca4 = pca.transform("pca_", x, 4).bindVars(iris.rvar("class"));
 
-        CForest rf2 = CForest.newModel().poolSize.set(0).runs.set(20);
-        CForest rf4 = CForest.newModel().poolSize.set(0).runs.set(20);
+        long seed = 2639493980909470186L;
 
+        CForest rf2 = CForest.newModel().poolSize.set(-1).runs.set(20).seed.set(seed);
+        CForest rf4 = CForest.newModel().poolSize.set(-1).runs.set(20).seed.set(seed);
         var fit1 = rf2.fit(pca2, "class").predict(pca2);
         var fit2 = rf4.fit(pca4, "class").predict(pca4);
 
-        double acc1 = Confusion.from(iris.rvar("class"), fit1.firstClasses()).accuracy();
-        double acc2 = Confusion.from(iris.rvar("class"), fit2.firstClasses()).accuracy();
-
+        var c1 = Confusion.from(iris.rvar("class"), fit1.firstClasses());
+        var c2 = Confusion.from(iris.rvar("class"), fit2.firstClasses());
+        var acc1 = c1.accuracy();
+        var acc2 = c2.accuracy();
         assertTrue(acc1 < acc2);
     }
 

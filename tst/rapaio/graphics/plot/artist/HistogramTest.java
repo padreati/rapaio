@@ -29,7 +29,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -44,7 +43,6 @@ public class HistogramTest extends AbstractArtistTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        RandomSource.setSeed(1234);
         df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
         ImageTools.setBestRenderingHints();
     }
@@ -69,6 +67,6 @@ public class HistogramTest extends AbstractArtistTest {
         Frame iris = Datasets.loadIrisDataset();
         var v = iris.rvar("sepal-length");
         assertTest(hist(v, bins(30), prob(true), fill(NColor.tab_purple))
-                .densityLine(v, (v.dv().max() - v.dv().min())/15), "hist-density-test");
+                .densityLine(v, (v.dv().max() - v.dv().min()) / 15), "hist-density-test");
     }
 }

@@ -24,6 +24,7 @@ package rapaio.ml.model.boost;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -107,6 +108,8 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
     @Override
     public boolean coreFit(Frame df, Var weights) {
 
+        Random random = getRandom();
+
         // algorithm described by ESTL pag. 387
 
         K = firstTargetLevels().size() - 1;
@@ -124,7 +127,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         }
 
         for (int m = 0; m < runs.get(); m++) {
-            buildAdditionalTree(df, weights, yk);
+            buildAdditionalTree(random, df, weights, yk);
             if (runningHook.get() != null) {
                 runningHook.get().accept(RunInfo.forClassifier(this, m));
             }
@@ -132,7 +135,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         return true;
     }
 
-    private void buildAdditionalTree(Frame df, Var w, DMatrix yk) {
+    private void buildAdditionalTree(Random random, Frame df, Var w, DMatrix yk) {
 
         // a) Set p_k(x)
 
@@ -152,7 +155,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         // b)
 
         Frame x = df.removeVars(targetNames);
-        RowSampler.Sample sample = rowSampler.get().nextSample(x, w);
+        RowSampler.Sample sample = rowSampler.get().nextSample(random, x, w);
 
         for (int k = 0; k < K; k++) {
 

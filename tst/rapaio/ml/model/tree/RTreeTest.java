@@ -21,19 +21,17 @@
 
 package rapaio.ml.model.tree;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -42,8 +40,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.data.sample.RowSampler;
 import rapaio.data.preprocessing.RefSort;
+import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.RMSE;
@@ -62,10 +60,11 @@ import rapaio.ml.model.tree.rtree.Splitter;
 public class RTreeTest {
 
     private static final double TOL = 1e-20;
+    private Random random;
 
     @BeforeEach
     void setUp() {
-        RandomSource.setSeed(12434);
+        random = new Random(12434);
     }
 
     @Test
@@ -88,7 +87,8 @@ public class RTreeTest {
                 .poolSize.set(10)
                 .rowSampler.set(RowSampler.bootstrap())
                 .runningHook.set(myRunningHook)
-                .stoppingHook.set(myStoppingHook);
+                .stoppingHook.set(myStoppingHook)
+                .seed.set(12434L);
         RTree rt2 = rt1.newInstance();
 
         assertEquals("RTree", rt2.name());
@@ -108,7 +108,7 @@ public class RTreeTest {
         assertNull(rt2.root());
 
         assertEquals("RTree{maxDepth=2,maxSize=10,poolSize=10,rowSampler=Bootstrap(p=1)," +
-                "runningHook=Consumer(),runs=10,stopHook=Function()," +
+                "runningHook=Consumer(),runs=10,seed=12434,stopHook=Function()," +
                 "testMap={BINARY=Ignore,INT=Ignore,NOMINAL=Ignore,DOUBLE=Ignore,LONG=Ignore,STRING=Ignore}," +
                 "varSelector=VarSelector[AUTO]}", rt2.fullName());
 
@@ -136,12 +136,13 @@ public class RTreeTest {
 
         RTree tree = RTree.newCART()
                 .maxDepth.set(10)
-                .minCount.set(4);
+                .minCount.set(4)
+                .seed.set(12434L);
         tree.fit(t, "Sales");
 
         assertEquals("""
 
-                 > RTree{maxDepth=10,minCount=4,splitter=Random,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}
+                 > RTree{maxDepth=10,minCount=4,seed=12434,splitter=Random,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}
                  model fitted: true
 
                 description:
@@ -216,21 +217,21 @@ public class RTreeTest {
 
         // first region - target 0
         for (int i = 0; i < 100; i++) {
-            vars[0].addDouble(RandomSource.nextDouble());
+            vars[0].addDouble(random.nextDouble());
             vars[1].addLabel("a");
             vars[2].addDouble(0);
         }
 
         // second region separated in x - target 1
         for (int i = 0; i < 100; i++) {
-            vars[0].addDouble(RandomSource.nextDouble() + 10);
+            vars[0].addDouble(random.nextDouble() + 10);
             vars[1].addLabel("a");
             vars[2].addDouble(1);
         }
 
         // third region separated by cat - target 2
         for (int i = 0; i < 100; i++) {
-            vars[0].addDouble(RandomSource.nextDouble() * 3);
+            vars[0].addDouble(random.nextDouble() * 3);
             vars[1].addLabel("b");
             vars[2].addDouble(2);
         }

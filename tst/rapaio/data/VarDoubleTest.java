@@ -21,10 +21,7 @@
 
 package rapaio.data;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import static rapaio.sys.With.*;
 
@@ -32,13 +29,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.sys.WS;
 
@@ -49,9 +46,11 @@ public class VarDoubleTest {
 
     private static final double TOL = 1e-20;
 
+    private Random random;
+
     @BeforeEach
     void setUp() {
-        RandomSource.setSeed(134);
+        random = new Random(134);
     }
 
     @Test
@@ -71,7 +70,7 @@ public class VarDoubleTest {
 
     @Test
     void testStaticBuilders() {
-        int[] sourceIntArray = IntStream.range(0, 100).map(i -> (i % 10 == 0) ? Integer.MIN_VALUE : RandomSource.nextInt(100)).toArray();
+        int[] sourceIntArray = IntStream.range(0, 100).map(i -> (i % 10 == 0) ? Integer.MIN_VALUE : random.nextInt(100)).toArray();
         List<Integer> sourceIntList = Arrays.stream(sourceIntArray).boxed().collect(Collectors.toList());
 
         VarDouble copy = VarDouble.copy(sourceIntArray);
@@ -83,7 +82,8 @@ public class VarDoubleTest {
         assertTrue(copy.deepEquals(VarDouble.copy(copy)));
         assertTrue(copy.deepEquals(VarDouble.copy(VarInt.wrap(sourceIntArray))));
 
-        double[] sourceDoubleArray = IntStream.range(0, 100).mapToDouble(i -> (i % 10 == 0) ? Double.NaN : RandomSource.nextDouble()).toArray();
+        double[] sourceDoubleArray =
+                IntStream.range(0, 100).mapToDouble(i -> (i % 10 == 0) ? Double.NaN : random.nextDouble()).toArray();
         List<Double> sourceDoubleList = Arrays.stream(sourceDoubleArray).boxed().toList();
 
         VarDouble dcopy = VarDouble.copy(sourceDoubleArray);
@@ -170,7 +170,7 @@ public class VarDoubleTest {
 
     @Test
     void testSetLeveles() {
-        var ex = assertThrows(RuntimeException.class, () -> VarDouble.scalar(10).setLevels(new String[]{}));
+        var ex = assertThrows(RuntimeException.class, () -> VarDouble.scalar(10).setLevels(new String[] {}));
         assertEquals("Operation not available for double vectors.", ex.getMessage());
     }
 
@@ -272,7 +272,7 @@ public class VarDoubleTest {
         var.addLabel("-Inf");
         var.addLabel("-10.3");
 
-        double[] expected = new double[]{
+        double[] expected = new double[] {
                 Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, -10.3,
                 Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, -10.3};
         for (int i = 0; i < expected.length; i++) {
@@ -284,7 +284,7 @@ public class VarDoubleTest {
     void testCollector() {
         List<Double> list = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            list.add(RandomSource.nextDouble() * 100);
+            list.add(random.nextDouble() * 100);
         }
         VarDouble copy = list.stream().collect(VarDouble.collector());
         for (int i = 0; i < list.size(); i++) {
@@ -294,14 +294,15 @@ public class VarDoubleTest {
 
     @Test
     void testString() {
-        Var x = VarDouble.from(10, row -> (row % 4 == 0) ? Double.NaN : Normal.std().sampleNext());
+        Var x = VarDouble.from(10, row -> (row % 4 == 0) ? Double.NaN : Normal.std().sampleNext(random));
 
-        assertEquals("VarDouble [name:\"?\", rowCount:10, values: ?, 0.6503131914222008, 1.1647628389666604, 0.7719984559060187, ?, 2.1236947978859986, 1.6546944254696838, 0.12053767260217511, ?, -0.01950154486410645]",
+        assertEquals(
+                "VarDouble [name:\"?\", rowCount:10, values: ?, 0.6503131914222008, 1.1647628389666604, 0.7719984559060187, ?, 2.1236947978859986, 1.6546944254696838, 0.12053767260217511, ?, -0.01950154486410645]",
                 x.toString());
 
         WS.getPrinter().withOptions(textWidth(100));
 
-        x = VarDouble.from(200, row -> (row % 4 == 0) ? Double.NaN : Normal.std().sampleNext());
+        x = VarDouble.from(200, row -> (row % 4 == 0) ? Double.NaN : Normal.std().sampleNext(random));
         assertEquals("""
                 VarDouble [name:"?", rowCount:200]
                  row          value          row          value          row          value        \s

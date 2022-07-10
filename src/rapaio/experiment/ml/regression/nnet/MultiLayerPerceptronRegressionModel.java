@@ -21,12 +21,12 @@
 
 package rapaio.experiment.ml.regression.nnet;
 
-import static rapaio.printer.Format.floatFlex;
+import static rapaio.printer.Format.*;
 
 import java.io.Serial;
 import java.util.Arrays;
+import java.util.Random;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
@@ -163,7 +163,7 @@ public class MultiLayerPerceptronRegressionModel
 
         int pos;
         for (int kk = 0; kk < runs; kk++) {
-            pos = RandomSource.nextInt(df.rowCount());
+            pos = new Random().nextInt(df.rowCount());
 
             // set inputs
             for (int i = 0; i < inputNames().length; i++) {
@@ -265,7 +265,7 @@ public class MultiLayerPerceptronRegressionModel
 @Deprecated
 class NetNode {
 
-    double value = RandomSource.nextDouble() / 10.;
+    double value = new Random().nextDouble() / 10.;
     NetNode[] inputs;
     double[] weights;
     double gamma;
@@ -278,7 +278,7 @@ class NetNode {
         }
         this.weights = new double[inputs.length];
         for (int i = 0; i < weights.length; i++) {
-            weights[i] = RandomSource.nextDouble() / 10.;
+            weights[i] = new Random().nextDouble() / 10.;
         }
     }
 }

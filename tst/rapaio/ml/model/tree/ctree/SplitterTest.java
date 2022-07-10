@@ -21,10 +21,10 @@
 
 package rapaio.ml.model.tree.ctree;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,8 +48,11 @@ public class SplitterTest {
     private Var w;
     private Candidate c;
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
+        random = new Random(42);
         VarDouble values = VarDouble.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
         df = SolidFrame.byVars(values.copy().name("x"));
         w = values.fapply(VarApply.onDouble(x -> Double.isNaN(x) ? 1 : Math.abs(x))).name("w");
@@ -60,7 +63,7 @@ public class SplitterTest {
 
     @Test
     void testIgnored() {
-        Pair<List<Frame>, List<Var>> pairs = Splitter.Ignore.performSplit(df, w, c.groupPredicates());
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Ignore.performSplit(df, w, c.groupPredicates(), random);
         assertEquals(2, pairs.v1.size());
         assertEquals(2, pairs.v2.size());
 
@@ -73,7 +76,7 @@ public class SplitterTest {
 
     @Test
     void testMajority() {
-        Pair<List<Frame>, List<Var>> pairs = Splitter.Majority.performSplit(df, w, c.groupPredicates());
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Majority.performSplit(df, w, c.groupPredicates(), random);
 
         assertEquals(2, pairs.v1.size());
         assertEquals(2, pairs.v2.size());
@@ -87,7 +90,7 @@ public class SplitterTest {
 
     @Test
     void testToAllWeighted() {
-        Pair<List<Frame>, List<Var>> pairs = Splitter.Weighted.performSplit(df, w, c.groupPredicates());
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Weighted.performSplit(df, w, c.groupPredicates(), random);
 
         assertEquals(2, pairs.v1.size());
         assertEquals(2, pairs.v2.size());
@@ -104,7 +107,7 @@ public class SplitterTest {
 
     @Test
     void testToRandom() {
-        Pair<List<Frame>, List<Var>> pairs = Splitter.Random.performSplit(df, w, c.groupPredicates());
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Random.performSplit(df, w, c.groupPredicates(), random);
 
         assertEquals(2, pairs.v1.size());
         assertEquals(2, pairs.v2.size());

@@ -22,13 +22,13 @@
 package rapaio.ml.model.tree.ctree;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarBinary;
@@ -43,6 +43,8 @@ import rapaio.ml.model.tree.CTree;
 public class SearchTest {
 
     private Frame play;
+
+    private Random random;
 
     @BeforeEach
     void beforeEach() {
@@ -63,7 +65,7 @@ public class SearchTest {
 [12]     rain  68     80    ?       play
 [13]     rain  70     96    false   play
      */
-        RandomSource.setSeed(123);
+        random = new Random(123);
 
         play = Datasets.loadPlay();
         play.setMissing(2, "outlook");
@@ -74,7 +76,7 @@ public class SearchTest {
 
     @Test
     void ignoreTest() {
-        assertNull(Search.Ignore.computeCandidate(null, play, null, "temp", "class", Purity.GiniGain));
+        assertNull(Search.Ignore.computeCandidate(null, play, null, "temp", "class", Purity.GiniGain, new Random()));
     }
 
     @Test
@@ -82,7 +84,7 @@ public class SearchTest {
 
         var candidate = Search.NumericRandom.computeCandidate(
                 CTree.newDecisionStump().missingPenalty.set(false),
-                play, VarDouble.fill(play.rowCount(), 1.0), "temp", "class", Purity.GiniGain);
+                play, VarDouble.fill(play.rowCount(), 1.0), "temp", "class", Purity.GiniGain, random);
 
         assertEquals("temp", candidate.testName());
         assertEquals(2, candidate.groupPredicates().size());
@@ -95,8 +97,8 @@ public class SearchTest {
     void numericRandomTestWithPenalty() {
 
         var candidate = Search.NumericRandom.computeCandidate(
-                CTree.newDecisionStump().missingPenalty.set(true),
-                play, VarDouble.fill(play.rowCount(), 1.0), "temp", "class", Purity.GiniGain);
+                CTree.newDecisionStump().missingPenalty.set(true), play, VarDouble.fill(play.rowCount(), 1.0), "temp", "class",
+                Purity.GiniGain, random);
 
         assertEquals("temp", candidate.testName());
         assertEquals(2, candidate.groupPredicates().size());
@@ -113,8 +115,7 @@ public class SearchTest {
         );
 
         var candidate = Search.Binary.computeCandidate(
-                CTree.newDecisionStump().missingPenalty.set(false),
-                df, null, "x", "y", Purity.GiniGain);
+                CTree.newDecisionStump().missingPenalty.set(false), df, null, "x", "y", Purity.GiniGain, random);
 
         assertEquals("x", candidate.testName());
         assertEquals(2, candidate.groupPredicates().size());
@@ -131,8 +132,7 @@ public class SearchTest {
         );
 
         var candidate = Search.Binary.computeCandidate(
-                CTree.newDecisionStump().missingPenalty.set(true),
-                df, VarDouble.fill(6, 1), "x", "y", Purity.GiniGain);
+                CTree.newDecisionStump().missingPenalty.set(true), df, VarDouble.fill(6, 1), "x", "y", Purity.GiniGain, random);
 
         assertEquals("x", candidate.testName());
         assertEquals(2, candidate.groupPredicates().size());
@@ -144,8 +144,8 @@ public class SearchTest {
     @Test
     void numericBinaryTest() {
         var candidate = Search.NumericBinary.computeCandidate(
-                CTree.newDecisionStump().minCount.set(2),
-                play, VarDouble.fill(play.rowCount(), 1.0), "temp", "class", Purity.GiniGain);
+                CTree.newDecisionStump().minCount.set(2), play, VarDouble.fill(play.rowCount(), 1.0), "temp", "class", Purity.GiniGain,
+                random);
 
         assertEquals("temp", candidate.testName());
         assertEquals("temp<=70.5", candidate.groupPredicates().get(0).toString());
@@ -154,7 +154,7 @@ public class SearchTest {
     @Test
     void nominalFullTest() {
         var candidate = Search.NominalFull.computeCandidate(CTree.newDecisionStump().minCount.set(1),
-                play, VarDouble.fill(play.rowCount(), 1), "outlook", "class", Purity.GiniGain);
+                play, VarDouble.fill(play.rowCount(), 1), "outlook", "class", Purity.GiniGain, random);
 
         assertEquals("outlook", candidate.testName());
         assertEquals("outlook='sunny'", candidate.groupPredicates().get(0).toString());
@@ -166,7 +166,7 @@ public class SearchTest {
     void nominalBinary() {
 
         var candidate = Search.NominalBinary.computeCandidate(CTree.newDecisionStump(),
-                play, VarDouble.fill(play.rowCount(), 1), "outlook", "class", Purity.GiniGain);
+                play, VarDouble.fill(play.rowCount(), 1), "outlook", "class", Purity.GiniGain, random);
 
         assertEquals("outlook", candidate.testName());
         assertEquals(2, candidate.groupPredicates().size());
@@ -177,8 +177,7 @@ public class SearchTest {
         var target = VarNominal.copy("1", "1", "1", "0", "0", "1", "1", "0").name("target");
 
         candidate = Search.NominalBinary.computeCandidate(CTree.newDecisionStump(),
-                SolidFrame.byVars(test, target), VarDouble.fill(8, 1), "test", "target", Purity.GiniGain
-        );
+                SolidFrame.byVars(test, target), VarDouble.fill(8, 1), "test", "target", Purity.GiniGain, random);
 
         assertEquals("test", candidate.testName());
         assertEquals(0.26041666666666674, candidate.score());
@@ -191,8 +190,7 @@ public class SearchTest {
         target = VarNominal.copy("1", "1", "1", "0", "0", "2", "2", "0").name("target");
 
         candidate = Search.NominalBinary.computeCandidate(CTree.newDecisionStump(),
-                SolidFrame.byVars(test, target), VarDouble.fill(8, 1), "test", "target", Purity.GiniGain
-        );
+                SolidFrame.byVars(test, target), VarDouble.fill(8, 1), "test", "target", Purity.GiniGain, random);
 
         assertEquals("test", candidate.testName());
         assertEquals(0.35625, candidate.score());
@@ -204,7 +202,7 @@ public class SearchTest {
         target = VarNominal.copy("1", "1", "1", "0", "0", "0", "0", "2", "2", "0").name("target");
 
         candidate = Search.NominalBinary.computeCandidate(CTree.newDecisionStump().minCount.set(5),
-                SolidFrame.byVars(test, target), VarDouble.fill(10, 1), "test", "target", Purity.GiniGain);
+                SolidFrame.byVars(test, target), VarDouble.fill(10, 1), "test", "target", Purity.GiniGain, random);
         assertNull(candidate);
     }
 }

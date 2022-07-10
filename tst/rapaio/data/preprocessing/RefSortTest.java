@@ -21,7 +21,9 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +37,7 @@ public class RefSortTest {
     @Test
     void testRefSort() {
 
-        Frame src = TransformTestUtil.allDoubleNominal(10, 2, 2);
+        Frame src = TransformTestUtil.allDoubleNominal(new Random(), 10, 2, 2);
 
         Frame sort1 = src.fapply(RefSort.by(src.rvar("v2").refComparator()));
         Frame sort2 = sort1.fapply(RefSort.by(sort1.rvar("v1").refComparator()));

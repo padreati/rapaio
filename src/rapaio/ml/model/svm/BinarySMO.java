@@ -21,14 +21,14 @@
 
 package rapaio.ml.model.svm;
 
-import static rapaio.printer.Format.floatFlex;
+import static rapaio.printer.Format.*;
 
 import java.io.Serial;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -187,6 +187,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
 
     @Override
     protected boolean coreFit(Frame initDf, Var initWeights) {
+        Random random = getRandom();
         State s = new State();
         prepareDataset(s, initDf, initWeights);
         initialize(s);
@@ -203,7 +204,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
             if (examineAll) {
 
                 // add random as an additional step
-                int offset = RandomSource.nextInt(train.rowCount());
+                int offset = random.nextInt(train.rowCount());
                 for (int i = offset; i < train.rowCount() + offset; i++) {
                     int pos = i;
                     if (pos >= train.rowCount()) {
@@ -218,7 +219,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
 
                 if ("Keerthi1".equals(solver.get())) {
                     // This code implements Modification 1 from Keerthi et al.'s paper
-                    int offset = RandomSource.nextInt(train.rowCount());
+                    int offset = random.nextInt(train.rowCount());
                     for (int i = offset; i < train.rowCount() + offset; i++) {
 
                         int pos = i;

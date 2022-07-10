@@ -23,6 +23,7 @@ package rapaio.ml.model.simple;
 
 import java.io.Serial;
 import java.util.Objects;
+import java.util.Random;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Uniform;
@@ -87,8 +88,9 @@ public class RandomValueRegression extends RegressionModel<RandomValueRegression
     @Override
     protected RegressionResult corePredict(final Frame df, final boolean withResiduals, final double[] quantiles) {
         RegressionResult pred = RegressionResult.build(this, df, withResiduals, quantiles);
+        Random random = getRandom();
         for (String targetName : targetNames()) {
-            pred.prediction(targetName).stream().forEach(s -> s.setDouble(distribution.get().sampleNext()));
+            pred.prediction(targetName).stream().forEach(s -> s.setDouble(distribution.get().sampleNext(random)));
         }
         pred.buildComplete();
         return pred;

@@ -21,11 +21,10 @@
 
 package rapaio.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,15 +42,17 @@ import rapaio.util.collection.DoubleArrays;
  */
 public class SamplingToolsTest {
 
+    private Random random;
+
     @BeforeEach
     void setUp() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
     }
 
     @Test
     void testSampleWR() {
         final int N = 1000;
-        int[] sample = SamplingTools.sampleWR(10, N);
+        int[] sample = SamplingTools.sampleWR(random, 10, N);
         assertEquals(N, sample.length);
         for (int aSample : sample) {
             assertTrue(aSample >= 0);
@@ -86,7 +87,7 @@ public class SamplingToolsTest {
     @Test
     void testSamplingWeightedWOR() {
 
-        double[] w = new double[]{0.4, 0.3, 0.2, 0.06, 0.03, 0.01};
+        double[] w = new double[] {0.4, 0.3, 0.2, 0.06, 0.03, 0.01};
         var freq = DensityVector.emptyByLabels(w.length);
 
         final int TRIALS = 10_000;
@@ -118,26 +119,26 @@ public class SamplingToolsTest {
 
     @Test
     void testInvalidNegativeProbabilities() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(2, new double[]{-1, 1}));
+        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(2, new double[] {-1, 1}));
         assertEquals("Frequencies must be positive.", ex.getMessage());
     }
 
     @Test
     void testInvalidSizeWeightedWOR() {
         var ex = assertThrows(IllegalArgumentException.class,
-                () -> SamplingTools.sampleWeightedWOR(20, new double[]{0.1, 0.2, 0.3, 0.4}));
+                () -> SamplingTools.sampleWeightedWOR(20, new double[] {0.1, 0.2, 0.3, 0.4}));
         assertEquals("Required sample size is bigger than population size.", ex.getMessage());
     }
 
     @Test
     void testInvalidSumZeroWeightedWR() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(2, new double[]{0, 0}));
+        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(2, new double[] {0, 0}));
         assertEquals("Sum of frequencies must be strict positive.", ex.getMessage());
     }
 
     @Test
     void testSampleWeightedWR() {
-        double[] w = new double[]{0.002, 0.018, 0.18, 1.8};
+        double[] w = new double[] {0.002, 0.018, 0.18, 1.8};
         var freq = DensityVector.emptyByLabels(w.length);
         final int TRIALS = 10_000;
         final int SAMPLES = 100;
@@ -155,7 +156,7 @@ public class SamplingToolsTest {
 
         Frame df = SolidFrame.byVars(VarDouble.seq(100).name("x"));
 
-        double[] freq = new double[]{0.127, 0.5, 0.333};
+        double[] freq = new double[] {0.127, 0.5, 0.333};
         Frame[] frames = SamplingTools.randomSampleSlices(df, freq);
 
         for (int i = 0; i < frames.length - 1; i++) {
@@ -179,7 +180,7 @@ public class SamplingToolsTest {
 
         double[] p = new double[3];
         Arrays.fill(p, 1. / 3);
-        Frame[] strata = SamplingTools.randomSampleStratifiedSplit(df, "strata", p);
+        Frame[] strata = SamplingTools.randomSampleStratifiedSplit(random, df, "strata", p);
 
         for (Frame st : strata) {
             ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(st.rvar("strata"), VarDouble.wrap(p));

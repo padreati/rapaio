@@ -1,42 +1,40 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.ml.model.svm;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.logging.Level;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.svm.libsvm.svm;
 import rapaio.experiment.ml.svm.libsvm.svm_model;
 import rapaio.experiment.ml.svm.libsvm.svm_predict;
 import rapaio.experiment.ml.svm.libsvm.svm_train;
@@ -72,7 +70,7 @@ public class SvmClassifierTest {
                 "-g", "0.7",
                 "-c", "10",
                 "-b", "1"};
-        RandomSource.setSeed(42);
+        svm.rand = new Random(42);
         svm_model model = t.run(xs, ys, argv);
         svm_predict.Prediction pred = svm_predict.predict(model, xs, 1);
 
@@ -80,8 +78,8 @@ public class SvmClassifierTest {
                 .type.set(SvmClassifier.Penalty.C)
                 .c.set(10.0)
                 .probability.set(true)
-                .kernel.set(new RBFKernel(0.7));
-        RandomSource.setSeed(42);
+                .kernel.set(new RBFKernel(0.7))
+                .seed.set(42L);
         ClassifierResult cpred = c.fit(iris, "class").predict(iris);
         DMatrix cdensity = DMatrix.copy(cpred.firstDensity()).removeCols(0);
 
@@ -100,7 +98,7 @@ public class SvmClassifierTest {
                 "-g", "0.7",
                 "-c", "10",
                 "-b", "0"};
-        RandomSource.setSeed(42);
+        svm.rand = new Random(42);
         svm_model model = t.run(xs, ys, argv);
         svm_predict.Prediction pred = svm_predict.predict(model, xs, 1);
 
@@ -108,9 +106,9 @@ public class SvmClassifierTest {
                 .type.set(SvmClassifier.Penalty.C)
                 .c.set(10.0)
                 .probability.set(false)
-                .kernel.set(new RBFKernel(0.7));
+                .kernel.set(new RBFKernel(0.7))
+                .seed.set(42L);
 
-        RandomSource.setSeed(42);
         ClassifierResult cpred = c.fit(iris, "class").predict(iris, true, true);
         for (int i = 0; i < pred.classes().length; i++) {
             int cls = (int) pred.classes()[i];
@@ -127,15 +125,15 @@ public class SvmClassifierTest {
                 "-n", "0.1",
                 "-b", "1"};
         svm_model model = t.run(xs, ys, argv);
-        RandomSource.setSeed(42);
+        svm.rand = new Random(42);
         svm_predict.Prediction pred = svm_predict.predict(model, xs, 1);
 
         SvmClassifier c = new SvmClassifier()
                 .type.set(SvmClassifier.Penalty.NU)
                 .nu.set(.1)
                 .probability.set(true)
-                .kernel.set(new RBFKernel(0.7));
-        RandomSource.setSeed(42);
+                .kernel.set(new RBFKernel(0.7))
+                .seed.set(42L);
         ClassifierResult cpred = c.fit(iris, "class").predict(iris);
         DMatrix cdensity = DMatrix.copy(cpred.firstDensity()).removeCols(0);
 
@@ -154,6 +152,7 @@ public class SvmClassifierTest {
                 "-g", "0.7",
                 "-n", "0.1",
                 "-b", "0"};
+        svm.rand = new Random(42);
         svm_model model = t.run(xs, ys, argv);
         svm_predict.Prediction pred = svm_predict.predict(model, xs, 1);
 
@@ -161,7 +160,8 @@ public class SvmClassifierTest {
                 .type.set(SvmClassifier.Penalty.NU)
                 .nu.set(.1)
                 .probability.set(false)
-                .kernel.set(new RBFKernel(0.7));
+                .kernel.set(new RBFKernel(0.7))
+                .seed.set(42L);
 
         ClassifierResult cpred = c.fit(iris, "class").predict(iris, true, true);
         for (int i = 0; i < pred.classes().length; i++) {

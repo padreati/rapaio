@@ -30,7 +30,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.image.ImageTools;
 
@@ -38,7 +37,6 @@ public class ImageArtistTest extends AbstractArtistTest {
 
     @BeforeEach
     void setUp() {
-        RandomSource.setSeed(1234);
         ImageTools.setBestRenderingHints();
     }
 
@@ -51,7 +49,7 @@ public class ImageArtistTest extends AbstractArtistTest {
 
         grid.add(image(image).xLim(-1000, 1000).yLim(-1000, 1000));
         grid.add(image(image));
-        grid.add(image(image, position(10,30,20,20)));
+        grid.add(image(image, position(10, 30, 20, 20)));
 
         assertTest(grid, "image-test");
     }

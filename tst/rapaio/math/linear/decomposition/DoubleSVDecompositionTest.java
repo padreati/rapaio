@@ -1,36 +1,33 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.math.linear.decomposition;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
@@ -41,9 +38,11 @@ public class DoubleSVDecompositionTest {
     private static final double TOL = 1e-14;
     private static final int ROUNDS = 100;
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(1234);
+        random = new Random(1234);
     }
 
     @Test
@@ -51,8 +50,8 @@ public class DoubleSVDecompositionTest {
 
         for (int round = 0; round < ROUNDS; round++) {
 
-            int n = RandomSource.nextInt(5) + 1;
-            int m = RandomSource.nextInt(5) + n;
+            int n = random.nextInt(5) + 1;
+            int m = random.nextInt(5) + n;
 
             DMatrix a = DMatrix.random(m, n);
 
@@ -77,7 +76,7 @@ public class DoubleSVDecompositionTest {
 
     @Test
     void testDimension() {
-        assertThrows(IllegalArgumentException.class, () -> DMatrix.random(10, 50).svd());
+        assertThrows(IllegalArgumentException.class, () -> DMatrix.random(random, 10, 50).svd());
     }
 
     @Test
@@ -86,10 +85,10 @@ public class DoubleSVDecompositionTest {
         // for random matrices we expect a low condition number
 
         for (int i = 0; i < ROUNDS; i++) {
-            var svd = DMatrix.random(10, 10).svd();
+            var svd = DMatrix.random(random, 10, 10).svd();
             double c = svd.conditionNumber();
             assertTrue(Math.log10(c) < 4);
-            assertEquals(1/c, svd.inverseConditionNumber(), 1e-12);
+            assertEquals(1 / c, svd.inverseConditionNumber(), 1e-12);
         }
 
         // for ill conditioned the condition number explodes
@@ -97,7 +96,7 @@ public class DoubleSVDecompositionTest {
         Normal norm = Normal.of(0, 0.000001);
 
         for (int i = 0; i < ROUNDS; i++) {
-            DMatrix a = DMatrix.random(10, 10);
+            DMatrix a = DMatrix.random(random, 10, 10);
 
             // we create the first column as a slightly modified
             // version of the second column, thus we have linearity
@@ -107,22 +106,22 @@ public class DoubleSVDecompositionTest {
 
             double c = a.svd().conditionNumber();
             assertTrue(Math.log10(c) > 5);
-            assertEquals(1/c, a.svd().inverseConditionNumber(), 1e-12);
+            assertEquals(1 / c, a.svd().inverseConditionNumber(), 1e-12);
         }
     }
 
     @Test
     void testProjectors() {
         for (int i = 0; i < ROUNDS; i++) {
-            DVector v = DVectorDense.random(3);
+            DVector v = DVectorDense.random(random, 3);
             DMatrix p = v.outer(v);
             assertEquals(1, p.svd().rank());
         }
 
         for (int i = 0; i < ROUNDS; i++) {
-            DVector v = DVectorDense.random(3);
+            DVector v = DVectorDense.random(random, 3);
             DMatrix p = v.outer(v);
-            v = DVectorDense.random(3);
+            v = DVectorDense.random(random, 3);
             p.add(v.outer(v));
             var svd = p.svd();
             assertEquals(2, svd.rank());

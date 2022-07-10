@@ -21,15 +21,15 @@
 
 package rapaio.ml.model.km;
 
-import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Gamma;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
@@ -43,18 +43,20 @@ import rapaio.ml.eval.RandIndex;
 
 public class MWKMeansTest {
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(42);
+        random = new Random(42);
     }
 
     @Test
     void minimumTest() {
-        MWKMeans mwk = MWKMeans.newMWKMeans();
+        MWKMeans mwk = MWKMeans.newMWKMeans().seed.set(42L);
         for (int t = 0; t < 10; t++) {
 
             DVector y = DVector.random(1_000, Gamma.of(1, 0.5)).mul(10).sortValues(true);
-            double beta = RandomSource.nextDouble() * 10 + 1;
+            double beta = random.nextDouble() * 10 + 1;
 
             double c = mwk.findMinimum(y, beta);
             double minError = mwk.error(y, beta, c);
@@ -81,7 +83,8 @@ public class MWKMeansTest {
                 .subspace.set(false)
                 .k.set(3)
                 .p.set(p)
-                .nstart.set(3);
+                .nstart.set(3)
+                .seed.set(42L);
         model.fit(iris);
 
         assertTrue(model.hasLearned());
@@ -91,13 +94,13 @@ public class MWKMeansTest {
         MWKMeansResult result = model.predict(iris);
         var prediction = result.assignment();
 
-        assertTrue(RandIndex.from(target, prediction).getRandIndex()>0.6);
+        assertTrue(RandIndex.from(target, prediction).getRandIndex() > 0.6);
     }
 
     @Test
     void irisTestLocalWeights() {
         Frame iris = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
-        iris = iris.fapply(Jitter.on(1, VarRange.all()));
+        iris = iris.fapply(Jitter.on(random, 1, VarRange.all()));
         Var target = Datasets.loadIrisDataset().rvar(4);
 
         double p = 3;
@@ -115,56 +118,57 @@ public class MWKMeansTest {
         MWKMeansResult result = model.predict(iris);
         var prediction = result.assignment();
 
-        assertTrue(RandIndex.from(target, prediction).getRandIndex()>0.6);
+        assertTrue(RandIndex.from(target, prediction).getRandIndex() > 0.6);
     }
 
     @Test
     void testPrinting() {
         Frame iris = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
-        iris = iris.fapply(Jitter.on(1, VarRange.all()));
+        iris = iris.fapply(Jitter.on(random, 1, VarRange.all()));
 
         double p = 3;
         MWKMeans model = MWKMeans.newMWKMeans()
                 .subspace.set(true)
                 .k.set(3)
                 .p.set(p)
-                .nstart.set(3);
+                .nstart.set(3)
+                .seed.set(42L);
         model.fit(iris);
 
-        assertEquals("MWKMeans{k=3,nstart=3,p=3,subspace clustering flag=true}, fitted=true", model.toString());
+        assertEquals("MWKMeans{k=3,nstart=3,p=3,seed=42,subspace clustering flag=true}, fitted=true", model.toString());
 
         assertEquals("""
-                MWKMeans{k=3,nstart=3,p=3,subspace clustering flag=true}
+                MWKMeans{k=3,nstart=3,p=3,seed=42,subspace clustering flag=true}
                 Model fitted=true
-                Inertia:9.601302213175508
-                Iterations:11
+                Inertia:13.439579060524519
+                Iterations:10
                 Clusters:3
                 """, model.toSummary());
 
         assertEquals("""
-                MWKMeans{k=3,nstart=3,p=3,subspace clustering flag=true}
+                MWKMeans{k=3,nstart=3,p=3,seed=42,subspace clustering flag=true}
                 Model fitted=true
-                Inertia:9.601302213175508
-                Iterations:11
+                Inertia:13.439579060524519
+                Iterations:10
                 Clusters:3
                 """, model.toContent());
 
         assertEquals("""
-                MWKMeans{k=3,nstart=3,p=3,subspace clustering flag=true}
+                MWKMeans{k=3,nstart=3,p=3,seed=42,subspace clustering flag=true}
                 Model fitted=true
-                Inertia:9.601302213175508
-                Iterations:11
+                Inertia:13.439579060524519
+                Iterations:10
                 Clusters:3
                 Centroids:
-                                  [0]                [1]               [2]                 [3]\s
-                [0] 5.986777993515609 2.9423085358642593 4.191995839461496  2.1017568006493   \s
-                [1] 6.800591757353497 3.1893952588470564 5.740304620672073  1.9229173573873266\s
-                [2] 5.705461136317303 3.6231194187349014 1.986967451710812 -0.0665784631607151\s
+                                  [0]                [1]                [2]                 [3]\s
+                [0] 5.705461136317303 3.6231194187349014 1.1785683307386638 0.25564309954691256\s
+                [1] 5.986777993511128 3.7180748362391958 5.235773581125203  1.6968020429242028 \s
+                [2] 5.459718618661379 2.5561069767231737 3.7862023884050187 1.0367951120759455 \s
                 Weights:
-                                    [0]                 [1]                 [2]                 [3]\s
-                [0] 0.1255641752675887  0.31483725762707626 0.10186068763814621 0.4577378794671888 \s
-                [1] 0.49737953182084893 0.15477617835581176 0.18077398413522214 0.1670703056881172 \s
-                [2] 0.22830331555968278 0.1957300412590679  0.15386102479123878 0.42210561839001054\s
+                                   [0]                 [1]                 [2]                 [3]\s
+                [0] 0.1769577085353604 0.1859042556649356  0.3325918758872587  0.3045461599124453 \s
+                [1] 0.1773231628415696 0.2709335147002507  0.18741222233232233 0.36433110012585734\s
+                [2] 0.4256811053679402 0.25814780484782507 0.17781752968402195 0.13835356010021277\s
                 """, model.toFullContent());
     }
 }

@@ -161,7 +161,7 @@ public class NestedBoostingRTree
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         this.root = new NBRTreeNode(1, null);
-        root.coreFit(this, df, weights);
+        root.coreFit(this, df, weights, getRandom());
         return true;
     }
 

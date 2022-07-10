@@ -1,31 +1,30 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.ml.model.tree.rtree;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,7 +76,7 @@ public class SplitterTest {
         populate(1, 2, 2);
         populate(2, 2, 3);
 
-        List<Mapping> result = Splitter.Ignore.performSplitMapping(df, w, candidate.getGroupPredicates());
+        List<Mapping> result = Splitter.Ignore.performSplitMapping(df, w, candidate.getGroupPredicates(), new Random());
         assertEquals(2, result.size());
 
         assertEquals(2, df.mapRows(result.get(0)).rowCount());
@@ -97,7 +96,7 @@ public class SplitterTest {
         populate(1, 7, 2);
         populate(2, 2, 3);
 
-        List<Mapping> result = Splitter.Majority.performSplitMapping(df, w, candidate.getGroupPredicates());
+        List<Mapping> result = Splitter.Majority.performSplitMapping(df, w, candidate.getGroupPredicates(), new Random());
 
         // groups
         assertEquals(2, result.size());
@@ -119,7 +118,7 @@ public class SplitterTest {
         populate(1, 7, 2);
         populate(2, 20, 3);
 
-        List<Mapping> result = Splitter.Random.performSplitMapping(df, w, candidate.getGroupPredicates());
+        List<Mapping> result = Splitter.Random.performSplitMapping(df, w, candidate.getGroupPredicates(), new Random());
 
         // groups
         assertEquals(2, result.size());

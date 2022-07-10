@@ -1,34 +1,33 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.core.stat;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 
@@ -39,16 +38,18 @@ public class QuantilesTest {
 
     private static final double TOL = 1e-12;
 
+    private Random random;
+
     @BeforeEach
     void setUp() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
     }
 
     @Test
     void testDoubleR7() {
 
         Normal normal = Normal.std();
-        VarDouble x = VarDouble.from(1_000_000, normal::sampleNext);
+        VarDouble x = VarDouble.from(1_000_000, () -> normal.sampleNext(random));
 
         Quantiles q = Quantiles.of(x, 0, 0.025, 0.5, 0.975, 1);
         double[] qq = q.values();
@@ -70,7 +71,7 @@ public class QuantilesTest {
     void testDoubleR8() {
 
         Normal normal = Normal.std();
-        VarDouble x = VarDouble.from(1_000_000, normal::sampleNext);
+        VarDouble x = VarDouble.from(1_000_000, () -> normal.sampleNext(random));
 
         Quantiles q = Quantiles.of(x, Quantiles.Type.R8, 0, 0.025, 0.5, 0.975, 1);
         double[] qq = q.values();

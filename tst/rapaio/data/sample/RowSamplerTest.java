@@ -21,15 +21,14 @@
 
 package rapaio.data.sample;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Random;
 import java.util.stream.DoubleStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
 import rapaio.core.tools.DensityVector;
@@ -47,8 +46,11 @@ public class RowSamplerTest {
     private Frame df;
     private VarDouble w;
 
+    private Random random;
+
     @BeforeEach
-    public void setUp() {
+    public void beforeEach() {
+        random = new Random(123);
         df = Datasets.loadIrisDataset();
         w = VarDouble.from(df.rowCount(), row -> (double) df.getInt(row, "class")).name("w");
         assertEquals(w.stream().mapToDouble().sum(), 50 * (1 + 2 + 3), 1e-20);
@@ -56,19 +58,17 @@ public class RowSamplerTest {
 
     @Test
     void identitySamplerTest() {
-        RowSampler.Sample s = RowSampler.identity().nextSample(df, w);
+        RowSampler.Sample s = RowSampler.identity().nextSample(new Random(), df, w);
         assertTrue(s.df().deepEquals(df));
         assertTrue(s.weights().deepEquals(w));
     }
 
     @Test
     void bootstrapTest() {
-        RandomSource.setSeed(123);
-
         int N = 1_000;
         VarDouble count = VarDouble.empty().name("bcount");
         for (int i = 0; i < N; i++) {
-            RowSampler.Sample s = RowSampler.bootstrap(1.0).nextSample(df, w);
+            RowSampler.Sample s = RowSampler.bootstrap(1.0).nextSample(random, df, w);
             count.addDouble(1.0 * s.mapping().stream().distinct().count() / df.rowCount());
         }
 
@@ -78,12 +78,10 @@ public class RowSamplerTest {
 
     @Test
     void subsampleTest() {
-        RandomSource.setSeed(123);
-
         int N = 1_000;
         VarDouble count = VarDouble.fill(df.rowCount(), 0.0).name("sscount");
         for (int i = 0; i < N; i++) {
-            RowSampler.Sample s = RowSampler.subsampler(0.5).nextSample(df, w);
+            RowSampler.Sample s = RowSampler.subsampler(0.5).nextSample(random, df, w);
             s.mapping().stream().forEach(r -> count.setDouble(r, count.getDouble(r) + 1));
         }
 

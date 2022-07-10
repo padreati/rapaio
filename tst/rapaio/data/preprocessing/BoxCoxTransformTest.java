@@ -21,8 +21,9 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +37,7 @@ public class BoxCoxTransformTest {
 
     @Test
     void testDouble() {
-        Frame src = TransformTestUtil.allDoubleNominal(100, 2, 2);
+        Frame src = TransformTestUtil.allDoubleNominal(new Random(), 100, 2, 2);
 
         Frame f1 = src.copy().fapply(BoxCoxTransform.on(1.1, 1.1, VarRange.of(1)));
         Frame f2 = src.copy().fapply(BoxCoxTransform.on(1.1, 1.1, "v2").newInstance());

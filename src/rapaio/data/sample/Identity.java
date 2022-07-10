@@ -22,6 +22,7 @@
 package rapaio.data.sample;
 
 import java.io.Serial;
+import java.util.Random;
 
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -38,7 +39,7 @@ public final class Identity implements RowSampler {
     private static final long serialVersionUID = -1133893495082466752L;
 
     @Override
-    public Sample nextSample(Frame df, Var weights) {
+    public Sample nextSample(Random random, Frame df, Var weights) {
         return new Sample(df, weights, Mapping.range(0, df.rowCount()), df.rowCount());
     }
 

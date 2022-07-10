@@ -22,6 +22,7 @@
 package rapaio.math.linear.dense;
 
 import java.util.Arrays;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import jdk.incubator.vector.DoubleVector;
@@ -80,8 +81,17 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
         return fill(rows, cols, (r, c) -> normal.sampleNext());
     }
 
+    public static DMatrixDenseC random(Random random, int rows, int cols) {
+        Normal normal = Normal.std();
+        return fill(rows, cols, (r, c) -> normal.sampleNext(random));
+    }
+
     public static DMatrixDenseC random(int rows, int cols, Distribution distribution) {
         return fill(rows, cols, (r, c) -> distribution.sampleNext());
+    }
+
+    public static DMatrixDenseC random(Random random, int rows, int cols, Distribution distribution) {
+        return fill(rows, cols, (r, c) -> distribution.sampleNext(random));
     }
 
     /**

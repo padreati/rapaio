@@ -1,34 +1,30 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.data.stream;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Comparator;
+import java.util.Random;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -36,7 +32,6 @@ import java.util.stream.LongStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.core.stat.Sum;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -56,9 +51,11 @@ public class VSpotsTest {
 
     private static final double TOL = 1e-10;
 
+    private Random random;
+
     @BeforeEach
     void beforeEach() {
-        RandomSource.setSeed(123);
+        random = new Random(123);
     }
 
     @Test
@@ -70,7 +67,7 @@ public class VSpotsTest {
 
     @Test
     void testDouble() {
-        VarDouble x = VarDouble.from(100, RandomSource::nextDouble);
+        VarDouble x = VarDouble.from(100, () -> random.nextDouble());
         assertEquals(100, x.stream().count());
 
         assertTrue(x.deepEquals(x.stream().toMappedVar()));
@@ -91,17 +88,18 @@ public class VSpotsTest {
         assertEquals(100, x.stream().distinct().count());
 
         double[] a1 = x.stream().mapToDouble().toArray();
-        double[] a2 = x.stream().peek(s -> s.setDouble(s.getDouble() + 1)).peek(s -> s.setDouble(s.getDouble() - 1)).mapToDouble().toArray();
+        double[] a2 =
+                x.stream().peek(s -> s.setDouble(s.getDouble() + 1)).peek(s -> s.setDouble(s.getDouble() - 1)).mapToDouble().toArray();
 
         assertArrayEquals(a1, a2, TOL);
 
         int[] a3 = SolidFrame.byVars(VarInt.seq(10)).stream().skip(1).limit(2).mapToInt(s -> s.getInt(0)).toArray();
-        assertArrayEquals(new int[]{1, 2}, a3);
+        assertArrayEquals(new int[] {1, 2}, a3);
     }
 
     @Test
     void testFilter() {
-        Frame x = SolidFrame.byVars(VarDouble.from(100, () -> RandomSource.nextDouble() - 0.5));
+        Frame x = SolidFrame.byVars(VarDouble.from(100, () -> random.nextDouble() - 0.5));
         x.stream().filter(s -> s.getDouble(0) >= 0).forEach(s -> assertTrue(s.getDouble(0) >= 0));
     }
 
@@ -138,7 +136,7 @@ public class VSpotsTest {
 
     @Test
     void testSpliterator() {
-        Frame x = SolidFrame.byVars(VarDouble.from(10_000, RandomSource::nextDouble));
+        Frame x = SolidFrame.byVars(VarDouble.from(10_000, () -> random.nextDouble()));
         double sum1 = x.stream().parallel().mapToDouble(s -> s.getDouble(0)).sum();
         double sum3 = x.stream().sequential().mapToDouble(s -> s.getDouble(0)).sum();
         double sum2 = Sum.of(x.rvar(0)).value();
@@ -163,30 +161,30 @@ public class VSpotsTest {
     @Test
     void testSorted() {
 
-        Var s1 = VarDouble.from(100, RandomSource::nextDouble).stream().sorted().toMappedVar();
+        Var s1 = VarDouble.from(100, () -> random.nextDouble()).stream().sorted().toMappedVar();
         for (int i = 1; i < s1.size(); i++) {
             assertTrue(s1.getDouble(i - 1) <= s1.getDouble(i));
         }
 
-        Var s2 = VarInt.from(100, row -> RandomSource.nextInt(100)).stream().sorted().toMappedVar();
+        Var s2 = VarInt.from(100, row -> random.nextInt(100)).stream().sorted().toMappedVar();
         for (int i = 1; i < s1.size(); i++) {
             assertTrue(s1.getInt(i - 1) <= s1.getInt(i));
         }
 
-        Var s3 = VarLong.from(100, row -> (long) (RandomSource.nextInt(100)))
+        Var s3 = VarLong.from(100, row -> (long) (random.nextInt(100)))
                 .stream().sorted().toMappedVar();
         for (int i = 1; i < s1.size(); i++) {
             assertTrue(s1.getLong(i - 1) <= s1.getLong(i));
         }
 
-        Var s4 = VarBinary.from(100, row -> RandomSource.nextDouble() > 0.5)
+        Var s4 = VarBinary.from(100, row -> random.nextDouble() > 0.5)
                 .stream().sorted().toMappedVar();
         for (int i = 1; i < s1.size(); i++) {
             assertTrue(s1.getInt(i - 1) <= s1.getInt(i));
         }
 
-        String[] words = new String[]{"ana", "are", "mere", "galbene"};
-        Var s5 = VarNominal.from(100, row -> words[RandomSource.nextInt(words.length)])
+        String[] words = new String[] {"ana", "are", "mere", "galbene"};
+        Var s5 = VarNominal.from(100, row -> words[random.nextInt(words.length)])
                 .stream().sorted().toMappedVar();
 
         for (int i = 1; i < s5.size(); i++) {

@@ -1,37 +1,33 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package rapaio.math.linear.decomposition;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.dense.DMatrixDenseR;
 
@@ -39,15 +35,17 @@ public class DoubleLUDecompositionTest {
 
     private static final double TOL = 1e-12;
 
+    private Random random;
+
     @BeforeEach
     void setUpEach() {
-        RandomSource.setSeed(14);
+        random = new Random(14);
     }
 
     @Test
     void testBasicGaussian() {
 
-        DMatrix a = DMatrix.random(100, 100);
+        DMatrix a = DMatrix.random(random, 100, 100);
         DoubleLUDecomposition lu = a.lu(DoubleLUDecomposition.Method.GAUSSIAN_ELIMINATION);
         DMatrix a1 = a.mapRows(lu.pivots());
         DMatrix a2 = lu.l().dot(lu.u());
@@ -56,7 +54,7 @@ public class DoubleLUDecompositionTest {
 
     @Test
     void testBasicCrout() {
-        DMatrix a = DMatrix.random(100, 100);
+        DMatrix a = DMatrix.random(random, 100, 100);
         DoubleLUDecomposition lu = a.lu(DoubleLUDecomposition.Method.CROUT);
         DMatrix a1 = a.mapRows(lu.pivots());
         DMatrix a2 = lu.l().dot(lu.u());
@@ -66,7 +64,7 @@ public class DoubleLUDecompositionTest {
     @Test
     void testIsSingular() {
         assertFalse(DMatrix.empty(10, 10).lu().isNonSingular());
-        assertTrue(DMatrix.random(10, 10).lu().isNonSingular());
+        assertTrue(DMatrix.random(random, 10, 10).lu().isNonSingular());
     }
 
     @Test
@@ -116,18 +114,18 @@ public class DoubleLUDecompositionTest {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> DMatrix.random(4, 3).lu().det());
         assertEquals("The determinant can be computed only for squared matrices.", ex.getMessage());
 
-        ex = assertThrows(IllegalArgumentException.class, () -> DMatrix.random(2, 3).lu().det());
+        ex = assertThrows(IllegalArgumentException.class, () -> DMatrix.random(random, 2, 3).lu().det());
         assertEquals("For LU decomposition, number of rows must be greater or equal with number of columns.", ex.getMessage());
 
         ex = assertThrows(IllegalArgumentException.class,
-                () -> DMatrix.random(2, 3).lu(DoubleLUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
+                () -> DMatrix.random(random, 2, 3).lu(DoubleLUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
         assertEquals("For LU decomposition, number of rows must be greater or equal with number of columns.", ex.getMessage());
     }
 
     @Test
     void testInvalidSolver() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> DMatrix.random(4,3).lu().solve(DMatrix.random(6,6)));
+                () -> DMatrix.random(random, 4, 3).lu().solve(DMatrix.random(6, 6)));
         assertEquals("Matrix row dimensions must agree.", ex.getMessage());
 
         ex = assertThrows(IllegalArgumentException.class, () -> DMatrix.fill(3, 3, 0).lu().solve(DMatrix.eye(3)));
@@ -136,7 +134,7 @@ public class DoubleLUDecompositionTest {
 
     @Test
     void testPrintable() {
-        DMatrix m = DMatrix.random(4,3);
+        DMatrix m = DMatrix.random(random, 4, 3);
         assertEquals("""
                 LU decomposition summary
                 ========================
@@ -156,7 +154,7 @@ public class DoubleLUDecompositionTest {
                                 
                 pivots: [3,0,1,2,]""", m.lu().toSummary());
 
-        m = DMatrix.random(20,4);
+        m = DMatrix.random(random, 20, 4);
         assertEquals("""
                 LU decomposition summary
                 ========================
@@ -196,7 +194,7 @@ public class DoubleLUDecompositionTest {
 
     @Test
     void testInv() {
-        DMatrix m = DMatrix.random(4,4);
+        DMatrix m = DMatrix.random(random, 4, 4);
         DMatrix inv = m.lu().inv();
 
         assertTrue(m.lu().solve(DMatrix.eye(4)).deepEquals(inv));

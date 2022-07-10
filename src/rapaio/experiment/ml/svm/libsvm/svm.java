@@ -27,8 +27,6 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.StringTokenizer;
 
-import rapaio.core.RandomSource;
-
 //
 // Kernel Cache
 //
@@ -1358,7 +1356,7 @@ public class svm {
     // construct and solve various formulations
     //
     public static final int LIBSVM_VERSION = 325;
-    public static Random rand = RandomSource.getRandom();
+    public static Random rand;
     private static final svm_print_interface svm_print_stdout = s -> {
 //            System.out.print(s);
 //            System.out.flush();
@@ -1809,7 +1807,6 @@ public class svm {
             int end = (i + 1) * prob.l / nr_fold;
             int j, k;
             svm_problem subprob = new svm_problem();
-
             subprob.l = prob.l - (end - begin);
             subprob.x = new svm_node[subprob.l][];
             subprob.y = new double[subprob.l];

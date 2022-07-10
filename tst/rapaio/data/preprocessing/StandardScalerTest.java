@@ -21,7 +21,9 @@
 
 package rapaio.data.preprocessing;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +38,7 @@ public class StandardScalerTest {
 
     @Test
     void testDouble() {
-        Frame src = TransformTestUtil.allDoubles(100, 2);
+        Frame src = TransformTestUtil.allDoubles(new Random(), 100, 2);
 
         StandardScaler filter = StandardScaler.on(VarRange.all());
         filter.fit(src);

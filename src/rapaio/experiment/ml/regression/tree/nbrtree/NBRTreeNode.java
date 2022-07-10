@@ -25,6 +25,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import rapaio.core.stat.Variance;
 import rapaio.core.stat.WeightedOnlineStat;
@@ -89,7 +90,7 @@ public class NBRTreeNode implements Serializable {
         return rightNode;
     }
 
-    public void coreFit(NestedBoostingRTree tree, Frame df, Var weights) {
+    public void coreFit(NestedBoostingRTree tree, Frame df, Var weights, Random random) {
 
         String targetName = tree.firstTargetName();
         int maxDepth = tree.getMaxDepth();
@@ -102,17 +103,17 @@ public class NBRTreeNode implements Serializable {
 //        this.factors.add(1.0);
 //        Var residual = VarDouble.from(df.rowCount(), r -> y.getDouble(r) - prediction.getDouble(r)).withName(y.name());
 //        this.coreNodeFit(df, weights, residual, tree, 1);
-        this.coreNodeFit(df, weights, y, tree, 1);
+        this.coreNodeFit(df, weights, y, tree, 1, random);
     }
 
-    private void coreNodeFit(Frame df, Var weights, Var y, NestedBoostingRTree tree, int depth) {
+    private void coreNodeFit(Frame df, Var weights, Var y, NestedBoostingRTree tree, int depth, Random random) {
 
         Var originalY = y;
         VarSelector varSelector = tree.getVarSelector().newInstance();
         varSelector.withVarNames(tree.inputNames());
 
         // find best fit function
-        String[] testVarNames = varSelector.nextVarNames();
+        String[] testVarNames = varSelector.nextVarNames(random);
         VarDouble prediction = VarDouble.fill(df.rowCount(), 0.0);
 
         double residualErrorScore = tree.getLoss().residualErrorScore(y);
@@ -250,11 +251,11 @@ public class NBRTreeNode implements Serializable {
         leftNode.coreNodeFit(
                 df.mapRows(leftRows).copy(),
                 weights.mapRows(leftRows).copy(),
-                residuals.mapRows(leftRows).copy(), tree, depth + 1);
+                residuals.mapRows(leftRows).copy(), tree, depth + 1, random);
         rightNode.coreNodeFit(
                 df.mapRows(rightRows).copy(),
                 weights.mapRows(rightRows).copy(),
-                residuals.mapRows(rightRows).copy(), tree, depth + 1);
+                residuals.mapRows(rightRows).copy(), tree, depth + 1, random);
     }
 
     private double computeFactor(Var resiual, VarDouble fx) {
