@@ -23,7 +23,6 @@ package rapaio.ml.common;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -149,24 +148,5 @@ public class VarSelectorTest {
     @Test
     void testMCount() {
         assertEquals(4, VarSelector.fixed(4).withVarNames(varNames).mCount());
-    }
-
-    @Test
-    void testAddRemoveVars() {
-
-        int len = varNames.length;
-
-        VarSelector selector = VarSelector.all().withVarNames(varNames);
-
-        for (int i = 0; i < len; i++) {
-            selector.removeVarNames(Collections.singleton(varNames[i]));
-            selector = selector.newInstance();
-            assertEquals(len - i - 1, selector.mCount());
-        }
-
-        for (int i = 0; i < len; i++) {
-            selector.addVarNames(Collections.singleton(varNames[i]));
-            assertEquals(i + 1, selector.mCount());
-        }
     }
 }

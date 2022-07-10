@@ -96,8 +96,7 @@ public class SmoothRTreeNode {
 
     private void coreNodeFit(Frame df, Var weights, Var y, SmoothRTree tree, int depth, Random random) {
 
-        VarSelector varSelector = tree.getVarSelector().newInstance();
-        varSelector.withVarNames(tree.inputNames());
+        VarSelector varSelector = tree.getVarSelector().withVarNames(tree.inputNames());
 
         // find best fit function
         String[] testVarNames = varSelector.nextVarNames(random);

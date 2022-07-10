@@ -189,54 +189,41 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
 
         int id = 1;
 
-        HashMap<Integer, Frame> frameMap = new HashMap<>();
-        HashMap<Integer, Var> weightsMap = new HashMap<>();
-
         this.varSelector.get().withVarNames(inputNames());
         root = new Node(null, id++, "root", (row, frame) -> true, 1);
 
-        // prepare data for root
-        frameMap.put(root.id, df);
-        weightsMap.put(root.id, weights);
+        VarSelector nodeVarSelector = this.varSelector.get().withVarNames(inputNames);
 
         // make queue and initialize it
 
-        Queue<Node> queue = new ConcurrentLinkedQueue<>();
-        queue.add(root);
+        Queue<QueueNode> queue = new ConcurrentLinkedQueue<>();
+        queue.add(new QueueNode(root, df, weights));
 
         while (!queue.isEmpty()) {
-            Node last = queue.poll();
-            int lastId = last.id;
-            Frame lastDf = frameMap.get(lastId);
-            Var lastWeights = weightsMap.get(lastId);
-            learnNode(last, lastDf, lastWeights, random);
+            QueueNode last = queue.poll();
+            learnNode(last.node, last.df, last.weight, nodeVarSelector, random);
 
-            if (last.leaf) {
+            if (last.node.leaf) {
                 continue;
             }
             // now that we have a best candidate,do the effective split
 
-            List<RowPredicate> predicates = last.bestCandidate.getGroupPredicates();
-            List<Mapping> mappings = splitter.get().performSplitMapping(lastDf, lastWeights, predicates, random);
+            List<RowPredicate> predicates = last.node.bestCandidate.getGroupPredicates();
+            List<Mapping> mappings = splitter.get().performSplitMapping(last.df, last.weight, predicates, random);
 
             for (int i = 0; i < predicates.size(); i++) {
                 RowPredicate predicate = predicates.get(i);
-                Node child = new Node(last, id++, predicate.toString(), predicate, last.depth + 1);
-                last.children.add(child);
-
-                frameMap.put(child.id, lastDf.mapRows(mappings.get(i)));
-                weightsMap.put(child.id, lastWeights.mapRows(mappings.get(i)).copy());
-
-                queue.add(child);
+                Node child = new Node(last.node, id++, predicate.toString(), predicate, last.node.depth + 1);
+                last.node.children.add(child);
+                queue.add(new QueueNode(child, last.df.mapRows(mappings.get(i)), last.weight.mapRows(mappings.get(i))));
             }
-
-            frameMap.remove(last.id);
-            weightsMap.remove(last.id);
         }
         return true;
     }
 
-    private void learnNode(Node node, Frame df, Var weights, Random random) {
+    record QueueNode(Node node, Frame df, Var weight) {}
+
+    private void learnNode(Node node, Frame df, Var weights, VarSelector nodeVarSelector, Random random) {
 
         node.leaf = true;
         node.value = loss.get().scalarMinimizer(df.rvar(firstTargetName()), weights);
@@ -251,7 +238,7 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
             return;
         }
 
-        Stream<String> stream = Arrays.stream(varSelector.get().nextVarNames(random));
+        Stream<String> stream = Arrays.stream(nodeVarSelector.nextVarNames(random));
         if (runs.get() > 1) {
             stream = stream.parallel();
         }

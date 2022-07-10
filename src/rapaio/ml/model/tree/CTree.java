@@ -30,7 +30,6 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
@@ -203,9 +202,6 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
                 .targets(1, 1, false, VarType.NOMINAL);
     }
 
-    record Triple(Node node, Frame df, Var weight) {
-    }
-
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
@@ -215,39 +211,33 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
         VarSelector nodeVarSelector = this.varSelector.get().withVarNames(inputNames());
 
         // create the root node
-        AtomicInteger idGenerator = new AtomicInteger();
-        idGenerator.set(0);
-        root = new Node(null, idGenerator.get(), 0, "root", RowPredicate.all());
+        int id = 1;
+        root = new Node(null, id++, 0, "root", RowPredicate.all());
 
         Queue<QueueNode> queue = new ConcurrentLinkedQueue<>();
-        queue.add(new QueueNode(root, df, weights, nodeVarSelector));
+        queue.add(new QueueNode(root, df, weights));
 
         while (!queue.isEmpty()) {
-            var t = queue.poll();
+            var last = queue.poll();
 
-            Node node = t.node;
-            Frame nodeDf = t.df;
-            Var weightsDf = t.weight;
+            learnNode(last.node, last.df, last.weight, nodeVarSelector, random);
 
-            learnNode(node, nodeDf, weightsDf, t.varSelector, random);
-
-            if (node.leaf) {
+            if (last.node.leaf) {
                 continue;
             }
-            Candidate bestCandidate = node.bestCandidate;
+            Candidate bestCandidate = last.node.bestCandidate;
 
             // now that we have a best candidate, do the effective split
-            Pair<List<Frame>, List<Var>> frames = splitter.get().performSplit(nodeDf, weightsDf,
+            Pair<List<Frame>, List<Var>> frames = splitter.get().performSplit(last.df, last.weight,
                     bestCandidate.groupPredicates(), random);
 
             for (RowPredicate predicate : bestCandidate.groupPredicates()) {
-                var child = new Node(node,
-                        idGenerator.incrementAndGet(), node.depth + 1, predicate.toString(), predicate);
-                node.children.add(child);
+                var child = new Node(last.node, id++, last.node.depth + 1, predicate.toString(), predicate);
+                last.node.children.add(child);
             }
-            for (int i = 0; i < node.children.size(); i++) {
-                var child = node.children.get(i);
-                queue.add(new QueueNode(child, frames.v1.get(i), frames.v2.get(i), t.varSelector.newInstance()));
+            for (int i = 0; i < last.node.children.size(); i++) {
+                var child = last.node.children.get(i);
+                queue.add(new QueueNode(child, frames.v1.get(i), frames.v2.get(i)));
             }
         }
 
@@ -255,7 +245,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
         return true;
     }
 
-    record QueueNode(Node node, Frame df, Var weight, VarSelector varSelector){}
+    record QueueNode(Node node, Frame df, Var weight){}
 
     private void learnNode(Node node, Frame df, Var weights, VarSelector nodeVarSelector, Random random) {
         node.density = DensityVector.fromLevelWeights(false, df.rvar(firstTargetName()), weights);
@@ -271,9 +261,8 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
             return;
         }
 
-        String[] nextVarNames = varSelector.get().nextVarNames(random);
+        String[] nextVarNames = nodeVarSelector.nextVarNames(random);
         List<Candidate> candidateList = new ArrayList<>();
-        Queue<String> exhaustList = new ConcurrentLinkedQueue<>();
 
         int m = nodeVarSelector.mCount();
         for (String testCol : nextVarNames) {
@@ -291,8 +280,6 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
             if (candidate != null) {
                 candidateList.add(candidate);
                 m--;
-            } else {
-                exhaustList.add(testCol);
             }
         }
         candidateList.sort((o1, o2) -> -(Double.compare(o1.score(), o2.score())));
@@ -306,7 +293,6 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
 
         node.leaf = false;
         node.bestCandidate = candidateList.get(0);
-        nodeVarSelector.removeVarNames(exhaustList);
     }
 
     public void prune(Frame df) {

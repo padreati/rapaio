@@ -54,7 +54,7 @@ public class ClassifierEvaluation extends ParamSet<ClassifierEvaluation> {
     @Serial
     private static final long serialVersionUID = 8533424311527093792L;
 
-    public static ClassifierEvaluation eval(Frame df, String targetName, ClassifierModel model, ClassifierMetric... metrics) {
+    public static ClassifierEvaluation eval(Frame df, String targetName, ClassifierModel<?, ?, ?> model, ClassifierMetric... metrics) {
         return new ClassifierEvaluation()
                 .data.set(df)
                 .targetName.set(targetName)
@@ -62,7 +62,8 @@ public class ClassifierEvaluation extends ParamSet<ClassifierEvaluation> {
                 .metrics.set(metrics);
     }
 
-    public static ClassifierEvaluation cv(Frame df, String targetName, ClassifierModel model, int folds, ClassifierMetric... metrics) {
+    public static ClassifierEvaluation cv(Frame df, String targetName, ClassifierModel<?, ?, ?> model, int folds,
+            ClassifierMetric... metrics) {
         return new ClassifierEvaluation()
                 .data.set(df)
                 .targetName.set(targetName)
@@ -124,9 +125,7 @@ public class ClassifierEvaluation extends ParamSet<ClassifierEvaluation> {
                     var testResult = m.predict(split.testDf(), true, true);
                     return new Run(split, trainResult, testResult);
                 }, executorService, th))
-                .forEach(run -> {
-                    result.appendRun(run.split, run.trainResult, run.testResult);
-                });
+                .forEach(run -> result.appendRun(run.split, run.trainResult, run.testResult));
         // shut down executor
         executorService.shutdownNow();
         return result;

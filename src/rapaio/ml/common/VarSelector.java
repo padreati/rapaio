@@ -24,9 +24,7 @@ package rapaio.ml.common;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Random;
-import java.util.stream.Stream;
 
 import rapaio.core.SamplingTools;
 
@@ -61,20 +59,19 @@ public class VarSelector implements Serializable {
         this.mVars = mVars;
     }
 
-    public VarSelector newInstance() {
-        return new VarSelector(mVars).withVarNames(varNames);
-    }
-
     public VarSelector withVarNames(final String... varNames) {
-        this.varNames = Arrays.stream(varNames).distinct().toArray(String[]::new);
+        String[] compVarNames = Arrays.stream(varNames).distinct().toArray(String[]::new);
         if (mVars == M_ALL) {
-            this.mCount = this.varNames.length;
+            this.mCount = compVarNames.length;
         } else if (mVars == M_AUTO) {
-            this.mCount = Math.max((int) Math.ceil(Math.sqrt(this.varNames.length)), 1);
+            this.mCount = Math.max((int) Math.ceil(Math.sqrt(compVarNames.length)), 1);
         } else {
             this.mCount = mVars;
         }
-        return this;
+        VarSelector copy = new VarSelector(mCount);
+        copy.mCount = this.mCount;
+        copy.varNames = compVarNames;
+        return copy;
     }
 
     public String name() {
@@ -100,13 +97,5 @@ public class VarSelector implements Serializable {
 
     public int mCount() {
         return mCount;
-    }
-
-    public void removeVarNames(Collection<String> varNames) {
-        withVarNames(Arrays.stream(this.varNames).filter(vn -> !varNames.contains(vn)).distinct().toArray(String[]::new));
-    }
-
-    public void addVarNames(Collection<String> varNames) {
-        withVarNames(Stream.concat(Arrays.stream(this.varNames), varNames.stream()).distinct().toArray(String[]::new));
     }
 }

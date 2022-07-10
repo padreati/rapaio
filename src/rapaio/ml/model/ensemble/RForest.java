@@ -113,13 +113,11 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
     protected boolean coreFit(Frame df, Var weights) {
         regressions.clear();
         Random random = getRandom();
-        Random[] randomSources = IntStream.range(0, runs.get())
-                .mapToObj(i -> new Random(random.nextLong()))
-                .toArray(Random[]::new);
+        long[] seeds = IntStream.range(0, runs.get()).mapToLong(i -> random.nextLong()).toArray();
         int threads = computeThreads();
         ExecutorService executor = Executors.newWorkStealingPool(threads);
         IntStream.range(0, runs.get()).boxed()
-                .collect(parallelToOrderedStream(s -> buildWeakPredictor(df, weights, s, randomSources[s]), executor, threads))
+                .collect(parallelToOrderedStream(s -> buildWeakPredictor(df, weights, s, seeds[s]), executor, threads))
                 .forEach(info -> {
                     regressions.add(info.model);
                     runningHook.get().accept(RunInfo.forRegression(this, info.run));
@@ -131,9 +129,9 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
     private record WeakPredictorInfo(RegressionModel<?, ?, ?> model, int run) {
     }
 
-    private WeakPredictorInfo buildWeakPredictor(Frame df, Var weights, int run, Random random) {
-        RowSampler.Sample sample = rowSampler.get().nextSample(random, df, weights);
-        RegressionModel<?, ?, ?> m = model.get().newInstance();
+    private WeakPredictorInfo buildWeakPredictor(Frame df, Var weights, int run, long seed) {
+        RowSampler.Sample sample = rowSampler.get().nextSample(new Random(seed), df, weights);
+        RegressionModel<?, ?, ?> m = model.get().newInstance().seed.set(seed);
         return new WeakPredictorInfo(m.fit(sample.df(), sample.weights(), targetNames), run);
     }
 

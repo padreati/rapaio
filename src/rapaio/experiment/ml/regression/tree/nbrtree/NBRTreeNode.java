@@ -109,11 +109,10 @@ public class NBRTreeNode implements Serializable {
     private void coreNodeFit(Frame df, Var weights, Var y, NestedBoostingRTree tree, int depth, Random random) {
 
         Var originalY = y;
-        VarSelector varSelector = tree.getVarSelector().newInstance();
-        varSelector.withVarNames(tree.inputNames());
+        VarSelector nodeVarSelector = tree.getVarSelector().withVarNames(tree.inputNames());
 
         // find best fit function
-        String[] testVarNames = varSelector.nextVarNames(random);
+        String[] testVarNames = nodeVarSelector.nextVarNames(random);
         VarDouble prediction = VarDouble.fill(df.rowCount(), 0.0);
 
         double residualErrorScore = tree.getLoss().residualErrorScore(y);
