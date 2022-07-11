@@ -70,8 +70,7 @@ public class VarSelectorTest {
         HashMap<String, Integer> counter = new HashMap<>();
         for (int i = 0; i < 1_000; i++) {
             int mcols = 5;
-            VarSelector colSelector = VarSelector.fixed(mcols);
-            colSelector.withVarNames(varNames);
+            VarSelector colSelector = VarSelector.fixed(mcols).withVarNames(varNames);
             String[] selectedVarNames = colSelector.nextVarNames(random);
             assertEquals(mcols, selectedVarNames.length);
             for (String varName : selectedVarNames) {
@@ -122,8 +121,7 @@ public class VarSelectorTest {
     void testAllVarSelector() {
         HashMap<String, Integer> counter = new HashMap<>();
         for (int i = 0; i < 1_000; i++) {
-            VarSelector colSelector = VarSelector.all();
-            colSelector.withVarNames(varNames);
+            VarSelector colSelector = VarSelector.all().withVarNames(varNames);
             String[] selectedVarNames = colSelector.nextVarNames(random);
             assertEquals(varNames.length, selectedVarNames.length);
             for (String varName : selectedVarNames) {

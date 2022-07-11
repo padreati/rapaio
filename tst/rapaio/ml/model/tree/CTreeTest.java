@@ -106,7 +106,7 @@ public class CTreeTest {
     void printingTest() {
 
         var iris = Datasets.loadIrisDataset();
-        var model = CTree.newCART().fit(iris, "class").seed.set(123L);
+        var model = CTree.newCART().seed.set(123L).fit(iris, "class");
 
         assertEquals("""
                 CTree model
@@ -127,23 +127,23 @@ public class CTreeTest {
                 description:
                 split, n/err, classes (densities) [* if is leaf / purity if not]
                                 
-                |- 0. root    150/100 setosa (0.333 0.333 0.333 ) [0.3333333]
-                |   |- 1. petal-length<=2.45    50/0 setosa (1 0 0 ) *
-                |   |- 2. petal-length>2.45    100/50 versicolor (0 0.5 0.5 ) [0.389694]
-                |   |   |- 3. petal-width<=1.75    54/5 versicolor (0 0.907 0.093 ) [0.0823903]
-                |   |   |   |- 5. petal-length<=4.95    48/1 versicolor (0 0.979 0.021 ) [0.0407986]
-                |   |   |   |   |- 9. petal-width<=1.65    47/0 versicolor (0 1 0 ) *
-                |   |   |   |   |- 10. petal-width>1.65    1/0 virginica (0 0 1 ) *
-                |   |   |   |- 6. petal-length>4.95    6/2 virginica (0 0.333 0.667 ) [0.2222222]
-                |   |   |   |   |- 11. petal-width<=1.55    3/0 virginica (0 0 1 ) *
-                |   |   |   |   |- 12. petal-width>1.55    3/1 versicolor (0 0.667 0.333 ) [0.4444444]
-                |   |   |   |   |   |- 15. sepal-length<=6.95    2/0 versicolor (0 1 0 ) *
-                |   |   |   |   |   |- 16. sepal-length>6.95    1/0 virginica (0 0 1 ) *
-                |   |   |- 4. petal-width>1.75    46/1 virginica (0 0.022 0.978 ) [0.0135476]
-                |   |   |   |- 7. petal-length<=4.85    3/1 virginica (0 0.333 0.667 ) [0.4444444]
-                |   |   |   |   |- 13. sepal-width<=3.1    2/0 virginica (0 0 1 ) *
-                |   |   |   |   |- 14. sepal-width>3.1    1/0 versicolor (0 1 0 ) *
-                |   |   |   |- 8. petal-length>4.85    43/0 virginica (0 0 1 ) *
+                |- 1. root    150/100 setosa (0.333 0.333 0.333 ) [0.3333333]
+                |   |- 2. petal-width<=0.8    50/0 setosa (1 0 0 ) *
+                |   |- 3. petal-width>0.8    100/50 versicolor (0 0.5 0.5 ) [0.389694]
+                |   |   |- 4. petal-width<=1.75    54/5 versicolor (0 0.907 0.093 ) [0.0823903]
+                |   |   |   |- 6. petal-length<=4.95    48/1 versicolor (0 0.979 0.021 ) [0.0407986]
+                |   |   |   |   |- 10. petal-width<=1.65    47/0 versicolor (0 1 0 ) *
+                |   |   |   |   |- 11. petal-width>1.65    1/0 virginica (0 0 1 ) *
+                |   |   |   |- 7. petal-length>4.95    6/2 virginica (0 0.333 0.667 ) [0.2222222]
+                |   |   |   |   |- 12. petal-width<=1.55    3/0 virginica (0 0 1 ) *
+                |   |   |   |   |- 13. petal-width>1.55    3/1 versicolor (0 0.667 0.333 ) [0.4444444]
+                |   |   |   |   |   |- 16. sepal-length<=6.95    2/0 versicolor (0 1 0 ) *
+                |   |   |   |   |   |- 17. sepal-length>6.95    1/0 virginica (0 0 1 ) *
+                |   |   |- 5. petal-width>1.75    46/1 virginica (0 0.022 0.978 ) [0.0135476]
+                |   |   |   |- 8. petal-length<=4.85    3/1 virginica (0 0.333 0.667 ) [0.4444444]
+                |   |   |   |   |- 14. sepal-width<=3.1    2/0 virginica (0 0 1 ) *
+                |   |   |   |   |- 15. sepal-width>3.1    1/0 versicolor (0 1 0 ) *
+                |   |   |   |- 9. petal-length>4.85    43/0 virginica (0 0 1 ) *
                 """, model.toSummary());
 
         assertEquals(model.toContent(), model.toSummary());

@@ -71,8 +71,8 @@ public class KMedoidsTest {
         Normal normal = Normal.std();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 100; j++) {
-                x1.addDouble(m1[i] + normal.sampleNext());
-                x2.addDouble(m2[i] + normal.sampleNext());
+                x1.addDouble(m1[i] + normal.sampleNext(random));
+                x2.addDouble(m2[i] + normal.sampleNext(random));
                 target.addInt(i);
             }
         }
@@ -125,7 +125,7 @@ public class KMedoidsTest {
 
     @Test
     void computeAssignmentTest() {
-        DMatrix x = DMatrix.copy(VarDouble.from(100, () -> Normal.std().sampleNext()));
+        DMatrix x = DMatrix.copy(VarDouble.from(100, () -> Normal.std().sampleNext(random)));
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
 
@@ -200,7 +200,7 @@ public class KMedoidsTest {
     @Test
     void updateAllClosestTest() {
         DMatrix x = DMatrix.copy(VarDouble.seq(21));
-        KMedoids km = KMedoids.newAlternateModel(2);
+        KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
 
         double[] dv = DoubleArrays.newFill(x.rows(), Double.NaN);
