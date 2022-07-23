@@ -299,7 +299,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     public String toSummary(Printer printer, POption<?>... options) {
 
         var opts = printer.getOptions();
-        opts.setFloatFormat(new POtpionFloatFormat(Format.formatDecFlex));
+        opts.setFloatFormat(new POtpionFloatFormat(Format.floatFlex()));
         opts.bind(options);
 
         StringBuilder sb = new StringBuilder();

@@ -43,7 +43,7 @@ public class POpts implements Serializable {
     static {
         defaults = new POpts(null);
         defaults.setTextWidth(new POptionTextWidth(120));
-        defaults.setFloatFormat(new POtpionFloatFormat(Format.formatDecFlexLong));
+        defaults.setFloatFormat(new POtpionFloatFormat(Format.floatFlexLong()));
     }
 
     public POpts(POpts parent) {

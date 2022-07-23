@@ -28,78 +28,109 @@ import java.text.DecimalFormat;
  */
 public class Format {
 
-    public static final DecimalFormat formatDecShort = new DecimalFormat();
-    public static final DecimalFormat formatDecMedium = new DecimalFormat();
-    public static final DecimalFormat formatDecLong = new DecimalFormat();
-    public static final DecimalFormat formatDecFlex = new DecimalFormat();
-    public static final DecimalFormat formatDecFlexShort = new DecimalFormat();
-    public static final DecimalFormat formatDecFlexLong = new DecimalFormat();
-
-    static {
-        formatDecShort.setMinimumIntegerDigits(1);
-        formatDecShort.setMinimumFractionDigits(3);
-        formatDecShort.setMaximumFractionDigits(3);
-        formatDecMedium.setMinimumIntegerDigits(1);
-        formatDecMedium.setMinimumFractionDigits(7);
-        formatDecMedium.setMaximumFractionDigits(7);
-        formatDecLong.setMinimumIntegerDigits(1);
-        formatDecLong.setMinimumFractionDigits(30);
-        formatDecLong.setMaximumFractionDigits(30);
-        formatDecFlexShort.setMinimumIntegerDigits(1);
-        formatDecFlexShort.setMinimumFractionDigits(0);
-        formatDecFlexShort.setMaximumFractionDigits(3);
-        formatDecFlex.setMinimumIntegerDigits(1);
-        formatDecFlex.setMinimumFractionDigits(0);
-        formatDecFlex.setMaximumFractionDigits(7);
-        formatDecFlexLong.setMinimumIntegerDigits(1);
-        formatDecFlexLong.setMinimumFractionDigits(0);
-        formatDecFlexLong.setMaximumFractionDigits(30);
-    }
-
-    private Format() {
+    public static DecimalFormat floatShort() {
+        DecimalFormat format = new DecimalFormat();
+        format.setMinimumIntegerDigits(1);
+        format.setMinimumFractionDigits(3);
+        format.setMaximumFractionDigits(3);
+        return format;
     }
 
     public static String floatShort(double value) {
-        return formatDecShort.format(value);
+        return floatShort().format(value);
+    }
+
+    public static DecimalFormat floatMedium() {
+        DecimalFormat format = new DecimalFormat();
+        format.setMinimumIntegerDigits(1);
+        format.setMinimumFractionDigits(7);
+        format.setMaximumFractionDigits(7);
+        return format;
     }
 
     public static String floatMedium(double value) {
-        return formatDecMedium.format(value);
+        return floatMedium().format(value);
+    }
+
+    public static DecimalFormat floatLong() {
+        DecimalFormat format = new DecimalFormat();
+        format.setMinimumIntegerDigits(1);
+        format.setMinimumFractionDigits(30);
+        format.setMaximumFractionDigits(30);
+        return format;
     }
 
     public static String floatLong(double value) {
-        return formatDecLong.format(value);
+        return floatLong().format(value);
+    }
+
+    public static DecimalFormat floatFlex() {
+        DecimalFormat format = new DecimalFormat();
+        format.setMinimumIntegerDigits(1);
+        format.setMinimumFractionDigits(0);
+        format.setMaximumFractionDigits(7);
+        return format;
     }
 
     public static String floatFlex(double value) {
-        if (Double.isNaN(value))
+        if (Double.isNaN(value)) {
             return "?";
-        if (Double.isInfinite(value))
+        }
+        if (Double.isInfinite(value)) {
             return Double.toString(value);
-        return formatDecFlex.format(value);
+        }
+        return floatFlex().format(value);
+    }
+
+    public static DecimalFormat floatFlexShort() {
+        DecimalFormat format = new DecimalFormat();
+        format.setMinimumIntegerDigits(1);
+        format.setMinimumFractionDigits(0);
+        format.setMaximumFractionDigits(3);
+        return format;
     }
 
     public static String floatFlexShort(double value) {
-        if (Double.isNaN(value))
+        if (Double.isNaN(value)) {
             return "?";
-        if (Double.isInfinite(value))
+        }
+        if (Double.isInfinite(value)) {
             return Double.toString(value);
-        return formatDecFlexShort.format(value);
+        }
+        return floatFlexShort().format(value);
+    }
+
+    public static DecimalFormat floatFlexLong() {
+        DecimalFormat format = new DecimalFormat();
+        format.setMinimumIntegerDigits(1);
+        format.setMinimumFractionDigits(0);
+        format.setMaximumFractionDigits(30);
+        return format;
     }
 
     public static String floatFlexLong(double value) {
-        if (Double.isNaN(value))
+        if (Double.isNaN(value)) {
             return "?";
-        if (Double.isInfinite(value))
+        }
+        if (Double.isInfinite(value)) {
             return Double.toString(value);
-        return formatDecFlexLong.format(value);
+        }
+        return floatFlexLong().format(value);
     }
 
     public static String pValueStars(double pValue) {
-        if (pValue > 0.1) return "";
-        if (pValue > 0.05) return ".";
-        if (pValue > 0.01) return "*";
-        if (pValue > 0.001) return "**";
+        if (pValue > 0.1) {
+            return "";
+        }
+        if (pValue > 0.05) {
+            return ".";
+        }
+        if (pValue > 0.01) {
+            return "*";
+        }
+        if (pValue > 0.001) {
+            return "**";
+        }
         return "***";
     }
 
@@ -111,5 +142,8 @@ public class Format {
             return floatMedium(pvalue);
         }
         return String.format("%10.2e", pvalue);
+    }
+
+    private Format() {
     }
 }

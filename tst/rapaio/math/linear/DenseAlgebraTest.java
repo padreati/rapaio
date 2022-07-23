@@ -21,11 +21,7 @@
 
 package rapaio.math.linear;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import static rapaio.sys.With.*;
 
@@ -329,7 +325,7 @@ public class DenseAlgebraTest {
                     [1] 0.714 0.857 1.000 1.143\s
                     [2] 1.286 1.429 1.571 1.714\s
                     [3] 1.857 2.000 2.143 2.286\s
-                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.formatDecShort)));
+                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.floatShort())));
 
             assertEquals("""
                               [0]       [1]       [2]       [3]\s
@@ -337,7 +333,7 @@ public class DenseAlgebraTest {
                     [1] 0.7142857 0.8571429 1.0000000 1.1428571\s
                     [2] 1.2857143 1.4285714 1.5714286 1.7142857\s
                     [3] 1.8571429 2.0000000 2.1428571 2.2857143\s
-                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.formatDecMedium)));
+                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.floatMedium())));
 
             assertEquals("""
                                                      [0]                              [1]                              [2]\s
@@ -352,7 +348,7 @@ public class DenseAlgebraTest {
                     [2] 1.714285714285714200000000000000\s
                     [3] 2.285714285714285600000000000000\s
                                         
-                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.formatDecLong)));
+                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.floatLong())));
         }
     }
 
