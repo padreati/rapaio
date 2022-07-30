@@ -1,23 +1,21 @@
 /*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
  *
- *  * Apache License
- *  * Version 2.0, January 2004
- *  * http://www.apache.org/licenses/
- *  *
- *  * Copyright 2013 - 2022 Aurelian Tutuianu
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *  http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
@@ -185,25 +183,25 @@ public class CsvTest {
 
         // test skip first 10 rows
 
-        Frame r1 = Csv.instance().skipRows.set(IntRule.from(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)).read(Datasets.class, "iris-r.csv");
-        Frame r2 = Csv.instance().skipRows.set(row -> row < 10).read(Datasets.class, "iris-r.csv");
-        Frame r3 = Csv.instance().skipRows.set(IntRule.range(10, 150).negate()).read(Datasets.class, "iris-r.csv");
+        Frame r1 = Csv.instance().keepRows.set(IntRule.from(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).negate()).read(Datasets.class, "iris-r.csv");
+        Frame r2 = Csv.instance().keepRows.set(row -> row >= 10).read(Datasets.class, "iris-r.csv");
+        Frame r3 = Csv.instance().keepRows.set(IntRule.range(10, 150)).read(Datasets.class, "iris-r.csv");
 
         assertTrue(r1.deepEquals(r2));
         assertTrue(r1.deepEquals(r3));
 
         // test skip row % 2 == 0 and between 50 and 100
 
-        Frame r5 = Csv.instance().startRow.set(50).endRow.set(100).skipRows.set(row -> row % 2 == 0).read(Datasets.class, "iris-r.csv");
+        Frame r5 = Csv.instance().startRow.set(50).endRow.set(100).keepRows.set(row -> row % 2 != 0).read(Datasets.class, "iris-r.csv");
         assertEquals(25, r5.rowCount());
         assertEquals("?", r5.rvar("class").levels().get(0));
         assertEquals("virginica", r5.rvar("class").levels().get(1));
 
         // test skip vars 0 and 2
 
-        Frame v1 = Csv.instance().skipCols.set(IntRule.from(0, 2)).read(Datasets.class, "iris-r.csv");
-        Frame v2 = Csv.instance().skipCols.set(i -> i == 0 || i == 2).read(Datasets.class, "iris-r.csv");
-        Frame v3 = Csv.instance().skipCols.set(IntRule.from(1, 3, 4).negate()).read(Datasets.class, "iris-r.csv");
+        Frame v1 = Csv.instance().keepCols.set(IntRule.from(0, 2).negate()).read(Datasets.class, "iris-r.csv");
+        Frame v2 = Csv.instance().keepCols.set(i -> i != 0 && i != 2).read(Datasets.class, "iris-r.csv");
+        Frame v3 = Csv.instance().keepCols.set(IntRule.from(1, 3, 4)).read(Datasets.class, "iris-r.csv");
 
         assertEquals(3, v1.varCount());
         assertTrue(v1.deepEquals(v2));
@@ -212,8 +210,8 @@ public class CsvTest {
         // test mixed
 
         Frame m1 = Csv.instance()
-                .skipRows.set(IntRule.range(20, 30).negate())
-                .skipCols.set(IntRule.less(2))
+                .keepRows.set(IntRule.range(20, 30))
+                .keepCols.set(IntRule.geq(2))
                 .read(Datasets.class, "iris-r.csv");
         assertEquals(10, m1.rowCount());
         assertEquals(3, m1.varCount());

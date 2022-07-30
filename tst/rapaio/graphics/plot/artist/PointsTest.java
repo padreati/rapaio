@@ -56,8 +56,6 @@ public class PointsTest extends AbstractArtistTest {
         Var y = df.rvar(1).dv().add(11).log1p().dv();
         Var h = VarDouble.from(x.size(), row -> Math.pow(Math.hypot(x.getDouble(row), y.getDouble(row)), 1.5));
 
-        h.printSummary();
-
         Figure fig = gridLayer(2, 2)
                 .add(points(x))
                 .add(points(x, y, pch(2), fill(2), color(1)))

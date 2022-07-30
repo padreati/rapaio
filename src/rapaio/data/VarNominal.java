@@ -282,7 +282,7 @@ public final class VarNominal extends AbstractVar {
         grow(rows + 1);
         if (!reverse.containsKey(label)) {
             if (dict.size() == Short.MAX_VALUE - 1) {
-                throw new IllegalStateException("Cannot add new label since dictionary achieved it's maximum size.");
+                throw new IllegalStateException("Cannot add new label since dictionary achieved it's maximum size for variable: %s.".formatted(name()));
             }
             dict.add(label);
             reverse.put(label, (short) reverse.size());

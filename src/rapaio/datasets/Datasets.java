@@ -222,14 +222,14 @@ public class Datasets {
 
     public static Frame loadVowelTrain() {
         return Csv.instance()
-                .skipCols.set(t -> t == 0)
+                .keepCols.set(t -> t != 0)
                 .types.add(VarType.NOMINAL, "y")
                 .readUrl("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/vowel.train");
     }
 
     public static Frame loadVowelTest() {
         return Csv.instance()
-                .skipCols.set(t -> t == 0)
+                .keepCols.set(t -> t != 0)
                 .types.add(VarType.NOMINAL, "y")
                 .readUrl("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/vowel.test");
     }

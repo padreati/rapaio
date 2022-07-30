@@ -136,12 +136,12 @@ public class Csv extends ParamSet<Csv> {
     /**
      * Skip rows predicate used to filter rows to be read. All row indexes matched by this predicate will not be read.
      */
-    public final ValueParam<IntRule, Csv> skipRows = new ValueParam<>(this, IntRule.all().negate(), "skipRows");
+    public final ValueParam<IntRule, Csv> keepRows = new ValueParam<>(this, IntRule.all(), "skipRows");
 
     /**
      * Skip columns predicate used to filter columns to be read. All column indexes matched by this predicate will not be read.
      */
-    public final ValueParam<IntRule, Csv> skipCols = new ValueParam<>(this, row -> false, "skipCols");
+    public final ValueParam<IntRule, Csv> keepCols = new ValueParam<>(this, IntRule.all(), "skipCols");
 
     /**
      * Optional frame templated used to define variable names and type for reading. This overrides auto detection of field names and
@@ -209,7 +209,7 @@ public class Csv extends ParamSet<Csv> {
                 names = parseLine(line);
             }
 
-            while (skipRows.get().test(allRowsNum)) {
+            while (!keepRows.get().test(allRowsNum)) {
                 reader.readLine();
                 allRowsNum += 1;
             }
@@ -222,7 +222,7 @@ public class Csv extends ParamSet<Csv> {
                 }
 
                 allRowsNum += 1;
-                if (skipRows.get().test(allRowsNum - 1)) {
+                if (!keepRows.get().test(allRowsNum - 1)) {
                     continue;
                 }
 
@@ -326,7 +326,7 @@ public class Csv extends ParamSet<Csv> {
                 }
             }
 
-            if (!skipCols.get().test(colNum)) {
+            if (keepCols.get().test(colNum)) {
                 data.add(clean(line.substring(start, end)));
             }
 

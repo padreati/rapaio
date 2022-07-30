@@ -21,9 +21,10 @@
 
 package rapaio.ml.model.km;
 
-import static java.lang.StrictMath.*;
+import static java.lang.StrictMath.abs;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Random;
 
@@ -75,7 +76,7 @@ public class MWKMeansTest {
     @Test
     void irisTestGlobalWeights() {
         Frame iris = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
-        iris = iris.fapply(Jitter.on(1, VarRange.all()));
+        iris = iris.fapply(Jitter.on(new Random(42), 1, VarRange.all()));
         Var target = Datasets.loadIrisDataset().rvar(4);
 
         double p = 3;
