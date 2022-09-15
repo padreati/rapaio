@@ -150,6 +150,22 @@ public class VarInstant extends AbstractVar {
     }
 
     @Override
+    public float getFloat(int row) {
+        return data[row].toEpochMilli();
+    }
+
+    @Override
+    public void setFloat(int row, float value) {
+        data[row] = Instant.ofEpochMilli((long) value);
+    }
+
+    @Override
+    public void addFloat(float value) {
+        ensureCapacity(rows + 1);
+        data[rows++] = Instant.ofEpochMilli((long) value);
+    }
+
+    @Override
     public double getDouble(int row) {
         return data[row].toEpochMilli();
     }

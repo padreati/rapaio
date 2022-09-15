@@ -23,6 +23,11 @@ package rapaio.data;
 
 import java.io.Serial;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import com.pivovarit.collectors.ParallelCollectors;
 
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -100,18 +105,20 @@ public abstract class AbstractFrame implements Frame {
 
         sb.append("* summary: \n");
 
-        tt = TextTable.empty(8, 2 * varCount());
+        var tt2 = TextTable.empty(8, 2 * varCount());
 
-        for (int i = 0; i < varCount(); i++) {
-            tt.textRight(0, i * 2, " " + rvar(i).name());
-            tt.textLeft(0, i * 2 + 1, "[" + rvar(i).type().code() + "]");
-
-            if (rvar(i) instanceof AbstractVar) {
-
-                ((AbstractVar) rvar(i)).fillSummary(tt, i * 2, i * 2 + 1);
+        var executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
+        IntStream.range(0, varCount()).boxed().collect(ParallelCollectors.parallelToStream(i -> {
+            tt2.textRight(0, i * 2, " " + rvar(i).name());
+            tt2.textLeft(0, i * 2 + 1, "[" + rvar(i).type().code() + "]");
+            if (rvar(i) instanceof AbstractVar av) {
+                av.fillSummary(tt2, i * 2, i * 2 + 1);
             }
-        }
-        sb.append(tt.getDynamicText(printer, options)).append("\n");
+            return 0;
+        }, executor, Runtime.getRuntime().availableProcessors() - 1)).collect(Collectors.toList());
+        executor.shutdown();
+
+        sb.append(tt2.getDynamicText(printer, options)).append("\n");
         return sb.toString();
     }
 

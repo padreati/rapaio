@@ -109,6 +109,21 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
+    public float getFloat(int row) {
+        return source.getFloat(mapping.get(row));
+    }
+
+    @Override
+    public void setFloat(int row, float value) {
+        source.setFloat(mapping.get(row), value);
+    }
+
+    @Override
+    public void addFloat(float value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
     public double getDouble(int row) {
         return source.getDouble(mapping.get(row));
     }

@@ -213,6 +213,38 @@ public final class VarBinary extends AbstractVar {
     }
 
     @Override
+    public float getFloat(int row) {
+        if (isMissing(row)) return VarFloat.MISSING_VALUE;
+        return values.get(row) ? 1.0f : 0.0f;
+    }
+
+    @Override
+    public void setFloat(int row, float value) {
+        if (value == 1.0) {
+            setInt(row, 1);
+            return;
+        }
+        if (value == 0.0) {
+            setInt(row, 0);
+            return;
+        }
+        setMissing(row);
+    }
+
+    @Override
+    public void addFloat(float value) {
+        if (value == 1.0) {
+            addInt(1);
+            return;
+        }
+        if (value == 0) {
+            addInt(0);
+            return;
+        }
+        addMissing();
+    }
+
+    @Override
     public double getDouble(int row) {
         if (isMissing(row)) return Double.NaN;
         return values.get(row) ? 1.0 : 0.0;

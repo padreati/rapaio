@@ -301,6 +301,27 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     @Override
+    public float getFloat(int row) {
+        if (isMissing(row))
+            return VarFloat.MISSING_VALUE;
+        return getInt(row);
+    }
+
+    @Override
+    public void setFloat(int row, float value) {
+        data[row] = Float.isNaN(value) ? MISSING_VALUE : (int) Math.rint(value);
+    }
+
+    @Override
+    public void addFloat(float value) {
+        if (Float.isNaN(value)) {
+            addMissing();
+        } else {
+            addInt((int) Math.rint(value));
+        }
+    }
+
+    @Override
     public double getDouble(int row) {
         if (isMissing(row))
             return VarDouble.MISSING_VALUE;

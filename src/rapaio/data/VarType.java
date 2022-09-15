@@ -65,6 +65,10 @@ public enum VarType {
      */
     NOMINAL("nom", VarNominal::empty),
     /**
+     * Numeric values stired in simple precision
+     */
+    FLOAT("flt", VarFloat::empty),
+    /**
      * Numeric values stored in double precision
      */
     DOUBLE("dbl", VarDouble::empty),

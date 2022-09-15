@@ -155,6 +155,23 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
+    public float getFloat(int row) {
+        int pos = findIndex(row);
+        return vars.get(pos).getFloat(localRow(pos, row));
+    }
+
+    @Override
+    public void setFloat(int row, float value) {
+        int pos = findIndex(row);
+        vars.get(pos).setFloat(localRow(pos, row), value);
+    }
+
+    @Override
+    public void addFloat(float value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
     public double getDouble(int row) {
         int pos = findIndex(row);
         return vars.get(pos).getDouble(localRow(pos, row));

@@ -202,7 +202,7 @@ public abstract class AbstractVar implements Var {
         switch (type()) {
             case BINARY -> fillSummaryBinary(this, tt, headerColIndex, valueColIndex);
             case NOMINAL, STRING -> fillSummaryLabel(this, tt, headerColIndex, valueColIndex);
-            case DOUBLE, INT, LONG -> fillSummaryDouble(this, tt, headerColIndex, valueColIndex);
+            case FLOAT, DOUBLE, INT, LONG -> fillSummaryDouble(this, tt, headerColIndex, valueColIndex);
             default -> {
             }
         }

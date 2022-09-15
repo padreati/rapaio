@@ -127,6 +127,21 @@ public class VarString extends AbstractVar {
     }
 
     @Override
+    public float getFloat(int row) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public void setFloat(int row, float value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public void addFloat(float value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
     public double getDouble(int row) {
         throw new OperationNotAvailableException();
     }

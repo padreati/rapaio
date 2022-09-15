@@ -130,7 +130,7 @@ public final class VarNominal extends AbstractVar {
     @Serial
     private static final long serialVersionUID = -7541719735879481349L;
     public static final String MISSING_VALUE = "?";
-    private static final int missingIndex = 0;
+    private static final int MISSING_INDEX = 0;
 
     private int rows;
     private ArrayList<String> dict;
@@ -242,6 +242,21 @@ public final class VarNominal extends AbstractVar {
     }
 
     @Override
+    public float getFloat(int row) {
+        return data[row];
+    }
+
+    @Override
+    public void setFloat(int row, float value) {
+        setInt(row, (int) Math.rint(value));
+    }
+
+    @Override
+    public void addFloat(float value) {
+        addInt((int) Math.rint(value));
+    }
+
+    @Override
     public double getDouble(int row) {
         return data[row];
     }
@@ -264,7 +279,7 @@ public final class VarNominal extends AbstractVar {
     @Override
     public void setLabel(int row, String value) {
         if (value.equals(MISSING_VALUE)) {
-            data[row] = missingIndex;
+            data[row] = MISSING_INDEX;
             return;
         }
         if (!reverse.containsKey(value)) {
@@ -362,17 +377,17 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public boolean isMissing(int row) {
-        return missingIndex == getInt(row);
+        return MISSING_INDEX == getInt(row);
     }
 
     @Override
     public void setMissing(int row) {
-        setInt(row, missingIndex);
+        setInt(row, MISSING_INDEX);
     }
 
     @Override
     public void addMissing() {
-        addInt(missingIndex);
+        addInt(MISSING_INDEX);
     }
 
     @Override

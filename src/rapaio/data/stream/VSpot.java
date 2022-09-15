@@ -54,6 +54,22 @@ public record VSpot(int row, Var rvar) implements Comparable<VSpot>, Serializabl
     }
 
     /**
+     * @return numeric float value of the observation
+     */
+    public float getFloat() {
+        return rvar.getFloat(row);
+    }
+
+    /**
+     * Assigns a numeric value to the observation
+     *
+     * @param value given numeric value
+     */
+    public void setFloat(final float value) {
+        rvar.setFloat(row, value);
+    }
+
+    /**
      * @return numeric double value of the observation
      */
     public double getDouble() {

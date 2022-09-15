@@ -184,6 +184,32 @@ public interface Var extends Serializable, Printable {
     void addLong(long value);
 
     /**
+     * Returns numeric float value for the observation specified by row.
+     * <p>
+     * Returns valid values for numerical var types, otherwise the method
+     * returns unspecified value.
+     *
+     * @param row position of the observation
+     * @return numerical float value
+     */
+    float getFloat(int row);
+
+    /**
+     * Adds a new double value to the last position of the variable.
+     *
+     * @param value value to be added variable
+     */
+    void addFloat(float value);
+
+    /**
+     * Set double value for the observation specified by {@param row} to the given {@param value}.
+     *
+     * @param row   position of the observation
+     * @param value numeric double value from position {@param row}
+     */
+    void setFloat(int row, float value);
+
+    /**
      * Returns numeric double value for the observation specified by row.
      * <p>
      * Returns valid values for numerical var types, otherwise the method
@@ -208,6 +234,7 @@ public interface Var extends Serializable, Printable {
      * @param value numeric double value from position {@param row}
      */
     void setDouble(int row, double value);
+
 
     /**
      * Returns nominal label for the observation specified by {@param row}.
@@ -511,6 +538,11 @@ public interface Var extends Serializable, Printable {
                     break;
                 case LONG:
                     if (getLong(i) != var.getLong(i)) {
+                        return false;
+                    }
+                    break;
+                case INSTANT:
+                    if(!getInstant(i).equals(var.getInstant(i))) {
                         return false;
                     }
                     break;

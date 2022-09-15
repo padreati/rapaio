@@ -40,28 +40,30 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import rapaio.data.stream.VSpot;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorVar;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 /**
- * Builds a numeric double variable. Double variables stores data as double values
+ * Builds a numeric float variable. Float variables stores data as float values
  * and allows modelling of any type of continuous or discrete numeric variable.
  * <p>
- * The placeholder for missing value is Double.NaN. Any form of usage of Double.NaN
+ * The placeholder for missing value is Float.NaN. Any form of usage of Float.NaN
  * on set/add operation will result in a missing value.
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public final class VarDouble extends AbstractVar implements Iterable<Double> {
+public final class VarFloat extends AbstractVar implements Iterable<Float> {
 
     /**
      * @return new empty double variable of size 0
      */
-    public static VarDouble empty() {
-        return new VarDouble(0, 0, Double.NaN);
+    public static VarFloat empty() {
+        return new VarFloat(0, 0, MISSING_VALUE);
     }
 
     /**
@@ -70,8 +72,8 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param rows size of the variable
      * @return new instance of numeric var
      */
-    public static VarDouble empty(int rows) {
-        return new VarDouble(rows, rows, Double.NaN);
+    public static VarFloat empty(int rows) {
+        return new VarFloat(rows, rows, MISSING_VALUE);
     }
 
     /**
@@ -80,14 +82,14 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param values given values
      * @return new instance of numeric variable
      */
-    public static VarDouble copy(Collection<? extends Number> values) {
-        double[] data = new double[values.size()];
+    public static VarFloat copy(Collection<? extends Number> values) {
+        float[] data = new float[values.size()];
         Iterator<? extends Number> it = values.iterator();
         int pos = 0;
         while (it.hasNext()) {
-            data[pos++] = it.next().doubleValue();
+            data[pos++] = it.next().floatValue();
         }
-        return VarDouble.wrapArray(data.length, data);
+        return VarFloat.wrapArray(data.length, data);
     }
 
     /**
@@ -96,12 +98,12 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param values given numeric values
      * @return new instance of numeric variable
      */
-    public static VarDouble copy(int... values) {
-        double[] data = new double[values.length];
+    public static VarFloat copy(int... values) {
+        float[] data = new float[values.length];
         for (int i = 0; i < values.length; i++) {
             data[i] = values[i];
         }
-        return VarDouble.wrapArray(values.length, data);
+        return VarFloat.wrapArray(values.length, data);
     }
 
     /**
@@ -110,8 +112,8 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param values given numeric values
      * @return new instance of numeric variable
      */
-    public static VarDouble copy(double... values) {
-        VarDouble numeric = new VarDouble(values.length, values.length, 0);
+    public static VarFloat copy(float... values) {
+        VarFloat numeric = new VarFloat(values.length, values.length, 0);
         numeric.data = Arrays.copyOf(values, values.length);
         return numeric;
     }
@@ -122,15 +124,15 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param source source numeric var
      * @return new instance of numeric variable
      */
-    public static VarDouble copy(Var source) {
-        VarDouble numeric = new VarDouble(source.size(), source.size(), 0).name(source.name());
-        if (!(source instanceof VarDouble)) {
-            for (int i = 0; i < source.size(); i++) {
-                numeric.data[i] = source.getDouble(i);
-            }
-        } else {
-            double[] srcArray = ((VarDouble) source).data;
+    public static VarFloat copy(Var source) {
+        VarFloat numeric = new VarFloat(source.size(), source.size(), 0).name(source.name());
+        if (source instanceof VarFloat fsource) {
+            float[] srcArray = fsource.data;
             System.arraycopy(srcArray, 0, numeric.data, 0, source.size());
+        } else {
+            for (int i = 0; i < source.size(); i++) {
+                numeric.data[i] = source.getFloat(i);
+            }
         }
         return numeric;
     }
@@ -141,8 +143,8 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param values wrapped array of doubles
      * @return new instance of numeric variable
      */
-    public static VarDouble wrap(double... values) {
-        VarDouble numeric = new VarDouble(0, 0, 0);
+    public static VarFloat wrap(float... values) {
+        VarFloat numeric = new VarFloat(0, 0, 0);
         numeric.data = values;
         numeric.rows = values.length;
         return numeric;
@@ -154,8 +156,8 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param values wrapped array of doubles
      * @return new instance of numeric variable
      */
-    public static VarDouble wrapArray(int size, double... values) {
-        VarDouble numeric = new VarDouble(0, 0, 0);
+    public static VarFloat wrapArray(int size, float... values) {
+        VarFloat numeric = new VarFloat(0, 0, 0);
         numeric.data = values;
         numeric.rows = size;
         return numeric;
@@ -167,8 +169,8 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param rows size of the variable
      * @return new instance of numeric variable of given size and filled with 0
      */
-    public static VarDouble fill(int rows) {
-        return new VarDouble(rows, rows, 0);
+    public static VarFloat fill(int rows) {
+        return new VarFloat(rows, rows, 0);
     }
 
     /**
@@ -178,18 +180,18 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param fill fill value used to set all the values
      * @return new instance of double variable of given size and filled with given value
      */
-    public static VarDouble fill(int rows, double fill) {
-        return new VarDouble(rows, rows, fill);
+    public static VarFloat fill(int rows, float fill) {
+        return new VarFloat(rows, rows, fill);
     }
 
     /**
-     * Builds a double variable of size 1 filled with given value
+     * Builds a float variable of size 1 filled with given value
      *
      * @param value fill value
      * @return new instance of numeric variable of size 1 and filled with given fill value
      */
-    public static VarDouble scalar(double value) {
-        return new VarDouble(1, 1, value);
+    public static VarFloat scalar(float value) {
+        return new VarFloat(1, 1, value);
     }
 
     /**
@@ -199,24 +201,24 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param end exclusive end of the sequence
      * @return new instance double variable filled with sequence
      */
-    public static VarDouble seq(double end) {
+    public static VarFloat seq(float end) {
         return seq(0, end);
     }
 
     /**
-     * Builds a new double variable with values starting from start, step 1,
+     * Builds a new float variable with values starting from start, step 1,
      * and ending inclusive with end
      *
      * @param start start of the sequence
      * @param end   inclusive end of the sequence
      * @return new instance double variable filled with sequence
      */
-    public static VarDouble seq(double start, double end) {
-        return seq(start, end, 1.0);
+    public static VarFloat seq(float start, float end) {
+        return seq(start, end, 1.0f);
     }
 
     /**
-     * Builds a new double variable with values starting from start,
+     * Builds a new float variable with values starting from start,
      * to inclusive end and given step.
      *
      * @param start inclusive start of the sequence
@@ -224,8 +226,8 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param step  step of the sequence
      * @return new instance double variable filled with sequence
      */
-    public static VarDouble seq(double start, double end, double step) {
-        VarDouble num = VarDouble.empty();
+    public static VarFloat seq(float start, float end, float step) {
+        VarFloat num = VarFloat.empty();
         int pos = 0;
         double current = start;
         while (current <= end) {
@@ -237,15 +239,15 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     /**
-     * Builds a new double variable from a double supplier functional.
+     * Builds a new float variable from a float supplier functional.
      *
      * @param rows     number of rows
      * @param supplier supplier of double values
      * @return new instance of double values
      */
-    public static VarDouble from(int rows, Supplier<Double> supplier) {
-        VarDouble numeric = new VarDouble(0, 0, 0);
-        numeric.data = new double[rows];
+    public static VarFloat from(int rows, Supplier<Float> supplier) {
+        VarFloat numeric = new VarFloat(0, 0, 0);
+        numeric.data = new float[rows];
         numeric.rows = rows;
         for (int i = 0; i < rows; i++) {
             numeric.data[i] = supplier.get();
@@ -261,9 +263,9 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param transformation transformation function
      * @return new double variable which contains the computed values
      */
-    public static VarDouble from(int rows, Function<Integer, Double> transformation) {
-        VarDouble numeric = new VarDouble(0, 0, 0);
-        numeric.data = new double[rows];
+    public static VarFloat from(int rows, Function<Integer, Float> transformation) {
+        VarFloat numeric = new VarFloat(0, 0, 0);
+        numeric.data = new float[rows];
         numeric.rows = rows;
         for (int i = 0; i < rows; i++) {
             numeric.data[i] = transformation.apply(i);
@@ -279,14 +281,14 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param transform transformation applied to source variable
      * @return new numeric variable which contains transformed variables
      */
-    public static VarDouble from(Var reference, Function<Double, Double> transform) {
-        return VarDouble.from(reference.size(), i -> transform.apply(reference.getDouble(i)));
+    public static VarFloat from(Var reference, Function<Float, Float> transform) {
+        return VarFloat.from(reference.size(), i -> transform.apply(reference.getFloat(i)));
     }
 
     @Serial
     private static final long serialVersionUID = -3167416341273129670L;
-    public static final double MISSING_VALUE = Double.NaN;
-    private double[] data;
+    public static final float MISSING_VALUE = Float.NaN;
+    private float[] data;
     private int rows;
 
     /**
@@ -296,40 +298,40 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @param capacity capacity of the array
      * @param fill     fill value for the array
      */
-    private VarDouble(int rows, int capacity, double fill) {
+    private VarFloat(int rows, int capacity, float fill) {
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
         }
-        this.data = new double[capacity];
+        this.data = new float[capacity];
         this.rows = rows;
         if (fill != 0) {
             Arrays.fill(data, 0, rows, fill);
         }
     }
 
-    public static Collector<Double, VarDouble, VarDouble> collector() {
+    public static Collector<Float, VarFloat, VarFloat> collector() {
 
         return new Collector<>() {
             @Override
-            public Supplier<VarDouble> supplier() {
-                return VarDouble::empty;
+            public Supplier<VarFloat> supplier() {
+                return VarFloat::empty;
             }
 
             @Override
-            public BiConsumer<VarDouble, Double> accumulator() {
-                return VarDouble::addDouble;
+            public BiConsumer<VarFloat, Float> accumulator() {
+                return VarFloat::addDouble;
             }
 
             @Override
-            public BinaryOperator<VarDouble> combiner() {
+            public BinaryOperator<VarFloat> combiner() {
                 return (x, y) -> {
-                    y.stream().forEach(s -> x.addDouble(s.getDouble()));
+                    y.stream().forEach(s -> x.addFloat(s.getFloat()));
                     return x;
                 };
             }
 
             @Override
-            public Function<VarDouble, VarDouble> finisher() {
+            public Function<VarFloat, VarFloat> finisher() {
                 return var -> var;
             }
 
@@ -341,13 +343,13 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    public VarDouble name(String name) {
-        return (VarDouble) super.name(name);
+    public VarFloat name(String name) {
+        return (VarFloat) super.name(name);
     }
 
     @Override
     public VarType type() {
-        return VarType.DOUBLE;
+        return VarType.FLOAT;
     }
 
     private void ensureCapacity(int minCapacity) {
@@ -366,15 +368,15 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         return rows;
     }
 
-    public boolean isMissingValue(double value) {
-        return Double.isNaN(value);
+    public boolean isMissingValue(float value) {
+        return Float.isNaN(value);
     }
 
-    public double[] elements() {
+    public float[] elements() {
         return data;
     }
 
-    public void setElements(double[] values, int rowCount) {
+    public void setElements(float[] values, int rowCount) {
         data = values;
         rows = rowCount;
     }
@@ -402,25 +404,22 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public boolean isMissing(int row) {
-        return Double.isNaN(data[row]);
+        return Float.isNaN(data[row]);
     }
 
     @Override
     public void setMissing(int row) {
-        setDouble(row, MISSING_VALUE);
+        setFloat(row, MISSING_VALUE);
     }
 
     @Override
     public void addMissing() {
-        addDouble(MISSING_VALUE);
+        addFloat(MISSING_VALUE);
     }
 
     @Override
     public float getFloat(int row) {
-        if(isMissing(row)) {
-            return Float.NaN;
-        }
-        return (float)data[row];
+        return data[row];
     }
 
     @Override
@@ -441,13 +440,13 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public void setDouble(int row, double value) {
-        data[row] = value;
+        data[row] = (float) value;
     }
 
     @Override
     public void addDouble(double value) {
         ensureCapacity(rows + 1);
-        data[rows++] = value;
+        data[rows++] = (float)value;
     }
 
     @Override
@@ -474,18 +473,18 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     @Override
     public void setLabel(int row, String value) {
         if (VarNominal.MISSING_VALUE.equals(value)) {
-            data[row] = Double.NaN;
+            data[row] = Float.NaN;
             return;
         }
         if ("Inf".equals(value)) {
-            data[row] = Double.POSITIVE_INFINITY;
+            data[row] = Float.POSITIVE_INFINITY;
             return;
         }
         if ("-Inf".equals(value)) {
-            data[row] = Double.NEGATIVE_INFINITY;
+            data[row] = Float.NEGATIVE_INFINITY;
             return;
         }
-        data[row] = Double.parseDouble(value);
+        data[row] = Float.parseFloat(value);
     }
 
     @Override
@@ -495,14 +494,14 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
             return;
         }
         if ("Inf".equals(value)) {
-            addDouble(Double.POSITIVE_INFINITY);
+            addFloat(Float.POSITIVE_INFINITY);
             return;
         }
         if ("-Inf".equals(value)) {
-            addDouble(Double.NEGATIVE_INFINITY);
+            addFloat(Float.NEGATIVE_INFINITY);
             return;
         }
-        addDouble(Double.parseDouble(value));
+        addFloat(Float.parseFloat(value));
     }
 
     @Override
@@ -522,7 +521,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public void setLong(int row, long value) {
-        data[row] = Double.parseDouble(String.valueOf(value));
+        data[row] = Float.parseFloat(String.valueOf(value));
     }
 
     @Override
@@ -535,7 +534,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         if (value == VarInstant.MISSING_VALUE) {
             addMissing();
         } else {
-            addDouble(value.toEpochMilli());
+            addFloat(value.toEpochMilli());
         }
     }
 
@@ -544,7 +543,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         if (value == VarInstant.MISSING_VALUE) {
             setMissing(row);
         } else {
-            setDouble(row, value.toEpochMilli());
+            setFloat(row, value.toEpochMilli());
         }
     }
 
@@ -558,12 +557,12 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public Var newInstance(int rows) {
-        return VarDouble.empty(rows);
+        return VarFloat.empty(rows);
     }
 
     @Override
-    public VarDouble copy() {
-        VarDouble copy = new VarDouble(0, 0, 0).name(name());
+    public VarFloat copy() {
+        VarFloat copy = new VarFloat(0, 0, 0).name(name());
         copy.data = Arrays.copyOf(data, rows);
         copy.rows = rows;
         return copy;
@@ -571,12 +570,15 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public DVector dv() {
-        return new DVectorDense(0, rows, data);
+        return new DVectorVar<>(this);
     }
 
     @Override
     public DVector dvNew() {
-        double[] values = Arrays.copyOf(data, size());
+        double[] values = new double[size()];
+        for (int i = 0; i < size(); i++) {
+            values[i] = data[i];
+        }
         return new DVectorDense(0, size(), values);
     }
 
@@ -584,22 +586,22 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(size());
         for (int i = 0; i < size(); i++) {
-            out.writeDouble(data[i]);
+            out.writeFloat(data[i]);
         }
     }
 
     @Serial
     private void readObject(ObjectInputStream in) throws IOException {
         rows = in.readInt();
-        data = new double[rows];
+        data = new float[rows];
         for (int i = 0; i < rows; i++) {
-            data[i] = in.readDouble();
+            data[i] = in.readFloat();
         }
     }
 
     @Override
     protected String toStringClassName() {
-        return "VarDouble";
+        return "VarFloat";
     }
 
     @Override
@@ -613,12 +615,12 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
             tt.textCenter(i, j, "?");
         } else {
             DecimalFormat format = printer.getOptions().bind(options).floatFormat();
-            tt.floatString(i, j, format.format(getDouble(row)));
+            tt.floatString(i, j, format.format(getFloat(row)));
         }
     }
 
     @Override
-    public Iterator<Double> iterator() {
-        return stream().mapToDouble().iterator();
+    public Iterator<Float> iterator() {
+        return stream().map(VSpot::getFloat).iterator();
     }
 }

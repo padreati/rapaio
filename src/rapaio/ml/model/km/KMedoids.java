@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -128,7 +129,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
     void coreFitAlternate(DMatrix x) {
         LOGGER.fine("Starting core fit for alternate method.");
         LOGGER.finest("Initialize centroids as random instances.");
-        int[] centroidIndexes = SamplingTools.sampleWOR(x.rows(), k.get());
+        int[] centroidIndexes = SamplingTools.sampleWOR(new Random(seed.get()), x.rows(), k.get());
         LOGGER.finest("medoid indexes: " + Arrays.stream(centroidIndexes)
                 .mapToObj(String::valueOf).collect(Collectors.joining(",")));
         c = x.mapRowsNew(centroidIndexes);

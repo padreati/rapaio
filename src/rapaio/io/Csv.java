@@ -70,8 +70,8 @@ public class Csv extends ParamSet<Csv> {
         return new Csv();
     }
 
-    private static final VarType[] DEFAULT_TYPES =
-            new VarType[] {VarType.BINARY, VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING};
+    private static final List<VarType> DEFAULT_TYPES = new ArrayList<>(List.of(
+            VarType.BINARY, VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING));
 
     private Csv() {
     }
@@ -118,7 +118,7 @@ public class Csv extends ParamSet<Csv> {
      * List of automated field types to be tried in the given order during automatic field type detection
      */
     public final ListParam<VarType, Csv> defaultTypes =
-            new ListParam<>(this, List.of(VarType.BINARY, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING), "defaultTypes",
+            new ListParam<>(this, DEFAULT_TYPES, "defaultTypes",
                     (in, out) -> true);
     /**
      * Specifies the first row number to be collected from csv file. By default, this value is 0,

@@ -21,7 +21,9 @@
 
 package rapaio.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -143,7 +145,7 @@ public class SamplingToolsTest {
         final int TRIALS = 10_000;
         final int SAMPLES = 100;
         for (int i = 0; i < TRIALS; i++) {
-            for (int next : SamplingTools.sampleWeightedWR(SAMPLES, w)) {
+            for (int next : SamplingTools.sampleWeightedWR(random, SAMPLES, w)) {
                 freq.increment(next, 1);
             }
         }

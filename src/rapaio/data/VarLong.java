@@ -371,6 +371,21 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
+    public float getFloat(int row) {
+        return getLong(row);
+    }
+
+    @Override
+    public void setFloat(int row, float value) {
+        setLong(row, (long) Math.rint(value));
+    }
+
+    @Override
+    public void addFloat(float value) {
+        addLong((long) Math.rint(value));
+    }
+
+    @Override
     public double getDouble(int row) {
         return getLong(row);
     }
