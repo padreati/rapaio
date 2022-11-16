@@ -21,8 +21,6 @@
 
 package rapaio.ml.model.ensemble;
 
-import static com.pivovarit.collectors.ParallelCollectors.*;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +46,7 @@ import rapaio.ml.model.tree.RTree;
 import rapaio.ml.model.tree.rtree.Splitter;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
+import rapaio.util.parralel.ParallelStreamCollector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
@@ -117,7 +116,7 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
         int threads = computeThreads();
         ExecutorService executor = Executors.newWorkStealingPool(threads);
         IntStream.range(0, runs.get()).boxed()
-                .collect(parallelToOrderedStream(s -> buildWeakPredictor(df, weights, s, seeds[s]), executor, threads))
+                .collect(ParallelStreamCollector.streamingOrdered(s -> buildWeakPredictor(df, weights, s, seeds[s]), executor, threads))
                 .forEach(info -> {
                     regressions.add(info.model);
                     runningHook.get().accept(RunInfo.forRegression(this, info.run));

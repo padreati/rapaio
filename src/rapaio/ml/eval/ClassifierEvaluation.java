@@ -27,8 +27,6 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.pivovarit.collectors.ParallelCollectors;
-
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.common.param.ListParam;
@@ -42,6 +40,7 @@ import rapaio.ml.eval.split.SplitStrategy;
 import rapaio.ml.eval.split.StratifiedKFold;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
+import rapaio.util.parralel.ParallelStreamCollector;
 
 /**
  * Classifier evaluation tool.
@@ -118,7 +117,7 @@ public class ClassifierEvaluation extends ParamSet<ClassifierEvaluation> {
         List<Split> splits = splitStrategy.get().generateSplits(data.get(), weights.get(), getRandom());
         ClassifierEvaluationResult result = new ClassifierEvaluationResult(this);
 
-        splits.stream().collect(ParallelCollectors.parallelToOrderedStream(split -> {
+        splits.stream().collect(ParallelStreamCollector.streamingOrdered(split -> {
                     var m = model.get().newInstance();
                     m.fit(split.trainDf(), targetName.get());
                     var trainResult = m.predict(split.trainDf(), true, true);

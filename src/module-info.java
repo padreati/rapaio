@@ -9,7 +9,6 @@ open module rapaio {
     requires javafx.graphics;
     requires javafx.fxml;
     requires javafx.swing;
-    requires parallel.collectors;
 
     requires jdk.incubator.vector;
 

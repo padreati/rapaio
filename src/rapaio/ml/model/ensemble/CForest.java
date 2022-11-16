@@ -21,8 +21,6 @@
 
 package rapaio.ml.model.ensemble;
 
-import static com.pivovarit.collectors.ParallelCollectors.*;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,6 +61,7 @@ import rapaio.ml.model.tree.ctree.Node;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
+import rapaio.util.parralel.ParallelStreamCollector;
 
 /**
  * Breiman random forest implementation.
@@ -247,7 +246,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
 
         ExecutorService executor = Executors.newWorkStealingPool(threads);
         IntStream.range(0, runs.get()).boxed()
-                .collect(parallelToOrderedStream(s -> buildWeakPredictor(df, weights, s, seeds[s]), executor, threads))
+                .collect(ParallelStreamCollector.streamingOrdered(s -> buildWeakPredictor(df, weights, s, seeds[s]), executor, threads))
                 .forEach(info -> {
                     predictors.add(info.model);
                     if (oob.get()) {

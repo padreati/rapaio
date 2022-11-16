@@ -27,12 +27,11 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.pivovarit.collectors.ParallelCollectors;
-
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.sys.WS;
+import rapaio.util.parralel.ParallelStreamCollector;
 
 /**
  * Base abstract class for a frame, which provides behavior for the utility
@@ -108,7 +107,7 @@ public abstract class AbstractFrame implements Frame {
         var tt2 = TextTable.empty(8, 2 * varCount());
 
         var executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
-        IntStream.range(0, varCount()).boxed().collect(ParallelCollectors.parallelToStream(i -> {
+        IntStream.range(0, varCount()).boxed().collect(ParallelStreamCollector.streaming(i -> {
             tt2.textRight(0, i * 2, " " + rvar(i).name());
             tt2.textLeft(0, i * 2 + 1, "[" + rvar(i).type().code() + "]");
             if (rvar(i) instanceof AbstractVar av) {
