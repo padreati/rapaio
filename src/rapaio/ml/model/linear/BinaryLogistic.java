@@ -37,7 +37,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.common.param.ValueParam;
+import rapaio.util.param.ValueParam;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;

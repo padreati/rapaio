@@ -47,10 +47,10 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarString;
 import rapaio.data.VarType;
-import rapaio.ml.common.param.ListParam;
-import rapaio.ml.common.param.MultiListParam;
-import rapaio.ml.common.param.ParamSet;
-import rapaio.ml.common.param.ValueParam;
+import rapaio.util.param.ListParam;
+import rapaio.util.param.MultiListParam;
+import rapaio.util.param.ParamSet;
+import rapaio.util.param.ValueParam;
 import rapaio.util.IntRule;
 
 /**

@@ -25,9 +25,21 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ShapeTest {
+
+    private Random random;
+
+    @BeforeEach
+    void beforeEach() {
+        random = new Random(42);
+    }
 
     @Test
     void builderTest() {
@@ -47,8 +59,8 @@ public class ShapeTest {
 
     void checkTensor(Shape shape, int... dims) {
         assertArrayEquals(shape.dims(), dims);
-        assertEquals(shape.size(), dims.length);
-        for(int i=0; i<dims.length; i++) {
+        assertEquals(shape.rank(), dims.length);
+        for (int i = 0; i < dims.length; i++) {
             assertEquals(dims[i], shape.dim(i));
         }
     }
@@ -60,5 +72,57 @@ public class ShapeTest {
 
         e = assertThrows(IllegalArgumentException.class, () -> Shape.of(0, 0));
         assertEquals("Invalid shape dimension: [0,0]", e.getMessage());
+    }
+
+    @Test
+    void testPositionAndIndex() {
+        for (int i = 0; i < 100; i++) {
+            int rank = random.nextInt(6) + 1;
+            int[] dims = new int[rank];
+            for (int j = 0; j < rank; j++) {
+                dims[j] = random.nextInt(4) + 1;
+            }
+            Shape shape = Shape.of(dims);
+
+            for (int j = 0; j < shape.size(); j++) {
+                assertEquals(j, shape.position(Tensor.Order.RowMajor, shape.index(Tensor.Order.RowMajor, j)));
+                assertEquals(j, shape.position(Tensor.Order.ColMajor, shape.index(Tensor.Order.ColMajor, j)));
+            }
+        }
+    }
+
+    @Test
+    void testInvalidOrderPosition() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Shape.of(1,2,3).position(Tensor.Order.Storage));
+        assertEquals("Position order not allowed.", ex.getMessage());
+    }
+
+    @Test
+    void testInvalidOrderIndex() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Shape.of(1,2,3).index(Tensor.Order.Storage, 0));
+        assertEquals("Indexing order not allowed.", ex.getMessage());
+    }
+
+    @Test
+    void testEqualsAndHash() {
+        Set<Shape> set = new HashSet<>();
+        for (int i = 0; i < 50; i++) {
+            int rank = random.nextInt(6)+1;
+            int[] dims = new int[rank];
+            for (int j = 0; j < rank; j++) {
+                dims[j] = random.nextInt(4)+1;
+            }
+            Shape shape = Shape.of(dims);
+            set.add(shape);
+        }
+
+        Set<Shape> copy = new HashSet<>();
+        copy.addAll(set);
+        copy.addAll(set);
+
+        Shape[] shapes1 = set.toArray(Shape[]::new);
+        Shape[] shapes2 = copy.toArray(Shape[]::new);
+
+        assertArrayEquals(shapes1, shapes2);
     }
 }

@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.ml.common.param;
+package rapaio.util.param;
 
 /**
  * Interface implemented by any class used as parameter.

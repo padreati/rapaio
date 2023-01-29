@@ -30,7 +30,7 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.common.param.ListParam;
+import rapaio.util.param.ListParam;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;

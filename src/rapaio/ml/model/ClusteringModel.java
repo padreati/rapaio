@@ -35,8 +35,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.common.param.ParamSet;
-import rapaio.ml.common.param.ValueParam;
+import rapaio.util.param.ParamSet;
+import rapaio.util.param.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.util.function.SConsumer;
 

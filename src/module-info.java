@@ -46,6 +46,9 @@ open module rapaio {
     exports rapaio.io;
 
     exports rapaio.math;
+    exports rapaio.math.tensor;
+    exports rapaio.math.tensor.iterators;
+    exports rapaio.math.tensor.storage;
     exports rapaio.math.functions;
     exports rapaio.math.linear;
     exports rapaio.math.linear.dense;
@@ -104,5 +107,5 @@ open module rapaio {
     exports rapaio.experiment.core;
     exports rapaio.printer.idea;
     exports rapaio.math.linear.base;
-    exports rapaio.ml.common.param;
+    exports rapaio.util.param;
 }

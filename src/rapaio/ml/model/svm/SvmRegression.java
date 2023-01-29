@@ -30,7 +30,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
-import rapaio.ml.common.param.ValueParam;
+import rapaio.util.param.ValueParam;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;

@@ -111,6 +111,14 @@ public final class IntArrays {
         return data;
     }
 
+    public static int[] newPermutation(int[] array, int[] permutation) {
+        int[] copy = new int[array.length];
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = array[permutation[i]];
+        }
+        return copy;
+    }
+
     public static IntStream stream(int[] array, int start, int end) {
         return Arrays.stream(array, start, end);
     }

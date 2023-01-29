@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.ml.common.param;
+package rapaio.util.param;
 
 import java.io.Serial;
 import java.util.Arrays;

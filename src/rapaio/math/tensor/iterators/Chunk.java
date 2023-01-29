@@ -19,17 +19,7 @@
  *
  */
 
-package rapaio.math.tensor;
+package rapaio.math.tensor.iterators;
 
-public abstract class NTensor<N extends Number, T extends NTensor<N, T>> {
-
-    private final Shape shape;
-
-    protected NTensor(Shape shape) {
-        this.shape = shape;
-    }
-
-    public Shape shape() {
-        return shape;
-    }
+public record Chunk(int start, int size) {
 }

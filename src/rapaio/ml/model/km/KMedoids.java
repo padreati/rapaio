@@ -43,7 +43,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.Manhattan;
-import rapaio.ml.common.param.ValueParam;
+import rapaio.util.param.ValueParam;
 import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.model.ClusteringResult;
 import rapaio.ml.model.RunInfo;

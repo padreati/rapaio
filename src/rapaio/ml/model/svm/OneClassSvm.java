@@ -30,7 +30,7 @@ import rapaio.data.VarInt;
 import rapaio.math.linear.DMatrix;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
-import rapaio.ml.common.param.ValueParam;
+import rapaio.util.param.ValueParam;
 import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.model.ClusteringResult;
 import rapaio.ml.model.RunInfo;

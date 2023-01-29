@@ -39,8 +39,8 @@ import rapaio.math.linear.decomposition.DoubleCholeskyDecomposition;
 import rapaio.math.optimization.Solver;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.ml.common.param.ParamSet;
-import rapaio.ml.common.param.ValueParam;
+import rapaio.util.param.ParamSet;
+import rapaio.util.param.ValueParam;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.

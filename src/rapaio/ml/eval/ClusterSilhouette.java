@@ -30,8 +30,8 @@ import java.util.Objects;
 
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Var;
-import rapaio.ml.common.param.ParamSet;
-import rapaio.ml.common.param.ValueParam;
+import rapaio.util.param.ParamSet;
+import rapaio.util.param.ValueParam;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;

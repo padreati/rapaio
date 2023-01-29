@@ -35,9 +35,9 @@ import java.util.concurrent.TimeUnit;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.ml.common.param.ListParam;
-import rapaio.ml.common.param.ParamSet;
-import rapaio.ml.common.param.ValueParam;
+import rapaio.util.param.ListParam;
+import rapaio.util.param.ParamSet;
+import rapaio.util.param.ValueParam;
 import rapaio.ml.eval.metric.RegressionMetric;
 import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.Split;

@@ -35,7 +35,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.common.param.ValueParam;
+import rapaio.util.param.ValueParam;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.model.RegressionModel;

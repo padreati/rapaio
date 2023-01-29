@@ -51,7 +51,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ClassWeights;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.common.param.ValueParam;
+import rapaio.util.param.ValueParam;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
