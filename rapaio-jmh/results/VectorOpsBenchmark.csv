@@ -1,0 +1,10 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"algebra.base.VectorOpsBenchmark.testCopySum","thrpt",1,10,12527.684594,1425.749715,"ops/ms",100
+"algebra.base.VectorOpsBenchmark.testCopySum","thrpt",1,10,1167.053859,64.062299,"ops/ms",1000
+"algebra.base.VectorOpsBenchmark.testCopySum","thrpt",1,10,11.201528,0.309923,"ops/ms",100000
+"algebra.base.VectorOpsBenchmark.testCopySum2","thrpt",1,10,17436.702790,2000.724295,"ops/ms",100
+"algebra.base.VectorOpsBenchmark.testCopySum2","thrpt",1,10,1054.193907,62.319291,"ops/ms",1000
+"algebra.base.VectorOpsBenchmark.testCopySum2","thrpt",1,10,13.109038,0.588133,"ops/ms",100000
+"algebra.base.VectorOpsBenchmark.testCopySum3","thrpt",1,10,18090.029633,1910.826973,"ops/ms",100
+"algebra.base.VectorOpsBenchmark.testCopySum3","thrpt",1,10,1085.235769,47.325128,"ops/ms",1000
+"algebra.base.VectorOpsBenchmark.testCopySum3","thrpt",1,10,12.983180,1.039418,"ops/ms",100000

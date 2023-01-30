@@ -51,7 +51,7 @@ KMeans. Additionaly there is a fair share of graphical tools and linear algebra 
 
 ## Installation
 
-Last published release on maven central is 4.0.0
+Last published release on maven central is 5.0.0-SNAPSHOT
 
        <dependency>
          <groupId>io.github.padreati</groupId>

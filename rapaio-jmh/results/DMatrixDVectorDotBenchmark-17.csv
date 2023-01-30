@@ -1,0 +1,21 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","avgt",1,5,0.073009,0.011523,"ms/op",10
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","avgt",1,5,0.284341,0.124799,"ms/op",100
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","avgt",1,5,0.795540,0.372568,"ms/op",250
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","avgt",1,5,1.793790,0.411916,"ms/op",500
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","avgt",1,5,5.461319,0.661927,"ms/op",1000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","avgt",1,5,19.530837,7.398439,"ms/op",2500
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","avgt",1,5,43.283813,4.054112,"ms/op",5000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","avgt",1,5,117.749570,4.086325,"ms/op",10000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","avgt",1,5,328.525599,200.381963,"ms/op",20000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","avgt",1,5,896.292800,404.262673,"ms/op",50000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","avgt",1,5,0.019840,0.002949,"ms/op",10
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","avgt",1,5,0.182651,0.129443,"ms/op",100
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","avgt",1,5,0.545757,0.049338,"ms/op",250
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","avgt",1,5,1.223446,0.217896,"ms/op",500
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","avgt",1,5,2.095689,0.136940,"ms/op",1000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","avgt",1,5,4.172870,0.694289,"ms/op",2500
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","avgt",1,5,7.350316,0.603020,"ms/op",5000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","avgt",1,5,13.354347,2.165504,"ms/op",10000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","avgt",1,5,25.096302,2.972565,"ms/op",20000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","avgt",1,5,64.065423,3.514715,"ms/op",50000

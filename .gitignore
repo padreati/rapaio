@@ -9,3 +9,10 @@
 /mkdocs/site/
 /rapaio/rapaio.iml
 /out/artifacts/rapaio_jar/rapaio.jar
+/rapaio-jmh/target/generated-sources/
+/rapaio-jmh/target/
+/rapaio-experimental/target/
+/rapaio-datasets/target/
+/rapaio-core/target/
+/rapaio-code-gen/target/
+/rapaio-demo/target/

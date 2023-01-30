@@ -1,0 +1,5 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotRC","avgt",1,5,1.697493,0.677398,"ms/op",250
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotRC","avgt",1,5,10.497766,1.122785,"ms/op",500
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotRC","avgt",1,5,105.446395,44.119016,"ms/op",1000
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotRC","avgt",1,5,1389.838042,529.260899,"ms/op",2000

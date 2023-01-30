@@ -1,0 +1,21 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","thrpt",1,5,14842.401457,462.429214,"ops/s",10
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","thrpt",1,5,4350.329122,879.727627,"ops/s",100
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","thrpt",1,5,1402.796052,325.057970,"ops/s",250
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","thrpt",1,5,611.783725,58.196692,"ops/s",500
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","thrpt",1,5,188.502136,5.587956,"ops/s",1000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","thrpt",1,5,54.418280,6.305868,"ops/s",2500
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","thrpt",1,5,23.719589,8.764903,"ops/s",5000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","thrpt",1,5,8.850223,1.003155,"ops/s",10000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","thrpt",1,5,3.786497,0.161043,"ops/s",20000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotBase","thrpt",1,5,1.368181,0.043627,"ops/s",50000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","thrpt",1,5,66125.364367,14409.399196,"ops/s",10
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","thrpt",1,5,7501.632355,619.868870,"ops/s",100
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","thrpt",1,5,2034.848318,211.062638,"ops/s",250
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","thrpt",1,5,901.539739,71.810572,"ops/s",500
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","thrpt",1,5,468.359322,49.742394,"ops/s",1000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","thrpt",1,5,235.875740,43.354794,"ops/s",2500
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","thrpt",1,5,136.078743,29.073221,"ops/s",5000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","thrpt",1,5,76.840456,11.308020,"ops/s",10000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","thrpt",1,5,38.962620,15.840875,"ops/s",20000
+"algebra.rapaio.DMatrixDVectorDotBenchmark.testDotDenseC","thrpt",1,5,15.730975,1.302146,"ops/s",50000

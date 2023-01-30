@@ -1,0 +1,17 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"algebra.rapaio.VectorLinearBenchmark.testAddDense","thrpt",1,5,19279.044174,484.972471,"ops/ms",100
+"algebra.rapaio.VectorLinearBenchmark.testAddDense","thrpt",1,5,5701.845369,1095.897394,"ops/ms",1000
+"algebra.rapaio.VectorLinearBenchmark.testAddDense","thrpt",1,5,562.830075,103.233873,"ops/ms",10000
+"algebra.rapaio.VectorLinearBenchmark.testAddDense","thrpt",1,5,1.126906,0.034369,"ops/ms",1000000
+"algebra.rapaio.VectorLinearBenchmark.testAddDenseCopy","thrpt",1,5,9976.100175,1901.505152,"ops/ms",100
+"algebra.rapaio.VectorLinearBenchmark.testAddDenseCopy","thrpt",1,5,940.461950,313.989538,"ops/ms",1000
+"algebra.rapaio.VectorLinearBenchmark.testAddDenseCopy","thrpt",1,5,91.335205,7.071431,"ops/ms",10000
+"algebra.rapaio.VectorLinearBenchmark.testAddDenseCopy","thrpt",1,5,0.709972,0.088713,"ops/ms",1000000
+"algebra.rapaio.VectorLinearBenchmark.testAddStride","thrpt",1,5,9975.382499,201.611685,"ops/ms",100
+"algebra.rapaio.VectorLinearBenchmark.testAddStride","thrpt",1,5,1510.301759,76.442453,"ops/ms",1000
+"algebra.rapaio.VectorLinearBenchmark.testAddStride","thrpt",1,5,167.761837,8.924591,"ops/ms",10000
+"algebra.rapaio.VectorLinearBenchmark.testAddStride","thrpt",1,5,0.977541,0.031399,"ops/ms",1000000
+"algebra.rapaio.VectorLinearBenchmark.testAddStrideCopy","thrpt",1,5,7315.855062,1135.600526,"ops/ms",100
+"algebra.rapaio.VectorLinearBenchmark.testAddStrideCopy","thrpt",1,5,1027.267339,475.397148,"ops/ms",1000
+"algebra.rapaio.VectorLinearBenchmark.testAddStrideCopy","thrpt",1,5,67.488436,3.593357,"ops/ms",10000
+"algebra.rapaio.VectorLinearBenchmark.testAddStrideCopy","thrpt",1,5,0.636699,0.107361,"ops/ms",1000000

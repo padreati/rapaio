@@ -1,0 +1,13 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"algebra.base.DoubleArrayMinBenchmark.testMinSimple","avgt",1,10,0.000094,0.000009,"ms/op",100
+"algebra.base.DoubleArrayMinBenchmark.testMinSimple","avgt",1,10,0.000406,0.000003,"ms/op",1000
+"algebra.base.DoubleArrayMinBenchmark.testMinSimple","avgt",1,10,0.003615,0.000111,"ms/op",10000
+"algebra.base.DoubleArrayMinBenchmark.testMinSimple","avgt",1,10,0.037269,0.000449,"ms/op",100000
+"algebra.base.DoubleArrayMinBenchmark.testMinSimple","avgt",1,10,0.545651,0.011587,"ms/op",1000000
+"algebra.base.DoubleArrayMinBenchmark.testMinSimple","avgt",1,10,5.702137,0.091096,"ms/op",10000000
+"algebra.base.DoubleArrayMinBenchmark.testMinVectorized","avgt",1,10,0.000081,0.000000,"ms/op",100
+"algebra.base.DoubleArrayMinBenchmark.testMinVectorized","avgt",1,10,0.000618,0.000007,"ms/op",1000
+"algebra.base.DoubleArrayMinBenchmark.testMinVectorized","avgt",1,10,0.006054,0.000080,"ms/op",10000
+"algebra.base.DoubleArrayMinBenchmark.testMinVectorized","avgt",1,10,0.078636,0.001433,"ms/op",100000
+"algebra.base.DoubleArrayMinBenchmark.testMinVectorized","avgt",1,10,0.749967,0.011681,"ms/op",1000000
+"algebra.base.DoubleArrayMinBenchmark.testMinVectorized","avgt",1,10,7.685265,0.042842,"ms/op",10000000
