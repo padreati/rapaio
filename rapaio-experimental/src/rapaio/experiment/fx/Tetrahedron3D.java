@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.fx;
+package rapaio.experiment.fx;
 
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;

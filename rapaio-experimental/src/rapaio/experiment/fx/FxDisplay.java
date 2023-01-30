@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.fx;
+package rapaio.experiment.fx;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

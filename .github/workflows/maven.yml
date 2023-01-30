@@ -33,6 +33,6 @@ jobs:
       uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files:  ${{ github.workspace }}/target/coverage-reports/jacoco/jacoco.xml
+        files:  ${{ github.workspace }}/rapaio-core/target/coverage-reports/jacoco/jacoco.xml
         fail_ci_if_error: false
         verbose: true

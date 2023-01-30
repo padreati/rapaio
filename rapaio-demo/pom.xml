@@ -5,11 +5,11 @@
     <parent>
         <artifactId>rapaio</artifactId>
         <groupId>io.github.padreati</groupId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>5.0.0</version>
     </parent>
 
     <artifactId>rapaio-demo</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.0.0</version>
 
     <name>rapaio-demo</name>
 
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-core</artifactId>
-            <version>5.0.0-SNAPSHOT</version>
+            <version>5.0.0</version>
         </dependency>
     </dependencies>
 
@@ -47,10 +47,10 @@
                 <version>3.10.1</version>
                 <configuration>
                     <fork>true</fork>
-                    <release>19</release>
+                    <release>${maven.compiler.release}</release>
                     <compilerArgs>--enable-preview</compilerArgs>
-                    <source>19</source>
-                    <target>19</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
             <plugin>

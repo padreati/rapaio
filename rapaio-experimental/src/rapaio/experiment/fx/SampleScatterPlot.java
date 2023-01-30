@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.fx;
+package rapaio.experiment.fx;
 
 import java.util.ArrayList;
 import java.util.List;
