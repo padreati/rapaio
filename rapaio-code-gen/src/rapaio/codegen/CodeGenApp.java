@@ -27,15 +27,14 @@ import java.util.List;
 
 public class CodeGenApp {
 
-    private static final String root = "/home/ati/work/rapaio/src/";
     private static final List<CodeGenTemplate> templates;
 
     static {
         templates = new ArrayList<>();
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/DTensor.java")
-                .dst.set("rapaio/math/tensor/FTensor.java")
+                .src.set("rapaio/experiment/math/tensor/DTensor.java")
+                .dst.set("rapaio/experiment/math/tensor/FTensor.java")
                 .replaces.set(
                         Replace.of("double", "float"),
                         Replace.of("Double", "Float"),
@@ -44,8 +43,8 @@ public class CodeGenApp {
                 )
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/DTensorDense.java")
-                .dst.set("rapaio/math/tensor/FTensorDense.java")
+                .src.set("rapaio/experiment/math/tensor/DTensorDense.java")
+                .dst.set("rapaio/experiment/math/tensor/FTensorDense.java")
                 .replaces.set(
                         Replace.of("double", "float"),
                         Replace.of("Double", "Float"),
@@ -54,8 +53,8 @@ public class CodeGenApp {
                 )
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/FTensorStride.java")
+                .src.set("rapaio/experiment/math/tensor/DTensorStride.java")
+                .dst.set("rapaio/experiment/math/tensor/FTensorStride.java")
                 .replaces.set(
                         Replace.of("double", "float"),
                         Replace.of("Double", "Float"),
@@ -65,8 +64,8 @@ public class CodeGenApp {
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/storage/DStorage.java")
-                .dst.set("rapaio/math/tensor/storage/FStorage.java")
+                .src.set("rapaio/experiment/math/tensor/storage/DStorage.java")
+                .dst.set("rapaio/experiment/math/tensor/storage/FStorage.java")
                 .replaces.set(
                         Replace.of("double", "float"),
                         Replace.of("Double", "Float"),
@@ -79,6 +78,10 @@ public class CodeGenApp {
     }
 
     public static void main(String[] args) {
+        if(args.length!=1) {
+            throw new IllegalArgumentException("Pass root as parameter.");
+        }
+        String root = args[0];
         templates.forEach(template -> {
             try {
                 template.run(root);

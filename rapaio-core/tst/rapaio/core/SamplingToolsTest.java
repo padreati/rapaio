@@ -68,7 +68,7 @@ public class SamplingToolsTest {
 
     @Test
     void testInvalidSizeSamplingWOR() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWOR(10, 100));
+        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWOR(random, 10, 100));
         assertEquals("Can't draw a sample without replacement bigger than population size.", ex.getMessage());
     }
 
@@ -76,7 +76,7 @@ public class SamplingToolsTest {
     void testSamplingWOR() {
         final int TRIALS = 100_000;
         VarDouble v = VarDouble.empty();
-        for (int next : SamplingTools.sampleWOR(TRIALS * 2, TRIALS)) {
+        for (int next : SamplingTools.sampleWOR(random, TRIALS * 2, TRIALS)) {
             v.addDouble(next);
         }
         double[] values = v.elements();
@@ -105,7 +105,7 @@ public class SamplingToolsTest {
 
         freq = DensityVector.emptyByLabels(w.length);
         for (int i = 0; i < TRIALS; i++) {
-            for (int next : SamplingTools.sampleWeightedWOR(1, w)) {
+            for (int next : SamplingTools.sampleWeightedWOR(random, 1, w)) {
                 freq.increment(next, 1);
             }
         }
@@ -115,26 +115,26 @@ public class SamplingToolsTest {
 
     @Test
     void testInvalidNullProbWR() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(10, null));
+        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(random, 10, null));
         assertEquals("Sampling probability array cannot be null.", ex.getMessage());
     }
 
     @Test
     void testInvalidNegativeProbabilities() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(2, new double[] {-1, 1}));
+        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(random, 2, new double[] {-1, 1}));
         assertEquals("Frequencies must be positive.", ex.getMessage());
     }
 
     @Test
     void testInvalidSizeWeightedWOR() {
         var ex = assertThrows(IllegalArgumentException.class,
-                () -> SamplingTools.sampleWeightedWOR(20, new double[] {0.1, 0.2, 0.3, 0.4}));
+                () -> SamplingTools.sampleWeightedWOR(random, 20, new double[] {0.1, 0.2, 0.3, 0.4}));
         assertEquals("Required sample size is bigger than population size.", ex.getMessage());
     }
 
     @Test
     void testInvalidSumZeroWeightedWR() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(2, new double[] {0, 0}));
+        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(random, 2, new double[] {0, 0}));
         assertEquals("Sum of frequencies must be strict positive.", ex.getMessage());
     }
 
@@ -159,7 +159,7 @@ public class SamplingToolsTest {
         Frame df = SolidFrame.byVars(VarDouble.seq(100).name("x"));
 
         double[] freq = new double[] {0.127, 0.5, 0.333};
-        Frame[] frames = SamplingTools.randomSampleSlices(df, freq);
+        Frame[] frames = SamplingTools.randomSampleSlices(random, df, freq);
 
         for (int i = 0; i < frames.length - 1; i++) {
             assertEquals(((int) (100 * freq[i])), frames[i].rowCount());

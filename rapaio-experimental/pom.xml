@@ -20,6 +20,11 @@
             <version>5.0.0</version>
         </dependency>
         <dependency>
+            <groupId>io.github.padreati</groupId>
+            <artifactId>rapaio-code-gen</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
             <version>19</version>
@@ -84,6 +89,26 @@
             </testResource>
         </testResources>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>Generate sources</id>
+                        <configuration>
+                            <mainClass>rapaio.codegen.CodeGenApp</mainClass>
+                            <arguments>
+                                <argument>${project.build.sourceDirectory}/</argument>
+                            </arguments>
+                        </configuration>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

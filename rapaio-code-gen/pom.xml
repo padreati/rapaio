@@ -9,9 +9,8 @@
     </parent>
 
     <artifactId>rapaio-code-gen</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
-
-    <name>rapaio-demo</name>
+    <version>5.0.0</version>
+    <name>rapaio-code-gen</name>
 
     <dependencies>
         <dependency>
