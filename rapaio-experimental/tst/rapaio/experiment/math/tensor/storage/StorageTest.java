@@ -28,6 +28,9 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.math.linear.DVector;
+import rapaio.util.collection.IntArrays;
+
 public class StorageTest {
 
     private Random random;
@@ -147,6 +150,7 @@ public class StorageTest {
     <N extends Number, S extends Storage<N>> void genericTestSuite(StorageProvider<N, S> storageProvider) {
         testBuilder(storageProvider);
         testFill(storageProvider);
+        testReverse(storageProvider);
         testAdd(storageProvider);
         testSub(storageProvider);
         testMul(storageProvider);
@@ -255,5 +259,18 @@ public class StorageTest {
         int index = storage.argMin(0, 100);
         assertEquals(min, storage.get(index));
         assertEquals(-1, storage.argMin(0, 0));
+    }
+
+    <N extends Number, S extends  Storage<N>> void testReverse(StorageProvider<N, S> provider) {
+        int[] array = IntArrays.newSeq(10_123);
+        IntArrays.shuffle(array, random);
+
+        Storage<N> storage = provider.wrap(IntArrays.copy(array));
+        storage.reverse(0, storage.size());
+        IntArrays.reverse(array);
+
+        for (int i = 0; i < array.length; i++) {
+            assertEquals(provider.value(array[i]), storage.get(i));
+        }
     }
 }

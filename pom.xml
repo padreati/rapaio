@@ -10,6 +10,12 @@
     <name>rapaio</name>
     <description>Rapaio Library</description>
     <url>https://github.com/padreati/rapaio</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
     <scm>
         <url>https://github.com/padreati/rapaio.git</url>
@@ -41,7 +47,6 @@
         <module>rapaio-datasets</module>
         <module>rapaio-experimental</module>
         <module>rapaio-jmh</module>
-        <module>rapaio-demo</module>
         <module>rapaio-code-gen</module>
     </modules>
 

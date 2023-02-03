@@ -3,7 +3,6 @@
     "match": [
       "rapaio*::*"
     ],
-    "inline": "+rapaio.math.linear.dense.DVectorDense.BinaryOp::*",
     "PrintInlining": false
   }
 ]

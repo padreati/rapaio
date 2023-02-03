@@ -1,4 +1,0 @@
-"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"misc.VectorizedArgMin.testArray","avgt",1,5,0.055087,0.025403,"ms/op",100000
-"misc.VectorizedArgMin.testVectorizedArray","avgt",1,5,0.026822,0.004513,"ms/op",100000
-"misc.VectorizedArgMin.testVectorizedMemorySegment","avgt",1,5,0.026019,0.002491,"ms/op",100000

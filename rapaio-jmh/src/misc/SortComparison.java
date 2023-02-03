@@ -49,7 +49,7 @@ import rapaio.util.collection.DoubleArrays;
 
 @BenchmarkMode( {Mode.Throughput})
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-public class VectorizedArgMin {
+public class SortComparison {
 
     @State(Scope.Benchmark)
     public static class VectorState {
@@ -70,32 +70,33 @@ public class VectorizedArgMin {
     }
 
     @Benchmark
-    public void testArray(VectorState s, Blackhole bh) {
-        bh.consume(DoubleArrays.reverse(s.darray));
+    public void testDoubleArray(VectorState s, Blackhole bh) {
+        DoubleArrays.quickSort(s.darray, 0, s.n);
+        bh.consume(s.darray);
     }
 
     @Benchmark
-    public void testVectorizedArray(VectorState s, Blackhole bh) {
-        s.dstorage.reverse(0, s.n);
+    public void testDStorage(VectorState s, Blackhole bh) {
+        s.dstorage.quickSort(0, s.n, true);
         bh.consume(s.dstorage);
     }
 
     @Benchmark
-    public void testVectorizedArrayFloat(VectorState s, Blackhole bh) {
-        s.fstorage.reverse(0, s.n);
-        bh.consume(s.fstorage);
+    public void testFStorage(VectorState s, Blackhole bh) {
+        s.fstorage.quickSort(0, s.n, true);
+        bh.consume(s.dstorage);
     }
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-                .include(misc.VectorizedArgMin.class.getSimpleName())
+                .include(SortComparison.class.getSimpleName())
                 .warmupTime(TimeValue.seconds(2))
                 .warmupIterations(3)
                 .measurementTime(TimeValue.seconds(2))
                 .measurementIterations(5)
                 .forks(1)
                 .resultFormat(ResultFormatType.CSV)
-                .result(Utils.resultPath(misc.VectorizedArgMin.class))
+                .result(Utils.resultPath(SortComparison.class))
                 .build();
 
         new Runner(opt).run();

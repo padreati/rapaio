@@ -79,8 +79,8 @@ public class CTreePerformance {
                 return dict[random.nextDouble() < 0.1 ? modIn : modOut];
             }, dict).name("x2");
 
-            VarNominal yTrue = VarNominal.from(n, row -> "1", new String[] {"1", "0"}).name("target");
-            VarNominal yFalse = VarNominal.from(n, row -> "0", new String[] {"1", "0"}).name("target");
+            VarNominal yTrue = VarNominal.from(n, row -> "1", "1", "0").name("target");
+            VarNominal yFalse = VarNominal.from(n, row -> "0", "1", "0").name("target");
 
             df = SolidFrame.byVars(x1True, x2True, yTrue)
                     .bindRows(SolidFrame.byVars(x1False, x2False, yFalse))

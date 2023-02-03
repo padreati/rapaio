@@ -23,7 +23,7 @@ package algebra;
 
 public class Utils {
 
-    private static final String RESULT_PREFIX = "/home/ati/work/rapaio-jmh/results/";
+    private static final String RESULT_PREFIX = "/home/ati/work/rapaio/rapaio-jmh/results/";
     private static final String RESULT_SUFFIX = ".csv";
 
     public static String resultPath(Class<?> clazz) {
