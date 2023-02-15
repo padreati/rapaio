@@ -6,7 +6,7 @@
     <groupId>io.github.padreati</groupId>
     <artifactId>rapaio</artifactId>
     <packaging>pom</packaging>
-    <version>5.0.0</version>
+    <version>5.0.1</version>
     <name>rapaio</name>
     <description>Rapaio Library</description>
     <url>https://github.com/padreati/rapaio</url>
@@ -43,11 +43,11 @@
     </properties>
 
     <modules>
+        <module>rapaio-code-gen</module>
         <module>rapaio-core</module>
         <module>rapaio-datasets</module>
         <module>rapaio-experimental</module>
         <module>rapaio-jmh</module>
-        <module>rapaio-code-gen</module>
     </modules>
 
     <distributionManagement>

@@ -26,11 +26,11 @@
     <parent>
         <artifactId>rapaio</artifactId>
         <groupId>io.github.padreati</groupId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </parent>
 
     <artifactId>rapaio-jmh</artifactId>
-    <version>5.0.0</version>
+    <version>5.0.1</version>
     <packaging>jar</packaging>
 
     <name>JMH benchmark for rapaio library</name>
@@ -57,12 +57,12 @@
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-core</artifactId>
-            <version>5.0.0</version>
+            <version>5.0.1</version>
         </dependency>
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-experimental</artifactId>
-            <version>5.0.0</version>
+            <version>5.0.1</version>
         </dependency>
     </dependencies>
 

@@ -47,6 +47,11 @@ module rapaio.core {
     exports rapaio.math.optimization;
     exports rapaio.math.optimization.linesearch;
     exports rapaio.math.optimization.scalar;
+    exports rapaio.math.tensor;
+    exports rapaio.math.tensor.storage;
+    exports rapaio.math.tensor.storage.array;
+    exports rapaio.math.tensor.manager;
+    exports rapaio.math.tensor.iterators;
 
     exports rapaio.ml.common;
     exports rapaio.ml.common.distance;

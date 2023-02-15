@@ -5,20 +5,12 @@
     <parent>
         <artifactId>rapaio</artifactId>
         <groupId>io.github.padreati</groupId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </parent>
 
     <artifactId>rapaio-code-gen</artifactId>
-    <version>5.0.0</version>
+    <version>5.0.1</version>
     <name>rapaio-code-gen</name>
-
-    <dependencies>
-        <dependency>
-            <groupId>io.github.padreati</groupId>
-            <artifactId>rapaio-core</artifactId>
-            <version>5.0.0</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <sourceDirectory>src</sourceDirectory>

@@ -12,6 +12,4 @@ module rapaio.experimental {
     requires jdk.incubator.vector;
 
     requires rapaio.core;
-
-    exports rapaio.experiment.math.tensor.storage;
 }

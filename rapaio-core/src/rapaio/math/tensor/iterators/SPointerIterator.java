@@ -1,0 +1,89 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ * Copyright 2013 - 2022 Aurelian Tutuianu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package rapaio.math.tensor.iterators;
+
+import java.util.NoSuchElementException;
+
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.StrideAlgebra;
+import rapaio.util.collection.IntArrays;
+
+public final class SPointerIterator implements PointerIterator {
+
+    private final int[] dims;
+    private final int[] strides;
+    private final int[] index;
+    private final int size;
+    private int position = 0;
+    private int pointer;
+    private int newPointer;
+
+    public SPointerIterator(Shape shape, int offset, int[] strides) {
+        int[] priority = StrideAlgebra.computeStorageOrder(shape.dims(), strides);
+
+        this.dims = IntArrays.newPermutation(shape.dims(), priority);
+        this.strides = IntArrays.newPermutation(strides, priority);
+        this.size = Shape.of(dims).size();
+
+        this.index = new int[shape.rank()];
+        this.pointer = offset;
+        this.newPointer = offset;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return position < size;
+    }
+
+    @Override
+    public int nextInt() {
+        if (position >= size) {
+            throw new NoSuchElementException();
+        }
+        pointer = newPointer;
+        position++;
+        int i = 0;
+        if (dims.length > 0) {
+            index[i]++;
+            newPointer += strides[i];
+        }
+        while (i < strides.length) {
+            if (index[i] == dims[i]) {
+                index[i] = 0;
+                newPointer -= dims[i] * strides[i];
+                if (i < strides.length - 1) {
+                    index[i + 1]++;
+                    newPointer += strides[i + 1];
+                }
+                i++;
+                continue;
+            }
+            break;
+        }
+        return pointer;
+    }
+
+    @Override
+    public int position() {
+        return position - 1;
+    }
+}

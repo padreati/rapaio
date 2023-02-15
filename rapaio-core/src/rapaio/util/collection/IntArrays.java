@@ -121,8 +121,21 @@ public final class IntArrays {
         return data;
     }
 
+    /**
+     * Creates a new copy of the given array with values permuted according to
+     * the {@code permutation} index array.
+     * <p>
+     * Note that there is not index check for permutation index. The returned array
+     * has the same size as the permutation array. If values in permutation appears more than
+     * once, the corresponding values will appear multiple times, accordingly. If a value index
+     * is missing from permutation, the corresponding value will be missing so.
+     *
+     * @param array       original value array
+     * @param permutation permutation index array
+     * @return new permuted values
+     */
     public static int[] newPermutation(int[] array, int[] permutation) {
-        int[] copy = new int[array.length];
+        int[] copy = new int[permutation.length];
         for (int i = 0; i < copy.length; i++) {
             copy[i] = array[permutation[i]];
         }
