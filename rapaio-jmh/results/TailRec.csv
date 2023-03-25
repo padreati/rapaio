@@ -1,0 +1,19 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"unlinkedlist.TailRec.factorialRecursive","thrpt",1,5,752.730100,31.006926,"ops/us",1
+"unlinkedlist.TailRec.factorialRecursive","thrpt",1,5,240.871420,3.794116,"ops/us",3
+"unlinkedlist.TailRec.factorialRecursive","thrpt",1,5,190.019747,9.608780,"ops/us",5
+"unlinkedlist.TailRec.factorialRecursive","thrpt",1,5,90.465572,0.605172,"ops/us",10
+"unlinkedlist.TailRec.factorialRecursive","thrpt",1,5,66.180651,0.202183,"ops/us",15
+"unlinkedlist.TailRec.factorialRecursive","thrpt",1,5,48.237890,0.262501,"ops/us",20
+"unlinkedlist.TailRec.recursiveRecursiveOptimized","thrpt",1,5,311.408060,235.314189,"ops/us",1
+"unlinkedlist.TailRec.recursiveRecursiveOptimized","thrpt",1,5,295.529155,15.029622,"ops/us",3
+"unlinkedlist.TailRec.recursiveRecursiveOptimized","thrpt",1,5,256.084176,15.496656,"ops/us",5
+"unlinkedlist.TailRec.recursiveRecursiveOptimized","thrpt",1,5,189.249802,2.471131,"ops/us",10
+"unlinkedlist.TailRec.recursiveRecursiveOptimized","thrpt",1,5,146.089590,9.511516,"ops/us",15
+"unlinkedlist.TailRec.recursiveRecursiveOptimized","thrpt",1,5,106.145549,21.946215,"ops/us",20
+"unlinkedlist.TailRec.recursiveTailRecDelegate","thrpt",1,5,29.751359,3.002432,"ops/us",1
+"unlinkedlist.TailRec.recursiveTailRecDelegate","thrpt",1,5,15.980280,2.382504,"ops/us",3
+"unlinkedlist.TailRec.recursiveTailRecDelegate","thrpt",1,5,13.550567,0.422049,"ops/us",5
+"unlinkedlist.TailRec.recursiveTailRecDelegate","thrpt",1,5,8.681441,0.223956,"ops/us",10
+"unlinkedlist.TailRec.recursiveTailRecDelegate","thrpt",1,5,6.031064,0.250754,"ops/us",15
+"unlinkedlist.TailRec.recursiveTailRecDelegate","thrpt",1,5,4.684908,0.221109,"ops/us",20

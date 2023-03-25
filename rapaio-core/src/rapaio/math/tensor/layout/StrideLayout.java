@@ -68,7 +68,7 @@ public final class StrideLayout implements Layout {
                 }
                 yield colStrides;
             }
-            case default -> throw new IllegalArgumentException("Order type is invalid.");
+            default -> throw new IllegalArgumentException("Order type is invalid.");
         };
         return new StrideLayout(shape, offset, strides);
     }
