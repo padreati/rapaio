@@ -29,47 +29,20 @@
  *
  */
 
-package rapaio.math.tensor;
+package rapaio.experiment.asm;
 
-import java.util.Arrays;
+public class Factorial implements FactorialInterface {
 
-public final class Index {
-
-    private final Shape shape;
-    private final int[] sortOrder;
-    private final int[] idxs;
-
-    public Index(Shape shape, int[] sortOrder) {
-        this.shape = shape;
-        this.idxs = new int[shape.rank()];
-        this.sortOrder = Arrays.copyOf(sortOrder, sortOrder.length);
+    public long fact(int n) {
+        return factTailRec(n, 1L);
     }
 
-    public Index(Shape shape, Order order) {
-        this.shape = shape;
-        this.idxs = new int[shape.rank()];
-        this.sortOrder = computeSortOrder(order);
-    }
-
-    private int[] computeSortOrder(Order order) {
-        int[] so = new int[shape.rank()];
-        switch (order) {
-            case C -> {
-                for (int i = 0; i < shape.rank(); i++) {
-                    so[i] = i;
-                }
-            }
-            case F -> {
-                for (int i = 0; i < shape.rank(); i++) {
-                    so[so.length - 1 - i] = i;
-                }
-            }
-            default -> throw new IllegalArgumentException("Invalid order.");
+    private long factTailRec(int n, long ret) {
+        if (n < 1) {
+            return ret;
         }
-        return so;
-    }
-
-    public void next() {
-
+        ret *= n;
+        n -= 1;
+        return factTailRec(n, ret);
     }
 }

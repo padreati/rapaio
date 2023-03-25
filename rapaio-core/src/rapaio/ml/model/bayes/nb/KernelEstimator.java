@@ -113,15 +113,14 @@ public class KernelEstimator extends AbstractEstimator {
 
     @Override
     public String fittedName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Kernel{test=").append(testVarName);
-        sb.append(", kdes=[");
-        sb.append(kdes.entrySet().stream()
-                .map(e -> e.getKey() + ":{kfun=" + e.getValue().kernel().toString() + ",bw=" + Format.floatFlex(e.getValue().bandwidth()) + "}")
-                .collect(Collectors.joining(",")));
-        sb.append("]");
-        sb.append("}");
-        return sb.toString();
+        return "Kernel{test=" + testVarName
+                + ", kdes=["
+                + kdes.entrySet().stream()
+                .map(e -> e.getKey() + ":{kfun=" + e.getValue().kernel().toString() + ",bw=" + Format.floatFlex(e.getValue().bandwidth())
+                        + "}")
+                .collect(Collectors.joining(","))
+                + "]"
+                + "}";
     }
 
     @Override

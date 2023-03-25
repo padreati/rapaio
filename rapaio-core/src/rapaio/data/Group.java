@@ -392,13 +392,11 @@ public class Group implements Printable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("GroupBy{");
-        sb.append("keys:[").append(String.join(",", pkNames)).append("], ");
-        sb.append("group count:").append(groupIdToLastLevelIndex.size()).append(", ");
-        sb.append("row count:").append(df.rowCount());
-        sb.append("}");
-        return sb.toString();
+        return "GroupBy{"
+                + "keys:[" + String.join(",", pkNames) + "], "
+                + "group count:" + groupIdToLastLevelIndex.size() + ", "
+                + "row count:" + df.rowCount()
+                + "}";
     }
 
     @Override
@@ -664,12 +662,10 @@ public class Group implements Printable {
 
         @Override
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Group.Aggregate{");
-            sb.append("group=").append(group.toString()).append(", ");
-            sb.append("funs=[").append(funs.stream().map(GroupFun::toString).collect(Collectors.joining(","))).append("]");
-            sb.append("}");
-            return sb.toString();
+            return "Group.Aggregate{"
+                    + "group=" + group.toString() + ", "
+                    + "funs=[" + funs.stream().map(GroupFun::toString).collect(Collectors.joining(",")) + "]"
+                    + "}";
         }
 
         @Override

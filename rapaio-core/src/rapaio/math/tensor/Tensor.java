@@ -26,14 +26,18 @@ import rapaio.math.tensor.iterators.PointerIterator;
 import rapaio.math.tensor.storage.Storage;
 import rapaio.printer.Printable;
 
-public interface Tensor<N extends Number, S extends Storage<N>, T extends Tensor<N, S, T>> extends Printable {
+public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> extends Printable {
 
     TensorManager manager();
 
     /**
      * @return shape of the tensor
      */
-    Shape shape();
+    Layout layout();
+
+    default Shape shape() {
+        return layout().shape();
+    }
 
     S storage();
 
@@ -71,7 +75,7 @@ public interface Tensor<N extends Number, S extends Storage<N>, T extends Tensor
      * <p>
      * In order to reshape a tensor, the source shape and destination shape must have the same size.
      *
-     * @param shape destination shape
+     * @param shape    destination shape
      * @param askOrder destination order, if the data will be copied, otherwise the parameter is ignored.
      * @return new tensor instance, wrapping, if possible, the data from the old tensor.
      */
@@ -85,6 +89,59 @@ public interface Tensor<N extends Number, S extends Storage<N>, T extends Tensor
      * @return a transposed view of the tensor
      */
     Tensor<N, S, T> t();
+
+    /**
+     * Collapses the tensor into one dimension in the order given as parameter. It creates a new tensor copy
+     * only if needed (no stride could be created).
+     *
+     * @param askOrder order of the elements
+     * @return a tensor with elements in given order (new copy if needed)
+     */
+    Tensor<N, S, T> ravel(Order askOrder);
+
+    /**
+     * Creates a copy of the array, flattened into one dimension. The order of the elements is given as parameter.
+     *
+     * @param askOrder order of the elements
+     * @return a copy of the tensor with elements in asked order.
+     */
+    Tensor<N, S, T> flatten(Order askOrder);
+
+    /**
+     * Collapses all dimensions equal with one. This operation does not create a new copy of the data.
+     * If no dimensions have size one, the same tensor is returned.
+     *
+     * @return view of the same tensor with all dimensions equal with one collapsed
+     */
+    Tensor<N, S, T> squeeze();
+
+    /**
+     * Creates a new tensor view with source axis moved into the given destination position.
+     *
+     * @param src source axis
+     * @param dst destination axis position
+     * @return new view tensor with moved axis
+     */
+    Tensor<N, S, T> moveAxis(int src, int dst);
+
+    /**
+     * Swap two axis. This does not affect the storage.
+     *
+     * @param src source axis
+     * @param dst destination axis
+     * @return new view tensor with swapped axis
+     */
+    Tensor<N, S, T> swapAxis(int src, int dst);
+
+    //Tensor<N, S, T> concatenate(int axis, Tensor<N, S, T>...tensors);
+
+    //Tensor<N, S, T> stack(int axis, Tensor<N, S, T>...tensors);
+
+    //List<Tensor<N,S,T>> split(int...indexes);
+
+    // repeat(rep,axis)
+    // flip(axis)
+    // rotate(axis1,axis2)
 
     /**
      * Creates a copy of the original tensor with the given order. Only {@link Order#C} or {@link Order#F} are allowed.

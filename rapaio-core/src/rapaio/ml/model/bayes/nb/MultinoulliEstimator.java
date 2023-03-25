@@ -211,14 +211,14 @@ public class MultinoulliEstimator extends AbstractEstimator {
         }
         String testLabel = "?";
         switch (ourCase) {
-            case 1:
+            case 1 -> {
                 // single nominal variable
                 String testLabelNominal = df.getLabel(row, getTestNames().get(0));
                 if (density.rowIndex().containsValue(testLabelNominal)) {
                     testLabel = testLabelNominal;
                 }
-                break;
-            case 2:
+            }
+            case 2 -> {
                 // multiple binary variables
                 for (String testLabelBinary : density.rowIndex().getValues()) {
                     if (df.getInt(row, testLabelBinary) == 1) {
@@ -226,7 +226,7 @@ public class MultinoulliEstimator extends AbstractEstimator {
                         break;
                     }
                 }
-                break;
+            }
         }
         return density.get(testLabel, targetLevel);
     }

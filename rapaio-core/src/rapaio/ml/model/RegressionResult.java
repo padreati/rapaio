@@ -299,7 +299,7 @@ public class RegressionResult implements Printable {
                     .append(String.join("", nCopies(target.length(), "="))).append('\n');
 
             String fullSummary = SolidFrame.byVars(prediction(target), residual(target)).toSummary(printer, options);
-            List<String> list = Arrays.stream(fullSummary.split("\n")).skip(10).collect(Collectors.toList());
+            List<String> list = Arrays.stream(fullSummary.split("\n")).skip(10).toList();
             sb.append(list.stream().collect(Collectors.joining("\n", "", "\n")));
 
             double max = Math.max(Math.max(tss.get(target), ess.get(target)), rss.get(target));

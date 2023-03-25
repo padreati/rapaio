@@ -172,36 +172,32 @@ public class ADTestGoodness implements HTest {
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("> ADTestGoodness\n");
-        sb.append("\n");
-        sb.append("Anderson-Darling GoF Test\n");
-        sb.append("\n");
 
-        sb.append("Null hypothesis:\n");
-        sb.append("  sample is normally distributed\n");
-        sb.append("\n");
-
-        sb.append("sample size: ").append(x.size()).append("\n");
-        sb.append("given mean: ").append(floatFlex(mu)).append(", used mean : ").append(floatFlex(muHat)).append("\n");
-        sb.append("given sd  : ").append(floatFlex(sigma)).append(", used sd   : ").append(floatFlex(sigmaHat)).append("\n");
-        sb.append("\n");
-
-        sb.append("A^2  statistic: ")
-                .append(floatFlex(a2))
-                .append(", p-value: ")
-                .append(floatFlex(pValue))
-                .append(" ")
-                .append(pValueStars(pValue))
-                .append("\n");
-        sb.append("A*^2 statistic: ")
-                .append(floatFlex(a2star))
-                .append(", p-value: ")
-                .append(floatFlex(pValueStar))
-                .append(" ")
-                .append(pValueStars(pValueStar))
-                .append("\n");
-        sb.append("\n");
-        return sb.toString();
+        return "> ADTestGoodness\n"
+                + "\n"
+                + "Anderson-Darling GoF Test\n"
+                + "\n"
+                + "Null hypothesis:\n"
+                + "  sample is normally distributed\n"
+                + "\n"
+                + "sample size: " + x.size() + "\n"
+                + "given mean: " + floatFlex(mu) + ", used mean : " + floatFlex(muHat) + "\n"
+                + "given sd  : " + floatFlex(sigma) + ", used sd   : " + floatFlex(sigmaHat) + "\n"
+                + "\n"
+                + "A^2  statistic: "
+                + floatFlex(a2)
+                + ", p-value: "
+                + floatFlex(pValue)
+                + " "
+                + pValueStars(pValue)
+                + "\n"
+                + "A*^2 statistic: "
+                + floatFlex(a2star)
+                + ", p-value: "
+                + floatFlex(pValueStar)
+                + " "
+                + pValueStars(pValueStar)
+                + "\n"
+                + "\n";
     }
 }

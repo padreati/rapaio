@@ -44,11 +44,6 @@ public class HolteBinningTest {
 
     private static final double TOLERANCE = 1e-12;
 
-    @BeforeEach
-    void beforeEach() {
-
-    }
-
     @Test
     void testName() {
         assertEquals("HolteBinning(minCount=2)", new HolteBinning(2).name());

@@ -182,22 +182,30 @@ public class DensityTableTest {
         dt2.inc(1, 1, 19);
         dt2.inc(1, 2, 12);
 
-        assertEquals("              x         y         z     total \n" +
-                "    a 0.5555556 0.2692308 0.3333333 1.1581197 \n" +
-                "    b 0.4444444 0.7307692 0.6666667 1.8418803 \n" +
-                "total 1         1         1         3         \n", dt2.normalizeOnCols().toSummary());
+        assertEquals("""
+                              x         y         z     total\s
+                    a 0.5555556 0.2692308 0.3333333 1.1581197\s
+                    b 0.4444444 0.7307692 0.6666667 1.8418803\s
+                total 1         1         1         3        \s
+                """, dt2.normalizeOnCols().toSummary());
 
-        assertEquals("              x         y         z     total \n" +
-                "    a 0.1612903 0.1129032 0.0967742 0.3709677 \n" +
-                "    b 0.1290323 0.3064516 0.1935484 0.6290323 \n" +
-                "total 0.2903226 0.4193548 0.2903226 1         \n", dt2.normalizeOverall().toSummary());
-        assertEquals("              x         y         z total \n" +
-                "    a 0.4347826 0.3043478 0.2608696   1   \n" +
-                "    b 0.2051282 0.4871795 0.3076923   1   \n" +
-                "total 0.6399108 0.7915273 0.5685619   2   \n", dt2.normalizeOnRows().toSummary());
-        assertEquals("              x         y         z     total \n" +
-                "    a 0.5555556 0.2692308 0.3333333 1.1581197 \n" +
-                "    b 0.4444444 0.7307692 0.6666667 1.8418803 \n" +
-                "total 1         1         1         3         \n", dt2.normalizeOnCols().toSummary());
+        assertEquals("""
+                              x         y         z     total\s
+                    a 0.1612903 0.1129032 0.0967742 0.3709677\s
+                    b 0.1290323 0.3064516 0.1935484 0.6290323\s
+                total 0.2903226 0.4193548 0.2903226 1        \s
+                """, dt2.normalizeOverall().toSummary());
+        assertEquals("""
+                              x         y         z total\s
+                    a 0.4347826 0.3043478 0.2608696   1  \s
+                    b 0.2051282 0.4871795 0.3076923   1  \s
+                total 0.6399108 0.7915273 0.5685619   2  \s
+                """, dt2.normalizeOnRows().toSummary());
+        assertEquals("""
+                              x         y         z     total\s
+                    a 0.5555556 0.2692308 0.3333333 1.1581197\s
+                    b 0.4444444 0.7307692 0.6666667 1.8418803\s
+                total 1         1         1         3        \s
+                """, dt2.normalizeOnCols().toSummary());
     }
 }

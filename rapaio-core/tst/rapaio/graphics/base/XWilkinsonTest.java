@@ -136,7 +136,7 @@ public class XWilkinsonTest {
         XWilkinson.Labels labels = x.search(dmin, dmax, 15);
         System.out.println("labels");
         for (double time = labels.getMin(); time < labels.getMax(); time += labels.getStep()) {
-            LocalTime lt = LocalTime.ofSecondOfDay(Double.valueOf(time).intValue() * 60);
+            LocalTime lt = LocalTime.ofSecondOfDay(Double.valueOf(time).intValue() * 60L);
             System.out.println(lt);
         }
     }

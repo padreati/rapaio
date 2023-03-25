@@ -32,48 +32,27 @@
 package rapaio.math.tensor.storage.array;
 
 import java.util.Arrays;
-import java.util.Random;
 
 import rapaio.math.tensor.storage.DStorage;
+import rapaio.math.tensor.storage.StorageFactory;
 
-public class DStorageArray implements DStorage {
+public final class DStorageArray implements DStorage {
 
-    public static DStorageArray wrap(double[] array) {
-        return new DStorageArray(array);
-    }
-
-    public static DStorageArray zeros(int size) {
-        return new DStorageArray(new double[size]);
-    }
-
-    public static DStorageArray fill(int size, double value) {
-        double[] array = new double[size];
-        if (value != 0) {
-            Arrays.fill(array, value);
-        }
-        return new DStorageArray(array);
-    }
-
-    public static DStorageArray random(int size, Random random) {
-        DStorageArray storage = zeros(size);
-        for (int i = 0; i < size; i++) {
-            storage.set(i, random.nextDouble());
-        }
-        return storage;
-    }
-
-    public static DStorageArray seq(int start, int end) {
-        DStorageArray storage = DStorageArray.zeros(end - start);
-        for (int i = 0; i < end - start; i++) {
-            storage.setValue(i, (double) (start + i));
-        }
-        return storage;
-    }
-
+    private final StorageFactory factory;
     private final double[] array;
 
-    private DStorageArray(double[] array) {
+    DStorageArray(StorageFactory factory, double[] array) {
+        this.factory = factory;
         this.array = array;
+
+        if (!(factory instanceof ArrayStorageFactory)) {
+            throw new IllegalArgumentException("Wrong type of storage factory.");
+        }
+    }
+
+    @Override
+    public StorageFactory storageFactory() {
+        return factory;
     }
 
     @Override
@@ -120,24 +99,35 @@ public class DStorageArray implements DStorage {
         }
     }
 
+    @Override
+    public void add(int start, DStorage from, int fStart, int len) {
+        for (int i = start, j = fStart; i < start + len; i++, j++) {
+            array[i] += from.get(j);
+        }
+    }
+
+    @Override
     public void sub(int start, int len, double v) {
         for (int i = start; i < start + len; i++) {
             array[i] -= v;
         }
     }
 
+    @Override
     public void mul(int start, int len, double v) {
         for (int i = start; i < start + len; i++) {
             array[i] *= v;
         }
     }
 
+    @Override
     public void div(int start, int len, double v) {
         for (int i = start; i < start + len; i++) {
             array[i] /= v;
         }
     }
 
+    @Override
     public double min(int start, int len) {
         if (len <= 0) {
             return Double.NaN;
@@ -168,6 +158,6 @@ public class DStorageArray implements DStorage {
 
     @Override
     public DStorageArray copy() {
-        return new DStorageArray(Arrays.copyOf(array, array.length));
+        return new DStorageArray(factory, Arrays.copyOf(array, array.length));
     }
 }

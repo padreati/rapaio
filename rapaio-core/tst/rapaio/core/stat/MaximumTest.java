@@ -57,8 +57,10 @@ public class MaximumTest {
         Maximum maximum = Maximum.of(x);
         assertEquals(max, maximum.value(), TOL);
 
-        assertEquals("> maximum[?]\n" +
-                "total rows: 100 (complete: 85, missing: 15)\n" +
-                "maximum: 0.9908989\n", maximum.toSummary());
+        assertEquals("""
+                > maximum[?]
+                total rows: 100 (complete: 85, missing: 15)
+                maximum: 0.9908989
+                """, maximum.toSummary());
     }
 }

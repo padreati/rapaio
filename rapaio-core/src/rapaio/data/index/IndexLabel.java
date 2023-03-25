@@ -66,21 +66,20 @@ public class IndexLabel implements Index<String> {
     public static IndexLabel fromVarLevels(boolean withMissing, Var v) {
         List<String> levels;
         switch (v.type()) {
-            case NOMINAL:
+            case NOMINAL -> {
                 levels = v.levels();
                 if (!withMissing) {
                     levels = levels.subList(1, levels.size());
                 }
-                break;
-            case BINARY:
+            }
+            case BINARY -> {
                 if (withMissing) {
                     levels = Arrays.asList("?", "0", "1");
                 } else {
                     levels = Arrays.asList("0", "1");
                 }
-                break;
-            default:
-                throw new IllegalArgumentException("Builder from levels not available for this type of variable.");
+            }
+            default -> throw new IllegalArgumentException("Builder from levels not available for this type of variable.");
         }
         return new IndexLabel(levels);
     }

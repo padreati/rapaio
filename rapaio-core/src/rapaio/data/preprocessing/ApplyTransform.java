@@ -111,21 +111,21 @@ public class ApplyTransform extends AbstractTransform {
             int varIndex = df.varIndex(name);
 
             switch (type) {
-                case DOUBLE:
+                case DOUBLE -> {
                     for (int i = 0; i < df.rowCount(); i++) {
                         df.setDouble(i, varIndex, doubleFunction.apply(df.getDouble(i, varIndex)));
                     }
-                    break;
-                case INT:
+                }
+                case INT -> {
                     for (int i = 0; i < df.rowCount(); i++) {
                         df.setInt(i, varIndex, intFunction.applyAsInt(df.getInt(i, varIndex)));
                     }
-                    break;
-                case LABEL:
+                }
+                case LABEL -> {
                     for (int i = 0; i < df.rowCount(); i++) {
                         df.setLabel(i, varIndex, stringFunction.apply(df.getLabel(i, varIndex)));
                     }
-                    break;
+                }
             }
 
         }

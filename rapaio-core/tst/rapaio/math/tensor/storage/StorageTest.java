@@ -30,8 +30,7 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.tensor.storage.array.DStorageArray;
-import rapaio.math.tensor.storage.array.FStorageArray;
+import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 import rapaio.util.collection.IntArrays;
 
 public class StorageTest {
@@ -43,26 +42,36 @@ public class StorageTest {
         random = new Random(42);
     }
 
-    interface StorageProvider<N extends Number, S extends Storage<N>> {
+    abstract static class StorageProvider<N extends Number, S extends Storage<N, S>> {
 
-        N value(int value);
+        protected final StorageFactory storageFactory;
 
-        N randomValue(Random random);
+        public StorageProvider(StorageFactory storageFactory) {
+            this.storageFactory = storageFactory;
+        }
 
-        boolean isNaN(N value);
+        abstract N value(int value);
 
-        Storage<N> zeros(int size);
+        abstract N randomValue(Random random);
 
-        Storage<N> fill(int size, int value);
+        abstract boolean isNaN(N value);
 
-        Storage<N> seq(int size);
+        abstract S zeros(int size);
 
-        Storage<N> wrap(int[] array);
+        abstract S fill(int size, int value);
 
-        Storage<N> random(int size, Random random);
+        abstract S seq(int size);
+
+        abstract S wrap(int[] array);
+
+        abstract S random(int size, Random random);
     }
 
-    static class DStorageProvider implements StorageProvider<Double, DStorageArray> {
+    static class DStorageProvider extends StorageProvider<Double, DStorage> {
+
+        DStorageProvider(StorageFactory storageFactory) {
+            super(storageFactory);
+        }
 
         @Override
         public Double value(int value) {
@@ -80,36 +89,40 @@ public class StorageTest {
         }
 
         @Override
-        public Storage<Double> zeros(int size) {
-            return DStorageArray.zeros(size);
+        public DStorage zeros(int size) {
+            return storageFactory.ofDoubleZeros(size);
         }
 
         @Override
-        public Storage<Double> fill(int size, int value) {
-            return DStorageArray.fill(size, value);
+        public DStorage fill(int size, int value) {
+            return storageFactory.ofDoubleFill(size, value);
         }
 
         @Override
-        public Storage<Double> seq(int size) {
-            return DStorageArray.seq(0, size);
+        public DStorage seq(int size) {
+            return storageFactory.ofDoubleSeq(0, size);
         }
 
         @Override
-        public Storage<Double> random(int size, Random random) {
-            return DStorageArray.random(size, random);
+        public DStorage random(int size, Random random) {
+            return storageFactory.ofDoubleRandom(size, random);
         }
 
         @Override
-        public Storage<Double> wrap(int[] array) {
+        public DStorage wrap(int[] array) {
             double[] values = new double[array.length];
             for (int i = 0; i < array.length; i++) {
                 values[i] = array[i];
             }
-            return DStorageArray.wrap(values);
+            return storageFactory.ofDoubleWrap(values);
         }
     }
 
-    static class FStorageProvider implements StorageProvider<Float, FStorageArray> {
+    static class FStorageProvider extends StorageProvider<Float, FStorage> {
+
+        public FStorageProvider(StorageFactory storageFactory) {
+            super(storageFactory);
+        }
 
         @Override
         public Float value(int value) {
@@ -127,42 +140,42 @@ public class StorageTest {
         }
 
         @Override
-        public Storage<Float> zeros(int size) {
-            return FStorageArray.zeros(size);
+        public FStorage zeros(int size) {
+            return storageFactory.ofFloatZeros(size);
         }
 
         @Override
-        public Storage<Float> fill(int size, int value) {
-            return FStorageArray.fill(size, value);
+        public FStorage fill(int size, int value) {
+            return storageFactory.ofFloatFill(size, value);
         }
 
         @Override
-        public Storage<Float> seq(int size) {
-            return FStorageArray.seq(0, size);
+        public FStorage seq(int size) {
+            return storageFactory.ofFloatSeq(0, size);
         }
 
         @Override
-        public Storage<Float> random(int size, Random random) {
-            return FStorageArray.random(size, random);
+        public FStorage random(int size, Random random) {
+            return storageFactory.ofFloatRandom(size, random);
         }
 
         @Override
-        public Storage<Float> wrap(int[] array) {
+        public FStorage wrap(int[] array) {
             float[] values = new float[array.length];
             for (int i = 0; i < array.length; i++) {
                 values[i] = array[i];
             }
-            return FStorageArray.wrap(values);
+            return storageFactory.ofFloatWrap(values);
         }
     }
 
     @Test
     void genericTestRunner() {
-        genericTestSuite(new DStorageProvider());
-        genericTestSuite(new FStorageProvider());
+        genericTestSuite(new DStorageProvider(new ArrayStorageFactory()));
+        genericTestSuite(new FStorageProvider(new ArrayStorageFactory()));
     }
 
-    <N extends Number, S extends Storage<N>> void genericTestSuite(StorageProvider<N, S> storageProvider) {
+    <N extends Number, S extends Storage<N, S>> void genericTestSuite(StorageProvider<N, S> storageProvider) {
         testBuilder(storageProvider);
         testCopy(storageProvider);
         testFill(storageProvider);
@@ -174,25 +187,26 @@ public class StorageTest {
         testMinArgMin(storageProvider);
     }
 
-    <N extends Number, S extends Storage<N>> void testBuilder(StorageProvider<N, S> provider) {
+    <N extends Number, S extends Storage<N, S>> void testBuilder(StorageProvider<N, S> provider) {
 
-        Storage<N> storage = provider.zeros(10);
-        for (int i = 0; i < 10; i++) {
+        int len = random.nextInt(100) + 2;
+        Storage<N, S> storage = provider.zeros(len);
+        for (int i = 0; i < len; i++) {
             assertEquals(provider.value(0), storage.getValue(i));
         }
-        assertEquals(10, storage.size());
+        assertEquals(len, storage.size());
 
-        storage = provider.seq(10);
-        for (int i = 0; i < 10; i++) {
+        storage = provider.seq(len);
+        for (int i = 0; i < len; i++) {
             assertEquals(provider.value(i), storage.getValue(i));
         }
-        assertEquals(10, storage.size());
+        assertEquals(len, storage.size());
 
-        storage = provider.fill(10, 3);
-        for (int i = 0; i < 10; i++) {
+        storage = provider.fill(len, 3);
+        for (int i = 0; i < len; i++) {
             assertEquals(provider.value(3), storage.getValue(i));
         }
-        assertEquals(10, storage.size());
+        assertEquals(len, storage.size());
 
         int[] values = new int[] {2, 5, 7, 9};
         storage = provider.wrap(values);
@@ -202,14 +216,14 @@ public class StorageTest {
         }
 
         Random r = new Random(42);
-        storage = provider.random(10, r);
+        storage = provider.random(len, r);
         r = new Random(42);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < len; i++) {
             assertEquals(provider.randomValue(r), storage.getValue(i));
         }
     }
 
-    <N extends Number, S extends Storage<N>> void testCopy(StorageProvider<N, S> provider) {
+    <N extends Number, S extends Storage<N, S>> void testCopy(StorageProvider<N, S> provider) {
         var storage = provider.seq(10);
         var copy = storage.copy();
 
@@ -226,8 +240,8 @@ public class StorageTest {
         }
     }
 
-    <N extends Number, S extends Storage<N>> void testFill(StorageProvider<N, S> provider) {
-        Storage<N> storage = provider.zeros(10);
+    <N extends Number, S extends Storage<N, S>> void testFill(StorageProvider<N, S> provider) {
+        Storage<N, S> storage = provider.zeros(10);
         storage.fillValue(0, 10, provider.value(100));
         storage.fillValue(1, 2, provider.value(10));
         storage.fillValue(6, 2, provider.value(1));
@@ -238,8 +252,8 @@ public class StorageTest {
         }
     }
 
-    <N extends Number, S extends Storage<N>> void testAdd(StorageProvider<N, S> provider) {
-        Storage<N> storage = provider.zeros(10);
+    <N extends Number, S extends Storage<N, S>> void testAdd(StorageProvider<N, S> provider) {
+        Storage<N, S> storage = provider.zeros(10);
         storage.addValue(0, 10, provider.value(100));
         storage.addValue(1, 2, provider.value(10));
         storage.addValue(6, 2, provider.value(1));
@@ -250,8 +264,8 @@ public class StorageTest {
         }
     }
 
-    <N extends Number, S extends Storage<N>> void testSub(StorageProvider<N, S> provider) {
-        Storage<N> storage = provider.zeros(10);
+    <N extends Number, S extends Storage<N, S>> void testSub(StorageProvider<N, S> provider) {
+        Storage<N, S> storage = provider.zeros(10);
         storage.subValue(0, 10, provider.value(100));
         storage.subValue(1, 2, provider.value(10));
         storage.subValue(6, 2, provider.value(1));
@@ -262,8 +276,8 @@ public class StorageTest {
         }
     }
 
-    <N extends Number, S extends Storage<N>> void testMul(StorageProvider<N, S> provider) {
-        Storage<N> storage = provider.fill(10, 1);
+    <N extends Number, S extends Storage<N, S>> void testMul(StorageProvider<N, S> provider) {
+        Storage<N, S> storage = provider.fill(10, 1);
         storage.mulValue(0, 10, provider.value(100));
         storage.mulValue(1, 2, provider.value(10));
         storage.mulValue(6, 2, provider.value(1));
@@ -274,8 +288,8 @@ public class StorageTest {
         }
     }
 
-    <N extends Number, S extends Storage<N>> void testDiv(StorageProvider<N, S> provider) {
-        Storage<N> storage = provider.fill(10, 64);
+    <N extends Number, S extends Storage<N, S>> void testDiv(StorageProvider<N, S> provider) {
+        Storage<N, S> storage = provider.fill(10, 64);
         storage.divValue(0, 10, provider.value(2));
         storage.divValue(1, 2, provider.value(2));
         storage.divValue(6, 2, provider.value(4));
@@ -286,8 +300,8 @@ public class StorageTest {
         }
     }
 
-    <N extends Number, S extends Storage<N>> void testMinArgMin(StorageProvider<N, S> provider) {
-        Storage<N> storage = provider.random(100, random);
+    <N extends Number, S extends Storage<N, S>> void testMinArgMin(StorageProvider<N, S> provider) {
+        Storage<N, S> storage = provider.random(100, random);
         N min = storage.minValue(0, 100);
         int index = storage.argMin(0, 100);
         assertEquals(min, storage.getValue(index));
@@ -297,11 +311,11 @@ public class StorageTest {
         assertEquals(-1, storage.argMin(0, -1));
     }
 
-    <N extends Number, S extends Storage<N>> void testReverse(StorageProvider<N, S> provider) {
+    <N extends Number, S extends Storage<N, S>> void testReverse(StorageProvider<N, S> provider) {
         int[] array = IntArrays.newSeq(10_123);
         IntArrays.shuffle(array, random);
 
-        Storage<N> storage = provider.wrap(IntArrays.copy(array));
+        Storage<N, S> storage = provider.wrap(IntArrays.copy(array));
         storage.reverse(0, storage.size());
         IntArrays.reverse(array);
 

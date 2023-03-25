@@ -535,31 +535,31 @@ public interface Var extends Serializable, Printable {
                 return false;
             }
             switch (type()) {
-                case DOUBLE:
+                case DOUBLE -> {
                     if (Math.abs(getDouble(i) - var.getDouble(i)) > tol) {
                         return false;
                     }
-                    break;
-                case INT:
-                case BINARY:
+                }
+                case INT, BINARY -> {
                     if (getInt(i) != var.getInt(i)) {
                         return false;
                     }
-                    break;
-                case LONG:
+                }
+                case LONG -> {
                     if (getLong(i) != var.getLong(i)) {
                         return false;
                     }
-                    break;
-                case INSTANT:
-                    if(!getInstant(i).equals(var.getInstant(i))) {
+                }
+                case INSTANT -> {
+                    if (!getInstant(i).equals(var.getInstant(i))) {
                         return false;
                     }
-                    break;
-                default:
+                }
+                default -> {
                     if (!Objects.equals(getLabel(i), var.getLabel(i))) {
                         return false;
                     }
+                }
             }
         }
         return true;

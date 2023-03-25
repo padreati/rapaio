@@ -140,10 +140,8 @@ public class ClassifierEvaluationResult implements Printable {
     }
 
     private String toContentName(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Model:\n");
-        sb.append(eval.model.get().fullName()).append("\n");
-        return sb.toString();
+        return "Model:\n"
+                + eval.model.get().fullName() + "\n";
     }
 
     private String toContentCVScore(Printer printer, POption<?>... options) {
@@ -179,12 +177,7 @@ public class ClassifierEvaluationResult implements Printable {
 
     @Override
     public String toContent(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(toContentName(printer, options));
-        sb.append(toContentCVScore(printer, options));
-
-        return sb.toString();
+        return toContentName(printer, options) + toContentCVScore(printer, options);
     }
 
     @Override

@@ -67,9 +67,11 @@ public class CovarianceTest {
         Covariance cov = Covariance.of(x, y);
         assertEquals(cs / (count - 1), cov.value(), TOL);
 
-        assertEquals("> cov[?,?]\n" +
-                "total rows: 100 (complete: 85, missing: 15)\n" +
-                "covariance: -0.0050385\n", cov.toSummary());
+        assertEquals("""
+                > cov[?,?]
+                total rows: 100 (complete: 85, missing: 15)
+                covariance: -0.0050385
+                """, cov.toSummary());
     }
 
     @Test

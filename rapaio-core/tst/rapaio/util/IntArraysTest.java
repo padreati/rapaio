@@ -3,27 +3,51 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2022 Aurelian Tutuianu
+ *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
+ *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2020 Aurelian Tutuianu
+ *    Copyright 2021 Aurelian Tutuianu
+ *    Copyright 2022 Aurelian Tutuianu
+ *    Copyright 2023 Aurelian Tutuianu
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  *
  */
 
-package rapaio.util.collection;
+package rapaio.util;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.util.collection.IntArrays.*;
+import static rapaio.util.collection.IntArrays.copy;
+import static rapaio.util.collection.IntArrays.ensureCapacity;
+import static rapaio.util.collection.IntArrays.forceCapacity;
+import static rapaio.util.collection.IntArrays.grow;
+import static rapaio.util.collection.IntArrays.iterator;
+import static rapaio.util.collection.IntArrays.newCopy;
+import static rapaio.util.collection.IntArrays.newFill;
+import static rapaio.util.collection.IntArrays.newFrom;
+import static rapaio.util.collection.IntArrays.newSeq;
+import static rapaio.util.collection.IntArrays.prod;
+import static rapaio.util.collection.IntArrays.prodsum;
+import static rapaio.util.collection.IntArrays.sub;
+import static rapaio.util.collection.IntArrays.trim;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -34,9 +58,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.util.IntComparator;
-import rapaio.util.IntComparators;
-import rapaio.util.IntIterator;
+import rapaio.util.collection.IntArrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
@@ -52,10 +74,10 @@ public class IntArraysTest {
 
     @Test
     void buildersTest() {
-        assertArrayEquals(new int[] {10, 10, 10}, IntArrays.newFill(3, 10));
-        assertArrayEquals(new int[] {10, 11, 12}, IntArrays.newSeq(10, 13));
-        assertArrayEquals(new int[] {4, 9, 16}, IntArrays.newFrom(new int[] {1, 2, 3, 4, 5}, 1, 4, x -> x * x));
-        assertArrayEquals(new int[] {3, 5}, IntArrays.newCopy(new int[] {1, 3, 5, 7}, 1, 2));
+        assertArrayEquals(new int[] {10, 10, 10}, newFill(3, 10));
+        assertArrayEquals(new int[] {10, 11, 12}, newSeq(10, 13));
+        assertArrayEquals(new int[] {4, 9, 16}, newFrom(new int[] {1, 2, 3, 4, 5}, 1, 4, x -> x * x));
+        assertArrayEquals(new int[] {3, 5}, newCopy(new int[] {1, 3, 5, 7}, 1, 2));
     }
 
     private void testEqualArrays(int[] actual, int... expected) {
@@ -69,48 +91,48 @@ public class IntArraysTest {
         for (int i = 0; i < array.length; i++) {
             array[i] = random.nextInt(100);
         }
-        IntIterator it1 = IntArrays.iterator(array, 0, 10);
+        IntIterator it1 = iterator(array, 0, 10);
         for (int i = 0; i < 10; i++) {
             assertTrue(it1.hasNext());
             assertEquals(array[i], it1.nextInt());
         }
-        assertThrows(NoSuchElementException.class, it1::nextInt);
+        Assertions.assertThrows(NoSuchElementException.class, it1::nextInt);
 
-        var it2 = IntArrays.iterator(array, 0, 100);
+        var it2 = iterator(array, 0, 100);
         for (int i = 0; i < 100; i++) {
             assertTrue(it2.hasNext());
             assertEquals(array[i], it2.nextInt());
         }
-        assertThrows(NoSuchElementException.class, it2::nextInt);
+        Assertions.assertThrows(NoSuchElementException.class, it2::nextInt);
     }
 
     @Test
     void testMinus() {
-        int[] a = IntArrays.newSeq(0, 100);
-        int[] b = IntArrays.copy(a);
+        int[] a = newSeq(0, 100);
+        int[] b = copy(a);
 
-        IntArrays.sub(a, 0, b, 0, 100);
+        sub(a, 0, b, 0, 100);
         for (int j : a) {
-            assertEquals(0, j);
+            Assertions.assertEquals(0, j);
         }
     }
 
     @Test
     void testDot() {
-        var a = IntArrays.newSeq(0, 100);
-        var b = IntArrays.copy(a);
+        var a = newSeq(0, 100);
+        var b = copy(a);
 
-        int result = IntArrays.prodsum(a, 0, b, 0, 100);
+        int result = prodsum(a, 0, b, 0, 100);
         for (int i = 0; i < a.length; i++) {
             result -= i * i;
         }
-        assertEquals(0, result);
+        Assertions.assertEquals(0, result);
 
-        result = IntArrays.prod(a, 1, 10);
+        result = prod(a, 1, 10);
         for (int i = 1; i < 11; i++) {
             result /= a[i];
         }
-        assertEquals(1, result);
+        Assertions.assertEquals(1, result);
     }
 
     @Test
@@ -168,8 +190,8 @@ public class IntArraysTest {
     void testSorting() {
 
         int len = 100_000;
-        var a = IntArrays.newSeq(0, len);
-        var b = IntArrays.newSeq(0, len);
+        var a = newSeq(0, len);
+        var b = newSeq(0, len);
 
         assertAsc(a, IntArrays::quickSort);
         assertAsc(a, IntArrays::parallelQuickSort);
@@ -189,39 +211,39 @@ public class IntArraysTest {
     }
 
     private void assertAsc(int[] src, Consumer<int[]> fun) {
-        var s = IntArrays.copy(src, 0, src.length);
+        var s = copy(src, 0, src.length);
         fun.accept(s);
         for (int i = 1; i < s.length; i++) {
-            assertTrue(s[i - 1] <= s[i]);
+            Assertions.assertTrue(s[i - 1] <= s[i]);
         }
     }
 
     private void assertDesc(int[] src, BiConsumer<int[], IntComparator> fun) {
-        var s = IntArrays.copy(src, 0, src.length);
+        var s = copy(src, 0, src.length);
         fun.accept(s, IntComparators.OPPOSITE_COMPARATOR);
         for (int i = 1; i < s.length; i++) {
-            assertTrue(s[i - 1] >= s[i]);
+            Assertions.assertTrue(s[i - 1] >= s[i]);
         }
     }
 
     private void assertAsc2(int[] a, int[] b, BiConsumer<int[], int[]> alg) {
-        var sa = IntArrays.copy(a, 0, a.length);
-        var sb = IntArrays.copy(b, 0, b.length);
+        var sa = copy(a, 0, a.length);
+        var sb = copy(b, 0, b.length);
         alg.accept(sa, sb);
         for (int i = 1; i < sa.length; i++) {
             if (sa[i - 1] == sa[i]) {
-                assertTrue(sb[i - 1] <= sb[i]);
+                Assertions.assertTrue(sb[i - 1] <= sb[i]);
             } else {
-                assertTrue(sa[i - 1] < sa[i]);
+                Assertions.assertTrue(sa[i - 1] < sa[i]);
             }
         }
     }
 
     private void assertAscIndirect(int[] array, BiConsumer<int[], int[]> alg) {
-        int[] perm = IntArrays.newSeq(0, array.length);
+        int[] perm = newSeq(0, array.length);
         alg.accept(perm, array);
         for (int i = 1; i < array.length; i++) {
-            assertTrue(array[perm[i - 1]] <= array[perm[i]]);
+            Assertions.assertTrue(array[perm[i - 1]] <= array[perm[i]]);
         }
     }
 

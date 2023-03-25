@@ -40,22 +40,15 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
+import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 
 public class PointerIteratorTest {
 
     @Test
-    void testScalarIterator() {
-        var it = new ScalarPointerIterator(10);
-        testScalar(it, 10);
-    }
-
-    @Test
     void testDenseIterator() {
-        var it = new DensePointerIterator(Shape.of());
-        testScalar(it, 0);
-
-        it = new DensePointerIterator(Shape.of(2, 3));
+        var it = new DensePointerIterator(Shape.of(2, 3), 0, 1);
         for (int i = 0; i < 6; i++) {
             assertTrue(it.hasNext());
             assertEquals(i, it.nextInt());
@@ -67,10 +60,7 @@ public class PointerIteratorTest {
 
     @Test
     void testCIterator() {
-        var it = new CPointerIterator(Shape.of(), 10, new int[0]);
-        testScalar(it, 10);
-
-        it = new CPointerIterator(Shape.of(2, 3), 10, new int[] {4, 19});
+        var it = new StridePointerIterator(StrideLayout.of(Shape.of(2, 3), 10, new int[] {4, 19}), Order.C);
 
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 3; j++) {
@@ -84,10 +74,7 @@ public class PointerIteratorTest {
 
     @Test
     void testFIterator() {
-        var it = new FPointerIterator(Shape.of(), 10, new int[0]);
-        testScalar(it, 10);
-
-        it = new FPointerIterator(Shape.of(2, 3), 10, new int[] {4, 19});
+        var it = new StridePointerIterator(StrideLayout.of(Shape.of(2, 3), 10, new int[] {4, 19}), Order.F);
 
         for (int j = 0; j < 3; j++) {
             for (int i = 0; i < 2; i++) {
@@ -101,10 +88,7 @@ public class PointerIteratorTest {
 
     @Test
     void testSIterator() {
-        var it = new SPointerIterator(Shape.of(), 10, new int[0]);
-        testScalar(it, 10);
-
-        it = new SPointerIterator(Shape.of(2, 3, 5), 10, new int[] {100, 4, 19});
+        var it = new StridePointerIterator(StrideLayout.of(Shape.of(2, 3, 5), 10, new int[] {100, 4, 19}), Order.S);
 
         for (int i = 0; i < 2; i++) {
             for (int k = 0; k < 5; k++) {
@@ -116,13 +100,5 @@ public class PointerIteratorTest {
             }
         }
         assertFalse(it.hasNext());
-    }
-
-    void testScalar(PointerIterator it, int pointer) {
-        assertTrue(it.hasNext());
-        assertEquals(pointer, it.nextInt());
-        assertEquals(0, it.position());
-        assertFalse(it.hasNext());
-        assertThrows(NoSuchElementException.class, it::nextInt);
     }
 }

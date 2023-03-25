@@ -191,12 +191,11 @@ enum Drawer {
         @Override
         void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
             Path2D.Double path = new Path2D.Double();
-            double d = sz;
-            path.moveTo(x - d, y - d);
-            path.lineTo(x + d, y - d);
-            path.lineTo(x + d, y + d);
-            path.lineTo(x - d, y + d);
-            path.lineTo(x - d, y - d);
+            path.moveTo(x - sz, y - sz);
+            path.lineTo(x + sz, y - sz);
+            path.lineTo(x + sz, y + sz);
+            path.lineTo(x - sz, y + sz);
+            path.lineTo(x - sz, y - sz);
 
             g2d.setStroke(new BasicStroke(lwd));
             g2d.setColor(color);
@@ -207,12 +206,11 @@ enum Drawer {
         @Override
         void draw(Graphics2D g2d, double x, double y, double sz, float lwd, Color color, Color fill) {
             Path2D.Double path = new Path2D.Double();
-            double d = sz;
-            path.moveTo(x - d, y - d);
-            path.lineTo(x + d, y - d);
-            path.lineTo(x + d, y + d);
-            path.lineTo(x - d, y + d);
-            path.lineTo(x - d, y - d);
+            path.moveTo(x - sz, y - sz);
+            path.lineTo(x + sz, y - sz);
+            path.lineTo(x + sz, y + sz);
+            path.lineTo(x - sz, y + sz);
+            path.lineTo(x - sz, y - sz);
 
             g2d.setStroke(new BasicStroke(1f));
             g2d.setColor(fill);

@@ -61,12 +61,14 @@ public class MAETest {
         assertEquals(mae1.mae(0), mae_values_3[0], TOL);
         assertEquals(mae2.mae(0), mae_values_3[1], TOL);
 
-        assertEquals("> MAE (Mean Absolute Error):\n" +
-                "\n" +
-                "names  mae \n" +
-                "x | y 50.5 \n" +
-                "\n" +
-                "Total mae: 50.5\n" +
-                "\n", mae1.toSummary());
+        assertEquals("""
+                > MAE (Mean Absolute Error):
+
+                names  mae\s
+                x | y 50.5\s
+
+                Total mae: 50.5
+
+                """, mae1.toSummary());
     }
 }

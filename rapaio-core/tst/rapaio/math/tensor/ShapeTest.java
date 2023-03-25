@@ -68,10 +68,10 @@ public class ShapeTest {
     @Test
     void testInvalid() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> Shape.of(1, 2, -3, 0));
-        assertEquals("Invalid shape dimension: [1,2,-3,0]", e.getMessage());
+        assertEquals("Invalid shape dimensions: [1,2,-3,0]", e.getMessage());
 
         e = assertThrows(IllegalArgumentException.class, () -> Shape.of(0, 0));
-        assertEquals("Invalid shape dimension: [0,0]", e.getMessage());
+        assertEquals("Invalid shape dimensions: [0,0]", e.getMessage());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class ShapeTest {
     @Test
     void testInvalidOrderPosition() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Shape.of(1,2,3).position(Order.S));
-        assertEquals("Position order not allowed.", ex.getMessage());
+        assertEquals("Indexing order not allowed.", ex.getMessage());
     }
 
     @Test

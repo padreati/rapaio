@@ -57,8 +57,10 @@ public class MinimumTest {
         Minimum minimum = Minimum.of(x);
         assertEquals(min, minimum.value(), TOL);
 
-        assertEquals("> minimum[?]\n" +
-                "total rows: 100 (complete: 85, missing: 15)\n" +
-                "minimum: 0.0174893\n", minimum.toSummary());
+        assertEquals("""
+                > minimum[?]
+                total rows: 100 (complete: 85, missing: 15)
+                minimum: 0.0174893
+                """, minimum.toSummary());
     }
 }

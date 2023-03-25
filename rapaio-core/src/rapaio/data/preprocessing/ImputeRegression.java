@@ -44,17 +44,17 @@ import rapaio.ml.model.RegressionResult;
  */
 public class ImputeRegression extends AbstractTransform {
 
-    public static ImputeRegression of(RegressionModel model, VarRange inputVars, String targetName) {
+    public static ImputeRegression of(RegressionModel<?, ?, ?> model, VarRange inputVars, String targetName) {
         return new ImputeRegression(model, inputVars, targetName);
     }
 
     @Serial
     private static final long serialVersionUID = 7428989420235407246L;
 
-    private final RegressionModel model;
+    private final RegressionModel<?, ?, ?> model;
     private final String targetName;
 
-    private ImputeRegression(RegressionModel model, VarRange inputVars, String targetName) {
+    private ImputeRegression(RegressionModel<?, ?, ?> model, VarRange inputVars, String targetName) {
         super(inputVars);
         this.model = model;
         this.targetName = targetName;

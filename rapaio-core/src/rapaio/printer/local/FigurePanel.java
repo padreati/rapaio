@@ -139,9 +139,6 @@ public class FigurePanel extends JPanel {
         drawWorker.execute();
     }
 
-    public void createUIComponents() {
-    }
-
     public Printer getPrinter() {
         return printer;
     }

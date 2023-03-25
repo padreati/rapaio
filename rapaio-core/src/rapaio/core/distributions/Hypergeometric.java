@@ -158,7 +158,7 @@ public class Hypergeometric implements Distribution {
             if (j > 0) {
                 up[i] += j;
             } else {
-                down[i] += -j;
+                down[i] -= j;
             }
         }
         for (int i = 0; i < m + n + 1; i++) {

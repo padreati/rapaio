@@ -59,9 +59,9 @@ public class ChunkIteratorTest {
         it = new DenseChunkIterator(100);
         assertTrue(it.hasNext());
         assertEquals(0, it.nextInt());
-        assertEquals(100, it.chunkSize());
+        assertEquals(100, it.loopSize());
         assertEquals(1, it.chunkCount());
-        assertEquals(1, it.chunkStride());
+        assertEquals(1, it.loopStep());
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::nextInt);
     }
@@ -73,13 +73,14 @@ public class ChunkIteratorTest {
 
         // test strided in fixed c order
         it = new StrideChunkIterator(Shape.of(2, 3, 4), 10, new int[] {10, 4, 7}, Order.C);
-        for (int k = 0; k < 4; k++) {
+        for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 3; j++) {
                 assertTrue(it.hasNext());
-                assertEquals(10 + j * 4 + k * 7, it.nextInt());
-                assertEquals(2, it.chunkSize());
-                assertEquals(10, it.chunkStride());
-                assertEquals(12, it.chunkCount());
+                assertEquals(10 + j * 4 + i * 10, it.nextInt());
+                assertEquals(4, it.loopSize());
+                assertEquals(7, it.loopStep());
+                assertEquals(4 * 7, it.loopBound());
+                assertEquals(6, it.chunkCount());
             }
         }
         assertFalse(it.hasNext());
@@ -87,13 +88,14 @@ public class ChunkIteratorTest {
 
         // test strided in fixed fortran order
         it = new StrideChunkIterator(Shape.of(2, 3, 4), 10, new int[] {10, 4, 7}, Order.F);
-        for (int i = 0; i < 2; i++) {
+        for (int k = 0; k < 4; k++) {
             for (int j = 0; j < 3; j++) {
                 assertTrue(it.hasNext());
-                assertEquals(10 + j * 4 + i * 10, it.nextInt());
-                assertEquals(4, it.chunkSize());
-                assertEquals(7, it.chunkStride());
-                assertEquals(6, it.chunkCount());
+                assertEquals(10 + j * 4 + k * 7, it.nextInt());
+                assertEquals(2, it.loopSize());
+                assertEquals(10, it.loopStep());
+                assertEquals(2 * 10, it.loopBound());
+                assertEquals(12, it.chunkCount());
             }
         }
         assertFalse(it.hasNext());
@@ -105,8 +107,9 @@ public class ChunkIteratorTest {
             for (int k = 0; k < 4; k++) {
                 assertTrue(it.hasNext());
                 assertEquals(10 + i * 10 + k * 7, it.nextInt());
-                assertEquals(3, it.chunkSize());
-                assertEquals(4, it.chunkStride());
+                assertEquals(3, it.loopSize());
+                assertEquals(4, it.loopStep());
+                assertEquals(3 * 4, it.loopBound());
                 assertEquals(8, it.chunkCount());
             }
         }
@@ -118,8 +121,8 @@ public class ChunkIteratorTest {
         for (int i = 0; i < 3; i++) {
             assertTrue(it.hasNext());
             assertEquals(10 + i * 100, it.nextInt());
-            assertEquals(60, it.chunkSize());
-            assertEquals(1, it.chunkStride());
+            assertEquals(60, it.loopSize());
+            assertEquals(1, it.loopStep());
             assertEquals(3, it.chunkCount());
         }
         assertFalse(it.hasNext());
@@ -129,8 +132,8 @@ public class ChunkIteratorTest {
         it = new StrideChunkIterator(Shape.of(5, 3, 4, 3), 10, new int[] {1, 20, 5, 60}, Order.S);
         assertTrue(it.hasNext());
         assertEquals(10, it.nextInt());
-        assertEquals(180, it.chunkSize());
-        assertEquals(1, it.chunkStride());
+        assertEquals(180, it.loopSize());
+        assertEquals(1, it.loopStep());
         assertEquals(1, it.chunkCount());
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::nextInt);
@@ -139,8 +142,8 @@ public class ChunkIteratorTest {
         it = new StrideChunkIterator(Shape.of(5, 3, 4, 3), 10, new int[] {2, 40, 10, 120}, Order.S);
         assertTrue(it.hasNext());
         assertEquals(10, it.nextInt());
-        assertEquals(180, it.chunkSize());
-        assertEquals(2, it.chunkStride());
+        assertEquals(180, it.loopSize());
+        assertEquals(2, it.loopStep());
         assertEquals(1, it.chunkCount());
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::nextInt);
@@ -149,9 +152,9 @@ public class ChunkIteratorTest {
     void testScalar(ChunkIterator it, int offset) {
         assertTrue(it.hasNext());
         assertEquals(offset, it.nextInt());
-        assertEquals(1, it.chunkSize());
+        assertEquals(1, it.loopSize());
         assertEquals(1, it.chunkCount());
-        assertEquals(1, it.chunkStride());
+        assertEquals(1, it.loopStep());
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::nextInt);
     }

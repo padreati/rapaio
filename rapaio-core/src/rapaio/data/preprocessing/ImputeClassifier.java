@@ -44,17 +44,17 @@ import rapaio.ml.model.ClassifierResult;
  */
 public class ImputeClassifier extends AbstractTransform {
 
-    public static ImputeClassifier of(ClassifierModel model, VarRange inputVars, String targetName) {
+    public static ImputeClassifier of(ClassifierModel<?, ?, ?> model, VarRange inputVars, String targetName) {
         return new ImputeClassifier(model, inputVars, targetName);
     }
 
     @Serial
     private static final long serialVersionUID = 7428989420235407246L;
 
-    private final ClassifierModel model;
+    private final ClassifierModel<?, ?, ?> model;
     private final String targetName;
 
-    private ImputeClassifier(ClassifierModel model, VarRange inputVars, String targetName) {
+    private ImputeClassifier(ClassifierModel<?, ?, ?> model, VarRange inputVars, String targetName) {
         super(inputVars);
         this.model = model;
         this.targetName = targetName;

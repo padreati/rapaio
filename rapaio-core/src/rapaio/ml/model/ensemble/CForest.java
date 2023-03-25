@@ -221,10 +221,6 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
                 .fapply(RefSort.by(zscores.refComparator(false))).copy();
     }
 
-    public List<ClassifierModel<?, ?, ?>> getPredictors() {
-        return predictors;
-    }
-
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 

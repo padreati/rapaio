@@ -34,34 +34,38 @@ package rapaio.math.tensor.iterators;
 import java.util.NoSuchElementException;
 
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.iterators.PointerIterator;
 
 public final class DensePointerIterator implements PointerIterator {
 
+    private final int offset;
     private final int size;
+    private final int step;
 
-    private int position = 0;
+    private int pointer;
 
-    public DensePointerIterator(Shape shape) {
-        this.size = shape.size();
+    public DensePointerIterator(Shape shape, int offset, int step) {
+        this.offset = offset;
+        this.size = shape.size() * step + offset;
+        this.step = step;
+        this.pointer = offset;
     }
 
     @Override
     public int nextInt() {
-        if (position >= size) {
+        if (pointer >= size) {
             throw new NoSuchElementException();
         }
-        position++;
-        return position - 1;
+        pointer += step;
+        return pointer - step;
     }
 
     @Override
     public boolean hasNext() {
-        return position < size;
+        return pointer < size;
     }
 
     @Override
     public int position() {
-        return position - 1;
+        return (pointer - offset) / step - 1;
     }
 }

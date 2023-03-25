@@ -33,8 +33,6 @@ package rapaio.util.collection;
 
 import java.util.Arrays;
 
-import rapaio.math.linear.DVector;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/22/20.
  */
@@ -88,8 +86,8 @@ public final class TArrays {
         array[j] = tmp;
     }
 
-    public static void swap(DVector[] array, int i, int j) {
-        DVector tmp = array[i];
+    public static <T> void swap(T[] array, int i, int j) {
+        T tmp = array[i];
         array[i] = array[j];
         array[j] = tmp;
     }

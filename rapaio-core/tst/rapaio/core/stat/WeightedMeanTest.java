@@ -58,9 +58,11 @@ public class WeightedMeanTest {
         }
         assertEquals(WeightedMean.of(values, weights).value(), wos.mean(), TOL);
 
-        assertEquals("> weightedMean[x]\n" +
-                        "total rows: 10 (complete: 10, missing: 0)\n" +
-                        "weightedMean: 5.6666667\n",
+        assertEquals("""
+                        > weightedMean[x]
+                        total rows: 10 (complete: 10, missing: 0)
+                        weightedMean: 5.6666667
+                        """,
                 WeightedMean.of(values, weights).toSummary());
     }
 

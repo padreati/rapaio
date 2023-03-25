@@ -33,56 +33,79 @@ package rapaio.math.tensor;
 
 import java.util.Random;
 
-import rapaio.math.tensor.manager.cpuarray.CpuArraySingleTensorManager;
+import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.math.tensor.manager.cpuparallel.CpuArrayParallelTensorManager;
+import rapaio.math.tensor.manager.cpusingle.CpuSingleTensorManager;
+import rapaio.math.tensor.storage.DStorage;
+import rapaio.math.tensor.storage.FStorage;
+import rapaio.math.tensor.storage.StorageFactory;
+import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 
-public interface TensorManager {
+public interface TensorManager extends AutoCloseable {
 
     static TensorManager newDefault() {
-        return newCpuArraySingle();
+        return newCpuArraySingle(new ArrayStorageFactory());
     }
 
-    static TensorManager newCpuArraySingle() {
-        return new CpuArraySingleTensorManager();
+    static TensorManager newCpuArraySingle(StorageFactory storageFactory) {
+        return new CpuSingleTensorManager(storageFactory);
     }
 
-    DTensor doubleZeros(Shape shape, Order order);
-
-    default DTensor doubleZeros(Shape shape) {
-        return doubleZeros(shape, Order.defaultOrder());
+    static TensorManager newCpuArrayParallel(StorageFactory storageFactory) {
+        return new CpuArrayParallelTensorManager(storageFactory);
     }
 
-    DTensor doubleSeq(Shape shape, Order order);
+    StorageFactory storageFactory();
 
-    default DTensor doubleSeq(Shape shape) {
-        return doubleSeq(shape, Order.defaultOrder());
+    DTensor ofDoubleZeros(Shape shape, Order order);
+
+    default DTensor ofDoubleZeros(Shape shape) {
+        return ofDoubleZeros(shape, Order.defaultOrder());
     }
 
-    DTensor doubleRandom(Shape shape, Random random, Order order);
+    DTensor ofDoubleSeq(Shape shape, Order order);
 
-    default DTensor doubleRandom(Shape shape, Random random) {
-        return doubleRandom(shape, random, Order.defaultOrder());
+    default DTensor ofDoubleSeq(Shape shape) {
+        return ofDoubleSeq(shape, Order.defaultOrder());
     }
 
-    DTensor wrap(Shape shape, double[] array, Order order);
+    DTensor ofDoubleRandom(Shape shape, Random random, Order order);
 
-    FTensor floatZeros(Shape shape, Order order);
-
-    default FTensor floatZeros(Shape shape) {
-        return floatZeros(shape, Order.defaultOrder());
+    default DTensor ofDoubleRandom(Shape shape, Random random) {
+        return ofDoubleRandom(shape, random, Order.defaultOrder());
     }
 
-    FTensor floatSeq(Shape shape, Order order);
+    DTensor ofDoubleWrap(Shape shape, double[] array, Order order);
 
-    default FTensor floatSeq(Shape shape) {
-        return floatSeq(shape, Order.defaultOrder());
+    default DTensor ofDoubleStride(StrideLayout layout, DStorage storage) {
+        return ofDoubleStride(layout.shape(), layout.offset(), layout.strides(), storage);
     }
 
-    FTensor floatRandom(Shape shape, Random random, Order order);
+    DTensor ofDoubleStride(Shape shape, int offset, int[] strides, DStorage storage);
 
-    default FTensor floatRandom(Shape shape, Random random) {
-        return floatRandom(shape, random, Order.defaultOrder());
+    FTensor ofFloatZeros(Shape shape, Order order);
+
+    default FTensor ofFloatZeros(Shape shape) {
+        return ofFloatZeros(shape, Order.defaultOrder());
     }
 
-    FTensor wrap(Shape shape, float[] array, Order order);
+    FTensor ofFloatSeq(Shape shape, Order order);
 
+    default FTensor ofFloatSeq(Shape shape) {
+        return ofFloatSeq(shape, Order.defaultOrder());
+    }
+
+    FTensor ofFloatRandom(Shape shape, Random random, Order order);
+
+    default FTensor ofFloatRandom(Shape shape, Random random) {
+        return ofFloatRandom(shape, random, Order.defaultOrder());
+    }
+
+    FTensor ofFloatWrap(Shape shape, float[] array, Order order);
+
+    default FTensor ofFloatStride(StrideLayout layout, FStorage storage) {
+        return ofFloatStride(layout.shape(), layout.offset(), layout.strides(), storage);
+    }
+
+    FTensor ofFloatStride(Shape shape, int offset, int[] strides, FStorage storage);
 }

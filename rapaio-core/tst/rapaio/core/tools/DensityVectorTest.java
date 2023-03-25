@@ -87,9 +87,11 @@ public class DensityVectorTest {
             assertEquals(v1[i + 1], v2[i], TOL);
         }
 
-        assertEquals("? a b c \n" +
-                "- - - - \n" +
-                "0 1 1 1 \n", DensityVector.fromLevelCounts(true, VarNominal.copy("a", "b", "c")).toSummary());
+        assertEquals("""
+                ? a b c\s
+                - - - -\s
+                0 1 1 1\s
+                """, DensityVector.fromLevelCounts(true, VarNominal.copy("a", "b", "c")).toSummary());
     }
 
     @Test

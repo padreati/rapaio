@@ -43,17 +43,13 @@ public record RegressionScore(RegressionMetric metric, double value) implements 
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("RegressionScore{").append("metric=").append(metric.getName());
-        sb.append(",value=").append(Format.floatFlex(value)).append("}");
-        return sb.toString();
+        return "RegressionScore{" + "metric=" + metric.getName()
+                + ",value=" + Format.floatFlex(value) + "}";
     }
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(metric.getName()).append(": ").append(Format.floatFlex(value)).append("\n");
-        return sb.toString();
+        return metric.getName() + ": " + Format.floatFlex(value) + "\n";
     }
 
     @Override

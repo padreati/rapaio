@@ -81,19 +81,18 @@ public class ChiSqGoodnessOfFit implements HTest {
 
     private static DensityVector<String> buildDv(Var x) {
         switch (x.type()) {
-            case BINARY:
-            case NOMINAL:
+            case BINARY, NOMINAL -> {
                 return DensityVector.fromLevelCounts(false, x);
-            case DOUBLE:
-            case INT:
+            }
+            case DOUBLE, INT -> {
                 var dv = DensityVector.emptyByLabels(x.size());
                 for (int i = 0; i < x.size(); i++) {
                     dv.set(i, x.getDouble(i));
                 }
                 return dv;
-            default:
-                throw new IllegalArgumentException("variable of given type could not be " +
-                        "used to build discrete observed counts");
+            }
+            default -> throw new IllegalArgumentException("variable of given type could not be " +
+                    "used to build discrete observed counts");
         }
     }
 

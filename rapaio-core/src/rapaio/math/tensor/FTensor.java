@@ -31,12 +31,12 @@
 
 package rapaio.math.tensor;
 
-import rapaio.math.tensor.storage.array.FStorageArray;
+import rapaio.math.tensor.storage.FStorage;
 
-public interface FTensor extends Tensor<Float, FStorageArray, FTensor> {
+public interface FTensor extends Tensor<Float, FStorage, FTensor> {
 
     @Override
-    FStorageArray storage();
+    FStorage storage();
 
     @Override
     default Float getValue(int... idxs) {
@@ -61,23 +61,22 @@ public interface FTensor extends Tensor<Float, FStorageArray, FTensor> {
     FTensor reshape(Shape shape, Order askOrder);
 
     @Override
-    default FTensor copy(Order askOrder) {
-        if (askOrder == Order.S) {
-            throw new IllegalArgumentException("Order argument is invalid.");
-        }
-        FTensor copy = manager().floatZeros(shape(), askOrder);
-        var it = chunkIterator(askOrder);
-        int pos = 0;
-        int l = it.chunkSize();
-        int s = it.chunkStride();
-        while (it.hasNext()) {
-            int pointer = it.nextInt();
-            for (int i = 0; i < l; i++) {
-                copy.storage().set(pos++, storage().get(pointer + i * s));
-            }
-        }
-        return copy;
-    }
+    FTensor ravel(Order askOrder);
+
+    @Override
+    FTensor flatten(Order askOrder);
+
+    @Override
+    FTensor squeeze();
+
+    @Override
+    FTensor moveAxis(int src, int dst);
+
+    @Override
+    FTensor swapAxis(int src, int dst);
+
+    @Override
+    FTensor copy(Order askOrder);
 
     @Override
     FTensor t();

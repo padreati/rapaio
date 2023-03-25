@@ -548,15 +548,12 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
         // employ parallelism only if we have large row vectors
         final int sliceSize = 256;
         final int slices = rows() / sliceSize;
-        IntStream stream = IntStream.range(0, slices + 1);
-        if (slices > 1) {
-            stream = stream.parallel();
-        }
-        stream.forEach(s -> {
-            for (int i = s * sliceSize; i < Math.min(rows(), (s + 1) * sliceSize); i++) {
-                c[i] = DoubleArrays.dotSum(array, offset + i * rowStride, vector, 0, cols);
-            }
-        });
+        IntStream.range(0, slices + 1).parallel()
+                .forEach(s -> {
+                    for (int i = s * sliceSize; i < Math.min(rows(), (s + 1) * sliceSize); i++) {
+                        c[i] = DoubleArrays.dotSum(array, offset + i * rowStride, vector, 0, cols);
+                    }
+                });
         return new DVectorDense(0, c.length, c);
     }
 

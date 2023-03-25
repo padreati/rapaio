@@ -145,12 +145,10 @@ public final class WeightedMean implements Printable {
 
     @Override
     public String toContent(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("> weightedMean[%s]\n", varName));
-        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",
-                completeCount + missingCount, completeCount, missingCount));
-        sb.append(String.format("weightedMean: %s\n", floatFlex(mean)));
-        return sb.toString();
+        return String.format("> weightedMean[%s]\n", varName)
+                + String.format("total rows: %d (complete: %d, missing: %d)\n",
+                completeCount + missingCount, completeCount, missingCount)
+                + String.format("weightedMean: %s\n", floatFlex(mean));
     }
 
     @Override

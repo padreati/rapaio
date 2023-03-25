@@ -47,7 +47,7 @@ import rapaio.data.Var;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
  */
-final record SubSampler(double percent) implements RowSampler {
+record SubSampler(double percent) implements RowSampler {
 
     @Serial
     private static final long serialVersionUID = -7987373317949449262L;

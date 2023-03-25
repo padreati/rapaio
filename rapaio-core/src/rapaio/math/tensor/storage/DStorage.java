@@ -31,7 +31,7 @@
 
 package rapaio.math.tensor.storage;
 
-public interface DStorage extends Storage<Double> {
+public interface DStorage extends Storage<Double, DStorage> {
 
     @Override
     default Double getValue(int offset) {
@@ -60,6 +60,8 @@ public interface DStorage extends Storage<Double> {
     }
 
     void add(int start, int len, double v);
+
+    void add(int start, DStorage from, int fStart, int len);
 
     @Override
     default void subValue(int start, int len, Double v) {

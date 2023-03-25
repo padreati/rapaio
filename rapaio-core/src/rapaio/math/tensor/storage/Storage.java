@@ -46,7 +46,9 @@ package rapaio.math.tensor.storage;
  *
  * @param <N> generic type of the numeric data type of the elements
  */
-public interface Storage<N extends Number> {
+public interface Storage<N extends Number, S extends Storage<N, S>> {
+
+    StorageFactory storageFactory();
 
     /**
      * @return number of stored elements
@@ -65,6 +67,8 @@ public interface Storage<N extends Number> {
 
     void addValue(int start, int len, N v);
 
+    void add(int start, S from, int fStart, int len);
+
     void subValue(int start, int len, N v);
 
     void mulValue(int start, int len, N v);
@@ -75,5 +79,5 @@ public interface Storage<N extends Number> {
 
     int argMin(int start, int len);
 
-    Storage<N> copy();
+    S copy();
 }

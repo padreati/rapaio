@@ -90,33 +90,33 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
      * <p>
      * Those providers are used to produce features learned by RVM model
      */
-    public ListParam<FeatureProvider, RVMRegression> providers = new ListParam<>(this,
+    public final ListParam<FeatureProvider, RVMRegression> providers = new ListParam<>(this,
             List.of(new InterceptProvider(), new RBFProvider(VarDouble.wrap(1), 1)), "providers", (fp1, fp2) -> true);
 
     /**
      * Method used to fit model
      */
-    public ValueParam<Method, RVMRegression> method = new ValueParam<>(this, Method.FAST_TIPPING, "method");
+    public final ValueParam<Method, RVMRegression> method = new ValueParam<>(this, Method.FAST_TIPPING, "method");
 
     /**
      * Fit threshold used in convergence criteria.
      */
-    public ValueParam<Double, RVMRegression> fitThreshold = new ValueParam<>(this, 1e-10, "fitThreshold");
+    public final ValueParam<Double, RVMRegression> fitThreshold = new ValueParam<>(this, 1e-10, "fitThreshold");
 
     /**
      * Fit threshold for setting an alpha weight's prior to infinity.
      */
-    public ValueParam<Double, RVMRegression> alphaThreshold = new ValueParam<>(this, 1e9, "alphaThreshold");
+    public final ValueParam<Double, RVMRegression> alphaThreshold = new ValueParam<>(this, 1e9, "alphaThreshold");
 
     /**
      * Max number of iterations
      */
-    public ValueParam<Integer, RVMRegression> maxIter = new ValueParam<>(this, 10_000, "maxIter");
+    public final ValueParam<Integer, RVMRegression> maxIter = new ValueParam<>(this, 10_000, "maxIter");
 
     /**
      * Maximum number of failures for a feature, before it is pruned.
      */
-    public ValueParam<Integer, RVMRegression> maxFailures = new ValueParam<>(this, 10_000, "maxFailures");
+    public final ValueParam<Integer, RVMRegression> maxFailures = new ValueParam<>(this, 10_000, "maxFailures");
 
     /**
      * RVM regression feature. Features are produuced by {@link FeatureProvider} implementations.

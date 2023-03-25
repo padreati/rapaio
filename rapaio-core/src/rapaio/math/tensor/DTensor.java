@@ -31,12 +31,12 @@
 
 package rapaio.math.tensor;
 
-import rapaio.math.tensor.storage.array.DStorageArray;
+import rapaio.math.tensor.storage.DStorage;
 
-public interface DTensor extends Tensor<Double, DStorageArray, DTensor> {
+public interface DTensor extends Tensor<Double, DStorage, DTensor> {
 
     @Override
-    DStorageArray storage();
+    DStorage storage();
 
     @Override
     default Double getValue(int... idxs) {
@@ -61,23 +61,22 @@ public interface DTensor extends Tensor<Double, DStorageArray, DTensor> {
     DTensor reshape(Shape shape, Order askOrder);
 
     @Override
-    default DTensor copy(Order askOrder) {
-        if (askOrder == Order.S) {
-            throw new IllegalArgumentException("Order argument is invalid.");
-        }
-        DTensor copy = manager().doubleZeros(shape(), askOrder);
-        var it = chunkIterator(askOrder);
-        int pos = 0;
-        int l = it.chunkSize();
-        int s = it.chunkStride();
-        while (it.hasNext()) {
-            int pointer = it.nextInt();
-            for (int i = 0; i < l; i++) {
-                copy.storage().set(pos++, storage().get(pointer + i * s));
-            }
-        }
-        return copy;
-    }
+    DTensor ravel(Order askOrder);
+
+    @Override
+    DTensor flatten(Order askOrder);
+
+    @Override
+    DTensor squeeze();
+
+    @Override
+    DTensor moveAxis(int src, int dst);
+
+    @Override
+    DTensor swapAxis(int src, int dst);
+
+    @Override
+    DTensor copy(Order askOrder);
 
     @Override
     DTensor t();

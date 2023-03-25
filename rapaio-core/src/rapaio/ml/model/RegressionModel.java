@@ -97,10 +97,10 @@ public abstract class RegressionModel<M extends RegressionModel<M, R, H>, R exte
     /**
      * Hook queried at each iteration if execution should continue or not.
      */
-    public ValueParam<Function<H, Boolean>, M> stoppingHook =
+    public final ValueParam<Function<H, Boolean>, M> stoppingHook =
             new ValueParam<>((M) this, DEFAULT_STOPPING_HOOK, "stopHook", Objects::nonNull);
 
-    public ValueParam<Long, M> seed = new ValueParam<>((M) this, 0L, "seed");
+    public final ValueParam<Long, M> seed = new ValueParam<>((M) this, 0L, "seed");
     // model artifacts
 
     protected boolean hasLearned;
@@ -293,7 +293,7 @@ public abstract class RegressionModel<M extends RegressionModel<M, R, H>, R exte
         this.targetTypes = targets.stream().map(df::type).toArray(VarType[]::new);
 
         HashSet<String> targetSet = new HashSet<>(targets);
-        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
+        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).toList();
         this.inputNames = inputs.toArray(new String[0]);
         this.inputTypes = inputs.stream().map(df::type).toArray(VarType[]::new);
 

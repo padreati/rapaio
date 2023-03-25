@@ -60,7 +60,7 @@ public class ClassifierModelSerializationTest {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends ClassifierModel> void testModel(T model, Frame df, Var varModel, Var varData, Var varAcc) throws IOException, ClassNotFoundException {
+    private <T extends ClassifierModel<?,?,?>> void testModel(T model, Frame df, Var varModel, Var varData, Var varAcc) throws IOException, ClassNotFoundException {
         model.fit(df, "class");
 
         File tmp = File.createTempFile("model-", "ser");

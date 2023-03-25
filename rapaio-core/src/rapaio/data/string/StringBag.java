@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.util;
+package rapaio.data.string;
 
 import java.util.HashMap;
 import java.util.Map;

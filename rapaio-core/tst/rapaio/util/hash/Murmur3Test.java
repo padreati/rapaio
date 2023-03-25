@@ -3,31 +3,42 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2022 Aurelian Tutuianu
+ *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
+ *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2020 Aurelian Tutuianu
+ *    Copyright 2021 Aurelian Tutuianu
+ *    Copyright 2022 Aurelian Tutuianu
+ *    Copyright 2023 Aurelian Tutuianu
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  *
  */
 
 package rapaio.util.hash;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import rapaio.util.hash.Murmur3;
 
 public class Murmur3Test {
 
@@ -50,15 +61,15 @@ public class Murmur3Test {
             for (int len = 0; len < bytes.length; len++) {
                 seed *= 0x9e3779b1;
                 int h = Murmur3.murmur3A(arr, offset, len, seed);
-                assertEquals(answers32[len], h);
+                Assertions.assertEquals(answers32[len], h);
                 long[] result = Murmur3.murmur3F(arr, offset, len, seed);
-                assertEquals(answers128[len * 2], result[0]);
-                assertEquals(answers128[len * 2 + 1], result[1]);
+                Assertions.assertEquals(answers128[len * 2], result[0]);
+                Assertions.assertEquals(answers128[len * 2 + 1], result[1]);
             }
         }
     }
 
-    static int[] answers32 = new int[] {
+    private static final int[] answers32 = new int[] {
             0x11fd02eb, 0x8dd65a73, 0x29b074ba, 0xcbcd43ce, 0xb6463881, 0xf6228557, 0x3d55c634, 0xa1bb9072,
             0x448402c6, 0xb12bf3d4, 0x18a71ccb, 0x6ae5f185, 0x9a482256, 0xc686d7f2, 0x8e8984d8, 0x68a2491d,
             0xcc29b0e6, 0x3e9130bd, 0xc90defb3, 0xf81c5978, 0x15ff7f63, 0x4ec16a7a, 0xa08aa899, 0x7317ffee,
@@ -69,7 +80,7 @@ public class Murmur3Test {
             0xe1acfb60, 0xc8b4d4b7, 0xf1ec49ba, 0xedbb8cc1, 0xdc5b3ab1, 0x7c7778ae, 0x52bf68d, 0xe0bb4148,
             0xfea36521, 0xa0696ca5, 0xf28df752, 0xd82dccb6};
 
-    static long[] answers128 = new long[] {
+    private static final long[] answers128 = new long[] {
             0x6e54d3ad2be8e9a2L, 0xd99e452d1cfc7decL, 0x609c35d060cf37c1L, 0x4ba03e78929b6807L,
             0xf4865522a8838216L, 0xef8dc0ad3f5a0581L, 0x8513b05a329d04ecL, 0x2295dbef5a603ebcL,
             0xd0259c75fa8711b2L, 0x311f78657cb7ecb9L, 0x771d03baa6accef1L, 0x596d9c3bde77e873L,
@@ -121,16 +132,16 @@ public class Murmur3Test {
             // second time for debugging...
             hash2 = Murmur3.murmur3A(s, pre, s.length() - pre - post, 123456789);
         }
-        assertEquals(hash1, hash2);
+        Assertions.assertEquals(hash1, hash2);
     }
 
     @Test
     public void testStringHash() {
         doString("hello!");
         doString("ABCD");
-        doString("\u0123");
-        doString("\u2345");
-        doString("\u2345\u1234");
+        doString("ģ");
+        doString("⍅");
+        doString("⍅ሴ");
 
         Random r = new Random();
         StringBuilder sb = new StringBuilder(40);

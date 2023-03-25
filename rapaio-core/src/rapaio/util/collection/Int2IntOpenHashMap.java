@@ -31,13 +31,13 @@
 
 package rapaio.util.collection;
 
-import static rapaio.util.hash.Murmur3.*;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import rapaio.util.hash.Murmur3;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.
@@ -107,7 +107,7 @@ public class Int2IntOpenHashMap implements Serializable {
             return false;
         }
         int len = array.length / 2;
-        int hash = murmur3A(key, seed) % len;
+        int hash = Murmur3.murmur3A(key, seed) % len;
         if (hash < 0) {
             hash += len;
         }
@@ -130,7 +130,7 @@ public class Int2IntOpenHashMap implements Serializable {
             throw new IllegalArgumentException();
         }
         int len = array.length / 2;
-        int hash = murmur3A(key, seed) % len;
+        int hash = Murmur3.murmur3A(key, seed) % len;
         if (hash < 0) {
             hash += len;
         }
@@ -160,7 +160,7 @@ public class Int2IntOpenHashMap implements Serializable {
 
     private boolean putInArray(int[] data, int key, int value) {
         int len = data.length / 2;
-        int hash = murmur3A(key, seed) % len;
+        int hash = Murmur3.murmur3A(key, seed) % len;
         if (hash < 0) {
             hash += len;
         }

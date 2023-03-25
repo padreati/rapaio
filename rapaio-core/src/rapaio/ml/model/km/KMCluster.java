@@ -84,7 +84,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment);
     }
 
-    public static Method KMeans = new Method() {
+    public static final Method KMeans = new Method() {
 
         @Override
         public Distance distance() {
@@ -112,7 +112,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         }
     };
 
-    public static Method KMedians = new Method() {
+    public static final Method KMedians = new Method() {
 
         @Override
         public Distance distance() {

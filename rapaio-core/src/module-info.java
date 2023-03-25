@@ -5,6 +5,7 @@ module rapaio.core {
     requires java.sql;
 
     requires jdk.incubator.vector;
+    requires jdk.incubator.concurrent;
 
     exports rapaio.core;
     exports rapaio.core.correlation;
@@ -103,4 +104,5 @@ module rapaio.core {
     exports rapaio.printer.idea;
     exports rapaio.math.linear.base;
     exports rapaio.util.param;
+    exports rapaio.math.tensor.layout;
 }

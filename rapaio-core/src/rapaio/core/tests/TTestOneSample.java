@@ -216,25 +216,22 @@ public class TTestOneSample implements HTest {
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n");
-        sb.append("> TTestOneSample\n");
-        sb.append("\n");
-        sb.append(" One Sample t-test\n");
-        sb.append("\n");
-        sb.append("mean: ").append(floatFlex(mu)).append("\n");
-        sb.append("significance level: ").append(floatFlex(sl)).append("\n");
-        sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
-        sb.append("\n");
-        sb.append("sample size: ").append(sampleSize).append("\n");
-        sb.append("sample mean: ").append(floatFlex(sampleMean)).append("\n");
-        sb.append("sample sd: ").append(floatFlex(sampleSd)).append("\n");
-        sb.append("df: ").append(sampleSize - 1).append("\n");
-        sb.append("t: ").append(floatFlex(t)).append("\n");
-        sb.append("p-value: ").append(pValue).append("\n");
 
-        sb.append("conf int: [").append(floatFlex(ciLow)).append(",").append(floatFlex(ciHigh)).append("]\n");
-
-        return sb.toString();
+        return "\n"
+                + "> TTestOneSample\n"
+                + "\n"
+                + " One Sample t-test\n"
+                + "\n"
+                + "mean: " + floatFlex(mu) + "\n"
+                + "significance level: " + floatFlex(sl) + "\n"
+                + "alternative hypothesis: " + (alt == Alternative.TWO_TAILS ? "two tails " : "one tail ") + alt.pCondition() + "\n"
+                + "\n"
+                + "sample size: " + sampleSize + "\n"
+                + "sample mean: " + floatFlex(sampleMean) + "\n"
+                + "sample sd: " + floatFlex(sampleSd) + "\n"
+                + "df: " + (sampleSize - 1) + "\n"
+                + "t: " + floatFlex(t) + "\n"
+                + "p-value: " + pValue + "\n"
+                + "conf int: [" + floatFlex(ciLow) + "," + floatFlex(ciHigh) + "]\n";
     }
 }

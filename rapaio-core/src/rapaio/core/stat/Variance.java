@@ -121,13 +121,11 @@ public class Variance implements Printable {
 
     @Override
     public String toContent(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("> variance[%s]\n", varName));
-        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",
-                completeCount() + missingCount(), completeCount(), missingCount()));
-        sb.append(String.format("variance: %s\n", floatFlex(value)));
-        sb.append(String.format("sd: %s\n", floatFlex(sdValue())));
-        return sb.toString();
+        return String.format("> variance[%s]\n", varName)
+                + String.format("total rows: %d (complete: %d, missing: %d)\n",
+                completeCount() + missingCount(), completeCount(), missingCount())
+                + String.format("variance: %s\n", floatFlex(value))
+                + String.format("sd: %s\n", floatFlex(sdValue()));
     }
 
     @Override

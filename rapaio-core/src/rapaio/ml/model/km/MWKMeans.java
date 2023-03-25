@@ -70,33 +70,33 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     /**
      * Specifies the desired number of centroids.
      */
-    public ValueParam<Integer, MWKMeans> k = new ValueParam<>(this, 2, "k");
+    public final ValueParam<Integer, MWKMeans> k = new ValueParam<>(this, 2, "k");
 
     /**
      * Power of Minkowski metric. Value should be greater than 1
      */
-    public ValueParam<Double, MWKMeans> p = new ValueParam<>(this, 2.0, "p", v -> Double.isFinite(v) && v >= 1);
+    public final ValueParam<Double, MWKMeans> p = new ValueParam<>(this, 2.0, "p", v -> Double.isFinite(v) && v >= 1);
 
     /**
      * Number of restarts when choosing the initial centroids.
      */
-    public ValueParam<Integer, MWKMeans> nstart = new ValueParam<>(this, 1, "nstart", v -> v >= 1);
+    public final ValueParam<Integer, MWKMeans> nstart = new ValueParam<>(this, 1, "nstart", v -> v >= 1);
 
     /**
      * Cluster initialization method.
      */
-    public ValueParam<KMClusterInit, MWKMeans> init = new ValueParam<>(this, KMClusterInit.Forgy, "init");
+    public final ValueParam<KMClusterInit, MWKMeans> init = new ValueParam<>(this, KMClusterInit.Forgy, "init");
 
     /**
      * Subspace clustering flag. If true, a separate set of weights for each cluster will be used, otherwise
      * a global set of weights will be used.
      */
-    public ValueParam<Boolean, MWKMeans> subspace = new ValueParam<>(this, false, "subspace clustering flag");
+    public final ValueParam<Boolean, MWKMeans> subspace = new ValueParam<>(this, false, "subspace clustering flag");
 
     /**
      * Threshold value used as a criteria for assessing convergence.
      */
-    public ValueParam<Double, MWKMeans> eps = new ValueParam<>(this, 1e-10, "eps");
+    public final ValueParam<Double, MWKMeans> eps = new ValueParam<>(this, 1e-10, "eps");
 
     // clustering artifacts
 

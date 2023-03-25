@@ -240,8 +240,8 @@ public class CForestTest {
         }
     }
 
-    String header = "id,x,y,z,target";
-    List<String> rows = List.of(
+    final String header = "id,x,y,z,target";
+    final List<String> rows = List.of(
             "0,a,a,a,0",
             "1,b,b,b,1",
             "2,a,b,a,0",

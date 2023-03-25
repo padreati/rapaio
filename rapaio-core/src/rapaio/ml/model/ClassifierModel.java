@@ -105,9 +105,9 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
      * an iterative procedure. If the call hook returns false, the iterative procedure is
      * stopped, if true it continues until the algorithm stops itself.
      */
-    public ValueParam<SFunction<H, Boolean>, M> stoppingHook = new ValueParam<>((M) this, h -> false, "stoppingHook", Objects::nonNull);
+    public final ValueParam<SFunction<H, Boolean>, M> stoppingHook = new ValueParam<>((M) this, h -> false, "stoppingHook", Objects::nonNull);
 
-    public ValueParam<Long, M> seed = new ValueParam<>((M) this, 0L, "seed");
+    public final ValueParam<Long, M> seed = new ValueParam<>((M) this, 0L, "seed");
 
     // learning artifacts
 

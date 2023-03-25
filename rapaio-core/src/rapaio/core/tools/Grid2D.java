@@ -57,7 +57,7 @@ public class Grid2D implements Serializable {
         return fromPrediction(c, df, xName, yName, labelName, bins, 0.05);
     }
 
-    public static Grid2D fromPrediction(ClassifierModel c, Frame df, String xName, String yName,
+    public static Grid2D fromPrediction(ClassifierModel<?,?,?> c, Frame df, String xName, String yName,
             String labelName, int bins, double margin) {
 
         double xMin = Minimum.of(df.rvar(xName)).value();

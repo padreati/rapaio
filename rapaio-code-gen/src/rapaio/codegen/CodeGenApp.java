@@ -43,16 +43,6 @@ public class CodeGenApp {
                 )
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/DTensor.java")
-                .dst.set("rapaio/math/tensor/FTensor.java")
-                .replaces.set(
-                        Replace.of("double", "float"),
-                        Replace.of("Double", "Float"),
-                        Replace.of("DTensor", "FTensor"),
-                        Replace.of("DStorage", "FStorage")
-                )
-        );
-        templates.add(new CodeGenTemplate()
                 .src.set("rapaio/math/tensor/storage/array/DStorageArray.java")
                 .dst.set("rapaio/math/tensor/storage/array/FStorageArray.java")
                 .replaces.set(
@@ -64,18 +54,8 @@ public class CodeGenApp {
                 )
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/cpuarray/DTensorDense.java")
-                .dst.set("rapaio/math/tensor/manager/cpuarray/FTensorDense.java")
-                .replaces.set(
-                        Replace.of("double", "float"),
-                        Replace.of("Double", "Float"),
-                        Replace.of("DTensor", "FTensor"),
-                        Replace.of("DStorage", "FStorage")
-                )
-        );
-        templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/cpuarray/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/manager/cpuarray/FTensorStride.java")
+                .src.set("rapaio/math/tensor/DTensor.java")
+                .dst.set("rapaio/math/tensor/FTensor.java")
                 .replaces.set(
                         Replace.of("double", "float"),
                         Replace.of("Double", "Float"),
@@ -84,6 +64,27 @@ public class CodeGenApp {
                 )
         );
 
+        templates.add(new CodeGenTemplate()
+                .src.set("rapaio/math/tensor/manager/cpusingle/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/manager/cpusingle/FTensorStride.java")
+                .replaces.set(
+                        Replace.of("double", "float"),
+                        Replace.of("Double", "Float"),
+                        Replace.of("DTensor", "FTensor"),
+                        Replace.of("DStorage", "FStorage")
+                )
+        );
+
+        templates.add(new CodeGenTemplate()
+                .src.set("rapaio/math/tensor/manager/cpuparallel/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/manager/cpuparallel/FTensorStride.java")
+                .replaces.set(
+                        Replace.of("double", "float"),
+                        Replace.of("Double", "Float"),
+                        Replace.of("DTensor", "FTensor"),
+                        Replace.of("DStorage", "FStorage")
+                )
+        );
 
     }
 

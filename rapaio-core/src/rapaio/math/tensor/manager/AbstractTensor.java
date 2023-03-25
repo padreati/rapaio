@@ -31,45 +31,23 @@
 
 package rapaio.math.tensor.manager;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.storage.Storage;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
-public abstract class AbstractTensor<N extends Number, S extends Storage<N>, T extends Tensor<N, S, T>> implements Tensor<N, S, T> {
-
-    protected final TensorManager manager;
-    protected final Shape shape;
-
-    public AbstractTensor(TensorManager manager, Shape shape) {
-        this.manager = manager;
-        this.shape = shape;
-    }
-
-    @Override
-    public TensorManager manager() {
-        return manager;
-    }
-
-    @Override
-    public final Shape shape() {
-        return shape;
-    }
+public abstract class AbstractTensor<N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> implements Tensor<N, S, T> {
 
     @Override
     public String toContent(Printer printer, POption<?>... options) {
 
         final int MAX_COL_VALUES = 21;
         boolean maxColHit = false;
-        int cols = 2 + shape.dim(-1);
-        if (shape.dim(-1) > MAX_COL_VALUES) {
+        int cols = 2 + shape().dim(-1);
+        if (shape().dim(-1) > MAX_COL_VALUES) {
             maxColHit = true;
             cols = 2 + MAX_COL_VALUES;
         }
@@ -87,8 +65,8 @@ public abstract class AbstractTensor<N extends Number, S extends Storage<N>, T e
         int row = 0;
         if (maxRowHit) {
             for (; row < MAX_ROW_VALUES - 1; row++) {
-                tt.textCenter(row, 0, rowStart(shape, row));
-                tt.textLeft(row, cols - 1, rowEnd(shape, row));
+                tt.textCenter(row, 0, rowStart(shape(), row));
+                tt.textLeft(row, cols - 1, rowEnd(shape(), row));
                 appendValues(printer, tt, row, cols, maxColHit);
             }
             for (int i = 0; i < cols; i++) {
@@ -96,8 +74,8 @@ public abstract class AbstractTensor<N extends Number, S extends Storage<N>, T e
             }
         } else {
             for (; row < rows; row++) {
-                tt.textCenter(row, 0, rowStart(shape, row));
-                tt.textLeft(row, cols - 1, rowEnd(shape, row));
+                tt.textCenter(row, 0, rowStart(shape(), row));
+                tt.textLeft(row, cols - 1, rowEnd(shape(), row));
                 appendValues(printer, tt, row, cols, maxColHit);
             }
         }
@@ -137,13 +115,13 @@ public abstract class AbstractTensor<N extends Number, S extends Storage<N>, T e
     private void appendValues(Printer printer, TextTable tt, int row, int cols, boolean maxColHit) {
         if (maxColHit) {
             for (int i = 0; i < cols - 2; i++) {
-                double value = getValue(shape.index(Order.C, row * shape.dim(shape.rank() - 1) + i)).doubleValue();
+                double value = getValue(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
                 tt.floatString(row, i + 1, printer.getOptions().floatFormat().format(value));
             }
             tt.textCenter(row, cols - 2, "...");
         } else {
             for (int i = 0; i < cols - 2; i++) {
-                double value = getValue(shape.index(Order.C, row * shape.dim(shape.rank() - 1) + i)).doubleValue();
+                double value = getValue(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
                 tt.floatString(row, i + 1, printer.getOptions().floatFormat().format(value));
             }
         }
@@ -151,15 +129,15 @@ public abstract class AbstractTensor<N extends Number, S extends Storage<N>, T e
 
     @Override
     public String toFullContent(Printer printer, POption<?>... options) {
-        int cols = 2 + shape.dim(shape.rank() - 1);
-        int rows = shape().size() / shape().dim(shape.rank() - 1);
+        int cols = 2 + shape().dim(-1);
+        int rows = shape().size() / shape().dim(-1);
 
         TextTable tt = TextTable.empty(rows, cols, 0, 0);
 
         int row = 0;
         for (; row < rows; row++) {
-            tt.textCenter(row, 0, rowStart(shape, row));
-            tt.textLeft(row, cols - 1, rowEnd(shape, row));
+            tt.textCenter(row, 0, rowStart(shape(), row));
+            tt.textLeft(row, cols - 1, rowEnd(shape(), row));
             appendValues(printer, tt, row, cols, false);
         }
 
@@ -168,16 +146,7 @@ public abstract class AbstractTensor<N extends Number, S extends Storage<N>, T e
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + " {rank:" + shape().rank() + ",dims:"
-                + Arrays.stream(shape().dims()).mapToObj(String::valueOf).collect(Collectors.joining(",", "[", "]"))
-                + "}";
+        return this.getClass().getSimpleName() + " {" + layout().toString() + "}";
     }
 
-    protected int pointer(int offset, int[] strides, int[] index) {
-        int pointer = offset;
-        for (int i = 0; i < index.length; i++) {
-            pointer += index[i] * strides[i];
-        }
-        return pointer;
-    }
 }

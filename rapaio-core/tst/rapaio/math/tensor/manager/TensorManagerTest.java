@@ -31,13 +31,21 @@
 
 package rapaio.math.tensor.manager;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.math.tensor.DTensor;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.manager.cpuarray.CpuArraySingleTensorManager;
+import rapaio.math.tensor.manager.cpuparallel.CpuArrayParallelTensorManager;
+import rapaio.math.tensor.manager.cpusingle.CpuSingleTensorManager;
+import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 
 public class TensorManagerTest {
 
@@ -50,15 +58,116 @@ public class TensorManagerTest {
 
     @Test
     void mainTestLoop() {
-        testManager(new CpuArraySingleTensorManager());
+        testManager(new CpuSingleTensorManager(new ArrayStorageFactory()));
+        testManager(new CpuArrayParallelTensorManager(new ArrayStorageFactory()));
     }
 
     void testManager(TensorManager manager) {
-        testBuilders(manager);
+        testOfDoubleZeros(manager);
+        testOfDoubleSeq(manager);
+        testOfDoubleRandom(manager);
+        testOfDoubleStride(manager);
+        testOfDoubleWrap(manager);
+
+        testOfFloatZeros(manager);
+        testOfFloatSeq(manager);
+        testOfFloatRandom(manager);
+        testOfFloatStride(manager);
+        testOfFloatWrap(manager);
     }
 
-    void testBuilders(TensorManager manager) {
-
+    void testOfDoubleZeros(TensorManager manager) {
+        DTensor t = manager.ofDoubleZeros(Shape.of(10, 20));
+        assertEquals(manager, t.manager());
+        assertEquals(t.shape(), Shape.of(10, 20));
+        var it = t.pointerIterator();
+        while (it.hasNext()) {
+            assertEquals(0, t.storage().get(it.nextInt()));
+        }
     }
 
+    void testOfDoubleSeq(TensorManager manager) {
+        var t = manager.ofDoubleSeq(Shape.of(2, 3, 4));
+        var it = t.pointerIterator(Order.C);
+        int i = 0;
+        while (it.hasNext()) {
+            assertEquals(i++, t.storage().get(it.nextInt()));
+        }
+    }
+
+    void testOfDoubleRandom(TensorManager manager) {
+        var t = manager.ofDoubleRandom(Shape.of(3, 4), random);
+        var it = t.pointerIterator(Order.C);
+        double last = t.storage().get(it.nextInt());
+        while (it.hasNext()) {
+            double next = t.storage().get(it.nextInt());
+            assertNotEquals(last, next);
+            last = next;
+        }
+    }
+
+    void testOfDoubleStride(TensorManager manager) {
+        var t = manager.ofDoubleStride(Shape.of(4, 3), 0, new int[] {1, 4}, manager.storageFactory().ofDoubleSeq(0, 12));
+        int i = 0;
+        var it = t.pointerIterator(Order.F);
+        while(it.hasNext()) {
+            assertEquals(i++, t.storage().get(it.nextInt()));
+        }
+    }
+
+    void testOfDoubleWrap(TensorManager manager) {
+        var t = manager.ofDoubleWrap(Shape.of(2,3), new double[] {1., 2, 3, 4, 5, 6}, Order.C);
+        int i=1;
+        var it = t.pointerIterator(Order.C);
+        while(it.hasNext()) {
+            assertEquals(i++, t.storage().get(it.nextInt()));
+        }
+    }
+
+    void testOfFloatZeros(TensorManager manager) {
+        var t = manager.ofFloatZeros(Shape.of(10, 20));
+        assertEquals(t.shape(), Shape.of(10, 20));
+        var it = t.pointerIterator();
+        while (it.hasNext()) {
+            assertEquals(0, t.storage().get(it.nextInt()));
+        }
+    }
+
+    void testOfFloatSeq(TensorManager manager) {
+        var t = manager.ofFloatSeq(Shape.of(2, 3, 4));
+        var it = t.pointerIterator(Order.C);
+        int i = 0;
+        while (it.hasNext()) {
+            assertEquals(i++, t.storage().get(it.nextInt()));
+        }
+    }
+
+    void testOfFloatRandom(TensorManager manager) {
+        var t = manager.ofFloatRandom(Shape.of(3, 4), random);
+        var it = t.pointerIterator(Order.C);
+        double last = t.storage().get(it.nextInt());
+        while (it.hasNext()) {
+            float next = t.storage().get(it.nextInt());
+            assertNotEquals(last, next);
+            last = next;
+        }
+    }
+
+    void testOfFloatStride(TensorManager manager) {
+        var t = manager.ofFloatStride(Shape.of(4, 3), 0, new int[] {1, 4}, manager.storageFactory().ofFloatSeq(0, 12));
+        int i = 0;
+        var it = t.pointerIterator(Order.F);
+        while(it.hasNext()) {
+            assertEquals(i++, t.storage().get(it.nextInt()));
+        }
+    }
+
+    void testOfFloatWrap(TensorManager manager) {
+        var t = manager.ofFloatWrap(Shape.of(2,3), new float[] {1.f, 2.f, 3.f, 4.f, 5.f, 6.f}, Order.C);
+        int i=1;
+        var it = t.pointerIterator(Order.C);
+        while(it.hasNext()) {
+            assertEquals(i++, t.storage().get(it.nextInt()));
+        }
+    }
 }

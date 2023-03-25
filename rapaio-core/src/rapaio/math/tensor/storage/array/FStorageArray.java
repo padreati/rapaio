@@ -32,48 +32,27 @@
 package rapaio.math.tensor.storage.array;
 
 import java.util.Arrays;
-import java.util.Random;
 
 import rapaio.math.tensor.storage.FStorage;
+import rapaio.math.tensor.storage.StorageFactory;
 
-public class FStorageArray implements FStorage {
+public final class FStorageArray implements FStorage {
 
-    public static FStorageArray wrap(float[] array) {
-        return new FStorageArray(array);
-    }
-
-    public static FStorageArray zeros(int size) {
-        return new FStorageArray(new float[size]);
-    }
-
-    public static FStorageArray fill(int size, float value) {
-        float[] array = new float[size];
-        if (value != 0) {
-            Arrays.fill(array, value);
-        }
-        return new FStorageArray(array);
-    }
-
-    public static FStorageArray random(int size, Random random) {
-        FStorageArray storage = zeros(size);
-        for (int i = 0; i < size; i++) {
-            storage.set(i, random.nextFloat());
-        }
-        return storage;
-    }
-
-    public static FStorageArray seq(int start, int end) {
-        FStorageArray storage = FStorageArray.zeros(end - start);
-        for (int i = 0; i < end - start; i++) {
-            storage.setValue(i, (float) (start + i));
-        }
-        return storage;
-    }
-
+    private final StorageFactory factory;
     private final float[] array;
 
-    private FStorageArray(float[] array) {
+    FStorageArray(StorageFactory factory, float[] array) {
+        this.factory = factory;
         this.array = array;
+
+        if (!(factory instanceof ArrayStorageFactory)) {
+            throw new IllegalArgumentException("Wrong type of storage factory.");
+        }
+    }
+
+    @Override
+    public StorageFactory storageFactory() {
+        return factory;
     }
 
     @Override
@@ -120,24 +99,35 @@ public class FStorageArray implements FStorage {
         }
     }
 
+    @Override
+    public void add(int start, FStorage from, int fStart, int len) {
+        for (int i = start, j = fStart; i < start + len; i++, j++) {
+            array[i] += from.get(j);
+        }
+    }
+
+    @Override
     public void sub(int start, int len, float v) {
         for (int i = start; i < start + len; i++) {
             array[i] -= v;
         }
     }
 
+    @Override
     public void mul(int start, int len, float v) {
         for (int i = start; i < start + len; i++) {
             array[i] *= v;
         }
     }
 
+    @Override
     public void div(int start, int len, float v) {
         for (int i = start; i < start + len; i++) {
             array[i] /= v;
         }
     }
 
+    @Override
     public float min(int start, int len) {
         if (len <= 0) {
             return Float.NaN;
@@ -168,6 +158,6 @@ public class FStorageArray implements FStorage {
 
     @Override
     public FStorageArray copy() {
-        return new FStorageArray(Arrays.copyOf(array, array.length));
+        return new FStorageArray(factory, Arrays.copyOf(array, array.length));
     }
 }

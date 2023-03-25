@@ -11,5 +11,12 @@ module rapaio.experimental {
 
     requires jdk.incubator.vector;
 
+    requires org.objectweb.asm;
+    requires org.objectweb.asm.util;
+    requires org.objectweb.asm.tree;
+    requires org.objectweb.asm.tree.analysis;
+
     requires rapaio.core;
+
+    exports rapaio.experiment.asm;
 }

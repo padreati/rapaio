@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  */
 public class VarTypeTest {
 
-    private VarType[] types = new VarType[]{
+    private final VarType[] types = new VarType[]{
             VarType.BINARY, VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING};
 
     @Test

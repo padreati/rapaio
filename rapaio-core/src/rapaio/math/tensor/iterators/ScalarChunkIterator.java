@@ -48,12 +48,12 @@ public final class ScalarChunkIterator implements ChunkIterator {
     }
 
     @Override
-    public int chunkSize() {
+    public int loopSize() {
         return 1;
     }
 
     @Override
-    public int chunkStride() {
+    public int loopStep() {
         return 1;
     }
 

@@ -35,6 +35,20 @@ import rapaio.util.IntIterator;
 
 public interface PointerIterator extends IntIterator {
 
+    /**
+     * Returns next pointer, if available.
+     *
+     * @return next pointer
+     * @throws java.util.NoSuchElementException if there is no next element
+     */
+    @Override
+    int nextInt();
+
+    /**
+     * Returns position for the corresponding pointer.
+     *
+     * @return current poition
+     */
     int position();
 }
 

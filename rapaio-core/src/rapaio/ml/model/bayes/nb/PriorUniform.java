@@ -64,11 +64,9 @@ public class PriorUniform implements Prior {
 
     @Override
     public String fittedName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{value=").append(Format.floatFlex(uniformPrior)).append(",");
-        sb.append("targetLevels=[").append(String.join(",", levels)).append("]");
-        sb.append("}");
-        return sb.toString();
+        return name() + "{value=" + Format.floatFlex(uniformPrior) + ","
+                + "targetLevels=[" + String.join(",", levels) + "]"
+                + "}";
     }
 
     @Override

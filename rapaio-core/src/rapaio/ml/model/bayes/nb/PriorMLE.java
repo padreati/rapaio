@@ -63,11 +63,9 @@ public class PriorMLE implements Prior {
 
     @Override
     public String fittedName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{");
-        sb.append(priors.entrySet().stream().map(e -> e.getKey() + ":" + Format.floatFlex(e.getValue())).collect(Collectors.joining(",")));
-        sb.append("}");
-        return sb.toString();
+        return name() + "{"
+                + priors.entrySet().stream().map(e -> e.getKey() + ":" + Format.floatFlex(e.getValue())).collect(Collectors.joining(","))
+                + "}";
     }
 
     @Override

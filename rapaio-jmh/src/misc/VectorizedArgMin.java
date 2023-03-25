@@ -42,10 +42,10 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
 import algebra.Utils;
-import rapaio.math.tensor.storage.array.DStorageArray;
-import rapaio.math.tensor.storage.array.FStorageArray;
-import rapaio.math.tensor.storage.FStorage;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.storage.DStorage;
+import rapaio.math.tensor.storage.FStorage;
+import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 import rapaio.util.collection.DoubleArrays;
 
 @BenchmarkMode( {Mode.Throughput})
@@ -58,15 +58,16 @@ public class VectorizedArgMin {
         private int n;
 
         private double[] darray;
-        private DStorageArray dstorage;
+        private DStorage dstorage;
         private FStorage fstorage;
 
         @Setup(Level.Invocation)
         public void setup() {
             Random random = new Random();
+            var storageFactory = new ArrayStorageFactory();
             darray = DVector.random(random, n).array();
-            dstorage = DStorageArray.random(n, random);
-            fstorage = FStorageArray.random(n, random);
+            dstorage = storageFactory.ofDoubleRandom(n, random);
+            fstorage = storageFactory.ofFloatRandom(n, random);
         }
     }
 

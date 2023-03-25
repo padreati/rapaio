@@ -179,25 +179,22 @@ public class TTestTwoPaired implements HTest {
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n");
-        sb.append("> TTestTwoPaired\n");
-        sb.append("\n");
-        sb.append(" Two Paired z-test\n");
-        sb.append("\n");
-        sb.append("complete rows: ").append(complete.size()).append("\n");
-        sb.append("mean: ").append(floatFlex(mu)).append("\n");
-        sb.append("significance level: ").append(floatFlex(sl)).append("\n");
-        sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
-        sb.append("\n");
-        sb.append("sample mean: ").append(floatFlex(sampleMean)).append("\n");
-        sb.append("sample sd: ").append(floatFlex(sd)).append("\n");
-        sb.append("df: ").append(df).append("\n");
-        sb.append("t: ").append(floatFlex(t)).append("\n");
-        sb.append("p-value: ").append(pValue).append("\n");
 
-        sb.append("conf int: [").append(floatFlex(ciLow)).append(",").append(floatFlex(ciHigh)).append("]\n");
-
-        return sb.toString();
+        return "\n"
+                + "> TTestTwoPaired\n"
+                + "\n"
+                + " Two Paired z-test\n"
+                + "\n"
+                + "complete rows: " + complete.size() + "\n"
+                + "mean: " + floatFlex(mu) + "\n"
+                + "significance level: " + floatFlex(sl) + "\n"
+                + "alternative hypothesis: " + (alt == Alternative.TWO_TAILS ? "two tails " : "one tail ") + alt.pCondition() + "\n"
+                + "\n"
+                + "sample mean: " + floatFlex(sampleMean) + "\n"
+                + "sample sd: " + floatFlex(sd) + "\n"
+                + "df: " + df + "\n"
+                + "t: " + floatFlex(t) + "\n"
+                + "p-value: " + pValue + "\n"
+                + "conf int: [" + floatFlex(ciLow) + "," + floatFlex(ciHigh) + "]\n";
     }
 }

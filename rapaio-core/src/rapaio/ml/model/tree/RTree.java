@@ -31,7 +31,7 @@
 
 package rapaio.ml.model.tree;
 
-import static rapaio.printer.Format.*;
+import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 import java.util.Arrays;
@@ -42,7 +42,6 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Stream;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Sum;
@@ -54,8 +53,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
-import rapaio.util.param.MultiParam;
-import rapaio.util.param.ValueParam;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.model.RegressionResult;
@@ -68,6 +65,8 @@ import rapaio.ml.model.tree.rtree.Splitter;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.DoublePair;
+import rapaio.util.param.MultiParam;
+import rapaio.util.param.ValueParam;
 
 /**
  * Implements a regression decision tree.
@@ -231,7 +230,8 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
         return true;
     }
 
-    record QueueNode(Node node, Frame df, Var weight) {}
+    record QueueNode(Node node, Frame df, Var weight) {
+    }
 
     private void learnNode(Node node, Frame df, Var weights, VarSelector nodeVarSelector, Random random) {
 
@@ -248,12 +248,8 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
             return;
         }
 
-        Stream<String> stream = Arrays.stream(nodeVarSelector.nextVarNames(random));
-        if (runs.get() > 1) {
-            stream = stream.parallel();
-        }
-
-        List<Candidate> candidates = stream
+        List<Candidate> candidates = Arrays.stream(nodeVarSelector.nextVarNames(random))
+                .parallel()
                 .map(testCol -> test.get(df.type(testCol))
                         .computeCandidate(this, df, weights, testCol, firstTargetName(), random)
                         .orElse(null))

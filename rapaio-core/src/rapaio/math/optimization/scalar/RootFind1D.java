@@ -199,10 +199,10 @@ public class RootFind1D extends ParamSet<RootFind1D> implements Serializable {
                 /* fr and fs have same sign, copy r to s */
                 xa = r;
                 fa = fr;
-                if (side == +1) {
+                if (side == 1) {
                     fb /= 2;
                 }
-                side = +1;
+                side = 1;
             } else {
                 /* fr * f_ very small (looks like zero) */
                 x = r;

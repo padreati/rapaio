@@ -31,8 +31,6 @@
 
 package rapaio.util.collection;
 
-import static rapaio.util.hash.Murmur3.*;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -41,6 +39,7 @@ import java.util.stream.IntStream;
 
 import rapaio.util.IntIterable;
 import rapaio.util.IntIterator;
+import rapaio.util.hash.Murmur3;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.
@@ -106,7 +105,7 @@ public class IntOpenHashSet implements Serializable, IntIterable {
      * @return true if value is in the set, false otherwise
      */
     public boolean contains(int value) {
-        int hash = murmur3A(value, seed) % array.length;
+        int hash = Murmur3.murmur3A(value, seed) % array.length;
         if (hash < 0) {
             hash += array.length;
         }
@@ -144,7 +143,7 @@ public class IntOpenHashSet implements Serializable, IntIterable {
         if (needsCapacity(1)) {
             ensureCapacity(1);
         }
-        int hash = murmur3A(value, seed) % array.length;
+        int hash = Murmur3.murmur3A(value, seed) % array.length;
         if (hash < 0) {
             hash += array.length;
         }
@@ -204,7 +203,7 @@ public class IntOpenHashSet implements Serializable, IntIterable {
             if (x == MISSING) {
                 continue;
             }
-            int hash = murmur3A(x, seed) % copy.length;
+            int hash = Murmur3.murmur3A(x, seed) % copy.length;
             if (hash < 0) {
                 hash += copy.length;
             }

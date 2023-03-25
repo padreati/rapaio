@@ -37,7 +37,7 @@ import rapaio.data.Frame;
 import rapaio.ml.model.tree.RowPredicate;
 import rapaio.printer.Format;
 
-public final record NumLessEqual(String testName, double testValue) implements RowPredicate {
+public record NumLessEqual(String testName, double testValue) implements RowPredicate {
 
     @Serial
     private static final long serialVersionUID = 8215441575970091295L;

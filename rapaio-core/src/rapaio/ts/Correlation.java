@@ -37,8 +37,8 @@ import rapaio.printer.Printable;
 
  abstract class Correlation implements Printable {
 
-     protected Var ts;
-     protected VarInt lags;
+     protected final Var ts;
+     protected final VarInt lags;
 
      Correlation(Var ts, VarInt lags) {
          this.ts = ts;

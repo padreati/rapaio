@@ -53,6 +53,7 @@ import rapaio.util.function.SConsumer;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/31/20.
  */
+@SuppressWarnings("unchecked")
 public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R extends ClusteringResult<M>, H>
         extends ParamSet<M> implements Printable, Serializable {
 
@@ -64,7 +65,6 @@ public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R exte
      * For various models composed of multiple sub-models
      * the runs represents the number of sub-models.
      */
-    @SuppressWarnings("unchecked")
     public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1_000, "runs", x -> x > 0);
 
     public final ValueParam<Long, M> seed = new ValueParam<>((M) this, 0L, "seed", Objects::nonNull);

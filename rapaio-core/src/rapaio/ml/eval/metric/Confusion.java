@@ -161,9 +161,7 @@ public final class Confusion implements Printable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ConfusionMatrix(levels:").append(String.join(",", factors)).append(")");
-        return sb.toString();
+        return "ConfusionMatrix(levels:" + String.join(",", factors) + ")";
     }
 
     @Override

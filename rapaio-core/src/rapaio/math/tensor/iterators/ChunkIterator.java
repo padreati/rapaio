@@ -27,8 +27,12 @@ public interface ChunkIterator extends IntIterator {
 
     int chunkCount();
 
-    int chunkSize();
+    int loopSize();
 
-    int chunkStride();
+    int loopStep();
+
+    default int loopBound() {
+        return loopSize() * loopStep();
+    }
 }
 

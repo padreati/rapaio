@@ -180,26 +180,23 @@ public class ZTestTwoPaired implements HTest {
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n");
-        sb.append("> ZTestTwoPaired\n");
-        sb.append("\n");
-        sb.append(" Two Paired z-test\n");
-        sb.append("\n");
-        sb.append("x complete rows: ").append(xComplete.size()).append("/").append(x.size()).append("\n");
-        sb.append("y complete rows: ").append(yComplete.size()).append("/").append(y.size()).append("\n");
-        sb.append("mean: ").append(floatFlex(mu)).append("\n");
-        sb.append("x sd: ").append(floatFlex(sd)).append("\n");
-        sb.append("significance level: ").append(floatFlex(sl)).append("\n");
-        sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
-        sb.append("\n");
-        sb.append("sample mean: ").append(floatFlex(sampleMean)).append("\n");
-        sb.append("z score: ").append(floatFlex(zScore)).append("\n");
-        sb.append("p-value: ").append(pValue).append("\n");
 
-        sb.append("conf int: [").append(floatFlex(ciLow)).append(",").append(floatFlex(ciHigh)).append("]\n");
-
-        return sb.toString();
+        return "\n"
+                + "> ZTestTwoPaired\n"
+                + "\n"
+                + " Two Paired z-test\n"
+                + "\n"
+                + "x complete rows: " + xComplete.size() + "/" + x.size() + "\n"
+                + "y complete rows: " + yComplete.size() + "/" + y.size() + "\n"
+                + "mean: " + floatFlex(mu) + "\n"
+                + "x sd: " + floatFlex(sd) + "\n"
+                + "significance level: " + floatFlex(sl) + "\n"
+                + "alternative hypothesis: " + (alt == Alternative.TWO_TAILS ? "two tails " : "one tail ") + alt.pCondition() + "\n"
+                + "\n"
+                + "sample mean: " + floatFlex(sampleMean) + "\n"
+                + "z score: " + floatFlex(zScore) + "\n"
+                + "p-value: " + pValue + "\n"
+                + "conf int: [" + floatFlex(ciLow) + "," + floatFlex(ciHigh) + "]\n";
     }
 
 }

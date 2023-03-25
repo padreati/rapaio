@@ -72,9 +72,10 @@ public abstract class AbstractVar implements Var {
         // all solid implementations have their own version of copy method
 
         switch (type()) {
-            case INT:
+            case INT -> {
                 return VarInt.from(size(), this::getInt).name(name());
-            case LONG:
+            }
+            case LONG -> {
                 VarLong stamp = VarLong.empty(size()).name(name());
                 for (int i = 0; i < size(); i++) {
                     if (isMissing(i)) {
@@ -84,13 +85,15 @@ public abstract class AbstractVar implements Var {
                     stamp.setLong(i, getLong(i));
                 }
                 return stamp;
-            case DOUBLE:
+            }
+            case DOUBLE -> {
                 VarDouble num = VarDouble.empty(size()).name(name());
                 for (int i = 0; i < size(); i++) {
                     num.setDouble(i, getDouble(i));
                 }
                 return num;
-            case BINARY:
+            }
+            case BINARY -> {
                 VarBinary bin = VarBinary.empty(size()).name(name());
                 for (int i = 0; i < size(); i++) {
                     if (isMissing(i)) {
@@ -100,7 +103,8 @@ public abstract class AbstractVar implements Var {
                     bin.setInt(i, getInt(i));
                 }
                 return bin;
-            case NOMINAL:
+            }
+            case NOMINAL -> {
                 VarNominal nom = VarNominal.empty(size(), levels()).name(name());
                 for (int i = 0; i < size(); i++) {
                     if (isMissing(i)) {
@@ -110,12 +114,14 @@ public abstract class AbstractVar implements Var {
                     nom.setLabel(i, getLabel(i));
                 }
                 return nom;
-            case STRING:
+            }
+            case STRING -> {
                 return VarString.from(size(), this::getLabel).name(name());
-            case INSTANT:
+            }
+            case INSTANT -> {
                 return VarInstant.from(size(), this::getInstant).name(name());
-            default:
-                throw new IllegalArgumentException("Variable type does not hav an implementation.");
+            }
+            default -> throw new IllegalArgumentException("Variable type does not hav an implementation.");
         }
     }
 

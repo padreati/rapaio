@@ -48,12 +48,12 @@ public final class DenseChunkIterator implements ChunkIterator {
     }
 
     @Override
-    public int chunkSize() {
+    public int loopSize() {
         return size;
     }
 
     @Override
-    public int chunkStride() {
+    public int loopStep() {
         return 1;
     }
 

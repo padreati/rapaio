@@ -46,30 +46,51 @@ public final class Shape {
     }
 
     private final int[] dims;
-    private final int[] rowMajorOffsets;
-    private final int[] colMajorOffsets;
+    private final int size;
+    private int[] cStrides = null;
+    private int[] fStrides = null;
 
     private Shape(int[] dims) {
         for (int dimSize : dims) {
             if (dimSize <= 0) {
-                throw new IllegalArgumentException(
-                        "Invalid shape dimension: " + Arrays.stream(dims).mapToObj(String::valueOf).collect(
-                                Collectors.joining(",", "[", "]")));
+                throw new IllegalArgumentException("Invalid shape dimensions: ["
+                        + Arrays.stream(dims).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "]");
             }
         }
         this.dims = Arrays.copyOf(dims, dims.length);
-        this.rowMajorOffsets = IntArrays.newFill(dims.length, 1);
-        this.colMajorOffsets = IntArrays.newFill(dims.length, 1);
-        for (int i = 1; i < rowMajorOffsets.length; i++) {
-            for (int j = 0; j < i; j++) {
-                rowMajorOffsets[j] *= dims[i];
+        this.size = IntArrays.prod(dims, 0, dims.length);
+    }
+
+    private int[] cStrides() {
+        if (cStrides == null) {
+            cStrides = IntArrays.newFill(dims.length, 1);
+            for (int i = 1; i < cStrides.length; i++) {
+                for (int j = 0; j < i; j++) {
+                    cStrides[j] *= dims[i];
+                }
             }
         }
-        for (int i = colMajorOffsets.length - 2; i >= 0; i--) {
-            for (int j = colMajorOffsets.length - 1; j > i; j--) {
-                colMajorOffsets[j] *= dims[i];
+        return cStrides;
+    }
+
+    private int[] fStrides() {
+        if (fStrides == null) {
+            fStrides = IntArrays.newFill(dims.length, 1);
+            for (int i = fStrides.length - 2; i >= 0; i--) {
+                for (int j = fStrides.length - 1; j > i; j--) {
+                    fStrides[j] *= dims[i];
+                }
             }
         }
+        return fStrides;
+    }
+
+    private int[] strides(Order askOrder) {
+        return switch (askOrder) {
+            case F -> fStrides();
+            case C -> cStrides();
+            default -> throw new IllegalArgumentException("Indexing order not allowed.");
+        };
     }
 
     /**
@@ -103,11 +124,7 @@ public final class Shape {
      * @return size of the shape
      */
     public int size() {
-        int prod = 1;
-        for (int dim : dims) {
-            prod *= dim;
-        }
-        return prod;
+        return size;
     }
 
     /**
@@ -119,50 +136,51 @@ public final class Shape {
      * <p>
      * The resulted index is computed for a given order and position.
      *
-     * @param order row or column major
-     * @param pos   position in a given order
+     * @param askOrder row or column major
+     * @param pos      position in a given order
      * @return the computed index for the pos-th elements in the given order
      */
-    public int[] index(Order order, int pos) {
-        switch (order) {
-            case C -> {
-                int[] index = new int[dims.length];
-                for (int i = 0; i < dims.length; i++) {
-                    index[i] = pos / rowMajorOffsets[i];
-                    pos = pos % rowMajorOffsets[i];
-                }
-                return index;
+    public int[] index(Order askOrder, int pos) {
+        int[] strides = strides(askOrder);
+        int[] index = new int[dims.length];
+        if (askOrder == Order.C) {
+            for (int i = 0; i < dims.length; i++) {
+                index[i] = pos / strides[i];
+                pos = pos % strides[i];
             }
-            case F -> {
-                int[] index = new int[dims.length];
-                for (int i = dims.length - 1; i >= 0; i--) {
-                    index[i] = pos / colMajorOffsets[i];
-                    pos = pos % colMajorOffsets[i];
-                }
-                return index;
+        } else {
+            for (int i = dims.length - 1; i >= 0; i--) {
+                index[i] = pos / strides[i];
+                pos = pos % strides[i];
             }
-            default -> throw new IllegalArgumentException("Indexing order not allowed.");
         }
+        return index;
     }
 
     /**
      * Computes the position of the element for a given index in the specified order.
      *
-     * @param order desired order
-     * @param idxs  int array which described the element index
+     * @param askOrder desired order
+     * @param idxs     int array which described the element index
      * @return position of the element with index in specified order
      */
-    public int position(Order order, int... idxs) {
-        int[] offsets = switch (order) {
-            case C -> rowMajorOffsets;
-            case F -> colMajorOffsets;
-            default -> throw new IllegalArgumentException("Position order not allowed.");
-        };
+    public int position(Order askOrder, int... idxs) {
+        int[] strides = strides(askOrder);
         int pos = 0;
         for (int i = 0; i < idxs.length; i++) {
-            pos += offsets[i] * idxs[i];
+            pos += strides[i] * idxs[i];
         }
         return pos;
+    }
+
+    public int unitDimCount() {
+        int count = 0;
+        for (int dim : dims) {
+            if (dim == 1) {
+                count++;
+            }
+        }
+        return count;
     }
 
     @Override
@@ -184,6 +202,6 @@ public final class Shape {
 
     @Override
     public String toString() {
-        return "Shape: " + Arrays.stream(dims).mapToObj(String::valueOf).collect(Collectors.joining(",", "[", "]"));
+        return "Shape: [" + Arrays.stream(dims).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "]";
     }
 }

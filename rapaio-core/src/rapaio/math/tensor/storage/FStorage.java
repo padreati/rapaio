@@ -31,7 +31,7 @@
 
 package rapaio.math.tensor.storage;
 
-public interface FStorage extends Storage<Float> {
+public interface FStorage extends Storage<Float, FStorage> {
 
     @Override
     default Float getValue(int offset) {
@@ -60,6 +60,8 @@ public interface FStorage extends Storage<Float> {
     }
 
     void add(int start, int len, float v);
+
+    void add(int start, FStorage from, int fStart, int len);
 
     @Override
     default void subValue(int start, int len, Float v) {
