@@ -31,13 +31,8 @@
 
 package rapaio.math.tensor.manager.cpuparallel;
 
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
-import jdk.incubator.concurrent.StructuredTaskScope;
 import rapaio.math.tensor.DTensor;
 import rapaio.math.tensor.FTensor;
 import rapaio.math.tensor.Order;
@@ -130,24 +125,6 @@ public class CpuArrayParallelTensorManager implements TensorManager {
     @Override
     public FTensor ofFloatStride(Shape shape, int offset, int[] strides, FStorage storage) {
         return new FTensorStride(this, shape, offset, strides, storage);
-    }
-
-    <T> List<T> executeCallableTasks(List<Callable<T>> tasks) throws Throwable {
-        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
-            List<Future<T>> futures = tasks.stream().map(scope::fork).toList();
-            scope.join();
-            scope.throwIfFailed();
-            return futures.stream().map(Future::resultNow).toList();
-        }
-    }
-
-    int executeRunnableTasks(List<Runnable> tasks) throws Throwable {
-        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
-            List<Future<Object>> futures = tasks.stream().map(Executors::callable).map(scope::fork).toList();
-            scope.join();
-            scope.throwIfFailed();
-            return futures.size();
-        }
     }
 
     @Override

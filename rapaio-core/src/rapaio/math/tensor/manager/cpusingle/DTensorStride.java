@@ -31,6 +31,11 @@
 
 package rapaio.math.tensor.manager.cpusingle;
 
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.StreamSupport;
+
 import rapaio.math.tensor.DTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -45,6 +50,7 @@ import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.manager.AbstractTensor;
 import rapaio.math.tensor.storage.DStorage;
 import rapaio.util.collection.IntArrays;
+import rapaio.util.function.IntIntBiFunction;
 
 public sealed class DTensorStride extends AbstractTensor<Double, DStorage, DTensor> implements DTensor permits rapaio.math.tensor.manager.cpuparallel.DTensorStride {
 
@@ -91,6 +97,28 @@ public sealed class DTensorStride extends AbstractTensor<Double, DStorage, DTens
     @Override
     public void set(double value, int... idxs) {
         storage.set(layout.pointer(idxs), value);
+    }
+
+    @Override
+    public Iterator<Double> iterator() {
+        return iterator(Order.A);
+    }
+
+    @Override
+    public Iterator<Double> iterator(Order askOrder) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(pointerIterator(askOrder), Spliterator.ORDERED), false)
+                .map(storage::get).iterator();
+    }
+
+    @Override
+    public DTensor iteratorApply(Order askOrder, IntIntBiFunction<Double> apply) {
+        var it = pointerIterator(askOrder);
+        int i = 0;
+        while (it.hasNext()) {
+            int p = it.nextInt();
+            storage.set(p, apply.applyAsInt(i++, p));
+        }
+        return this;
     }
 
     @Override
@@ -158,22 +186,17 @@ public sealed class DTensorStride extends AbstractTensor<Double, DStorage, DTens
 
     @Override
     public DTensor flatten(Order askOrder) {
-        if (!(askOrder == Order.C || askOrder == Order.F)) {
-            throw new IllegalArgumentException("Ask order is invalid.");
-        }
-        var out = manager.storageFactory().ofDoubleZeros(layout.shape().size());
+        askOrder = Order.autoFC(askOrder);
+        var out = manager.storageFactory().ofDoubleZeros(layout.size());
         int p = 0;
         var it = chunkIterator(askOrder);
         while (it.hasNext()) {
             int pointer = it.nextInt();
             for (int i = pointer; i < pointer + it.loopBound(); i += it.loopStep()) {
-                out.set(p++, storage().get(i));
+                out.set(p++, storage.get(i));
             }
         }
-
-        Shape askShape = Shape.of(layout.shape().size());
-        StrideLayout askLayout = StrideLayout.ofDense(askShape, layout.offset(), askOrder);
-        return manager.ofDoubleStride(askLayout, out);
+        return manager.ofDoubleStride(Shape.of(layout.size()), 0, new int[] {1}, out);
     }
 
     @Override
@@ -198,18 +221,17 @@ public sealed class DTensorStride extends AbstractTensor<Double, DStorage, DTens
 
     @Override
     public DTensor copy(Order askOrder) {
-        if (askOrder == Order.S) {
-            throw new IllegalArgumentException("Order argument is invalid.");
-        }
-        var out = manager.storageFactory().ofDoubleZeros(layout.shape().size());
-        var it = chunkIterator(askOrder);
-        int p = 0;
-        while (it.hasNext()) {
-            int pointer = it.nextInt();
-            for (int i = pointer; i < pointer + it.loopBound(); i += it.loopStep()) {
-                out.set(p++, storage().get(i));
+        askOrder = Order.autoFC(askOrder);
+
+        var copy = manager.ofDoubleZeros(shape(), askOrder);
+        var it1 = chunkIterator(askOrder);
+        var it2 = copy.pointerIterator(askOrder);
+        while (it1.hasNext()) {
+            int pointer = it1.nextInt();
+            for (int i = pointer; i < pointer + it1.loopBound(); i += it1.loopStep()) {
+                copy.storage().set(it2.nextInt(), storage().get(i));
             }
         }
-        return manager.ofDoubleStride(StrideLayout.ofDense(layout.shape(), layout.offset(), askOrder), out);
+        return copy;
     }
 }

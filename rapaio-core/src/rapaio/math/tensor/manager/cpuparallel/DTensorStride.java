@@ -31,9 +31,7 @@
 
 package rapaio.math.tensor.manager.cpuparallel;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import jdk.incubator.concurrent.StructuredTaskScope;
 import rapaio.math.tensor.DTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -42,14 +40,12 @@ import rapaio.math.tensor.storage.DStorage;
 
 public final class DTensorStride extends rapaio.math.tensor.manager.cpusingle.DTensorStride {
 
-    private CpuArrayParallelTensorManager parallelManager;
-
     public DTensorStride(CpuArrayParallelTensorManager manager, StrideLayout layout, DStorage storage) {
         super(manager, layout, storage);
     }
 
     public DTensorStride(CpuArrayParallelTensorManager manager, Shape shape, int offset, int[] strides, DStorage storage) {
-        super(manager, StrideLayout.of(shape, offset, strides), storage);
+        this(manager, StrideLayout.of(shape, offset, strides), storage);
     }
 
     public DTensorStride(CpuArrayParallelTensorManager manager, Shape shape, int offset, Order order, DStorage storage) {
@@ -58,33 +54,29 @@ public final class DTensorStride extends rapaio.math.tensor.manager.cpusingle.DT
 
     @Override
     public DTensor flatten(Order askOrder) {
-        if (!(askOrder == Order.C || askOrder == Order.F)) {
-            throw new IllegalArgumentException("Ask order is invalid.");
-        }
+        // TODO: this is basically a test, an optimized code would require a different strategy
+        askOrder = Order.autoFC(askOrder);
         var out = manager.storageFactory().ofDoubleZeros(layout.shape().size());
         int p = 0;
         var it = chunkIterator(askOrder);
 
-        List<Runnable> tasks = new ArrayList<>();
-        while (it.hasNext()) {
-            int pointer = it.nextInt();
-            int pstart = p;
-            tasks.add(() -> {
-                for (int i = pointer; i < pointer + it.loopBound(); i += it.loopStep()) {
-                    out.set(pstart + i - pointer, storage().get(i));
-                }
-            });
-            p += it.loopSize();
-        }
-        try {
-            parallelManager.executeRunnableTasks(tasks);
-
-            Shape askShape = Shape.of(layout.shape().size());
-            StrideLayout strideLayout = StrideLayout.ofDense(askShape, layout.offset(), askOrder);
-            return manager.ofDoubleStride(strideLayout, out);
+        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+            while (it.hasNext()) {
+                int pointer = it.nextInt();
+                int pstart = p;
+                scope.fork(() -> {
+                    for (int i = pointer, j = pstart; i < pointer + it.loopBound(); i += it.loopStep(), j++) {
+                        out.set(j, storage().get(i));
+                    }
+                    return null;
+                });
+                p += it.loopSize();
+            }
+            scope.join();
+            scope.throwIfFailed();
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+        return manager.ofDoubleStride(Shape.of(layout.shape().size()), 0, new int[] {1}, out);
     }
-
 }

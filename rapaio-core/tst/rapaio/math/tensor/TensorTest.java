@@ -23,7 +23,9 @@ package rapaio.math.tensor;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Random;
 
@@ -59,6 +61,9 @@ public class TensorTest {
         testReshape(g);
         testIterators(g);
         testTranspose(g);
+        testFlatten(g);
+        testSqueezeMoveSwapAxis(g);
+        testCopy(g);
     }
 
     <N extends Number, S extends Storage<N, S>, V extends Tensor<N, S, V>> void testGet(DataFactory<N, S, V> g) {
@@ -308,6 +313,58 @@ public class TensorTest {
         }
     }
 
+    <N extends Number, S extends Storage<N, S>, V extends Tensor<N, S, V>> void testFlatten(DataFactory<N, S, V> g) {
+        Shape shape = Shape.of(2, 3, 4);
+        var t = g.sequence(shape);
+
+        var f = t.flatten(Order.C);
+        assertArrayEquals(new int[] {4 * 3 * 2}, f.shape().dims());
+
+        var itT = t.pointerIterator(Order.C);
+        var itF = f.pointerIterator(Order.C);
+        while (itF.hasNext()) {
+            assertEquals(t.storage().getValue(itT.nextInt()), f.storage().getValue(itF.nextInt()),
+                    "Error at tensor: " + t + ", flatten: " + f);
+        }
+
+        var r = t.ravel(Order.C);
+        for (int i = 0; i < t.shape().size(); i++) {
+            assertEquals(f.getValue(i), r.getValue(i));
+        }
+    }
+
+    <N extends Number, S extends Storage<N, S>, V extends Tensor<N, S, V>> void testSqueezeMoveSwapAxis(DataFactory<N, S, V> g) {
+        Shape shape = Shape.of(2, 1, 3, 1, 4, 1);
+        var t = g.sequence(shape);
+        var s = t.squeeze();
+        assertArrayEquals(new int[] {2, 3, 4}, s.shape().dims());
+
+        var it1 = t.pointerIterator(Order.C);
+        var it2 = s.pointerIterator(Order.C);
+        while (it1.hasNext()) {
+            int next1 = it1.nextInt();
+            int next2 = it2.nextInt();
+            assertEquals(t.storage().getValue(next1), s.storage().getValue(next2), "t: " + t + ", f: " + s);
+        }
+
+        assertTrue(t.moveAxis(2, 3).deepEquals(t.swapAxis(2, 3)));
+        assertFalse(t.moveAxis(2, 3).deepEquals(t.swapAxis(0, 2)));
+
+        assertTrue(t.swapAxis(0, 2).deepEquals(t.swapAxis(0, 1).swapAxis(1, 2).swapAxis(0, 1)));
+        assertTrue(t.moveAxis(0, 2).deepEquals(t.swapAxis(0, 1).swapAxis(1, 2)));
+    }
+
+    <N extends Number, S extends Storage<N, S>, V extends Tensor<N, S, V>> void testCopy(DataFactory<N, S, V> g) {
+        Shape shape = Shape.of(2, 3, 4);
+        var t = g.sequence(shape);
+
+        var s = t.copy(Order.C);
+        assertArrayEquals(new int[] {2, 3, 4}, s.shape().dims());
+
+        assertTrue(t.deepEquals(s));
+        assertTrue(t.t().deepEquals(t.t().copy(Order.C)));
+    }
+
     abstract static class DataFactory<N extends Number, S extends Storage<N, S>, V extends Tensor<N, S, V>> {
 
         final TensorManager manager;
@@ -392,12 +449,32 @@ public class TensorTest {
 
         @Override
         public DTensor sequence(Shape shape) {
-            DTensor t = zeros(shape);
-            var it = t.pointerIterator(Order.C);
-            int p = 0;
-            while (it.hasNext()) {
-                t.storage().set(it.nextInt(), p++);
+            int[] strides = IntArrays.newFill(shape.rank(), 1);
+            int[] ordering = IntArrays.newSeq(0, shape.rank());
+            IntArrays.shuffle(ordering, new Random(42));
+            for (int i = 1; i < shape.rank(); i++) {
+                int next = -1;
+                int prev = -1;
+                for (int j = 0; j < ordering.length; j++) {
+                    if (ordering[j] == i) {
+                        next = j;
+                        break;
+                    }
+                }
+                for (int j = 0; j < ordering.length; j++) {
+                    if (ordering[j] == i - 1) {
+                        prev = j;
+                        break;
+                    }
+                }
+                strides[next] = strides[prev] * shape.dim(prev);
             }
+
+            int offset = 10;
+            var t = manager.ofDoubleStride(shape, offset, strides, manager.storageFactory().ofDoubleZeros(offset + shape.size()));
+
+            t.iteratorApply(Order.C, (i, p) -> (double) i);
+
             return t;
         }
 
@@ -409,7 +486,21 @@ public class TensorTest {
             IntArrays.shuffle(ordering, new Random(42));
 
             for (int i = 1; i < shape.rank(); i++) {
-                strides[ordering[i]] = strides[ordering[i - 1]] * shape.dim(ordering[i - 1]);
+                int next = -1;
+                int prev = -1;
+                for (int j = 0; j < ordering.length; j++) {
+                    if (ordering[j] == i) {
+                        next = j;
+                        break;
+                    }
+                }
+                for (int j = 0; j < ordering.length; j++) {
+                    if (ordering[j] == i - 1) {
+                        prev = j;
+                        break;
+                    }
+                }
+                strides[next] = strides[prev] * shape.dim(prev);
             }
 
             return manager.ofDoubleStride(shape, offset, strides, manager.storageFactory().ofDoubleZeros(offset + shape.size()));
@@ -480,12 +571,32 @@ public class TensorTest {
 
         @Override
         public FTensor sequence(Shape shape) {
-            FTensor t = zeros(shape);
-            var it = t.pointerIterator(Order.C);
-            int p = 0;
-            while (it.hasNext()) {
-                t.storage().setValue(it.nextInt(), value(p++));
+            int[] strides = IntArrays.newFill(shape.rank(), 1);
+            int[] ordering = IntArrays.newSeq(0, shape.rank());
+            IntArrays.shuffle(ordering, new Random(42));
+            for (int i = 1; i < shape.rank(); i++) {
+                int next = -1;
+                int prev = -1;
+                for (int j = 0; j < ordering.length; j++) {
+                    if (ordering[j] == i) {
+                        next = j;
+                        break;
+                    }
+                }
+                for (int j = 0; j < ordering.length; j++) {
+                    if (ordering[j] == i - 1) {
+                        prev = j;
+                        break;
+                    }
+                }
+                strides[next] = strides[prev] * shape.dim(prev);
             }
+
+            int offset = 10;
+            var t = manager.ofFloatStride(shape, offset, strides, manager.storageFactory().ofFloatZeros(offset + shape.size()));
+
+            t.iteratorApply(Order.C, (i, p) -> (float) i);
+
             return t;
         }
 
@@ -497,7 +608,21 @@ public class TensorTest {
             IntArrays.shuffle(ordering, new Random(42));
 
             for (int i = 1; i < shape.rank(); i++) {
-                strides[ordering[i]] = strides[ordering[i - 1]] * shape.dim(ordering[i - 1]);
+                int next = -1;
+                int prev = -1;
+                for (int j = 0; j < ordering.length; j++) {
+                    if (ordering[j] == i) {
+                        next = j;
+                        break;
+                    }
+                }
+                for (int j = 0; j < ordering.length; j++) {
+                    if (ordering[j] == i - 1) {
+                        prev = j;
+                        break;
+                    }
+                }
+                strides[next] = strides[prev] * shape.dim(prev);
             }
 
             return manager.ofFloatStride(shape, offset, strides, manager.storageFactory().ofFloatZeros(offset + shape.size()));

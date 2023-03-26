@@ -64,23 +64,12 @@ public class CpuSingleTensorManager implements TensorManager {
 
     @Override
     public DTensor ofDoubleSeq(Shape shape, Order order) {
-        DTensor tensor = ofDoubleZeros(shape, order);
-        var it = tensor.pointerIterator(Order.C);
-        int seq = 0;
-        while (it.hasNext()) {
-            tensor.storage().set(it.nextInt(), seq++);
-        }
-        return tensor;
+        return ofDoubleZeros(shape, Order.autoFC(order)).iteratorApply(Order.C, (i, p) -> (double) i);
     }
 
     @Override
     public DTensor ofDoubleRandom(Shape shape, Random random, Order order) {
-        DTensor tensor = ofDoubleZeros(shape, order);
-        var it = tensor.pointerIterator(Order.C);
-        while (it.hasNext()) {
-            tensor.storage().set(it.nextInt(), random.nextDouble());
-        }
-        return tensor;
+        return ofDoubleZeros(shape, Order.autoFC(order)).iteratorApply(order, (i, p) -> random.nextDouble());
     }
 
     @Override
@@ -103,18 +92,12 @@ public class CpuSingleTensorManager implements TensorManager {
 
     @Override
     public FTensor ofFloatSeq(Shape shape, Order order) {
-        FTensor tensor = ofFloatZeros(shape, order);
-        var it = tensor.pointerIterator(Order.C);
-        int seq = 0;
-        while (it.hasNext()) {
-            tensor.storage().set(it.nextInt(), seq++);
-        }
-        return tensor;
+        return ofFloatZeros(shape, order).iteratorApply(Order.C, (i, p) -> (float) i);
     }
 
     @Override
     public FTensor ofFloatRandom(Shape shape, Random random, Order order) {
-        return new FTensorStride(this, shape, 0, Order.autoFC(order), storageFactory.ofFloatRandom(shape.size(), random));
+        return ofFloatZeros(shape, Order.autoFC(order)).iteratorApply(Order.C, (i, p) -> random.nextFloat());
     }
 
     @Override

@@ -333,7 +333,7 @@ public final class StrideLayout implements Layout {
             newStrides[pos] = strides[i];
             pos++;
         }
-        return new StrideLayout(Shape.of(newDims), 0, newStrides);
+        return new StrideLayout(Shape.of(newDims), offset, newStrides);
     }
 
     @Override

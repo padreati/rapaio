@@ -21,12 +21,15 @@
 
 package rapaio.math.tensor;
 
+import java.util.Iterator;
+
 import rapaio.math.tensor.iterators.ChunkIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
 import rapaio.math.tensor.storage.Storage;
 import rapaio.printer.Printable;
+import rapaio.util.function.IntIntBiFunction;
 
-public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> extends Printable {
+public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> extends Printable, Iterable<N> {
 
     TensorManager manager();
 
@@ -48,6 +51,10 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
     default PointerIterator pointerIterator() {
         return pointerIterator(Order.S);
     }
+
+    Iterator<N> iterator(Order askOrder);
+
+    T iteratorApply(Order order, IntIntBiFunction<N> apply);
 
     PointerIterator pointerIterator(Order askOrder);
 
@@ -145,9 +152,33 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
 
     /**
      * Creates a copy of the original tensor with the given order. Only {@link Order#C} or {@link Order#F} are allowed.
+     * <p>
+     * The order does not determine how values are read, but how values will be stored.
      *
      * @param askOrder desired order of the copy tensor.
      * @return new copy of the tensor
      */
     Tensor<N, S, T> copy(Order askOrder);
+
+    default boolean deepEquals(Object t) {
+        return deepEquals(t, 1e-100);
+    }
+
+    default boolean deepEquals(Object t, double tol) {
+        if (t instanceof Tensor<?, ?, ?> dt) {
+            if (!layout().shape().equals(dt.layout().shape())) {
+                return false;
+            }
+            var it1 = pointerIterator(Order.C);
+            var it2 = dt.pointerIterator(Order.C);
+            while (it1.hasNext()) {
+                double v1 = storage().getValue(it1.nextInt()).doubleValue();
+                double v2 = dt.storage().getValue(it2.nextInt()).doubleValue();
+                if (Math.abs(v1 - v2) > tol) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

@@ -143,6 +143,7 @@ public final class Shape {
     public int[] index(Order askOrder, int pos) {
         int[] strides = strides(askOrder);
         int[] index = new int[dims.length];
+        askOrder = Order.autoFC(askOrder);
         if (askOrder == Order.C) {
             for (int i = 0; i < dims.length; i++) {
                 index[i] = pos / strides[i];
