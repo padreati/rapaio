@@ -56,9 +56,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <reuseForks>true</reuseForks>
+                    <!--<reuseForks>true</reuseForks>-->
                     <!--suppress UnresolvedMavenProperty -->
-                    <argLine>${argLine} --enable-preview --add-modules=jdk.incubator.vector</argLine>
+                    <argLine> --enable-preview --add-modules=jdk.incubator.vector</argLine>
                 </configuration>
             </plugin>
             <plugin>

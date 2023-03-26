@@ -112,7 +112,7 @@
                 <configuration>
                     <!--<reuseForks>true</reuseForks>-->
                     <!--suppress UnresolvedMavenProperty -->
-                    <!--<argLine>${argLine} - -enable-preview - -add-modules=jdk.incubator.vector</argLine>-->
+                    <argLine>--enable-preview --add-modules=jdk.incubator.vector</argLine>
                 </configuration>
             </plugin>
             <!--
