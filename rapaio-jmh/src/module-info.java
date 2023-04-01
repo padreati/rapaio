@@ -1,4 +1,5 @@
 open module rapaio.jmh {
+    requires java.desktop;
     requires jmh.core;
     requires jmh.generator.annprocess;
     requires jdk.incubator.vector;

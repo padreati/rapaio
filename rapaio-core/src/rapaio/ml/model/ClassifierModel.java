@@ -95,7 +95,7 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     );
 
     /**
-     * Lambda call hook called after each sub-component or iteration at training time.
+     * Lambda call hook called after each subcomponent or iteration at training time.
      */
     public final ValueParam<SConsumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {
     }, "runningHook", Objects::nonNull);

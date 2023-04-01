@@ -29,17 +29,20 @@
  *
  */
 
-package rapaio.math.tensor.manager.cpusingle;
+package rapaio.math.tensor.manager.standard;
 
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.DTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.TensorOps;
 import rapaio.math.tensor.iterators.ChunkIterator;
 import rapaio.math.tensor.iterators.DensePointerIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
@@ -48,11 +51,15 @@ import rapaio.math.tensor.iterators.StrideChunkIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.manager.AbstractTensor;
+import rapaio.math.tensor.operators.TensorUnaryOp;
 import rapaio.math.tensor.storage.DStorage;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
-public sealed class DTensorStride extends AbstractTensor<Double, DStorage, DTensor> implements DTensor permits rapaio.math.tensor.manager.cpuparallel.DTensorStride {
+public sealed class DTensorStride extends AbstractTensor<Double, DStorage, DTensor>
+        implements DTensor permits rapaio.math.tensor.manager.parallel.DTensorStride {
+
+    protected static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
 
     protected final StrideLayout layout;
     protected final TensorManager manager;
@@ -97,6 +104,91 @@ public sealed class DTensorStride extends AbstractTensor<Double, DStorage, DTens
     @Override
     public void set(double value, int... idxs) {
         storage.set(layout.pointer(idxs), value);
+    }
+
+    @Override
+    public DTensor unaryOp(TensorUnaryOp op) {
+        var it = pointerIterator(Order.A);
+        while (it.hasNext()) {
+            int p = it.nextInt();
+            storage.set(p, op.applyDouble(storage.get(p)));
+        }
+        return this;
+    }
+
+    @Override
+    public DTensor abs() {
+        return unaryOp(TensorOps.ABS);
+    }
+
+    @Override
+    public DTensor neg() {
+        return unaryOp(TensorOps.NEG);
+    }
+
+    @Override
+    public DTensor log() {
+        return unaryOp(TensorOps.LOG);
+    }
+
+    @Override
+    public DTensor log1p() {
+        return unaryOp(TensorOps.LOG1P);
+    }
+
+    @Override
+    public DTensor exp() {
+        return unaryOp(TensorOps.EXP);
+    }
+
+    @Override
+    public DTensor expm1() {
+        return unaryOp(TensorOps.EXPM1);
+    }
+
+    @Override
+    public DTensor sin() {
+        return unaryOp(TensorOps.SIN);
+    }
+
+    @Override
+    public DTensor asin() {
+        return unaryOp(TensorOps.ASIN);
+    }
+
+    @Override
+    public DTensor sinh() {
+        return unaryOp(TensorOps.SINH);
+    }
+
+    @Override
+    public DTensor cos() {
+        return unaryOp(TensorOps.COS);
+    }
+
+    @Override
+    public DTensor acos() {
+        return unaryOp(TensorOps.ACOS);
+    }
+
+    @Override
+    public DTensor cosh() {
+        return unaryOp(TensorOps.COSH);
+    }
+
+    @Override
+    public DTensor tan() {
+        return unaryOp(TensorOps.TAN);
+    }
+
+    @Override
+    public DTensor atan() {
+        return unaryOp(TensorOps.ATAN);
+    }
+
+    @Override
+    public DTensor tanh() {
+        return unaryOp(TensorOps.TANH);
     }
 
     @Override

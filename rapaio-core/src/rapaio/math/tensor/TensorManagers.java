@@ -29,50 +29,24 @@
  *
  */
 
-package rapaio.math.tensor.storage;
+package rapaio.math.tensor;
 
-import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.VectorMask;
+import rapaio.math.tensor.manager.parallel.ParallelTensorManager;
+import rapaio.math.tensor.manager.standard.StandardTensorManager;
+import rapaio.math.tensor.storage.StorageFactory;
+import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 
-public interface FStorage extends Storage<Float, FStorage> {
+public final class TensorManagers {
 
-    @Override
-    default Float getValue(int offset) {
-        return get(offset);
+    public static TensorManager newDefault() {
+        return newStandard(new ArrayStorageFactory());
     }
 
-    float get(int offset);
-
-    @Override
-    default void setValue(int offset, Float v) {
-        set(offset, v);
+    public static TensorManager newStandard(StorageFactory storageFactory) {
+        return new StandardTensorManager(storageFactory);
     }
 
-    void set(int offset, float v);
-
-    FloatVector load(int offset);
-
-    FloatVector load(int offset, VectorMask<Float> mask);
-
-    FloatVector load(int offset, int[] indexMap, int mapOffset);
-
-    FloatVector load(int offset, int[] indexMap, int mapOffset, VectorMask<Float> mask);
-
-    void save(FloatVector v, int offset);
-
-    void save(FloatVector v, int offset, VectorMask<Float> mask);
-
-    void save(FloatVector v, int offset, int[] indexMap, int mapOffset);
-
-    void save(FloatVector v, int offset, int[] indexMap, int mapOffset, VectorMask<Float> mask);
-
-    @Override
-    default void fillValue(int start, int len, Float v) {
-        fill(start, len, v);
+    public static TensorManager newParallel(StorageFactory storageFactory) {
+        return new ParallelTensorManager(storageFactory);
     }
-
-    void fill(int start, int len, float v);
-
-    @Override
-    FStorage copy();
 }

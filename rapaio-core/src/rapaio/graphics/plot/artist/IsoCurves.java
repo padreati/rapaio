@@ -92,17 +92,17 @@ public class IsoCurves extends Artist {
         union(x.getDouble(x.size() - 1), y.getDouble(y.size() - 1));
     }
 
-    private boolean isInside(double x, double y) {
+    private boolean isOutside(double x, double y) {
         if (plot.xAxis().domain().hasHardMin() && x < plot.xAxis().min()) {
-            return false;
+            return true;
         }
         if (plot.xAxis().domain().hasHardMax() && x < plot.xAxis().max()) {
-            return false;
+            return true;
         }
         if (plot.yAxis().domain().hasHardMin() && y < plot.yAxis().min()) {
-            return false;
+            return true;
         }
-        return !plot.yAxis().domain().hasHardMax() || !(y < plot.yAxis().max());
+        return plot.yAxis().domain().hasHardMax() && y < plot.yAxis().max();
     }
 
     @Override
@@ -117,13 +117,13 @@ public class IsoCurves extends Artist {
         BasicStroke contourStroke = new BasicStroke(options.getLwd(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
         if (fill) {
-            visitEach(g2d, x, y, fillStroke, contourStroke, (fillPoints, fillIndexes, levelValue) -> {
+            visitEach(x, y, (fillPoints, fillIndexes, levelValue) -> {
 
                 if (fillPoints.size() > 2) {
                     g2d.setColor(options.getPalette().getColor(levelValue));
                     g2d.setStroke(fillStroke);
                     Path2D.Double path = new Path2D.Double();
-                    if (!isInside(fillPoints.get(0).x, fillPoints.get(0).y)) {
+                    if (isOutside(fillPoints.get(0).x, fillPoints.get(0).y)) {
                         return;
                     }
                     path.moveTo(fillPoints.get(fillPoints.size() - 1).x, fillPoints.get(fillPoints.size() - 1).y);
@@ -136,13 +136,13 @@ public class IsoCurves extends Artist {
             });
         }
         if (contour) {
-            visitEach(g2d, x, y, fillStroke, contourStroke, (fillPoints, fillIndexes, levelValue) -> {
+            visitEach(x, y, (fillPoints, fillIndexes, levelValue) -> {
 
                 g2d.setColor(options.getColor(0));
                 g2d.setStroke(contourStroke);
 
                 if (fillPoints.size() > 2) {
-                    if (!isInside(fillPoints.get(0).x, fillPoints.get(0).y)) {
+                    if (isOutside(fillPoints.get(0).x, fillPoints.get(0).y)) {
                         return;
                     }
                     fillPoints.add(fillPoints.get(0));
@@ -167,7 +167,7 @@ public class IsoCurves extends Artist {
         void painter(List<Point2D.Double> fillStroke, List<Integer> contourStroke, double levelValue);
     }
 
-    private void visitEach(Graphics2D g2d, Var x, Var y, BasicStroke fillStroke, BasicStroke contourStroke, Painter consumer) {
+    private void visitEach(Var x, Var y, Painter consumer) {
 
         for (int l = 0; l < levels.length - 1; l++) {
             MeshStripe mg = new MeshStripe(grid, levels[l], levels[l + 1]);

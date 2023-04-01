@@ -34,26 +34,11 @@ package rapaio.math.tensor;
 import java.util.Random;
 
 import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.math.tensor.manager.cpuparallel.CpuArrayParallelTensorManager;
-import rapaio.math.tensor.manager.cpusingle.CpuSingleTensorManager;
 import rapaio.math.tensor.storage.DStorage;
 import rapaio.math.tensor.storage.FStorage;
 import rapaio.math.tensor.storage.StorageFactory;
-import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 
 public interface TensorManager extends AutoCloseable {
-
-    static TensorManager newDefault() {
-        return newCpuArraySingle(new ArrayStorageFactory());
-    }
-
-    static TensorManager newCpuArraySingle(StorageFactory storageFactory) {
-        return new CpuSingleTensorManager(storageFactory);
-    }
-
-    static TensorManager newCpuArrayParallel(StorageFactory storageFactory) {
-        return new CpuArrayParallelTensorManager(storageFactory);
-    }
 
     StorageFactory storageFactory();
 

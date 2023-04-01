@@ -29,17 +29,20 @@
  *
  */
 
-package rapaio.math.tensor.manager.cpusingle;
+package rapaio.math.tensor.manager.standard;
 
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
+import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.FTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.TensorOps;
 import rapaio.math.tensor.iterators.ChunkIterator;
 import rapaio.math.tensor.iterators.DensePointerIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
@@ -48,11 +51,15 @@ import rapaio.math.tensor.iterators.StrideChunkIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.manager.AbstractTensor;
+import rapaio.math.tensor.operators.TensorUnaryOp;
 import rapaio.math.tensor.storage.FStorage;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
-public sealed class FTensorStride extends AbstractTensor<Float, FStorage, FTensor> implements FTensor permits rapaio.math.tensor.manager.cpuparallel.FTensorStride {
+public sealed class FTensorStride extends AbstractTensor<Float, FStorage, FTensor>
+        implements FTensor permits rapaio.math.tensor.manager.parallel.FTensorStride {
+
+    protected static final VectorSpecies<Float> SPECIES = FloatVector.SPECIES_PREFERRED;
 
     protected final StrideLayout layout;
     protected final TensorManager manager;
@@ -97,6 +104,91 @@ public sealed class FTensorStride extends AbstractTensor<Float, FStorage, FTenso
     @Override
     public void set(float value, int... idxs) {
         storage.set(layout.pointer(idxs), value);
+    }
+
+    @Override
+    public FTensor unaryOp(TensorUnaryOp op) {
+        var it = pointerIterator(Order.A);
+        while (it.hasNext()) {
+            int p = it.nextInt();
+            storage.set(p, op.applyFloat(storage.get(p)));
+        }
+        return this;
+    }
+
+    @Override
+    public FTensor abs() {
+        return unaryOp(TensorOps.ABS);
+    }
+
+    @Override
+    public FTensor neg() {
+        return unaryOp(TensorOps.NEG);
+    }
+
+    @Override
+    public FTensor log() {
+        return unaryOp(TensorOps.LOG);
+    }
+
+    @Override
+    public FTensor log1p() {
+        return unaryOp(TensorOps.LOG1P);
+    }
+
+    @Override
+    public FTensor exp() {
+        return unaryOp(TensorOps.EXP);
+    }
+
+    @Override
+    public FTensor expm1() {
+        return unaryOp(TensorOps.EXPM1);
+    }
+
+    @Override
+    public FTensor sin() {
+        return unaryOp(TensorOps.SIN);
+    }
+
+    @Override
+    public FTensor asin() {
+        return unaryOp(TensorOps.ASIN);
+    }
+
+    @Override
+    public FTensor sinh() {
+        return unaryOp(TensorOps.SINH);
+    }
+
+    @Override
+    public FTensor cos() {
+        return unaryOp(TensorOps.COS);
+    }
+
+    @Override
+    public FTensor acos() {
+        return unaryOp(TensorOps.ACOS);
+    }
+
+    @Override
+    public FTensor cosh() {
+        return unaryOp(TensorOps.COSH);
+    }
+
+    @Override
+    public FTensor tan() {
+        return unaryOp(TensorOps.TAN);
+    }
+
+    @Override
+    public FTensor atan() {
+        return unaryOp(TensorOps.ATAN);
+    }
+
+    @Override
+    public FTensor tanh() {
+        return unaryOp(TensorOps.TANH);
     }
 
     @Override

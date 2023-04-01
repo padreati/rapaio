@@ -65,8 +65,8 @@ public class CodeGenApp {
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/cpusingle/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/manager/cpusingle/FTensorStride.java")
+                .src.set("rapaio/math/tensor/manager/standard/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/manager/standard/FTensorStride.java")
                 .replaces.set(
                         Replace.of("double", "float"),
                         Replace.of("Double", "Float"),
@@ -76,8 +76,8 @@ public class CodeGenApp {
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/cpuparallel/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/manager/cpuparallel/FTensorStride.java")
+                .src.set("rapaio/math/tensor/manager/parallel/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/manager/parallel/FTensorStride.java")
                 .replaces.set(
                         Replace.of("double", "float"),
                         Replace.of("Double", "Float"),

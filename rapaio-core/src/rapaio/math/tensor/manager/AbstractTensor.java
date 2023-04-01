@@ -39,7 +39,8 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
-public abstract class AbstractTensor<N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> implements Tensor<N, S, T> {
+public abstract class AbstractTensor<N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>>
+        implements Tensor<N, S, T> {
 
     @Override
     public String toContent(Printer printer, POption<?>... options) {

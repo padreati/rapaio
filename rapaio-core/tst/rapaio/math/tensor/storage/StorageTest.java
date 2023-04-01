@@ -23,7 +23,6 @@ package rapaio.math.tensor.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Random;
 
@@ -180,17 +179,12 @@ public class StorageTest {
         testCopy(storageProvider);
         testFill(storageProvider);
         testReverse(storageProvider);
-        testAdd(storageProvider);
-        testSub(storageProvider);
-        testMul(storageProvider);
-        testDiv(storageProvider);
-        testMinArgMin(storageProvider);
     }
 
     <N extends Number, S extends Storage<N, S>> void testBuilder(StorageProvider<N, S> provider) {
 
         int len = random.nextInt(100) + 2;
-        Storage<N, S> storage = provider.zeros(len);
+        var storage = provider.zeros(len);
         for (int i = 0; i < len; i++) {
             assertEquals(provider.value(0), storage.getValue(i));
         }
@@ -241,7 +235,7 @@ public class StorageTest {
     }
 
     <N extends Number, S extends Storage<N, S>> void testFill(StorageProvider<N, S> provider) {
-        Storage<N, S> storage = provider.zeros(10);
+        var storage = provider.zeros(10);
         storage.fillValue(0, 10, provider.value(100));
         storage.fillValue(1, 2, provider.value(10));
         storage.fillValue(6, 2, provider.value(1));
@@ -252,70 +246,11 @@ public class StorageTest {
         }
     }
 
-    <N extends Number, S extends Storage<N, S>> void testAdd(StorageProvider<N, S> provider) {
-        Storage<N, S> storage = provider.zeros(10);
-        storage.addValue(0, 10, provider.value(100));
-        storage.addValue(1, 2, provider.value(10));
-        storage.addValue(6, 2, provider.value(1));
-
-        int[] expected = new int[] {100, 110, 110, 100, 100, 100, 101, 101, 100, 100};
-        for (int i = 0; i < 10; i++) {
-            assertEquals(provider.value(expected[i]), storage.getValue(i));
-        }
-    }
-
-    <N extends Number, S extends Storage<N, S>> void testSub(StorageProvider<N, S> provider) {
-        Storage<N, S> storage = provider.zeros(10);
-        storage.subValue(0, 10, provider.value(100));
-        storage.subValue(1, 2, provider.value(10));
-        storage.subValue(6, 2, provider.value(1));
-
-        int[] expected = new int[] {-100, -110, -110, -100, -100, -100, -101, -101, -100, -100};
-        for (int i = 0; i < 10; i++) {
-            assertEquals(provider.value(expected[i]), storage.getValue(i));
-        }
-    }
-
-    <N extends Number, S extends Storage<N, S>> void testMul(StorageProvider<N, S> provider) {
-        Storage<N, S> storage = provider.fill(10, 1);
-        storage.mulValue(0, 10, provider.value(100));
-        storage.mulValue(1, 2, provider.value(10));
-        storage.mulValue(6, 2, provider.value(1));
-
-        int[] expected = new int[] {100, 1000, 1000, 100, 100, 100, 100, 100, 100, 100};
-        for (int i = 0; i < 10; i++) {
-            assertEquals(provider.value(expected[i]), storage.getValue(i));
-        }
-    }
-
-    <N extends Number, S extends Storage<N, S>> void testDiv(StorageProvider<N, S> provider) {
-        Storage<N, S> storage = provider.fill(10, 64);
-        storage.divValue(0, 10, provider.value(2));
-        storage.divValue(1, 2, provider.value(2));
-        storage.divValue(6, 2, provider.value(4));
-
-        int[] expected = new int[] {32, 16, 16, 32, 32, 32, 8, 8, 32, 32};
-        for (int i = 0; i < 10; i++) {
-            assertEquals(provider.value(expected[i]), storage.getValue(i));
-        }
-    }
-
-    <N extends Number, S extends Storage<N, S>> void testMinArgMin(StorageProvider<N, S> provider) {
-        Storage<N, S> storage = provider.random(100, random);
-        N min = storage.minValue(0, 100);
-        int index = storage.argMin(0, 100);
-        assertEquals(min, storage.getValue(index));
-        assertEquals(-1, storage.argMin(0, 0));
-
-        assertTrue(provider.isNaN(storage.minValue(0, 0)));
-        assertEquals(-1, storage.argMin(0, -1));
-    }
-
     <N extends Number, S extends Storage<N, S>> void testReverse(StorageProvider<N, S> provider) {
         int[] array = IntArrays.newSeq(10_123);
         IntArrays.shuffle(array, random);
 
-        Storage<N, S> storage = provider.wrap(IntArrays.copy(array));
+        var storage = provider.wrap(IntArrays.copy(array));
         storage.reverse(0, storage.size());
         IntArrays.reverse(array);
 
@@ -323,4 +258,5 @@ public class StorageTest {
             assertEquals(provider.value(array[i]), storage.getValue(i));
         }
     }
+
 }

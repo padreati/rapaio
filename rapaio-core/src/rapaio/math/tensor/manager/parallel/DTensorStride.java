@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.manager.cpuparallel;
+package rapaio.math.tensor.manager.parallel;
 
 import jdk.incubator.concurrent.StructuredTaskScope;
 import rapaio.math.tensor.DTensor;
@@ -38,17 +38,17 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.storage.DStorage;
 
-public final class DTensorStride extends rapaio.math.tensor.manager.cpusingle.DTensorStride {
+public final class DTensorStride extends rapaio.math.tensor.manager.standard.DTensorStride {
 
-    public DTensorStride(CpuArrayParallelTensorManager manager, StrideLayout layout, DStorage storage) {
+    public DTensorStride(ParallelTensorManager manager, StrideLayout layout, DStorage storage) {
         super(manager, layout, storage);
     }
 
-    public DTensorStride(CpuArrayParallelTensorManager manager, Shape shape, int offset, int[] strides, DStorage storage) {
+    public DTensorStride(ParallelTensorManager manager, Shape shape, int offset, int[] strides, DStorage storage) {
         this(manager, StrideLayout.of(shape, offset, strides), storage);
     }
 
-    public DTensorStride(CpuArrayParallelTensorManager manager, Shape shape, int offset, Order order, DStorage storage) {
+    public DTensorStride(ParallelTensorManager manager, Shape shape, int offset, Order order, DStorage storage) {
         super(manager, StrideLayout.ofDense(shape, offset, order), storage);
     }
 

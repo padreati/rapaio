@@ -33,10 +33,15 @@ package rapaio.math.tensor.storage.array;
 
 import java.util.Arrays;
 
+import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.storage.FStorage;
 import rapaio.math.tensor.storage.StorageFactory;
 
 public final class FStorageArray implements FStorage {
+
+    private static final VectorSpecies<Float> SPECIES = FloatVector.SPECIES_PREFERRED;
 
     private final StorageFactory factory;
     private final float[] array;
@@ -71,6 +76,46 @@ public final class FStorageArray implements FStorage {
     }
 
     @Override
+    public FloatVector load(int offset) {
+        return FloatVector.fromArray(SPECIES, array, offset);
+    }
+
+    @Override
+    public FloatVector load(int offset, VectorMask<Float> mask) {
+        return FloatVector.fromArray(SPECIES, array, offset, mask);
+    }
+
+    @Override
+    public FloatVector load(int offset, int[] indexMap, int mapOffset) {
+        return FloatVector.fromArray(SPECIES, array, offset, indexMap, mapOffset);
+    }
+
+    @Override
+    public FloatVector load(int offset, int[] indexMap, int mapOffset, VectorMask<Float> mask) {
+        return FloatVector.fromArray(SPECIES, array, offset, indexMap, mapOffset, mask);
+    }
+
+    @Override
+    public void save(FloatVector v, int offset) {
+        v.intoArray(array, offset);
+    }
+
+    @Override
+    public void save(FloatVector v, int offset, VectorMask<Float> mask) {
+        v.intoArray(array, offset, mask);
+    }
+
+    @Override
+    public void save(FloatVector v, int offset, int[] indexMap, int mapOffset) {
+        v.intoArray(array, offset, indexMap, mapOffset);
+    }
+
+    @Override
+    public void save(FloatVector v, int offset, int[] indexMap, int mapOffset, VectorMask<Float> mask) {
+        v.intoArray(array, offset, indexMap, mapOffset, mask);
+    }
+
+    @Override
     public void swap(int left, int right) {
         float tmp = array[left];
         array[left] = array[right];
@@ -90,70 +135,6 @@ public final class FStorageArray implements FStorage {
             start++;
             end--;
         }
-    }
-
-    @Override
-    public void add(int start, int len, float v) {
-        for (int i = start; i < start + len; i++) {
-            array[i] += v;
-        }
-    }
-
-    @Override
-    public void add(int start, FStorage from, int fStart, int len) {
-        for (int i = start, j = fStart; i < start + len; i++, j++) {
-            array[i] += from.get(j);
-        }
-    }
-
-    @Override
-    public void sub(int start, int len, float v) {
-        for (int i = start; i < start + len; i++) {
-            array[i] -= v;
-        }
-    }
-
-    @Override
-    public void mul(int start, int len, float v) {
-        for (int i = start; i < start + len; i++) {
-            array[i] *= v;
-        }
-    }
-
-    @Override
-    public void div(int start, int len, float v) {
-        for (int i = start; i < start + len; i++) {
-            array[i] /= v;
-        }
-    }
-
-    @Override
-    public float min(int start, int len) {
-        if (len <= 0) {
-            return Float.NaN;
-        }
-        float minValue = array[start];
-        for (int i = start + 1; i < start + len; i++) {
-            minValue = Math.min(minValue, array[i]);
-        }
-        return minValue;
-    }
-
-    @Override
-    public int argMin(int start, int len) {
-        if (len <= 0) {
-            return -1;
-        }
-        float min = array[start];
-        int index = start;
-        for (int i = start + 1; i < start + len; i++) {
-            float value = array[i];
-            if (value < min) {
-                min = value;
-                index = i;
-            }
-        }
-        return index;
     }
 
     @Override

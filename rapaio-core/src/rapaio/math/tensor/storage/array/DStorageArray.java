@@ -33,10 +33,15 @@ package rapaio.math.tensor.storage.array;
 
 import java.util.Arrays;
 
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.storage.DStorage;
 import rapaio.math.tensor.storage.StorageFactory;
 
 public final class DStorageArray implements DStorage {
+
+    private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
 
     private final StorageFactory factory;
     private final double[] array;
@@ -71,6 +76,46 @@ public final class DStorageArray implements DStorage {
     }
 
     @Override
+    public DoubleVector load(int offset) {
+        return DoubleVector.fromArray(SPECIES, array, offset);
+    }
+
+    @Override
+    public DoubleVector load(int offset, VectorMask<Double> mask) {
+        return DoubleVector.fromArray(SPECIES, array, offset, mask);
+    }
+
+    @Override
+    public DoubleVector load(int offset, int[] indexMap, int mapOffset) {
+        return DoubleVector.fromArray(SPECIES, array, offset, indexMap, mapOffset);
+    }
+
+    @Override
+    public DoubleVector load(int offset, int[] indexMap, int mapOffset, VectorMask<Double> mask) {
+        return DoubleVector.fromArray(SPECIES, array, offset, indexMap, mapOffset, mask);
+    }
+
+    @Override
+    public void save(DoubleVector v, int offset) {
+        v.intoArray(array, offset);
+    }
+
+    @Override
+    public void save(DoubleVector v, int offset, VectorMask<Double> mask) {
+        v.intoArray(array, offset, mask);
+    }
+
+    @Override
+    public void save(DoubleVector v, int offset, int[] indexMap, int mapOffset) {
+        v.intoArray(array, offset, indexMap, mapOffset);
+    }
+
+    @Override
+    public void save(DoubleVector v, int offset, int[] indexMap, int mapOffset, VectorMask<Double> mask) {
+        v.intoArray(array, offset, indexMap, mapOffset, mask);
+    }
+
+    @Override
     public void swap(int left, int right) {
         double tmp = array[left];
         array[left] = array[right];
@@ -90,70 +135,6 @@ public final class DStorageArray implements DStorage {
             start++;
             end--;
         }
-    }
-
-    @Override
-    public void add(int start, int len, double v) {
-        for (int i = start; i < start + len; i++) {
-            array[i] += v;
-        }
-    }
-
-    @Override
-    public void add(int start, DStorage from, int fStart, int len) {
-        for (int i = start, j = fStart; i < start + len; i++, j++) {
-            array[i] += from.get(j);
-        }
-    }
-
-    @Override
-    public void sub(int start, int len, double v) {
-        for (int i = start; i < start + len; i++) {
-            array[i] -= v;
-        }
-    }
-
-    @Override
-    public void mul(int start, int len, double v) {
-        for (int i = start; i < start + len; i++) {
-            array[i] *= v;
-        }
-    }
-
-    @Override
-    public void div(int start, int len, double v) {
-        for (int i = start; i < start + len; i++) {
-            array[i] /= v;
-        }
-    }
-
-    @Override
-    public double min(int start, int len) {
-        if (len <= 0) {
-            return Double.NaN;
-        }
-        double minValue = array[start];
-        for (int i = start + 1; i < start + len; i++) {
-            minValue = Math.min(minValue, array[i]);
-        }
-        return minValue;
-    }
-
-    @Override
-    public int argMin(int start, int len) {
-        if (len <= 0) {
-            return -1;
-        }
-        double min = array[start];
-        int index = start;
-        for (int i = start + 1; i < start + len; i++) {
-            double value = array[i];
-            if (value < min) {
-                min = value;
-                index = i;
-            }
-        }
-        return index;
     }
 
     @Override

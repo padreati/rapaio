@@ -29,50 +29,17 @@
  *
  */
 
-package rapaio.math.tensor.storage;
+package rapaio.math.tensor.operators;
 
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.VectorMask;
-
-public interface DStorage extends Storage<Double, DStorage> {
+public class TensorOpASin implements TensorUnaryOp {
 
     @Override
-    default Double getValue(int offset) {
-        return get(offset);
+    public double applyDouble(double x) {
+        return Math.asin(x);
     }
 
-    double get(int offset);
-
     @Override
-    default void setValue(int offset, Double v) {
-        set(offset, v);
+    public float applyFloat(float x) {
+        return (float) Math.asin(x);
     }
-
-    void set(int offset, double v);
-
-    DoubleVector load(int offset);
-
-    DoubleVector load(int offset, VectorMask<Double> mask);
-
-    DoubleVector load(int offset, int[] indexMap, int mapOffset);
-
-    DoubleVector load(int offset, int[] indexMap, int mapOffset, VectorMask<Double> mask);
-
-    void save(DoubleVector v, int offset);
-
-    void save(DoubleVector v, int offset, VectorMask<Double> mask);
-
-    void save(DoubleVector v, int offset, int[] indexMap, int mapOffset);
-
-    void save(DoubleVector v, int offset, int[] indexMap, int mapOffset, VectorMask<Double> mask);
-
-    @Override
-    default void fillValue(int start, int len, Double v) {
-        fill(start, len, v);
-    }
-
-    void fill(int start, int len, double v);
-
-    @Override
-    DStorage copy();
 }

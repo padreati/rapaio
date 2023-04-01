@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import rapaio.math.tensor.iterators.ChunkIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
+import rapaio.math.tensor.operators.TensorUnaryOp;
 import rapaio.math.tensor.storage.Storage;
 import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
@@ -52,6 +53,24 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
         return pointerIterator(Order.S);
     }
 
+    T unaryOp(TensorUnaryOp op);
+
+    T abs();
+    T neg();
+    T log();
+    T log1p();
+    T exp();
+    T expm1();
+    T sin();
+    T asin();
+    T sinh();
+    T cos();
+    T acos();
+    T cosh();
+    T tan();
+    T atan();
+    T tanh();
+
     Iterator<N> iterator(Order askOrder);
 
     T iteratorApply(Order order, IntIntBiFunction<N> apply);
@@ -73,7 +92,7 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
      * @param shape destination shape
      * @return new tensor instance, wrapping, if possible, the data from the old tensor.
      */
-    default Tensor<N, S, T> reshape(Shape shape) {
+    default T reshape(Shape shape) {
         return reshape(shape, Order.defaultOrder());
     }
 
@@ -86,7 +105,7 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
      * @param askOrder destination order, if the data will be copied, otherwise the parameter is ignored.
      * @return new tensor instance, wrapping, if possible, the data from the old tensor.
      */
-    Tensor<N, S, T> reshape(Shape shape, Order askOrder);
+    T reshape(Shape shape, Order askOrder);
 
     /**
      * Transpose of a tensor. A transposed tensor is a tensor which reverts axis, the first axis becomes the last,
@@ -95,7 +114,7 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
      *
      * @return a transposed view of the tensor
      */
-    Tensor<N, S, T> t();
+    T t();
 
     /**
      * Collapses the tensor into one dimension in the order given as parameter. It creates a new tensor copy
@@ -104,7 +123,7 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
      * @param askOrder order of the elements
      * @return a tensor with elements in given order (new copy if needed)
      */
-    Tensor<N, S, T> ravel(Order askOrder);
+    T ravel(Order askOrder);
 
     /**
      * Creates a copy of the array, flattened into one dimension. The order of the elements is given as parameter.
@@ -112,7 +131,7 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
      * @param askOrder order of the elements
      * @return a copy of the tensor with elements in asked order.
      */
-    Tensor<N, S, T> flatten(Order askOrder);
+    T flatten(Order askOrder);
 
     /**
      * Collapses all dimensions equal with one. This operation does not create a new copy of the data.
@@ -120,7 +139,7 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
      *
      * @return view of the same tensor with all dimensions equal with one collapsed
      */
-    Tensor<N, S, T> squeeze();
+    T squeeze();
 
     /**
      * Creates a new tensor view with source axis moved into the given destination position.
@@ -129,7 +148,7 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
      * @param dst destination axis position
      * @return new view tensor with moved axis
      */
-    Tensor<N, S, T> moveAxis(int src, int dst);
+    T moveAxis(int src, int dst);
 
     /**
      * Swap two axis. This does not affect the storage.
@@ -138,7 +157,7 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
      * @param dst destination axis
      * @return new view tensor with swapped axis
      */
-    Tensor<N, S, T> swapAxis(int src, int dst);
+    T swapAxis(int src, int dst);
 
     //Tensor<N, S, T> concatenate(int axis, Tensor<N, S, T>...tensors);
 
@@ -155,10 +174,21 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
      * <p>
      * The order does not determine how values are read, but how values will be stored.
      *
+     * @return new copy of the tensor
+     */
+    default T copy() {
+        return copy(Order.defaultOrder());
+    }
+
+    /**
+     * Creates a copy of the original tensor with the given order. Only {@link Order#C} or {@link Order#F} are allowed.
+     * <p>
+     * The order does not determine how values are read, but how values will be stored.
+     *
      * @param askOrder desired order of the copy tensor.
      * @return new copy of the tensor
      */
-    Tensor<N, S, T> copy(Order askOrder);
+    T copy(Order askOrder);
 
     default boolean deepEquals(Object t) {
         return deepEquals(t, 1e-100);

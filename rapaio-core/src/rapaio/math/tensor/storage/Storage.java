@@ -65,19 +65,5 @@ public interface Storage<N extends Number, S extends Storage<N, S>> {
 
     void reverse(int start, int len);
 
-    void addValue(int start, int len, N v);
-
-    void add(int start, S from, int fStart, int len);
-
-    void subValue(int start, int len, N v);
-
-    void mulValue(int start, int len, N v);
-
-    void divValue(int start, int len, N v);
-
-    N minValue(int start, int len);
-
-    int argMin(int start, int len);
-
     S copy();
 }

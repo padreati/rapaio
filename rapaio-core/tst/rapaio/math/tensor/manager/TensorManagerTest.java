@@ -43,8 +43,8 @@ import rapaio.math.tensor.DTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.manager.cpuparallel.CpuArrayParallelTensorManager;
-import rapaio.math.tensor.manager.cpusingle.CpuSingleTensorManager;
+import rapaio.math.tensor.manager.parallel.ParallelTensorManager;
+import rapaio.math.tensor.manager.standard.StandardTensorManager;
 import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 
 public class TensorManagerTest {
@@ -58,8 +58,8 @@ public class TensorManagerTest {
 
     @Test
     void mainTestLoop() {
-        testManager(new CpuSingleTensorManager(new ArrayStorageFactory()));
-        testManager(new CpuArrayParallelTensorManager(new ArrayStorageFactory()));
+        testManager(new StandardTensorManager(new ArrayStorageFactory()));
+        testManager(new ParallelTensorManager(new ArrayStorageFactory()));
     }
 
     void testManager(TensorManager manager) {

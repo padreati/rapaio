@@ -29,10 +29,8 @@
  *
  */
 
-package rapaio.math.tensor.manager.cpusingle;
+package rapaio.math.tensor.manager.parallel;
 
-import java.io.IOException;
-import java.util.Objects;
 import java.util.Random;
 
 import rapaio.math.tensor.DTensor;
@@ -44,11 +42,11 @@ import rapaio.math.tensor.storage.DStorage;
 import rapaio.math.tensor.storage.FStorage;
 import rapaio.math.tensor.storage.StorageFactory;
 
-public class CpuSingleTensorManager implements TensorManager {
+public class ParallelTensorManager implements TensorManager {
 
     private final StorageFactory storageFactory;
 
-    public CpuSingleTensorManager(StorageFactory storageFactory) {
+    public ParallelTensorManager(StorageFactory storageFactory) {
         this.storageFactory = storageFactory;
     }
 
@@ -64,12 +62,23 @@ public class CpuSingleTensorManager implements TensorManager {
 
     @Override
     public DTensor ofDoubleSeq(Shape shape, Order order) {
-        return ofDoubleZeros(shape, Order.autoFC(order)).iteratorApply(Order.C, (i, p) -> (double) i);
+        DTensor tensor = ofDoubleZeros(shape, order);
+        var it = tensor.pointerIterator(Order.C);
+        int seq = 0;
+        while (it.hasNext()) {
+            tensor.storage().set(it.nextInt(), seq++);
+        }
+        return tensor;
     }
 
     @Override
     public DTensor ofDoubleRandom(Shape shape, Random random, Order order) {
-        return ofDoubleZeros(shape, Order.autoFC(order)).iteratorApply(order, (i, p) -> random.nextDouble());
+        DTensor tensor = ofDoubleZeros(shape, order);
+        var it = tensor.pointerIterator(Order.C);
+        while (it.hasNext()) {
+            tensor.storage().set(it.nextInt(), random.nextDouble());
+        }
+        return tensor;
     }
 
     @Override
@@ -79,9 +88,6 @@ public class CpuSingleTensorManager implements TensorManager {
 
     @Override
     public DTensor ofDoubleStride(Shape shape, int offset, int[] strides, DStorage storage) {
-        if (!Objects.equals(storage.storageFactory().getClass(), storageFactory.getClass())) {
-            throw new IllegalArgumentException("Invalid storage type.");
-        }
         return new DTensorStride(this, shape, offset, strides, storage);
     }
 
@@ -92,12 +98,23 @@ public class CpuSingleTensorManager implements TensorManager {
 
     @Override
     public FTensor ofFloatSeq(Shape shape, Order order) {
-        return ofFloatZeros(shape, order).iteratorApply(Order.C, (i, p) -> (float) i);
+        FTensor tensor = ofFloatZeros(shape, order);
+        var it = tensor.pointerIterator(Order.C);
+        int seq = 0;
+        while (it.hasNext()) {
+            tensor.storage().set(it.nextInt(), seq++);
+        }
+        return tensor;
     }
 
     @Override
     public FTensor ofFloatRandom(Shape shape, Random random, Order order) {
-        return ofFloatZeros(shape, Order.autoFC(order)).iteratorApply(Order.C, (i, p) -> random.nextFloat());
+        FTensor tensor = ofFloatZeros(shape, order);
+        var it = tensor.pointerIterator(Order.C);
+        while (it.hasNext()) {
+            tensor.storage().set(it.nextInt(), random.nextFloat());
+        }
+        return tensor;
     }
 
     @Override
@@ -111,7 +128,6 @@ public class CpuSingleTensorManager implements TensorManager {
     }
 
     @Override
-    public void close() throws IOException {
-        // nothing
+    public void close() {
     }
 }
