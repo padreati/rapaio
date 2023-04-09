@@ -21,9 +21,10 @@
 
 package rapaio.data.unique;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
+import static rapaio.printer.opt.POpts.textWidth;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -35,13 +36,14 @@ import rapaio.data.Unique;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.stream.VSpot;
-import rapaio.sys.WS;
+import rapaio.printer.opt.POpt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
  */
 public class UniqueLabelTest {
 
+    private static final POpt<?>[] P_OPTS = new POpt[] {textWidth(100)};
     private Random random;
 
     @BeforeEach
@@ -148,8 +150,6 @@ public class UniqueLabelTest {
 
     @Test
     void testString() {
-
-        WS.getPrinter().withOptions(textWidth(100));
         String[] sample = new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
                 "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26",
                 "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40",
@@ -173,7 +173,7 @@ public class UniqueLabelTest {
                            14     8      0.040    21     3      0.015    29     3      0.015  ...   ...                 8     3      0.015\s
                            15     4      0.020    22     5      0.025     3     5      0.025     4     6      0.030     9     1      0.005\s
                         """,
-                ui1.toContent());
+                ui1.toContent(P_OPTS));
         assertEquals(
                 """
                         Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage\s
@@ -187,8 +187,8 @@ public class UniqueLabelTest {
                            15     4      0.020    23     5      0.025    31     4      0.020     4     6      0.030\s
                            16     7      0.035    24     2      0.010    32     4      0.020    40     3      0.015\s
                         """,
-                ui1.toFullContent());
-        assertEquals(ui1.toString(), ui1.toSummary());
+                ui1.toFullContent(P_OPTS));
+        assertEquals(ui1.toString(), ui1.toSummary(P_OPTS));
 
         VarNominal x2 = VarNominal.from(N, row -> sample[random.nextInt(5)]);
         String[] values2 = x2.stream().map(VSpot::getLabel).toArray(String[]::new);
@@ -201,13 +201,13 @@ public class UniqueLabelTest {
                     1    43      0.215     4    31      0.155\s
                     2    50      0.250     5    26      0.130\s
                     3    50      0.250\s
-                """, ui2.toContent());
+                """, ui2.toContent(P_OPTS));
         assertEquals("""
                 Value Count Percentage Value Count Percentage\s
                     1    43      0.215     4    31      0.155\s
                     2    50      0.250     5    26      0.130\s
                     3    50      0.250\s
-                """, ui2.toFullContent());
-        assertEquals(ui2.toString(), ui2.toSummary());
+                """, ui2.toFullContent(P_OPTS));
+        assertEquals(ui2.toString(), ui2.toSummary(P_OPTS));
     }
 }

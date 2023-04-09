@@ -106,4 +106,5 @@ module rapaio.core {
     exports rapaio.math.linear.base;
     exports rapaio.util.param;
     exports rapaio.math.tensor.layout;
+    exports rapaio.util.nparam;
 }

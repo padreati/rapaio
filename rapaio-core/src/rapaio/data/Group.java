@@ -53,7 +53,7 @@ import rapaio.data.preprocessing.VarRefSort;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.collection.Int2IntOpenHashMap;
 
 /**
@@ -400,7 +400,7 @@ public class Group implements Printable {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         if (df.rowCount() < 40) {
             return toFullContent(printer, options);
         }
@@ -468,7 +468,7 @@ public class Group implements Printable {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("group by: ").append(String.join(", ", pkNames)).append("\n");
@@ -513,7 +513,7 @@ public class Group implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 
@@ -669,7 +669,7 @@ public class Group implements Printable {
         }
 
         @Override
-        public String toSummary(Printer printer, POption<?>... options) {
+        public String toSummary(Printer printer, POpt<?>... options) {
             StringBuilder sb = new StringBuilder();
 
             sb.append("group by: ");
@@ -692,7 +692,7 @@ public class Group implements Printable {
             return sb.toString();
         }
 
-        private String selectedContent(Printer printer, POption<?>[] options, int headRows, int tailRows) {
+        private String selectedContent(Printer printer, POpt<?>[] options, int headRows, int tailRows) {
             StringBuilder sb = new StringBuilder();
             sb.append(toSummary(printer, options));
 
@@ -755,12 +755,12 @@ public class Group implements Printable {
         }
 
         @Override
-        public String toContent(Printer printer, POption<?>... options) {
+        public String toContent(Printer printer, POpt<?>... options) {
             return selectedContent(printer, options, 30, 10);
         }
 
         @Override
-        public String toFullContent(Printer printer, POption<?>... options) {
+        public String toFullContent(Printer printer, POpt<?>... options) {
             return selectedContent(printer, options, group.getNumberOfGroups(), 0);
         }
     }

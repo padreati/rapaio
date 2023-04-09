@@ -46,7 +46,7 @@ import rapaio.data.VarDouble;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Result of a regression prediction.
@@ -287,7 +287,7 @@ public class RegressionResult implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(model.headerSummary());

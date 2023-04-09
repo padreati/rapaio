@@ -38,7 +38,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.stream.VSpot;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
 
@@ -205,7 +205,7 @@ public class VarToDoubleTransform extends AbstractVarTransform {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return "VToDouble";
     }
 

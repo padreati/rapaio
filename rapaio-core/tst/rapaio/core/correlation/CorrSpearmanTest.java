@@ -21,9 +21,10 @@
 
 package rapaio.core.correlation;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static rapaio.sys.With.*;
+import static rapaio.printer.opt.POpts.textWidth;
 
 import java.util.Random;
 
@@ -36,7 +37,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
-import rapaio.sys.WS;
+import rapaio.printer.opt.POpt;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -44,6 +45,7 @@ import rapaio.sys.WS;
 public class CorrSpearmanTest {
 
     private static final double TOL = 1e-20;
+    private static final POpt<?>[] pOptions = new POpt[] {textWidth(100)};
 
     private final Var iq = VarDouble.copy(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
     private final Var tvHours = VarDouble.copy(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
@@ -167,7 +169,7 @@ public class CorrSpearmanTest {
         assertEquals("""
                 > spearman[?, ?] - Spearman's rank correlation coefficient
                 0.2875008
-                """, CorrSpearman.of(x1, x2).toFullContent());
+                """, CorrSpearman.of(x1, x2).toFullContent(pOptions));
 
         assertEquals("""
                 > spearman[[?, ?, ?]] - Spearman's rank correlation coefficient
@@ -175,7 +177,7 @@ public class CorrSpearmanTest {
                 1.? 1         0.2875008 0.0649745\s
                 2.? 0.2875008 1         0.2294869\s
                 3.? 0.0649745 0.2294869 1        \s
-                """, CorrSpearman.of(x1, x2, x3).toSummary());
+                """, CorrSpearman.of(x1, x2, x3).toSummary(pOptions));
     }
 
     @Test
@@ -185,8 +187,6 @@ public class CorrSpearmanTest {
         for (int i = 0; i < K; i++) {
             vars[i] = VarDouble.from(100, () -> Normal.std().sampleNext(random)).name("Var_" + (i + 1));
         }
-
-        WS.getPrinter().withOptions(textWidth(100));
 
         CorrSpearman cs = CorrSpearman.of(vars);
         assertEquals("spearman[Var_1, Var_2, Var_3, Var_4, Var_5, Var_6, Var_7, Var_8, Var_9, Var_10] " +
@@ -218,6 +218,6 @@ public class CorrSpearmanTest {
                 9.Var_9   -0.129961 \s
                 10.Var_10  1        \s
 
-                """, cs.toContent());
+                """, cs.toContent(pOptions));
     }
 }

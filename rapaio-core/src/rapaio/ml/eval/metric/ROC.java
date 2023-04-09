@@ -44,7 +44,7 @@ import rapaio.data.VarInt;
 import rapaio.data.preprocessing.VarRefSort;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 
 /**
@@ -206,7 +206,7 @@ public class ROC implements Printable, Serializable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         final String fmt = "%-10s";
 

@@ -46,7 +46,7 @@ import rapaio.data.VarNominal;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Classification predict result.
@@ -229,7 +229,7 @@ public class ClassifierResult implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Classification Result Summary").append("\n");

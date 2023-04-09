@@ -36,7 +36,7 @@ import static rapaio.printer.Format.floatFlex;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Var}.
@@ -127,7 +127,7 @@ public final class Mean implements Printable {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return "> mean[" + varName + "]\n" +
                 "total rows: " + floatFlex(completeCount + missingCount) +
                 " (complete: " + floatFlex(completeCount) +
@@ -136,12 +136,12 @@ public final class Mean implements Printable {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 }

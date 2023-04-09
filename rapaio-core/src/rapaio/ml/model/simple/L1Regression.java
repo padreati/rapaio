@@ -46,7 +46,7 @@ import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Simple regression which predicts with the median value of the target columns.
@@ -138,7 +138,7 @@ public class L1Regression extends RegressionModel<L1Regression, RegressionResult
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -160,7 +160,7 @@ public class L1Regression extends RegressionModel<L1Regression, RegressionResult
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -182,7 +182,7 @@ public class L1Regression extends RegressionModel<L1Regression, RegressionResult
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 }

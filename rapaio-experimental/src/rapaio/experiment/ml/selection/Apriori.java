@@ -40,7 +40,7 @@ import rapaio.data.VarType;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.Pair;
 
 /**
@@ -182,7 +182,7 @@ public class Apriori implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
 
         StringBuilder sb = new StringBuilder();
         // print a list of rules

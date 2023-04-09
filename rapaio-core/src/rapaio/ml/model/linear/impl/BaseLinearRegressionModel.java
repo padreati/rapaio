@@ -46,7 +46,7 @@ import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.linear.LinearRegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
@@ -134,7 +134,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");

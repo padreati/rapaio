@@ -21,9 +21,10 @@
 
 package rapaio.data.unique;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
+import static rapaio.printer.opt.POpts.textWidth;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -33,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.sys.WS;
+import rapaio.printer.opt.POpt;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -41,6 +42,7 @@ import rapaio.util.collection.IntArrays;
  */
 public class UniqueIntTest {
 
+    private static final POpt<?>[] P_OPTS = new POpt[] {textWidth(100)};
     private Random random;
 
     @BeforeEach
@@ -115,7 +117,6 @@ public class UniqueIntTest {
     @Test
     void testString() {
 
-        WS.getPrinter().withOptions(textWidth(100));
         int[] sample = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
                 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, VarInt.MISSING_VALUE};
         final int N = 200;
@@ -135,7 +136,7 @@ public class UniqueIntTest {
                             6     4      0.020    14     8      0.040    22     5      0.025  ...   ...                41     7      0.035\s
                             7     5      0.025    15     4      0.020    23     5      0.025    34     3      0.015    42     3      0.015\s
                         """,
-                ui1.toContent());
+                ui1.toContent(P_OPTS));
         assertEquals(
                 """
                         Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage\s
@@ -149,8 +150,8 @@ public class UniqueIntTest {
                             7     5      0.025    16     7      0.035    25     3      0.015    34     3      0.015\s
                             8     3      0.015    17     4      0.020    26     5      0.025    35     6      0.030\s
                         """,
-                ui1.toFullContent());
-        assertEquals(ui1.toString(), ui1.toSummary());
+                ui1.toFullContent(P_OPTS));
+        assertEquals(ui1.toString(), ui1.toSummary(P_OPTS));
 
         VarInt x2 = VarInt.from(N, row -> sample[random.nextInt(5)]);
         int[] values2 = x2.stream().mapToInt().toArray();
@@ -163,13 +164,13 @@ public class UniqueIntTest {
                     1    43      0.215     4    31      0.155\s
                     2    50      0.250     5    26      0.130\s
                     3    50      0.250\s
-                """, ui2.toContent());
+                """, ui2.toContent(P_OPTS));
         assertEquals("""
                 Value Count Percentage Value Count Percentage\s
                     1    43      0.215     4    31      0.155\s
                     2    50      0.250     5    26      0.130\s
                     3    50      0.250\s
-                """, ui2.toFullContent());
-        assertEquals(ui2.toString(), ui2.toSummary());
+                """, ui2.toFullContent(P_OPTS));
+        assertEquals(ui2.toString(), ui2.toSummary(P_OPTS));
     }
 }

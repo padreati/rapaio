@@ -39,7 +39,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Chi-square test for conditional independence of categorical variables.
@@ -125,7 +125,7 @@ public class ChiSqConditionalIndependence implements HTest {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("> ChiSqConditionalIndependence\n");
         sb.append("\n");

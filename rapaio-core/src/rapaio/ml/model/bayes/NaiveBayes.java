@@ -56,7 +56,7 @@ import rapaio.ml.model.bayes.nb.Prior;
 import rapaio.ml.model.bayes.nb.PriorMLE;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Mixed Naive Bayes Classifier.
@@ -202,7 +202,7 @@ public class NaiveBayes extends ClassifierModel<NaiveBayes, ClassifierResult, Ru
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append(" model\n");
         sb.append("================\n\n");
@@ -232,12 +232,12 @@ public class NaiveBayes extends ClassifierModel<NaiveBayes, ClassifierResult, Ru
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 

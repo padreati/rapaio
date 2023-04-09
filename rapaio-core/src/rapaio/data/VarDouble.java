@@ -54,7 +54,7 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Builds a numeric double variable. Double variables stores data as double values
@@ -618,11 +618,11 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POpt<?>[] options) {
         if (isMissing(row)) {
             tt.textCenter(i, j, "?");
         } else {
-            DecimalFormat format = printer.getOptions().bind(options).floatFormat();
+            DecimalFormat format = printer.getOptions().bind(options).getFloatFormat();
             tt.floatString(i, j, format.format(getDouble(row)));
         }
     }

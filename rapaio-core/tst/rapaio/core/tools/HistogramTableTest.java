@@ -21,7 +21,10 @@
 
 package rapaio.core.tools;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static rapaio.printer.opt.POpts.textWidth;
 
 import java.util.Random;
 
@@ -30,7 +33,6 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.sys.With;
 
 public class HistogramTableTest {
 
@@ -115,7 +117,7 @@ public class HistogramTableTest {
                  [15] 12  [33]  6  [51]  9  [69] 15  [87] 17 [105] 17 [123] 10 [141] 11 [159] 12 [177] 12 [195]  7 [213] 10 [231] 11 [249] 14 [267]  3 [285]  6\s
                  [16]  9  [34] 16  [52] 12  [70] 11  [88]  9 [106] 16 [124] 15 [142]  8 [160] 13 [178] 13 [196] 12 [214]  9 [232] 12 [250]  9 [268]  8 [286]  7\s
                  [17] 11  [35] 10  [53] 16  [71] 22  [89]  8 [107] 14 [125] 11 [143] 16 [161] 12 [179]  9 [197] 14 [215] 10 [233] 15 [251]  9 [269] 11 [287] 13\s
-                ]}""", ht.toFullContent(With.textWidth(120)));
+                ]}""", ht.toFullContent(textWidth(120)));
 
     }
 

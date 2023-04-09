@@ -39,7 +39,7 @@ import rapaio.data.Var;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/4/19.
@@ -114,17 +114,17 @@ public abstract class AbstractCorrelation implements Correlation {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         if (distanceMatrix.names().length == 2) {
             summaryTwo(sb);
@@ -139,7 +139,7 @@ public abstract class AbstractCorrelation implements Correlation {
         sb.append(Format.floatFlex(distanceMatrix.get(0, 1))).append("\n");
     }
 
-    private void summaryMore(StringBuilder sb, Printer printer, POption<?>... options) {
+    private void summaryMore(StringBuilder sb, Printer printer, POpt<?>... options) {
         sb.append(String.format("> %s[%s] - %s\n", corrName(), Arrays.deepToString(distanceMatrix.names()), corrDescription()));
 
         TextTable tt = TextTable.empty(distanceMatrix.names().length + 1, distanceMatrix.names().length + 1, 1, 1);

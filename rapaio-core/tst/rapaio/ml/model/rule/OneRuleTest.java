@@ -21,9 +21,11 @@
 
 package rapaio.ml.model.rule;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
+import static rapaio.printer.opt.POpts.textWidth;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +37,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.ml.model.rule.onerule.HolteBinning;
-import rapaio.sys.WS;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -195,8 +196,6 @@ public class OneRuleTest {
         OneRule modelMushrooms = OneRule.newModel();
         modelMushrooms.fit(mushrooms, "classes");
 
-        int oldTextWidth = WS.getPrinter().getOptions().textWidth();
-        WS.getPrinter().withOptions(textWidth(100));
         assertEquals("""
                 OneRule model
                 ================
@@ -237,11 +236,10 @@ public class OneRuleTest {
                 > NominalRule {value=y, class=p, errors=0, total=576, acc=1}
                 > NominalRule {value=s, class=p, errors=0, total=576, acc=1}
                 > NominalRule {value=m, class=p, errors=0, total=36, acc=1}
-                """, modelMushrooms.toSummary());
-        WS.getPrinter().withOptions(textWidth(oldTextWidth));
+                """, modelMushrooms.toSummary(textWidth(100)));
 
-        assertEquals(modelMushrooms.toContent(), modelMushrooms.toSummary());
-        assertEquals(modelMushrooms.toFullContent(), modelMushrooms.toSummary());
+        assertEquals(modelMushrooms.toContent(textWidth(100)), modelMushrooms.toSummary(textWidth(100)));
+        assertEquals(modelMushrooms.toFullContent(textWidth(100)), modelMushrooms.toSummary(textWidth(100)));
 
         assertEquals("OneRule{}, fitted=true, rule set: RuleSet {var=odor, acc=0.9852289512555391}, " +
                         "NominalRule {value=?, class=p, errors=0, total=0, acc=0}, " +

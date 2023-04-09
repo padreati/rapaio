@@ -47,7 +47,6 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.ml.common.Capabilities;
-import rapaio.util.param.ValueParam;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
@@ -56,8 +55,9 @@ import rapaio.ml.model.linear.binarylogistic.BinaryLogisticNewton;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
-import rapaio.printer.opt.POtpionFloatFormat;
+import rapaio.printer.opt.POpt;
+import rapaio.printer.opt.POpts;
+import rapaio.util.param.ValueParam;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
@@ -306,11 +306,11 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
 
-        var opts = printer.getOptions();
-        opts.setFloatFormat(new POtpionFloatFormat(Format.floatFlex()));
-        opts.bind(options);
+        var opts = printer.getOptions()
+                .bind(POpts.floatFormat(Format.floatFlex()))
+                .bind(options);
 
         StringBuilder sb = new StringBuilder();
         sb.append(fullNameSummary());
@@ -323,7 +323,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         if (hasLearned()) {
             sb.append("> has intercept: ").append(hasIntercept).append("\n");
             if (hasIntercept) {
-                sb.append("> intercept factor: ").append(opts.floatFormat().format(intercept.get())).append("\n");
+                sb.append("> intercept factor: ").append(opts.getFloatFormat().format(intercept.get())).append("\n");
             }
             sb.append("> coefficients:\n");
             TextTable tt = TextTable.empty(w.size() + 1, 2, 1, 1);
@@ -331,7 +331,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
             tt.textCenter(0, 1, "Value");
             for (int i = 0; i < w.size(); i++) {
                 tt.textRight(i, 0, hasIntercept ? (i == 0 ? "intercept" : inputName(i - 1)) : inputName(i));
-                tt.floatString(i, 1, opts.floatFormat().format(w.getDouble(i)));
+                tt.floatString(i, 1, opts.getFloatFormat().format(w.getDouble(i)));
             }
             sb.append(tt.getDynamicText(printer, options));
             sb.append("> converged: ").append(converged).append("\n");
@@ -343,12 +343,12 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 }

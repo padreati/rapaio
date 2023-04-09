@@ -70,7 +70,7 @@ import rapaio.ml.model.tree.CTree;
 import rapaio.ml.model.tree.ctree.Node;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.parralel.ParallelStreamCollector;
 
 /**
@@ -412,7 +412,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("CForest\n");
         sb.append("=======\n\n");
@@ -440,12 +440,12 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
     }
 
     @Override
-    public String toContent(POption<?>... options) {
+    public String toContent(POpt<?>... options) {
         return toSummary();
     }
 
     @Override
-    public String toFullContent(POption<?>... options) {
+    public String toFullContent(POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(toSummary()).append("\n");
         if (hasLearned() && viFreq.get()) {

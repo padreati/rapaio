@@ -36,7 +36,7 @@ import static rapaio.printer.Format.floatFlex;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Core tool which computes geometric mean for a given numerical variable.
@@ -107,19 +107,19 @@ public class GeometricMean implements Printable {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return "> geometricMean[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ", negative values: " + negativeCount + ")\n" +
                 "mean: " + floatFlex(value) + "\n";
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 }

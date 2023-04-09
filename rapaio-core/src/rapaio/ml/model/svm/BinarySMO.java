@@ -52,7 +52,7 @@ import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 
 /**
@@ -727,7 +727,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         int printed = 0;
 
@@ -800,12 +800,12 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     }
 
     @Override
-    public String toContent(POption<?>... options) {
+    public String toContent(POpt<?>... options) {
         return toSummary(options);
     }
 
     @Override
-    public String toFullContent(POption<?>... options) {
+    public String toFullContent(POpt<?>... options) {
         return toSummary(options);
     }
 }

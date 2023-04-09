@@ -45,7 +45,7 @@ import javax.swing.SwingWorker;
 import rapaio.graphics.Figure;
 import rapaio.image.ImageTools;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.printer.opt.POpts;
 
 /**
@@ -146,7 +146,6 @@ public class FigurePanel extends JPanel {
     static final class FigurePrinter implements Printer {
 
         private final FigurePanel panel;
-        private POpts opts = POpts.defaults;
 
         public FigurePrinter(FigurePanel panel) {
             this.panel = panel;
@@ -158,24 +157,8 @@ public class FigurePanel extends JPanel {
         }
 
         @Override
-        public int graphicWidth() {
-            return panel.getWidth();
-        }
-
-        @Override
-        public int graphicHeight() {
-            return panel.getHeight();
-        }
-
-        @Override
         public POpts getOptions() {
             return null;
-        }
-
-        @Override
-        public Printer withOptions(POption<?>... options) {
-            opts = opts.bind(options);
-            return this;
         }
 
         @Override
@@ -194,7 +177,7 @@ public class FigurePanel extends JPanel {
         }
 
         @Override
-        public void draw(Figure figure) {
+        public void draw(Figure figure, POpt<?>... options) {
             panel.figure = figure;
             panel.currentImage = null;
             panel.repaint();

@@ -32,7 +32,7 @@
 package rapaio.printer;
 
 import rapaio.graphics.Figure;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.printer.opt.POpts;
 
 /**
@@ -58,36 +58,13 @@ public interface Printer {
     Printer withGraphicShape(int width, int height);
 
     /**
-     * Configured value for graphical image width.
-     */
-    int graphicWidth();
-
-    /**
-     * Configured value for graphical image height.
-     */
-    int graphicHeight();
-
-
-    /**
      * Creates a new instance of printing options collection.
      * Any modification on this instance will not affect what
      * is stored as configuration on the printer itself.
-     * <p>
-     * If one wants to modify the printing options from printer instance
-     * she must use {@link #withOptions(POption[])} method.
      *
      * @return new copy of printing options collection
      */
     POpts getOptions();
-
-    /**
-     * Changes the options for this printer. Any change will affect
-     * new instances created with {@link #getOptions()}.
-     *
-     * @param options options to be applied on this printer instance
-     * @return instance of the printer
-     */
-    Printer withOptions(POption<?>... options);
 
     /**
      * Print a message to text output
@@ -119,23 +96,24 @@ public interface Printer {
 
     void draw(Figure figure, int width, int height);
 
-    default void draw(Figure figure) {
-        draw(figure, graphicWidth(), graphicHeight());
+    default void draw(Figure figure, POpt<?>...options) {
+        var opts = getOptions().bind(options);
+        draw(figure, opts.getGraphicWidth(), opts.getGraphicHeight());
     }
 
     default void printString(Printable printable) {
         println(printable.toString());
     }
 
-    default void printSummary(Printable printable, POption<?>... options) {
+    default void printSummary(Printable printable, POpt<?>... options) {
         println(printable.toSummary(this, options));
     }
 
-    default void printContent(Printable printable, POption<?>... options) {
+    default void printContent(Printable printable, POpt<?>... options) {
         println(printable.toContent(this, options));
     }
 
-    default void printFullContent(Printable printable, POption<?>... options) {
+    default void printFullContent(Printable printable, POpt<?>... options) {
         println(printable.toFullContent(this, options));
     }
 }

@@ -39,7 +39,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.data.VarType;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Helper tool to build text in tabular format.
@@ -387,8 +387,8 @@ public class TextTable {
         return getText(-1);
     }
 
-    public String getDynamicText(Printer printer, POption<?>... options) {
-        return getText(printer.getOptions().bind(options).textWidth());
+    public String getDynamicText(Printer printer, POpt<?>... options) {
+        return getText(printer.getOptions().bind(options).getTextWidth());
     }
 
     public String getText(int consoleWidth) {

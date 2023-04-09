@@ -47,7 +47,7 @@ import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -132,7 +132,7 @@ public class L2Regression extends RegressionModel<L2Regression, RegressionResult
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -154,7 +154,7 @@ public class L2Regression extends RegressionModel<L2Regression, RegressionResult
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -176,7 +176,7 @@ public class L2Regression extends RegressionModel<L2Regression, RegressionResult
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 

@@ -21,9 +21,10 @@
 
 package rapaio.data.unique;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
+import static rapaio.printer.opt.POpts.textWidth;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -33,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.sys.WS;
+import rapaio.printer.opt.POpt;
 import rapaio.util.collection.DoubleArrays;
 
 /**
@@ -42,6 +43,7 @@ import rapaio.util.collection.DoubleArrays;
 public class UniqueDoubleTest {
 
     private static final double TOL = 1e-20;
+    private static final POpt<?>[] P_OPTS = new POpt[] {textWidth(100)};
 
     private Random random;
 
@@ -129,8 +131,6 @@ public class UniqueDoubleTest {
     @Test
     void testString() {
 
-        int oldTextWidth = WS.getPrinter().getOptions().textWidth();
-        WS.getPrinter().withOptions(textWidth(100));
         double[] sample = new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
                 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, Double.NaN};
         final int N = 200;
@@ -155,8 +155,8 @@ public class UniqueDoubleTest {
                  2.7272727     1      0.005  6.0606061    11      0.055  9.3939394     4      0.020 12.7272727     3      0.015\s
                   3.030303     6      0.030  6.3636364     3      0.015  9.6969697     4      0.020          ?     6      0.030\s
                  3.3333333     3      0.015  6.6666667     5      0.025         10     5      0.025\s
-                """, ui1.toFullContent());
-        assertEquals(ui1.toString(), ui1.toSummary());
+                """, ui1.toFullContent(P_OPTS));
+        assertEquals(ui1.toString(), ui1.toSummary(P_OPTS));
 
         VarDouble x2 = VarDouble.from(N, row -> sample[random.nextInt(5)] / 3.3);
         double[] values2 = x2.stream().mapToDouble().toArray();
@@ -170,6 +170,6 @@ public class UniqueDoubleTest {
                 0.6060606    50      0.250 1.5151515    26      0.130\s
                 0.9090909    50      0.250\s
                 """, ui2.toFullContent());
-        assertEquals(ui2.toString(), ui2.toSummary());
+        assertEquals(ui2.toString(), ui2.toSummary(P_OPTS));
     }
 }

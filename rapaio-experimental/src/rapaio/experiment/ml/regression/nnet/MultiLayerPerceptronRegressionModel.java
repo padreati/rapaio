@@ -36,7 +36,7 @@ import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -257,7 +257,7 @@ public class MultiLayerPerceptronRegressionModel
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         throw new IllegalArgumentException("not implemented");
     }
 }

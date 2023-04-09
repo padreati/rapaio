@@ -63,7 +63,7 @@ import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -478,7 +478,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -504,12 +504,12 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options)
                 + "> sigma: \n"
                 + sigma.toContent(options);

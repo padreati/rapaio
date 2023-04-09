@@ -33,7 +33,7 @@ package rapaio.core.tests;
 
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Interface for a hypothesis test
@@ -65,12 +65,12 @@ public interface HTest extends Printable {
     double ciLow();
 
     @Override
-    default String toContent(Printer printer, POption<?>... options) {
+    default String toContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    default String toFullContent(Printer printer, POption<?>... options) {
+    default String toFullContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 }

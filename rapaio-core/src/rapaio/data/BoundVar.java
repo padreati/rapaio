@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * A bound variable is a variable which is obtained by binding observations
@@ -313,7 +313,7 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POpt<?>[] options) {
         if (vars.get(0) instanceof AbstractVar) {
             ((AbstractVar) vars.get(0)).textTablePutValue(tt, i, j, row, printer, options);
         } else {

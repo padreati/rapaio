@@ -38,7 +38,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * one sample z test
@@ -215,7 +215,7 @@ public class TTestOneSample implements HTest {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
 
         return "\n"
                 + "> TTestOneSample\n"

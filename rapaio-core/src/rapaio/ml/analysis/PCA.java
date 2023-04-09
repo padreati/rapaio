@@ -48,7 +48,7 @@ import rapaio.util.param.ParamSet;
 import rapaio.util.param.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
@@ -209,7 +209,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
         return "PCA{}";
     }
 
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return "PCA decomposition\n"
                 + "=================\n"
                 + "input shape: rows=" + inputRows + ", vars=" + inputVars + "\n"
@@ -220,12 +220,12 @@ public class PCA extends ParamSet<PCA> implements Printable {
     }
 
     @Override
-    public String toContent(POption<?>... options) {
+    public String toContent(POpt<?>... options) {
         return toSummary(options);
     }
 
     @Override
-    public String toFullContent(POption<?>... options) {
+    public String toFullContent(POpt<?>... options) {
         return toSummary(options);
     }
 }

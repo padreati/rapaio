@@ -38,7 +38,7 @@ import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Regression evaluation tool which enables one to compute
@@ -103,7 +103,7 @@ public class MAE implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("> MAE (Mean Absolute Error):\n");
         sb.append("\n");

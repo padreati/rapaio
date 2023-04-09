@@ -34,13 +34,12 @@ import static rapaio.data.Group.nunique;
 import static rapaio.data.Group.skewness;
 import static rapaio.data.Group.std;
 import static rapaio.data.Group.sum;
-import static rapaio.sys.With.*;
+import static rapaio.printer.opt.POpts.textWidth;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,16 +50,17 @@ import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.string.StringBag;
 import rapaio.datasets.Datasets;
-import rapaio.sys.WS;
+import rapaio.printer.opt.POpt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/21/19.
  */
 public class GroupTest {
 
+    private final static POpt<?>[] P_OPTS = new POpt[] {textWidth(100)};
+
     private Frame iris;
     private Frame play;
-    private int textWidth = 0;
     private Random random;
 
     @BeforeEach
@@ -68,13 +68,6 @@ public class GroupTest {
         random = new Random(1234);
         play = Datasets.loadPlay();
         iris = Datasets.loadIrisDataset();
-        textWidth = WS.getPrinter().getOptions().textWidth();
-        WS.getPrinter().withOptions(textWidth(100));
-    }
-
-    @AfterEach
-    void afterEach() {
-        WS.getPrinter().withOptions(textWidth(textWidth));
     }
 
     @Test
@@ -94,7 +87,7 @@ public class GroupTest {
                  [4] noplay sunny    3  ->    72     95    false [11] play   rain     13  ->   70     96    false\s
                  [5] play   overcast 5  ->    72     90     true [12] play   sunny    0  ->    75     70     true\s
                  [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false\s
-                """, group1.toContent());
+                """, group1.toContent(P_OPTS));
         assertEquals("""
                 group by: class, outlook
                 group count: 5
@@ -107,7 +100,7 @@ public class GroupTest {
                  [4] noplay sunny    3  ->    72     95    false [11] play   rain     13  ->   70     96    false\s
                  [5] play   overcast 5  ->    72     90     true [12] play   sunny    0  ->    75     70     true\s
                  [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false\s
-                """, group1.toFullContent());
+                """, group1.toFullContent(P_OPTS));
         assertEquals("""
                 group by: class, outlook
                 group count: 5
@@ -120,7 +113,7 @@ public class GroupTest {
                  [4] noplay sunny    3  ->    72     95    false [11] play   rain     13  ->   70     96    false\s
                  [5] play   overcast 5  ->    72     90     true [12] play   sunny    0  ->    75     70     true\s
                  [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false\s
-                """, group1.toSummary());
+                """, group1.toSummary(P_OPTS));
 
         assertEquals("temp,humidity,windy", String.join(",", group1.getFeatureNameList()));
 
@@ -170,7 +163,7 @@ public class GroupTest {
                 [147] virginica 147  ->      6.5          3           5.2          2      \s
                 [148] virginica 148  ->      6.2          3.4         5.4          2.3    \s
                 [149] virginica 149  ->      5.9          3           5.1          1.8    \s
-                """, group2.toContent());
+                """, group2.toContent(P_OPTS));
     }
 
     @Test
@@ -191,7 +184,7 @@ public class GroupTest {
                 [1] versicolor                50\s
                 [2]  virginica                50\s
 
-                """, agg1.toContent());
+                """, agg1.toContent(P_OPTS));
         assertEquals("""
                 group by: class
                 group count: 3
@@ -202,20 +195,20 @@ public class GroupTest {
                 [1] versicolor                50\s
                 [2]  virginica                50\s
 
-                """, agg1.toFullContent());
+                """, agg1.toFullContent(P_OPTS));
         assertEquals("""
                 group by: class
                 group count: 3
                 group by functions: GroupByFunction{name=count,varNames=[petal-width]}
 
-                """, agg1.toSummary());
+                """, agg1.toSummary(P_OPTS));
 
         assertEquals("""
                       class    petal-width_count\s
                 [0]     setosa                50\s
                 [1] versicolor                50\s
                 [2]  virginica                50\s
-                """, agg1.toFrame().toContent());
+                """, agg1.toFrame().toContent(P_OPTS));
 
     }
 
@@ -247,7 +240,7 @@ public class GroupTest {
                 sum("temp"), sum(1, "temp"), mean("temp"), mean(1, "temp"), nunique("windy"), nunique(1, "windy"),
                 min("temp"), min(1, "temp"), max("temp"), max(1, "temp"), skewness("temp"), skewness(1, "temp"),
                 std("temp"), std(1, "temp"), kurtosis("temp"), kurtosis(1, "temp")
-        ).toFrame().toContent());
+        ).toFrame().toContent(P_OPTS));
     }
 
     @Test

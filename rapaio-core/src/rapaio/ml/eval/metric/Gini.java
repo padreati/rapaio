@@ -41,7 +41,7 @@ import rapaio.data.preprocessing.VarRefSort;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.IntComparator;
 
 /**
@@ -123,7 +123,7 @@ public class Gini implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return "> Gini" + (weighted ? " (Weighted):\n" : ":\n")
                 + "\n"
                 + "gini coefficient: " + Format.floatFlex(gini) + "\n"

@@ -36,7 +36,7 @@ import static rapaio.printer.Format.floatFlex;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Compute covariance of two variables
@@ -99,7 +99,7 @@ public class Covariance implements Printable {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return "> cov[" + varName1 + "," + varName2 + "]\n" +
                 "total rows: " + (completeCount + missingCount) +
                 " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
@@ -107,12 +107,12 @@ public class Covariance implements Printable {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 }

@@ -21,13 +21,17 @@
 
 package rapaio.math.linear;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
+import static rapaio.printer.opt.POpts.floatFormat;
+import static rapaio.printer.opt.POpts.textWidth;
 
 import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Bernoulli;
@@ -45,18 +49,14 @@ import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorStride;
 import rapaio.math.linear.dense.DVectorVar;
 import rapaio.printer.Format;
-import rapaio.sys.WS;
-import rapaio.sys.With;
+import rapaio.printer.opt.POpt;
 import rapaio.util.DoubleComparators;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
 public class DenseAlgebraTest {
 
-    @BeforeEach
-    void beforeEach() {
-        WS.getPrinter().withOptions(With.textWidth(120));
-    }
+    private static final POpt<?>[] P_OPTS = new POpt[] {textWidth(120)};
 
     private static final MatrixFactory[] matrixFactories = new MatrixFactory[] {
             // base matrix - used only for tests
@@ -267,14 +267,14 @@ public class DenseAlgebraTest {
                      [1]  12  13  14  15  16  17  18  19  20  21  22   [5]  56  57  58  59  60  61  62  63  64  65  66   [9] 100 101 102 103 104 105 106 107 108 109 110 \s
                      [2]  23  24  25  26  27  28  29  30  31  32  33   [6]  67  68  69  70  71  72  73  74  75  76  77  [10] 111 112 113 114 115 116 117 118 119 120 121 \s
                      [3]  34  35  36  37  38  39  40  41  42  43  44   [7]  78  79  80  81  82  83  84  85  86  87  88 \s
-                    """, m.toContent()));
+                    """, m.toContent(P_OPTS)));
             test1matrix(mf, m -> assertEquals("""
                          [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]      [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]      [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]\s
                      [0]   1   2   3   4   5   6   7   8   9  10  11   [4]  45  46  47  48  49  50  51  52  53  54  55   [8]  89  90  91  92  93  94  95  96  97  98  99 \s
                      [1]  12  13  14  15  16  17  18  19  20  21  22   [5]  56  57  58  59  60  61  62  63  64  65  66   [9] 100 101 102 103 104 105 106 107 108 109 110 \s
                      [2]  23  24  25  26  27  28  29  30  31  32  33   [6]  67  68  69  70  71  72  73  74  75  76  77  [10] 111 112 113 114 115 116 117 118 119 120 121 \s
                      [3]  34  35  36  37  38  39  40  41  42  43  44   [7]  78  79  80  81  82  83  84  85  86  87  88 \s
-                    """, m.toFullContent()));
+                    """, m.toFullContent(P_OPTS)));
 
             test1matrix(mf, m -> assertEquals("""
                          [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]      [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]      [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]\s
@@ -282,7 +282,7 @@ public class DenseAlgebraTest {
                      [1]  12  13  14  15  16  17  18  19  20  21  22   [5]  56  57  58  59  60  61  62  63  64  65  66   [9] 100 101 102 103 104 105 106 107 108 109 110 \s
                      [2]  23  24  25  26  27  28  29  30  31  32  33   [6]  67  68  69  70  71  72  73  74  75  76  77  [10] 111 112 113 114 115 116 117 118 119 120 121 \s
                      [3]  34  35  36  37  38  39  40  41  42  43  44   [7]  78  79  80  81  82  83  84  85  86  87  88 \s
-                    """, m.toSummary()));
+                    """, m.toSummary(P_OPTS)));
 
             assertEquals("""
                            [0]   [1]   [2]   [3]   [4]   [5]   [6]   [7]   [8]   [9]  [10]  [11]  [12]  [13]  [14]  [15]  [16]  [17]  [18]  [19] ...  [98]   [99]\s
@@ -309,7 +309,7 @@ public class DenseAlgebraTest {
                     ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...  ...  ...   ...  \s
                     [98] 9,801 9,802 9,803 9,804 9,805 9,806 9,807 9,808 9,809 9,810 9,811 9,812 9,813 9,814 9,815 9,816 9,817 9,818 9,819 9,820 ... 9,899  9,900\s
                     [99] 9,901 9,902 9,903 9,904 9,905 9,906 9,907 9,908 9,909 9,910 9,911 9,912 9,913 9,914 9,915 9,916 9,917 9,918 9,919 9,920 ... 9,999 10,000\s
-                    """, mf.newMatrix(100, 100).toContent());
+                    """, mf.newMatrix(100, 100).toContent(P_OPTS));
 
             assertEquals("""
                                         [0]                [1]                 [2]                [3]\s
@@ -317,7 +317,7 @@ public class DenseAlgebraTest {
                     [1] 0.7142857142857143  0.8571428571428571 1                   1.1428571428571428\s
                     [2] 1.2857142857142858  1.4285714285714286 1.5714285714285714  1.7142857142857142\s
                     [3] 1.8571428571428572  2                  2.142857142857143   2.2857142857142856\s
-                    """, mf.newMatrix(4, 4).div(7).toContent());
+                    """, mf.newMatrix(4, 4).div(7).toContent(P_OPTS));
 
             assertEquals("""
                           [0]   [1]   [2]   [3]\s
@@ -325,7 +325,7 @@ public class DenseAlgebraTest {
                     [1] 0.714 0.857 1.000 1.143\s
                     [2] 1.286 1.429 1.571 1.714\s
                     [3] 1.857 2.000 2.143 2.286\s
-                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.floatShort())));
+                    """, mf.newMatrix(4, 4).div(7).toContent(textWidth(100), floatFormat(Format.floatShort())));
 
             assertEquals("""
                               [0]       [1]       [2]       [3]\s
@@ -333,7 +333,7 @@ public class DenseAlgebraTest {
                     [1] 0.7142857 0.8571429 1.0000000 1.1428571\s
                     [2] 1.2857143 1.4285714 1.5714286 1.7142857\s
                     [3] 1.8571429 2.0000000 2.1428571 2.2857143\s
-                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.floatMedium())));
+                    """, mf.newMatrix(4, 4).div(7).toContent(textWidth(100), floatFormat(Format.floatMedium())));
 
             assertEquals("""
                                                      [0]                              [1]                              [2]\s
@@ -348,7 +348,7 @@ public class DenseAlgebraTest {
                     [2] 1.714285714285714200000000000000\s
                     [3] 2.285714285714285600000000000000\s
                                         
-                    """, mf.newMatrix(4, 4).div(7).toContent(floatFormat(Format.floatLong())));
+                    """, mf.newMatrix(4, 4).div(7).toContent(textWidth(100), floatFormat(Format.floatLong())));
         }
     }
 
@@ -723,7 +723,7 @@ public class DenseAlgebraTest {
                      [1]  2  [5]  6  [9] 10\s
                      [2]  3  [6]  7 [10] 11\s
                      [3]  4  [7]  8\s
-                    """, v.toContent()));
+                    """, v.toContent(P_OPTS)));
             assertEquals("""
                      [0]   1  [6]   7 [12]  13 [18]  19\s
                      [1]   2  [7]   8 [13]  14 [19]  20\s
@@ -731,19 +731,19 @@ public class DenseAlgebraTest {
                      [3]   4  [9]  10 [15]  16 [98]  99\s
                      [4]   5 [10]  11 [16]  17 [99] 100\s
                      [5]   6 [11]  12 [17]  18\s
-                    """, vf.newInstance(100).toContent());
+                    """, vf.newInstance(100).toContent(P_OPTS));
             test1vector(vf, v -> assertEquals("""
                      [0]  1  [4]  5  [8]  9\s
                      [1]  2  [5]  6  [9] 10\s
                      [2]  3  [6]  7 [10] 11\s
                      [3]  4  [7]  8\s
-                    """, v.toFullContent()));
+                    """, v.toFullContent(P_OPTS)));
             test1vector(vf, v -> assertEquals("""
                      [0]  1  [4]  5  [8]  9\s
                      [1]  2  [5]  6  [9] 10\s
                      [2]  3  [6]  7 [10] 11\s
                      [3]  4  [7]  8\s
-                    """, v.toSummary()));
+                    """, v.toSummary(P_OPTS)));
 
             test1vector(vf, v -> {
                 v = v.copy().sortValues();

@@ -62,7 +62,7 @@ import rapaio.ml.model.tree.ctree.Splitter;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.Pair;
 
 /**
@@ -382,7 +382,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("CTree model\n");
         sb.append("================\n\n");
@@ -452,12 +452,12 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
     }
 
     @Override
-    public String toContent(POption<?>... options) {
+    public String toContent(POpt<?>... options) {
         return toSummary();
     }
 
     @Override
-    public String toFullContent(POption<?>... options) {
+    public String toFullContent(POpt<?>... options) {
         return toSummary();
     }
 

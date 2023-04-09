@@ -38,7 +38,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * t test for checking if two samples have the same mean
@@ -358,7 +358,7 @@ public class TTestTwoSamples implements HTest {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> HTTools.tTestTwoSamples\n");

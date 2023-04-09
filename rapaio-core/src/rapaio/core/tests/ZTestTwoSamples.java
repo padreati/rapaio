@@ -37,7 +37,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Two sample z test: tests the difference between two sample means
@@ -269,7 +269,7 @@ public class ZTestTwoSamples implements HTest {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
 
         return "\n"
                 + "> HTTools.zTestTwoSamples\n"

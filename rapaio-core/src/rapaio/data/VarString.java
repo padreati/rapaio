@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.function.SFunction;
 
 /**
@@ -289,7 +289,7 @@ public class VarString extends AbstractVar {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POpt<?>[] options) {
         tt.textCenter(i, j, getLabel(row));
     }
 

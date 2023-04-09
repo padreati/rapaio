@@ -50,7 +50,7 @@ import java.util.stream.IntStream;
 
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.IntIterator;
 import rapaio.util.function.Int2IntFunction;
 
@@ -497,7 +497,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>... options) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POpt<?>... options) {
         tt.textRight(i, j, getLabel(row));
     }
 

@@ -31,77 +31,71 @@
 
 package rapaio.printer.opt;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 
 import rapaio.printer.Format;
+import rapaio.util.nparam.NamedParamSet;
 
 /**
  * Printing options.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/25/20.
  */
-public class POpts implements Serializable {
+public class POpts extends NamedParamSet<POpts, POpt<?>> implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = -2369999674228369814L;
+    // parameter declarations with default values
 
-    public static final POpts defaults;
+    private static final POpt<Integer> pTextWidth = new POpt<>("textWidth", 120);
+    private static final POpt<DecimalFormat> pFloatFormat = new POpt<>("floatFormat", Format.floatFlexLong());
+    private static final POpt<Integer> pGraphicWidth = new POpt<>("graphicWidth", 1200);
+    private static final POpt<Integer> pGraphicHeight = new POpt<>("graphicHeight", 600);
 
-    static {
-        defaults = new POpts(null);
-        defaults.setTextWidth(new POptionTextWidth(120));
-        defaults.setFloatFormat(new POtpionFloatFormat(Format.floatFlexLong()));
+    // named parameters methods
+
+    public static POpt<Integer> textWidth(int textWidth) {
+        return new POpt<>(pTextWidth, textWidth);
     }
 
-    public POpts(POpts parent) {
-        this.parent = parent;
+    public static POpt<DecimalFormat> floatFormat(DecimalFormat format) {
+        return new POpt<>(pFloatFormat, format);
     }
+
+    public static POpt<Integer> graphicWidth(int width) {
+        return new POpt<>(pGraphicWidth, width);
+    }
+
+    public static POpt<Integer> graphicHeight(int height) {
+        return new POpt<>(pGraphicHeight, height);
+    }
+
+    // constructor
 
     public POpts() {
-        this(defaults);
+        super(null);
     }
 
-    private final POpts parent;
-    private POptionTextWidth textWidth;
-    private POtpionFloatFormat floatFormat;
-
-    public POpts getParent() {
-        return parent;
+    private POpts(POpts parent) {
+        super(parent);
     }
 
-    public POpts bind(POption<?>... options) {
-        Arrays.stream(options).forEach(o -> o.bind(this));
-        return this;
+    public POpts bind(POpt<?>... options) {
+        return new POpts(this).apply(options);
     }
 
-    public POption<?>[] toArray() {
-        return new POption[]{
-                textWidth, floatFormat
-        };
+    public Integer getTextWidth() {
+        return (Integer) getParamValue(pTextWidth);
     }
 
-    public int textWidth() {
-        if (textWidth == null) {
-            return parent != null ? parent.textWidth() : defaults.textWidth.apply(this);
-        }
-        return textWidth.apply(this);
+    public DecimalFormat getFloatFormat() {
+        return (DecimalFormat) getParamValue(pFloatFormat);
     }
 
-    public void setTextWidth(POptionTextWidth textWidth) {
-        this.textWidth = textWidth;
+    public Integer getGraphicWidth() {
+        return (Integer) getParamValue(pGraphicWidth);
     }
 
-    public DecimalFormat floatFormat() {
-        if (floatFormat == null) {
-            return parent != null ? parent.floatFormat() : defaults.floatFormat.apply(this);
-        }
-        return floatFormat.apply(this);
-    }
-
-    public void setFloatFormat(POtpionFloatFormat floatFormat) {
-        this.floatFormat = floatFormat;
+    public Integer getGraphicHeight() {
+        return (Integer) getParamValue(pGraphicHeight);
     }
 }

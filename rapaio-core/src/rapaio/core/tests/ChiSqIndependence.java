@@ -41,7 +41,7 @@ import rapaio.data.Var;
 import rapaio.math.linear.DMatrix;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Pearson Chi Square independence test.
@@ -151,7 +151,7 @@ public final class ChiSqIndependence implements HTest {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
 
         return "> ChiSqIndependence\n"
                 + "\n"

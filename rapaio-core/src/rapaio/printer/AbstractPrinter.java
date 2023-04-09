@@ -31,7 +31,9 @@
 
 package rapaio.printer;
 
-import rapaio.printer.opt.POption;
+import static rapaio.printer.opt.POpts.graphicHeight;
+import static rapaio.printer.opt.POpts.graphicWidth;
+
 import rapaio.printer.opt.POpts;
 
 /**
@@ -39,37 +41,16 @@ import rapaio.printer.opt.POpts;
  */
 public abstract class AbstractPrinter implements Printer {
 
-    private int graphicWidth;
-    private int graphicHeight;
-    private final POpts opts = new POpts(POpts.defaults);
+    protected POpts opts = new POpts();
 
     @Override
     public Printer withGraphicShape(int width, int height) {
-        graphicWidth = width;
-        graphicHeight = height;
+        opts = opts.bind(graphicWidth(width), graphicHeight(height));
         return this;
-    }
-
-    @Override
-    public int graphicWidth() {
-        return graphicWidth;
-    }
-
-    @Override
-    public int graphicHeight() {
-        return graphicHeight;
     }
 
     @Override
     public POpts getOptions() {
-        return new POpts(opts);
-    }
-
-    @Override
-    public Printer withOptions(POption<?>... options) {
-        for (POption<?> option : options) {
-            option.bind(opts);
-        }
-        return this;
+        return opts;
     }
 }

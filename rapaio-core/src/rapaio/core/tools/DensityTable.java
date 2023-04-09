@@ -51,7 +51,7 @@ import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Two way table which holds frequencies between two discrete variables.
@@ -269,7 +269,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         TextTable tt = TextTable.empty(rowIndex.size() + 2, colIndex.size() + 2, 1, 0);
         putLevels(tt);
         tt.textRight(0, colIndex.size() + 1, "total");

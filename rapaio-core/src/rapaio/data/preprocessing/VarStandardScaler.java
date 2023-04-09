@@ -38,7 +38,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
@@ -103,7 +103,7 @@ public class VarStandardScaler extends AbstractVarTransform {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toString();
     }
 

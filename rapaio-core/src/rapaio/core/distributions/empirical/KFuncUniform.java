@@ -34,7 +34,7 @@ package rapaio.core.distributions.empirical;
 import java.io.Serial;
 
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -67,7 +67,7 @@ public class KFuncUniform implements KFunc {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toString();
     }
 }

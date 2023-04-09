@@ -44,7 +44,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.preprocessing.VarRefSort;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Hypothesis test which assess if a given samples belongs to a normal distribution.
@@ -171,7 +171,7 @@ public class ADTestGoodness implements HTest {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
 
         return "> ADTestGoodness\n"
                 + "\n"

@@ -37,7 +37,7 @@ import rapaio.core.stat.GeometricMean;
 import rapaio.data.Var;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Filter to create monotonic power transformations
@@ -92,7 +92,7 @@ public class VarPowerTransform extends AbstractVarTransform {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return "VarPowerTransform(lambda=" + Format.floatFlex(lambda) + ")";
     }
 

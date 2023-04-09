@@ -41,7 +41,7 @@ import rapaio.data.format.InstantFormatter;
 import rapaio.data.format.InstantParser;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Variable which contains time instants truncated to milliseconds.
@@ -304,7 +304,7 @@ public class VarInstant extends AbstractVar {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POpt<?>[] options) {
         tt.textCenter(i, j, getLabel(row));
     }
 }

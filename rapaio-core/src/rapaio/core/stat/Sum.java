@@ -36,7 +36,7 @@ import static rapaio.printer.Format.floatFlex;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Computes the sum of elements for a {@link rapaio.data.Var} of values.
@@ -107,7 +107,7 @@ public class Sum implements Printable {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return String.format("""
                         > sum[%s]
                         total rows: %d (complete: %d, missing: %d)
@@ -118,12 +118,12 @@ public class Sum implements Printable {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 }

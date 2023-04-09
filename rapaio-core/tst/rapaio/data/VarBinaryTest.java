@@ -22,9 +22,12 @@
 package rapaio.data;
 
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
+import static rapaio.printer.opt.POpts.textWidth;
 
 import java.util.List;
 import java.util.Random;
@@ -34,13 +37,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.stat.Mean;
-import rapaio.sys.WS;
+import rapaio.printer.opt.POpt;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarBinaryTest {
 
+    private static final POpt<?>[] P_OPTS = new POpt[] {textWidth(100)};
     private Random random;
 
     @BeforeEach
@@ -292,8 +296,6 @@ public class VarBinaryTest {
         assertEquals("VarBinary [name:\"x\", rowCount:200, values: 1, 1, 1, 1, ?, 1, ?, 0, 1, 0, 1, ?, 1, 1, 0, ?, ..., 0, 0]",
                 var.toString());
 
-        WS.getPrinter().withOptions(textWidth(100));
-
         assertEquals("""
                         VarBinary [name:"x", rowCount:200]
                          row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value\s
@@ -309,7 +311,7 @@ public class VarBinaryTest {
                           [9]   0    [20]   1    [31]   1    [42]   ?    [53]   1    [64]   1    [75]   ?   [186]   1   [197]   ?  \s
                          [10]   1    [21]   ?    [32]   ?    [43]   0    [54]   ?    [65]   1    [76]   0   [187]   0   [198]   0  \s
                         """,
-                var.toContent());
+                var.toContent(P_OPTS));
 
         assertEquals("""
                         VarBinary [name:"x", rowCount:200]
@@ -335,7 +337,6 @@ public class VarBinaryTest {
                          [18]   ?    [38]   1    [58]   ?    [78]   0    [98]   ?   [118]   1   [138]   0   [158]   ?   [178]   1   [198]   0  \s
                          [19]   ?    [39]   0    [59]   0    [79]   1    [99]   0   [119]   ?   [139]   ?   [159]   1   [179]   1   [199]   0  \s
                         """,
-                var.toFullContent());
-
+                var.toFullContent(P_OPTS));
     }
 }

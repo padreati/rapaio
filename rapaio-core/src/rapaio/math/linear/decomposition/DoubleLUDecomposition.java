@@ -41,7 +41,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -285,7 +285,7 @@ public class DoubleLUDecomposition implements Serializable, Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("LU decomposition summary\n")
                 .append("========================\n")

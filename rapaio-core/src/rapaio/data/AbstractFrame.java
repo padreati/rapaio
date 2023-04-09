@@ -39,7 +39,7 @@ import java.util.stream.IntStream;
 
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.sys.WS;
 import rapaio.util.parralel.ParallelStreamCollector;
 
@@ -80,17 +80,17 @@ public abstract class AbstractFrame implements Frame {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return selection(10, 5, printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return selection(rowCount(), 0, printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
 
         StringBuilder sb = new StringBuilder();
 
@@ -147,7 +147,7 @@ public abstract class AbstractFrame implements Frame {
         WS.println(head(lines));
     }
 
-    private String selection(int head, int tail, Printer printer, POption<?>... options) {
+    private String selection(int head, int tail, Printer printer, POpt<?>... options) {
         if (varCount() == 0) {
             return "";
         }

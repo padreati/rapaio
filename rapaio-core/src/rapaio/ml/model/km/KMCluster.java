@@ -57,7 +57,7 @@ import rapaio.util.param.ValueParam;
 import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -384,7 +384,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(fullName()).append("\n");
         sb.append("Model fitted=").append(hasLearned()).append("\n");
@@ -397,12 +397,12 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(toSummary(printer, options));
         if (hasLearned()) {

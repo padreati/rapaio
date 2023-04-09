@@ -63,7 +63,7 @@ import rapaio.ml.model.tree.rtree.Node;
 import rapaio.ml.model.tree.rtree.Search;
 import rapaio.ml.model.tree.rtree.Splitter;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.DoublePair;
 import rapaio.util.param.MultiParam;
 import rapaio.util.param.ValueParam;
@@ -312,7 +312,7 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName());
         sb.append("\n model fitted: ").append(hasLearned).append("\n");
@@ -330,12 +330,12 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 

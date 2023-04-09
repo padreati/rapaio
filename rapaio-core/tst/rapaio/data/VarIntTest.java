@@ -21,9 +21,12 @@
 
 package rapaio.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
+import static rapaio.printer.opt.POpts.textWidth;
 
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -31,7 +34,6 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.stat.Sum;
-import rapaio.sys.WS;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -340,8 +342,6 @@ public class VarIntTest {
                 4, 2, 4, 23, 4, 23, 4, 234, 23, 423, 42, 34, 23);
         assertEquals("VarInt [name:\"?\", rowCount:38, values: 1, 2, ?, -10, 0, 100, ?, 16, 1, 2, 3, 4, ..., 34, 23]", x.toString());
 
-        WS.getPrinter().withOptions(textWidth(100));
-
         Random random = new Random(123);
         for (int i = 0; i < 200; i++) {
             x.addInt(random.nextInt(1000));
@@ -377,6 +377,6 @@ public class VarIntTest {
                  [24]     23  [51]    565  [78]    748 [105]    827 [132]    753 [159]    921 [186]    619 [213]    369\s
                  [25]      4  [52]    637  [79]    842 [106]    720 [133]    805 [160]    132 [187]    903 [214]    724\s
                  [26]      2  [53]    749  [80]    643 [107]     90 [134]    137 [161]    347 [188]      7 [215]    307\s
-                """, x.toFullContent());
+                """, x.toFullContent(textWidth(100)));
     }
 }

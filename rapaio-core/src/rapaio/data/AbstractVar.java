@@ -44,7 +44,7 @@ import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorVar;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -153,7 +153,7 @@ public abstract class AbstractVar implements Var {
 
     protected abstract int toStringDisplayValueCount();
 
-    protected abstract void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options);
+    protected abstract void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POpt<?>[] options);
 
     @Override
     public String toString() {
@@ -184,7 +184,7 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("> summary(name: ").append(name()).append(", type: ").append(type().name()).append(")\n");
@@ -319,7 +319,7 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(toStringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(size()).append("]\n");
 
@@ -346,14 +346,14 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(toStringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(size()).append("]\n");
         fullTable(sb, printer, options);
         return sb.toString();
     }
 
-    private void fullTable(StringBuilder sb, Printer printer, POption<?>... options) {
+    private void fullTable(StringBuilder sb, Printer printer, POpt<?>... options) {
         TextTable tt = TextTable.empty(size() + 1, 2, 1, 1);
         tt.textCenter(0, 0, "row");
         tt.textCenter(0, 1, "value");

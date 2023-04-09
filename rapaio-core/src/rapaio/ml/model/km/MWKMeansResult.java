@@ -46,7 +46,7 @@ import rapaio.math.linear.DVector;
 import rapaio.ml.model.ClusteringResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/2/20.
@@ -109,7 +109,7 @@ public class MWKMeansResult extends ClusteringResult<MWKMeans> {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Overall errors: \n");
         sb.append("> count: ").append(distances.size()).append("\n");
@@ -127,12 +127,12 @@ public class MWKMeansResult extends ClusteringResult<MWKMeans> {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 }

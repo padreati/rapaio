@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 
 import rapaio.graphics.Figure;
 import rapaio.printer.Printer;
+import rapaio.printer.opt.POpt;
 import rapaio.printer.standard.StandardPrinter;
 
 /**
@@ -49,18 +50,8 @@ public class IdeaPrinter extends StandardPrinter {
     public static final int DEFAULT_PORT = 56739;
 
     @Override
-    public int graphicWidth() {
-        return 600;
-    }
-
-    @Override
     public Printer withGraphicShape(int width, int height) {
         return this;
-    }
-
-    @Override
-    public int graphicHeight() {
-        return 400;
     }
 
     @Override
@@ -69,7 +60,7 @@ public class IdeaPrinter extends StandardPrinter {
     }
 
     @Override
-    public void draw(Figure figure) {
+    public void draw(Figure figure, POpt<?>... options) {
         try (Socket s = new Socket("localhost", DEFAULT_PORT)) {
             new ClassMarshaller().marshallDraw(s.getOutputStream(), figure);
         } catch (IOException ex) {

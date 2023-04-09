@@ -35,7 +35,7 @@ import java.io.Serializable;
 
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Kernel function used in kernel density estimator
@@ -73,12 +73,12 @@ public interface KFunc extends Printable, Serializable {
     double maxValue(double x, double bandwidth);
 
     @Override
-    default String toFullContent(Printer printer, POption<?>... options) {
+    default String toFullContent(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    default String toSummary(Printer printer, POption<?>... options) {
+    default String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 }

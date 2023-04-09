@@ -37,7 +37,7 @@ import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
 
@@ -75,7 +75,7 @@ public class VarRefSort extends AbstractVarTransform {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toString();
     }
 

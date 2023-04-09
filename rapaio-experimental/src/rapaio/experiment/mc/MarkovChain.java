@@ -34,7 +34,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.sys.WS;
 
 /**
@@ -49,7 +49,7 @@ public class MarkovChain implements Printable {
     private DMatrix m;
     private ChainAdapter adapter = new NGram(2);
     //
-    private final double smoothEps = 1e-30;
+    private static final double smoothEps = 1e-30;
 
     public MarkovChain() {
     }
@@ -100,7 +100,7 @@ public class MarkovChain implements Printable {
         List<List<String>> chains = rowChains.stream()
                 .map(chain -> adapter.tokenize(chain))
                 .filter(chain -> !chain.isEmpty())
-                .collect(Collectors.toList());
+                .toList();
 
         for (List<String> chain : chains) {
             if (chain.isEmpty()) {
@@ -182,7 +182,7 @@ public class MarkovChain implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("MarkovChain model\n");
@@ -192,7 +192,7 @@ public class MarkovChain implements Printable {
         sb.append("values: \n");
         StringBuilder buff = new StringBuilder();
         for (String state : states) {
-            if (buff.length() + state.length() + 3 >= WS.getPrinter().getOptions().textWidth()) {
+            if (buff.length() + state.length() + 3 >= WS.getPrinter().getOptions().getTextWidth()) {
                 sb.append(buff).append("\n");
                 buff = new StringBuilder();
             }

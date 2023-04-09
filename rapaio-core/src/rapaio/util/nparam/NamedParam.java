@@ -29,30 +29,23 @@
  *
  */
 
-package rapaio.printer.opt;
+package rapaio.util.nparam;
 
-import java.io.Serial;
+public abstract class NamedParam<V> {
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/25/20.
- */
-public class POptionTextWidth implements POption<Integer> {
+    private final String name;
+    private final V value;
 
-    @Serial
-    private static final long serialVersionUID = 2485016171417227463L;
-    private final int textWidth;
-
-    public POptionTextWidth(int textWidth) {
-        this.textWidth = textWidth;
+    public NamedParam(String name, V value) {
+        this.name = name;
+        this.value = value;
     }
 
-    @Override
-    public void bind(POpts opts) {
-        opts.setTextWidth(this);
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public Integer apply(POpts opts) {
-        return textWidth;
+    public V getValue() {
+        return value;
     }
 }

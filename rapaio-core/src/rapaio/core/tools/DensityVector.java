@@ -49,7 +49,7 @@ import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Nominal distribution vector.
@@ -361,7 +361,7 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         TextTable tt = TextTable.empty(3, index.size());
         for (int i = 0; i < index.size(); i++) {
             tt.textRight(0, i, index.getValueString(i));
@@ -378,12 +378,12 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 }

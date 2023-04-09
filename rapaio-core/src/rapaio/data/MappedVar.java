@@ -40,7 +40,7 @@ import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorVar;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * A variable which wraps rows from another variable. The row selection
@@ -278,7 +278,7 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POpt<?>[] options) {
         if (source instanceof AbstractVar) {
             ((AbstractVar) source).textTablePutValue(tt, i, j, mapping.get(row), printer, options);
         } else {

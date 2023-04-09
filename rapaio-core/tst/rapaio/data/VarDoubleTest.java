@@ -21,9 +21,12 @@
 
 package rapaio.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.sys.With.*;
+import static rapaio.printer.opt.POpts.textWidth;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +40,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
-import rapaio.sys.WS;
+import rapaio.printer.opt.POpt;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -45,6 +48,7 @@ import rapaio.sys.WS;
 public class VarDoubleTest {
 
     private static final double TOL = 1e-20;
+    private static final POpt<?>[] P_OPTS = new POpt[] {textWidth(100)};
 
     private Random random;
 
@@ -300,8 +304,6 @@ public class VarDoubleTest {
                 "VarDouble [name:\"?\", rowCount:10, values: ?, 0.6503131914222008, 1.1647628389666604, 0.7719984559060187, ?, 2.1236947978859986, 1.6546944254696838, 0.12053767260217511, ?, -0.01950154486410645]",
                 x.toString());
 
-        WS.getPrinter().withOptions(textWidth(100));
-
         x = VarDouble.from(200, row -> (row % 4 == 0) ? Double.NaN : Normal.std().sampleNext(random));
         assertEquals("""
                 VarDouble [name:"?", rowCount:200]
@@ -340,7 +342,7 @@ public class VarDoubleTest {
                  [31]  0.6283115778307867    [65]  0.15057809464818378  [199] -1.019025608752341   \s
                  [32]           ?            [66] -0.2627364006171766                              \s
                  [33] -0.0846767320121113    [67]  0.15946839026843737 \s
-                """, x.toContent());
+                """, x.toContent(P_OPTS));
 
         assertEquals("""
                 VarDouble [name:"?", rowCount:200]
@@ -412,7 +414,7 @@ public class VarDoubleTest {
                  [64]           ?           [131]  0.2643650313120908   [198] -0.038230386122934265\s
                  [65]  0.15057809464818378  [132]           ?           [199] -1.019025608752341   \s
                  [66] -0.2627364006171766   [133]  1.06270324331314    \s
-                """, x.toFullContent());
+                """, x.toFullContent(P_OPTS));
     }
 
     @Test

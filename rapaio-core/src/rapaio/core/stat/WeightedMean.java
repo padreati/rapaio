@@ -37,7 +37,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Compensated weighted mean.
@@ -144,7 +144,7 @@ public final class WeightedMean implements Printable {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return String.format("> weightedMean[%s]\n", varName)
                 + String.format("total rows: %d (complete: %d, missing: %d)\n",
                 completeCount + missingCount, completeCount, missingCount)
@@ -152,12 +152,12 @@ public final class WeightedMean implements Printable {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 }

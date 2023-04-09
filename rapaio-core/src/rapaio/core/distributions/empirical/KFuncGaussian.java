@@ -35,7 +35,7 @@ import java.io.Serial;
 
 import rapaio.core.distributions.Normal;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * GaussianPdf kernel function
@@ -70,7 +70,7 @@ public class KFuncGaussian implements KFunc {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toString();
     }
 }

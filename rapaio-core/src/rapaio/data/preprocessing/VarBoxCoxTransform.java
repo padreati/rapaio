@@ -36,7 +36,7 @@ import java.io.Serial;
 import rapaio.data.Var;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
@@ -88,7 +88,7 @@ public class VarBoxCoxTransform extends AbstractVarTransform {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return "VarBoxCoxTransform(lambda=" + Format.floatFlex(lambda) + ", shift:" + Format.floatFlex(shift) + ")";
     }
 

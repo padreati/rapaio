@@ -39,7 +39,7 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 public final class HistogramTable implements Printable {
 
@@ -121,7 +121,7 @@ public final class HistogramTable implements Printable {
     }
 
     @Override
-    public String toSummary(POption<?>... options) {
+    public String toSummary(POpt<?>... options) {
         return "HistogramTable\n"
                 + "==============\n"
                 + "min=" + Format.floatFlex(min) + "\n"
@@ -134,7 +134,7 @@ public final class HistogramTable implements Printable {
     }
 
     @Override
-    public String toContent(POption<?>... options) {
+    public String toContent(POpt<?>... options) {
         return "HistogramTable\n"
                 + "==============\n"
                 + "min=" + Format.floatFlex(min) + "\n"
@@ -146,7 +146,7 @@ public final class HistogramTable implements Printable {
                 + "}";
     }
     @Override
-    public String toFullContent(POption<?>... options) {
+    public String toFullContent(POpt<?>... options) {
         return "HistogramTable\n"
                 + "==============\n"
                 + "min=" + Format.floatFlex(min) + "\n"

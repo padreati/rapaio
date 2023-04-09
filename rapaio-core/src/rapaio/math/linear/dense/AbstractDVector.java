@@ -41,7 +41,7 @@ import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.DoubleComparator;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
@@ -1149,12 +1149,12 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         int head = 20;
         int tail = 2;
 
@@ -1186,7 +1186,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
 
         TextTable tt = TextTable.empty(size(), 2, 0, 1);
         for (int i = 0; i < size(); i++) {

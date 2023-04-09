@@ -40,6 +40,7 @@ import java.util.logging.LogManager;
 import rapaio.graphics.Figure;
 import rapaio.image.ImageTools;
 import rapaio.printer.Printer;
+import rapaio.printer.opt.POpt;
 import rapaio.printer.standard.StandardPrinter;
 
 /**
@@ -128,8 +129,9 @@ public class WS {
         }
     }
 
-    public static BufferedImage image(Figure figure) {
-        return image(figure, getPrinter().graphicWidth(), getPrinter().graphicHeight());
+    public static BufferedImage image(Figure figure, POpt<?>...options) {
+        var opts = printer.getOptions().bind(options);
+        return image(figure, opts.getGraphicHeight(), opts.getGraphicHeight());
     }
 
     public static BufferedImage image(Figure figure, int w, int h) {

@@ -34,7 +34,6 @@ package rapaio.sys;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
-import java.text.DecimalFormat;
 
 import rapaio.core.tools.Grid2D;
 import rapaio.data.Var;
@@ -62,21 +61,11 @@ import rapaio.graphics.opt.GOptionTop;
 import rapaio.graphics.opt.GOptionVAlign;
 import rapaio.graphics.opt.GOptionWidths;
 import rapaio.graphics.opt.Palette;
-import rapaio.printer.opt.POptionTextWidth;
-import rapaio.printer.opt.POtpionFloatFormat;
 
 /**
  * Utility class which provides shortcuts to various named options.
  */
 public final class With {
-
-    public static POptionTextWidth textWidth(int textWidth) {
-        return new POptionTextWidth(textWidth);
-    }
-
-    public static POtpionFloatFormat floatFormat(DecimalFormat format) {
-        return new POtpionFloatFormat(format);
-    }
 
     // Graphical options
 
@@ -324,9 +313,11 @@ public final class With {
         static GOptionVAlign top() {
             return new GOptionVAlign(VALIGN_TOP);
         }
+
         static GOptionVAlign center() {
             return new GOptionVAlign(VALIGN_CENTER);
         }
+
         static GOptionVAlign bottom() {
             return new GOptionVAlign(VALIGN_BOTTOM);
         }

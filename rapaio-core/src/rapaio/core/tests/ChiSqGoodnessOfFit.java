@@ -38,7 +38,7 @@ import rapaio.data.VarDouble;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Pearson Chi Square goodness of predict test.
@@ -160,7 +160,7 @@ public class ChiSqGoodnessOfFit implements HTest {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("> ChiSqGoodnessOfFit\n");
         sb.append("\n");

@@ -31,7 +31,7 @@
 
 package rapaio.printer;
 
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.sys.WS;
 
 /**
@@ -75,7 +75,7 @@ public interface Printable {
      * @param options printing options
      * @return summary statistics text representation
      */
-    default String toSummary(Printer printer, POption<?>... options) {
+    default String toSummary(Printer printer, POpt<?>... options) {
         return toString();
     }
 
@@ -85,7 +85,7 @@ public interface Printable {
      * @param options printing options
      * @return summary statistics text representation
      */
-    default String toSummary(POption<?>... options) {
+    default String toSummary(POpt<?>... options) {
         return toSummary(WS.getPrinter(), options);
     }
 
@@ -96,7 +96,7 @@ public interface Printable {
      * @param options printing options
      * @return eventually truncated content's text representation
      */
-    default String toContent(Printer printer, POption<?>... options) {
+    default String toContent(Printer printer, POpt<?>... options) {
         return toString();
     }
 
@@ -106,7 +106,7 @@ public interface Printable {
      * @param options printing options
      * @return eventually truncated content's text representation
      */
-    default String toContent(POption<?>... options) {
+    default String toContent(POpt<?>... options) {
         return toContent(WS.getPrinter(), options);
     }
 
@@ -117,7 +117,7 @@ public interface Printable {
      * @param options printing options
      * @return full content's text representation
      */
-    default String toFullContent(Printer printer, POption<?>... options) {
+    default String toFullContent(Printer printer, POpt<?>... options) {
         return toString();
     }
 
@@ -127,7 +127,7 @@ public interface Printable {
      * @param options printing options
      * @return full content's text representation
      */
-    default String toFullContent(POption<?>... options) {
+    default String toFullContent(POpt<?>... options) {
         return toFullContent(WS.getPrinter(), options);
     }
 
@@ -153,7 +153,7 @@ public interface Printable {
      *
      * @param options printing options
      */
-    default void printSummary(POption<?>... options) {
+    default void printSummary(POpt<?>... options) {
         printSummary(WS.getPrinter(), options);
     }
 
@@ -163,7 +163,7 @@ public interface Printable {
      * @param printer printer instance
      * @param options printing options
      */
-    default void printSummary(Printer printer, POption<?>... options) {
+    default void printSummary(Printer printer, POpt<?>... options) {
         printer.printSummary(this, options);
     }
 
@@ -172,7 +172,7 @@ public interface Printable {
      *
      * @param options printing options
      */
-    default void printContent(POption<?>... options) {
+    default void printContent(POpt<?>... options) {
         printContent(WS.getPrinter(), options);
     }
 
@@ -182,7 +182,7 @@ public interface Printable {
      * @param printer printer instance
      * @param options printing options
      */
-    default void printContent(Printer printer, POption<?>... options) {
+    default void printContent(Printer printer, POpt<?>... options) {
         printer.printContent(this, options);
     }
 
@@ -191,7 +191,7 @@ public interface Printable {
      *
      * @param options printing options
      */
-    default void printFullContent(POption<?>... options) {
+    default void printFullContent(POpt<?>... options) {
         printFullContent(WS.getPrinter(), options);
     }
 
@@ -201,7 +201,7 @@ public interface Printable {
      * @param printer printer instance
      * @param options printing options
      */
-    default void printFullContent(Printer printer, POption<?>... options) {
+    default void printFullContent(Printer printer, POpt<?>... options) {
         printer.printFullContent(this, options);
     }
 }

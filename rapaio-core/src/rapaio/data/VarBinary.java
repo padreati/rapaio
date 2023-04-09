@@ -43,7 +43,7 @@ import java.util.function.Function;
 
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Numerical variable which store only 1,0 and missing values. This is a storage-optimized version of a
@@ -475,7 +475,7 @@ public final class VarBinary extends AbstractVar {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POpt<?>[] options) {
         tt.textCenter(i, j, getLabel(row));
     }
 

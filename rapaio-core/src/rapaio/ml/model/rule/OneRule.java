@@ -52,7 +52,7 @@ import rapaio.ml.model.rule.onerule.NumericRule;
 import rapaio.ml.model.rule.onerule.Rule;
 import rapaio.ml.model.rule.onerule.RuleSet;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.Pair;
 
 /**
@@ -231,7 +231,7 @@ public class OneRule extends ClassifierModel<OneRule, ClassifierResult, RunInfo<
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(fullNameSummary());
         sb.append(capabilitiesSummary());
@@ -253,12 +253,12 @@ public class OneRule extends ClassifierModel<OneRule, ClassifierResult, RunInfo<
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 

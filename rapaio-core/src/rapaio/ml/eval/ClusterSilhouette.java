@@ -45,7 +45,7 @@ import rapaio.util.param.ValueParam;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Computes cluster silhouette information based
@@ -265,7 +265,7 @@ public class ClusterSilhouette extends ParamSet<ClusterSilhouette> implements Pr
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         addHeader(sb);
         addClusterAverages(sb);
@@ -290,12 +290,12 @@ public class ClusterSilhouette extends ParamSet<ClusterSilhouette> implements Pr
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         addHeader(sb);
         addInstanceDetails(sb);

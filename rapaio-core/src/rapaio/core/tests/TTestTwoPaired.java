@@ -39,7 +39,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * t test two paired samples for mean of differences
@@ -178,7 +178,7 @@ public class TTestTwoPaired implements HTest {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
 
         return "\n"
                 + "> TTestTwoPaired\n"

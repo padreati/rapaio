@@ -37,13 +37,13 @@ import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.storage.Storage;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 public abstract class AbstractTensor<N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>>
         implements Tensor<N, S, T> {
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
 
         final int MAX_COL_VALUES = 21;
         boolean maxColHit = false;
@@ -117,19 +117,19 @@ public abstract class AbstractTensor<N extends Number, S extends Storage<N, S>, 
         if (maxColHit) {
             for (int i = 0; i < cols - 2; i++) {
                 double value = getValue(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
-                tt.floatString(row, i + 1, printer.getOptions().floatFormat().format(value));
+                tt.floatString(row, i + 1, printer.getOptions().getFloatFormat().format(value));
             }
             tt.textCenter(row, cols - 2, "...");
         } else {
             for (int i = 0; i < cols - 2; i++) {
                 double value = getValue(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
-                tt.floatString(row, i + 1, printer.getOptions().floatFormat().format(value));
+                tt.floatString(row, i + 1, printer.getOptions().getFloatFormat().format(value));
             }
         }
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         int cols = 2 + shape().dim(-1);
         int rows = shape().size() / shape().dim(-1);
 

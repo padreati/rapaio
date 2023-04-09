@@ -31,30 +31,17 @@
 
 package rapaio.printer.opt;
 
-import java.io.Serial;
-import java.text.DecimalFormat;
+import java.io.Serializable;
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/9/20.
- */
-public class POtpionFloatFormat implements POption<DecimalFormat> {
+import rapaio.util.nparam.NamedParam;
 
-    @Serial
-    private static final long serialVersionUID = -6426137730862137730L;
+public final class POpt<V> extends NamedParam<V> implements Serializable {
 
-    private final DecimalFormat format;
-
-    public POtpionFloatFormat(DecimalFormat format) {
-        this.format = format;
+    public POpt(String name, V value) {
+        super(name, value);
     }
 
-    @Override
-    public void bind(POpts opts) {
-        opts.setFloatFormat(this);
-    }
-
-    @Override
-    public DecimalFormat apply(POpts opts) {
-        return format;
+    public POpt(POpt<V> p, V value) {
+        super(p.getName(), value);
     }
 }

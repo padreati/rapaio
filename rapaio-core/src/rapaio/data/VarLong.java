@@ -45,7 +45,7 @@ import java.util.stream.Collector;
 
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Variable which stores long 64-bit integer values.
@@ -548,7 +548,7 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POpt<?>[] options) {
         tt.textRight(i, j, String.valueOf(getLong(row)));
     }
 }

@@ -55,7 +55,7 @@ import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.tree.RTree;
 import rapaio.ml.model.tree.rtree.Splitter;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.parralel.ParallelStreamCollector;
 
 /**
@@ -172,19 +172,19 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return "Model:\n"
                 + fullName() + "\n"
                 + "fitted: " + isFitted() + "\n";
     }
 
     @Override
-    public String toContent(POption<?>... options) {
+    public String toContent(POpt<?>... options) {
         return toSummary(options);
     }
 
     @Override
-    public String toFullContent(POption<?>... options) {
+    public String toFullContent(POpt<?>... options) {
         return toSummary(options);
     }
 }

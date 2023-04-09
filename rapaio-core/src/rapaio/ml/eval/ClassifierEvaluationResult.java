@@ -51,7 +51,7 @@ import rapaio.ml.eval.split.Split;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
@@ -139,13 +139,12 @@ public class ClassifierEvaluationResult implements Printable {
         }
     }
 
-    private String toContentName(Printer printer, POption<?>... options) {
+    private String toContentName(Printer printer, POpt<?>... options) {
         return "Model:\n"
                 + eval.model.get().fullName() + "\n";
     }
 
-    private String toContentCVScore(Printer printer, POption<?>... options) {
-        printer.withOptions(options);
+    private String toContentCVScore(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("CV score in training data\n");
         sb.append("=========================\n");
@@ -176,12 +175,12 @@ public class ClassifierEvaluationResult implements Printable {
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toContentName(printer, options) + toContentCVScore(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Model:\n");
         sb.append(eval.model.get().fullName()).append("\n");

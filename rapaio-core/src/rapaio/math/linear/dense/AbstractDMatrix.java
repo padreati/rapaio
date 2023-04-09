@@ -42,7 +42,7 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.sys.WS;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -763,7 +763,7 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public String toString() {
-        DecimalFormat floatFormat = WS.getPrinter().getOptions().floatFormat();
+        DecimalFormat floatFormat = WS.getPrinter().getOptions().getFloatFormat();
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getSimpleName()).append("{");
         sb.append("rowCount:").append(rows()).append(", colCount:").append(cols()).append(", values:\n");
@@ -803,14 +803,14 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
 
-        DecimalFormat floatFormat = printer.getOptions().bind(options).floatFormat();
+        DecimalFormat floatFormat = printer.getOptions().bind(options).getFloatFormat();
         int headRows = 20;
         int headCols = 20;
         int tailRows = 2;
@@ -880,9 +880,9 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
 
-        DecimalFormat floatFormat = printer.getOptions().bind(options).floatFormat();
+        DecimalFormat floatFormat = printer.getOptions().bind(options).getFloatFormat();
         TextTable tt = TextTable.empty(rows() + 1, cols() + 1, 1, 1);
         for (int i = 0; i < rows(); i++) {
             tt.intRow(i + 1, 0, i);

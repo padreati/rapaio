@@ -36,7 +36,7 @@ import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.boost.GBTRtree;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/19.
@@ -197,12 +197,12 @@ public class NestedBoostingRTree
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         return null;
     }
 
     @Override
-    public String toContent(Printer printer, POption<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         nodeContent(sb, root, 0);
         return sb.toString();
@@ -221,7 +221,7 @@ public class NestedBoostingRTree
     }
 
     @Override
-    public String toFullContent(Printer printer, POption<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return null;
     }
 

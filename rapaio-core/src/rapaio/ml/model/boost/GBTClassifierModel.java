@@ -54,7 +54,7 @@ import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.tree.RTree;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
@@ -240,7 +240,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
         if (hasLearned()) {
@@ -250,12 +250,12 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
     }
 
     @Override
-    public String toContent(POption<?>... options) {
+    public String toContent(POpt<?>... options) {
         return toSummary();
     }
 
     @Override
-    public String toFullContent(POption<?>... options) {
+    public String toFullContent(POpt<?>... options) {
         return toSummary();
     }
 }

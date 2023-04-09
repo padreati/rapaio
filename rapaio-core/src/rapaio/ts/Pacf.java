@@ -37,7 +37,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Partial auto correlation function
@@ -96,7 +96,7 @@ public class Pacf extends Correlation {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Pacf summary\n");
         sb.append("===========\n");

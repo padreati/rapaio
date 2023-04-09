@@ -54,7 +54,7 @@ import rapaio.util.param.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 import rapaio.util.function.SConsumer;
 import rapaio.util.function.SFunction;
 
@@ -376,7 +376,7 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
                 + capabilities().toString() + "\n";
     }
 
-    public String inputVarsSummary(Printer printer, POption<?>... options) {
+    public String inputVarsSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("input vars: \n");
 

@@ -49,7 +49,7 @@ import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
@@ -145,7 +145,7 @@ public class LinearRegressionResult extends RegressionResult {
     }
 
     @Override
-    public String toSummary(Printer printer, POption<?>... options) {
+    public String toSummary(Printer printer, POpt<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(lm.headerSummary());
         sb.append("\n");
@@ -218,7 +218,7 @@ public class LinearRegressionResult extends RegressionResult {
         return sb.toString();
     }
 
-    private String getHorizontalSummary5(Var var, Printer printer, POption<?>... options) {
+    private String getHorizontalSummary5(Var var, Printer printer, POpt<?>... options) {
         TextTable tt1 = TextTable.empty(2, 5, 1, 0);
 
         String[] headers1 = new String[]{"Min", "1Q", "Median", "3Q", "Max"};
