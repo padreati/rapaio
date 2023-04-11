@@ -23,7 +23,7 @@ package rapaio.experiment.core.test;
 
 import static rapaio.graphics.Plotter.points;
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.With.*;
+import static rapaio.graphics.opt.GOptions.*;
 
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;

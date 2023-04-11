@@ -31,6 +31,9 @@
 
 package rapaio.graphics.plot.artist;
 
+import static rapaio.graphics.opt.GOptions.color;
+import static rapaio.graphics.opt.GOptions.palette;
+
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Composite;
@@ -39,12 +42,11 @@ import java.awt.geom.Path2D;
 import java.io.Serial;
 
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionPalette;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.math.linear.DMatrix;
-import rapaio.sys.With;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/19.
@@ -57,9 +59,9 @@ public class Matrix extends Artist {
 
     public Matrix(DMatrix m, GOption<?>... opts) {
         this.m = m;
-        this.options.setColor(With.color(-1));
-        this.options.setPalette(new GOptionPalette(Palette.hue(0, 240, m.min(0).min(), m.max(0).max())));
-        this.options.bind(opts);
+        this.options = new GOptions()
+                .apply(color(-1), palette(Palette.hue(0, 240, m.min(0).min(), m.max(0).max())))
+                .apply(opts);
     }
 
     @Override

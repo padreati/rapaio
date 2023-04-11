@@ -33,15 +33,16 @@ package rapaio.printer.opt;
 
 import java.io.Serializable;
 
+import rapaio.util.function.SFunction;
 import rapaio.util.nparam.NamedParam;
 
-public final class POpt<V> extends NamedParam<V> implements Serializable {
+public final class POpt<V> extends NamedParam<POpts, V> implements Serializable {
 
-    public POpt(String name, V value) {
-        super(name, value);
+    public POpt(String name, SFunction<POpts, V> fun) {
+        super(name, fun);
     }
 
-    public POpt(POpt<V> p, V value) {
-        super(p.getName(), value);
+    public POpt(POpt<V> p, SFunction<POpts, V> fun) {
+        super(p.getName(), fun);
     }
 }

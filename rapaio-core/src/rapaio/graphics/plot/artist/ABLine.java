@@ -31,7 +31,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.sys.With.*;
+import static rapaio.graphics.opt.GOptions.color;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -42,6 +42,7 @@ import java.io.Serial;
 
 import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -74,8 +75,7 @@ public class ABLine extends Artist {
         this.b = a;
         this.h = horiz;
         this.v = !horiz;
-        this.options.setColor(color(Color.LIGHT_GRAY));
-        this.options.bind(opts);
+        this.options = new GOptions().apply(color(Color.LIGHT_GRAY)).apply(opts);
     }
 
     public ABLine(double a, double b, GOption<?>... opts) {
@@ -83,8 +83,7 @@ public class ABLine extends Artist {
         this.b = b;
         this.h = false;
         this.v = false;
-        this.options.setColor(color(Color.LIGHT_GRAY));
-        this.options.bind(opts);
+        this.options = new GOptions().apply(color(Color.LIGHT_GRAY)).apply(opts);
     }
 
     @Override

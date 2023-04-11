@@ -21,6 +21,9 @@
 
 package algebra.rapaio;
 
+import static rapaio.graphics.opt.GOptions.color;
+import static rapaio.graphics.opt.GOptions.labels;
+
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +56,6 @@ import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.sys.WS;
-import rapaio.sys.With;
 
 @BenchmarkMode( {Mode.AverageTime})
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -145,10 +147,10 @@ public class DVectorAddVectorToVectorBenchmark {
             Frame sel = df.stream().filter(s -> s.getLabel("Benchmark").equals(benchmark))
                     .toMappedFrame();
             sel = sel.fapply(RefSort.by(sel.rvar("Score").refComparator()));
-            plot.lines(/*sel.rvar("Param: n"),*/ sel.rvar("Score").dv().applyNew(Math::log1p).dv(), With.color(i));
+            plot.lines(/*sel.rvar("Param: n"),*/ sel.rvar("Score").dv().applyNew(Math::log1p).dv(), color(i));
             i++;
         }
-        plot.legend(Legend.UP_LEFT, With.labels(df.rvar("Benchmark").levels().stream().skip(1).toArray(String[]::new)));
+        plot.legend(Legend.UP_LEFT, labels(df.rvar("Benchmark").levels().stream().skip(1).toArray(String[]::new)));
 
         WS.draw(plot);
     }

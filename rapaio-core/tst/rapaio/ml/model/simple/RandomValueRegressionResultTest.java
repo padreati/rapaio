@@ -39,8 +39,7 @@ import rapaio.datasets.Datasets;
  */
 public class RandomValueRegressionResultTest {
 
-    private final String father = "Father";
-    private final String son = "Son";
+    private static final String father = "Father";
     private Frame df;
     private Random random;
 
@@ -55,7 +54,9 @@ public class RandomValueRegressionResultTest {
         var fit1 = RandomValueRegression.newRVR()
                 .seed.set(42L)
                 .fit(df, father).predict(df);
-        var fit2 = RandomValueRegression.from(Normal.of(10, 0.1)).fit(df, father).predict(df);
+        var fit2 = RandomValueRegression.from(Normal.of(10, 0.1))
+                .seed.set(42L)
+                .fit(df, father).predict(df);
 
         // unsignificant if test on true distribution
         assertTrue(KSTestOneSample.from(fit1.firstPrediction(), Uniform.of(0, 1)).pValue() > 0.01);

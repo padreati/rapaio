@@ -22,8 +22,8 @@
 package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.With.points;
-import static rapaio.sys.With.*;
+import static rapaio.graphics.opt.GOptions.color;
+import static rapaio.graphics.opt.GOptions.points;
 
 import java.awt.Color;
 import java.io.IOException;

@@ -46,27 +46,27 @@ public class POpts extends NamedParamSet<POpts, POpt<?>> implements Serializable
 
     // parameter declarations with default values
 
-    private static final POpt<Integer> pTextWidth = new POpt<>("textWidth", 120);
-    private static final POpt<DecimalFormat> pFloatFormat = new POpt<>("floatFormat", Format.floatFlexLong());
-    private static final POpt<Integer> pGraphicWidth = new POpt<>("graphicWidth", 1200);
-    private static final POpt<Integer> pGraphicHeight = new POpt<>("graphicHeight", 600);
+    private static final POpt<Integer> pTextWidth = new POpt<>("textWidth", __ -> 120);
+    private static final POpt<DecimalFormat> pFloatFormat = new POpt<>("floatFormat", __ -> Format.floatFlexLong());
+    private static final POpt<Integer> pGraphicWidth = new POpt<>("graphicWidth", __ -> 1200);
+    private static final POpt<Integer> pGraphicHeight = new POpt<>("graphicHeight", __ -> 600);
 
     // named parameters methods
 
     public static POpt<Integer> textWidth(int textWidth) {
-        return new POpt<>(pTextWidth, textWidth);
+        return new POpt<>(pTextWidth, __ -> textWidth);
     }
 
     public static POpt<DecimalFormat> floatFormat(DecimalFormat format) {
-        return new POpt<>(pFloatFormat, format);
+        return new POpt<>(pFloatFormat, __ -> format);
     }
 
     public static POpt<Integer> graphicWidth(int width) {
-        return new POpt<>(pGraphicWidth, width);
+        return new POpt<>(pGraphicWidth, __ -> width);
     }
 
     public static POpt<Integer> graphicHeight(int height) {
-        return new POpt<>(pGraphicHeight, height);
+        return new POpt<>(pGraphicHeight, __ -> height);
     }
 
     // constructor

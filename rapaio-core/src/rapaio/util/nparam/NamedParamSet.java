@@ -38,11 +38,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
-public abstract class NamedParamSet<S extends NamedParamSet<S, P>, P extends NamedParam<?>> {
+public abstract class NamedParamSet<S extends NamedParamSet<S, P>, P extends NamedParam<S, ?>> {
 
     protected final Map<String, P> defaults;
     protected final Map<String, P> params = new HashMap<>();
-    protected final S parent;
+    protected S parent;
 
     protected NamedParamSet(S parent) {
         this.parent = parent;
@@ -54,6 +54,17 @@ public abstract class NamedParamSet<S extends NamedParamSet<S, P>, P extends Nam
         }
     }
 
+    public void setParent(S parent) {
+        this.parent = parent;
+    }
+
+    public final S apply(P... parameters) {
+        for (var p : parameters) {
+            params.put(p.getName(), p);
+        }
+        return (S) this;
+    }
+
     private void register(Class<?> clazz) {
         Field[] fields = clazz.getDeclaredFields();
         for (var field : fields) {
@@ -62,7 +73,11 @@ public abstract class NamedParamSet<S extends NamedParamSet<S, P>, P extends Nam
             }
             try {
                 field.setAccessible(true);
-                P np = (P) field.get(null);
+                Object fieldValue = field.get(null);
+                if(!(fieldValue instanceof NamedParam)) {
+                    continue;
+                }
+                P np = (P) fieldValue;
                 if (defaults.containsKey(np.getName())) {
                     throw new IllegalArgumentException("Duplicate keys in named values.");
                 }
@@ -74,20 +89,18 @@ public abstract class NamedParamSet<S extends NamedParamSet<S, P>, P extends Nam
     }
 
     protected Object getParamValue(P p) {
-        if (params.containsKey(p.getName())) {
-            return params.get(p.getName()).getValue();
+        S root = (S) this;
+        S ref = (S) this;
+        while(true) {
+            if (ref.params.containsKey(p.getName())) {
+                return ref.params.get(p.getName()).getValue(root);
+            }
+            if (ref.parent != null) {
+                ref = ref.parent;
+                continue;
+            }
+            return ref.defaults.get(p.getName()).getValue(root);
         }
-        if (parent != null) {
-            return parent.getParamValue(p);
-        }
-        return defaults.get(p.getName()).getValue();
-    }
-
-    protected final S apply(P... parameters) {
-        for (var p : parameters) {
-            params.put(p.getName(), p);
-        }
-        return (S) this;
     }
 
     private S getRoot() {

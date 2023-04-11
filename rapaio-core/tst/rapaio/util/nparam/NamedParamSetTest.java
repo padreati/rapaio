@@ -31,11 +31,16 @@
 
 package rapaio.util.nparam;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
+
+import rapaio.util.function.SFunction;
 
 public class NamedParamSetTest {
 
@@ -43,27 +48,51 @@ public class NamedParamSetTest {
     void testNamed() {
 
         GOpts set = new GOpts(null);
-        assertEquals("GOpts{colour:java.awt.Color[r=0,g=0,b=0],age:10}", set.toString());
+        assertEquals(true, set.getVerbose());
+        assertEquals(Color.GREEN, set.getColor());
+        assertEquals("0.10000000", set.getFloatFormat().format(0.1));
+        assertArrayEquals(new Color[] {Color.GREEN}, set.getRepeatColors());
 
-        set = set.bind(GOpts.color(Color.BLUE));
-        assertEquals("GOpts{colour:java.awt.Color[r=0,g=0,b=255],age:10}", set.toString());
+        set = set.bind(GOpts.color(Color.BLUE), GOpts.repeatColors(2));
+        assertEquals(true, set.getVerbose());
+        assertEquals(Color.BLUE, set.getColor());
+        assertEquals("0.10000000", set.getFloatFormat().format(0.1));
+        assertArrayEquals(new Color[] {Color.BLUE, Color.BLUE}, set.getRepeatColors());
 
-        GOpts set2 = set.bind(GOpts.size(20));
-        assertEquals("GOpts{colour:java.awt.Color[r=0,g=0,b=255],age:20}", set2.toString());
+        set = set.bind(GOpts.verbose(false));
+        assertEquals(false, set.getVerbose());
+        assertEquals(Color.BLUE, set.getColor());
+        assertEquals("0.10", set.getFloatFormat().format(0.1));
+        assertArrayEquals(new Color[] {Color.BLUE, Color.BLUE}, set.getRepeatColors());
     }
 }
 
 final class GOpts extends NamedParamSet<GOpts, GOpt<?>> {
 
-    private static final GOpt<Color> pColor = new GOpt<>("colour", Color.BLACK);
-    private static final GOpt<Integer> pSize = new GOpt<>("age", 10);
+    // named parameters definitions with default values
 
-    public static GOpt<Color> color(Color c) {
-        return new GOpt<>(pColor, c);
+    private static final GOpt<Boolean> _verbose = new GOpt<>("verbose", __ -> true);
+    private static final GOpt<Color> _color = new GOpt<>("colour", __ -> Color.GREEN);
+    private static final GOpt<DecimalFormat> _floatFormat = new GOpt<>("floatFormat",
+            s -> s.getVerbose() ? new DecimalFormat("0.00000000") : new DecimalFormat("0.00"));
+    private static final GOpt<Color[]> _repeatColors = new GOpt<>("repeatColors", __ -> new Color[] {Color.GREEN});
+
+    // named parameter static builders
+
+    public static GOpt<Boolean> verbose(boolean verbose) {
+        return new GOpt<>(_verbose, __ -> verbose);
     }
 
-    public static GOpt<Integer> size(int size) {
-        return new GOpt<>(pSize, size);
+    public static GOpt<Color> color(Color c) {
+        return new GOpt<>(_color, __ -> c);
+    }
+
+    public static GOpt<Color[]> repeatColors(int len) {
+        return new GOpt<>(_repeatColors, s -> {
+            Color[] array = new Color[len];
+            Arrays.fill(array, s.getColor());
+            return array;
+        });
     }
 
     public GOpts(GOpts parent) {
@@ -74,22 +103,32 @@ final class GOpts extends NamedParamSet<GOpts, GOpt<?>> {
         return new GOpts(this).apply(parameters);
     }
 
-    public Color getColor() {
-        return (Color) getParamValue(pColor);
+    // getters for parameter values
+
+    public Boolean getVerbose() {
+        return (Boolean) getParamValue(_verbose);
     }
 
-    public Integer getSize() {
-        return (Integer) getParamValue(pSize);
+    public Color getColor() {
+        return (Color) getParamValue(_color);
+    }
+
+    public DecimalFormat getFloatFormat() {
+        return (DecimalFormat) getParamValue(_floatFormat);
+    }
+
+    public Color[] getRepeatColors() {
+        return (Color[]) getParamValue(_repeatColors);
     }
 }
 
-final class GOpt<V> extends NamedParam<V> {
+final class GOpt<V> extends NamedParam<GOpts, V> {
 
-    public GOpt(String name, V value) {
-        super(name, value);
+    public GOpt(String name, SFunction<GOpts, V> fun) {
+        super(name, fun);
     }
 
-    public GOpt(GOpt<V> p, V value) {
-        super(p.getName(), value);
+    public GOpt(GOpt<V> p, SFunction<GOpts, V> fun) {
+        super(p.getName(), fun);
     }
 }

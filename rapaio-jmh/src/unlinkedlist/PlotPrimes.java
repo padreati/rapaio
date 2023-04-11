@@ -32,7 +32,7 @@
 package unlinkedlist;
 
 import static rapaio.graphics.Plotter.points;
-import static rapaio.sys.With.*;
+import static rapaio.graphics.opt.GOptions.*;
 
 import java.util.Arrays;
 import java.util.LinkedList;

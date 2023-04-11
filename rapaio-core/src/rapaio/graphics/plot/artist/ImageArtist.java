@@ -31,7 +31,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.sys.With.*;
+import static rapaio.graphics.opt.GOptions.position;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
@@ -39,6 +39,7 @@ import java.awt.image.BufferedImage;
 import java.io.Serial;
 
 import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -55,8 +56,8 @@ public class ImageArtist extends Artist {
 
     public ImageArtist(BufferedImage image, GOption<?>... opts) {
         this.image = image;
-        this.options.bind(position(0, image.getHeight(), image.getWidth(), image.getHeight()));
-        this.options.bind(opts);
+        options = new GOptions().apply(position(0, image.getHeight(), image.getWidth(), image.getHeight()))
+                .apply(opts);
     }
 
     @Override

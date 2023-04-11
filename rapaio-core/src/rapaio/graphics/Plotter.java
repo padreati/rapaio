@@ -31,6 +31,8 @@
 
 package rapaio.graphics;
 
+import static rapaio.graphics.opt.GOptions.bins;
+
 import java.awt.image.BufferedImage;
 
 import rapaio.core.distributions.Distribution;
@@ -64,7 +66,6 @@ import rapaio.graphics.plot.artist.Text;
 import rapaio.math.linear.DMatrix;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
-import rapaio.sys.With;
 import rapaio.util.function.Double2DoubleFunction;
 
 public final class Plotter {
@@ -226,7 +227,7 @@ public final class Plotter {
         for (int i = 0; i < df.varCount(); i++) {
             for (int j = 0; j < df.varCount(); j++) {
                 if (i == j) {
-                    grid.add(hist(df.rvar(i), With.bins(40)).title(df.rvar(i).name())
+                    grid.add(hist(df.rvar(i), bins(40)).title(df.rvar(i).name())
                             .leftMarkers(true).leftThick(true)
                             .bottomMarkers(true).bottomThick(true)
                             .yLab(null).xLab(null)

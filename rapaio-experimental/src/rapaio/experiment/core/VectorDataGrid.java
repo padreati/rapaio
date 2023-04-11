@@ -21,7 +21,7 @@
 
 package rapaio.experiment.core;
 
-import static rapaio.sys.With.*;
+import static rapaio.graphics.opt.GOptions.*;
 
 import java.util.function.BiFunction;
 

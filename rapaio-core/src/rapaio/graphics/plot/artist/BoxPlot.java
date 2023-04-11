@@ -35,7 +35,10 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
-import static rapaio.sys.With.*;
+import static rapaio.data.VarInt.wrap;
+import static rapaio.graphics.opt.GOptions.color;
+import static rapaio.graphics.opt.GOptions.fill;
+import static rapaio.graphics.opt.GOptions.pch;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -52,11 +55,9 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
 import rapaio.data.stream.VSpot;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionFill;
-import rapaio.graphics.opt.GOptionPch;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.PchPalette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -76,7 +77,7 @@ public class BoxPlot extends Artist {
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.getLabel(s.row()), mapping(VSpot::getDouble, toList())));
         names = factor.levels().stream().filter(map::containsKey).toArray(String[]::new);
         vars = Arrays.stream(names).map(map::get).map(VarDouble::copy).toArray(Var[]::new);
-        this.options.bind(opts);
+        this.options = new GOptions().apply(opts);
     }
 
     public BoxPlot(Var x, GOption<?>... opts) {
@@ -87,20 +88,14 @@ public class BoxPlot extends Artist {
         this.vars = Arrays.copyOf(vars, vars.length);
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
-        options.setPch(new GOptionPch(VarInt.wrap(0, 3)));
-        options.setColor(color(0));
-        options.setFill(new GOptionFill(new Color(240, 240, 240)));
-        this.options.bind(opts);
+        this.options = new GOptions().apply(pch(wrap(0, 3)), color(0), fill(new Color(240, 240, 240))).apply(opts);
     }
 
     public BoxPlot(Frame df, GOption<?>... opts) {
         this.vars = df.varStream().filter(var -> var.stream().complete().findAny().isPresent()).toArray(Var[]::new);
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
-        options.setPch(new GOptionPch(VarInt.wrap(0, 3)));
-        options.setColor(color(0));
-        options.setFill(new GOptionFill(new Color(240, 240, 240)));
-        this.options.bind(opts);
+        this.options = new GOptions().apply(pch(wrap(0, 3)), color(0), fill(new Color(240, 240, 240))).apply(opts);
     }
 
     @Override

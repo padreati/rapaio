@@ -21,6 +21,9 @@
 
 package algebra.rapaio;
 
+import static rapaio.graphics.opt.GOptions.color;
+import static rapaio.graphics.opt.GOptions.labels;
+
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -52,7 +55,6 @@ import rapaio.math.linear.base.DMatrixBase;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.sys.WS;
-import rapaio.sys.With;
 
 @BenchmarkMode( {Mode.AverageTime})
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -124,10 +126,10 @@ public class DMatrixDVectorDotBenchmark {
             Frame sel = df.stream().filter(s -> s.getLabel("Benchmark").equals(benchmark))
                     .toMappedFrame();
             sel = sel.fapply(RefSort.by(sel.rvar("Score").refComparator()));
-            plot.lines(sel.rvar("Param: n"), sel.rvar("Score"), With.color(i));
+            plot.lines(sel.rvar("Param: n"), sel.rvar("Score"), color(i));
             i++;
         }
-        plot.legend(Legend.UP_LEFT, With.labels(df.rvar("Benchmark").levels().stream().skip(1).toArray(String[]::new)));
+        plot.legend(Legend.UP_LEFT, labels(df.rvar("Benchmark").levels().stream().skip(1).toArray(String[]::new)));
         WS.draw(plot);
     }
 }

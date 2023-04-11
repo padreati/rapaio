@@ -31,397 +31,434 @@
 
 package rapaio.graphics.opt;
 
-import static rapaio.sys.With.*;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.Arrays;
 
+import rapaio.core.tools.Grid2D;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
+import rapaio.util.function.SFunction;
+import rapaio.util.nparam.NamedParamSet;
 
-/**
- * Graphical aspect options.
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/31/15.
- */
-public class GOptions implements Serializable {
+public class GOptions extends NamedParamSet<GOptions, GOption<?>> {
 
-    @Serial
-    private static final long serialVersionUID = -8407683729055712796L;
+    public static final int HALIGN_LEFT = -1;
+    public static final int HALIGN_CENTER = 0;
+    public static final int HALIGN_RIGHT = 1;
 
-    private static final GOptions defaults;
+    public static final int PCH_CIRCLE_WIRE = 0;
+    public static final int PCH_CIRCLE_FILL = 1;
+    public static final int PCH_CIRCLE_FULL = 2;
+    public static final int PCH_CROSS_WIRE = 3;
+    public static final int PCH_TRIANGLE_WIRE = 4;
+    public static final int PCH_TRIANGLE_FILL = 5;
+    public static final int PCH_TRIANGLE_FULL = 6;
+    public static final int PCH_SQUARE_WIRE = 7;
+    public static final int PCH_SQUARE_FILL = 8;
+    public static final int PCH_SQUARE_FULL = 9;
 
-    static {
-        defaults = new GOptions();
-        defaults.palette = new GOptionPalette(Palette.tableau21());
-        defaults.color = new GOptionColor(Color.BLACK);
-        defaults.fill = new GOptionFill(-1);
-        defaults.lwd = new GOptionLwd(1.0f);
-        defaults.sz = new GOptionSz(VarDouble.scalar(3));
-        defaults.pch = new GOptionPch(VarInt.scalar(0));
-        defaults.alpha = new GOptionAlpha(1.0f);
-        defaults.bins = new GOptionBins(-1);
-        defaults.prob = new GOptionProb(false);
-        defaults.stacked = new GOptionStacked(false);
-        defaults.points = new GOptionPoints(256);
-        defaults.top = new GOptionTop(Integer.MAX_VALUE);
-        defaults.sort = new GOptionSort(0);
-        defaults.horizontal = new GOptionHorizontal(false);
-        defaults.widths = new GOptionWidths(new double[] {-1});
-        defaults.heights = new GOptionHeights(new double[] {-1});
-        defaults.labels = new GOptionLabels(new String[] {""});
-        defaults.hAlign = new GOptionHAlign(HALIGN_LEFT);
-        defaults.vAlign = new GOptionVAlign(VALIGN_TOP);
-        defaults.font = new GOptionFont(new Font("DejaVu Sans", Font.PLAIN, 20));
-        defaults.position = new GOptionPosition(new Rectangle2D.Double(0, 0, 1, 1));
+    public static final int SORT_DESC = -1;
+    public static final int SORT_NONE = 0;
+    public static final int SORT_ASC = 1;
+
+    public static final int VALIGN_TOP = -1;
+    public static final int VALIGN_CENTER = 0;
+    public static final int VALIGN_BOTTOM = 1;
+
+
+    private static final GOption<Palette> _palette = new GOption<>("palette", __ -> Palette.tableau21());
+    private static final GOption<Color[]> _color = new GOption<>("color", __ -> new Color[] {Color.BLACK});
+    private static final GOption<Color[]> _fill = new GOption<>("fill", __ -> null);
+    private static final GOption<Float> _lwd = new GOption<>("lwd", __ -> 1.0f);
+    private static final GOption<Var> _sz = new GOption<>("sz", __ -> VarDouble.scalar(3));
+    private static final GOption<VarInt> _pch = new GOption<>("pch", __ -> VarInt.scalar(0));
+    private static final GOption<Float> _alpha = new GOption<>("alpha", __ -> 1.0f);
+    private static final GOption<Integer> _bins = new GOption<>("bins", __ -> 30);
+    private static final GOption<Boolean> _prob = new GOption<>("prob", __ -> false);
+    private static final GOption<Boolean> _stacked = new GOption<>("stacked", __ -> false);
+    private static final GOption<Integer> _points = new GOption<>("points", __ -> 256);
+    private static final GOption<Integer> _top = new GOption<>("top", __ -> Integer.MAX_VALUE);
+    private static final GOption<Integer> _sort = new GOption<>("sort", __ -> 0);
+    private static final GOption<Boolean> _horizontal = new GOption<>("horizontal", __ -> false);
+    private static final GOption<Sizes> _widths = new GOption<>("widths", __ -> new Sizes(false, new double[] {-1}, null));
+    private static final GOption<Sizes> _heights = new GOption<>("heights", __ -> new Sizes(false, new double[] {-1}, null));
+    private static final GOption<String[]> _labels = new GOption<>("labels", __ -> new String[] {""});
+    private static final GOption<Integer> _hAlign = new GOption<>("hAling", __ -> HALIGN_LEFT);
+    private static final GOption<Integer> _vAlign = new GOption<>("vAlign", __ -> VALIGN_TOP);
+    private static final GOption<Font> _font = new GOption<>("font", __ -> new Font("DejaVu Sans", Font.PLAIN, 20));
+    private static final GOption<Rectangle2D> _position = new GOption<>("position", __ -> new Rectangle2D.Double(0, 0, 1, 1));
+
+    // getters
+
+    public interface palette {
+        static GOption<Palette> hue() {
+            return new GOption<>(_palette, s -> Palette.hue());
+        }
+
+        static GOption<Palette> hue(double start, double end) {
+            return new GOption<>(_palette, s -> Palette.hue(start, end));
+        }
+
+        static GOption<Palette> hue(double start, double end, double rangeFrom, double rangeTo) {
+            return new GOption<>(_palette, s -> Palette.hue(start, end, rangeFrom, rangeTo));
+        }
+
+        static GOption<Palette> hue(double start, double end, Grid2D gridData) {
+            return new GOption<>(_palette, s -> Palette.hue(start, end, gridData.minValue(), gridData.maxValue()));
+        }
     }
 
-    private GOptions parent;
-
-    private GOptionPalette palette;
-    private GOptionColor color;
-    private GOptionFill fill;
-    private GOptionLwd lwd;
-    private GOptionSz sz;
-    private GOptionPch pch;
-    private GOptionAlpha alpha;
-    private GOptionBins bins;
-    private GOptionProb prob;
-    private GOptionStacked stacked;
-    private GOptionPoints points;
-    private GOptionTop top;
-    private GOptionSort sort;
-    private GOptionHorizontal horizontal;
-    private GOptionWidths widths;
-    private GOptionHeights heights;
-    private GOptionLabels labels;
-    private GOptionHAlign hAlign;
-    private GOptionVAlign vAlign;
-    private GOptionFont font;
-    private GOptionPosition position;
-
-    public GOptions bind(GOption<?>... options) {
-        Arrays.stream(options).forEach(o -> o.bind(this));
-        return this;
+    public static GOption<Palette> palette(Palette colorPalette) {
+        return new GOption<>(_palette, s -> colorPalette);
     }
 
-    public GOption<?>[] toArray() {
-        return new GOption[] {
-                palette,
-                color,
-                fill,
-                lwd,
-                sz,
-                pch,
-                alpha,
-                bins,
-                prob,
-                stacked,
-                points,
-                top,
-                sort,
-                horizontal,
-                widths,
-                heights,
-                labels,
-                hAlign,
-                vAlign,
-                font,
-                position
-        };
+    public static GOption<Color[]> color(int... index) {
+        SFunction<GOptions, Color[]> fun = (index.length == 1 && index[0] == -1)
+                ? s -> null
+                : s -> Arrays.stream(index).boxed().map(i -> s.getPalette().getColor(i)).toArray(Color[]::new);
+        return new GOption<>(_color, fun);
+    }
+
+    public static GOption<Color[]> color(Color... colors) {
+        return new GOption<>(_color, s -> colors);
+    }
+
+    public static GOption<Color[]> color(Var color) {
+        return new GOption<>(_color, s -> {
+            Color[] colors = new Color[color.size()];
+            for (int i = 0; i < colors.length; i++) {
+                colors[i] = s.getPalette().getColor(color.getDouble(i));
+            }
+            return colors;
+        });
+    }
+
+    public static GOption<Color[]> fill(int... index) {
+        SFunction<GOptions, Color[]> fun = (index.length == 1 && index[0] == -1)
+                ? s -> null
+                : s -> Arrays.stream(index).boxed().map(i -> s.getPalette().getColor(i)).toArray(Color[]::new);
+        return new GOption<>(_fill, fun);
+    }
+
+    public static GOption<Color[]> fill(Color... colors) {
+        return new GOption<>(_fill, s -> colors);
+    }
+
+    public static GOption<Color[]> fill(Var color) {
+        return new GOption<>(_fill, s -> {
+            Color[] colors = new Color[color.size()];
+            for (int i = 0; i < colors.length; i++) {
+                colors[i] = s.getPalette().getColor(color.getDouble(i));
+            }
+            return colors;
+        });
+    }
+
+    public static GOption<Float> lwd(float lwd) {
+        return new GOption<>(_lwd, __ -> lwd);
+    }
+
+    public static GOption<Var> sz(Var sizeIndex) {
+        return sz(sizeIndex, 1);
+    }
+
+    public static GOption<Var> sz(Var sizeIndex, double factor) {
+        return sz(sizeIndex, factor, 0);
+    }
+
+    public static GOption<Var> sz(Var sizeIndex, double factor, double offset) {
+        return new GOption<>(_sz,
+                __ -> sizeIndex.stream().mapToDouble().map(x -> x * factor + offset).boxed().collect(VarDouble.collector()));
+    }
+
+    public static GOption<Var> sz(double size) {
+        return new GOption<>(_sz, __ -> VarDouble.scalar(size));
+    }
+
+    public static GOption<VarInt> pch(Var pchIndex, int... mapping) {
+        return new GOption<>(_pch, __ -> VarInt.from(pchIndex.size(), row -> {
+            int i = pchIndex.getInt(row);
+            if (i >= 0 && i < mapping.length) {
+                return mapping[i];
+            }
+            return mapping != null && mapping.length>0 ? mapping[0] : i;
+        }));
+    }
+
+    public interface pch {
+        static GOption<VarInt> circleWire() {
+            return new GOption<>(_pch, __ -> VarInt.scalar(PCH_CIRCLE_WIRE));
+        }
+
+        static GOption<VarInt> circleFill() {
+            return new GOption<>(_pch, __ -> VarInt.scalar(PCH_CIRCLE_FILL));
+        }
+
+        static GOption<VarInt> circleFull() {
+            return new GOption<>(_pch, __ -> VarInt.scalar(PCH_CIRCLE_FULL));
+        }
+
+        static GOption<VarInt> crossWire() {
+            return new GOption<>(_pch, __ -> VarInt.scalar(PCH_CROSS_WIRE));
+        }
+
+        static GOption<VarInt> triangleWire() {
+            return new GOption<>(_pch, __ -> VarInt.scalar(PCH_TRIANGLE_WIRE));
+        }
+
+        static GOption<VarInt> triangleFill() {
+            return new GOption<>(_pch, __ -> VarInt.scalar(PCH_TRIANGLE_FILL));
+        }
+
+        static GOption<VarInt> triangleFull() {
+            return new GOption<>(_pch, __ -> VarInt.scalar(PCH_TRIANGLE_FULL));
+        }
+
+        static GOption<VarInt> squareWire() {
+            return new GOption<>(_pch, __ -> VarInt.scalar(PCH_SQUARE_WIRE));
+        }
+
+        static GOption<VarInt> squareFill() {
+            return new GOption<>(_pch, __ -> VarInt.scalar(PCH_SQUARE_FILL));
+        }
+
+        static GOption<VarInt> squareFull() {
+            return new GOption<>(_pch, __ -> VarInt.scalar(PCH_SQUARE_FULL));
+        }
+    }
+
+    public static GOption<VarInt> pch(int pch) {
+        return new GOption<>(_pch, __ -> VarInt.scalar(pch));
+    }
+
+    public static GOption<Float> alpha(float alpha) {
+        return new GOption<>(_alpha, __ -> alpha);
+    }
+
+    public static GOption<Integer> bins(int bins) {
+        return new GOption<>(_bins, __ -> bins);
+    }
+
+    public static GOption<Boolean> prob(boolean prob) {
+        return new GOption<>(_prob, __ -> prob);
+    }
+
+    public static GOption<Boolean> stacked(boolean stacked) {
+        return new GOption<>(_stacked, __ -> stacked);
+    }
+
+    public static GOption<Integer> points(int points) {
+        return new GOption<>(_points, __ -> points);
+    }
+
+    public static GOption<Integer> top(int top) {
+        return new GOption<>(_top, __ -> top);
+    }
+
+    public static GOption<Integer> sort(int sort) {
+        return new GOption<>(_sort, __ -> sort);
+    }
+
+    public interface sort {
+        static GOption<Integer> asc() {
+            return new GOption<>(_sort, __ -> SORT_ASC);
+        }
+
+        static GOption<Integer> none() {
+            return new GOption<>(_sort, __ -> SORT_NONE);
+        }
+
+        static GOption<Integer> desc() {
+            return new GOption<>(_sort, __ -> SORT_DESC);
+        }
+    }
+
+    public static GOption<Boolean> horizontal(boolean horizontal) {
+        return new GOption<>(_horizontal, __ -> horizontal);
+    }
+
+    public static GOption<String[]> labels(String... labels) {
+        return new GOption<>(_labels, __ -> labels);
+    }
+
+    public static GOption<Sizes> widths(double... relativeSizes) {
+        return new GOption<>(_widths, __ -> new Sizes(false, relativeSizes, null));
+    }
+
+    public static GOption<Sizes> widths(int... absoluteSizes) {
+        return new GOption<>(_widths, __ -> new Sizes(true, null, absoluteSizes));
+    }
+
+    public static GOption<Sizes> heights(double... relativeSizes) {
+        return new GOption<>(_heights, __ -> new Sizes(false, relativeSizes, null));
+    }
+
+    public static GOption<Sizes> heights(int... absoluteSizes) {
+        return new GOption<>(_heights, __ -> new Sizes(true, null, absoluteSizes));
+    }
+
+    public static GOption<Integer> halign(int hAlign) {
+        return new GOption<>(_hAlign, __ -> hAlign);
+    }
+
+    public interface halign {
+        static GOption<Integer> left() {
+            return new GOption<>(_hAlign, __ -> HALIGN_LEFT);
+        }
+
+        static GOption<Integer> center() {
+            return new GOption<>(_hAlign, __ -> HALIGN_CENTER);
+        }
+
+        static GOption<Integer> right() {
+            return new GOption<>(_hAlign, __ -> HALIGN_RIGHT);
+        }
+    }
+
+    public static GOption<Integer> valign(int vAlign) {
+        return new GOption<>(_vAlign, __ -> vAlign);
+    }
+
+    public interface valign {
+        static GOption<Integer> top() {
+            return new GOption<>(_vAlign, __ -> VALIGN_TOP);
+        }
+
+        static GOption<Integer> center() {
+            return new GOption<>(_vAlign, __ -> VALIGN_CENTER);
+        }
+
+        static GOption<Integer> bottom() {
+            return new GOption<>(_vAlign, __ -> VALIGN_BOTTOM);
+        }
+    }
+
+    public static GOption<Font> font(Font font) {
+        return new GOption<>(_font, __ -> font);
+    }
+
+    public static GOption<Font> font(String fontName) {
+        return new GOption<>(_font, __ -> new Font(fontName, Font.PLAIN, 20));
+    }
+
+    public static GOption<Font> font(String fontName, int style, int size) {
+        return new GOption<>(_font, __ -> new Font(fontName, style, size));
+    }
+
+    public static GOption<Rectangle2D> position(Rectangle2D position) {
+        return new GOption<>(_position, __ -> position);
+    }
+
+    public static GOption<Rectangle2D> position(double x, double y, double width, double height) {
+        return position(new Rectangle2D.Double(x, y, width, height));
+    }
+
+
+    // constructors
+
+    public GOptions() {
+        this(null);
+    }
+
+    protected GOptions(GOptions parent) {
+        super(parent);
+    }
+
+    @Override
+    public GOptions bind(GOption<?>... parameters) {
+        return new GOptions(this).apply(parameters);
     }
 
     // getters
 
-    public GOptions getParent() {
-        return parent;
-    }
-
-    public void setParent(GOptions parent) {
-        this.parent = parent;
-    }
-
-    /*
-     * Color palette
-     */
-
     public Palette getPalette() {
-        if (palette == null) {
-            return parent != null ? parent.getPalette() : defaults.palette.apply(this);
-        }
-        return palette.apply(this);
+        return (Palette) getParamValue(_palette);
     }
-
-    public void setPalette(GOptionPalette palette) {
-        this.palette = palette;
-    }
-
-    /*
-     * Color
-     */
 
     public Color getColor(int row) {
-        if (color == null) {
-            if (parent != null) {
-                return parent.getColor(row);
-            } else {
-                Color[] _color = defaults.color.apply(this);
-                return _color != null ? _color[row % _color.length] : null;
-            }
-        }
-        Color[] _color = color.apply(this);
-        return _color != null ? _color[row % _color.length] : null;
-    }
-
-    public void setColor(GOptionColor color) {
-        this.color = color;
+        Color[] value = (Color[]) getParamValue(_color);
+        return value != null ? value[row % value.length] : null;
     }
 
     public Color getFill(int row) {
-        if (fill == null) {
-            if (parent != null) {
-                return parent.getFill(row);
-            } else {
-                Color[] _color = defaults.fill.apply(this);
-                return _color != null ? _color[row % _color.length] : null;
-            }
-        }
-        Color[] _color = fill.apply(this);
-        return _color != null ? _color[row % _color.length] : null;
+        Color[] value = (Color[]) getParamValue(_fill);
+        return value != null ? value[row % value.length] : null;
     }
 
-    public void setFill(GOptionFill fill) {
-        this.fill = fill;
+    public Float getLwd() {
+        return (Float) getParamValue(_lwd);
     }
-
-    /*
-     * Line width
-     */
-
-    public float getLwd() {
-        if (lwd == null) {
-            return parent != null ? parent.getLwd() : defaults.lwd.apply(this);
-        }
-        return lwd.apply(this);
-    }
-
-    public void setLwd(GOptionLwd lwd) {
-        this.lwd = lwd;
-    }
-
-    /*
-     * Item size
-     */
 
     public double getSz(int row) {
-        if (sz == null) {
-            if (parent != null) {
-                return parent.getSz(row);
-            } else {
-                Var _sz = defaults.sz.apply(this);
-                return _sz.getDouble(row % _sz.size());
-            }
-        }
-        Var _sz = sz.apply(this);
-        return _sz.getDouble(row % _sz.size());
+        Var sz = (Var) getParamValue(_sz);
+        return sz.getDouble(row % sz.size());
     }
-
-    public void setSz(GOptionSz sz) {
-        this.sz = sz;
-    }
-
-    /*
-     * Point character
-     */
 
     public int getPch(int row) {
-        if (pch == null) {
-            if (parent != null) {
-                return parent.getPch(row);
-            } else {
-                Var _pch = defaults.pch.apply(this);
-                return _pch.getInt(row % _pch.size());
-            }
-        }
-        Var _pch = pch.apply(this);
-        return _pch.getInt(row % _pch.size());
+        var pch = (VarInt) getParamValue(_pch);
+        return pch.getInt(row % pch.size());
     }
 
-    public void setPch(GOptionPch pch) {
-        this.pch = pch;
+    public Float getAlpha() {
+        return (Float) getParamValue(_alpha);
     }
 
-    /*
-     * Alpha
-     */
-
-    public float getAlpha() {
-        if (alpha == null) {
-            return parent != null ? parent.getAlpha() : defaults.alpha.apply(this);
-        }
-        return alpha.apply(this);
+    public Integer getBins() {
+        return (Integer) getParamValue(_bins);
     }
 
-    public void setAlpha(GOptionAlpha alpha) {
-        this.alpha = alpha;
+    public Boolean getProb() {
+        return (Boolean) getParamValue(_prob);
     }
 
-    public int getBins() {
-        if (bins == null) {
-            return parent != null ? parent.getBins() : defaults.bins.apply(this);
-        }
-        return bins.apply(this);
+    public Boolean getStacked() {
+        return (Boolean) getParamValue(_stacked);
     }
 
-    public void setBins(GOptionBins bins) {
-        this.bins = bins;
+    public Integer getPoints() {
+        return (Integer) getParamValue(_points);
     }
 
-    public boolean getProb() {
-        if (prob == null) {
-            return parent != null ? parent.getProb() : defaults.prob.apply(this);
-        }
-        return prob.apply(this);
+    public Integer getTop() {
+        return (Integer) getParamValue(_top);
     }
 
-    public void setProb(GOptionProb prob) {
-        this.prob = prob;
+    public Integer getSort() {
+        return (Integer) getParamValue(_sort);
     }
 
-    public boolean getStacked() {
-        if (stacked == null) {
-            return parent != null ? parent.getStacked() : defaults.stacked.apply(this);
-        }
-        return stacked.apply(this);
-    }
-
-    public void setStacked(GOptionStacked stacked) {
-        this.stacked = stacked;
-    }
-
-    public int getPoints() {
-        if (points == null) {
-            return parent != null ? parent.getPoints() : defaults.points.apply(this);
-        }
-        return points.apply(this);
-    }
-
-    public void setPoints(GOptionPoints points) {
-        this.points = points;
-    }
-
-    public int getTop() {
-        if (top == null) {
-            return parent != null ? parent.getTop() : defaults.top.apply(this);
-        }
-        return top.apply(this);
-    }
-
-    public void setTop(GOptionTop top) {
-        this.top = top;
-    }
-
-    public int getSort() {
-        if (sort == null) {
-            return parent != null ? parent.getSort() : defaults.sort.apply(this);
-        }
-        return sort.apply(this);
-    }
-
-    public void setSort(GOptionSort sort) {
-        this.sort = sort;
-    }
-
-    public boolean getHorizontal() {
-        if (horizontal == null) {
-            return parent != null ? parent.getHorizontal() : defaults.horizontal.apply(this);
-        }
-        return horizontal.apply(this);
-    }
-
-    public void setHorizontal(GOptionHorizontal horizontal) {
-        this.horizontal = horizontal;
-    }
-
-    public Sizes getWidths() {
-        if (widths == null) {
-            return parent != null ? parent.getWidths() : defaults.widths.apply(this);
-        }
-        return widths.apply(this);
-    }
-
-    public void setWidths(GOptionWidths widths) {
-        this.widths = widths;
-    }
-
-    public Sizes getHeights() {
-        if (heights == null) {
-            return parent != null ? parent.getHeights() : defaults.heights.apply(this);
-        }
-        return heights.apply(this);
-    }
-
-    public void setHeights(GOptionHeights heights) {
-        this.heights = heights;
+    public Boolean getHorizontal() {
+        return (Boolean) getParamValue(_horizontal);
     }
 
     public String[] getLabels() {
-        if (labels == null) {
-            return parent != null ? parent.getLabels() : defaults.labels.apply(this);
-        }
-        return labels.apply(this);
+        return (String[]) getParamValue(_labels);
     }
 
-    public void setLabels(GOptionLabels labels) {
-        this.labels = labels;
+    public Sizes getWidths() {
+        return (Sizes) getParamValue(_widths);
     }
 
-    public int getHAlign() {
-        if (hAlign == null) {
-            return parent != null ? parent.getHAlign() : defaults.hAlign.apply(this);
-        }
-        return hAlign.apply(this);
+    public Sizes getHeights() {
+        return (Sizes) getParamValue(_heights);
     }
 
-    public void setHAlign(GOptionHAlign hAlign) {
-        this.hAlign = hAlign;
+    public Integer getHAlign() {
+        return (Integer) getParamValue(_hAlign);
     }
 
-    public int getVAlign() {
-        if (vAlign == null) {
-            return parent != null ? parent.getVAlign() : defaults.vAlign.apply(this);
-        }
-        return vAlign.apply(this);
-    }
-
-    public void setVAlign(GOptionVAlign vAlign) {
-        this.vAlign = vAlign;
+    public Integer getVAlign() {
+        return (Integer) getParamValue(_vAlign);
     }
 
     public Font getFont() {
-        if (font == null) {
-            return parent != null ? parent.getFont() : defaults.font.apply(this);
-        }
-        return font.apply(this);
-    }
-
-    public void setFont(GOptionFont font) {
-        this.font = font;
+        return (Font) getParamValue(_font);
     }
 
     public Rectangle2D getPosition() {
-        if (position == null) {
-            return parent != null ? parent.getPosition() : defaults.position.apply(this);
-        }
-        return position.apply(this);
-    }
-
-    public void setPosition(GOptionPosition position) {
-        this.position = position;
+        return (Rectangle2D) getParamValue(_position);
     }
 }

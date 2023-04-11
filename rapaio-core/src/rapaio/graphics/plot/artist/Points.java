@@ -38,6 +38,7 @@ import java.io.Serial;
 
 import rapaio.data.Var;
 import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.PchPalette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -59,7 +60,7 @@ public class Points extends Artist {
     public Points(Var x, Var y, GOption<?>... opts) {
         this.x = x;
         this.y = y;
-        this.options.bind(opts);
+        this.options = new GOptions().apply(opts);
     }
 
     @Override

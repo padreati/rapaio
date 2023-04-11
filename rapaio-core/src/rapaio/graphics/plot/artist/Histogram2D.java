@@ -31,6 +31,8 @@
 
 package rapaio.graphics.plot.artist;
 
+import static rapaio.graphics.opt.GOptions.bins;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
@@ -38,7 +40,7 @@ import java.io.Serial;
 
 import rapaio.data.Var;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionBins;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
@@ -59,8 +61,7 @@ public class Histogram2D extends Artist {
     public Histogram2D(Var x, Var y, GOption<?>... opts) {
         this.x = x;
         this.y = y;
-        this.options.setBins(new GOptionBins(10));
-        this.options.bind(opts);
+        this.options = new GOptions().apply(bins(10)).apply(opts);
     }
 
     @Override

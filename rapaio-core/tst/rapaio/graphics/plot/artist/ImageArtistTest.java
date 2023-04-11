@@ -22,7 +22,7 @@
 package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.With.*;
+import static rapaio.graphics.opt.GOptions.*;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;

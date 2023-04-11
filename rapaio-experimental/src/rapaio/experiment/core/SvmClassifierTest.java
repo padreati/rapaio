@@ -22,7 +22,7 @@
 package rapaio.experiment.core;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.With.*;
+import static rapaio.graphics.opt.GOptions.*;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;

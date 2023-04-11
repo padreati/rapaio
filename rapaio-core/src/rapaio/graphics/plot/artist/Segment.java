@@ -40,6 +40,7 @@ import java.awt.geom.AffineTransform;
 import java.io.Serial;
 
 import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -68,7 +69,7 @@ public class Segment extends Artist {
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        this.options.bind(opts);
+        this.options = new GOptions().apply(opts);
     }
 
     @Override
@@ -112,7 +113,7 @@ public class Segment extends Artist {
         at.concatenate(AffineTransform.getRotateInstance(angle));
         g.transform(at);
 
-        int diff = (int) options.getLwd();
+        int diff = options.getLwd().intValue();
         // Draw horizontal arrow starting in (0, 0)
         g.drawLine(0, 0, len - diff, 0);
         if (type.equals(Type.ARROW)) {

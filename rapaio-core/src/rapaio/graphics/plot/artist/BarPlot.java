@@ -31,7 +31,9 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.sys.With.*;
+import static rapaio.graphics.opt.GOptions.SORT_ASC;
+import static rapaio.graphics.opt.GOptions.SORT_DESC;
+import static rapaio.graphics.opt.GOptions.fill;
 
 import java.awt.Graphics2D;
 import java.io.Serial;
@@ -55,7 +57,6 @@ import rapaio.graphics.plot.Axis;
 import rapaio.util.collection.IntArrays;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class BarPlot extends Artist {
@@ -65,7 +66,6 @@ public class BarPlot extends Artist {
 
     private static final Set<VarType> categoryTypes = Set.of(
             VarType.BINARY, VarType.NOMINAL, VarType.INT);
-    private final GOptions options = new GOptions();
     private final List<String> categories;
     private final List<String> conditions;
     private final int[] selection;
@@ -90,8 +90,7 @@ public class BarPlot extends Artist {
         }
 
         int shift = 9;
-        options.bind(fill(VarInt.seq(shift, Unique.of(condition).uniqueCount())));
-        options.bind(opts);
+        this.options = new GOptions().apply(fill(VarInt.seq(shift, Unique.of(condition).uniqueCount()))).apply(opts);
 
         Map<String, Map<String, Double>> map = new HashMap<>();
         int rowCount = category.size();
@@ -144,13 +143,15 @@ public class BarPlot extends Artist {
         // sort if required
         switch (options.getSort()) {
             case SORT_ASC -> IntArrays.quickSort(indexes, 0, len, (o1, o2) -> {
-                if (totals[o1] == totals[o2])
+                if (totals[o1] == totals[o2]) {
                     return 0;
+                }
                 return totals[o1] < totals[o2] ? -1 : 1;
             });
             case SORT_DESC -> IntArrays.quickSort(indexes, 0, len, (o1, o2) -> {
-                if (totals[o1] == totals[o2])
+                if (totals[o1] == totals[o2]) {
                     return 0;
+                }
                 return totals[o1] < totals[o2] ? 1 : -1;
             });
             default -> {
@@ -186,7 +187,7 @@ public class BarPlot extends Artist {
                     plot.yAxis().domain().unionNumeric(hits[selection[i]][j]);
                 }
             }
-            plot.xAxis().domain().unionCategory(i, i + 0.5, i+1, categories.get(selection[i]));
+            plot.xAxis().domain().unionCategory(i, i + 0.5, i + 1, categories.get(selection[i]));
         }
     }
 
@@ -202,13 +203,13 @@ public class BarPlot extends Artist {
                 for (int j = 0; j < conditions.size(); j++) {
                     double yend = ystart + hits[sel][j];
 
-                    int[] x = new int[]{
+                    int[] x = new int[] {
                             (int) xScale(pos - 0.4),
                             (int) xScale(pos - 0.4),
                             (int) xScale(pos + 0.4),
                             (int) xScale(pos + 0.4),
                             (int) xScale(pos - 0.4)};
-                    int[] y = new int[]{
+                    int[] y = new int[] {
                             (int) yScale(ystart),
                             (int) yScale(yend),
                             (int) yScale(yend),
@@ -230,14 +231,14 @@ public class BarPlot extends Artist {
 
                 double wstep = 0.8 / conditions.size();
                 for (int j = 0; j < conditions.size(); j++) {
-                    int[] x = new int[]{
+                    int[] x = new int[] {
                             (int) xScale(i + 0.1 + j * wstep),
                             (int) xScale(i + 0.1 + j * wstep),
                             (int) xScale(i + 0.1 + (j + 1) * wstep),
                             (int) xScale(i + 0.1 + (j + 1) * wstep),
                             (int) xScale(i + 0.1 + j * wstep),
                     };
-                    int[] y = new int[]{
+                    int[] y = new int[] {
                             (int) yScale(0),
                             (int) yScale(hits[sel][j]),
                             (int) yScale(hits[sel][j]),

@@ -31,7 +31,11 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.sys.With.*;
+import static rapaio.graphics.opt.GOptions.HALIGN_CENTER;
+import static rapaio.graphics.opt.GOptions.HALIGN_RIGHT;
+import static rapaio.graphics.opt.GOptions.VALIGN_BOTTOM;
+import static rapaio.graphics.opt.GOptions.VALIGN_CENTER;
+import static rapaio.graphics.opt.GOptions.VALIGN_TOP;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -42,6 +46,7 @@ import java.io.Serial;
 import java.util.Arrays;
 
 import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -61,7 +66,7 @@ public class Text extends Artist {
         this.x = x;
         this.y = y;
         this.text = text;
-        this.options.bind(opts);
+        this.options = new GOptions().apply(opts);
     }
 
     @Override

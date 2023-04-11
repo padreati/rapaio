@@ -31,17 +31,16 @@
 
 package rapaio.graphics.opt;
 
-import java.io.Serializable;
+import rapaio.util.function.SFunction;
+import rapaio.util.nparam.NamedParam;
 
-public interface GOption<T> extends Serializable {
+public class GOption<V> extends NamedParam<GOptions, V> {
 
-    /**
-     * Binds an option to a given set of graphical options
-     */
-    void bind(GOptions opts);
+    public GOption(String name, SFunction<GOptions, V> fun) {
+        super(name, fun);
+    }
 
-    /**
-     * Produce the graphical option
-     */
-    T apply(GOptions opts);
+    public GOption(GOption<?> p, SFunction<GOptions, V> fun) {
+        super(p.getName(), fun);
+    }
 }

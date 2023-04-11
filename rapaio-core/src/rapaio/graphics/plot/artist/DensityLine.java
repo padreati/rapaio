@@ -45,6 +45,7 @@ import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -77,7 +78,7 @@ public class DensityLine extends Artist {
         this.var = var;
         this.bandwidth = bandwidth;
         this.kde = KDE.of(var, kfunc, bandwidth);
-        this.options.bind(opts);
+        options = new GOptions().apply(opts);
     }
 
     @Override

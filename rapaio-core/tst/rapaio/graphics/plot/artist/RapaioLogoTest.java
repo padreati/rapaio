@@ -22,20 +22,27 @@
 package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.With.*;
+import static rapaio.graphics.opt.GOptions.HALIGN_CENTER;
+import static rapaio.graphics.opt.GOptions.VALIGN_CENTER;
+import static rapaio.graphics.opt.GOptions.alpha;
+import static rapaio.graphics.opt.GOptions.color;
+import static rapaio.graphics.opt.GOptions.fill;
+import static rapaio.graphics.opt.GOptions.font;
+import static rapaio.graphics.opt.GOptions.halign;
+import static rapaio.graphics.opt.GOptions.heights;
+import static rapaio.graphics.opt.GOptions.lwd;
+import static rapaio.graphics.opt.GOptions.valign;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.io.IOException;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.graphics.Figure;
 import rapaio.graphics.plot.Plot;
-import rapaio.image.ImageTools;
 
 /**
  * Test some graphics by maintaining some previously generated images.
@@ -50,11 +57,6 @@ import rapaio.image.ImageTools;
  */
 
 public class RapaioLogoTest extends AbstractArtistTest {
-
-    @BeforeEach
-    void setUp() throws Exception {
-        ImageTools.setBestRenderingHints();
-    }
 
     @Test
     void testRapaioLogo() throws IOException {

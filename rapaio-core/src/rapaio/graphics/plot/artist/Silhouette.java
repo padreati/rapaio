@@ -31,6 +31,10 @@
 
 package rapaio.graphics.plot.artist;
 
+import static rapaio.graphics.opt.GOptions.color;
+import static rapaio.graphics.opt.GOptions.fill;
+import static rapaio.graphics.opt.GOptions.horizontal;
+
 import java.awt.AlphaComposite;
 import java.awt.Composite;
 import java.awt.Graphics2D;
@@ -42,9 +46,7 @@ import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.VarDouble;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionColor;
-import rapaio.graphics.opt.GOptionFill;
-import rapaio.graphics.opt.GOptionHorizontal;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
@@ -58,10 +60,10 @@ public class Silhouette extends Artist {
         this.silhouette = silhouette;
 
         // default fill and color
-        options.setHorizontal(new GOptionHorizontal(true));
-        options.setFill(new GOptionFill(IntStream.range(1, silhouette.getScores().length + 1).toArray()));
-        options.setColor(new GOptionColor(IntStream.range(1, silhouette.getScores().length + 1).toArray()));
-        options.bind(opts);
+        options = new GOptions()
+                .apply(horizontal(true), fill(IntStream.range(1, silhouette.getScores().length + 1).toArray()),
+                        color(IntStream.range(1, silhouette.getScores().length + 1).toArray()))
+                .apply(opts);
     }
 
     @Override

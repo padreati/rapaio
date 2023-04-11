@@ -63,7 +63,7 @@ public class GridLayer implements Figure {
     protected static final int TITLE_PAD = 40;
     protected static final int MINIMUM_PAD = 20;
 
-    protected final GOptions options = new GOptions();
+    protected final GOptions options;
 
     protected Rectangle viewport;
     protected String title;
@@ -80,7 +80,7 @@ public class GridLayer implements Figure {
         this.rows = rows;
         this.cols = cols;
         this.assign = new G[rows][cols];
-        this.options.bind(options);
+        this.options = new GOptions().apply(options);
     }
 
     public GOptions getOptions() {
@@ -121,6 +121,7 @@ public class GridLayer implements Figure {
                 }
             }
         }
+        plot.options.setParent(this.options);
         return this;
     }
 
@@ -145,6 +146,7 @@ public class GridLayer implements Figure {
                 assign[i][j] = g;
             }
         }
+        plot.options.setParent(this.options);
         return this;
     }
 

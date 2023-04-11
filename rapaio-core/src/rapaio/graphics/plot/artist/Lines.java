@@ -43,6 +43,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -65,7 +66,7 @@ public class Lines extends Artist {
         Frame df = BoundFrame.byVars(x, y).stream().complete().toMappedFrame();
         this.x = df.rvar(0).copy();
         this.y = df.rvar(1).copy();
-        this.options.bind(opts);
+        this.options = new GOptions().apply(opts);
     }
 
     @Override

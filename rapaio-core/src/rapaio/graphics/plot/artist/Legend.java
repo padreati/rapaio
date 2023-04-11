@@ -31,6 +31,8 @@
 
 package rapaio.graphics.plot.artist;
 
+import static rapaio.graphics.opt.GOptions.fill;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
@@ -38,7 +40,7 @@ import java.io.Serial;
 import java.util.stream.IntStream;
 
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionFill;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -60,16 +62,18 @@ public class Legend extends Artist {
         this.x = x;
         this.y = y;
         this.place = -1;
-        options.setFill(new GOptionFill(IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new)));
-        this.options.bind(opts);
+        options = new GOptions()
+                .apply(fill(IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new)))
+                .apply(opts);
     }
 
     public Legend(int place, GOption<?>... opts) {
         this.x = -1;
         this.y = -1;
         this.place = place;
-        options.setFill(new GOptionFill(IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new)));
-        this.options.bind(opts);
+        options = new GOptions()
+                .apply(fill(IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new)))
+                .apply(opts);
     }
 
     @Override

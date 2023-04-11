@@ -41,7 +41,7 @@ import rapaio.graphics.opt.GOptions;
  */
 public abstract class Artist implements Serializable {
 
-    protected final GOptions options = new GOptions();
+    protected GOptions options;
     protected Plot plot;
 
     public void bind(Plot plot) {

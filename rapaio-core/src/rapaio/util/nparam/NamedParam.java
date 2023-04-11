@@ -31,21 +31,23 @@
 
 package rapaio.util.nparam;
 
-public abstract class NamedParam<V> {
+import rapaio.util.function.SFunction;
+
+public abstract class NamedParam<S extends NamedParamSet<S, ?>, V> {
 
     private final String name;
-    private final V value;
+    private final SFunction<S, V> fun;
 
-    public NamedParam(String name, V value) {
+    public NamedParam(String name, SFunction<S, V> fun) {
         this.name = name;
-        this.value = value;
+        this.fun = fun;
     }
 
     public String getName() {
         return name;
     }
 
-    public V getValue() {
-        return value;
+    public V getValue(S s) {
+        return fun.apply(s);
     }
 }
