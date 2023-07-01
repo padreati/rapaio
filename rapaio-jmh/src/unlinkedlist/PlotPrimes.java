@@ -31,18 +31,19 @@
 
 package unlinkedlist;
 
-import static rapaio.graphics.Plotter.points;
-import static rapaio.graphics.opt.GOptions.*;
+import jdk.incubator.concurrent.StructuredTaskScope;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.sys.WS;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import jdk.incubator.concurrent.StructuredTaskScope;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.sys.WS;
+import static rapaio.graphics.Plotter.points;
+import static rapaio.graphics.opt.GOptions.pch;
+import static rapaio.graphics.opt.GOptions.sz;
 
 public class PlotPrimes {
 
@@ -146,6 +147,6 @@ public class PlotPrimes {
         Var x = VarDouble.from(primes.length, i -> r.getDouble(i) * Math.cos(theta.getDouble(i))).name("x");
         Var y = VarDouble.from(primes.length, i -> r.getDouble(i) * Math.sin(theta.getDouble(i))).name("y");
 
-        WS.draw(points(x, y, pch(2), sz(0.5)));
+        WS.draw(points(x, y, pch.circleFull(), sz(0.5)));
     }
 }

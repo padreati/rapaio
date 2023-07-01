@@ -31,10 +31,11 @@
 
 package rapaio.printer;
 
+import rapaio.printer.opt.POpt;
+import rapaio.printer.opt.POpts;
+
 import static rapaio.printer.opt.POpts.graphicHeight;
 import static rapaio.printer.opt.POpts.graphicWidth;
-
-import rapaio.printer.opt.POpts;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -42,6 +43,12 @@ import rapaio.printer.opt.POpts;
 public abstract class AbstractPrinter implements Printer {
 
     protected POpts opts = new POpts();
+
+    @Override
+    public Printer withOptions(POpt<?>... options) {
+        opts = opts.bind(options);
+        return this;
+    }
 
     @Override
     public Printer withGraphicShape(int width, int height) {

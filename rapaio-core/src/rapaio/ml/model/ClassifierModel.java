@@ -31,32 +31,22 @@
 
 package rapaio.ml.model;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.stream.IntStream;
-
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarRange;
-import rapaio.data.VarType;
+import rapaio.data.*;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
-import rapaio.util.param.ParamSet;
-import rapaio.util.param.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 import rapaio.util.function.SConsumer;
 import rapaio.util.function.SFunction;
+import rapaio.util.param.ParamSet;
+import rapaio.util.param.ValueParam;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * Abstract base class for all classifier implementations.
@@ -91,22 +81,26 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
      * For example for CForest the number of runs is used to specify
      * the number of decision trees to be built.
      */
-    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 100, "runs", x -> x > 0
-    );
+    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 100, "runs", x -> x > 0);
 
     /**
      * Lambda call hook called after each subcomponent or iteration at training time.
      */
-    public final ValueParam<SConsumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {
-    }, "runningHook", Objects::nonNull);
+    public final ValueParam<SConsumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {}, "runningHook", Objects::nonNull);
 
     /**
      * Lambda call hook which can be used to implement a criteria used to stop running
      * an iterative procedure. If the call hook returns false, the iterative procedure is
      * stopped, if true it continues until the algorithm stops itself.
      */
-    public final ValueParam<SFunction<H, Boolean>, M> stoppingHook = new ValueParam<>((M) this, h -> false, "stoppingHook", Objects::nonNull);
+    public final ValueParam<SFunction<H, Boolean>, M> stoppingHook =
+            new ValueParam<>((M) this, h -> false, "stoppingHook", Objects::nonNull);
 
+    /**
+     * Random seed used to fix the behavior of random utility usage. This is useful
+     * to make the model consistent: running model multiple times with the same seed will produce
+     * the same results. Mostly used in testing and / or for reproducible research.
+     */
     public final ValueParam<Long, M> seed = new ValueParam<>((M) this, 0L, "seed");
 
     // learning artifacts

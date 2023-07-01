@@ -31,12 +31,6 @@
 
 package rapaio.core.tools;
 
-import static java.lang.StrictMath.abs;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.function.BiFunction;
-
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
@@ -48,6 +42,12 @@ import rapaio.math.linear.DVector;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.function.BiFunction;
+
+import static java.lang.StrictMath.abs;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/22/15.
  */
@@ -57,7 +57,7 @@ public class Grid2D implements Serializable {
         return fromPrediction(c, df, xName, yName, labelName, bins, 0.05);
     }
 
-    public static Grid2D fromPrediction(ClassifierModel<?,?,?> c, Frame df, String xName, String yName,
+    public static Grid2D fromPrediction(ClassifierModel<?, ?, ?> c, Frame df, String xName, String yName,
             String labelName, int bins, double margin) {
 
         double xMin = Minimum.of(df.rvar(xName)).value();
@@ -130,7 +130,6 @@ public class Grid2D implements Serializable {
     public Grid2D(Var x, Var y) {
         this.x = x;
         this.y = y;
-
         this.values = DVector.zeros(x.size() * y.size());
     }
 

@@ -31,14 +31,13 @@
 
 package rapaio.printer.idea;
 
+import rapaio.graphics.Figure;
+import rapaio.printer.opt.POpt;
+import rapaio.printer.standard.StandardPrinter;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Logger;
-
-import rapaio.graphics.Figure;
-import rapaio.printer.Printer;
-import rapaio.printer.opt.POpt;
-import rapaio.printer.standard.StandardPrinter;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -48,11 +47,6 @@ public class IdeaPrinter extends StandardPrinter {
     private static final Logger logger = Logger.getLogger(IdeaPrinter.class.getName());
 
     public static final int DEFAULT_PORT = 56739;
-
-    @Override
-    public Printer withGraphicShape(int width, int height) {
-        return this;
-    }
 
     @Override
     public void draw(Figure figure, int width, int height) {

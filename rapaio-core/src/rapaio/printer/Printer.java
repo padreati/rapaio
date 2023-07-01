@@ -48,6 +48,8 @@ import rapaio.printer.opt.POpts;
  */
 public interface Printer {
 
+    Printer withOptions(POpt<?>...opts);
+
     /**
      * Configures default graphic image shape (width and height).
      *

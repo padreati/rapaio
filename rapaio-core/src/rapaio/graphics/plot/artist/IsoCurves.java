@@ -31,15 +31,14 @@
 
 package rapaio.graphics.plot.artist;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import rapaio.core.tools.Grid2D;
+import rapaio.data.Var;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.Axis;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Composite;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -48,12 +47,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import rapaio.core.tools.Grid2D;
-import rapaio.data.Var;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
-import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.Axis;
+import static java.lang.Math.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/20/15.
@@ -303,7 +297,7 @@ public class IsoCurves extends Artist {
                         fillIndexes.add(q);
                     }
 
-                    consumer.painter(fillPoints, fillIndexes, (levels[l]+levels[l+1])/2);
+                    consumer.painter(fillPoints, fillIndexes, (levels[l] + levels[l + 1]) / 2);
                 }
             }
         }
@@ -372,7 +366,10 @@ public class IsoCurves extends Artist {
          * @return x coordinate value of the low threshold
          */
         public double xLow(int i, int j) {
-            if ((side(i, j) == 0 && side(i + 1, j) >= 1) || (side(i, j) >= 1 && side(i + 1, j) == 0)) {
+            if (
+                    (side(i, j) == 0 && side(i + 1, j) >= 1) ||
+                            (side(i, j) >= 1 && side(i + 1, j) == 0)
+            ) {
                 double value = x().getDouble(i) + abs(x().getDouble(i + 1) - x().getDouble(i)) * abs(low - g.value(i, j))
                         / abs(g.value(i + 1, j) - g.value(i, j));
                 return max(x().getDouble(i), min(x().getDouble(i + 1), value));

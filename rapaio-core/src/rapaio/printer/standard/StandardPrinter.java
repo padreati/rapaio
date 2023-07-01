@@ -31,51 +31,30 @@
 
 package rapaio.printer.standard;
 
-import java.awt.BorderLayout;
-import java.awt.Dialog;
-import java.io.Console;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-
 import rapaio.graphics.Figure;
 import rapaio.printer.AbstractPrinter;
 import rapaio.printer.local.FigurePanel;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author tutuianu
  */
 public class StandardPrinter extends AbstractPrinter {
 
-    private final Reader reader;
-    private final PrintWriter writer;
-
     public StandardPrinter() {
-
-        Console console = System.console();
-        if (console != null) {
-            reader = console.reader();
-            writer = console.writer();
-        } else {
-            reader = new InputStreamReader(System.in);
-            writer = new PrintWriter(System.out);
-        }
         withGraphicShape(1200, 600);
     }
 
     @Override
     public void print(String message) {
-        writer.print(message);
-        writer.flush();
+        System.out.print(message);
     }
 
     @Override
     public void println() {
-        writer.println();
-        writer.flush();
+        System.out.println();
     }
 
     @Override

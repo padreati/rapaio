@@ -58,9 +58,9 @@ public class PointsTest extends AbstractArtistTest {
 
         Figure fig = gridLayer(2, 2)
                 .add(points(x))
-                .add(points(x, y, pch(2), fill(2), color(1)))
-                .add(points(x, y, pch(2), fill(h), sz(4), palette(Palette.hue(0, 240, h.dv().min(), h.dv().max()))))
-                .add(points(x, pch(2), fill(y), sz(3), palette(Palette.hue(0, 120, y.dv().min(), y.dv().max()))));
+                .add(points(x, y, pch.circleFull(), fill(2), color(1)))
+                .add(points(x, y, pch.circleFull(), fill(h), sz(4), palette(Palette.hue(0, 240, h.dv().min(), h.dv().max()))))
+                .add(points(x, pch.circleFull(), fill(y), sz(3), palette(Palette.hue(0, 120, y.dv().min(), y.dv().max()))));
         assertTest(fig, "points-test");
     }
 }

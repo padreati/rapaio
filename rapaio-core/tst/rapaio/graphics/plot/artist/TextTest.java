@@ -21,29 +21,22 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOptions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import rapaio.image.ImageTools;
+import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.opt.GOptions.color;
+import static rapaio.graphics.opt.GOptions.halign;
 
 public class TextTest extends AbstractArtistTest {
-
-    @BeforeEach
-    void setUp() throws Exception {
-        ImageTools.setBestRenderingHints();
-    }
 
     @Test
     void testText() throws IOException {
         var plot = plot().xLim(0, 1).yLim(0, 1);
-        plot.text(0.1, 0.9, "Ana\nAre\nMere", halign(HALIGN_LEFT));
-        plot.text(0.5, 0.9, "Ana\nAre\nMere", halign(HALIGN_CENTER), color(2));
-        plot.text(0.8, 0.9, "Ana\nAre\nMere", halign(HALIGN_RIGHT), color(4));
+        plot.text(0.1, 0.9, "Ana\nAre\nMere", halign.left());
+        plot.text(0.5, 0.9, "Ana\nAre\nMere", halign.center(), color(2));
+        plot.text(0.8, 0.9, "Ana\nAre\nMere", halign.right(), color(4));
 
         assertTest(plot, "text-test");
     }

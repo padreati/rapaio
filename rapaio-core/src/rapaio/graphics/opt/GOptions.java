@@ -230,10 +230,6 @@ public class GOptions extends NamedParamSet<GOptions, GOption<?>> {
         }
     }
 
-    public static GOption<VarInt> pch(int pch) {
-        return new GOption<>(_pch, __ -> VarInt.scalar(pch));
-    }
-
     public static GOption<Float> alpha(float alpha) {
         return new GOption<>(_alpha, __ -> alpha);
     }
@@ -256,10 +252,6 @@ public class GOptions extends NamedParamSet<GOptions, GOption<?>> {
 
     public static GOption<Integer> top(int top) {
         return new GOption<>(_top, __ -> top);
-    }
-
-    public static GOption<Integer> sort(int sort) {
-        return new GOption<>(_sort, __ -> sort);
     }
 
     public interface sort {
@@ -300,10 +292,6 @@ public class GOptions extends NamedParamSet<GOptions, GOption<?>> {
         return new GOption<>(_heights, __ -> new Sizes(true, null, absoluteSizes));
     }
 
-    public static GOption<Integer> halign(int hAlign) {
-        return new GOption<>(_hAlign, __ -> hAlign);
-    }
-
     public interface halign {
         static GOption<Integer> left() {
             return new GOption<>(_hAlign, __ -> HALIGN_LEFT);
@@ -316,10 +304,6 @@ public class GOptions extends NamedParamSet<GOptions, GOption<?>> {
         static GOption<Integer> right() {
             return new GOption<>(_hAlign, __ -> HALIGN_RIGHT);
         }
-    }
-
-    public static GOption<Integer> valign(int vAlign) {
-        return new GOption<>(_vAlign, __ -> vAlign);
     }
 
     public interface valign {

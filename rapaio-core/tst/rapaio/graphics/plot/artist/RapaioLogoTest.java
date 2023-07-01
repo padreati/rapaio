@@ -21,28 +21,18 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOptions.HALIGN_CENTER;
-import static rapaio.graphics.opt.GOptions.VALIGN_CENTER;
-import static rapaio.graphics.opt.GOptions.alpha;
-import static rapaio.graphics.opt.GOptions.color;
-import static rapaio.graphics.opt.GOptions.fill;
-import static rapaio.graphics.opt.GOptions.font;
-import static rapaio.graphics.opt.GOptions.halign;
-import static rapaio.graphics.opt.GOptions.heights;
-import static rapaio.graphics.opt.GOptions.lwd;
-import static rapaio.graphics.opt.GOptions.valign;
-
-import java.awt.Color;
-import java.awt.Font;
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
-
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.graphics.Figure;
 import rapaio.graphics.plot.Plot;
+
+import java.awt.*;
+import java.io.IOException;
+
+import static rapaio.graphics.Plotter.gridLayer;
+import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.opt.GOptions.*;
 
 /**
  * Test some graphics by maintaining some previously generated images.
@@ -106,7 +96,7 @@ public class RapaioLogoTest extends AbstractArtistTest {
         down.bottomMarkers(false);
 
         down.add(new Text(0.5, 0.6, "rapaio", font("DejaVu Sans", Font.BOLD, 110),
-                halign(HALIGN_CENTER), valign(VALIGN_CENTER), color(Color.decode("0x096b87"))));
+                halign.center(), valign.center(), color(Color.decode("0x096b87"))));
         down.xLim(0, 1);
         down.yLim(0, 1);
 

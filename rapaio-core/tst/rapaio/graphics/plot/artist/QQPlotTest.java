@@ -21,15 +21,8 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOptions.*;
-
-import java.awt.Color;
-import java.io.IOException;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
@@ -40,6 +33,13 @@ import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.Plot;
 import rapaio.image.ImageTools;
+
+import java.awt.*;
+import java.io.IOException;
+
+import static rapaio.graphics.Plotter.qqplot;
+import static rapaio.graphics.opt.GOptions.fill;
+import static rapaio.graphics.opt.GOptions.pch;
 
 public class QQPlotTest extends AbstractArtistTest {
 
@@ -55,7 +55,7 @@ public class QQPlotTest extends AbstractArtistTest {
     void testQQPlot() throws IOException {
         Var x = df.rvar(2);
         Distribution normal = Normal.of(Mean.of(x).value(), Variance.of(x).sdValue());
-        Plot plot = qqplot(x, normal, pch(2), fill(3))
+        Plot plot = qqplot(x, normal, pch.circleFull(), fill(3))
                 .vLine(0, fill(Color.GRAY))
                 .hLine(0, fill(Color.GRAY));
 

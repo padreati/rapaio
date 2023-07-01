@@ -21,14 +21,7 @@
 
 package rapaio.experiment.core;
 
-import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOptions.*;
-
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarRange;
+import rapaio.data.*;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
@@ -37,6 +30,10 @@ import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.model.svm.SvmClassifier;
 import rapaio.sys.Experimental;
 import rapaio.sys.WS;
+
+import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.opt.GOptions.fill;
+import static rapaio.graphics.opt.GOptions.pch;
 
 @Experimental
 public class SvmClassifierTest {
@@ -70,13 +67,13 @@ public class SvmClassifierTest {
         Plot plot1 = plot();
         VectorDataGrid mg1 = computMesh(svm1, x1, x2);
         mg1.plot(plot1, 0, 1, 20);
-        plot1.points(iris.rvar(0), iris.rvar(1), pch(PCH_CIRCLE_FULL), fill(iris.rvar(2)));
+        plot1.points(iris.rvar(0), iris.rvar(1), pch.circleFull(), fill(iris.rvar(2)));
         grid.add(plot1);
 
         Plot plot2 = plot();
         VectorDataGrid mg2 = computMesh(svm2, x1, x2);
         mg2.plot(plot2, Double.NaN, Double.NaN, 20);
-        plot2.points(iris.rvar(0), iris.rvar(1), pch(PCH_CIRCLE_FULL), fill(iris.rvar(2)));
+        plot2.points(iris.rvar(0), iris.rvar(1), pch.circleFull(), fill(iris.rvar(2)));
         grid.add(plot2);
 
 
