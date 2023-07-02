@@ -31,17 +31,17 @@
 
 package rapaio.sys;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-
 import rapaio.graphics.Figure;
 import rapaio.image.ImageTools;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 import rapaio.printer.standard.StandardPrinter;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 
 /**
  * Working session tool. This class contains a printer instance and can be used as a single
@@ -131,7 +131,7 @@ public class WS {
 
     public static BufferedImage image(Figure figure, POpt<?>...options) {
         var opts = printer.getOptions().bind(options);
-        return image(figure, opts.getGraphicHeight(), opts.getGraphicHeight());
+        return image(figure, opts.getGraphicWidth(), opts.getGraphicHeight());
     }
 
     public static BufferedImage image(Figure figure, int w, int h) {
