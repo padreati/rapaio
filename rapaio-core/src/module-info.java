@@ -78,6 +78,7 @@ module rapaio.core {
     exports rapaio.ml.model.linear;
     exports rapaio.ml.model.linear.binarylogistic;
     exports rapaio.ml.model.linear.impl;
+    exports rapaio.ml.model.meta;
     exports rapaio.ml.model.rule;
     exports rapaio.ml.model.rule.onerule;
     exports rapaio.ml.model.rvm;
