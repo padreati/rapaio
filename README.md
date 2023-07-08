@@ -22,8 +22,8 @@ library written in Java.*
 
 ### Try it online
  
-[![Launch rapaio with IJava binder jupyter](images/launch-binder.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master) 
-[![Launch rapaio with IJava binder jupyter lab](images/launch-binder-lab.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master?urlpath=lab)
+[![Launch rapaio with rapaio-jupyter-kernel jupyter binder](images/launch-binder.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master) 
+[![Launch rapaio with rapaio-jupyter-kernel jupyter-lab binder](images/launch-binder-lab.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master?urlpath=lab)
 </td>
 <td>
 
@@ -51,28 +51,23 @@ KMeans. Additionaly there is a fair share of graphical tools and linear algebra 
 
 ## Installation
 
-Last published release on maven central is 5.0.0
+Last published release on maven central is 5.1.0
 
     <dependency>
         <groupId>io.github.padreati</groupId>
         <artifactId>rapaio-core</artifactId>
-        <version>5.0.0</version>
+        <version>5.1.0</version>
     </dependency>
 
 The best way for exploration is through jupyter / jupyter-lab notebooks. This is excellent for experimenting with interactive notebooks or
-to document the ideas you are working on. You have to install jupyter / jupyter-lab and IJava kernel. For more information you can follow
-the instruction from
-[IJava](https://github.com/SpencerPark/IJava#installing). The following notation is specific to IJava kernel jupyter notation.
+to document the ideas you are working on. You have to install `jupyter` / `jupyter-lab` and `rapaio-jupyter-kernel` kernel. 
+For more information you can follow the instruction from
+[Rapaio Jupyter Kernel](https://github.com/padreati/rapaio-jupyter-kernel#installation). The following notation is specific to IJava kernel jupyter notation.
 
-    %maven io.github.padreati:rapaio-core:5.0.0  
+    %maven io.github.padreati:rapaio-core:5.1.0  
 
 ## Acknowledgements
 
-Many thanks to 
-[![JetBrains](images/jetbrains-variant-3_logos/jetbrains-variant-3.svg)](https://www.jetbrains.com/?from=rapaio) 
-who provided open source licenses for their brilliant IDE 
-[![a](images/intellij-idea_logos/logo.svg)](https://www.jetbrains.com/?from=rapaio)
- 
-Many thanks to [SpencerPark](https://github.com/SpencerPark) for the java kernel he realized 
-[IJava jupyter kernel](https://github.com/SpencerPark/IJava).
+Many thanks to **JetBrains** who provided open source licenses for their brilliant IDE 
+[![a](images/intellij-idea_logos/logo.svg)](https://www.jetbrains.com/?from=rapaio).
 
