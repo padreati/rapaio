@@ -6,17 +6,17 @@
     <parent>
         <groupId>io.github.padreati</groupId>
         <artifactId>rapaio</artifactId>
-        <version>5.0.1</version>
+        <version>5.1.0</version>
     </parent>
     <artifactId>rapaio-datasets</artifactId>
-    <version>5.0.1</version>
+    <version>${rapaio.version}</version>
     <name>rapaio-datasets</name>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-core</artifactId>
-            <version>5.0.0</version>
+            <version>${rapaio.version}</version>
         </dependency>
     </dependencies>
 

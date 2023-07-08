@@ -31,42 +31,29 @@
 
 package rapaio.ml.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarBinary;
-import rapaio.data.VarInt;
-import rapaio.data.VarNominal;
+import rapaio.data.*;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
+import java.util.*;
+
 /**
  * Classification predict result.
- * <p>
- * This object holds the result of a classification fitting.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class ClassifierResult implements Printable {
 
-    private final ClassifierModel<?, ?, ?> model;
-    private final Frame df;
-    private final List<String> targetNames = new ArrayList<>();
-    private final boolean hasClasses;
-    private final boolean hasDensities;
-    private final Map<String, List<String>> dictionaries = new HashMap<>();
-    private final Map<String, Var> classes = new HashMap<>();
-    private final Map<String, Frame> densities = new HashMap<>();
-
-    // builder
+    protected final ClassifierModel<?, ?, ?> model;
+    protected final Frame df;
+    protected final List<String> targetNames = new ArrayList<>();
+    protected final boolean hasClasses;
+    protected final boolean hasDensities;
+    protected final Map<String, List<String>> dictionaries = new HashMap<>();
+    protected final Map<String, Var> classes = new HashMap<>();
+    protected final Map<String, Frame> densities = new HashMap<>();
 
     public static ClassifierResult build(ClassifierModel<?, ?, ?> model, Frame df, boolean withClasses, boolean withDensities) {
         return new ClassifierResult(model, df, withClasses, withDensities);
@@ -83,8 +70,6 @@ public class ClassifierResult implements Printable {
         }
         return result;
     }
-
-    // private constructor
 
     private ClassifierResult(final ClassifierModel<?, ?, ?> model, final Frame df, final boolean hasClasses, final boolean hasDensities) {
         this.model = model;
