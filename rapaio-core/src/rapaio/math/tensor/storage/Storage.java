@@ -31,6 +31,11 @@
 
 package rapaio.math.tensor.storage;
 
+import jdk.incubator.vector.Vector;
+import jdk.incubator.vector.VectorMask;
+import rapaio.math.tensor.operators.TensorBinaryOp;
+import rapaio.math.tensor.operators.TensorUnaryOp;
+
 /**
  * A storage is an array contained decorated with access and operations on the stored values.
  * <p>
@@ -46,7 +51,7 @@ package rapaio.math.tensor.storage;
  *
  * @param <N> generic type of the numeric data type of the elements
  */
-public interface Storage<N extends Number, S extends Storage<N, S>> {
+public interface Storage<N extends Number, V extends Vector<N>, S extends Storage<N, V, S>> {
 
     StorageFactory storageFactory();
 
@@ -59,7 +64,27 @@ public interface Storage<N extends Number, S extends Storage<N, S>> {
 
     void setValue(int offset, N v);
 
+    V load(int offset);
+
+    V load(int offset, VectorMask<N> mask);
+
+    V load(int offset, int[] indexMap, int mapOffset);
+
+    V load(int offset, int[] indexMap, int mapOffset, VectorMask<N> mask);
+
+    void save(V v, int offset);
+
+    void save(V v, int offset, VectorMask<N> mask);
+
+    void save(V v, int offset, int[] indexMap, int mapOffset);
+
+    void save(V v, int offset, int[] indexMap, int mapOffset, VectorMask<N> mask);
+
     void swap(int left, int right);
+
+    void apply(TensorUnaryOp op, int offset);
+
+    void applyValue(TensorBinaryOp op, int offset, N value);
 
     void fillValue(int start, int len, N v);
 

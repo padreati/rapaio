@@ -21,18 +21,20 @@
 
 package rapaio.math.tensor;
 
-import java.util.Iterator;
-
+import jdk.incubator.vector.Vector;
 import rapaio.math.tensor.iterators.ChunkIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
+import rapaio.math.tensor.operators.TensorBinaryOp;
 import rapaio.math.tensor.operators.TensorUnaryOp;
 import rapaio.math.tensor.storage.Storage;
 import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
 
-public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> extends Printable, Iterable<N> {
+import java.util.Iterator;
 
-    TensorManager manager();
+public interface Tensor<N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> extends Printable, Iterable<N> {
+
+    TensorEngine manager();
 
     /**
      * @return shape of the tensor
@@ -70,6 +72,13 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
     T tan();
     T atan();
     T tanh();
+
+    T binaryOp(T tensor, TensorBinaryOp op);
+
+    T add(T tensor);
+    T sub(T tensor);
+    T mul(T tensor);
+    T div(T tensor);
 
     Iterator<N> iterator(Order askOrder);
 
@@ -195,7 +204,7 @@ public interface Tensor<N extends Number, S extends Storage<N, S>, T extends Ten
     }
 
     default boolean deepEquals(Object t, double tol) {
-        if (t instanceof Tensor<?, ?, ?> dt) {
+        if (t instanceof Tensor<?, ?, ?, ?> dt) {
             if (!layout().shape().equals(dt.layout().shape())) {
                 return false;
             }

@@ -31,13 +31,15 @@
 
 package rapaio.math.tensor.storage.array;
 
-import java.util.Arrays;
-
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorSpecies;
+import rapaio.math.tensor.operators.TensorBinaryOp;
+import rapaio.math.tensor.operators.TensorUnaryOp;
 import rapaio.math.tensor.storage.FStorage;
 import rapaio.math.tensor.storage.StorageFactory;
+
+import java.util.Arrays;
 
 public final class FStorageArray implements FStorage {
 
@@ -113,6 +115,16 @@ public final class FStorageArray implements FStorage {
     @Override
     public void save(FloatVector v, int offset, int[] indexMap, int mapOffset, VectorMask<Float> mask) {
         v.intoArray(array, offset, indexMap, mapOffset, mask);
+    }
+
+    @Override
+    public void apply(TensorUnaryOp op, int offset) {
+        array[offset] = op.applyFloat(array[offset]);
+    }
+
+    @Override
+    public void apply(TensorBinaryOp op, int offset, float value) {
+        array[offset] = op.apply(array[offset], value);
     }
 
     @Override

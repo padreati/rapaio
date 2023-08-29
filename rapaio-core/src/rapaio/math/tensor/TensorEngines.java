@@ -31,28 +31,22 @@
 
 package rapaio.math.tensor;
 
-import rapaio.math.tensor.operators.*;
+import rapaio.math.tensor.engine.parallel.ParallelTensorEngine;
+import rapaio.math.tensor.engine.base.BaseTensorEngine;
+import rapaio.math.tensor.storage.StorageFactory;
+import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 
-public final class TensorOps {
+public final class TensorEngines {
 
-    public static final Abs ABS = new Abs();
-    public static final Neg NEG = new Neg();
-    public static final Log LOG = new Log();
-    public static final Log1p LOG1P = new Log1p();
-    public static final Exp EXP = new Exp();
-    public static final Expm1 EXPM1 = new Expm1();
-    public static final Sin SIN = new Sin();
-    public static final ASin ASIN = new ASin();
-    public static final Sinh SINH = new Sinh();
-    public static final Cos COS = new Cos();
-    public static final ACos ACOS = new ACos();
-    public static final Cosh COSH = new Cosh();
-    public static final Tan TAN = new Tan();
-    public static final ATan ATAN = new ATan();
-    public static final Tanh TANH = new Tanh();
+    public static TensorEngine newDefault() {
+        return newStandard(new ArrayStorageFactory());
+    }
 
-    public static final Add ADD = new Add();
-    public static final Sub SUB = new Sub();
-    public static final Mul MUL = new Mul();
-    public static final Div DIV = new Div();
+    public static TensorEngine newStandard(StorageFactory storageFactory) {
+        return new BaseTensorEngine(storageFactory);
+    }
+
+    public static TensorEngine newParallel(StorageFactory storageFactory) {
+        return new ParallelTensorEngine(storageFactory);
+    }
 }

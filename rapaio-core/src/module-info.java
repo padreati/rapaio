@@ -52,8 +52,9 @@ module rapaio.core {
     exports rapaio.math.tensor.operators;
     exports rapaio.math.tensor.storage;
     exports rapaio.math.tensor.storage.array;
-    exports rapaio.math.tensor.manager;
+    exports rapaio.math.tensor.engine;
     exports rapaio.math.tensor.iterators;
+    exports rapaio.math.tensor.layout;
 
     exports rapaio.ml.common;
     exports rapaio.ml.common.distance;
@@ -106,6 +107,5 @@ module rapaio.core {
     exports rapaio.printer.idea;
     exports rapaio.math.linear.base;
     exports rapaio.util.param;
-    exports rapaio.math.tensor.layout;
     exports rapaio.util.nparam;
 }

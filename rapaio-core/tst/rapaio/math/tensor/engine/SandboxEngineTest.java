@@ -29,30 +29,37 @@
  *
  */
 
-package rapaio.math.tensor;
+package rapaio.math.tensor.engine;
 
-import rapaio.math.tensor.operators.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorEngines;
 
-public final class TensorOps {
+import java.util.Random;
 
-    public static final Abs ABS = new Abs();
-    public static final Neg NEG = new Neg();
-    public static final Log LOG = new Log();
-    public static final Log1p LOG1P = new Log1p();
-    public static final Exp EXP = new Exp();
-    public static final Expm1 EXPM1 = new Expm1();
-    public static final Sin SIN = new Sin();
-    public static final ASin ASIN = new ASin();
-    public static final Sinh SINH = new Sinh();
-    public static final Cos COS = new Cos();
-    public static final ACos ACOS = new ACos();
-    public static final Cosh COSH = new Cosh();
-    public static final Tan TAN = new Tan();
-    public static final ATan ATAN = new ATan();
-    public static final Tanh TANH = new Tanh();
+public class SandboxEngineTest {
 
-    public static final Add ADD = new Add();
-    public static final Sub SUB = new Sub();
-    public static final Mul MUL = new Mul();
-    public static final Div DIV = new Div();
+    private Random random;
+
+    @BeforeEach
+    void beforeEach() {
+        random = new Random(42);
+    }
+
+    @Test
+    void sandbox() {
+
+        var engine = TensorEngines.newDefault();
+
+        var t1 = engine.ofFloatRandom(Shape.of(2,3,2), random, Order.C);
+
+        var t2 = t1.copy(Order.F).neg();
+
+        t1.printFullContent();
+        t2.printFullContent();
+
+        t1.add(t2).printFullContent();
+    }
 }

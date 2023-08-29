@@ -29,30 +29,28 @@
  *
  */
 
-package rapaio.math.tensor;
+package rapaio.experiment.datasets;
 
-import rapaio.math.tensor.operators.*;
+import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
+import rapaio.graphics.plot.GridLayer;
+import rapaio.sys.WS;
 
-public final class TensorOps {
+import static rapaio.graphics.Plotter.hist;
+import static rapaio.graphics.Plotter.points;
+import static rapaio.graphics.opt.GOptions.bins;
+import static rapaio.graphics.opt.GOptions.horizontal;
 
-    public static final Abs ABS = new Abs();
-    public static final Neg NEG = new Neg();
-    public static final Log LOG = new Log();
-    public static final Log1p LOG1P = new Log1p();
-    public static final Exp EXP = new Exp();
-    public static final Expm1 EXPM1 = new Expm1();
-    public static final Sin SIN = new Sin();
-    public static final ASin ASIN = new ASin();
-    public static final Sinh SINH = new Sinh();
-    public static final Cos COS = new Cos();
-    public static final ACos ACOS = new ACos();
-    public static final Cosh COSH = new Cosh();
-    public static final Tan TAN = new Tan();
-    public static final ATan ATAN = new ATan();
-    public static final Tanh TANH = new Tanh();
+public class MyWeights {
 
-    public static final Add ADD = new Add();
-    public static final Sub SUB = new Sub();
-    public static final Mul MUL = new Mul();
-    public static final Div DIV = new Div();
+    public static void main(String[] args) {
+        Frame df = Datasets.loadMyWeights();
+        df.printFullContent();
+        WS.draw(GridLayer.of(1,2)
+                .add(points(df.rvar("time"), df.rvar("weight"))
+                        .lines(df.rvar("time"), df.rvar("weight"))
+                )
+                .add(hist(df.rvar("weight"), horizontal(true), bins(15)))
+        );
+    }
 }

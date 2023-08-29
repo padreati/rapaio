@@ -32,9 +32,9 @@
 package rapaio.math.tensor.storage;
 
 import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.VectorMask;
+import rapaio.math.tensor.operators.TensorBinaryOp;
 
-public interface FStorage extends Storage<Float, FStorage> {
+public interface FStorage extends Storage<Float, FloatVector, FStorage> {
 
     @Override
     default Float getValue(int offset) {
@@ -50,28 +50,19 @@ public interface FStorage extends Storage<Float, FStorage> {
 
     void set(int offset, float v);
 
-    FloatVector load(int offset);
-
-    FloatVector load(int offset, VectorMask<Float> mask);
-
-    FloatVector load(int offset, int[] indexMap, int mapOffset);
-
-    FloatVector load(int offset, int[] indexMap, int mapOffset, VectorMask<Float> mask);
-
-    void save(FloatVector v, int offset);
-
-    void save(FloatVector v, int offset, VectorMask<Float> mask);
-
-    void save(FloatVector v, int offset, int[] indexMap, int mapOffset);
-
-    void save(FloatVector v, int offset, int[] indexMap, int mapOffset, VectorMask<Float> mask);
-
     @Override
     default void fillValue(int start, int len, Float v) {
         fill(start, len, v);
     }
 
     void fill(int start, int len, float v);
+
+    @Override
+    default void applyValue(TensorBinaryOp op, int offset, Float value) {
+        apply(op, offset, value);
+    }
+
+    void apply(TensorBinaryOp op, int offset, float value);
 
     @Override
     FStorage copy();

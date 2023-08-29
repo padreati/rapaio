@@ -21,31 +21,29 @@
 
 package rapaio.math.tensor;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Random;
-
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.Vector;
 import org.junit.jupiter.api.Test;
-
 import rapaio.math.tensor.storage.DStorage;
 import rapaio.math.tensor.storage.FStorage;
 import rapaio.math.tensor.storage.Storage;
 import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 import rapaio.util.collection.IntArrays;
 
+import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 public class TensorTest {
 
     @Test
     void managerTestRunner() {
-        genericTestRunner(TensorManagers.newStandard(new ArrayStorageFactory()));
-        genericTestRunner(TensorManagers.newParallel(new ArrayStorageFactory()));
+        genericTestRunner(TensorEngines.newStandard(new ArrayStorageFactory()));
+        genericTestRunner(TensorEngines.newParallel(new ArrayStorageFactory()));
     }
 
-    void genericTestRunner(TensorManager manager) {
+    void genericTestRunner(TensorEngine manager) {
         genericTestSuite(new DoubleDenseRow(manager));
         genericTestSuite(new DoubleDenseCol(manager));
         genericTestSuite(new DoubleDenseStride(manager));
@@ -54,7 +52,7 @@ public class TensorTest {
         genericTestSuite(new FloatDenseStride(manager));
     }
 
-    <N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> void genericTestSuite(DataFactory<N, S, T> g) {
+    <N extends Number, S extends Storage<N, V, S>, V extends Vector<N>, T extends Tensor<N, V, S, T>> void genericTestSuite(DataFactory<N, V, S, T> g) {
         testGet(g);
         testSet(g);
         testPrinting(g);
@@ -66,7 +64,7 @@ public class TensorTest {
         testCopy(g);
     }
 
-    <N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> void testGet(DataFactory<N, S, T> g) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testGet(DataFactory<N, V, S, T> g) {
         var t = g.sequence(Shape.of(2, 3, 4));
         var val = g.value(0);
         for (int i = 0; i < 2; i++) {
@@ -79,7 +77,7 @@ public class TensorTest {
         }
     }
 
-    <N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> void testSet(DataFactory<N, S, T> g) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testSet(DataFactory<N, V, S, T> g) {
         var t = g.zeros(Shape.of(2, 3, 4));
         N val = g.value(0);
         for (int i = 0; i < 2; i++) {
@@ -101,7 +99,7 @@ public class TensorTest {
         }
     }
 
-    <N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> void testPrinting(DataFactory<N, S, T> g) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testPrinting(DataFactory<N, V, S, T> g) {
         var tensor = g.sequence(Shape.of(20, 2, 2, 25));
         assertEquals(tensor.toString(), tensor.toSummary());
 
@@ -242,7 +240,7 @@ public class TensorTest {
                 """, tensor.toFullContent());
     }
 
-    <N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> void testReshape(DataFactory<N, S, T> g) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testReshape(DataFactory<N, V, S, T> g) {
         var t = g.sequence(Shape.of(2, 3, 4));
         assertEquals(Shape.of(6, 4), t.reshape(Shape.of(6, 4)).shape());
         assertEquals(Shape.of(24, 1, 1), t.reshape(Shape.of(24, 1, 1)).shape());
@@ -252,7 +250,7 @@ public class TensorTest {
         assertEquals("Incompatible shape size.", ex.getMessage());
     }
 
-    <N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> void testIterators(DataFactory<N, S, T> g) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testIterators(DataFactory<N, V, S, T> g) {
 
         Shape shape = Shape.of(2, 3, 4);
         var t = g.sequence(shape);
@@ -294,7 +292,7 @@ public class TensorTest {
         }
     }
 
-    <N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> void testTranspose(DataFactory<N, S, T> g) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testTranspose(DataFactory<N, V, S, T> g) {
         Shape shape = Shape.of(2, 3, 4);
         var t = g.sequence(shape);
 
@@ -313,7 +311,7 @@ public class TensorTest {
         }
     }
 
-    <N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> void testFlatten(DataFactory<N, S, T> g) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testFlatten(DataFactory<N, V, S, T> g) {
         Shape shape = Shape.of(2, 3, 4);
         var t = g.sequence(shape);
 
@@ -333,7 +331,7 @@ public class TensorTest {
         }
     }
 
-    <N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> void testSqueezeMoveSwapAxis(DataFactory<N, S, T> g) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testSqueezeMoveSwapAxis(DataFactory<N, V, S, T> g) {
         Shape shape = Shape.of(2, 1, 3, 1, 4, 1);
         var t = g.sequence(shape);
         var s = t.squeeze();
@@ -354,7 +352,7 @@ public class TensorTest {
         assertTrue(t.moveAxis(0, 2).deepEquals(t.swapAxis(0, 1).swapAxis(1, 2)));
     }
 
-    <N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> void testCopy(DataFactory<N, S, T> g) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testCopy(DataFactory<N, V, S, T> g) {
         Shape shape = Shape.of(2, 3, 4);
         var t = g.sequence(shape);
 
@@ -365,11 +363,11 @@ public class TensorTest {
         assertTrue(t.t().deepEquals(t.t().copy(Order.C)));
     }
 
-    abstract static class DataFactory<N extends Number, S extends Storage<N, S>, T extends Tensor<N, S, T>> {
+    abstract static class DataFactory<N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> {
 
-        final TensorManager manager;
+        final TensorEngine manager;
 
-        public DataFactory(TensorManager manager) {
+        public DataFactory(TensorEngine manager) {
             this.manager = manager;
         }
 
@@ -379,14 +377,14 @@ public class TensorTest {
 
         abstract N mul(N x, double y);
 
-        abstract Tensor<N, S, T> sequence(Shape shape);
+        abstract Tensor<N, V, S, T> sequence(Shape shape);
 
-        abstract Tensor<N, S, T> zeros(Shape shape);
+        abstract Tensor<N, V, S, T> zeros(Shape shape);
     }
 
-    abstract static class DoubleDense extends DataFactory<Double, DStorage, DTensor> {
+    abstract static class DoubleDense extends DataFactory<Double, DoubleVector, DStorage, DTensor> {
 
-        public DoubleDense(TensorManager manager) {
+        public DoubleDense(TensorEngine manager) {
             super(manager);
         }
 
@@ -409,7 +407,7 @@ public class TensorTest {
 
     static final class DoubleDenseCol extends DoubleDense {
 
-        public DoubleDenseCol(TensorManager manager) {
+        public DoubleDenseCol(TensorEngine manager) {
             super(manager);
         }
 
@@ -426,7 +424,7 @@ public class TensorTest {
 
     static final class DoubleDenseRow extends DoubleDense {
 
-        public DoubleDenseRow(TensorManager manager) {
+        public DoubleDenseRow(TensorEngine manager) {
             super(manager);
         }
 
@@ -443,7 +441,7 @@ public class TensorTest {
 
     static final class DoubleDenseStride extends DoubleDense {
 
-        public DoubleDenseStride(TensorManager manager) {
+        public DoubleDenseStride(TensorEngine manager) {
             super(manager);
         }
 
@@ -507,9 +505,9 @@ public class TensorTest {
         }
     }
 
-    abstract static class FloatDense extends DataFactory<Float, FStorage, FTensor> {
+    abstract static class FloatDense extends DataFactory<Float, FloatVector, FStorage, FTensor> {
 
-        public FloatDense(TensorManager manager) {
+        public FloatDense(TensorEngine manager) {
             super(manager);
         }
 
@@ -531,7 +529,7 @@ public class TensorTest {
 
     static final class FloatDenseCol extends FloatDense {
 
-        public FloatDenseCol(TensorManager manager) {
+        public FloatDenseCol(TensorEngine manager) {
             super(manager);
         }
 
@@ -548,7 +546,7 @@ public class TensorTest {
 
     static final class FloatDenseRow extends FloatDense {
 
-        public FloatDenseRow(TensorManager manager) {
+        public FloatDenseRow(TensorEngine manager) {
             super(manager);
         }
 
@@ -565,7 +563,7 @@ public class TensorTest {
 
     static final class FloatDenseStride extends FloatDense {
 
-        public FloatDenseStride(TensorManager manager) {
+        public FloatDenseStride(TensorEngine manager) {
             super(manager);
         }
 

@@ -29,30 +29,17 @@
  *
  */
 
-package rapaio.math.tensor;
+package rapaio.math.tensor.operators;
 
-import rapaio.math.tensor.operators.*;
+public class Exp implements TensorUnaryOp {
 
-public final class TensorOps {
+    @Override
+    public double applyDouble(double x) {
+        return Math.exp(x);
+    }
 
-    public static final Abs ABS = new Abs();
-    public static final Neg NEG = new Neg();
-    public static final Log LOG = new Log();
-    public static final Log1p LOG1P = new Log1p();
-    public static final Exp EXP = new Exp();
-    public static final Expm1 EXPM1 = new Expm1();
-    public static final Sin SIN = new Sin();
-    public static final ASin ASIN = new ASin();
-    public static final Sinh SINH = new Sinh();
-    public static final Cos COS = new Cos();
-    public static final ACos ACOS = new ACos();
-    public static final Cosh COSH = new Cosh();
-    public static final Tan TAN = new Tan();
-    public static final ATan ATAN = new ATan();
-    public static final Tanh TANH = new Tanh();
-
-    public static final Add ADD = new Add();
-    public static final Sub SUB = new Sub();
-    public static final Mul MUL = new Mul();
-    public static final Div DIV = new Div();
+    @Override
+    public float applyFloat(float x) {
+        return (float) Math.exp(x);
+    }
 }

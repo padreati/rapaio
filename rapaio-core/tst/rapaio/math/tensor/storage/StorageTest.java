@@ -21,16 +21,18 @@
 
 package rapaio.math.tensor.storage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.Vector;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import rapaio.math.tensor.storage.array.ArrayStorageFactory;
+import rapaio.util.collection.IntArrays;
 
 import java.util.Random;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import rapaio.math.tensor.storage.array.ArrayStorageFactory;
-import rapaio.util.collection.IntArrays;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class StorageTest {
 
@@ -41,7 +43,7 @@ public class StorageTest {
         random = new Random(42);
     }
 
-    abstract static class StorageProvider<N extends Number, S extends Storage<N, S>> {
+    abstract static class StorageProvider<N extends Number, V extends Vector<N>, S extends Storage<N, V, S>> {
 
         protected final StorageFactory storageFactory;
 
@@ -66,7 +68,7 @@ public class StorageTest {
         abstract S random(int size, Random random);
     }
 
-    static class DStorageProvider extends StorageProvider<Double, DStorage> {
+    static class DStorageProvider extends StorageProvider<Double, DoubleVector, DStorage> {
 
         DStorageProvider(StorageFactory storageFactory) {
             super(storageFactory);
@@ -117,7 +119,7 @@ public class StorageTest {
         }
     }
 
-    static class FStorageProvider extends StorageProvider<Float, FStorage> {
+    static class FStorageProvider extends StorageProvider<Float, FloatVector, FStorage> {
 
         public FStorageProvider(StorageFactory storageFactory) {
             super(storageFactory);
@@ -174,14 +176,14 @@ public class StorageTest {
         genericTestSuite(new FStorageProvider(new ArrayStorageFactory()));
     }
 
-    <N extends Number, S extends Storage<N, S>> void genericTestSuite(StorageProvider<N, S> storageProvider) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>> void genericTestSuite(StorageProvider<N, V, S> storageProvider) {
         testBuilder(storageProvider);
         testCopy(storageProvider);
         testFill(storageProvider);
         testReverse(storageProvider);
     }
 
-    <N extends Number, S extends Storage<N, S>> void testBuilder(StorageProvider<N, S> provider) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>> void testBuilder(StorageProvider<N, V, S> provider) {
 
         int len = random.nextInt(100) + 2;
         var storage = provider.zeros(len);
@@ -217,7 +219,7 @@ public class StorageTest {
         }
     }
 
-    <N extends Number, S extends Storage<N, S>> void testCopy(StorageProvider<N, S> provider) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>> void testCopy(StorageProvider<N, V, S> provider) {
         var storage = provider.seq(10);
         var copy = storage.copy();
 
@@ -234,7 +236,7 @@ public class StorageTest {
         }
     }
 
-    <N extends Number, S extends Storage<N, S>> void testFill(StorageProvider<N, S> provider) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>> void testFill(StorageProvider<N, V, S> provider) {
         var storage = provider.zeros(10);
         storage.fillValue(0, 10, provider.value(100));
         storage.fillValue(1, 2, provider.value(10));
@@ -246,7 +248,7 @@ public class StorageTest {
         }
     }
 
-    <N extends Number, S extends Storage<N, S>> void testReverse(StorageProvider<N, S> provider) {
+    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>> void testReverse(StorageProvider<N, V, S> provider) {
         int[] array = IntArrays.newSeq(10_123);
         IntArrays.shuffle(array, random);
 

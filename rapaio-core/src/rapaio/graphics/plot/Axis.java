@@ -31,25 +31,20 @@
 
 package rapaio.graphics.plot;
 
-import java.awt.Graphics2D;
+import rapaio.graphics.base.XWilkinson;
+import rapaio.util.time.PrettyTimeInterval;
+
+import java.awt.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Date;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import rapaio.graphics.base.XWilkinson;
-import rapaio.util.time.PrettyTimeInterval;
 
 /**
  * @author padreati
@@ -336,6 +331,9 @@ public final class Axis implements Serializable {
                 }
                 if (end.isBefore(instants.get(instants.size() - 1))) {
                     instants = instants.subList(0, instants.size() - 1);
+                }
+                if(instants.isEmpty()) {
+                    continue;
                 }
                 double width = plot.getLabelFontMetrics(g2d, interval.groupFormat().format(Date.from(instants.get(0)))).getWidth() * 1.1;
 

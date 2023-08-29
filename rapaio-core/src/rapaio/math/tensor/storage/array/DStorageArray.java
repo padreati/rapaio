@@ -31,13 +31,15 @@
 
 package rapaio.math.tensor.storage.array;
 
-import java.util.Arrays;
-
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorSpecies;
+import rapaio.math.tensor.operators.TensorBinaryOp;
+import rapaio.math.tensor.operators.TensorUnaryOp;
 import rapaio.math.tensor.storage.DStorage;
 import rapaio.math.tensor.storage.StorageFactory;
+
+import java.util.Arrays;
 
 public final class DStorageArray implements DStorage {
 
@@ -113,6 +115,16 @@ public final class DStorageArray implements DStorage {
     @Override
     public void save(DoubleVector v, int offset, int[] indexMap, int mapOffset, VectorMask<Double> mask) {
         v.intoArray(array, offset, indexMap, mapOffset, mask);
+    }
+
+    @Override
+    public void apply(TensorUnaryOp op, int offset) {
+        array[offset] = op.applyDouble(array[offset]);
+    }
+
+    @Override
+    public void apply(TensorBinaryOp op, int offset, double value) {
+        array[offset] = op.apply(array[offset], value);
     }
 
     @Override

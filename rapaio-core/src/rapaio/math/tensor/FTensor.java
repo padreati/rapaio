@@ -31,9 +31,10 @@
 
 package rapaio.math.tensor;
 
+import jdk.incubator.vector.FloatVector;
 import rapaio.math.tensor.storage.FStorage;
 
-public interface FTensor extends Tensor<Float, FStorage, FTensor> {
+public interface FTensor extends Tensor<Float, FloatVector, FStorage, FTensor> {
 
     @Override
     FStorage storage();
@@ -76,8 +77,8 @@ public interface FTensor extends Tensor<Float, FStorage, FTensor> {
     FTensor swapAxis(int src, int dst);
 
     @Override
-    FTensor copy(Order askOrder);
+    FTensor t();
 
     @Override
-    FTensor t();
+    FTensor copy(Order askOrder);
 }

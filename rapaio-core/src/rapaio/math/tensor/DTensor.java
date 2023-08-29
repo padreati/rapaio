@@ -31,9 +31,10 @@
 
 package rapaio.math.tensor;
 
+import jdk.incubator.vector.DoubleVector;
 import rapaio.math.tensor.storage.DStorage;
 
-public interface DTensor extends Tensor<Double, DStorage, DTensor> {
+public interface DTensor extends Tensor<Double, DoubleVector, DStorage, DTensor> {
 
     @Override
     DStorage storage();
@@ -76,8 +77,8 @@ public interface DTensor extends Tensor<Double, DStorage, DTensor> {
     DTensor swapAxis(int src, int dst);
 
     @Override
-    DTensor copy(Order askOrder);
+    DTensor t();
 
     @Override
-    DTensor t();
+    DTensor copy(Order askOrder);
 }
