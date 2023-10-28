@@ -21,18 +21,15 @@
 
 package rapaio.math.tensor;
 
-import jdk.incubator.vector.Vector;
+import java.util.Iterator;
+
 import rapaio.math.tensor.iterators.ChunkIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
 import rapaio.math.tensor.operators.TensorBinaryOp;
-import rapaio.math.tensor.operators.TensorUnaryOp;
-import rapaio.math.tensor.storage.Storage;
 import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
 
-import java.util.Iterator;
-
-public interface Tensor<N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> extends Printable, Iterable<N> {
+public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printable, Iterable<N> {
 
     TensorEngine manager();
 
@@ -45,39 +42,56 @@ public interface Tensor<N extends Number, V extends Vector<N>, S extends Storage
         return layout().shape();
     }
 
-    S storage();
-
     N getValue(int... idxs);
 
     void setValue(N value, int... idxs);
+
+    N ptrGetValue(int pos);
+
+    void ptrSetValue(int pos, N value);
 
     default PointerIterator pointerIterator() {
         return pointerIterator(Order.S);
     }
 
-    T unaryOp(TensorUnaryOp op);
-
     T abs();
+
     T neg();
+
     T log();
+
     T log1p();
+
     T exp();
+
     T expm1();
+
     T sin();
+
     T asin();
+
     T sinh();
+
     T cos();
+
     T acos();
+
     T cosh();
+
     T tan();
+
     T atan();
+
     T tanh();
 
     T binaryOp(T tensor, TensorBinaryOp op);
 
     T add(T tensor);
+
     T sub(T tensor);
+
     T mul(T tensor);
+
     T div(T tensor);
 
     Iterator<N> iterator(Order askOrder);
@@ -204,15 +218,15 @@ public interface Tensor<N extends Number, V extends Vector<N>, S extends Storage
     }
 
     default boolean deepEquals(Object t, double tol) {
-        if (t instanceof Tensor<?, ?, ?, ?> dt) {
+        if (t instanceof Tensor<?, ?> dt) {
             if (!layout().shape().equals(dt.layout().shape())) {
                 return false;
             }
-            var it1 = pointerIterator(Order.C);
-            var it2 = dt.pointerIterator(Order.C);
+            var it1 = iterator(Order.C);
+            var it2 = dt.iterator(Order.C);
             while (it1.hasNext()) {
-                double v1 = storage().getValue(it1.nextInt()).doubleValue();
-                double v2 = dt.storage().getValue(it2.nextInt()).doubleValue();
+                double v1 = it1.next().doubleValue();
+                double v2 = it2.next().doubleValue();
                 if (Math.abs(v1 - v2) > tol) {
                     return false;
                 }

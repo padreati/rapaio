@@ -29,34 +29,35 @@
  *
  */
 
-package rapaio.math.tensor.engine.parallel;
+package rapaio.math.tensor.engine.parallelarray;
 
-import jdk.incubator.concurrent.StructuredTaskScope;
+import java.util.concurrent.StructuredTaskScope;
+
 import rapaio.math.tensor.DTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.math.tensor.storage.DStorage;
 
-public final class DTensorStride extends rapaio.math.tensor.engine.base.DTensorStride {
+public final class DTensorStride extends rapaio.math.tensor.engine.basearray.DTensorStride {
 
-    public DTensorStride(ParallelTensorEngine manager, StrideLayout layout, DStorage storage) {
-        super(manager, layout, storage);
+    public DTensorStride(TensorEngine manager, StrideLayout layout, double[] array) {
+        super(manager, layout, array);
     }
 
-    public DTensorStride(ParallelTensorEngine manager, Shape shape, int offset, int[] strides, DStorage storage) {
-        this(manager, StrideLayout.of(shape, offset, strides), storage);
+    public DTensorStride(TensorEngine manager, Shape shape, int offset, int[] strides, double[] array) {
+        this(manager, StrideLayout.of(shape, offset, strides), array);
     }
 
-    public DTensorStride(ParallelTensorEngine manager, Shape shape, int offset, Order order, DStorage storage) {
-        super(manager, StrideLayout.ofDense(shape, offset, order), storage);
+    public DTensorStride(ParallelArrayTensorEngine manager, Shape shape, int offset, Order order, double[] array) {
+        super(manager, StrideLayout.ofDense(shape, offset, order), array);
     }
 
     @Override
     public DTensor flatten(Order askOrder) {
         // TODO: this is basically a test, an optimized code would require a different strategy
         askOrder = Order.autoFC(askOrder);
-        var out = manager.storageFactory().ofDoubleZeros(layout.shape().size());
+        var out = new double[layout.shape().size()];
         int p = 0;
         var it = chunkIterator(askOrder);
 
@@ -66,7 +67,7 @@ public final class DTensorStride extends rapaio.math.tensor.engine.base.DTensorS
                 int pstart = p;
                 scope.fork(() -> {
                     for (int i = pointer, j = pstart; i < pointer + it.loopBound(); i += it.loopStep(), j++) {
-                        out.set(j, storage().get(i));
+                        out[j] = array[i];
                     }
                     return null;
                 });
@@ -77,6 +78,6 @@ public final class DTensorStride extends rapaio.math.tensor.engine.base.DTensorS
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-        return manager.ofDoubleStride(Shape.of(layout.shape().size()), 0, new int[] {1}, out);
+        return manager.ofDouble().stride(Shape.of(layout.shape().size()), 0, new int[] {1}, out);
     }
 }

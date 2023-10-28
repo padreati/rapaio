@@ -9,7 +9,7 @@
         <version>5.1.0</version>
     </parent>
     <artifactId>rapaio-core</artifactId>
-    <version>${rapaio.version}</version>
+    <version>5.1.0</version>
     <name>rapaio-core</name>
 
     <url>http://maven.apache.org</url>
@@ -19,23 +19,24 @@
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-code-gen</artifactId>
             <version>5.1.0</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.2</version>
+            <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.2.0</version>
+            <version>5.6.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.2.0</version>
+            <version>5.4.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -63,7 +64,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>Generate sources</id>
@@ -89,7 +90,7 @@
                     <compilerArgs>
                         <compilerArg>--enable-preview</compilerArg>
                         <compilerArg>--add-modules</compilerArg>
-                        <compilerArg>jdk.incubator.vector,jdk.incubator.concurrent</compilerArg>
+                        <compilerArg>java.base,jdk.incubator.vector</compilerArg>
                     </compilerArgs>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
@@ -98,17 +99,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.2</version>
                 <configuration>
                     <reuseForks>true</reuseForks>
                     <!--suppress UnresolvedMavenProperty -->
-                    <argLine>--enable-preview --add-modules jdk.incubator.vector,jdk.incubator.concurrent</argLine>
+                    <argLine>--enable-preview --add-modules java.base,jdk.incubator.vector</argLine>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
+                <version>0.8.10</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -135,7 +136,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -148,12 +149,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.6.0</version>
                 <configuration>
-                    <source>20</source>
+                    <source>21</source>
                     <show>private</show>
                     <additionalOptions>-Xdoclint:none</additionalOptions>
                     <additionalJOption>-Xdoclint:none</additionalJOption>
+                    <release>21</release>
+                    <additionalOptions>--enable-preview</additionalOptions>
                 </configuration>
                 <executions>
                     <execution>
@@ -167,7 +170,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>3.0.0-M7</version>
+                <version>3.0.1</version>
                 <configuration>
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>

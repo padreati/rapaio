@@ -43,9 +43,6 @@ import org.openjdk.jmh.runner.options.TimeValue;
 
 import algebra.Utils;
 import rapaio.math.linear.DVector;
-import rapaio.math.tensor.storage.DStorage;
-import rapaio.math.tensor.storage.FStorage;
-import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 import rapaio.util.collection.DoubleArrays;
 
 @BenchmarkMode( {Mode.Throughput})
@@ -58,34 +55,17 @@ public class VectorizedArgMin {
         private int n;
 
         private double[] darray;
-        private DStorage dstorage;
-        private FStorage fstorage;
 
         @Setup(Level.Invocation)
         public void setup() {
             Random random = new Random();
-            var storageFactory = new ArrayStorageFactory();
             darray = DVector.random(random, n).array();
-            dstorage = storageFactory.ofDoubleRandom(n, random);
-            fstorage = storageFactory.ofFloatRandom(n, random);
         }
     }
 
     @Benchmark
     public void testArray(VectorState s, Blackhole bh) {
         bh.consume(DoubleArrays.reverse(s.darray));
-    }
-
-    @Benchmark
-    public void testVectorizedArray(VectorState s, Blackhole bh) {
-        s.dstorage.reverse(0, s.n);
-        bh.consume(s.dstorage);
-    }
-
-    @Benchmark
-    public void testVectorizedArrayFloat(VectorState s, Blackhole bh) {
-        s.fstorage.reverse(0, s.n);
-        bh.consume(s.fstorage);
     }
 
     public static void main(String[] args) throws RunnerException {

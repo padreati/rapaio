@@ -31,19 +31,19 @@
 
 package unlinkedlist;
 
-import jdk.incubator.concurrent.StructuredTaskScope;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.sys.WS;
+import static rapaio.graphics.Plotter.points;
+import static rapaio.graphics.opt.GOptions.pch;
+import static rapaio.graphics.opt.GOptions.sz;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.StructuredTaskScope;
 
-import static rapaio.graphics.Plotter.points;
-import static rapaio.graphics.opt.GOptions.pch;
-import static rapaio.graphics.opt.GOptions.sz;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.sys.WS;
 
 public class PlotPrimes {
 

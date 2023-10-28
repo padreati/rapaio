@@ -21,26 +21,25 @@
 
 package rapaio.math.tensor;
 
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.Vector;
-import org.junit.jupiter.api.Test;
-import rapaio.math.tensor.storage.DStorage;
-import rapaio.math.tensor.storage.FStorage;
-import rapaio.math.tensor.storage.Storage;
-import rapaio.math.tensor.storage.array.ArrayStorageFactory;
-import rapaio.util.collection.IntArrays;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import jdk.incubator.vector.Vector;
+import rapaio.util.collection.IntArrays;
 
 public class TensorTest {
 
     @Test
     void managerTestRunner() {
-        genericTestRunner(TensorEngines.newStandard(new ArrayStorageFactory()));
-        genericTestRunner(TensorEngines.newParallel(new ArrayStorageFactory()));
+        genericTestRunner(TensorEngines.newBaseArray());
+        genericTestRunner(TensorEngines.newParallelArray());
     }
 
     void genericTestRunner(TensorEngine manager) {
@@ -52,7 +51,7 @@ public class TensorTest {
         genericTestSuite(new FloatDenseStride(manager));
     }
 
-    <N extends Number, S extends Storage<N, V, S>, V extends Vector<N>, T extends Tensor<N, V, S, T>> void genericTestSuite(DataFactory<N, V, S, T> g) {
+    <N extends Number, T extends Tensor<N, T>> void genericTestSuite(DataFactory<N, T> g) {
         testGet(g);
         testSet(g);
         testPrinting(g);
@@ -64,7 +63,7 @@ public class TensorTest {
         testCopy(g);
     }
 
-    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testGet(DataFactory<N, V, S, T> g) {
+    <N extends Number, T extends Tensor<N, T>> void testGet(DataFactory<N, T> g) {
         var t = g.sequence(Shape.of(2, 3, 4));
         var val = g.value(0);
         for (int i = 0; i < 2; i++) {
@@ -77,7 +76,7 @@ public class TensorTest {
         }
     }
 
-    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testSet(DataFactory<N, V, S, T> g) {
+    <N extends Number, T extends Tensor<N, T>> void testSet(DataFactory<N, T> g) {
         var t = g.zeros(Shape.of(2, 3, 4));
         N val = g.value(0);
         for (int i = 0; i < 2; i++) {
@@ -99,7 +98,7 @@ public class TensorTest {
         }
     }
 
-    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testPrinting(DataFactory<N, V, S, T> g) {
+    <N extends Number, V extends Vector<N>, T extends Tensor<N, T>> void testPrinting(DataFactory<N, T> g) {
         var tensor = g.sequence(Shape.of(20, 2, 2, 25));
         assertEquals(tensor.toString(), tensor.toSummary());
 
@@ -240,7 +239,7 @@ public class TensorTest {
                 """, tensor.toFullContent());
     }
 
-    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testReshape(DataFactory<N, V, S, T> g) {
+    <N extends Number, T extends Tensor<N, T>> void testReshape(DataFactory<N, T> g) {
         var t = g.sequence(Shape.of(2, 3, 4));
         assertEquals(Shape.of(6, 4), t.reshape(Shape.of(6, 4)).shape());
         assertEquals(Shape.of(24, 1, 1), t.reshape(Shape.of(24, 1, 1)).shape());
@@ -250,7 +249,7 @@ public class TensorTest {
         assertEquals("Incompatible shape size.", ex.getMessage());
     }
 
-    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testIterators(DataFactory<N, V, S, T> g) {
+    <N extends Number, T extends Tensor<N, T>> void testIterators(DataFactory<N, T> g) {
 
         Shape shape = Shape.of(2, 3, 4);
         var t = g.sequence(shape);
@@ -258,16 +257,16 @@ public class TensorTest {
         var it = t.pointerIterator(Order.C);
         int pos = 0;
         while (it.hasNext()) {
-            assertEquals(t.storage().getValue(it.nextInt()), t.getValue(shape.index(Order.C, pos)));
-            assertEquals(pos, it.position());
+            assertEquals(t.ptrGetValue(it.nextInt()), t.getValue(shape.index(Order.C, pos)));
+            assertEquals(pos, it.location());
             pos++;
         }
 
         it = t.pointerIterator(Order.F);
         pos = 0;
         while (it.hasNext()) {
-            assertEquals(t.storage().getValue(it.nextInt()), t.getValue(shape.index(Order.F, pos)), t.toString());
-            assertEquals(pos, it.position());
+            assertEquals(t.ptrGetValue(it.nextInt()), t.getValue(shape.index(Order.F, pos)), t.toString());
+            assertEquals(pos, it.location());
             pos++;
         }
 
@@ -275,24 +274,25 @@ public class TensorTest {
         t = g.sequence(shape);
         it = t.pointerIterator(Order.S);
         while (it.hasNext()) {
-            t.storage().setValue(it.nextInt(), g.value(1));
+            t.ptrSetValue(it.nextInt(), g.value(1));
         }
 
         it = t.pointerIterator(Order.C);
         while (it.hasNext()) {
-            assertEquals(g.value(1), t.storage().getValue(it.nextInt()));
+            assertEquals(g.value(1), t.ptrGetValue(it.nextInt()));
         }
         it = t.pointerIterator(Order.F);
         while (it.hasNext()) {
-            assertEquals(g.value(1), t.storage().getValue(it.nextInt()));
+            assertEquals(g.value(1), t.ptrGetValue(it.nextInt()));
         }
         it = t.pointerIterator(Order.S);
         while (it.hasNext()) {
-            assertEquals(g.value(1), t.storage().getValue(it.nextInt()));
+            assertEquals(g.value(1), t.ptrGetValue(it.nextInt()));
         }
     }
 
-    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testTranspose(DataFactory<N, V, S, T> g) {
+    <N extends Number, T extends Tensor<N, T>> void testTranspose(
+            DataFactory<N, T> g) {
         Shape shape = Shape.of(2, 3, 4);
         var t = g.sequence(shape);
 
@@ -311,7 +311,7 @@ public class TensorTest {
         }
     }
 
-    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testFlatten(DataFactory<N, V, S, T> g) {
+    <N extends Number, T extends Tensor<N, T>> void testFlatten(DataFactory<N, T> g) {
         Shape shape = Shape.of(2, 3, 4);
         var t = g.sequence(shape);
 
@@ -321,7 +321,7 @@ public class TensorTest {
         var itT = t.pointerIterator(Order.C);
         var itF = f.pointerIterator(Order.C);
         while (itF.hasNext()) {
-            assertEquals(t.storage().getValue(itT.nextInt()), f.storage().getValue(itF.nextInt()),
+            assertEquals(t.ptrGetValue(itT.nextInt()), f.ptrGetValue(itF.nextInt()),
                     "Error at tensor: " + t + ", flatten: " + f);
         }
 
@@ -331,7 +331,7 @@ public class TensorTest {
         }
     }
 
-    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testSqueezeMoveSwapAxis(DataFactory<N, V, S, T> g) {
+    <N extends Number, T extends Tensor<N, T>> void testSqueezeMoveSwapAxis(DataFactory<N, T> g) {
         Shape shape = Shape.of(2, 1, 3, 1, 4, 1);
         var t = g.sequence(shape);
         var s = t.squeeze();
@@ -342,7 +342,7 @@ public class TensorTest {
         while (it1.hasNext()) {
             int next1 = it1.nextInt();
             int next2 = it2.nextInt();
-            assertEquals(t.storage().getValue(next1), s.storage().getValue(next2), "t: " + t + ", f: " + s);
+            assertEquals(t.ptrGetValue(next1), s.ptrGetValue(next2), "t: " + t + ", f: " + s);
         }
 
         assertTrue(t.moveAxis(2, 3).deepEquals(t.swapAxis(2, 3)));
@@ -352,7 +352,7 @@ public class TensorTest {
         assertTrue(t.moveAxis(0, 2).deepEquals(t.swapAxis(0, 1).swapAxis(1, 2)));
     }
 
-    <N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> void testCopy(DataFactory<N, V, S, T> g) {
+    <N extends Number, T extends Tensor<N, T>> void testCopy(DataFactory<N, T> g) {
         Shape shape = Shape.of(2, 3, 4);
         var t = g.sequence(shape);
 
@@ -363,7 +363,7 @@ public class TensorTest {
         assertTrue(t.t().deepEquals(t.t().copy(Order.C)));
     }
 
-    abstract static class DataFactory<N extends Number, V extends Vector<N>, S extends Storage<N, V, S>, T extends Tensor<N, V, S, T>> {
+    abstract static class DataFactory<N extends Number, T extends Tensor<N, T>> {
 
         final TensorEngine manager;
 
@@ -377,12 +377,12 @@ public class TensorTest {
 
         abstract N mul(N x, double y);
 
-        abstract Tensor<N, V, S, T> sequence(Shape shape);
+        abstract Tensor<N, T> sequence(Shape shape);
 
-        abstract Tensor<N, V, S, T> zeros(Shape shape);
+        abstract Tensor<N, T> zeros(Shape shape);
     }
 
-    abstract static class DoubleDense extends DataFactory<Double, DoubleVector, DStorage, DTensor> {
+    abstract static class DoubleDense extends DataFactory<Double, DTensor> {
 
         public DoubleDense(TensorEngine manager) {
             super(manager);
@@ -413,12 +413,12 @@ public class TensorTest {
 
         @Override
         public DTensor sequence(Shape shape) {
-            return manager.ofDoubleSeq(shape, Order.F);
+            return manager.ofDouble().seq(shape, Order.F);
         }
 
         @Override
         public DTensor zeros(Shape shape) {
-            return manager.ofDoubleZeros(shape, Order.F);
+            return manager.ofDouble().zeros(shape, Order.F);
         }
     }
 
@@ -430,12 +430,12 @@ public class TensorTest {
 
         @Override
         public DTensor sequence(Shape shape) {
-            return manager.ofDoubleSeq(shape, Order.C);
+            return manager.ofDouble().seq(shape, Order.C);
         }
 
         @Override
         public DTensor zeros(Shape shape) {
-            return manager.ofDoubleZeros(shape, Order.C);
+            return manager.ofDouble().zeros(shape, Order.C);
         }
     }
 
@@ -469,7 +469,7 @@ public class TensorTest {
             }
 
             int offset = 10;
-            var t = manager.ofDoubleStride(shape, offset, strides, manager.storageFactory().ofDoubleZeros(offset + shape.size()));
+            var t = manager.ofDouble().stride(shape, offset, strides, new double[offset + shape.size()]);
 
             t.iteratorApply(Order.C, (i, p) -> (double) i);
 
@@ -501,11 +501,11 @@ public class TensorTest {
                 strides[next] = strides[prev] * shape.dim(prev);
             }
 
-            return manager.ofDoubleStride(shape, offset, strides, manager.storageFactory().ofDoubleZeros(offset + shape.size()));
+            return manager.ofDouble().stride(shape, offset, strides, new double[offset + shape.size()]);
         }
     }
 
-    abstract static class FloatDense extends DataFactory<Float, FloatVector, FStorage, FTensor> {
+    abstract static class FloatDense extends DataFactory<Float, FTensor> {
 
         public FloatDense(TensorEngine manager) {
             super(manager);
@@ -535,12 +535,12 @@ public class TensorTest {
 
         @Override
         public FTensor sequence(Shape shape) {
-            return manager.ofFloatSeq(shape, Order.F);
+            return manager.ofFloat().seq(shape, Order.F);
         }
 
         @Override
         public FTensor zeros(Shape shape) {
-            return manager.ofFloatZeros(shape, Order.F);
+            return manager.ofFloat().zeros(shape, Order.F);
         }
     }
 
@@ -552,12 +552,12 @@ public class TensorTest {
 
         @Override
         public FTensor sequence(Shape shape) {
-            return manager.ofFloatSeq(shape, Order.C);
+            return manager.ofFloat().seq(shape, Order.C);
         }
 
         @Override
         public FTensor zeros(Shape shape) {
-            return manager.ofFloatZeros(shape, Order.F);
+            return manager.ofFloat().zeros(shape, Order.F);
         }
     }
 
@@ -591,7 +591,7 @@ public class TensorTest {
             }
 
             int offset = 10;
-            var t = manager.ofFloatStride(shape, offset, strides, manager.storageFactory().ofFloatZeros(offset + shape.size()));
+            var t = manager.ofFloat().stride(shape, offset, strides, new float[offset + shape.size()]);
 
             t.iteratorApply(Order.C, (i, p) -> (float) i);
 
@@ -623,7 +623,7 @@ public class TensorTest {
                 strides[next] = strides[prev] * shape.dim(prev);
             }
 
-            return manager.ofFloatStride(shape, offset, strides, manager.storageFactory().ofFloatZeros(offset + shape.size()));
+            return manager.ofFloat().stride(shape, offset, strides, new float[offset + shape.size()]);
         }
     }
 }

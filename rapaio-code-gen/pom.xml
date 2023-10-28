@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>rapaio-code-gen</artifactId>
-    <version>${rapaio.version}</version>
+    <version>5.1.0</version>
     <name>rapaio-code-gen</name>
 
     <build>

@@ -31,20 +31,20 @@
 
 package rapaio.math.tensor.engine;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.util.Random;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.math.tensor.DTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorEngine;
-import rapaio.math.tensor.engine.parallel.ParallelTensorEngine;
-import rapaio.math.tensor.engine.base.BaseTensorEngine;
-import rapaio.math.tensor.storage.array.ArrayStorageFactory;
-
-import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import rapaio.math.tensor.engine.basearray.BaseArrayTensorEngine;
+import rapaio.math.tensor.engine.parallelarray.ParallelArrayTensorEngine;
 
 public class TensorEngineTest {
 
@@ -57,8 +57,8 @@ public class TensorEngineTest {
 
     @Test
     void mainTestLoop() {
-        testManager(new BaseTensorEngine(new ArrayStorageFactory()));
-        testManager(new ParallelTensorEngine(new ArrayStorageFactory()));
+        testManager(new BaseArrayTensorEngine());
+        testManager(new ParallelArrayTensorEngine());
     }
 
     void testManager(TensorEngine manager) {
@@ -76,97 +76,105 @@ public class TensorEngineTest {
     }
 
     void testOfDoubleZeros(TensorEngine manager) {
-        DTensor t = manager.ofDoubleZeros(Shape.of(10, 20));
+        DTensor t = manager.ofDouble().zeros(Shape.of(10, 20));
         assertEquals(manager, t.manager());
         assertEquals(t.shape(), Shape.of(10, 20));
         var it = t.pointerIterator();
         while (it.hasNext()) {
-            assertEquals(0, t.storage().get(it.nextInt()));
+            assertEquals(0, t.ptrGet(it.nextInt()));
         }
     }
 
     void testOfDoubleSeq(TensorEngine manager) {
-        var t = manager.ofDoubleSeq(Shape.of(2, 3, 4));
+        var t = manager.ofDouble().seq(Shape.of(2, 3, 4));
         var it = t.pointerIterator(Order.C);
         int i = 0;
         while (it.hasNext()) {
-            assertEquals(i++, t.storage().get(it.nextInt()));
+            assertEquals(i++, t.ptrGet(it.nextInt()));
         }
     }
 
     void testOfDoubleRandom(TensorEngine manager) {
-        var t = manager.ofDoubleRandom(Shape.of(3, 4), random);
+        var t = manager.ofDouble().random(Shape.of(3, 4), random);
         var it = t.pointerIterator(Order.C);
-        double last = t.storage().get(it.nextInt());
+        double last = t.ptrGet(it.nextInt());
         while (it.hasNext()) {
-            double next = t.storage().get(it.nextInt());
+            double next = t.ptrGet(it.nextInt());
             assertNotEquals(last, next);
             last = next;
         }
     }
 
     void testOfDoubleStride(TensorEngine manager) {
-        var t = manager.ofDoubleStride(Shape.of(4, 3), 0, new int[] {1, 4}, manager.storageFactory().ofDoubleSeq(0, 12));
+        double[] seq = new double[12];
+        for (int i = 0; i < seq.length; i++) {
+            seq[i] = i;
+        }
+        var t = manager.ofDouble().stride(Shape.of(4, 3), 0, new int[] {1, 4}, seq);
         int i = 0;
         var it = t.pointerIterator(Order.F);
-        while(it.hasNext()) {
-            assertEquals(i++, t.storage().get(it.nextInt()));
+        while (it.hasNext()) {
+            assertEquals(i++, t.ptrGet(it.nextInt()));
         }
     }
 
     void testOfDoubleWrap(TensorEngine manager) {
-        var t = manager.ofDoubleWrap(Shape.of(2,3), new double[] {1., 2, 3, 4, 5, 6}, Order.C);
-        int i=1;
+        var t = manager.ofDouble().wrap(Shape.of(2, 3), new double[] {1., 2, 3, 4, 5, 6}, Order.C);
+        int i = 1;
         var it = t.pointerIterator(Order.C);
-        while(it.hasNext()) {
-            assertEquals(i++, t.storage().get(it.nextInt()));
+        while (it.hasNext()) {
+            assertEquals(i++, t.ptrGet(it.nextInt()));
         }
     }
 
     void testOfFloatZeros(TensorEngine manager) {
-        var t = manager.ofFloatZeros(Shape.of(10, 20));
+        var t = manager.ofFloat().zeros(Shape.of(10, 20));
         assertEquals(t.shape(), Shape.of(10, 20));
         var it = t.pointerIterator();
         while (it.hasNext()) {
-            assertEquals(0, t.storage().get(it.nextInt()));
+            assertEquals(0, t.ptrGet(it.nextInt()));
         }
     }
 
     void testOfFloatSeq(TensorEngine manager) {
-        var t = manager.ofFloatSeq(Shape.of(2, 3, 4));
+        var t = manager.ofFloat().seq(Shape.of(2, 3, 4));
         var it = t.pointerIterator(Order.C);
         int i = 0;
         while (it.hasNext()) {
-            assertEquals(i++, t.storage().get(it.nextInt()));
+            assertEquals(i++, t.ptrGet(it.nextInt()));
         }
     }
 
     void testOfFloatRandom(TensorEngine manager) {
-        var t = manager.ofFloatRandom(Shape.of(3, 4), random);
+        var t = manager.ofFloat().random(Shape.of(3, 4), random);
         var it = t.pointerIterator(Order.C);
-        double last = t.storage().get(it.nextInt());
+        double last = t.ptrGet(it.nextInt());
         while (it.hasNext()) {
-            float next = t.storage().get(it.nextInt());
+            float next = t.ptrGet(it.nextInt());
             assertNotEquals(last, next);
             last = next;
         }
     }
 
     void testOfFloatStride(TensorEngine manager) {
-        var t = manager.ofFloatStride(Shape.of(4, 3), 0, new int[] {1, 4}, manager.storageFactory().ofFloatSeq(0, 12));
+        float[] seq = new float[12];
+        for (int i = 0; i < seq.length; i++) {
+            seq[i] = (float) i;
+        }
+        var t = manager.ofFloat().stride(Shape.of(4, 3), 0, new int[] {1, 4}, seq);
         int i = 0;
         var it = t.pointerIterator(Order.F);
-        while(it.hasNext()) {
-            assertEquals(i++, t.storage().get(it.nextInt()));
+        while (it.hasNext()) {
+            assertEquals(i++, t.ptrGet(it.nextInt()));
         }
     }
 
     void testOfFloatWrap(TensorEngine manager) {
-        var t = manager.ofFloatWrap(Shape.of(2,3), new float[] {1.f, 2.f, 3.f, 4.f, 5.f, 6.f}, Order.C);
-        int i=1;
+        var t = manager.ofFloat().wrap(Shape.of(2, 3), new float[] {1.f, 2.f, 3.f, 4.f, 5.f, 6.f}, Order.C);
+        int i = 1;
         var it = t.pointerIterator(Order.C);
-        while(it.hasNext()) {
-            assertEquals(i++, t.storage().get(it.nextInt()));
+        while (it.hasNext()) {
+            assertEquals(i++, t.ptrGet(it.nextInt()));
         }
     }
 }

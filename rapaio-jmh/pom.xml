@@ -30,7 +30,7 @@
     </parent>
 
     <artifactId>rapaio-jmh</artifactId>
-    <version>${rapaio.version}</version>
+    <version>5.1.0</version>
     <packaging>jar</packaging>
 
     <name>JMH benchmark for rapaio library</name>
@@ -57,12 +57,12 @@
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-core</artifactId>
-            <version>${rapaio.version}</version>
+            <version>5.1.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-experimental</artifactId>
-            <version>${rapaio.version}</version>
+            <version>5.1.0</version>
         </dependency>
     </dependencies>
 

@@ -36,11 +36,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>20</maven.compiler.source>
-        <maven.compiler.target>20</maven.compiler.target>
-        <maven.compiler.release>20</maven.compiler.release>
-        <java.version>20</java.version>
-        <rapaio.version>5.1.0</rapaio.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
+        <java.version>21</java.version>
     </properties>
 
     <modules>
@@ -61,7 +60,7 @@
                     <compilerArgs>
                         <compilerArg>--enable-preview</compilerArg>
                         <compilerArg>--add-modules</compilerArg>
-                        <compilerArg>jdk.incubator.vector,jdk.incubator.concurrent</compilerArg>
+                        <compilerArg>java.base,jdk.incubator.vector</compilerArg>
                     </compilerArgs>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
@@ -74,7 +73,7 @@
                 <configuration>
                     <reuseForks>true</reuseForks>
                     <!--suppress UnresolvedMavenProperty -->
-                    <argLine>--enable-preview --add-modules jdk.incubator.vector,jdk.incubator.concurrent</argLine>
+                    <argLine>--enable-preview --add-modules java.base,jdk.incubator.vector</argLine>
                 </configuration>
             </plugin>
         </plugins>

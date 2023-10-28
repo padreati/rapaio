@@ -31,27 +31,35 @@
 
 package rapaio.math.tensor;
 
-import jdk.incubator.vector.FloatVector;
-import rapaio.math.tensor.storage.FStorage;
-
-public interface FTensor extends Tensor<Float, FloatVector, FStorage, FTensor> {
+public interface FTensor extends Tensor<Float, FTensor> {
 
     @Override
-    FStorage storage();
-
-    @Override
-    default Float getValue(int... idxs) {
-        return get(idxs);
+    default Float getValue(int... indexes) {
+        return get(indexes);
     }
 
-    float get(int... idxs);
+    float get(int... indexes);
 
     @Override
-    default void setValue(Float value, int... idxs) {
-        set(value, idxs);
+    default void setValue(Float value, int... indexes) {
+        set(value, indexes);
     }
 
-    void set(float value, int... idxs);
+    void set(float value, int... indexes);
+
+    @Override
+    default Float ptrGetValue(int ptr) {
+        return ptrGet(ptr);
+    }
+
+    float ptrGet(int ptr);
+
+    @Override
+    default void ptrSetValue(int ptr, Float value) {
+        ptrSet(ptr, value);
+    }
+
+    void ptrSet(int ptr, float value);
 
     @Override
     default FTensor reshape(Shape shape) {

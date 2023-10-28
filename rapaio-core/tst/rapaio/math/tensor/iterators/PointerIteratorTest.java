@@ -52,7 +52,7 @@ public class PointerIteratorTest {
         for (int i = 0; i < 6; i++) {
             assertTrue(it.hasNext());
             assertEquals(i, it.nextInt());
-            assertEquals(i, it.position());
+            assertEquals(i, it.location());
         }
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::nextInt);
@@ -66,7 +66,7 @@ public class PointerIteratorTest {
             for (int j = 0; j < 3; j++) {
                 assertTrue(it.hasNext());
                 assertEquals(10 + i * 4 + j * 19, it.nextInt());
-                assertEquals(i * 3 + j, it.position());
+                assertEquals(i * 3 + j, it.location());
             }
         }
         assertFalse(it.hasNext());
@@ -80,7 +80,7 @@ public class PointerIteratorTest {
             for (int i = 0; i < 2; i++) {
                 assertTrue(it.hasNext());
                 assertEquals(10 + i * 4 + j * 19, it.nextInt());
-                assertEquals(i + j * 2, it.position());
+                assertEquals(i + j * 2, it.location());
             }
         }
         assertFalse(it.hasNext());
@@ -95,7 +95,7 @@ public class PointerIteratorTest {
                 for (int j = 0; j < 3; j++) {
                     assertTrue(it.hasNext());
                     assertEquals(10 + i * 100 + j * 4 + k * 19, it.nextInt());
-                    assertEquals(i * 15 + k * 3 + j, it.position());
+                    assertEquals(i * 15 + k * 3 + j, it.location());
                 }
             }
         }

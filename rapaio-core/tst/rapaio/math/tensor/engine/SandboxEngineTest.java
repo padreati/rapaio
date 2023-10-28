@@ -31,13 +31,14 @@
 
 package rapaio.math.tensor.engine;
 
+import java.util.Random;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorEngines;
-
-import java.util.Random;
 
 public class SandboxEngineTest {
 
@@ -53,7 +54,7 @@ public class SandboxEngineTest {
 
         var engine = TensorEngines.newDefault();
 
-        var t1 = engine.ofFloatRandom(Shape.of(2,3,2), random, Order.C);
+        var t1 = engine.ofFloat().random(Shape.of(2,3,2), random, Order.C);
 
         var t2 = t1.copy(Order.F).neg();
 
@@ -61,5 +62,8 @@ public class SandboxEngineTest {
         t2.printFullContent();
 
         t1.add(t2).printFullContent();
+
+        t1.sub(t2).printFullContent();
+
     }
 }

@@ -34,12 +34,12 @@ package rapaio.math.tensor.operators;
 public class Exp implements TensorUnaryOp {
 
     @Override
-    public double applyDouble(double x) {
+    public double apply(double x) {
         return Math.exp(x);
     }
 
     @Override
-    public float applyFloat(float x) {
+    public float apply(float x) {
         return (float) Math.exp(x);
     }
 }

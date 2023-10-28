@@ -43,6 +43,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serial;
+import java.net.URI;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -185,7 +186,7 @@ public class Csv extends ParamSet<Csv> {
 
     public Frame readUrl(String url) {
         try {
-            URL urlObject = new URL(url);
+            URL urlObject = URI.create(url).toURL();
             InputStream is = urlObject.openStream();
             Frame df = read(is);
             is.close();

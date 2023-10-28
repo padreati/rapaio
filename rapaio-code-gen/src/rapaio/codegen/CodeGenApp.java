@@ -32,64 +32,36 @@ public class CodeGenApp {
     static {
         templates = new ArrayList<>();
 
-        templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/storage/DStorage.java")
-                .dst.set("rapaio/math/tensor/storage/FStorage.java")
-                .replaces.set(
-                        Replace.of("double", "float"),
-                        Replace.of("Double", "Float"),
-                        Replace.of("DTensor", "FTensor"),
-                        Replace.of("DStorage", "FStorage")
-                )
-        );
-        templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/storage/array/DStorageArray.java")
-                .dst.set("rapaio/math/tensor/storage/array/FStorageArray.java")
-                .replaces.set(
-                        Replace.of("double", "float"),
-                        Replace.of("Double", "Float"),
-                        Replace.of("DTensor", "FTensor"),
-                        Replace.of("DStorage", "FStorage"),
-                        Replace.of("JAVA_DOUBLE", "JAVA_FLOAT")
-                )
-        );
+        Replace[] replaces = new Replace[] {
+                Replace.of("double", "float"),
+                Replace.of("Double", "Float"),
+                Replace.of("DTensor", "FTensor"),
+                Replace.of("DStorage", "FStorage"),
+                Replace.of("JAVA_DOUBLE", "JAVA_FLOAT")
+        };
+
         templates.add(new CodeGenTemplate()
                 .src.set("rapaio/math/tensor/DTensor.java")
                 .dst.set("rapaio/math/tensor/FTensor.java")
-                .replaces.set(
-                        Replace.of("double", "float"),
-                        Replace.of("Double", "Float"),
-                        Replace.of("DTensor", "FTensor"),
-                        Replace.of("DStorage", "FStorage")
-                )
+                .replaces.set(replaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/base/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/base/FTensorStride.java")
-                .replaces.set(
-                        Replace.of("double", "float"),
-                        Replace.of("Double", "Float"),
-                        Replace.of("DTensor", "FTensor"),
-                        Replace.of("DStorage", "FStorage")
-                )
+                .src.set("rapaio/math/tensor/engine/basearray/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/engine/basearray/FTensorStride.java")
+                .replaces.set(replaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/parallel/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/parallel/FTensorStride.java")
-                .replaces.set(
-                        Replace.of("double", "float"),
-                        Replace.of("Double", "Float"),
-                        Replace.of("DTensor", "FTensor"),
-                        Replace.of("DStorage", "FStorage")
-                )
+                .src.set("rapaio/math/tensor/engine/parallelarray/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/engine/parallelarray/FTensorStride.java")
+                .replaces.set(replaces)
         );
 
     }
 
     public static void main(String[] args) {
-        if(args.length!=1) {
+        if (args.length != 1) {
             throw new IllegalArgumentException("Pass root as parameter.");
         }
         String root = args[0];

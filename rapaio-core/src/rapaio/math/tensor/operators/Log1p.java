@@ -34,12 +34,12 @@ package rapaio.math.tensor.operators;
 public final class Log1p implements TensorUnaryOp {
 
     @Override
-    public double applyDouble(double x) {
+    public double apply(double x) {
         return Math.log1p(x);
     }
 
     @Override
-    public float applyFloat(float x) {
+    public float apply(float x) {
         return (float) Math.log1p(x);
     }
 }

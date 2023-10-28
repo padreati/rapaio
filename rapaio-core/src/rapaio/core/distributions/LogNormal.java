@@ -36,7 +36,12 @@ import static java.lang.Math.log;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MathTools.DOUBLE_PI;
+import static rapaio.math.MathTools.PI;
+import static rapaio.math.MathTools.SQRT_2;
+import static rapaio.math.MathTools.erf;
+import static rapaio.math.MathTools.inverf;
+import static rapaio.math.MathTools.log2;
 import static rapaio.printer.Format.floatFlex;
 
 public class LogNormal implements Distribution {

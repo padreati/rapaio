@@ -49,6 +49,6 @@ public interface PointerIterator extends IntIterator {
      *
      * @return current poition
      */
-    int position();
+    int location();
 }
 

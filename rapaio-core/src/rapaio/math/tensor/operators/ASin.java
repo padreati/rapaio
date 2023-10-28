@@ -34,12 +34,12 @@ package rapaio.math.tensor.operators;
 public final class ASin implements TensorUnaryOp {
 
     @Override
-    public double applyDouble(double x) {
+    public double apply(double x) {
         return Math.asin(x);
     }
 
     @Override
-    public float applyFloat(float x) {
+    public float apply(float x) {
         return (float) Math.asin(x);
     }
 }

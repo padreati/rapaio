@@ -29,45 +29,50 @@
  *
  */
 
-package rapaio.math.tensor.engine.base;
-
-import jdk.incubator.vector.DoubleVector;
-import rapaio.math.tensor.*;
-import rapaio.math.tensor.engine.AbstractTensor;
-import rapaio.math.tensor.iterators.*;
-import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.math.tensor.operators.TensorBinaryOp;
-import rapaio.math.tensor.operators.TensorUnaryOp;
-import rapaio.math.tensor.storage.DStorage;
-import rapaio.util.collection.IntArrays;
-import rapaio.util.function.IntIntBiFunction;
+package rapaio.math.tensor.engine.basearray;
 
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
-public sealed class DTensorStride extends AbstractTensor<Double, DoubleVector, DStorage, DTensor>
-        implements DTensor permits rapaio.math.tensor.engine.parallel.DTensorStride {
+import rapaio.math.tensor.DTensor;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorOps;
+import rapaio.math.tensor.engine.AbstractTensor;
+import rapaio.math.tensor.iterators.ChunkIterator;
+import rapaio.math.tensor.iterators.DensePointerIterator;
+import rapaio.math.tensor.iterators.PointerIterator;
+import rapaio.math.tensor.iterators.ScalarChunkIterator;
+import rapaio.math.tensor.iterators.StrideChunkIterator;
+import rapaio.math.tensor.iterators.StridePointerIterator;
+import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.math.tensor.operators.TensorBinaryOp;
+import rapaio.math.tensor.operators.TensorUnaryOp;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.function.IntIntBiFunction;
+
+public sealed class DTensorStride extends AbstractTensor<Double, DTensor>
+        implements DTensor permits rapaio.math.tensor.engine.parallelarray.DTensorStride {
 
     protected final StrideLayout layout;
     protected final TensorEngine manager;
-    protected final DStorage storage;
+    protected final double[] array;
 
-    public DTensorStride(TensorEngine manager, Shape shape, int offset, int[] strides, DStorage storage) {
-        this(manager, StrideLayout.of(shape, offset, strides), storage);
-    }
-
-    public DTensorStride(TensorEngine manager, StrideLayout layout, DStorage storage) {
+    public DTensorStride(TensorEngine manager, StrideLayout layout, double[] array) {
         this.layout = layout;
         this.manager = manager;
-        this.storage = storage;
+        this.array = array;
     }
 
-    public DTensorStride(TensorEngine manager, Shape shape, int offset, Order order, DStorage storage) {
-        this.layout = StrideLayout.ofDense(shape, offset, order);
-        this.manager = manager;
-        this.storage = storage;
+    public DTensorStride(TensorEngine manager, Shape shape, int offset, int[] strides, double[] array) {
+        this(manager, StrideLayout.of(shape, offset, strides), array);
+    }
+
+    public DTensorStride(TensorEngine manager, Shape shape, int offset, Order order, double[] array) {
+        this(manager, StrideLayout.ofDense(shape, offset, order), array);
     }
 
     @Override
@@ -75,9 +80,8 @@ public sealed class DTensorStride extends AbstractTensor<Double, DoubleVector, D
         return manager;
     }
 
-    @Override
-    public DStorage storage() {
-        return storage;
+    public double[] array() {
+        return array;
     }
 
     @Override
@@ -86,20 +90,30 @@ public sealed class DTensorStride extends AbstractTensor<Double, DoubleVector, D
     }
 
     @Override
-    public double get(int... idxs) {
-        return storage.get(layout.pointer(idxs));
+    public double get(int... indexes) {
+        return array[layout.pointer(indexes)];
     }
 
     @Override
-    public void set(double value, int... idxs) {
-        storage.set(layout.pointer(idxs), value);
+    public void set(double value, int... indexes) {
+        array[layout.pointer(indexes)] = value;
     }
 
     @Override
-    public DTensor unaryOp(TensorUnaryOp op) {
+    public double ptrGet(int ptr) {
+        return array[ptr];
+    }
+
+    @Override
+    public void ptrSet(int ptr, double value) {
+        array[ptr] = value;
+    }
+
+    protected DTensor unaryOp(TensorUnaryOp op) {
         var it = pointerIterator(Order.A);
         while (it.hasNext()) {
-            storage.apply(op, it.nextInt());
+            int pos = it.nextInt();
+            array[pos] = op.apply(array[pos]);
         }
         return this;
     }
@@ -189,7 +203,8 @@ public sealed class DTensorStride extends AbstractTensor<Double, DoubleVector, D
             var it = pointerIterator(order);
             var refIt = tensor.pointerIterator(order);
             while (it.hasNext()) {
-                storage.apply(op, it.nextInt(), tensor.storage().get(refIt.nextInt()));
+                int pos = it.nextInt();
+                array[pos] = op.apply(array[pos], tensor.ptrGetValue(refIt.nextInt()));
             }
             return this;
         }
@@ -224,16 +239,16 @@ public sealed class DTensorStride extends AbstractTensor<Double, DoubleVector, D
     @Override
     public Iterator<Double> iterator(Order askOrder) {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(pointerIterator(askOrder), Spliterator.ORDERED), false)
-                .map(storage::get).iterator();
+                .map(i -> array[i]).iterator();
     }
 
     @Override
-    public DTensor iteratorApply(Order askOrder, IntIntBiFunction<Double> apply) {
+    public DTensorStride iteratorApply(Order askOrder, IntIntBiFunction<Double> apply) {
         var it = pointerIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
             int p = it.nextInt();
-            storage.set(p, apply.applyAsInt(i++, p));
+            array[p] = apply.applyAsInt(i++, p);
         }
         return this;
     }
@@ -284,10 +299,10 @@ public sealed class DTensorStride extends AbstractTensor<Double, DoubleVector, D
             }
         }
         var it = new StridePointerIterator(layout, askOrder);
-        DTensor copy = manager.ofDoubleZeros(askShape, askOrder);
+        DTensor copy = manager.ofDouble().zeros(askShape, askOrder);
         var copyIt = copy.pointerIterator(Order.C);
         while (it.hasNext()) {
-            copy.storage().set(copyIt.nextInt(), storage.get(it.nextInt()));
+            copy.ptrSet(copyIt.nextInt(), array[it.nextInt()]);
         }
         return copy;
     }
@@ -296,7 +311,7 @@ public sealed class DTensorStride extends AbstractTensor<Double, DoubleVector, D
     public DTensor ravel(Order askOrder) {
         var compact = layout.computeFortranLayout(askOrder, true);
         if (compact.shape().rank() == 1) {
-            return manager.ofDoubleStride(compact, storage);
+            return manager.ofDouble().stride(compact, array);
         }
         return flatten(askOrder);
     }
@@ -304,49 +319,49 @@ public sealed class DTensorStride extends AbstractTensor<Double, DoubleVector, D
     @Override
     public DTensor flatten(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
-        var out = manager.storageFactory().ofDoubleZeros(layout.size());
+        var out = new double[layout.size()];
         int p = 0;
         var it = chunkIterator(askOrder);
         while (it.hasNext()) {
             int pointer = it.nextInt();
             for (int i = pointer; i < pointer + it.loopBound(); i += it.loopStep()) {
-                out.set(p++, storage.get(i));
+                out[p++] = array[i];
             }
         }
-        return manager.ofDoubleStride(Shape.of(layout.size()), 0, new int[]{1}, out);
+        return manager.ofDouble().stride(Shape.of(layout.size()), 0, new int[] {1}, out);
     }
 
     @Override
     public DTensor squeeze() {
-        return layout.shape().unitDimCount() == 0 ? this : manager.ofDoubleStride(layout.squeeze(), storage);
+        return layout.shape().unitDimCount() == 0 ? this : manager.ofDouble().stride(layout.squeeze(), array);
     }
 
     @Override
     public DTensor t() {
-        return manager.ofDoubleStride(layout.revert(), storage);
+        return manager.ofDouble().stride(layout.revert(), array);
     }
 
     @Override
     public DTensor moveAxis(int src, int dst) {
-        return manager.ofDoubleStride(layout.moveAxis(src, dst), storage());
+        return manager.ofDouble().stride(layout.moveAxis(src, dst), array);
     }
 
     @Override
     public DTensor swapAxis(int src, int dst) {
-        return manager.ofDoubleStride(layout.swapAxis(src, dst), storage());
+        return manager.ofDouble().stride(layout.swapAxis(src, dst), array);
     }
 
     @Override
     public DTensor copy(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
 
-        var copy = manager.ofDoubleZeros(shape(), askOrder);
+        var copy = manager.ofDouble().zeros(shape(), askOrder);
         var it1 = chunkIterator(askOrder);
         var it2 = copy.pointerIterator(askOrder);
         while (it1.hasNext()) {
             int pointer = it1.nextInt();
             for (int i = pointer; i < pointer + it1.loopBound(); i += it1.loopStep()) {
-                copy.storage().set(it2.nextInt(), storage().get(i));
+                copy.ptrSet(it2.nextInt(), ptrGet(i));
             }
         }
         return copy;

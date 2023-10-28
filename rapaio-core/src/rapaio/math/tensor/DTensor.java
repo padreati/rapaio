@@ -31,27 +31,35 @@
 
 package rapaio.math.tensor;
 
-import jdk.incubator.vector.DoubleVector;
-import rapaio.math.tensor.storage.DStorage;
-
-public interface DTensor extends Tensor<Double, DoubleVector, DStorage, DTensor> {
+public interface DTensor extends Tensor<Double, DTensor> {
 
     @Override
-    DStorage storage();
-
-    @Override
-    default Double getValue(int... idxs) {
-        return get(idxs);
+    default Double getValue(int... indexes) {
+        return get(indexes);
     }
 
-    double get(int... idxs);
+    double get(int... indexes);
 
     @Override
-    default void setValue(Double value, int... idxs) {
-        set(value, idxs);
+    default void setValue(Double value, int... indexes) {
+        set(value, indexes);
     }
 
-    void set(double value, int... idxs);
+    void set(double value, int... indexes);
+
+    @Override
+    default Double ptrGetValue(int ptr) {
+        return ptrGet(ptr);
+    }
+
+    double ptrGet(int ptr);
+
+    @Override
+    default void ptrSetValue(int ptr, Double value) {
+        ptrSet(ptr, value);
+    }
+
+    void ptrSet(int ptr, double value);
 
     @Override
     default DTensor reshape(Shape shape) {

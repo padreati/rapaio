@@ -31,66 +31,70 @@
 
 package rapaio.math.tensor;
 
-import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.math.tensor.storage.DStorage;
-import rapaio.math.tensor.storage.FStorage;
-import rapaio.math.tensor.storage.StorageFactory;
-
 import java.util.Random;
 
-public interface TensorEngine extends AutoCloseable {
+import rapaio.math.tensor.layout.StrideLayout;
 
-    StorageFactory storageFactory();
+public interface TensorEngine {
 
-    DTensor ofDoubleZeros(Shape shape, Order order);
+    interface OfDouble {
+        DTensor zeros(Shape shape, Order order);
 
-    default DTensor ofDoubleZeros(Shape shape) {
-        return ofDoubleZeros(shape, Order.defaultOrder());
+        default DTensor zeros(Shape shape) {
+            return zeros(shape, Order.defaultOrder());
+        }
+
+        DTensor seq(Shape shape, Order order);
+
+        default DTensor seq(Shape shape) {
+            return seq(shape, Order.defaultOrder());
+        }
+
+        DTensor random(Shape shape, Random random, Order order);
+
+        default DTensor random(Shape shape, Random random) {
+            return random(shape, random, Order.defaultOrder());
+        }
+
+        DTensor wrap(Shape shape, double[] array, Order order);
+
+        default DTensor stride(StrideLayout layout, double[] array) {
+            return stride(layout.shape(), layout.offset(), layout.strides(), array);
+        }
+
+        DTensor stride(Shape shape, int offset, int[] strides, double[] array);
     }
 
-    DTensor ofDoubleSeq(Shape shape, Order order);
+    interface OfFloat {
 
-    default DTensor ofDoubleSeq(Shape shape) {
-        return ofDoubleSeq(shape, Order.defaultOrder());
+        FTensor zeros(Shape shape, Order order);
+
+        default FTensor zeros(Shape shape) {
+            return zeros(shape, Order.defaultOrder());
+        }
+
+        FTensor seq(Shape shape, Order order);
+
+        default FTensor seq(Shape shape) {
+            return seq(shape, Order.defaultOrder());
+        }
+
+        FTensor random(Shape shape, Random random, Order order);
+
+        default FTensor random(Shape shape, Random random) {
+            return random(shape, random, Order.defaultOrder());
+        }
+
+        FTensor wrap(Shape shape, float[] array, Order order);
+
+        default FTensor stride(StrideLayout layout, float[] array) {
+            return stride(layout.shape(), layout.offset(), layout.strides(), array);
+        }
+
+        FTensor stride(Shape shape, int offset, int[] strides, float[] array);
     }
 
-    DTensor ofDoubleRandom(Shape shape, Random random, Order order);
+    OfDouble ofDouble();
 
-    default DTensor ofDoubleRandom(Shape shape, Random random) {
-        return ofDoubleRandom(shape, random, Order.defaultOrder());
-    }
-
-    DTensor ofDoubleWrap(Shape shape, double[] array, Order order);
-
-    default DTensor ofDoubleStride(StrideLayout layout, DStorage storage) {
-        return ofDoubleStride(layout.shape(), layout.offset(), layout.strides(), storage);
-    }
-
-    DTensor ofDoubleStride(Shape shape, int offset, int[] strides, DStorage storage);
-
-    FTensor ofFloatZeros(Shape shape, Order order);
-
-    default FTensor ofFloatZeros(Shape shape) {
-        return ofFloatZeros(shape, Order.defaultOrder());
-    }
-
-    FTensor ofFloatSeq(Shape shape, Order order);
-
-    default FTensor ofFloatSeq(Shape shape) {
-        return ofFloatSeq(shape, Order.defaultOrder());
-    }
-
-    FTensor ofFloatRandom(Shape shape, Random random, Order order);
-
-    default FTensor ofFloatRandom(Shape shape, Random random) {
-        return ofFloatRandom(shape, random, Order.defaultOrder());
-    }
-
-    FTensor ofFloatWrap(Shape shape, float[] array, Order order);
-
-    default FTensor ofFloatStride(StrideLayout layout, FStorage storage) {
-        return ofFloatStride(layout.shape(), layout.offset(), layout.strides(), storage);
-    }
-
-    FTensor ofFloatStride(Shape shape, int offset, int[] strides, FStorage storage);
+    OfFloat ofFloat();
 }

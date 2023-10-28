@@ -31,17 +31,14 @@
 
 package rapaio.math.tensor.engine;
 
-import jdk.incubator.vector.Vector;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.storage.Storage;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 
-public abstract class AbstractTensor<N extends Number, V extends Vector<N>, S extends Storage<N, V, S>,  T extends Tensor<N, V, S, T>>
-        implements Tensor<N, V, S, T> {
+public abstract class AbstractTensor<N extends Number, T extends Tensor<N, T>> implements Tensor<N, T> {
 
     @Override
     public String toContent(Printer printer, POpt<?>... options) {

@@ -37,7 +37,8 @@ import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sqrt;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MathTools.E;
+import static rapaio.math.MathTools.PI;
 import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;

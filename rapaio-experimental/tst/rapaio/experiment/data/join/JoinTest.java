@@ -34,7 +34,6 @@ import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.preprocessing.RefSort;
-import rapaio.experiment.data.join.Join;
 
 
 /**
@@ -61,11 +60,13 @@ public class JoinTest {
 
     @Test
     void leftJoinTest() {
-        assertEquals("    id   city    age children     id   city    age children \n" +
-                        "[0]  a      Iasi  20    1     [4]  c      Iasi  40    3     \n" +
-                        "[1]  a Bucharest  20    1     [5]  d Bucharest   ?    ?     \n" +
-                        "[2]  a      Iasi  30    0     [6]  d Constanta   ?    ?     \n" +
-                        "[3]  a Bucharest  30    0     \n",
+        assertEquals("""
+                            id   city    age children     id   city    age children\s
+                        [0]  a      Iasi  20    1     [4]  c      Iasi  40    3    \s
+                        [1]  a Bucharest  20    1     [5]  d Bucharest   ?    ?    \s
+                        [2]  a      Iasi  30    0     [6]  d Constanta   ?    ?    \s
+                        [3]  a Bucharest  30    0    \s
+                        """,
                 Join.from(df2, df1, VarRange.of("id"), VarRange.of("id"), Join.Type.LEFT).head(7));
 
         assertTrue(Join.leftJoin(df1, df2).deepEquals(Join.from(df1, df2, VarRange.of("id"), VarRange.of("id"), Join.Type.LEFT)));

@@ -33,7 +33,7 @@ package rapaio.math.tensor.operators;
 
 public interface TensorUnaryOp {
 
-    double applyDouble(double x);
+    double apply(double x);
 
-    float applyFloat(float x);
+    float apply(float x);
 }

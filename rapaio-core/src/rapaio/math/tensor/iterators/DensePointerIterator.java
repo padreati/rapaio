@@ -65,7 +65,7 @@ public final class DensePointerIterator implements PointerIterator {
     }
 
     @Override
-    public int position() {
+    public int location() {
         return (pointer - offset) / step - 1;
     }
 }

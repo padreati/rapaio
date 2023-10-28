@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.experiment.math.fourier.FFT;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
 

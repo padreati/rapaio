@@ -44,7 +44,7 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.layout.StrideLayout;
 
-public class ScalarPointerIteratorTest {
+public class ScalarLocationIteratorTest {
 
     @Test
     void testScalarIterator() {
@@ -79,7 +79,7 @@ public class ScalarPointerIteratorTest {
     void testScalar(PointerIterator it, int pointer) {
         assertTrue(it.hasNext());
         assertEquals(pointer, it.nextInt());
-        assertEquals(0, it.position());
+        assertEquals(0, it.location());
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::nextInt);
     }

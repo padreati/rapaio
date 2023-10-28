@@ -39,8 +39,6 @@ import static rapaio.printer.Format.*;
 import java.io.Serial;
 import java.util.Random;
 
-import rapaio.printer.Format;
-
 /**
  * Gamma distribution;
  * <A HREF="http://wwwinfo.cern.ch/asdoc/shortwrupsdir/g106/top.html"\n > math definition</A>,
@@ -102,8 +100,8 @@ public record Gamma(double alpha, double beta) implements Distribution {
      */
     public Gamma {
         if (alpha <= 0 || beta <= 0) {
-            throw new IllegalArgumentException("Value parameters alpha (" + Format.floatFlex(alpha) +
-                    ") and beta (" + Format.floatFlex(beta) + ") parameters should be strictly positive.");
+            throw new IllegalArgumentException("Value parameters alpha (" + floatFlex(alpha) +
+                    ") and beta (" + floatFlex(beta) + ") parameters should be strictly positive.");
         }
     }
 

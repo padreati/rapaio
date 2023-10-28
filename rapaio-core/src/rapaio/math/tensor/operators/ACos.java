@@ -34,12 +34,12 @@ package rapaio.math.tensor.operators;
 public final class ACos implements TensorUnaryOp {
 
     @Override
-    public double applyDouble(double x) {
+    public double apply(double x) {
         return Math.acos(x);
     }
 
     @Override
-    public float applyFloat(float x) {
+    public float apply(float x) {
         return (float) Math.acos(x);
     }
 }
