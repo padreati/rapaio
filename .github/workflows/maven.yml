@@ -16,7 +16,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         java-version: [ 21 ]
-        distro: [ 'corretto' ]
+        distro: [ 'zulu' ]
     runs-on: ${{ matrix.os }}
 
 
