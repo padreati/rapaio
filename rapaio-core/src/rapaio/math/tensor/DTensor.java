@@ -62,31 +62,30 @@ public interface DTensor extends Tensor<Double, DTensor> {
     void ptrSet(int ptr, double value);
 
     @Override
-    default DTensor reshape(Shape shape) {
-        return reshape(shape, Order.defaultOrder());
+    default DTensor add_(Double value) {
+        return add_(value.doubleValue());
     }
 
-    @Override
-    DTensor reshape(Shape shape, Order askOrder);
+    DTensor add_(double value);
 
     @Override
-    DTensor ravel(Order askOrder);
+    default DTensor sub_(Double value) {
+        return sub_(value.doubleValue());
+    }
+
+    DTensor sub_(double value);
 
     @Override
-    DTensor flatten(Order askOrder);
+    default DTensor mul_(Double value) {
+        return mul_(value.doubleValue());
+    }
+
+    DTensor mul_(double value);
 
     @Override
-    DTensor squeeze();
+    default DTensor div_(Double value) {
+        return div_(value.doubleValue());
+    }
 
-    @Override
-    DTensor moveAxis(int src, int dst);
-
-    @Override
-    DTensor swapAxis(int src, int dst);
-
-    @Override
-    DTensor t();
-
-    @Override
-    DTensor copy(Order askOrder);
+    DTensor div_(double value);
 }

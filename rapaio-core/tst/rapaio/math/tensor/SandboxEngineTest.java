@@ -29,11 +29,42 @@
  *
  */
 
-package rapaio.math.tensor.operators;
+package rapaio.math.tensor;
 
-public interface TensorBinaryOp {
+import java.util.Random;
 
-    double apply(double a, double b);
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 
-    float apply(float a, float b);
+import rapaio.printer.Format;
+import rapaio.printer.opt.POpts;
+import rapaio.sys.WS;
+
+public class SandboxEngineTest {
+
+    private Random random;
+
+    @BeforeEach
+    void beforeEach() {
+        random = new Random(42);
+    }
+
+//    @Test
+    void sandbox() {
+        WS.getPrinter().withOptions(POpts.floatFormat(Format.floatShort()));
+
+        var fact = TensorEngines.newDefault();
+        var t1 = fact.ofFloat().random(Shape.of(5, 5, 2), random);
+        t1.printContent();
+
+        for(var t : t1.slice(1, 3)) {
+            t.squeeze().printContent();
+        }
+
+        fact.ofFloat().concatenate(1, t1.slice(1, 1).toArray(FTensor[]::new)).printContent();
+        fact.ofFloat().stack(1, t1.slice(1, 1).toArray(FTensor[]::new)).squeeze().printContent();
+
+        Assertions.assertTrue(t1.deepEquals(fact.ofFloat().concatenate(1, t1.slice(1, 3).toArray(FTensor[]::new))));
+
+    }
 }

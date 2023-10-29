@@ -49,8 +49,7 @@ module rapaio.core {
     exports rapaio.math.optimization.linesearch;
     exports rapaio.math.optimization.scalar;
     exports rapaio.math.tensor;
-    exports rapaio.math.tensor.operators;
-    exports rapaio.math.tensor.engine;
+    exports rapaio.math.tensor.factory;
     exports rapaio.math.tensor.iterators;
     exports rapaio.math.tensor.layout;
 

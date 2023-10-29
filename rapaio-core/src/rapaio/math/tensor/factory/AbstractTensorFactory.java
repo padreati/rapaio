@@ -29,17 +29,9 @@
  *
  */
 
-package rapaio.math.tensor.operators;
+package rapaio.math.tensor.factory;
 
-public final class Sub implements TensorBinaryOp {
+import rapaio.math.tensor.TensorFactory;
 
-    @Override
-    public double apply(double a, double b) {
-        return a - b;
-    }
-
-    @Override
-    public float apply(float a, float b) {
-        return a - b;
-    }
+public abstract class AbstractTensorFactory implements TensorFactory {
 }

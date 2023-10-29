@@ -52,7 +52,7 @@ public final class ScalarPointerIterator implements PointerIterator {
     }
 
     @Override
-    public int location() {
+    public int pointer() {
         return 0;
     }
 

@@ -62,31 +62,30 @@ public interface FTensor extends Tensor<Float, FTensor> {
     void ptrSet(int ptr, float value);
 
     @Override
-    default FTensor reshape(Shape shape) {
-        return reshape(shape, Order.defaultOrder());
+    default FTensor add_(Float value) {
+        return add_(value.floatValue());
     }
 
-    @Override
-    FTensor reshape(Shape shape, Order askOrder);
+    FTensor add_(float value);
 
     @Override
-    FTensor ravel(Order askOrder);
+    default FTensor sub_(Float value) {
+        return sub_(value.floatValue());
+    }
+
+    FTensor sub_(float value);
 
     @Override
-    FTensor flatten(Order askOrder);
+    default FTensor mul_(Float value) {
+        return mul_(value.floatValue());
+    }
+
+    FTensor mul_(float value);
 
     @Override
-    FTensor squeeze();
+    default FTensor div_(Float value) {
+        return div_(value.floatValue());
+    }
 
-    @Override
-    FTensor moveAxis(int src, int dst);
-
-    @Override
-    FTensor swapAxis(int src, int dst);
-
-    @Override
-    FTensor t();
-
-    @Override
-    FTensor copy(Order askOrder);
+    FTensor div_(float value);
 }

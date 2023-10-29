@@ -31,8 +31,6 @@
 
 package rapaio.math.tensor;
 
-import rapaio.math.tensor.layout.StrideLayout;
-
 /**
  * A layout describes the dimensionality of a tensor and its related properties.
  * The interface {@link Layout} does not propose any constraints regarding how the
@@ -111,16 +109,18 @@ public interface Layout {
      *
      * @return same layout if no squeezed dimensions exist, otherwise a new layout with all unitary dimensions removed
      */
-    StrideLayout squeeze();
+    Layout squeeze();
+
+    Layout unsqueeze(int axis);
 
     /**
      * Revert all axes of the layout
      *
      * @return a layout with axes reverted
      */
-    StrideLayout revert();
+    Layout revert();
 
-    StrideLayout moveAxis(int src, int dst);
+    Layout moveAxis(int src, int dst);
 
-    StrideLayout swapAxis(int src, int dst);
+    Layout swapAxis(int src, int dst);
 }

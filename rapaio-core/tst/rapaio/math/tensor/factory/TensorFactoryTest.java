@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.engine;
+package rapaio.math.tensor.factory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -42,11 +42,11 @@ import org.junit.jupiter.api.Test;
 import rapaio.math.tensor.DTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorEngine;
-import rapaio.math.tensor.engine.basearray.BaseArrayTensorEngine;
-import rapaio.math.tensor.engine.parallelarray.ParallelArrayTensorEngine;
+import rapaio.math.tensor.TensorFactory;
+import rapaio.math.tensor.factory.basearray.BaseArrayTensorFactory;
+import rapaio.math.tensor.factory.parallelarray.ParallelArrayTensorFactory;
 
-public class TensorEngineTest {
+public class TensorFactoryTest {
 
     private Random random;
 
@@ -57,11 +57,11 @@ public class TensorEngineTest {
 
     @Test
     void mainTestLoop() {
-        testManager(new BaseArrayTensorEngine());
-        testManager(new ParallelArrayTensorEngine());
+        testManager(new BaseArrayTensorFactory());
+        testManager(new ParallelArrayTensorFactory());
     }
 
-    void testManager(TensorEngine manager) {
+    void testManager(TensorFactory manager) {
         testOfDoubleZeros(manager);
         testOfDoubleSeq(manager);
         testOfDoubleRandom(manager);
@@ -75,9 +75,9 @@ public class TensorEngineTest {
         testOfFloatWrap(manager);
     }
 
-    void testOfDoubleZeros(TensorEngine manager) {
+    void testOfDoubleZeros(TensorFactory manager) {
         DTensor t = manager.ofDouble().zeros(Shape.of(10, 20));
-        assertEquals(manager, t.manager());
+        assertEquals(manager, t.factory());
         assertEquals(t.shape(), Shape.of(10, 20));
         var it = t.pointerIterator();
         while (it.hasNext()) {
@@ -85,7 +85,7 @@ public class TensorEngineTest {
         }
     }
 
-    void testOfDoubleSeq(TensorEngine manager) {
+    void testOfDoubleSeq(TensorFactory manager) {
         var t = manager.ofDouble().seq(Shape.of(2, 3, 4));
         var it = t.pointerIterator(Order.C);
         int i = 0;
@@ -94,7 +94,7 @@ public class TensorEngineTest {
         }
     }
 
-    void testOfDoubleRandom(TensorEngine manager) {
+    void testOfDoubleRandom(TensorFactory manager) {
         var t = manager.ofDouble().random(Shape.of(3, 4), random);
         var it = t.pointerIterator(Order.C);
         double last = t.ptrGet(it.nextInt());
@@ -105,7 +105,7 @@ public class TensorEngineTest {
         }
     }
 
-    void testOfDoubleStride(TensorEngine manager) {
+    void testOfDoubleStride(TensorFactory manager) {
         double[] seq = new double[12];
         for (int i = 0; i < seq.length; i++) {
             seq[i] = i;
@@ -118,7 +118,7 @@ public class TensorEngineTest {
         }
     }
 
-    void testOfDoubleWrap(TensorEngine manager) {
+    void testOfDoubleWrap(TensorFactory manager) {
         var t = manager.ofDouble().wrap(Shape.of(2, 3), new double[] {1., 2, 3, 4, 5, 6}, Order.C);
         int i = 1;
         var it = t.pointerIterator(Order.C);
@@ -127,7 +127,7 @@ public class TensorEngineTest {
         }
     }
 
-    void testOfFloatZeros(TensorEngine manager) {
+    void testOfFloatZeros(TensorFactory manager) {
         var t = manager.ofFloat().zeros(Shape.of(10, 20));
         assertEquals(t.shape(), Shape.of(10, 20));
         var it = t.pointerIterator();
@@ -136,7 +136,7 @@ public class TensorEngineTest {
         }
     }
 
-    void testOfFloatSeq(TensorEngine manager) {
+    void testOfFloatSeq(TensorFactory manager) {
         var t = manager.ofFloat().seq(Shape.of(2, 3, 4));
         var it = t.pointerIterator(Order.C);
         int i = 0;
@@ -145,7 +145,7 @@ public class TensorEngineTest {
         }
     }
 
-    void testOfFloatRandom(TensorEngine manager) {
+    void testOfFloatRandom(TensorFactory manager) {
         var t = manager.ofFloat().random(Shape.of(3, 4), random);
         var it = t.pointerIterator(Order.C);
         double last = t.ptrGet(it.nextInt());
@@ -156,7 +156,7 @@ public class TensorEngineTest {
         }
     }
 
-    void testOfFloatStride(TensorEngine manager) {
+    void testOfFloatStride(TensorFactory manager) {
         float[] seq = new float[12];
         for (int i = 0; i < seq.length; i++) {
             seq[i] = (float) i;
@@ -169,7 +169,7 @@ public class TensorEngineTest {
         }
     }
 
-    void testOfFloatWrap(TensorEngine manager) {
+    void testOfFloatWrap(TensorFactory manager) {
         var t = manager.ofFloat().wrap(Shape.of(2, 3), new float[] {1.f, 2.f, 3.f, 4.f, 5.f, 6.f}, Order.C);
         int i = 1;
         var it = t.pointerIterator(Order.C);

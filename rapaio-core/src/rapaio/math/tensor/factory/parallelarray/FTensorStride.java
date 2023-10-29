@@ -29,27 +29,27 @@
  *
  */
 
-package rapaio.math.tensor.engine.parallelarray;
+package rapaio.math.tensor.factory.parallelarray;
 
 import java.util.concurrent.StructuredTaskScope;
 
 import rapaio.math.tensor.FTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorFactory;
 import rapaio.math.tensor.layout.StrideLayout;
 
-public final class FTensorStride extends rapaio.math.tensor.engine.basearray.FTensorStride {
+public final class FTensorStride extends rapaio.math.tensor.factory.basearray.FTensorStride {
 
-    public FTensorStride(TensorEngine manager, StrideLayout layout, float[] array) {
+    public FTensorStride(TensorFactory manager, StrideLayout layout, float[] array) {
         super(manager, layout, array);
     }
 
-    public FTensorStride(TensorEngine manager, Shape shape, int offset, int[] strides, float[] array) {
+    public FTensorStride(TensorFactory manager, Shape shape, int offset, int[] strides, float[] array) {
         this(manager, StrideLayout.of(shape, offset, strides), array);
     }
 
-    public FTensorStride(ParallelArrayTensorEngine manager, Shape shape, int offset, Order order, float[] array) {
+    public FTensorStride(ParallelArrayTensorFactory manager, Shape shape, int offset, Order order, float[] array) {
         super(manager, StrideLayout.ofDense(shape, offset, order), array);
     }
 
@@ -78,6 +78,6 @@ public final class FTensorStride extends rapaio.math.tensor.engine.basearray.FTe
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-        return manager.ofFloat().stride(Shape.of(layout.shape().size()), 0, new int[] {1}, out);
+        return factory.ofFloat().stride(Shape.of(layout.shape().size()), 0, new int[] {1}, out);
     }
 }

@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.engine;
+package rapaio.math.tensor.factory;
 
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;

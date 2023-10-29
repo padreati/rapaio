@@ -47,17 +47,16 @@ public class CodeGenApp {
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/basearray/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/basearray/FTensorStride.java")
+                .src.set("rapaio/math/tensor/factory/basearray/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/factory/basearray/FTensorStride.java")
                 .replaces.set(replaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/parallelarray/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/parallelarray/FTensorStride.java")
+                .src.set("rapaio/math/tensor/factory/parallelarray/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/factory/parallelarray/FTensorStride.java")
                 .replaces.set(replaces)
         );
-
     }
 
     public static void main(String[] args) {

@@ -33,6 +33,17 @@ package rapaio.math.tensor.iterators;
 
 import rapaio.util.IntIterator;
 
+/**
+ * Iterator over pointers. A pointer is an unidimensional index into the storage
+ * of the tensor. Each tensor stores its data into a contiguous block of memory.
+ * The API which allows accessing data through pointers are {@link rapaio.math.tensor.DTensor#ptrGet(int)}
+ * and {@link rapaio.math.tensor.DTensor#ptrSet(int, double)}, with similar methods for other types
+ * of tensors.
+ * <p>
+ * Pointers are used to access the tensor data in a more direct way.
+ * <p>
+ * The iterator is backed by a {@link IntIterator}
+ */
 public interface PointerIterator extends IntIterator {
 
     /**
@@ -47,8 +58,8 @@ public interface PointerIterator extends IntIterator {
     /**
      * Returns position for the corresponding pointer.
      *
-     * @return current poition
+     * @return current position
      */
-    int location();
+    int pointer();
 }
 

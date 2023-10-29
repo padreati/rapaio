@@ -35,7 +35,7 @@ import java.util.Random;
 
 import rapaio.math.tensor.layout.StrideLayout;
 
-public interface TensorEngine {
+public interface TensorFactory {
 
     interface OfDouble {
         DTensor zeros(Shape shape, Order order);
@@ -63,6 +63,27 @@ public interface TensorEngine {
         }
 
         DTensor stride(Shape shape, int offset, int[] strides, double[] array);
+
+        /**
+         * Concatenates multiple tensors along a given axis.
+         * Tensors must have compatible size, all other dimensions must be equal.
+         *
+         * @param axis    axis to concatenate along
+         * @param tensors tensors to concatenate
+         * @return new tensor with concatenated data
+         */
+        DTensor concatenate(int axis, DTensor... tensors);
+
+        /**
+         * Concatenates multiple tensors along a new axis.
+         * All tensors must have the same shape. The position of the new axis is between 0 (inclusive)
+         * and the number of dimensions (inclusive).
+         *
+         * @param axis index of the new dimension
+         * @param tensors tensors to concatenate
+         * @return new tensor with concatenated data
+         */
+        DTensor stack(int axis, DTensor... tensors);
     }
 
     interface OfFloat {
@@ -92,6 +113,28 @@ public interface TensorEngine {
         }
 
         FTensor stride(Shape shape, int offset, int[] strides, float[] array);
+
+        /**
+         * Concatenates multiple tensors along a given axis.
+         * Tensors must have compatible size, all other dimensions must be equal.
+         *
+         * @param axis    axis to concatenate along
+         * @param tensors tensors to concatenate
+         * @return new tensor with concatenated data
+         */
+        FTensor concatenate(int axis, FTensor... tensors);
+
+        /**
+         * Concatenates multiple tensors along a new axis.
+         * All tensors must have the same shape. The position of the new axis is between 0 (inclusive)
+         * and the number of dimensions (inclusive).
+         *
+         * @param axis index of the new dimension
+         * @param tensors tensors to concatenate
+         * @return new tensor with concatenated data
+         */
+        FTensor stack(int axis, FTensor... tensors);
+
     }
 
     OfDouble ofDouble();

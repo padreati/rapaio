@@ -337,6 +337,28 @@ public final class StrideLayout implements Layout {
     }
 
     @Override
+    public StrideLayout unsqueeze(int axis) {
+        if (axis < 0 || axis > rank()) {
+            throw new IllegalArgumentException("Axis is out of bounds.");
+        }
+        int[] newDims = new int[rank() + 1];
+        int[] newStrides = new int[rank() + 1];
+        for (int i = 0; i < shape().rank(); i++) {
+            newDims[i < axis ? i : i + 1] = dim(i);
+            newStrides[i < axis ? i : i + 1] = stride(i);
+        }
+        newDims[axis] = 1;
+        if (isCOrdered()) {
+            newStrides[axis] = axis == rank() ? 1 : stride(axis);
+        } else if (isFOrdered()) {
+            newStrides[axis] = axis == 0 ? 1 : stride(axis);
+        } else {
+            newStrides[axis] = 1;
+        }
+        return StrideLayout.of(Shape.of(newDims), offset(), newStrides);
+    }
+
+    @Override
     public StrideLayout revert() {
         int[] reversedDims = IntArrays.reverse(Arrays.copyOf(shape.dims(), shape.rank()));
         int[] reversedStride = IntArrays.reverse(Arrays.copyOf(strides, shape.rank()));
@@ -415,11 +437,11 @@ public final class StrideLayout implements Layout {
         if (isFOrdered()) {
             flagString.add("F_DENSE");
         }
-        return "StrideLayout("
+        return "StrideLayout{"
                 + "shape=[" + IntStream.of(shape.dims()).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "],"
                 + "offset=" + offset + ","
                 + "strides=[" + IntStream.of(strides).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "],"
                 + "flags=[" + String.join(",", flagString) + "]"
-                + ")";
+                + "}";
     }
 }

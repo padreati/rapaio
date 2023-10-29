@@ -42,7 +42,7 @@ public class TensorTest {
         genericTestRunner(TensorEngines.newParallelArray());
     }
 
-    void genericTestRunner(TensorEngine manager) {
+    void genericTestRunner(TensorFactory manager) {
         genericTestSuite(new DoubleDenseRow(manager));
         genericTestSuite(new DoubleDenseCol(manager));
         genericTestSuite(new DoubleDenseStride(manager));
@@ -258,7 +258,7 @@ public class TensorTest {
         int pos = 0;
         while (it.hasNext()) {
             assertEquals(t.ptrGetValue(it.nextInt()), t.getValue(shape.index(Order.C, pos)));
-            assertEquals(pos, it.location());
+            assertEquals(pos, it.pointer());
             pos++;
         }
 
@@ -266,7 +266,7 @@ public class TensorTest {
         pos = 0;
         while (it.hasNext()) {
             assertEquals(t.ptrGetValue(it.nextInt()), t.getValue(shape.index(Order.F, pos)), t.toString());
-            assertEquals(pos, it.location());
+            assertEquals(pos, it.pointer());
             pos++;
         }
 
@@ -365,9 +365,9 @@ public class TensorTest {
 
     abstract static class DataFactory<N extends Number, T extends Tensor<N, T>> {
 
-        final TensorEngine manager;
+        final TensorFactory manager;
 
-        public DataFactory(TensorEngine manager) {
+        public DataFactory(TensorFactory manager) {
             this.manager = manager;
         }
 
@@ -384,7 +384,7 @@ public class TensorTest {
 
     abstract static class DoubleDense extends DataFactory<Double, DTensor> {
 
-        public DoubleDense(TensorEngine manager) {
+        public DoubleDense(TensorFactory manager) {
             super(manager);
         }
 
@@ -407,7 +407,7 @@ public class TensorTest {
 
     static final class DoubleDenseCol extends DoubleDense {
 
-        public DoubleDenseCol(TensorEngine manager) {
+        public DoubleDenseCol(TensorFactory manager) {
             super(manager);
         }
 
@@ -424,7 +424,7 @@ public class TensorTest {
 
     static final class DoubleDenseRow extends DoubleDense {
 
-        public DoubleDenseRow(TensorEngine manager) {
+        public DoubleDenseRow(TensorFactory manager) {
             super(manager);
         }
 
@@ -441,7 +441,7 @@ public class TensorTest {
 
     static final class DoubleDenseStride extends DoubleDense {
 
-        public DoubleDenseStride(TensorEngine manager) {
+        public DoubleDenseStride(TensorFactory manager) {
             super(manager);
         }
 
@@ -507,7 +507,7 @@ public class TensorTest {
 
     abstract static class FloatDense extends DataFactory<Float, FTensor> {
 
-        public FloatDense(TensorEngine manager) {
+        public FloatDense(TensorFactory manager) {
             super(manager);
         }
 
@@ -529,7 +529,7 @@ public class TensorTest {
 
     static final class FloatDenseCol extends FloatDense {
 
-        public FloatDenseCol(TensorEngine manager) {
+        public FloatDenseCol(TensorFactory manager) {
             super(manager);
         }
 
@@ -546,7 +546,7 @@ public class TensorTest {
 
     static final class FloatDenseRow extends FloatDense {
 
-        public FloatDenseRow(TensorEngine manager) {
+        public FloatDenseRow(TensorFactory manager) {
             super(manager);
         }
 
@@ -563,7 +563,7 @@ public class TensorTest {
 
     static final class FloatDenseStride extends FloatDense {
 
-        public FloatDenseStride(TensorEngine manager) {
+        public FloatDenseStride(TensorFactory manager) {
             super(manager);
         }
 

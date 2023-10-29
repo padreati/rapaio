@@ -23,10 +23,21 @@ package rapaio.math.tensor.iterators;
 
 import rapaio.util.IntIterator;
 
+/**
+ * A chunk iterator iterates over chunks of contiguous blocks of memory.
+ *
+ * All chunks are of the same size. The iterator is backed by a {@link IntIterator}
+ */
 public interface ChunkIterator extends IntIterator {
 
+    /**
+     * @return number of chunks
+     */
     int chunkCount();
 
+    /**
+     * @return chunk size
+     */
     int loopSize();
 
     int loopStep();
