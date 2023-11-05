@@ -2,6 +2,6 @@ comment:
   layout: header, changes, diff
 coverage:
   ignore:
-    - "src/rapaio/experiment/**/*"
+    - "rapaio/rapaio-core/src/rapaio/experiment/**/*"
   status:
     patch: false
