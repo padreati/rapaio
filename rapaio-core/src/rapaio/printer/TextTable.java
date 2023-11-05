@@ -35,10 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarInt;
-import rapaio.data.VarType;
 import rapaio.printer.opt.POpt;
 
 /**
@@ -201,22 +197,6 @@ public class TextTable {
         }
     }
 
-    public void textType(int row, int col, Var var, int pos) {
-        if (var.type() == VarType.DOUBLE) {
-            floatFlex(row, col, var.getDouble(pos));
-        } else {
-            textRight(row, col, var.getLabel(pos));
-        }
-    }
-
-    public void textType(int row, int col, Frame df, int pos, String varName) {
-        if (df.type(varName) == VarType.DOUBLE) {
-            floatFlex(row, col, df.getDouble(pos, varName));
-        } else {
-            textRight(row, col, df.getLabel(pos, varName));
-        }
-    }
-
     /**
      * This method is required to implement custom things:
      * <p>
@@ -234,7 +214,7 @@ public class TextTable {
         set(row, col, value, align, NO_ANCHOR);
     }
 
-    void set(int row, int col, String value, int align, char anchor) {
+    public void set(int row, int col, String value, int align, char anchor) {
         computedLayout = false;
         if (anchor == NO_ANCHOR) {
             // no anchor
@@ -255,22 +235,22 @@ public class TextTable {
             right[row][col] = null;
         } else {
             // anchor
-            VarInt indexes = VarInt.empty();
+            List<Integer> indexes = new ArrayList<>();
             for (int i = 0; i < value.length(); i++) {
                 if (value.charAt(i) == anchor) {
-                    indexes.addInt(i);
+                    indexes.add(i);
                 }
             }
             // by default if no anchor is found we take mid
             int mid = (int) Math.ceil(value.length() / 2.);
-            if (indexes.size() != 0) {
+            if (!indexes.isEmpty()) {
                 if (align < 0) {
-                    mid = indexes.getInt(0);
+                    mid = indexes.get(0);
                 } else {
                     if (align > 0) {
-                        mid = indexes.getInt(indexes.size() - 1);
+                        mid = indexes.get(indexes.size() - 1);
                     } else {
-                        mid = indexes.getInt(indexes.size() / 2);
+                        mid = indexes.get(indexes.size() / 2);
                     }
                 }
             }

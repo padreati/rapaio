@@ -33,8 +33,8 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.preprocessing.VarApply;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Figure;
-import rapaio.image.ImageTools;
+import rapaio.printer.Figure;
+import rapaio.printer.ImageTools;
 
 public class LinesTest extends AbstractArtistTest {
 

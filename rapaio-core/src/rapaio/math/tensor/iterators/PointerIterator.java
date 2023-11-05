@@ -31,7 +31,7 @@
 
 package rapaio.math.tensor.iterators;
 
-import rapaio.util.IntIterator;
+import java.util.PrimitiveIterator;
 
 /**
  * Iterator over pointers. A pointer is an unidimensional index into the storage
@@ -42,9 +42,9 @@ import rapaio.util.IntIterator;
  * <p>
  * Pointers are used to access the tensor data in a more direct way.
  * <p>
- * The iterator is backed by a {@link IntIterator}
+ * The iterator is backed by a {@link PrimitiveIterator.OfInt}
  */
-public interface PointerIterator extends IntIterator {
+public interface PointerIterator extends PrimitiveIterator.OfInt {
 
     /**
      * Returns next pointer, if available.

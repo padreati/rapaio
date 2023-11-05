@@ -31,7 +31,6 @@
 
 package rapaio.printer;
 
-import rapaio.graphics.Figure;
 import rapaio.printer.opt.POpt;
 import rapaio.printer.opt.POpts;
 

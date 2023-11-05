@@ -40,6 +40,8 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import rapaio.printer.nparam.NamedParam;
+import rapaio.printer.nparam.NamedParamSet;
 import rapaio.util.function.SFunction;
 
 public class NamedParamSetTest {

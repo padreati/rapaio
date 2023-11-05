@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import rapaio.data.format.TextTableUtil;
 import rapaio.data.group.GroupFun;
 import rapaio.data.group.function.GroupFunCount;
 import rapaio.data.group.function.GroupFunKurtosis;
@@ -187,7 +188,7 @@ public class Group implements Printable {
         // names of the primary keys
         this.pkNames = groupVarNames;
         HashSet<String> pkVarNamesSet = new HashSet<>(pkNames);
-        if(pkNames.size()!=pkVarNamesSet.size()) {
+        if (pkNames.size() != pkVarNamesSet.size()) {
             throw new IllegalArgumentException("Group var names contains duplicates.");
         }
 
@@ -239,7 +240,7 @@ public class Group implements Printable {
         // sort group ids
         List<int[]> groupUniqueIds = new ArrayList<>();
         for (int i = 0; i < getNumberOfGroups(); i++) {
-            groupUniqueIds.add(groupIdToLastLevelIndex.get(i).getLevelIds(new int[pkNames.size()+1]));
+            groupUniqueIds.add(groupIdToLastLevelIndex.get(i).getLevelIds(new int[pkNames.size() + 1]));
             sortedGroupIds.addInt(i);
         }
         sortedGroupIds = (VarInt) sortedGroupIds.fapply(VarRefSort.from((i1, i2) -> {
@@ -332,7 +333,7 @@ public class Group implements Printable {
         private final Mapping rows = Mapping.empty();
 
         public IndexNode(IndexNode parent, String levelName,
-                         String levelValue, int levelId, int groupId) {
+                String levelValue, int levelId, int groupId) {
             this.parent = parent;
             this.levelName = levelName;
             this.levelValue = levelValue;
@@ -463,7 +464,7 @@ public class Group implements Printable {
         }
         tt.textLeft(i + 1, groupValues.size() + 1, String.format("%d  -> ", r));
         for (int j = 0; j < featureNames.size(); j++) {
-            tt.textType(i + 1, j + groupValues.size() + 2, df, r, featureNames.get(j));
+            TextTableUtil.textType(tt, i + 1, j + groupValues.size() + 2, df, r, featureNames.get(j));
         }
     }
 
@@ -503,7 +504,7 @@ public class Group implements Printable {
                 }
                 tt.textLeft(pos, groupValues.size() + 1, String.format("%d  -> ", row));
                 for (int i = 0; i < featureNames.size(); i++) {
-                    tt.textType(pos, i + groupValues.size() + 2, df, row, featureNames.get(i));
+                    TextTableUtil.textType(tt, pos, i + groupValues.size() + 2, df, row, featureNames.get(i));
                 }
                 pos++;
             }
@@ -676,8 +677,9 @@ public class Group implements Printable {
             for (int i = 0; i < group.getGroupByNameList().size(); i++) {
                 String groupVarName = group.getGroupByNameList().get(i);
                 sb.append(groupVarName);
-                if (i != group.getGroupByNameList().size() - 1)
+                if (i != group.getGroupByNameList().size() - 1) {
                     sb.append(", ");
+                }
             }
             sb.append("\n");
             sb.append("group count: ").append(group.getNumberOfGroups()).append("\n");
@@ -703,7 +705,7 @@ public class Group implements Printable {
                 selectedGroupIds.addAllInt(sortedGroupIds.iterator());
                 full = true;
             } else {
-                 selectedGroupIds.addAllInt(sortedGroupIds.iterator(0, headRows));
+                selectedGroupIds.addAllInt(sortedGroupIds.iterator(0, headRows));
                 selectedGroupIds.addAllInt(sortedGroupIds.iterator(sortedGroupIds.size() - tailRows, sortedGroupIds.size()));
             }
 

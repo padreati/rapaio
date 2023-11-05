@@ -37,6 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import rapaio.data.format.TextTableUtil;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
@@ -177,7 +178,7 @@ public abstract class AbstractFrame implements Frame {
 
         for (int i = 0; i < head; i++) {
             for (int j = 0; j < vars.length; j++) {
-                tt.textType(i + 1, j + 1, vars[j], i);
+                TextTableUtil.textType(tt, i + 1, j + 1, vars[j], i);
             }
         }
 
@@ -189,10 +190,12 @@ public abstract class AbstractFrame implements Frame {
             }
             for (int i = head + dots; i < head + dots + tail; i++) {
                 for (int j = 0; j < vars.length; j++) {
-                    tt.textType(i + 1, j + 1, vars[j], rowCount - tail - dots - head + i);
+                    TextTableUtil.textType(tt, i + 1, j + 1, vars[j], rowCount - tail - dots - head + i);
                 }
             }
         }
         return tt.getDynamicText(printer, options);
     }
+
+
 }

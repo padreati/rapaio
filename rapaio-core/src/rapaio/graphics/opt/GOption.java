@@ -32,7 +32,7 @@
 package rapaio.graphics.opt;
 
 import rapaio.util.function.SFunction;
-import rapaio.util.nparam.NamedParam;
+import rapaio.printer.nparam.NamedParam;
 
 public class GOption<V> extends NamedParam<GOptions, V> {
 

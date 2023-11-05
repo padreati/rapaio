@@ -31,12 +31,15 @@
 
 package rapaio.printer.standard;
 
-import rapaio.graphics.Figure;
-import rapaio.printer.AbstractPrinter;
-import rapaio.printer.local.FigurePanel;
+import java.awt.BorderLayout;
+import java.awt.Dialog;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+
+import rapaio.printer.AbstractPrinter;
+import rapaio.printer.Figure;
+import rapaio.printer.local.FigurePanel;
 
 /**
  * @author tutuianu

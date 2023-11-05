@@ -21,10 +21,7 @@
 
 package rapaio.ml.model.svm;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.IOException;
-import java.util.Random;
 import java.util.logging.Level;
 
 import org.junit.jupiter.api.BeforeEach;

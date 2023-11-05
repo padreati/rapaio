@@ -21,18 +21,27 @@
 
 package rapaio.graphics.plot.artist;
 
-import org.junit.jupiter.api.Test;
-import rapaio.core.distributions.Normal;
-import rapaio.data.VarDouble;
-import rapaio.graphics.Figure;
-import rapaio.graphics.plot.Plot;
-
-import java.awt.*;
-import java.io.IOException;
-
 import static rapaio.graphics.Plotter.gridLayer;
 import static rapaio.graphics.Plotter.plot;
-import static rapaio.graphics.opt.GOptions.*;
+import static rapaio.graphics.opt.GOptions.alpha;
+import static rapaio.graphics.opt.GOptions.color;
+import static rapaio.graphics.opt.GOptions.fill;
+import static rapaio.graphics.opt.GOptions.font;
+import static rapaio.graphics.opt.GOptions.halign;
+import static rapaio.graphics.opt.GOptions.heights;
+import static rapaio.graphics.opt.GOptions.lwd;
+import static rapaio.graphics.opt.GOptions.valign;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
+
+import rapaio.core.distributions.Normal;
+import rapaio.data.VarDouble;
+import rapaio.graphics.plot.Plot;
+import rapaio.printer.Figure;
 
 /**
  * Test some graphics by maintaining some previously generated images.

@@ -34,8 +34,8 @@ import org.junit.jupiter.api.BeforeEach;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.VarDouble;
-import rapaio.graphics.Figure;
-import rapaio.image.ImageTools;
+import rapaio.printer.Figure;
+import rapaio.printer.ImageTools;
 import rapaio.sys.WS;
 
 public abstract class AbstractArtistTest {

@@ -37,7 +37,7 @@ public class CodeGenApp {
                 Replace.of("Double", "Float"),
                 Replace.of("DTensor", "FTensor"),
                 Replace.of("DStorage", "FStorage"),
-                Replace.of("JAVA_DOUBLE", "JAVA_FLOAT")
+                Replace.of("DOUBLE", "FLOAT")
         };
 
         templates.add(new CodeGenTemplate()
@@ -47,14 +47,14 @@ public class CodeGenApp {
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/factory/basearray/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/factory/basearray/FTensorStride.java")
+                .src.set("rapaio/math/tensor/engine/basearray/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/engine/basearray/FTensorStride.java")
                 .replaces.set(replaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/factory/parallelarray/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/factory/parallelarray/FTensorStride.java")
+                .src.set("rapaio/math/tensor/engine/parallelarray/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/engine/parallelarray/FTensorStride.java")
                 .replaces.set(replaces)
         );
     }

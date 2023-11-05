@@ -7,6 +7,17 @@ module rapaio.core {
     requires jdk.incubator.vector;
     requires java.base;
 
+    requires javafx.base;
+    requires javafx.fxml;
+    requires javafx.controls;
+    requires javafx.graphics;
+    requires javafx.swing;
+
+    requires org.objectweb.asm;
+    requires org.objectweb.asm.tree;
+    requires org.objectweb.asm.tree.analysis;
+    requires org.objectweb.asm.util;
+
     exports rapaio.core;
     exports rapaio.core.correlation;
     exports rapaio.core.distributions;
@@ -48,8 +59,9 @@ module rapaio.core {
     exports rapaio.math.optimization;
     exports rapaio.math.optimization.linesearch;
     exports rapaio.math.optimization.scalar;
+    exports rapaio.math.tensor.dtype;
     exports rapaio.math.tensor;
-    exports rapaio.math.tensor.factory;
+    exports rapaio.math.tensor.engine;
     exports rapaio.math.tensor.iterators;
     exports rapaio.math.tensor.layout;
 
@@ -91,6 +103,7 @@ module rapaio.core {
     exports rapaio.printer;
     exports rapaio.printer.opt;
     exports rapaio.printer.local;
+    exports rapaio.printer.idea;
     exports rapaio.printer.standard;
 
     exports rapaio.sys;
@@ -101,8 +114,8 @@ module rapaio.core {
     exports rapaio.util.collection;
     exports rapaio.util.function;
     exports rapaio.util.hash;
-    exports rapaio.printer.idea;
     exports rapaio.math.linear.base;
     exports rapaio.util.param;
-    exports rapaio.util.nparam;
+
+    exports rapaio.experiment.asm;
 }

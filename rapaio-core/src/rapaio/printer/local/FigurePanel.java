@@ -31,17 +31,22 @@
 
 package rapaio.printer.local;
 
-import rapaio.graphics.Figure;
-import rapaio.image.ImageTools;
-import rapaio.printer.Printer;
-import rapaio.printer.opt.POpt;
-import rapaio.printer.opt.POpts;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.Serial;
 import java.util.concurrent.ExecutionException;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+
+import rapaio.printer.Figure;
+import rapaio.printer.ImageTools;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POpt;
+import rapaio.printer.opt.POpts;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

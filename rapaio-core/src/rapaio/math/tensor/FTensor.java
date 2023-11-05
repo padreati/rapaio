@@ -88,4 +88,10 @@ public interface FTensor extends Tensor<Float, FTensor> {
     }
 
     FTensor div_(float value);
+
+    default Float vdotValue(FTensor tensor) {
+        return vdot(tensor);
+    }
+
+    float vdot(FTensor tensor);
 }

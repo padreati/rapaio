@@ -41,7 +41,7 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
-import rapaio.graphics.Figure;
+import rapaio.printer.Figure;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

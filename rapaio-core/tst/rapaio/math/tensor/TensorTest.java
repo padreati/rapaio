@@ -38,17 +38,21 @@ public class TensorTest {
 
     @Test
     void managerTestRunner() {
-        genericTestRunner(TensorEngines.newBaseArray());
-        genericTestRunner(TensorEngines.newParallelArray());
-    }
 
-    void genericTestRunner(TensorFactory manager) {
-        genericTestSuite(new DoubleDenseRow(manager));
-        genericTestSuite(new DoubleDenseCol(manager));
-        genericTestSuite(new DoubleDenseStride(manager));
-        genericTestSuite(new FloatDenseRow(manager));
-        genericTestSuite(new FloatDenseCol(manager));
-        genericTestSuite(new FloatDenseStride(manager));
+        genericTestSuite(new DoubleDenseRow(TensorEngines.baseArray()));
+        genericTestSuite(new DoubleDenseCol(TensorEngines.baseArray()));
+        genericTestSuite(new DoubleDenseStride(TensorEngines.baseArray()));
+        genericTestSuite(new FloatDenseRow(TensorEngines.baseArray()));
+        genericTestSuite(new FloatDenseCol(TensorEngines.baseArray()));
+        genericTestSuite(new FloatDenseStride(TensorEngines.baseArray()));
+
+        genericTestSuite(new DoubleDenseRow(TensorEngines.parallelArray()));
+        genericTestSuite(new DoubleDenseCol(TensorEngines.parallelArray()));
+        genericTestSuite(new DoubleDenseStride(TensorEngines.parallelArray()));
+        genericTestSuite(new FloatDenseRow(TensorEngines.parallelArray()));
+        genericTestSuite(new FloatDenseCol(TensorEngines.parallelArray()));
+        genericTestSuite(new FloatDenseStride(TensorEngines.parallelArray()));
+
     }
 
     <N extends Number, T extends Tensor<N, T>> void genericTestSuite(DataFactory<N, T> g) {
@@ -365,17 +369,17 @@ public class TensorTest {
 
     abstract static class DataFactory<N extends Number, T extends Tensor<N, T>> {
 
-        final TensorFactory manager;
+        final Engine engine;
+        final Engine.OfType<N, T> ofType;
 
-        public DataFactory(TensorFactory manager) {
-            this.manager = manager;
+        public DataFactory(Engine engine, Engine.OfType<N, T> ofType) {
+            this.engine = engine;
+            this.ofType = ofType;
         }
 
         abstract N value(int x);
 
         abstract N inc(N x);
-
-        abstract N mul(N x, double y);
 
         abstract Tensor<N, T> sequence(Shape shape);
 
@@ -384,8 +388,8 @@ public class TensorTest {
 
     abstract static class DoubleDense extends DataFactory<Double, DTensor> {
 
-        public DoubleDense(TensorFactory manager) {
-            super(manager);
+        public DoubleDense(Engine engine) {
+            super(engine, engine.ofDouble());
         }
 
         @Override
@@ -398,50 +402,45 @@ public class TensorTest {
             return x + 1;
         }
 
-        @Override
-        public final Double mul(Double x, double y) {
-            return x * y;
-        }
-
     }
 
     static final class DoubleDenseCol extends DoubleDense {
 
-        public DoubleDenseCol(TensorFactory manager) {
-            super(manager);
+        public DoubleDenseCol(Engine engine) {
+            super(engine);
         }
 
         @Override
         public DTensor sequence(Shape shape) {
-            return manager.ofDouble().seq(shape, Order.F);
+            return ofType.seq(shape, Order.F);
         }
 
         @Override
         public DTensor zeros(Shape shape) {
-            return manager.ofDouble().zeros(shape, Order.F);
+            return ofType.zeros(shape, Order.F);
         }
     }
 
     static final class DoubleDenseRow extends DoubleDense {
 
-        public DoubleDenseRow(TensorFactory manager) {
+        public DoubleDenseRow(Engine manager) {
             super(manager);
         }
 
         @Override
         public DTensor sequence(Shape shape) {
-            return manager.ofDouble().seq(shape, Order.C);
+            return ofType.seq(shape, Order.C);
         }
 
         @Override
         public DTensor zeros(Shape shape) {
-            return manager.ofDouble().zeros(shape, Order.C);
+            return ofType.zeros(shape, Order.C);
         }
     }
 
     static final class DoubleDenseStride extends DoubleDense {
 
-        public DoubleDenseStride(TensorFactory manager) {
+        public DoubleDenseStride(Engine manager) {
             super(manager);
         }
 
@@ -469,7 +468,7 @@ public class TensorTest {
             }
 
             int offset = 10;
-            var t = manager.ofDouble().stride(shape, offset, strides, new double[offset + shape.size()]);
+            var t = ofType.stride(shape, offset, strides, new double[offset + shape.size()]);
 
             t.iteratorApply(Order.C, (i, p) -> (double) i);
 
@@ -501,14 +500,14 @@ public class TensorTest {
                 strides[next] = strides[prev] * shape.dim(prev);
             }
 
-            return manager.ofDouble().stride(shape, offset, strides, new double[offset + shape.size()]);
+            return ofType.stride(shape, offset, strides, new double[offset + shape.size()]);
         }
     }
 
     abstract static class FloatDense extends DataFactory<Float, FTensor> {
 
-        public FloatDense(TensorFactory manager) {
-            super(manager);
+        public FloatDense(Engine engine) {
+            super(engine, engine.ofFloat());
         }
 
         @Override
@@ -521,49 +520,45 @@ public class TensorTest {
             return x + 1;
         }
 
-        @Override
-        public final Float mul(Float x, double y) {
-            return (float) (x * y);
-        }
     }
 
     static final class FloatDenseCol extends FloatDense {
 
-        public FloatDenseCol(TensorFactory manager) {
-            super(manager);
+        public FloatDenseCol(Engine engine) {
+            super(engine);
         }
 
         @Override
         public FTensor sequence(Shape shape) {
-            return manager.ofFloat().seq(shape, Order.F);
+            return ofType.seq(shape, Order.F);
         }
 
         @Override
         public FTensor zeros(Shape shape) {
-            return manager.ofFloat().zeros(shape, Order.F);
+            return ofType.zeros(shape, Order.F);
         }
     }
 
     static final class FloatDenseRow extends FloatDense {
 
-        public FloatDenseRow(TensorFactory manager) {
+        public FloatDenseRow(Engine manager) {
             super(manager);
         }
 
         @Override
         public FTensor sequence(Shape shape) {
-            return manager.ofFloat().seq(shape, Order.C);
+            return ofType.seq(shape, Order.C);
         }
 
         @Override
         public FTensor zeros(Shape shape) {
-            return manager.ofFloat().zeros(shape, Order.F);
+            return ofType.zeros(shape, Order.F);
         }
     }
 
     static final class FloatDenseStride extends FloatDense {
 
-        public FloatDenseStride(TensorFactory manager) {
+        public FloatDenseStride(Engine manager) {
             super(manager);
         }
 
@@ -591,7 +586,7 @@ public class TensorTest {
             }
 
             int offset = 10;
-            var t = manager.ofFloat().stride(shape, offset, strides, new float[offset + shape.size()]);
+            var t = ofType.stride(shape, offset, strides, new float[offset + shape.size()]);
 
             t.iteratorApply(Order.C, (i, p) -> (float) i);
 
@@ -623,7 +618,7 @@ public class TensorTest {
                 strides[next] = strides[prev] * shape.dim(prev);
             }
 
-            return manager.ofFloat().stride(shape, offset, strides, new float[offset + shape.size()]);
+            return ofType.stride(shape, offset, strides, new float[offset + shape.size()]);
         }
     }
 }

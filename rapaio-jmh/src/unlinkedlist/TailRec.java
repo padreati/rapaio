@@ -82,11 +82,11 @@ public class TailRec {
             array = IntArrays.newSeq(n);
 
             normalFactorial = new Factorial();
-            optimizedFactorial = new CustomClassLoader(false).newTailRecInstance(FactorialInterface.class, Factorial.class);
+            optimizedFactorial = new CustomClassLoader(false).newTailRecInstance(Factorial.class);
             factorialDelegated = new FactorialDelegated();
 
             normalSum = new Sum();
-            optimizedSum = new CustomClassLoader(false).newTailRecInstance(SumInterface.class, Sum.class);
+            optimizedSum = new CustomClassLoader(false).newTailRecInstance(Sum.class);
         }
     }
 

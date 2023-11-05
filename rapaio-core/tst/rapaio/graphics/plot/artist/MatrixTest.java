@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
-import rapaio.image.ImageTools;
+import rapaio.printer.ImageTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 

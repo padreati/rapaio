@@ -37,7 +37,7 @@ import rapaio.core.tools.Grid2D;
 import rapaio.data.VarDouble;
 import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
-import rapaio.image.ImageTools;
+import rapaio.printer.ImageTools;
 
 public class IsoCurvesTest extends AbstractArtistTest {
 

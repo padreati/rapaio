@@ -35,7 +35,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 
 import rapaio.printer.Format;
-import rapaio.util.nparam.NamedParamSet;
+import rapaio.printer.nparam.NamedParamSet;
 
 /**
  * Printing options.

@@ -31,20 +31,20 @@
 
 package rapaio.math.tensor;
 
-import rapaio.math.tensor.factory.parallelarray.ParallelArrayTensorFactory;
-import rapaio.math.tensor.factory.basearray.BaseArrayTensorFactory;
+import rapaio.math.tensor.engine.basearray.BaseArrayEngine;
+import rapaio.math.tensor.engine.parallelarray.ParallelArrayEngine;
 
 public final class TensorEngines {
 
-    public static TensorFactory newDefault() {
-        return newBaseArray();
+    public static Engine doubleDefault() {
+        return baseArray();
     }
 
-    public static TensorFactory newBaseArray() {
-        return new BaseArrayTensorFactory();
+    public static Engine baseArray() {
+        return new BaseArrayEngine();
     }
 
-    public static TensorFactory newParallelArray() {
-        return new ParallelArrayTensorFactory();
+    public static Engine parallelArray() {
+        return new ParallelArrayEngine();
     }
 }

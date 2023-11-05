@@ -31,22 +31,32 @@
 
 package rapaio.ml.model;
 
-import rapaio.data.*;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.IntStream;
+
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
+import rapaio.printer.TextTable;
 import rapaio.util.function.SConsumer;
 import rapaio.util.function.SFunction;
 import rapaio.util.param.ParamSet;
 import rapaio.util.param.ValueParam;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.IntStream;
 
 /**
  * Abstract base class for all classifier implementations.

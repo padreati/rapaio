@@ -31,6 +31,17 @@
 
 package rapaio.core.tools;
 
+import static java.lang.StrictMath.min;
+import static java.lang.StrictMath.pow;
+
+import static rapaio.math.MathTools.log2;
+import static rapaio.util.collection.DoubleArrays.nanSum;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Var;
@@ -39,18 +50,8 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-
-import static java.lang.StrictMath.min;
-import static java.lang.StrictMath.pow;
-import static rapaio.math.MathTools.log2;
-import static rapaio.util.collection.DoubleArrays.nanSum;
+import rapaio.printer.TextTable;
 
 /**
  * Two-way table which holds frequencies between two discrete variables.

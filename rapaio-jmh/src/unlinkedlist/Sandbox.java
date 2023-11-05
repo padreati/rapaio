@@ -31,7 +31,7 @@
 
 package unlinkedlist;
 
-import static rapaio.graphics.opt.GOptions.*;
+import static rapaio.graphics.opt.GOptions.palette;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -42,9 +42,9 @@ import java.io.IOException;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.GridLayer;
-import rapaio.image.ImageTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.decomposition.DoubleSVDecomposition;
+import rapaio.printer.ImageTools;
 import rapaio.sys.WS;
 
 public class Sandbox {

@@ -41,7 +41,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.util.function.SFunction;
-import rapaio.util.nparam.NamedParamSet;
+import rapaio.printer.nparam.NamedParamSet;
 
 public class GOptions extends NamedParamSet<GOptions, GOption<?>> {
 

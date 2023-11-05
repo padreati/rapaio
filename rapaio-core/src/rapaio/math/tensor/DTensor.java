@@ -88,4 +88,10 @@ public interface DTensor extends Tensor<Double, DTensor> {
     }
 
     DTensor div_(double value);
+
+    default Double vdotValue(DTensor tensor) {
+        return vdot(tensor);
+    }
+
+    double vdot(DTensor tensor);
 }

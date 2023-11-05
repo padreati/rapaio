@@ -35,9 +35,9 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Figure;
+import rapaio.printer.Figure;
 import rapaio.graphics.opt.Palette;
-import rapaio.image.ImageTools;
+import rapaio.printer.ImageTools;
 
 public class PointsTest extends AbstractArtistTest {
 

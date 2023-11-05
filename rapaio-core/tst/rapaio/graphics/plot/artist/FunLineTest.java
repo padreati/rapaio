@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.graphics.plot.Plot;
-import rapaio.image.ImageTools;
+import rapaio.printer.ImageTools;
 
 public class FunLineTest extends AbstractArtistTest {
 

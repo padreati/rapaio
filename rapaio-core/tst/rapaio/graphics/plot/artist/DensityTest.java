@@ -34,7 +34,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
-import rapaio.image.ImageTools;
+import rapaio.printer.ImageTools;
 
 public class DensityTest extends AbstractArtistTest {
 

@@ -40,12 +40,12 @@ import rapaio.data.preprocessing.AddIntercept;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
+import rapaio.printer.TextTable;
 import rapaio.util.param.ValueParam;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.linear.LinearRegressionResult;
 import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 
 /**

@@ -35,7 +35,7 @@ import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
-import rapaio.image.ImageTools;
+import rapaio.printer.ImageTools;
 
 public class HistogramTest extends AbstractArtistTest {
 

@@ -48,7 +48,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.preprocessing.VarSort;
-import rapaio.graphics.Figure;
+import rapaio.printer.Figure;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.Palette;

@@ -33,7 +33,7 @@ import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Frame;
 import rapaio.data.VarInt;
 import rapaio.datasets.Datasets;
-import rapaio.image.ImageTools;
+import rapaio.printer.ImageTools;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.model.km.KMCluster;
 import rapaio.ml.model.km.KMClusterResult;
