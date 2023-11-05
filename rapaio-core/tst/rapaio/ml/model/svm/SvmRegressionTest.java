@@ -61,7 +61,9 @@ public class SvmRegressionTest {
                 .kernel.set(new RBFKernel(0.001))
                 .seed.set(42L);
 
-        DVector pr = m.fit(df.mapVars("TV,Radio,Sales"), "Sales").predict(df).firstPrediction().dv();
+        var pred = m.fit(df.mapVars("TV,Radio,Sales"), "Sales").predict(df);
+        DVector pr = pred.firstPrediction().dv();
+        pred.printSummary();
 
 //        assertTrue(DVector.wrap(pred.classes()).deepEquals(pr, TOL));
 

@@ -40,8 +40,8 @@ import rapaio.datasets.Datasets;
  */
 public class ConstantRegressionResultTest {
 
-    private final String father = "Father";
-    private final String son = "Son";
+    private static final String father = "Father";
+    private static final String son = "Son";
     private Frame df;
 
     @BeforeEach

@@ -44,8 +44,7 @@ import rapaio.ml.model.rule.ZeroRule;
 public class ClassifierModelEvaluationTest {
 
     private final SplitStrategy splitStrategy = (df, weights, __) -> List.of(new Split(0, 0, df, df), new Split(0, 1, df, df));
-
-    private final String targetName = "target";
+    private static final String targetName = "target";
 
     private Random random;
 

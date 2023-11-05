@@ -31,7 +31,14 @@
 
 package rapaio.ml.model.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Random;
+
 import org.junit.jupiter.api.Test;
+
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
@@ -40,14 +47,10 @@ import rapaio.ml.model.linear.BinaryLogistic;
 import rapaio.ml.model.svm.SvmClassifier;
 import rapaio.ml.model.tree.CTree;
 
-import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 public class CStackingTest {
 
     private final Frame iris = Datasets.loadIrisDataset();
-    private final String target = "class";
+    private static final String target = "class";
 
     @Test
     void buildTest() {

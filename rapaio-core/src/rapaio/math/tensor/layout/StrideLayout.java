@@ -206,14 +206,14 @@ public final class StrideLayout implements Layout {
         IntArrays.quickSort(storageOrder,
                 IntComparators.asIntComparator(Comparator.comparingInt(this::stride).thenComparing(this::dim).reversed()));
         int[] index = new int[rank()];
-        for (int i = 0; i < storageOrder.length; i++) {
-            int p = pointer / strides[storageOrder[i]];
+        for (int j : storageOrder) {
+            int p = pointer / strides[j];
             // this should not happen, if it happens than the strides are wrong from the very beginning
-            if (p >= dim(storageOrder[i])) {
+            if (p >= dim(j)) {
                 throw new IllegalStateException("Could not compute index from pointer.");
             }
-            index[storageOrder[i]] = p;
-            pointer -= p * strides[storageOrder[i]];
+            index[j] = p;
+            pointer -= p * strides[j];
         }
         return index;
     }

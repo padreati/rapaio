@@ -3,19 +3,29 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- * Copyright 2013 - 2022 Aurelian Tutuianu
+ *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
+ *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2020 Aurelian Tutuianu
+ *    Copyright 2021 Aurelian Tutuianu
+ *    Copyright 2022 Aurelian Tutuianu
+ *    Copyright 2023 Aurelian Tutuianu
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  *
  */
 
@@ -102,11 +112,9 @@ class Cache {
             }
             h.data = new_data;
             size -= more;
-            do {
-                int tmp = h.len;
-                h.len = len;
-                len = tmp;
-            } while (false);
+            int tmp = h.len;
+            h.len = len;
+            len = tmp;
         }
 
         lru_insert(h);
@@ -125,16 +133,16 @@ class Cache {
         if (head[j].len > 0) {
             lru_delete(head[j]);
         }
-        do {
+        {
             double[] tmp = head[i].data;
             head[i].data = head[j].data;
             head[j].data = tmp;
-        } while (false);
-        do {
+        }
+        {
             int tmp = head[i].len;
             head[i].len = head[j].len;
             head[j].len = tmp;
-        } while (false);
+        }
         if (head[i].len > 0) {
             lru_insert(head[i]);
         }
@@ -143,20 +151,18 @@ class Cache {
         }
 
         if (i > j) {
-            do {
-                int tmp = i;
-                i = j;
-                j = tmp;
-            } while (false);
+            int tmp = i;
+            i = j;
+            j = tmp;
         }
         for (head_t h = lru_head.next; h != lru_head; h = h.next) {
             if (h.len > i) {
                 if (h.len > j) {
-                    do {
+                    {
                         double tmp = h.data[i];
                         h.data[i] = h.data[j];
                         h.data[j] = tmp;
-                    } while (false);
+                    }
                 } else {
                     // give up
                     lru_delete(h);
@@ -199,17 +205,15 @@ abstract class Kernel extends QMatrix {
     abstract double[] get_QD();
 
     void swap_index(int i, int j) {
-        do {
+        {
             svm_node[] tmp = x[i];
             x[i] = x[j];
             x[j] = tmp;
-        } while (false);
+        }
         if (x_square != null) {
-            do {
-                double tmp = x_square[i];
-                x_square[i] = x_square[j];
-                x_square[j] = tmp;
-            } while (false);
+            double tmp = x_square[i];
+            x_square[i] = x_square[j];
+            x_square[j] = tmp;
         }
     }
 
@@ -420,41 +424,41 @@ class Solver {
 
     void swap_index(int i, int j) {
         Q.swap_index(i, j);
-        do {
+        {
             byte tmp = y[i];
             y[i] = y[j];
             y[j] = tmp;
-        } while (false);
-        do {
+        }
+        {
             double tmp = G[i];
             G[i] = G[j];
             G[j] = tmp;
-        } while (false);
-        do {
+        }
+        {
             byte tmp = alpha_status[i];
             alpha_status[i] = alpha_status[j];
             alpha_status[j] = tmp;
-        } while (false);
-        do {
+        }
+        {
             double tmp = alpha[i];
             alpha[i] = alpha[j];
             alpha[j] = tmp;
-        } while (false);
-        do {
+        }
+        {
             double tmp = p[i];
             p[i] = p[j];
             p[j] = tmp;
-        } while (false);
-        do {
+        }
+        {
             int tmp = active_set[i];
             active_set[i] = active_set[j];
             active_set[j] = tmp;
-        } while (false);
-        do {
+        }
+        {
             double tmp = G_bar[i];
             G_bar[i] = G_bar[j];
             G_bar[j] = tmp;
-        } while (false);
+        }
     }
 
     void reconstruct_gradient() {
@@ -1274,11 +1278,9 @@ class ONE_CLASS_Q extends Kernel {
     void swap_index(int i, int j) {
         cache.swap_index(i, j);
         super.swap_index(i, j);
-        do {
-            double tmp = QD[i];
-            QD[i] = QD[j];
-            QD[j] = tmp;
-        } while (false);
+        double tmp = QD[i];
+        QD[i] = QD[j];
+        QD[j] = tmp;
     }
 }
 
@@ -1730,7 +1732,7 @@ public class svm {
     // Method 2 from the multiclass_prob paper by Wu, Lin, and Weng
     private static void multiclass_probability(int k, double[][] r, double[] p) {
         int t, j;
-        int iter = 0, max_iter = Math.max(100, k);
+        int iter, max_iter = Math.max(100, k);
         double[][] Q = new double[k][k];
         double[] Qp = new double[k];
         double pQp, eps = 0.005 / k;
@@ -2355,17 +2357,13 @@ public class svm {
 
     public static void svm_get_labels(svm_model model, int[] label) {
         if (model.label != null) {
-            for (int i = 0; i < model.nr_class; i++) {
-                label[i] = model.label[i];
-            }
+            if (model.nr_class >= 0) System.arraycopy(model.label, 0, label, 0, model.nr_class);
         }
     }
 
     public static void svm_get_sv_indices(svm_model model, int[] indices) {
         if (model.sv_indices != null) {
-            for (int i = 0; i < model.l; i++) {
-                indices[i] = model.sv_indices[i];
-            }
+            if (model.l >= 0) System.arraycopy(model.sv_indices, 0, indices, 0, model.l);
         }
     }
 

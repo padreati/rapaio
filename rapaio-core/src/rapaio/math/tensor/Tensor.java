@@ -481,8 +481,8 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
             var it2 = dt.iterator(Order.C);
 
             while (it1.hasNext()) {
-                Object v1 = it1.next();
-                Object v2 = it2.next();
+                Number v1 = it1.next();
+                Number v2 = it2.next();
 
                 if (v1 == null && v2 == null) {
                     continue;
@@ -490,12 +490,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
                 if (v1 == null || v2 == null) {
                     return false;
                 }
-                if (v1 instanceof Number nv1 && v2 instanceof Number nv2) {
-                    if (Math.abs(nv1.doubleValue() - nv2.doubleValue()) > tol) {
-                        return false;
-                    }
-                }
-                if (!v1.equals(v2)) {
+                if (Math.abs(v1.doubleValue() - v2.doubleValue()) > tol) {
                     return false;
                 }
             }

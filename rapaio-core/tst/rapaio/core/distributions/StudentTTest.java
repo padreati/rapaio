@@ -137,25 +137,25 @@ public class StudentTTest {
             }
             assertEquals(df.getDouble(i, "pdf_2"), t2.pdf(x), TOL);
             assertEquals(df.getDouble(i, "cdf_2"), t2.cdf(x), TOL);
-            if (x > 0 && x < 1 && !Double.isNaN(x)) {
+            if (x > 0 && x < 1) {
                 if (!Double.isNaN(df.getDouble(i, "quantile_2")))
                     assertEquals(df.getDouble(i, "quantile_2"), t2.quantile(df.getDouble(i, "x")), TOL);
             }
             assertEquals(df.getDouble(i, "pdf_5"), t5.pdf(x), TOL);
             assertEquals(df.getDouble(i, "cdf_5"), t5.cdf(x), TOL);
-            if (x > 0 && x < 1 && !Double.isNaN(x)) {
+            if (x > 0 && x < 1) {
                 if (!Double.isNaN(df.getDouble(i, "quantile_5")))
                     assertEquals(df.getDouble(i, "quantile_5"), t5.quantile(df.getDouble(i, "x")), TOL);
             }
             assertEquals(df.getDouble(i, "pdf_10"), t10.pdf(x), TOL);
             assertEquals(df.getDouble(i, "cdf_10"), t10.cdf(x), TOL);
-            if (x > 0 && x < 1 && !Double.isNaN(x)) {
+            if (x > 0 && x < 1) {
                 if (!Double.isNaN(df.getDouble(i, "quantile_10")))
                     assertEquals(df.getDouble(i, "quantile_10"), t10.quantile(df.getDouble(i, "x")), TOL);
             }
             assertEquals(df.getDouble(i, "pdf_100"), t100.pdf(x), TOL);
             assertEquals(df.getDouble(i, "cdf_100"), t100.cdf(x), TOL);
-            if (x > 0 && x < 1 && !Double.isNaN(x)) {
+            if (x > 0 && x < 1) {
                 if (!Double.isNaN(df.getDouble(i, "quantile_100")))
                     assertEquals(df.getDouble(i, "quantile_100"), t100.quantile(df.getDouble(i, "x")), TOL);
             }

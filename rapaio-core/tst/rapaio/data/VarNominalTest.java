@@ -23,6 +23,7 @@
 
 package rapaio.data;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -138,30 +139,9 @@ public class VarNominalTest {
     @Test
     public void testLabel() {
         Var v = VarNominal.empty(1, "a", "b", "c");
-
-        boolean exceptional = false;
-        try {
-            v.setLabel(0, "j");
-        } catch (Throwable ex) {
-            exceptional = true;
-        }
-        assertFalse(exceptional);
-
-        exceptional = false;
-        try {
-            v.setLabel(-1, "a");
-        } catch (Throwable ex) {
-            exceptional = true;
-        }
-        assertTrue(exceptional);
-
-        exceptional = false;
-        try {
-            v.setLabel(4, "a");
-        } catch (Throwable ex) {
-            exceptional = true;
-        }
-        assertTrue(exceptional);
+        assertDoesNotThrow(() -> v.setLabel(0, "j"));
+        assertThrows(IndexOutOfBoundsException.class, () -> v.setLabel(-1, "a"));
+        assertThrows(IndexOutOfBoundsException.class, () -> v.setLabel(4, "a"));
     }
 
     @Test
