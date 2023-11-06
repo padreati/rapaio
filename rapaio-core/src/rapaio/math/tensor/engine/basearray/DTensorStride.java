@@ -87,10 +87,6 @@ public sealed class DTensorStride extends AbstractTensor<Double, DTensor>
         return engine;
     }
 
-    public double[] array() {
-        return array;
-    }
-
     @Override
     public StrideLayout layout() {
         return layout;
