@@ -33,75 +33,15 @@ package rapaio.math.tensor.engine;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import rapaio.math.tensor.DTensor;
-import rapaio.math.tensor.Engine;
-import rapaio.math.tensor.FTensor;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 
-public abstract class AbstractEngine implements Engine {
-
-    protected static abstract class AbstractOfFloat implements OfType<Float, FTensor> {
-
-        @Override
-        public FTensor eye(int n, Order order) {
-            FTensor eye = zeros(Shape.of(n, n), order);
-            for (int i = 0; i < n; i++) {
-                eye.set(1, i, i);
-            }
-            return eye;
-        }
-
-        @Override
-        public FTensor full(Shape shape, Float value, Order order) {
-            float[] array = new float[shape.size()];
-            Arrays.fill(array, value);
-            return stride(shape, Order.autoFC(order), array);
-        }
-
-        @Override
-        public FTensor seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).iteratorApply(Order.C, (i, p) -> (float) i);
-        }
-
-        @Override
-        public FTensor random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).iteratorApply(order, (i, p) -> random.nextFloat());
-        }
-    }
-    protected static abstract class AbstractOfDouble implements OfType<Double, DTensor> {
-
-        @Override
-        public DTensor eye(int n, Order order) {
-            DTensor eye = zeros(Shape.of(n, n), order);
-            for (int i = 0; i < n; i++) {
-                eye.set(1, i, i);
-            }
-            return eye;
-        }
-
-        @Override
-        public DTensor full(Shape shape, Double value, Order order) {
-            double[] array = new double[shape.size()];
-            Arrays.fill(array, value);
-            return stride(shape, Order.autoFC(order), array);
-        }
-
-        @Override
-        public DTensor seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).iteratorApply(Order.C, (i, p) -> (double) i);
-        }
-
-        @Override
-        public DTensor random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).iteratorApply(order, (i, p) -> random.nextDouble());
-        }
-    }
+public abstract class AbstractTensorEngine implements TensorEngine {
 
     @Override
     public <N extends Number, T extends Tensor<N, T>> T concat(int axis, Iterable<T> tensors) {
@@ -111,7 +51,7 @@ public abstract class AbstractEngine implements Engine {
         int newDim = tensorList.stream().mapToInt(tensor -> tensor.layout().shape().dim(axis)).sum();
         int[] newDims = Arrays.copyOf(tensorList.get(0).shape().dims(), tensorList.get(0).rank());
         newDims[axis] = newDim;
-        T result = ofType(tensorList.get(0).dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
+        var result = ofType(tensorList.get(0).dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
 
         int start = 0;
         for (T tensor : tensors) {
@@ -122,11 +62,11 @@ public abstract class AbstractEngine implements Engine {
             var it2 = dst.pointerIterator(Order.defaultOrder());
 
             while (it1.hasNext() && it2.hasNext()) {
-                dst.ptrSetValue(it2.nextInt(), tensor.ptrGetValue(it1.nextInt()));
+                dst.setAt(it2.nextInt(), tensor.getAt(it1.nextInt()));
             }
             start = end;
         }
-        return result;
+        return (T) result;
     }
 
     @Override
@@ -146,16 +86,16 @@ public abstract class AbstractEngine implements Engine {
             }
         }
         newDims[axis] = tensorList.size();
-        T result = ofType(tensorList.get(0).dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
-        List<T> slices = result.slice(axis, 1);
+        var result = ofType(tensorList.get(0).dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
+        var slices = result.slice(axis, 1);
         for (int i = 0; i < tensorList.size(); i++) {
             var it1 = slices.get(i).squeeze().pointerIterator(Order.defaultOrder());
             var it2 = tensorList.get(i).pointerIterator(Order.defaultOrder());
             while (it1.hasNext() && it2.hasNext()) {
-                slices.get(i).ptrSetValue(it1.nextInt(), tensorList.get(i).ptrGetValue(it2.nextInt()));
+                slices.get(i).setAt(it1.nextInt(), tensorList.get(i).getAt(it2.nextInt()));
             }
         }
-        return result;
+        return (T) result;
     }
 
     protected static void validateForConcatenation(int axis, List<int[]> dims) {

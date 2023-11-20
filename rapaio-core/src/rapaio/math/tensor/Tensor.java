@@ -42,7 +42,7 @@ import rapaio.util.function.IntIntBiFunction;
 
 public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printable, Iterable<N> {
 
-    Engine engine();
+    TensorEngine engine();
 
     DType<N, T> dtype();
 
@@ -60,13 +60,13 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
         return layout().size();
     }
 
-    N getValue(int... indexes);
+    N get(int... indexes);
 
-    void setValue(N value, int... indexes);
+    void set(N value, int... indexes);
 
-    N ptrGetValue(int pos);
+    N getAt(int pos);
 
-    void ptrSetValue(int pos, N value);
+    void setAt(int pos, N value);
 
     default PointerIterator pointerIterator() {
         return pointerIterator(Order.S);

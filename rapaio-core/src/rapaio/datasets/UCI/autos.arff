@@ -69,15 +69,15 @@
 %   6. num-of-doors:             four, two.
 %   7. body-style:               hardtop, wagon, sedan, hatchback, convertible.
 %   8. drive-wheels:             4wd, fwd, rwd.
-%   9. engine-location:          front, rear.
+%   9. tensorEngine-location:          front, rear.
 %  10. wheel-base:               continuous from 86.6 120.9.
 %  11. length:                   continuous from 141.1 to 208.1.
 %  12. width:                    continuous from 60.3 to 72.3.
 %  13. height:                   continuous from 47.8 to 59.8.
 %  14. curb-weight:              continuous from 1488 to 4066.
-%  15. engine-type:              dohc, dohcv, l, ohc, ohcf, ohcv, rotor.
+%  15. tensorEngine-type:              dohc, dohcv, l, ohc, ohcf, ohcv, rotor.
 %  16. num-of-cylinders:         eight, five, four, six, three, twelve, two.
-%  17. engine-size:              continuous from 61 to 326.
+%  17. tensorEngine-size:              continuous from 61 to 326.
 %  18. fuel-system:              1bbl, 2bbl, 4bbl, idi, mfi, mpfi, spdi, spfi.
 %  19. bore:                     continuous from 2.54 to 3.94.
 %  20. stroke:                   continuous from 2.07 to 4.17.
@@ -106,15 +106,15 @@
 @attribute num-of-doors { four, two}
 @attribute body-style { hardtop, wagon, sedan, hatchback, convertible}
 @attribute drive-wheels { 4wd, fwd, rwd}
-@attribute engine-location { front, rear}
+@attribute tensorEngine-location { front, rear}
 @attribute wheel-base real
 @attribute length real
 @attribute width real
 @attribute height real
 @attribute curb-weight real
-@attribute engine-type { dohc, dohcv, l, ohc, ohcf, ohcv, rotor}
+@attribute tensorEngine-type { dohc, dohcv, l, ohc, ohcf, ohcv, rotor}
 @attribute num-of-cylinders { eight, five, four, six, three, twelve, two}
-@attribute engine-size real
+@attribute tensorEngine-size real
 @attribute fuel-system { 1bbl, 2bbl, 4bbl, idi, mfi, mpfi, spdi, spfi}
 @attribute bore real
 @attribute stroke real

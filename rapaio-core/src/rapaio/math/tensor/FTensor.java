@@ -34,32 +34,32 @@ package rapaio.math.tensor;
 public interface FTensor extends Tensor<Float, FTensor> {
 
     @Override
-    default Float getValue(int... indexes) {
-        return get(indexes);
+    default Float get(int... indexes) {
+        return getFloat(indexes);
     }
 
-    float get(int... indexes);
+    float getFloat(int... indexes);
 
     @Override
-    default void setValue(Float value, int... indexes) {
-        set(value, indexes);
+    default void set(Float value, int... indexes) {
+        setFloat(value, indexes);
     }
 
-    void set(float value, int... indexes);
+    void setFloat(float value, int... indexes);
 
     @Override
-    default Float ptrGetValue(int ptr) {
-        return ptrGet(ptr);
+    default Float getAt(int ptr) {
+        return getAtFloat(ptr);
     }
 
-    float ptrGet(int ptr);
+    float getAtFloat(int ptr);
 
     @Override
-    default void ptrSetValue(int ptr, Float value) {
-        ptrSet(ptr, value);
+    default void setAt(int ptr, Float value) {
+        setAtFloat(ptr, value);
     }
 
-    void ptrSet(int ptr, float value);
+    void setAtFloat(int ptr, float value);
 
     @Override
     default FTensor add_(Float value) {

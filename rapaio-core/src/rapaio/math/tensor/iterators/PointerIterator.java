@@ -36,8 +36,8 @@ import java.util.PrimitiveIterator;
 /**
  * Iterator over pointers. A pointer is an unidimensional index into the storage
  * of the tensor. Each tensor stores its data into a contiguous block of memory.
- * The API which allows accessing data through pointers are {@link rapaio.math.tensor.DTensor#ptrGet(int)}
- * and {@link rapaio.math.tensor.DTensor#ptrSet(int, double)}, with similar methods for other types
+ * The API which allows accessing data through pointers are {@link rapaio.math.tensor.DTensor#getAtDouble(int)}
+ * and {@link rapaio.math.tensor.DTensor#setAtDouble(int, double)}, with similar methods for other types
  * of tensors.
  * <p>
  * Pointers are used to access the tensor data in a more direct way.
@@ -60,6 +60,6 @@ public interface PointerIterator extends PrimitiveIterator.OfInt {
      *
      * @return current position
      */
-    int pointer();
+    int position();
 }
 

@@ -78,6 +78,14 @@ public interface Layout {
     boolean isFOrdered();
 
     /**
+     * Tells if the tensor values are stored  in dense format. Dense means that
+     * elements are stored in contiguous memory.
+     *
+     * @return true if elements are stored in dense format, false otherwise
+     */
+    boolean isDense();
+
+    /**
      * Finds the best order which is closest to how values are stored in data storage.
      * It returns {@link Order#C} or {@link Order#F} for standard row major or col
      * major orderings. If none of the standard orderings are appropriate, then it returns

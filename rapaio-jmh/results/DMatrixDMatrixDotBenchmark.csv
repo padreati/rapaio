@@ -1,5 +1,13 @@
 "Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotRC","avgt",1,5,1.697493,0.677398,"ms/op",250
-"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotRC","avgt",1,5,10.497766,1.122785,"ms/op",500
-"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotRC","avgt",1,5,105.446395,44.119016,"ms/op",1000
-"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotRC","avgt",1,5,1389.838042,529.260899,"ms/op",2000
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testAbsJSAT","avgt",1,3,0.011101,0.007907,"ms/op",100
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testAbsJSAT","avgt",1,3,0.088167,0.021124,"ms/op",250
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testAbsJSAT","avgt",1,3,0.305008,0.251941,"ms/op",500
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testAbsJSAT","avgt",1,3,1.364500,0.098655,"ms/op",1000
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testMatrixAbs","avgt",1,3,0.005174,0.000285,"ms/op",100
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testMatrixAbs","avgt",1,3,0.031868,0.003762,"ms/op",250
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testMatrixAbs","avgt",1,3,0.135423,0.011549,"ms/op",500
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testMatrixAbs","avgt",1,3,1.116805,0.245231,"ms/op",1000
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testTensorAbs","avgt",1,3,0.001230,0.000626,"ms/op",100
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testTensorAbs","avgt",1,3,0.008032,0.002146,"ms/op",250
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testTensorAbs","avgt",1,3,0.041896,0.014351,"ms/op",500
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testTensorAbs","avgt",1,3,0.355796,0.007677,"ms/op",1000

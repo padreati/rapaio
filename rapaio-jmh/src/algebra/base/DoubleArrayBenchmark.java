@@ -19,7 +19,7 @@
  *
  */
 
-package misc;
+package algebra.base;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -42,48 +42,63 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
 import algebra.Utils;
-import rapaio.math.linear.DVector;
 import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.IntArrays;
 
-@BenchmarkMode( {Mode.Throughput})
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-public class VectorizedArgMin {
+@BenchmarkMode(Mode.AverageTime)
+public class DoubleArrayBenchmark {
 
     @State(Scope.Benchmark)
-    public static class VectorState {
-        @Param( {"100000"})
-        private int n;
+    public static class MyState {
+        @Param( {"100000", "1000000"})
+        int n;
 
-        private double[] darray;
+        double[] v;
+        int[] indexes;
 
         @Setup(Level.Invocation)
-        public void setup() {
-            Random random = new Random();
-            darray = DVector.random(random, n).array();
+        public void setupInvocation() {
+            v = DoubleArrays.newFrom(0, n, row -> new Random().nextDouble());
+            indexes = IntArrays.newSeq(0, n);
+            IntArrays.shuffle(indexes, new Random(42));
         }
     }
 
     @Benchmark
-    public void testArray(VectorState s, Blackhole bh) {
-        bh.consume(DoubleArrays.reverse(s.darray));
+    public void testContiguous(MyState s, Blackhole sink) {
+        for (int i = 0; i < s.n; i++) {
+            s.v[i] += (i & 1) + 1;
+        }
+        sink.consume(s.v);
+    }
+
+    @Benchmark
+    public void testReversed(MyState s, Blackhole sink) {
+        for (int i = s.n - 1; i >= 0; i--) {
+            s.v[i] += (i & 1) + 1;
+        }
+        sink.consume(s.v);
+    }
+
+    @Benchmark
+    public void testIndexed(MyState s, Blackhole bh) {
+        for (int i : s.indexes) {
+            s.v[i] += (i & 1) + 1;
+        }
     }
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-                .include(misc.VectorizedArgMin.class.getSimpleName())
-                .warmupTime(TimeValue.seconds(2))
+                .include(DoubleArrayBenchmark.class.getSimpleName())
+                .warmupTime(TimeValue.seconds(1))
                 .warmupIterations(3)
-                .measurementTime(TimeValue.seconds(2))
+                .measurementTime(TimeValue.seconds(1))
                 .measurementIterations(5)
-                .forks(1)
                 .resultFormat(ResultFormatType.CSV)
-                .result(Utils.resultPath(misc.VectorizedArgMin.class))
+                .result(Utils.resultPath(DoubleArrayBenchmark.class))
+                .forks(1)
                 .build();
-
         new Runner(opt).run();
     }
-
 }
-
-
-

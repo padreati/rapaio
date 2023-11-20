@@ -43,10 +43,12 @@ public abstract class DType<N extends Number, T extends Tensor<N, T>> {
     public static DTypeDouble DOUBLE = new DTypeDouble();
 
     private final String id;
+    private final byte bytes;
     private final boolean isInteger;
 
-    protected DType(String id, boolean isInteger) {
+    protected DType(String id, byte bytes, boolean isInteger) {
         this.id = id;
+        this.bytes = bytes;
         this.isInteger = isInteger;
     }
 
@@ -60,6 +62,10 @@ public abstract class DType<N extends Number, T extends Tensor<N, T>> {
 
     public boolean isFloat() {
         return !isInteger;
+    }
+
+    public int bytes() {
+        return bytes;
     }
 
     public abstract <M extends Number> N castValue(M value);

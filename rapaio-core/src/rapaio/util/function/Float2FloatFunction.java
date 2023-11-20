@@ -29,45 +29,14 @@
  *
  */
 
-package rapaio.math.tensor.iterators;
+package rapaio.util.function;
 
-import java.util.NoSuchElementException;
+@FunctionalInterface
+public interface Float2FloatFunction extends SFunction<Float, Float> {
 
-public final class DenseChunkIterator implements ChunkIterator {
+    float applyAsFloat(float value);
 
-    private final int size;
-    private boolean consumed = false;
-
-    public DenseChunkIterator(int size) {
-        this.size = size;
-    }
-
-    @Override
-    public int chunkCount() {
-        return 1;
-    }
-
-    @Override
-    public int loopSize() {
-        return size;
-    }
-
-    @Override
-    public int loopStep() {
-        return 1;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return !consumed;
-    }
-
-    @Override
-    public int nextInt() {
-        if (consumed) {
-            throw new NoSuchElementException();
-        }
-        consumed = true;
-        return 0;
+    default Float apply(Float value) {
+        return applyAsFloat(value);
     }
 }

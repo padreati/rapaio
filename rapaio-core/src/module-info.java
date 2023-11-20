@@ -118,4 +118,5 @@ module rapaio.core {
     exports rapaio.util.param;
 
     exports rapaio.experiment.asm;
+    exports rapaio.math.tensor.operator;
 }

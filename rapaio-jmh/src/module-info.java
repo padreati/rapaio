@@ -7,4 +7,5 @@ open module rapaio.jmh {
     requires jdk.unsupported;
 
     requires rapaio.core;
+    requires JSAT;
 }

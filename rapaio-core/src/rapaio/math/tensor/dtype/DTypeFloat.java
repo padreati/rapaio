@@ -41,7 +41,7 @@ public final class DTypeFloat extends DType<Float, FTensor> {
     private static final String ID = "FLOAT";
 
     public DTypeFloat() {
-        super(ID, false);
+        super(ID, (byte) 4, false);
     }
 
     @Override

@@ -41,7 +41,7 @@ public final class DTypeDouble extends DType<Double, DTensor> {
     private static final String ID = "DOUBLE";
 
     public DTypeDouble() {
-        super(ID, false);
+        super(ID, (byte)8, false);
     }
 
     @Override

@@ -55,8 +55,9 @@ public final class DensePointerIterator implements PointerIterator {
         if (pointer >= size) {
             throw new NoSuchElementException();
         }
+        int oldPointer = pointer;
         pointer += step;
-        return pointer - step;
+        return oldPointer;
     }
 
     @Override
@@ -65,7 +66,7 @@ public final class DensePointerIterator implements PointerIterator {
     }
 
     @Override
-    public int pointer() {
+    public int position() {
         return (pointer - offset) / step - 1;
     }
 }

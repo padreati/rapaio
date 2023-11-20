@@ -79,7 +79,7 @@ public class ScalarLocationIteratorTest {
     void testScalar(PointerIterator it, int pointer) {
         assertTrue(it.hasNext());
         assertEquals(pointer, it.nextInt());
-        assertEquals(0, it.pointer());
+        assertEquals(0, it.position());
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::nextInt);
     }

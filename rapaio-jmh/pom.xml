@@ -58,6 +58,11 @@
             <artifactId>rapaio-core</artifactId>
             <version>6.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.edwardraff</groupId>
+            <artifactId>JSAT</artifactId>
+            <version>0.0.9</version>
+        </dependency>
     </dependencies>
 
     <build>

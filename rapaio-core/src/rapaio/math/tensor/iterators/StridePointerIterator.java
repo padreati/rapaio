@@ -87,7 +87,7 @@ public final class StridePointerIterator implements PointerIterator {
     }
 
     @Override
-    public int pointer() {
+    public int position() {
         return position - 1;
     }
 }

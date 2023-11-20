@@ -70,4 +70,9 @@ public final class ScalarChunkIterator implements ChunkIterator {
     public boolean hasNext() {
         return !consumed;
     }
+
+    @Override
+    public int[] computeChunkOffsets() {
+        return new int[] {offset};
+    }
 }

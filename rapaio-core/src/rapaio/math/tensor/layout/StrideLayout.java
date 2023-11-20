@@ -98,10 +98,10 @@ public final class StrideLayout implements Layout {
             flags |= F_DENSE;
             return;
         }
-        if (isCOrder()) {
+        if (isValidCOrder()) {
             flags |= C_DENSE;
         }
-        if (isFOrder()) {
+        if (isValidFOrder()) {
             flags |= F_DENSE;
         }
     }
@@ -155,6 +155,11 @@ public final class StrideLayout implements Layout {
     }
 
     @Override
+    public boolean isDense() {
+        return (isCOrdered() && stride(-1) == 1) || (isFOrdered() && stride(0) == 1);
+    }
+
+    @Override
     public Order storageFastOrder() {
         /*
         If the rank is 1, then we have a dense layout and any kind of order matches criteria.
@@ -163,16 +168,16 @@ public final class StrideLayout implements Layout {
         if (shape.rank() < 2) {
             return Order.defaultOrder();
         }
-        if (isFOrder()) {
+        if (isFOrdered()) {
             return Order.F;
         }
-        if (isCOrder()) {
+        if (isCOrdered()) {
             return Order.C;
         }
         return Order.S;
     }
 
-    private boolean isFOrder() {
+    private boolean isValidFOrder() {
         for (int i = 1; i < shape.rank(); i++) {
             if (strides[i] != strides[i - 1] * shape.dim(i - 1)) {
                 return false;
@@ -181,7 +186,7 @@ public final class StrideLayout implements Layout {
         return true;
     }
 
-    private boolean isCOrder() {
+    private boolean isValidCOrder() {
         for (int i = shape.rank() - 2; i >= 0; i--) {
             if (strides[i] != strides[i + 1] * shape.dim(i + 1)) {
                 return false;

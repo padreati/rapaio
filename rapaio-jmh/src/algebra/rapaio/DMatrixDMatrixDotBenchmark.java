@@ -45,6 +45,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
 import algebra.Utils;
+import jsat.linear.DenseMatrix;
 import rapaio.data.Frame;
 import rapaio.data.preprocessing.RefSort;
 import rapaio.graphics.Plotter;
@@ -54,7 +55,12 @@ import rapaio.io.Csv;
 import rapaio.math.linear.base.DMatrixBase;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
+import rapaio.math.tensor.DTensor;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorEngines;
 import rapaio.sys.WS;
+
 
 @BenchmarkMode( {Mode.AverageTime})
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -62,13 +68,18 @@ public class DMatrixDMatrixDotBenchmark {
 
     @State(Scope.Benchmark)
     public static class StateDMDM {
-//        @Param( {"100","250","500","1000","1500","2000","3000","4000"})
-        @Param( {"250","500","1000","2000"})
+//                @Param( {"100","250","500","1000","1500","2000","3000","4000"})
+        @Param( {"100","250", "500", "1000"})
         private int n;
 
         private DMatrixBase mb;
         private DMatrixDenseC mc;
         private DMatrixDenseR mr;
+
+        private DenseMatrix jsatDM;
+
+        private DTensor t;
+        private DTensor tc;
 
         @Setup(Level.Invocation)
         public void setup() {
@@ -82,6 +93,17 @@ public class DMatrixDMatrixDotBenchmark {
             mb = new DMatrixBase(n, n, array);
             mc = new DMatrixDenseC(0, n, n, array);
             mr = new DMatrixDenseR(0, n, n, array);
+
+            jsatDM = new DenseMatrix(n, n);
+            int p = 0;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    jsatDM.set(i, j, array[p++]);
+                }
+            }
+
+            t = TensorEngines.baseArray().ofDouble().stride(Shape.of(n, n), Order.C, array);
+            tc = t.t().copy(Order.F);
         }
     }
 
@@ -89,7 +111,7 @@ public class DMatrixDMatrixDotBenchmark {
 //    public void testDotBaseBase(StateDMDM s, Blackhole bh) {
 //        bh.consume(s.mb.dot(s.mb));
 //    }
-//
+
 //    @Benchmark
 //    public void testDotCC(StateDMDM s, Blackhole bh) {
 //        bh.consume(s.mc.dot(s.mc));
@@ -104,30 +126,54 @@ public class DMatrixDMatrixDotBenchmark {
 //    public void testDotRR(StateDMDM s, Blackhole bh) {
 //        bh.consume(s.mr.dot(s.mr));
 //    }
+//
+//    @Benchmark
+//    public void testDotRC(StateDMDM s, Blackhole bh) {
+//        bh.consume(s.mr.dot(s.mc));
+//    }
+//
+//    @Benchmark
+//    public void testJSAT(StateDMDM s, Blackhole bh) throws InterruptedException {
+//        ExecutorService service = Executors.newCachedThreadPool();
+//        bh.consume(s.jsatDM.multiply(s.jsatDM, service));
+//        service.shutdownNow();
+//        service.awaitTermination(1L, TimeUnit.MILLISECONDS);
+//    }
+
+//    @Benchmark
+//    public void testTensorRC(StateDMDM s, Blackhole bh) {
+//        bh.consume(s.t.mm(s.tc));
+//    }
 
     @Benchmark
-    public void testDotRC(StateDMDM s, Blackhole bh) {
-        bh.consume(s.mr.dot(s.mc));
+    public void testTensorAbs(StateDMDM s, Blackhole bh) {
+        bh.consume(s.t.abs_());
+    }
+
+    @Benchmark
+    public void testMatrixAbs(StateDMDM s, Blackhole bh) {
+        bh.consume(s.mb.sub(1.));
+    }
+
+    @Benchmark
+    public void testAbsJSAT(StateDMDM s, Blackhole bh) {
+        bh.consume(s.jsatDM.add(1.));
     }
 
     public static void main(String[] args) throws RunnerException {
-        runTest();
-        printResults();
-    }
-
-    public static void runTest() throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(DMatrixDMatrixDotBenchmark.class.getSimpleName())
                 .warmupTime(TimeValue.seconds(1))
-                .warmupIterations(3)
+                .warmupIterations(2)
                 .measurementTime(TimeValue.seconds(1))
-                .measurementIterations(5)
+                .measurementIterations(3)
                 .forks(1)
                 .resultFormat(ResultFormatType.CSV)
                 .result(Utils.resultPath(DMatrixDMatrixDotBenchmark.class))
                 .build();
 
         new Runner(opt).run();
+        printResults();
     }
 
     public static void printResults() {

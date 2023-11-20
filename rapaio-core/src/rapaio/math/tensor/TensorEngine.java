@@ -35,7 +35,7 @@ import java.util.Random;
 
 import rapaio.math.tensor.layout.StrideLayout;
 
-public interface Engine {
+public interface TensorEngine {
 
     interface OfType<N extends Number, T extends Tensor<N, T>> {
 

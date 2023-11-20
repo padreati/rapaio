@@ -34,32 +34,32 @@ package rapaio.math.tensor;
 public interface DTensor extends Tensor<Double, DTensor> {
 
     @Override
-    default Double getValue(int... indexes) {
-        return get(indexes);
+    default Double get(int... indexes) {
+        return getDouble(indexes);
     }
 
-    double get(int... indexes);
+    double getDouble(int... indexes);
 
     @Override
-    default void setValue(Double value, int... indexes) {
-        set(value, indexes);
+    default void set(Double value, int... indexes) {
+        setDouble(value, indexes);
     }
 
-    void set(double value, int... indexes);
+    void setDouble(double value, int... indexes);
 
     @Override
-    default Double ptrGetValue(int ptr) {
-        return ptrGet(ptr);
+    default Double getAt(int ptr) {
+        return getAtDouble(ptr);
     }
 
-    double ptrGet(int ptr);
+    double getAtDouble(int ptr);
 
     @Override
-    default void ptrSetValue(int ptr, Double value) {
-        ptrSet(ptr, value);
+    default void setAt(int ptr, Double value) {
+        setAtDouble(ptr, value);
     }
 
-    void ptrSet(int ptr, double value);
+    void setAtDouble(int ptr, double value);
 
     @Override
     default DTensor add_(Double value) {

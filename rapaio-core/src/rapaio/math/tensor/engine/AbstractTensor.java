@@ -61,12 +61,13 @@ public abstract class AbstractTensor<N extends Number, T extends Tensor<N, T>> i
 
         TextTable tt = TextTable.empty(rows, cols, 0, 0);
 
+        var p = printer.withOptions(options);
         int row = 0;
         if (maxRowHit) {
             for (; row < MAX_ROW_VALUES - 1; row++) {
                 tt.textCenter(row, 0, rowStart(shape(), row));
                 tt.textLeft(row, cols - 1, rowEnd(shape(), row));
-                appendValues(printer, tt, row, cols, maxColHit);
+                appendValues(p, tt, row, cols, maxColHit);
             }
             for (int i = 0; i < cols; i++) {
                 tt.textCenter(row, i, "...");
@@ -75,7 +76,7 @@ public abstract class AbstractTensor<N extends Number, T extends Tensor<N, T>> i
             for (; row < rows; row++) {
                 tt.textCenter(row, 0, rowStart(shape(), row));
                 tt.textLeft(row, cols - 1, rowEnd(shape(), row));
-                appendValues(printer, tt, row, cols, maxColHit);
+                appendValues(p, tt, row, cols, maxColHit);
             }
         }
 
@@ -114,13 +115,13 @@ public abstract class AbstractTensor<N extends Number, T extends Tensor<N, T>> i
     private void appendValues(Printer printer, TextTable tt, int row, int cols, boolean maxColHit) {
         if (maxColHit) {
             for (int i = 0; i < cols - 2; i++) {
-                double value = getValue(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
+                double value = get(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
                 tt.floatString(row, i + 1, printer.getOptions().getFloatFormat().format(value));
             }
             tt.textCenter(row, cols - 2, "...");
         } else {
             for (int i = 0; i < cols - 2; i++) {
-                double value = getValue(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
+                double value = get(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
                 tt.floatString(row, i + 1, printer.getOptions().getFloatFormat().format(value));
             }
         }

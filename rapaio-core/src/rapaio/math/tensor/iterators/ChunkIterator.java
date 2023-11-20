@@ -55,5 +55,7 @@ public interface ChunkIterator extends PrimitiveIterator.OfInt {
     default int loopBound() {
         return loopSize() * loopStep();
     }
+
+    int[] computeChunkOffsets();
 }
 

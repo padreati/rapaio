@@ -31,14 +31,17 @@
 
 package rapaio.math.tensor.engine.basearray;
 
+import java.util.Arrays;
+import java.util.Random;
+
 import rapaio.math.tensor.DTensor;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.FTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.engine.AbstractEngine;
+import rapaio.math.tensor.engine.AbstractTensorEngine;
 
-public class BaseArrayEngine extends AbstractEngine {
+public class BaseArrayTensorEngine extends AbstractTensorEngine {
 
     private final BaseArrayOfDouble ofDouble = new BaseArrayOfDouble(this);
     private final BaseArrayOfFloat ofFloat = new BaseArrayOfFloat(this);
@@ -53,11 +56,11 @@ public class BaseArrayEngine extends AbstractEngine {
         return ofFloat;
     }
 
-    protected static class BaseArrayOfDouble extends AbstractOfDouble {
+    protected static class BaseArrayOfDouble implements OfType<Double, DTensor> {
 
-        private final BaseArrayEngine parent;
+        private final BaseArrayTensorEngine parent;
 
-        public BaseArrayOfDouble(BaseArrayEngine parent) {
+        public BaseArrayOfDouble(BaseArrayTensorEngine parent) {
             this.parent = parent;
         }
 
@@ -67,12 +70,38 @@ public class BaseArrayEngine extends AbstractEngine {
         }
 
         @Override
-        public DTensor zeros(Shape shape, Order order) {
+        public DTensorStride zeros(Shape shape, Order order) {
             return new DTensorStride(parent, shape, 0, Order.autoFC(order), new double[shape.size()]);
         }
 
         @Override
-        public DTensor stride(Shape shape, int offset, int[] strides, float[] array) {
+        public DTensorStride eye(int n, Order order) {
+            DTensorStride eye = zeros(Shape.of(n, n), order);
+            for (int i = 0; i < n; i++) {
+                eye.setDouble(1, i, i);
+            }
+            return eye;
+        }
+
+        @Override
+        public DTensor full(Shape shape, Double value, Order order) {
+            double[] array = new double[shape.size()];
+            Arrays.fill(array, value);
+            return stride(shape, Order.autoFC(order), array);
+        }
+
+        @Override
+        public DTensorStride seq(Shape shape, Order order) {
+            return zeros(shape, Order.autoFC(order)).iteratorApply(Order.C, (i, p) -> (double) i);
+        }
+
+        @Override
+        public DTensorStride random(Shape shape, Random random, Order order) {
+            return zeros(shape, Order.autoFC(order)).iteratorApply(order, (i, p) -> random.nextDouble());
+        }
+
+        @Override
+        public DTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
             double[] darray = new double[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = array[i];
@@ -81,16 +110,16 @@ public class BaseArrayEngine extends AbstractEngine {
         }
 
         @Override
-        public DTensor stride(Shape shape, int offset, int[] strides, double[] array) {
+        public DTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
             return new DTensorStride(parent, shape, offset, strides, array);
         }
     }
 
-    protected static class BaseArrayOfFloat extends AbstractOfFloat {
+    protected static class BaseArrayOfFloat implements OfType<Float, FTensor> {
 
-        private final BaseArrayEngine parent;
+        private final BaseArrayTensorEngine parent;
 
-        public BaseArrayOfFloat(BaseArrayEngine parent) {
+        public BaseArrayOfFloat(BaseArrayTensorEngine parent) {
             this.parent = parent;
         }
 
@@ -100,17 +129,43 @@ public class BaseArrayEngine extends AbstractEngine {
         }
 
         @Override
-        public FTensor zeros(Shape shape, Order order) {
+        public FTensorStride zeros(Shape shape, Order order) {
             return new FTensorStride(parent, shape, 0, Order.autoFC(order), new float[shape.size()]);
         }
 
         @Override
-        public FTensor stride(Shape shape, int offset, int[] strides, float[] array) {
+        public FTensorStride eye(int n, Order order) {
+            FTensorStride eye = zeros(Shape.of(n, n), order);
+            for (int i = 0; i < n; i++) {
+                eye.setFloat(1, i, i);
+            }
+            return eye;
+        }
+
+        @Override
+        public FTensor full(Shape shape, Float value, Order order) {
+            float[] array = new float[shape.size()];
+            Arrays.fill(array, value);
+            return stride(shape, Order.autoFC(order), array);
+        }
+
+        @Override
+        public FTensorStride seq(Shape shape, Order order) {
+            return zeros(shape, Order.autoFC(order)).iteratorApply(Order.C, (i, p) -> (float) i);
+        }
+
+        @Override
+        public FTensorStride random(Shape shape, Random random, Order order) {
+            return zeros(shape, Order.autoFC(order)).iteratorApply(order, (i, p) -> random.nextFloat());
+        }
+
+        @Override
+        public FTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
             return new FTensorStride(parent, shape, offset, strides, array);
         }
 
         @Override
-        public FTensor stride(Shape shape, int offset, int[] strides, double[] array) {
+        public FTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
             float[] darray = new float[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = (float) array[i];

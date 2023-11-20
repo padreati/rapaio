@@ -36,32 +36,26 @@ import java.util.Arrays;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.util.collection.IntArrays;
 
-public final class StrideChunkIterator implements ChunkIterator {
+public final class StrideChunkDescriptor {
 
     private final int loopSize;
     private final int loopStep;
     private final int chunkCount;
+    private final int[] chunkOffsets;
 
-    private final int outerOffset;
-    private final Shape outerShape;
-    private final int[] outerStrides;
-    private final PointerIterator it;
-
-    public StrideChunkIterator(Shape shape, int offset, int[] strides, Order askOrder) {
+    public StrideChunkDescriptor(Shape shape, int offset, int[] strides, Order askOrder) {
         this(new StrideLayout(shape, offset, strides), askOrder);
     }
 
-    public StrideChunkIterator(StrideLayout layout, Order askOrder) {
-        outerOffset = layout.offset();
+    public StrideChunkDescriptor(StrideLayout layout, Order askOrder) {
 
         if (layout.shape().rank() == 0) {
             loopSize = 1;
             loopStep = 1;
             chunkCount = 1;
-            outerShape = null;
-            outerStrides = null;
-            it = new ScalarPointerIterator(layout.offset());
+            chunkOffsets = new int[] {layout.offset()};
             return;
         }
 
@@ -71,61 +65,27 @@ public final class StrideChunkIterator implements ChunkIterator {
 
         if (compact.shape().rank() == 1) {
             chunkCount = 1;
-            outerShape = null;
-            outerStrides = null;
-            it = new ScalarPointerIterator(layout.offset());
+            chunkOffsets = new int[] {layout.offset()};
             return;
         }
 
-        outerShape = Shape.of(Arrays.copyOfRange(compact.shape().dims(), 1, compact.shape().rank()));
-        outerStrides = Arrays.copyOfRange(compact.strides(), 1, compact.shape().rank());
+        int[] outerDims = Arrays.copyOfRange(compact.shape().dims(), 1, compact.shape().rank());
+        int[] outerStrides = Arrays.copyOfRange(compact.strides(), 1, compact.shape().rank());
 
-        this.chunkCount = outerShape.size();
-        this.it = new StridePointerIterator(new StrideLayout(outerShape, outerOffset, outerStrides), Order.F);
-    }
+        this.chunkCount = IntArrays.prod(outerDims, 0, outerDims.length);
 
-    @Override
-    public int chunkCount() {
-        return chunkCount;
-    }
-
-    @Override
-    public int loopSize() {
-        return loopSize;
-    }
-
-    @Override
-    public int loopStep() {
-        return loopStep;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return it.hasNext();
-    }
-
-    @Override
-    public int nextInt() {
-        return it.nextInt();
-    }
-
-    @Override
-    public int[] computeChunkOffsets() {
-        if (outerShape == null) {
-            return new int[] {outerOffset};
-        }
-        int[] offsets = new int[chunkCount];
-        Arrays.fill(offsets, outerOffset);
+        this.chunkOffsets = new int[chunkCount];
+        Arrays.fill(chunkOffsets, layout.offset());
         int inner = 1;
-        for (int i = 0; i < outerShape.rank(); i++) {
-            int dim = outerShape.dim(i);
+        for (int i = 0; i < outerDims.length; i++) {
+            int dim = outerDims[i];
             int stride = outerStrides[i];
             int pos = 0;
-            while (pos < offsets.length) {
+            while (pos < chunkOffsets.length) {
                 int value = 0;
                 for (int k = 0; k < dim; k++) {
                     for (int j = 0; j < inner; j++) {
-                        offsets[pos + j] += value;
+                        chunkOffsets[pos + j] += value;
                     }
                     value += stride;
                     pos += inner;
@@ -133,6 +93,21 @@ public final class StrideChunkIterator implements ChunkIterator {
             }
             inner *= dim;
         }
-        return offsets;
+    }
+
+    public int chunkCount() {
+        return chunkCount;
+    }
+
+    public int loopSize() {
+        return loopSize;
+    }
+
+    public int loopStep() {
+        return loopStep;
+    }
+
+    public int[] getChunkOffsets() {
+        return chunkOffsets;
     }
 }

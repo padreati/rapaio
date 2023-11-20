@@ -51,12 +51,6 @@ public class CodeGenApp {
                 .dst.set("rapaio/math/tensor/engine/basearray/FTensorStride.java")
                 .replaces.set(replaces)
         );
-
-        templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/parallelarray/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/parallelarray/FTensorStride.java")
-                .replaces.set(replaces)
-        );
     }
 
     public static void main(String[] args) {
