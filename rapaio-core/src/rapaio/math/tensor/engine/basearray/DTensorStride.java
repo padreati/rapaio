@@ -156,7 +156,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     private void unaryOpStep(TensorUnaryOp op) {
         for (int off : chunkDesc.getChunkOffsets()) {
             int loopLen = chunkDesc.loopSize() * chunkDesc.loopStep() + off;
-            int loopBound = SPEC.loopBound(chunkDesc.loopSize() * chunkDesc.loopStep()) + off;
+            int loopBound = SPEC.loopBound(chunkDesc.loopSize()) * chunkDesc.loopStep() + off;
             int i = off;
             for (; i < loopBound; i += SPEC_LEN * chunkDesc.loopStep()) {
                 DoubleVector a = DoubleVector.fromArray(SPEC, array, i, chunkIndexes, 0);
@@ -331,7 +331,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     void binaryScalarOpStep(TensorBinaryOp op, double value) {
         for (int off : chunkDesc.getChunkOffsets()) {
             int loopLen = chunkDesc.loopSize() * chunkDesc.loopStep() + off;
-            int loopBound = SPEC.loopBound(chunkDesc.loopSize() * chunkDesc.loopStep()) + off;
+            int loopBound = SPEC.loopBound(chunkDesc.loopSize()) * chunkDesc.loopStep() + off;
             int i = off;
             for (; i < loopBound; i += SPEC_LEN * chunkDesc.loopStep()) {
                 DoubleVector a = DoubleVector.fromArray(SPEC, array, i, chunkIndexes, 0);

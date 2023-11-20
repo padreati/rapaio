@@ -66,7 +66,7 @@ import rapaio.util.function.IntIntBiFunction;
 
 public final class FTensorStride extends AbstractTensor<Float, FTensor> implements FTensor {
 
-    private static final VectorSpecies<Float> SPEC = FloatVector.SPECIES_PREFERRED;
+    private static final VectorSpecies<Float> SPEC = FloatVector.SPECIES_256;
     private static final int SPEC_LEN = SPEC.length();
 
     private final StrideLayout layout;
@@ -156,7 +156,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     private void unaryOpStep(TensorUnaryOp op) {
         for (int off : chunkDesc.getChunkOffsets()) {
             int loopLen = chunkDesc.loopSize() * chunkDesc.loopStep() + off;
-            int loopBound = SPEC.loopBound(chunkDesc.loopSize() * chunkDesc.loopStep()) + off;
+            int loopBound = SPEC.loopBound(chunkDesc.loopSize()) * chunkDesc.loopStep() + off;
             int i = off;
             for (; i < loopBound; i += SPEC_LEN * chunkDesc.loopStep()) {
                 FloatVector a = FloatVector.fromArray(SPEC, array, i, chunkIndexes, 0);
@@ -331,7 +331,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     void binaryScalarOpStep(TensorBinaryOp op, float value) {
         for (int off : chunkDesc.getChunkOffsets()) {
             int loopLen = chunkDesc.loopSize() * chunkDesc.loopStep() + off;
-            int loopBound = SPEC.loopBound(chunkDesc.loopSize() * chunkDesc.loopStep()) + off;
+            int loopBound = SPEC.loopBound(chunkDesc.loopSize()) * chunkDesc.loopStep() + off;
             int i = off;
             for (; i < loopBound; i += SPEC_LEN * chunkDesc.loopStep()) {
                 FloatVector a = FloatVector.fromArray(SPEC, array, i, chunkIndexes, 0);
@@ -374,6 +374,32 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     public FTensorStride div_(float value) {
         binaryScalarOp(TensorBinaryOp.DIV, value);
         return this;
+    }
+
+    @Override
+    public float vdot(FTensor tensor) {
+        if (shape().rank() != 1 || tensor.shape().rank() != 1 || shape().dim(0) != tensor.shape().dim(0)) {
+            throw new RuntimeException("Operands are not valid for vector dot product "
+                    + "(v = %s, v = %s).".formatted(shape().toString(), tensor.shape().toString()));
+        }
+        return _vdot(tensor, 0, shape().dim(0));
+    }
+
+    private float _vdot(FTensor tensor, int start, int end) {
+
+        FTensorStride dts = (FTensorStride) tensor;
+
+        int step1 = layout.stride(0);
+        int step2 = dts.layout.stride(0);
+        int start1 = layout.offset() + start * step1;
+        int start2 = dts.layout.offset() + start * step2;
+        float sum = 0;
+        for (int i = 0; i < end - start; i++) {
+            sum += array[start1] * dts.array[start2];
+            start1 += step1;
+            start2 += step2;
+        }
+        return sum;
     }
 
     @Override
@@ -466,32 +492,6 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
             return mm(tensor);
         }
         throw new IllegalArgumentException("Operation not supported.");
-    }
-
-    @Override
-    public float vdot(FTensor tensor) {
-        if (shape().rank() != 1 || tensor.shape().rank() != 1 || shape().dim(0) != tensor.shape().dim(0)) {
-            throw new RuntimeException("Operands are not valid for vector dot product "
-                    + "(v = %s, v = %s).".formatted(shape().toString(), tensor.shape().toString()));
-        }
-        return _vdot(tensor, 0, shape().dim(0));
-    }
-
-    private float _vdot(FTensor tensor, int start, int end) {
-
-        FTensorStride dts = (FTensorStride) tensor;
-
-        int step1 = layout.stride(0);
-        int step2 = dts.layout.stride(0);
-        int start1 = layout.offset() + start * step1;
-        int start2 = dts.layout.offset() + start * step2;
-        float sum = 0;
-        for (int i = 0; i < end - start; i++) {
-            sum += array[start1] * dts.array[start2];
-            start1 += step1;
-            start2 += step2;
-        }
-        return sum;
     }
 
     @Override
