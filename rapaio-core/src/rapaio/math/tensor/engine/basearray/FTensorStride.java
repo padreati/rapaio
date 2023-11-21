@@ -66,7 +66,7 @@ import rapaio.util.function.IntIntBiFunction;
 
 public final class FTensorStride extends AbstractTensor<Float, FTensor> implements FTensor {
 
-    private static final VectorSpecies<Float> SPEC = FloatVector.SPECIES_256;
+    private static final VectorSpecies<Float> SPEC = FloatVector.SPECIES_PREFERRED;
     private static final int SPEC_LEN = SPEC.length();
 
     private final StrideLayout layout;

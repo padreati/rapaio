@@ -204,13 +204,13 @@ public class TextTable {
      * * if right is null, left is not - text from left will be left aligned
      * * if left and right are non nulls - left will be right aligned, right will be left aligned
      */
-    void set(int row, int col, String left, String right) {
+    public void set(int row, int col, String left, String right) {
         computedLayout = false;
         this.left[row][col] = left;
         this.right[row][col] = right;
     }
 
-    void set(int row, int col, String value, int align) {
+    public void set(int row, int col, String value, int align) {
         set(row, col, value, align, NO_ANCHOR);
     }
 

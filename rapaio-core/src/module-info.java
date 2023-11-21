@@ -18,6 +18,8 @@ module rapaio.core {
     requires org.objectweb.asm.tree.analysis;
     requires org.objectweb.asm.util;
 
+    requires rapaio.commons;
+
     exports rapaio.core;
     exports rapaio.core.correlation;
     exports rapaio.core.distributions;
@@ -100,14 +102,6 @@ module rapaio.core {
     exports rapaio.ml.model.tree.rtree;
     exports rapaio.ml.model.tree.rowpredicate;
 
-    exports rapaio.printer;
-    exports rapaio.printer.opt;
-    exports rapaio.printer.local;
-    exports rapaio.printer.idea;
-    exports rapaio.printer.standard;
-
-    exports rapaio.sys;
-
     exports rapaio.ts;
 
     exports rapaio.util;
@@ -119,4 +113,6 @@ module rapaio.core {
 
     exports rapaio.experiment.asm;
     exports rapaio.math.tensor.operator;
+
+    opens rapaio.graphics.opt to rapaio.commons;
 }

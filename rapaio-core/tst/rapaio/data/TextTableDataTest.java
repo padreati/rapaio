@@ -29,27 +29,22 @@
  *
  */
 
-package rapaio.printer;
-
+package rapaio.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Random;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
+import rapaio.printer.Format;
+import rapaio.printer.TextTable;
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/18.
- */
-public class TextTableTest {
+public class TextTableDataTest {
 
     private Random random;
 
@@ -74,7 +69,7 @@ public class TextTableTest {
             }
         }
         String rawText = tt.getRawText();
-        assertEquals("""
+        Assertions.assertEquals("""
                    sepal-length sepal-width petal-length petal-width      class\s
                 0.          5.1         3.5          1.4         0.2     setosa\s
                 1.          4.9         3.0          1.4         0.2     setosa\s
@@ -86,42 +81,6 @@ public class TextTableTest {
                 7.          5.8         2.7          5.1         1.9  virginica\s
                 8.          7.1         3.0          5.9         2.1  virginica\s
                 """, rawText);
-    }
-
-    @Test
-    void testDotCentering() {
-        TextTable tt = TextTable.empty(5, 1);
-        tt.set(0, 0, "23343.345", 0, '.');
-        tt.set(1, 0, "2342342323343.", 0, '.');
-        tt.set(2, 0, "343.345", 0, '.');
-        tt.set(3, 0, "343.3453424", 0, '.');
-        tt.set(4, 0, "2.3454434", 0, '.');
-
-        assertEquals("""
-                        23343.345    \s
-                2342342323343.       \s
-                          343.345    \s
-                          343.3453424\s
-                            2.3454434\s
-                """, tt.getRawText());
-    }
-
-    @Test
-    void testDotMixt() {
-        TextTable tt = TextTable.empty(5, 1);
-        tt.set(0, 0, "23343.345", -1, '.');
-        tt.set(1, 0, "2342342323343.", -1, '.');
-        tt.set(2, 0, "343.345", 0, '.');
-        tt.set(3, 0, "343.3453424", -1, '.');
-        tt.set(4, 0, "2.3454434", 1, '.');
-
-        assertEquals("""
-                        23343.345    \s
-                2342342323343.       \s
-                          343.345    \s
-                          343.3453424\s
-                            2.3454434\s
-                """, tt.getRawText());
     }
 
     @Test
@@ -443,4 +402,5 @@ public class TextTableTest {
         }
         return s.toString();
     }
+
 }

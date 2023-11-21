@@ -44,6 +44,7 @@
     </properties>
 
     <modules>
+        <module>rapaio-commons</module>
         <module>rapaio-code-gen</module>
         <module>rapaio-core</module>
         <module>rapaio-jmh</module>

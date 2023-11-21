@@ -1,0 +1,10 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"algebra.base.RandomAccessBenchmark.testBase","avgt",1,5,0.008346,0.000136,"ms/op",10000
+"algebra.base.RandomAccessBenchmark.testBase","avgt",1,5,0.344229,0.013194,"ms/op",100000
+"algebra.base.RandomAccessBenchmark.testBase","avgt",1,5,9.580095,0.196707,"ms/op",1000000
+"algebra.base.RandomAccessBenchmark.testVectorized","avgt",1,5,0.017149,0.006699,"ms/op",10000
+"algebra.base.RandomAccessBenchmark.testVectorized","avgt",1,5,0.339187,0.048883,"ms/op",100000
+"algebra.base.RandomAccessBenchmark.testVectorized","avgt",1,5,9.887624,0.277167,"ms/op",1000000
+"algebra.base.RandomAccessBenchmark.testVectorizedBuffer","avgt",1,5,0.032222,0.001850,"ms/op",10000
+"algebra.base.RandomAccessBenchmark.testVectorizedBuffer","avgt",1,5,0.461312,0.030785,"ms/op",100000
+"algebra.base.RandomAccessBenchmark.testVectorizedBuffer","avgt",1,5,8.017977,0.576212,"ms/op",1000000

@@ -29,20 +29,14 @@
  *
  */
 
-package rapaio.util.nparam;
+package rapaio.printer.nparam;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Color;
-import java.text.DecimalFormat;
-import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-
-import rapaio.printer.nparam.NamedParam;
-import rapaio.printer.nparam.NamedParamSet;
-import rapaio.util.function.SFunction;
 
 public class NamedParamSetTest {
 
@@ -69,68 +63,3 @@ public class NamedParamSetTest {
     }
 }
 
-final class GOpts extends NamedParamSet<GOpts, GOpt<?>> {
-
-    // named parameters definitions with default values
-
-    private static final GOpt<Boolean> _verbose = new GOpt<>("verbose", __ -> true);
-    private static final GOpt<Color> _color = new GOpt<>("colour", __ -> Color.GREEN);
-    private static final GOpt<DecimalFormat> _floatFormat = new GOpt<>("floatFormat",
-            s -> s.getVerbose() ? new DecimalFormat("0.00000000") : new DecimalFormat("0.00"));
-    private static final GOpt<Color[]> _repeatColors = new GOpt<>("repeatColors", __ -> new Color[] {Color.GREEN});
-
-    // named parameter static builders
-
-    public static GOpt<Boolean> verbose(boolean verbose) {
-        return new GOpt<>(_verbose, __ -> verbose);
-    }
-
-    public static GOpt<Color> color(Color c) {
-        return new GOpt<>(_color, __ -> c);
-    }
-
-    public static GOpt<Color[]> repeatColors(int len) {
-        return new GOpt<>(_repeatColors, s -> {
-            Color[] array = new Color[len];
-            Arrays.fill(array, s.getColor());
-            return array;
-        });
-    }
-
-    public GOpts(GOpts parent) {
-        super(parent);
-    }
-
-    public GOpts bind(GOpt<?>... parameters) {
-        return new GOpts(this).apply(parameters);
-    }
-
-    // getters for parameter values
-
-    public Boolean getVerbose() {
-        return (Boolean) getParamValue(_verbose);
-    }
-
-    public Color getColor() {
-        return (Color) getParamValue(_color);
-    }
-
-    public DecimalFormat getFloatFormat() {
-        return (DecimalFormat) getParamValue(_floatFormat);
-    }
-
-    public Color[] getRepeatColors() {
-        return (Color[]) getParamValue(_repeatColors);
-    }
-}
-
-final class GOpt<V> extends NamedParam<GOpts, V> {
-
-    public GOpt(String name, SFunction<GOpts, V> fun) {
-        super(name, fun);
-    }
-
-    public GOpt(GOpt<V> p, SFunction<GOpts, V> fun) {
-        super(p.getName(), fun);
-    }
-}

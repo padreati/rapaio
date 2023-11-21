@@ -1,0 +1,7 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"algebra.base.DoubleArrayBenchmark.testContiguous","avgt",1,5,0.038298,0.012881,"ms/op",100000
+"algebra.base.DoubleArrayBenchmark.testContiguous","avgt",1,5,0.576976,0.113593,"ms/op",1000000
+"algebra.base.DoubleArrayBenchmark.testIndexed","avgt",1,5,0.294459,0.073026,"ms/op",100000
+"algebra.base.DoubleArrayBenchmark.testIndexed","avgt",1,5,4.885421,2.447131,"ms/op",1000000
+"algebra.base.DoubleArrayBenchmark.testReversed","avgt",1,5,0.175978,0.006752,"ms/op",100000
+"algebra.base.DoubleArrayBenchmark.testReversed","avgt",1,5,1.810307,0.147497,"ms/op",1000000
