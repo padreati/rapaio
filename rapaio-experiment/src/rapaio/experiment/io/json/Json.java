@@ -1,0 +1,99 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
+ *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2020 Aurelian Tutuianu
+ *    Copyright 2021 Aurelian Tutuianu
+ *    Copyright 2022 Aurelian Tutuianu
+ *    Copyright 2023 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
+package rapaio.experiment.io.json;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import rapaio.experiment.io.json.stream.JsonSpliterator;
+import rapaio.experiment.io.json.tree.JsonValue;
+
+/**
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/20/15.
+ */
+public final class Json {
+
+    public static JsonStream stream(File root, FileFilter ff) {
+        return new JsonStream(Json.stream(root, ff, msg -> {
+        }, Json.allFilter()));
+    }
+
+    public static JsonStream stream(File root, FileFilter ff, Predicate<String> propFilter) {
+        return new JsonStream(Json.stream(root, ff, msg -> {
+        }, propFilter));
+    }
+
+    public static JsonStream stream(File root, FileFilter ff, Consumer<String> ph, Predicate<String> propFilter) {
+        List<File> files = new ArrayList<>();
+        if (root.isDirectory()) {
+            File[] listFiles = root.listFiles();
+            if (listFiles == null) {
+                return new JsonStream(Stream.empty());
+            }
+            files = Arrays.stream(listFiles).filter(ff::accept).collect(Collectors.toList());
+        } else {
+            files.add(root);
+        }
+        JsonSpliterator spliterator = new JsonSpliterator(files, ph, propFilter);
+        return new JsonStream(StreamSupport.stream(spliterator, spliterator.isParallel()));
+    }
+
+    public static void write(OutputStream os, JsonValue js) throws IOException {
+        Writer w = new OutputStreamWriter(os);
+        w.append(js.toString()).append('\n');
+        w.flush();
+    }
+
+    public static Predicate<String> allFilter() {
+        return key -> true;
+    }
+
+    public static Predicate<String> inFilter(String... keys) {
+        final HashSet<String> allow = new HashSet<>();
+        Collections.addAll(allow, keys);
+        return key -> allow.isEmpty() || allow.contains(key);
+    }
+}

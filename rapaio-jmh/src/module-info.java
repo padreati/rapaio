@@ -8,5 +8,6 @@ open module rapaio.jmh {
 
     requires rapaio.commons;
     requires rapaio.core;
+    requires rapaio.experiment;
     requires JSAT;
 }

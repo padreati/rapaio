@@ -2,21 +2,9 @@ module rapaio.core {
 
     requires java.desktop;
     requires java.logging;
-    requires java.sql;
 
     requires jdk.incubator.vector;
     requires java.base;
-
-    requires javafx.base;
-    requires javafx.fxml;
-    requires javafx.controls;
-    requires javafx.graphics;
-    requires javafx.swing;
-
-    requires org.objectweb.asm;
-    requires org.objectweb.asm.tree;
-    requires org.objectweb.asm.tree.analysis;
-    requires org.objectweb.asm.util;
 
     requires rapaio.commons;
 
@@ -111,7 +99,6 @@ module rapaio.core {
     exports rapaio.math.linear.base;
     exports rapaio.util.param;
 
-    exports rapaio.experiment.asm;
     exports rapaio.math.tensor.operator;
 
     opens rapaio.graphics.opt to rapaio.commons;

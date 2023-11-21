@@ -48,6 +48,7 @@
         <module>rapaio-code-gen</module>
         <module>rapaio-core</module>
         <module>rapaio-jmh</module>
+        <module>rapaio-experiment</module>
     </modules>
 
     <build>

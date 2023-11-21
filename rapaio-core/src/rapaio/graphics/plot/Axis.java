@@ -31,20 +31,25 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.graphics.base.XWilkinson;
-import rapaio.util.time.PrettyTimeInterval;
-
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.io.Serial;
 import java.io.Serializable;
-import java.sql.Date;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import rapaio.graphics.base.XWilkinson;
+import rapaio.util.time.PrettyTimeInterval;
 
 /**
  * @author padreati
