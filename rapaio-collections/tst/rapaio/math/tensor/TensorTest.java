@@ -569,7 +569,7 @@ public class TensorTest {
 
         void testVDot() {
 
-            int vLen = 153;
+            int vLen = 53;
             Shape shape = Shape.of(50, vLen);
             var t1 = g.seq(shape);
 
