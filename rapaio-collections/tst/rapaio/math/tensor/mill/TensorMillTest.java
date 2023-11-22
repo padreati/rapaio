@@ -79,11 +79,11 @@ public class TensorMillTest {
 
     <N extends Number, T extends Tensor<N, T>> void testZeros(TensorMill tensorMill, TensorMill.OfType<N, T> ofType) {
         var t = ofType.zeros(Shape.of(10, 20));
-        assertEquals(tensorMill, t.engine());
+        assertEquals(tensorMill, t.mill());
         assertEquals(t.shape(), Shape.of(10, 20));
-        var it = t.pointerIterator();
+        var it = t.ptrIterator();
         while (it.hasNext()) {
-            assertEquals(ofType.dtype().castValue(0), t.getAt(it.nextInt()));
+            assertEquals(ofType.dtype().castValue(0), t.ptrGet(it.nextInt()));
         }
     }
 
@@ -114,19 +114,19 @@ public class TensorMillTest {
 
     <N extends Number, T extends Tensor<N, T>> void testSeq(TensorMill tensorMill, TensorMill.OfType<N, T> ofType) {
         var t = ofType.seq(Shape.of(2, 3, 4));
-        var it = t.pointerIterator(Order.C);
+        var it = t.ptrIterator(Order.C);
         int i = 0;
         while (it.hasNext()) {
-            assertEquals(ofType.dtype().castValue(i++), t.getAt(it.nextInt()));
+            assertEquals(ofType.dtype().castValue(i++), t.ptrGet(it.nextInt()));
         }
     }
 
     <N extends Number, T extends Tensor<N, T>> void testRandom(TensorMill tensorMill, TensorMill.OfType<N, T> ofType) {
         var t = ofType.random(Shape.of(3, 4), random);
-        var it = t.pointerIterator(Order.C);
-        N last = t.getAt(it.nextInt());
+        var it = t.ptrIterator(Order.C);
+        N last = t.ptrGet(it.nextInt());
         while (it.hasNext()) {
-            N next = t.getAt(it.nextInt());
+            N next = t.ptrGet(it.nextInt());
             assertNotEquals(last, next);
             last = next;
         }
@@ -139,18 +139,18 @@ public class TensorMillTest {
         }
         var t = ofType.stride(Shape.of(4, 3), 0, new int[] {1, 4}, seq);
         int i = 0;
-        var it = t.pointerIterator(Order.F);
+        var it = t.ptrIterator(Order.F);
         while (it.hasNext()) {
-            assertEquals(ofType.dtype().castValue(i++), t.getAt(it.nextInt()));
+            assertEquals(ofType.dtype().castValue(i++), t.ptrGet(it.nextInt()));
         }
     }
 
     <N extends Number, T extends Tensor<N, T>> void testWrap(TensorMill tensorMill, TensorMill.OfType<N, T> ofType) {
         var t = ofType.stride(Shape.of(2, 3), Order.C, new double[] {1., 2, 3, 4, 5, 6});
         int i = 1;
-        var it = t.pointerIterator(Order.C);
+        var it = t.ptrIterator(Order.C);
         while (it.hasNext()) {
-            assertEquals(ofType.dtype().castValue(i++), t.getAt(it.nextInt()));
+            assertEquals(ofType.dtype().castValue(i++), t.ptrGet(it.nextInt()));
         }
     }
 
@@ -163,9 +163,9 @@ public class TensorMillTest {
 
         var t = tensorMill.concat(0, List.of(t1, t2, t3));
         int i = 1;
-        var it = t.pointerIterator(Order.C);
+        var it = t.ptrIterator(Order.C);
         while (it.hasNext()) {
-            assertEquals(ofType.dtype().castValue(i++), t.getAt(it.nextInt()));
+            assertEquals(ofType.dtype().castValue(i++), t.ptrGet(it.nextInt()));
         }
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> tensorMill.concat(0, List.of(t1, t4)));
@@ -185,9 +185,9 @@ public class TensorMillTest {
         for (int s = 0; s < 3; s++) {
             var t = tensorMill.stack(s, List.of(t1, t2, t3));
             int i = 0;
-            var it = t.pointerIterator(Order.defaultOrder());
+            var it = t.ptrIterator(Order.defaultOrder());
             while (it.hasNext()) {
-                assertEquals(ofType.dtype().castValue(expected[s][i++]), t.getAt(it.nextInt()));
+                assertEquals(ofType.dtype().castValue(expected[s][i++]), t.ptrGet(it.nextInt()));
             }
         }
 

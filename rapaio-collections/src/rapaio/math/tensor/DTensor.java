@@ -48,18 +48,18 @@ public interface DTensor extends Tensor<Double, DTensor> {
     void setDouble(double value, int... indexes);
 
     @Override
-    default Double getAt(int ptr) {
-        return getAtDouble(ptr);
+    default Double ptrGet(int ptr) {
+        return ptrGetDouble(ptr);
     }
 
-    double getAtDouble(int ptr);
+    double ptrGetDouble(int ptr);
 
     @Override
-    default void setAt(int ptr, Double value) {
-        setAtDouble(ptr, value);
+    default void ptrSet(int ptr, Double value) {
+        ptrSetDouble(ptr, value);
     }
 
-    void setAtDouble(int ptr, double value);
+    void ptrSetDouble(int ptr, double value);
 
     @Override
     default DTensor add_(Double value) {

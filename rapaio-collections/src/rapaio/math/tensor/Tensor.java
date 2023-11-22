@@ -40,9 +40,15 @@ import rapaio.math.tensor.iterators.PointerIterator;
 import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
 
+/**
+ * Generic tensor interface. A tensor is a multidimensional array.
+ *
+ * @param <N> Generic data type
+ * @param <T> Generic tensor type
+ */
 public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printable, Iterable<N> {
 
-    TensorMill engine();
+    TensorMill mill();
 
     DType<N, T> dtype();
 
@@ -64,12 +70,12 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
 
     void set(N value, int... indexes);
 
-    N getAt(int pos);
+    N ptrGet(int pos);
 
-    void setAt(int pos, N value);
+    void ptrSet(int pos, N value);
 
-    default PointerIterator pointerIterator() {
-        return pointerIterator(Order.S);
+    default PointerIterator ptrIterator() {
+        return ptrIterator(Order.S);
     }
 
     default T abs() {
@@ -314,7 +320,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
 
     T iteratorApply(Order order, IntIntBiFunction<N> apply);
 
-    PointerIterator pointerIterator(Order askOrder);
+    PointerIterator ptrIterator(Order askOrder);
 
     default ChunkIterator chunkIterator() {
         return chunkIterator(Order.S);

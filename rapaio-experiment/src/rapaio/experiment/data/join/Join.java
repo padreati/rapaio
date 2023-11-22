@@ -289,11 +289,9 @@ public class Join {
         switch (dst.type()) {
             case VarType.BINARY, VarType.INT -> {
                 dst.addInt(src.getInt(row, varIndex));
-                return;
             }
             case VarType.DOUBLE -> {
                 dst.addDouble(src.getDouble(row, varIndex));
-                return;
             }
             default -> dst.addLabel(src.getLabel(row, varIndex));
         }

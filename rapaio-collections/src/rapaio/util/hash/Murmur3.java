@@ -33,6 +33,21 @@ package rapaio.util.hash;
 
 import java.nio.ByteBuffer;
 
+/**
+ * The MurmurHash3 algorithm was created by Austin Appleby and placed in the public domain.
+ * This java port was authored by Yonik Seeley and also placed into the public domain.
+ * The author hereby disclaims copyright to this source code.
+ * <p>
+ * This produces exactly the same hash values as the final C++
+ * version of MurmurHash3 and is thus suitable for producing the same hash values across
+ * platforms.
+ * <p>
+ * The 32 bit x86 version of this hash should be the fastest variant for relatively short keys like ids.
+ * murmurhash3_x64_128 is a good choice for longer strings or if you need more than 32 bits of hash.
+ * <p>
+ * Note - The x86 and x64 versions do _not_ produce the same results, as the
+ * algorithms are optimized for their respective platforms.
+ */
 public final class Murmur3 {
 
     public static int murmur3A(double value) {
@@ -48,12 +63,12 @@ public final class Murmur3 {
     }
 
     public static int murmur3A(int value) {
-        byte[] data = new byte[]{(byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value};
+        byte[] data = new byte[] {(byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value};
         return murmur3A(data, 0, 4, 0);
     }
 
     public static int murmur3A(int value, int seed) {
-        byte[] data = new byte[]{(byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value};
+        byte[] data = new byte[] {(byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value};
         return murmur3A(data, 0, 4, seed);
     }
 
@@ -304,16 +319,7 @@ public final class Murmur3 {
         h1 += h2;
         h2 += h1;
 
-        return new long[]{h1, h2};
-    }
-
-    private static int fmix32(int h) {
-        h ^= h >>> 16;
-        h *= 0x85ebca6b;
-        h ^= h >>> 13;
-        h *= 0xc2b2ae35;
-        h ^= h >>> 16;
-        return h;
+        return new long[] {h1, h2};
     }
 
     private static long fmix64(long k) {

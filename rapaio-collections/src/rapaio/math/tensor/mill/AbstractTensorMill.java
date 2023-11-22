@@ -58,15 +58,15 @@ public abstract class AbstractTensorMill implements TensorMill {
             int end = start + tensor.shape().dim(axis);
             var dst = result.truncate(axis, start, end);
 
-            var it1 = tensor.pointerIterator(Order.defaultOrder());
-            var it2 = dst.pointerIterator(Order.defaultOrder());
+            var it1 = tensor.ptrIterator(Order.defaultOrder());
+            var it2 = dst.ptrIterator(Order.defaultOrder());
 
             while (it1.hasNext() && it2.hasNext()) {
-                dst.setAt(it2.nextInt(), tensor.getAt(it1.nextInt()));
+                dst.ptrSet(it2.nextInt(), tensor.ptrGet(it1.nextInt()));
             }
             start = end;
         }
-        return (T) result;
+        return result;
     }
 
     @Override
@@ -89,13 +89,13 @@ public abstract class AbstractTensorMill implements TensorMill {
         var result = ofType(tensorList.get(0).dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
         var slices = result.slice(axis, 1);
         for (int i = 0; i < tensorList.size(); i++) {
-            var it1 = slices.get(i).squeeze().pointerIterator(Order.defaultOrder());
-            var it2 = tensorList.get(i).pointerIterator(Order.defaultOrder());
+            var it1 = slices.get(i).squeeze().ptrIterator(Order.defaultOrder());
+            var it2 = tensorList.get(i).ptrIterator(Order.defaultOrder());
             while (it1.hasNext() && it2.hasNext()) {
-                slices.get(i).setAt(it1.nextInt(), tensorList.get(i).getAt(it2.nextInt()));
+                slices.get(i).ptrSet(it1.nextInt(), tensorList.get(i).ptrGet(it2.nextInt()));
             }
         }
-        return (T) result;
+        return result;
     }
 
     protected static void validateForConcatenation(int axis, List<int[]> dims) {

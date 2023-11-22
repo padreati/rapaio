@@ -50,4 +50,4 @@ public class svm_model implements Serializable {
     public int[] label;		// label of each class (label[k])
     public int[] nSV;		// number of SVs for each class (nSV[k])
     // nSV[0] + nSV[1] + ... + nSV[k-1] = l
-};
+}

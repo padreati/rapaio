@@ -39,13 +39,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.math.tensor.mill.array.DTensorStride;
 import rapaio.util.collection.IntArrays;
 
 public class TensorTest {
@@ -54,15 +52,8 @@ public class TensorTest {
     void testSandbox() {
 
         var engine = TensorMill.array();
-        var t = engine.ofDouble().seq(Shape.of(2, 3, 2));
 
-        t.copy(Order.C).printContent();
-        t.copy(Order.F).printContent();
 
-        System.out.println(
-                Arrays.stream(((DTensorStride) t.copy(Order.C)).array()).mapToObj(String::valueOf).collect(Collectors.joining(",")));
-        System.out.println(
-                Arrays.stream(((DTensorStride) t.copy(Order.F)).array()).mapToObj(String::valueOf).collect(Collectors.joining(",")));
     }
 
     @Test
@@ -120,10 +111,11 @@ public class TensorTest {
             testMathUnary();
             testMathBinaryScalar();
             testMathBinaryVector();
+            testVDot();
         }
 
         void testBuild() {
-            var t = g.sequence(Shape.of(1));
+            var t = g.seq(Shape.of(1));
             N value = g.value(1);
             if (value instanceof Double) {
                 assertEquals(t.dtype(), DType.DOUBLE);
@@ -131,11 +123,11 @@ public class TensorTest {
             if (value instanceof Float) {
                 assertEquals(t.dtype(), DType.FLOAT);
             }
-            assertEquals(g.engine, t.engine());
+            assertEquals(g.engine, t.mill());
         }
 
         void testGet() {
-            var t = g.sequence(Shape.of(2, 3, 4));
+            var t = g.seq(Shape.of(2, 3, 4));
             var val = g.value(0);
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 3; j++) {
@@ -170,7 +162,7 @@ public class TensorTest {
         }
 
         void testPrinting() {
-            var tensor = g.sequence(Shape.of(20, 2, 2, 25));
+            var tensor = g.seq(Shape.of(20, 2, 2, 25));
             assertEquals(tensor.toString(), tensor.toSummary());
 
             assertEquals("""
@@ -299,7 +291,7 @@ public class TensorTest {
                        [ 1,975 1,976 1,977 1,978 1,979 1,980 1,981 1,982 1,983 1,984 1,985 1,986 1,987 1,988 1,989 1,990 1,991 1,992 1,993 1,994 1,995 1,996 1,997 1,998 1,999 ]]]]\s
                     """, tensor.toFullContent());
 
-            tensor = g.sequence(Shape.of(2, 3));
+            tensor = g.seq(Shape.of(2, 3));
             assertEquals("""
                     [[ 0 1 2 ] \s
                      [ 3 4 5 ]]\s
@@ -311,7 +303,7 @@ public class TensorTest {
         }
 
         void testReshape() {
-            var t = g.sequence(Shape.of(2, 3, 4));
+            var t = g.seq(Shape.of(2, 3, 4));
             assertEquals(Shape.of(6, 4), t.reshape(Shape.of(6, 4)).shape());
             assertEquals(Shape.of(24, 1, 1), t.reshape(Shape.of(24, 1, 1)).shape());
             assertEquals(Shape.of(1, 24, 1, 1), t.reshape(Shape.of(1, 24, 1, 1)).shape());
@@ -322,48 +314,48 @@ public class TensorTest {
 
         void testIterators() {
             Shape shape = Shape.of(2, 3, 4);
-            var t = g.sequence(shape);
+            var t = g.seq(shape);
 
-            var it = t.pointerIterator(Order.C);
+            var it = t.ptrIterator(Order.C);
             int pos = 0;
             while (it.hasNext()) {
-                assertEquals(t.getAt(it.nextInt()), t.get(shape.index(Order.C, pos)));
+                assertEquals(t.ptrGet(it.nextInt()), t.get(shape.index(Order.C, pos)));
                 assertEquals(pos, it.position());
                 pos++;
             }
 
-            it = t.pointerIterator(Order.F);
+            it = t.ptrIterator(Order.F);
             pos = 0;
             while (it.hasNext()) {
-                assertEquals(t.getAt(it.nextInt()), t.get(shape.index(Order.F, pos)), t.toString());
+                assertEquals(t.ptrGet(it.nextInt()), t.get(shape.index(Order.F, pos)), t.toString());
                 assertEquals(pos, it.position());
                 pos++;
             }
 
             // set values with iterator and check them later
-            t = g.sequence(shape);
-            it = t.pointerIterator(Order.S);
+            t = g.seq(shape);
+            it = t.ptrIterator(Order.S);
             while (it.hasNext()) {
-                t.setAt(it.nextInt(), g.value(1));
+                t.ptrSet(it.nextInt(), g.value(1));
             }
 
-            it = t.pointerIterator(Order.C);
+            it = t.ptrIterator(Order.C);
             while (it.hasNext()) {
-                assertEquals(g.value(1), t.getAt(it.nextInt()));
+                assertEquals(g.value(1), t.ptrGet(it.nextInt()));
             }
-            it = t.pointerIterator(Order.F);
+            it = t.ptrIterator(Order.F);
             while (it.hasNext()) {
-                assertEquals(g.value(1), t.getAt(it.nextInt()));
+                assertEquals(g.value(1), t.ptrGet(it.nextInt()));
             }
-            it = t.pointerIterator(Order.S);
+            it = t.ptrIterator(Order.S);
             while (it.hasNext()) {
-                assertEquals(g.value(1), t.getAt(it.nextInt()));
+                assertEquals(g.value(1), t.ptrGet(it.nextInt()));
             }
         }
 
         void testTranspose() {
             Shape shape = Shape.of(2, 3, 4);
-            var t = g.sequence(shape);
+            var t = g.seq(shape);
 
             var tt = t.t();
             assertArrayEquals(new int[] {4, 3, 2}, tt.shape().dims());
@@ -382,15 +374,15 @@ public class TensorTest {
 
         void testFlatten() {
             Shape shape = Shape.of(2, 3, 4);
-            var t = g.sequence(shape);
+            var t = g.seq(shape);
 
             var f = t.flatten(Order.C);
             assertArrayEquals(new int[] {4 * 3 * 2}, f.shape().dims());
 
-            var itT = t.pointerIterator(Order.C);
-            var itF = f.pointerIterator(Order.C);
+            var itT = t.ptrIterator(Order.C);
+            var itF = f.ptrIterator(Order.C);
             while (itF.hasNext()) {
-                assertEquals(t.getAt(itT.nextInt()), f.getAt(itF.nextInt()),
+                assertEquals(t.ptrGet(itT.nextInt()), f.ptrGet(itF.nextInt()),
                         "Error at tensor: " + t + ", flatten: " + f);
             }
 
@@ -402,16 +394,16 @@ public class TensorTest {
 
         void testSqueezeMoveSwapAxis() {
             Shape shape = Shape.of(2, 1, 3, 1, 4, 1);
-            var t = g.sequence(shape);
+            var t = g.seq(shape);
             var s = t.squeeze();
             assertArrayEquals(new int[] {2, 3, 4}, s.shape().dims());
 
-            var it1 = t.pointerIterator(Order.C);
-            var it2 = s.pointerIterator(Order.C);
+            var it1 = t.ptrIterator(Order.C);
+            var it2 = s.ptrIterator(Order.C);
             while (it1.hasNext()) {
                 int next1 = it1.nextInt();
                 int next2 = it2.nextInt();
-                assertEquals(t.getAt(next1), s.getAt(next2), "t: " + t + ", f: " + s);
+                assertEquals(t.ptrGet(next1), s.ptrGet(next2), "t: " + t + ", f: " + s);
             }
 
             assertTrue(t.moveAxis(2, 3).deepEquals(t.swapAxis(2, 3)));
@@ -423,7 +415,7 @@ public class TensorTest {
 
         void testCopy() {
             Shape shape = Shape.of(2, 3, 4);
-            var t = g.sequence(shape);
+            var t = g.seq(shape);
 
             var s = t.copy(Order.C);
             assertArrayEquals(new int[] {2, 3, 4}, s.shape().dims());
@@ -526,23 +518,23 @@ public class TensorTest {
         }
 
         void testMathBinaryScalar() {
-            var t = g.sequence(Shape.of(2, 3, 2));
+            var t = g.seq(Shape.of(2, 3, 2));
             var c = t.add(g.value(10));
             assertTrue(t.add_(g.value(10)).deepEquals(c));
 
-            t = g.sequence(Shape.of(2, 3, 2));
+            t = g.seq(Shape.of(2, 3, 2));
             c = t.sub(g.value(2));
             assertTrue(t.sub_(g.value(2)).deepEquals(c));
 
-            t = g.sequence(Shape.of(2, 3, 2));
+            t = g.seq(Shape.of(2, 3, 2));
             c = t.mul(g.value(5));
             assertTrue(t.mul_(g.value(5)).deepEquals(c));
 
-            t = g.sequence(Shape.of(2, 3, 2));
+            t = g.seq(Shape.of(2, 3, 2));
             c = t.div(g.value(4));
             assertTrue(t.div_(g.value(4)).deepEquals(c));
 
-            t = g.sequence(Shape.of(2, 3, 2));
+            t = g.seq(Shape.of(2, 3, 2));
             c = t.copy();
             assertTrue(c.deepEquals(t.add_(g.value(10)).sub_(g.value(10))));
             assertTrue(c.deepEquals(t.mul(g.value(2)).div(g.value(2))));
@@ -552,27 +544,47 @@ public class TensorTest {
 
             Shape shape = Shape.of(2, 3, 2);
 
-            var t1 = g.sequence(shape);
+            var t1 = g.seq(shape);
             var c1 = t1.copy();
             var t2 = g.random(shape, g.random);
             var c2 = t2.copy();
 
             assertTrue(c1.add(c2).deepEquals(t1.add_(t2)));
 
-            t1 = g.sequence(shape);
+            t1 = g.seq(shape);
             assertTrue(c1.sub(c2).deepEquals(t1.sub_(t2)));
 
-            t1 = g.sequence(shape);
+            t1 = g.seq(shape);
             assertTrue(c1.mul(c2).deepEquals(t1.mul_(t2)));
 
-            t1 = g.sequence(shape);
+            t1 = g.seq(shape);
             assertTrue(c1.div(c2).deepEquals(t1.div_(t2)));
 
-            t1 = g.sequence(shape);
+            t1 = g.seq(shape);
             assertTrue(c1.add(c2).sub(c2).deepEquals(t1.add_(t2).sub_(t2)));
 
-            t1 = g.sequence(shape);
+            t1 = g.seq(shape);
             assertTrue(c1.mul(c2).div(c2).deepEquals(t1.mul_(t2).div_(t2)));
+        }
+
+        void testVDot() {
+
+            int vLen = 153;
+            Shape shape = Shape.of(50, vLen);
+            var t1 = g.seq(shape);
+
+            var vdots = t1.slice(0, 1).stream().map(t -> {
+                t = t.squeeze();
+                return t.vdot(t);
+            }).toList();
+
+            for (int i = 0; i < vdots.size(); i++) {
+                var sum = g.value(0);
+                for (int j = 0; j < vLen; j++) {
+                    sum = g.sum(sum, g.value((i * vLen + j) * (i * vLen + j)));
+                }
+                assertEquals(sum, vdots.get(i));
+            }
         }
 
     }
@@ -593,7 +605,9 @@ public class TensorTest {
 
         abstract N inc(N x);
 
-        abstract T sequence(Shape shape);
+        abstract N sum(N x, N y);
+
+        abstract T seq(Shape shape);
 
         abstract T zeros(Shape shape);
 
@@ -611,12 +625,15 @@ public class TensorTest {
             return x;
         }
 
-
         @Override
         public final Double inc(Double x) {
             return x + 1;
         }
 
+        @Override
+        Double sum(Double x, Double y) {
+            return x + y;
+        }
     }
 
     static final class DoubleDenseCol extends DoubleDense {
@@ -626,7 +643,7 @@ public class TensorTest {
         }
 
         @Override
-        public DTensor sequence(Shape shape) {
+        public DTensor seq(Shape shape) {
             return ofType.seq(shape, Order.F);
         }
 
@@ -648,7 +665,7 @@ public class TensorTest {
         }
 
         @Override
-        public DTensor sequence(Shape shape) {
+        public DTensor seq(Shape shape) {
             return ofType.seq(shape, Order.C);
         }
 
@@ -670,7 +687,7 @@ public class TensorTest {
         }
 
         @Override
-        public DTensor sequence(Shape shape) {
+        public DTensor seq(Shape shape) {
             int[] strides = IntArrays.newFill(shape.rank(), 1);
             int[] ordering = IntArrays.newSeq(0, shape.rank());
             IntArrays.shuffle(ordering, new Random(42));
@@ -768,7 +785,7 @@ public class TensorTest {
         }
 
         @Override
-        public DTensor sequence(Shape shape) {
+        public DTensor seq(Shape shape) {
             var t = zeros(shape);
             t.iteratorApply(Order.C, (i, p) -> (double) i);
             return t;
@@ -814,6 +831,10 @@ public class TensorTest {
             return x + 1;
         }
 
+        @Override
+        Float sum(Float x, Float y) {
+            return x + y;
+        }
     }
 
     static final class FloatDenseCol extends FloatDense {
@@ -823,7 +844,7 @@ public class TensorTest {
         }
 
         @Override
-        public FTensor sequence(Shape shape) {
+        public FTensor seq(Shape shape) {
             return ofType.seq(shape, Order.F);
         }
 
@@ -845,7 +866,7 @@ public class TensorTest {
         }
 
         @Override
-        public FTensor sequence(Shape shape) {
+        public FTensor seq(Shape shape) {
             return ofType.seq(shape, Order.C);
         }
 
@@ -867,7 +888,7 @@ public class TensorTest {
         }
 
         @Override
-        public FTensor sequence(Shape shape) {
+        public FTensor seq(Shape shape) {
             int[] strides = IntArrays.newFill(shape.rank(), 1);
             int[] ordering = IntArrays.newSeq(0, shape.rank());
             IntArrays.shuffle(ordering, new Random(42));
@@ -965,7 +986,7 @@ public class TensorTest {
         }
 
         @Override
-        public FTensor sequence(Shape shape) {
+        public FTensor seq(Shape shape) {
             var t = zeros(shape);
             t.iteratorApply(Order.C, (i, p) -> (float) i);
             return t;

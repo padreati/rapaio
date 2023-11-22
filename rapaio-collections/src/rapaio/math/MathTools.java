@@ -399,12 +399,10 @@ public class MathTools {
 
     /**
      * Error function of a {@code double} value.
-     * <p>
      * {@code erf(x) = 2 * cdf(x * sqrt(2)) - 1}
-     * <p>
      * where cdf is the cdf of the gaussian densities
      * <p>
-     * http://en.wikipedia.org/wiki/Error_function
+     * {@see http://en.wikipedia.org/wiki/Error_function}
      *
      * @param x the number for which we compute erf
      * @return the erf of x
@@ -963,13 +961,13 @@ public class MathTools {
     }
 
     public static double logistic(double x) {
-        return 1/(1+StrictMath.exp(-x));
+        return 1 / (1 + StrictMath.exp(-x));
     }
 
     /**
      * Logit function is the inverse of logistic function. The logit function
      * takes as parameter the value of the probability and returns the logit value.
-     *
+     * <p>
      * For performance reasons the range value of {@code p} is not checked. The
      * valid value range is [0,1]. For other values the behaviour is not specified.
      *
@@ -977,7 +975,7 @@ public class MathTools {
      * @return value of the logit function
      */
     public static double logit(double p) {
-        return StrictMath.log(p/(1-p));
+        return StrictMath.log(p / (1 - p));
     }
 
     /**

@@ -109,7 +109,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public TensorMill engine() {
+    public TensorMill mill() {
         return engine;
     }
 
@@ -129,7 +129,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public float getAtFloat(int ptr) {
+    public float ptrGetFloat(int ptr) {
         return array[ptr];
     }
 
@@ -138,7 +138,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public void setAtFloat(int ptr, float value) {
+    public void ptrSetFloat(int ptr, float value) {
         array[ptr] = value;
     }
 
@@ -281,11 +281,11 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         var order = layout.storageFastOrder();
         order = order == Order.C || order == Order.F ? order : Order.defaultOrder();
 
-        var it = pointerIterator(order);
-        var refIt = b.pointerIterator(order);
+        var it = ptrIterator(order);
+        var refIt = b.ptrIterator(order);
         while (it.hasNext()) {
             int next = it.nextInt();
-            array[next] = op.applyFloat(array[next], b.getAt(refIt.nextInt()));
+            array[next] = op.applyFloat(array[next], b.ptrGet(refIt.nextInt()));
         }
     }
 
@@ -413,12 +413,12 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
                     + "(m = %s, v = %s).".formatted(shape().toString(), tensor.shape().toString()));
         }
         float[] result = new float[shape().dim(0)];
-        var it = pointerIterator(Order.C);
+        var it = ptrIterator(Order.C);
         for (int i = 0; i < shape().dim(0); i++) {
-            var innerIt = tensor.pointerIterator(Order.C);
+            var innerIt = tensor.ptrIterator(Order.C);
             float sum = 0;
             for (int j = 0; j < shape().dim(1); j++) {
-                sum += getAtFloat(it.nextInt()) * tensor.getAtFloat(innerIt.nextInt());
+                sum += ptrGetFloat(it.nextInt()) * tensor.ptrGetFloat(innerIt.nextInt());
             }
             result[i] = sum;
         }
@@ -505,13 +505,13 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
 
     @Override
     public Iterator<Float> iterator(Order askOrder) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(pointerIterator(askOrder), Spliterator.ORDERED), false)
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
                 .map(i -> array[i]).iterator();
     }
 
     @Override
     public FTensorStride iteratorApply(Order askOrder, IntIntBiFunction<Float> apply) {
-        var it = pointerIterator(askOrder);
+        var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
             int p = it.nextInt();
@@ -521,7 +521,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public PointerIterator pointerIterator(Order askOrder) {
+    public PointerIterator ptrIterator(Order askOrder) {
         if (layout.isCOrdered() && askOrder != Order.F) {
             return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(-1));
         }
@@ -567,9 +567,9 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         }
         var it = new StridePointerIterator(layout, askOrder);
         FTensor copy = engine.ofFloat().zeros(askShape, askOrder);
-        var copyIt = copy.pointerIterator(Order.C);
+        var copyIt = copy.ptrIterator(Order.C);
         while (it.hasNext()) {
-            copy.setAtFloat(copyIt.nextInt(), array[it.nextInt()]);
+            copy.ptrSetFloat(copyIt.nextInt(), array[it.nextInt()]);
         }
         return copy;
     }
@@ -669,11 +669,11 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
 
         var copy = engine.ofFloat().zeros(shape(), askOrder);
         var it1 = chunkIterator(askOrder);
-        var it2 = copy.pointerIterator(askOrder);
+        var it2 = copy.ptrIterator(askOrder);
         while (it1.hasNext()) {
             int pointer = it1.nextInt();
             for (int i = pointer; i < pointer + it1.loopBound(); i += it1.loopStep()) {
-                copy.setAtFloat(it2.nextInt(), getAtFloat(i));
+                copy.ptrSetFloat(it2.nextInt(), ptrGetFloat(i));
             }
         }
         return copy;

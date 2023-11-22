@@ -31,14 +31,11 @@
 
 package rapaio.util.hash;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import rapaio.util.hash.Murmur3;
 
 public class Murmur3Test {
 
@@ -117,14 +114,12 @@ public class Murmur3Test {
             0x89526c269d9225b0L, 0xfc24aac3b731d33eL, 0x2518f6ea6300c3caL, 0xe4e20fdb203d79f5L
     };
 
-    private final Charset utf8Charset = StandardCharsets.UTF_8;
-
     private void doString(String s) {
         doString(s, 0, 0);
     }
 
     private void doString(String s, int pre, int post) {
-        byte[] utf8 = s.getBytes(utf8Charset);
+        byte[] utf8 = s.getBytes(StandardCharsets.UTF_8);
         int hash1 = Murmur3.murmur3A(utf8, pre, utf8.length - pre - post, 123456789);
         int hash2 = Murmur3.murmur3A(s, pre, s.length() - pre - post, 123456789);
         if (hash1 != hash2) {

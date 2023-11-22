@@ -184,9 +184,7 @@ public abstract class JsonValue {
     protected abstract String pretty(int level);
 
     protected String tabs(int level) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\t".repeat(Math.max(0, level)));
-        return sb.toString();
+        return "\t".repeat(Math.max(0, level));
     }
 
     public final Stream<String> stringPathStream() {

@@ -47,7 +47,7 @@ public class svm_train {
     private int cross_validation;
     private int nr_fold;
 
-    private static svm_print_interface svm_print_null = s -> {
+    private static final svm_print_interface svm_print_null = s -> {
     };
 
     private static void exit_with_help() {
@@ -118,7 +118,7 @@ public class svm_train {
         }
     }
 
-    public svm_model run(DMatrix xs, DVector ys, String argv[]) throws IOException {
+    public svm_model run(DMatrix xs, DVector ys, String[] argv) throws IOException {
         parse_command_line(argv);
         read_problem(xs, ys);
         error_msg = svm.svm_check_parameter(prob, param);
@@ -149,7 +149,7 @@ public class svm_train {
         return Integer.parseInt(s);
     }
 
-    private void parse_command_line(String argv[]) {
+    private void parse_command_line(String[] argv) {
         int i;
         svm_print_interface print_func = null;    // default printing to stdout
 

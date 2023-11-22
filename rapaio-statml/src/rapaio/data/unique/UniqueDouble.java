@@ -32,6 +32,7 @@
 package rapaio.data.unique;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -39,7 +40,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.Format;
 import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.DoubleOpenHashSet;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -57,7 +57,7 @@ public class UniqueDouble extends AbstractUnique {
 
     private UniqueDouble(Var var, boolean sorted) {
         super(sorted);
-        DoubleOpenHashSet keySet = new DoubleOpenHashSet();
+        HashSet<Double> keySet = new HashSet<>();
         for (int i = 0; i < var.size(); i++) {
             keySet.add(var.getDouble(i));
         }

@@ -48,18 +48,18 @@ public interface FTensor extends Tensor<Float, FTensor> {
     void setFloat(float value, int... indexes);
 
     @Override
-    default Float getAt(int ptr) {
-        return getAtFloat(ptr);
+    default Float ptrGet(int ptr) {
+        return ptrGetFloat(ptr);
     }
 
-    float getAtFloat(int ptr);
+    float ptrGetFloat(int ptr);
 
     @Override
-    default void setAt(int ptr, Float value) {
-        setAtFloat(ptr, value);
+    default void ptrSet(int ptr, Float value) {
+        ptrSetFloat(ptr, value);
     }
 
-    void setAtFloat(int ptr, float value);
+    void ptrSetFloat(int ptr, float value);
 
     @Override
     default FTensor add_(Float value) {

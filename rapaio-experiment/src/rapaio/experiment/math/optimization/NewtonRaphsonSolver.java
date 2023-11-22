@@ -160,9 +160,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("solution: ").append(sol.toString()).append("\n");
-        return sb.toString();
+        return "solution: " + sol.toString() + "\n";
     }
 
     public List<DVector> solutions() {

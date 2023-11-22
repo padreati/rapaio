@@ -54,7 +54,7 @@ class Cache {
     }
 
     private final head_t[] head;
-    private head_t lru_head;
+    private final head_t lru_head;
 
     Cache(int l_, long size_) {
         l = l_;
@@ -64,7 +64,7 @@ class Cache {
             head[i] = new head_t();
         }
         size /= 4;
-        size -= l * (16 / 4);    // sizeof(head_t) == 16
+        size -= (long) l * (16 / 4);    // sizeof(head_t) == 16
         size = Math.max(size, 2 * (long) l);  // cache must be large enough for two columns
         lru_head = new head_t();
         lru_head.next = lru_head.prev = lru_head;
@@ -188,10 +188,10 @@ abstract class QMatrix {
     abstract double[] get_QD();
 
     abstract void swap_index(int i, int j);
-};
+}
 
 abstract class Kernel extends QMatrix {
-    private svm_node[][] x;
+    private final svm_node[][] x;
     private final double[] x_square;
 
     // svm_parameter
@@ -267,7 +267,7 @@ abstract class Kernel extends QMatrix {
         this.gamma = param.gamma;
         this.coef0 = param.coef0;
 
-        x = (svm_node[][]) x_.clone();
+        x = x_.clone();
 
         if (kernel_type == svm_parameter.RBF) {
             x_square = new double[l];
@@ -512,9 +512,9 @@ class Solver {
         this.l = l;
         this.Q = Q;
         QD = Q.get_QD();
-        p = (double[]) p_.clone();
-        y = (byte[]) y_.clone();
-        alpha = (double[]) alpha_.clone();
+        p = p_.clone();
+        y = y_.clone();
+        alpha = alpha_.clone();
         this.Cp = Cp;
         this.Cn = Cn;
         this.eps = eps;
@@ -904,7 +904,7 @@ class Solver {
             }
         }
 
-        if (unshrink == false && Gmax1 + Gmax2 <= eps * 10) {
+        if (!unshrink && Gmax1 + Gmax2 <= eps * 10) {
             unshrink = true;
             reconstruct_gradient();
             active_size = l;
@@ -1132,7 +1132,7 @@ final class Solver_NU extends Solver {
             }
         }
 
-        if (unshrink == false && Math.max(Gmax1 + Gmax2, Gmax3 + Gmax4) <= eps * 10) {
+        if (!unshrink && Math.max(Gmax1 + Gmax2, Gmax3 + Gmax4) <= eps * 10) {
             unshrink = true;
             reconstruct_gradient();
             active_size = l;
@@ -1208,7 +1208,7 @@ class SVC_Q extends Kernel {
 
     SVC_Q(svm_problem prob, svm_parameter param, byte[] y_) {
         super(prob.l, prob.x, param);
-        y = (byte[]) y_.clone();
+        y = y_.clone();
         cache = new Cache(prob.l, (long) (param.cache_size * (1 << 20)));
         QD = new double[prob.l];
         for (int i = 0; i < prob.l; i++) {
@@ -1290,7 +1290,7 @@ class SVR_Q extends Kernel {
     private final byte[] sign;
     private final int[] index;
     private int next_buffer;
-    private double[][] buffer;
+    private final double[][] buffer;
     private final double[] QD;
 
     SVR_Q(svm_problem prob, svm_parameter param) {
@@ -1339,7 +1339,7 @@ class SVR_Q extends Kernel {
             }
         }
         // reorder and copy
-        double buf[] = buffer[next_buffer];
+        double[] buf = buffer[next_buffer];
         next_buffer = 1 - next_buffer;
         byte si = sign[i];
         for (j = 0; j < len; j++) {
@@ -1554,8 +1554,6 @@ public class svm {
         double[] alpha;
         double rho;
     }
-
-    ;
 
     static decision_function svm_train_one(
             svm_problem prob, svm_parameter param,
