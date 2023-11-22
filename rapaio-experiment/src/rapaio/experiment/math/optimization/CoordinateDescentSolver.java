@@ -31,22 +31,19 @@
 
 package rapaio.experiment.math.optimization;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.signum;
-
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
+import rapaio.core.param.ParamSet;
+import rapaio.core.param.ValueParam;
 import rapaio.data.VarDouble;
-import rapaio.math.functions.RDerivative;
-import rapaio.math.functions.RFunction;
-import rapaio.math.linear.DVector;
-import rapaio.math.optimization.Solver;
-import rapaio.math.optimization.linesearch.BacktrackLineSearch;
-import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.util.param.ParamSet;
-import rapaio.util.param.ValueParam;
+import rapaio.linear.DVector;
+import rapaio.optimization.Solver;
+import rapaio.optimization.functions.RDerivative;
+import rapaio.optimization.functions.RFunction;
+import rapaio.optimization.linesearch.BacktrackLineSearch;
+import rapaio.optimization.linesearch.LineSearch;
 
 /**
  * Steepest descent for L1 norm

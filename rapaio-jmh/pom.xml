@@ -33,7 +33,7 @@
     <version>6.0.0</version>
     <packaging>jar</packaging>
 
-    <name>JMH benchmark for rapaio library</name>
+    <name>rapaio-jmh</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -60,7 +60,12 @@
         </dependency>
         <dependency>
             <groupId>io.github.padreati</groupId>
-            <artifactId>rapaio-core</artifactId>
+            <artifactId>rapaio-collections</artifactId>
+            <version>6.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.padreati</groupId>
+            <artifactId>rapaio-statml</artifactId>
             <version>6.0.0</version>
         </dependency>
         <dependency>

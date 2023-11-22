@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>rapaio-jmh</artifactId>
-  <name>JMH benchmark for rapaio library</name>
+  <name>rapaio-jmh</name>
   <version>6.0.0</version>
   <build>
     <plugins>

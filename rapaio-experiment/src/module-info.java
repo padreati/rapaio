@@ -4,7 +4,8 @@ module rapaio.experiment {
     requires java.sql;
 
     requires rapaio.commons;
-    requires rapaio.core;
+    requires rapaio.collections;
+    requires rapaio.statml;
 
     requires javafx.base;
     requires javafx.fxml;

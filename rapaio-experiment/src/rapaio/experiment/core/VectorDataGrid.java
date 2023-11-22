@@ -38,7 +38,7 @@ import rapaio.data.VarDouble;
 import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Plot;
-import rapaio.math.linear.DVector;
+import rapaio.linear.DVector;
 import rapaio.sys.Experimental;
 
 /**

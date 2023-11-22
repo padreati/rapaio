@@ -5,8 +5,6 @@ module rapaio.commons {
 
     exports rapaio.printer;
     exports rapaio.printer.opt;
-    exports rapaio.printer.nparam;
-    exports rapaio.printer.local;
     exports rapaio.printer.idea;
     exports rapaio.printer.standard;
 

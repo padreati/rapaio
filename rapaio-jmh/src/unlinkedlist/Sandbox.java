@@ -42,8 +42,8 @@ import java.io.IOException;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.GridLayer;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.decomposition.DoubleSVDecomposition;
+import rapaio.linear.DMatrix;
+import rapaio.linear.decomposition.DoubleSVDecomposition;
 import rapaio.printer.ImageTools;
 import rapaio.sys.WS;
 

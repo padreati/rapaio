@@ -8,7 +8,13 @@
     </parent>
     <artifactId>rapaio-experiment</artifactId>
     <name>rapaio-experiment</name>
-    <url>http://maven.apache.org</url>
+    <url>https://github.com/padreati/rapaio/tree/master/rapaio-commons</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
     <build>
         <sourceDirectory>src</sourceDirectory>
@@ -34,7 +40,12 @@
     <dependencies>
         <dependency>
             <groupId>io.github.padreati</groupId>
-            <artifactId>rapaio-core</artifactId>
+            <artifactId>rapaio-collections</artifactId>
+            <version>6.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.padreati</groupId>
+            <artifactId>rapaio-statml</artifactId>
             <version>6.0.0</version>
         </dependency>
         <dependency>

@@ -33,8 +33,8 @@ package rapaio.experiment.ml.svm.libsvm;
 
 import java.io.IOException;
 
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.linear.DMatrix;
+import rapaio.linear.DVector;
 
 public class svm_predict {
 

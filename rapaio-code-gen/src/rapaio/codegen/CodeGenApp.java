@@ -32,7 +32,7 @@ public class CodeGenApp {
     static {
         templates = new ArrayList<>();
 
-        Replace[] replaces = new Replace[] {
+        Replace[] floatReplaces = new Replace[] {
                 Replace.of("double", "float"),
                 Replace.of("Double", "Float"),
                 Replace.of("DTensor", "FTensor"),
@@ -43,13 +43,13 @@ public class CodeGenApp {
         templates.add(new CodeGenTemplate()
                 .src.set("rapaio/math/tensor/DTensor.java")
                 .dst.set("rapaio/math/tensor/FTensor.java")
-                .replaces.set(replaces)
+                .replaces.set(floatReplaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/basearray/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/basearray/FTensorStride.java")
-                .replaces.set(replaces)
+                .src.set("rapaio/math/tensor/mill/array/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/array/FTensorStride.java")
+                .replaces.set(floatReplaces)
         );
     }
 

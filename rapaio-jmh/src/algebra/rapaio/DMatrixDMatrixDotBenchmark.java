@@ -52,13 +52,13 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
-import rapaio.math.linear.base.DMatrixBase;
-import rapaio.math.linear.dense.DMatrixDenseC;
-import rapaio.math.linear.dense.DMatrixDenseR;
+import rapaio.linear.base.DMatrixBase;
+import rapaio.linear.dense.DMatrixDenseC;
+import rapaio.linear.dense.DMatrixDenseR;
 import rapaio.math.tensor.DTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorEngines;
+import rapaio.math.tensor.TensorMill;
 import rapaio.sys.WS;
 
 
@@ -102,7 +102,7 @@ public class DMatrixDMatrixDotBenchmark {
                 }
             }
 
-            t = TensorEngines.baseArray().ofDouble().stride(Shape.of(n, n), Order.C, array);
+            t = TensorMill.array().ofDouble().stride(Shape.of(n, n), Order.C, array);
             tc = t.t().copy(Order.F);
         }
     }

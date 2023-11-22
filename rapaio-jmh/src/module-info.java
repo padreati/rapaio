@@ -7,7 +7,8 @@ open module rapaio.jmh {
     requires jdk.unsupported;
 
     requires rapaio.commons;
-    requires rapaio.core;
+    requires rapaio.collections;
+    requires rapaio.statml;
     requires rapaio.experiment;
     requires JSAT;
 }

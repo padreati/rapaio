@@ -51,9 +51,9 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
-import rapaio.math.linear.base.DMatrixBase;
-import rapaio.math.linear.dense.DMatrixDenseC;
-import rapaio.math.linear.dense.DVectorDense;
+import rapaio.linear.base.DMatrixBase;
+import rapaio.linear.dense.DMatrixDenseC;
+import rapaio.linear.dense.DVectorDense;
 import rapaio.sys.WS;
 
 @BenchmarkMode( {Mode.AverageTime})

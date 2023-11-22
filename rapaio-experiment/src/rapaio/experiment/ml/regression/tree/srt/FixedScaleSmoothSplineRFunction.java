@@ -40,7 +40,7 @@ import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DVector;
+import rapaio.linear.DVector;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.model.linear.LinearRegressionModel;
