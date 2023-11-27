@@ -1,7 +1,0 @@
-"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"ml.tree.CTreePerformance.testCBinaryTree","avgt",1,5,15.435241,0.659453,"ms/op",1000
-"ml.tree.CTreePerformance.testCBinaryTree","avgt",1,5,362.016908,49.279542,"ms/op",10000
-"ml.tree.CTreePerformance.testCBinaryTree","avgt",1,5,18302.629978,7111.849435,"ms/op",100000
-"ml.tree.CTreePerformance.testCTree","avgt",1,5,14.200121,0.792091,"ms/op",1000
-"ml.tree.CTreePerformance.testCTree","avgt",1,5,219.365444,12.782708,"ms/op",10000
-"ml.tree.CTreePerformance.testCTree","avgt",1,5,3609.089033,415.649368,"ms/op",100000

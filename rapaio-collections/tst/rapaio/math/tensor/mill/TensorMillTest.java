@@ -191,7 +191,7 @@ public class TensorMillTest {
             }
         }
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> tensorMill.stack(0, List.of(t1, t2.t())));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> tensorMill.stack(0, List.of(t1, t2.t_())));
         assertEquals("Tensors are not valid for stack, they have to have the same dimensions.", ex.getMessage());
     }
 }

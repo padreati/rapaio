@@ -21,12 +21,34 @@
 
 package algebra;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class Utils {
 
     private static final String RESULT_PREFIX = "/home/ati/work/rapaio/rapaio-jmh/results/";
-    private static final String RESULT_SUFFIX = ".csv";
 
     public static String resultPath(Class<?> clazz) {
-        return RESULT_PREFIX + clazz.getSimpleName() + RESULT_SUFFIX;
+        return RESULT_PREFIX + clazz.getSimpleName() + "-tmp.csv";
+    }
+
+    public static String resultFinalPath(Class<?> clazz) {
+        return RESULT_PREFIX + clazz.getSimpleName() + ".csv";
+    }
+
+    public static String resultPrevPath(Class<?> clazz) {
+        return RESULT_PREFIX + clazz.getSimpleName() + ".prev.csv";
+    }
+
+    public static void resultPromote(Class<?> clazz) throws IOException {
+        Files.deleteIfExists(Path.of(Utils.resultPrevPath(clazz)));
+
+        if(Files.exists(Path.of(Utils.resultFinalPath(clazz)))) {
+            Files.move(Path.of(Utils.resultFinalPath(clazz)), Path.of(Utils.resultPrevPath(clazz)));
+        }
+        if(Files.exists(Path.of(Utils.resultPath(clazz)))) {
+            Files.copy(Path.of(Utils.resultPath(clazz)), Path.of(Utils.resultFinalPath(clazz)));
+        }
     }
 }

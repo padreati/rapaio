@@ -119,6 +119,11 @@ public interface Layout {
      */
     Layout squeeze();
 
+    /**
+     * Introduce a new dimension of length 1 on position given by axis.
+     * @param axis index of the new axis
+     * @return layout with new dimension
+     */
     Layout unsqueeze(int axis);
 
     /**
@@ -131,4 +136,8 @@ public interface Layout {
     Layout moveAxis(int src, int dst);
 
     Layout swapAxis(int src, int dst);
+
+    Layout truncate(int axis, int start, int end);
+
+    Layout truncateAll(int[] starts, int[] ends);
 }

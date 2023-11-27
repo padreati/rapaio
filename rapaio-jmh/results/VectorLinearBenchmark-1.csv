@@ -1,9 +1,0 @@
-"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"algebra.rapaio.VectorLinearBenchmark.testAddDense","thrpt",1,5,11543.469711,413.381738,"ops/ms",100
-"algebra.rapaio.VectorLinearBenchmark.testAddDense","thrpt",1,5,1477.364576,64.618720,"ops/ms",1000
-"algebra.rapaio.VectorLinearBenchmark.testAddDense","thrpt",1,5,119.886088,33.976949,"ops/ms",10000
-"algebra.rapaio.VectorLinearBenchmark.testAddDense","thrpt",1,5,0.904916,0.075870,"ops/ms",1000000
-"algebra.rapaio.VectorLinearBenchmark.testAddStride","thrpt",1,5,7987.545487,124.348325,"ops/ms",100
-"algebra.rapaio.VectorLinearBenchmark.testAddStride","thrpt",1,5,1523.652108,9.473524,"ops/ms",1000
-"algebra.rapaio.VectorLinearBenchmark.testAddStride","thrpt",1,5,129.224864,1.247217,"ops/ms",10000
-"algebra.rapaio.VectorLinearBenchmark.testAddStride","thrpt",1,5,0.832550,0.076369,"ops/ms",1000000

@@ -1,0 +1,19 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"commons.tensor.CopyBenchmark.tensorTransposeOrderC","avgt",1,3,0.030049,0.004772,"ms/op",100
+"commons.tensor.CopyBenchmark.tensorTransposeOrderC","avgt",1,3,0.302550,0.045282,"ms/op",500
+"commons.tensor.CopyBenchmark.tensorTransposeOrderC","avgt",1,3,1.218338,0.253859,"ms/op",1000
+"commons.tensor.CopyBenchmark.tensorTransposeOrderC","avgt",1,3,9.985398,1.944001,"ms/op",2500
+"commons.tensor.CopyBenchmark.tensorTransposeOrderC","avgt",1,3,41.072304,82.570134,"ms/op",5000
+"commons.tensor.CopyBenchmark.tensorTransposeOrderC","avgt",1,3,189.738326,1831.396862,"ms/op",10000
+"commons.tensor.CopyBenchmark.tensorTransposeOrderF","avgt",1,3,0.010142,0.003598,"ms/op",100
+"commons.tensor.CopyBenchmark.tensorTransposeOrderF","avgt",1,3,0.229912,0.706024,"ms/op",500
+"commons.tensor.CopyBenchmark.tensorTransposeOrderF","avgt",1,3,1.055708,0.552076,"ms/op",1000
+"commons.tensor.CopyBenchmark.tensorTransposeOrderF","avgt",1,3,7.318577,2.373353,"ms/op",2500
+"commons.tensor.CopyBenchmark.tensorTransposeOrderF","avgt",1,3,36.344686,79.553187,"ms/op",5000
+"commons.tensor.CopyBenchmark.tensorTransposeOrderF","avgt",1,3,225.851476,1505.481068,"ms/op",10000
+"commons.tensor.CopyBenchmark.testJSAT","avgt",1,3,0.015290,0.003109,"ms/op",100
+"commons.tensor.CopyBenchmark.testJSAT","avgt",1,3,0.516165,0.095700,"ms/op",500
+"commons.tensor.CopyBenchmark.testJSAT","avgt",1,3,2.642208,3.729745,"ms/op",1000
+"commons.tensor.CopyBenchmark.testJSAT","avgt",1,3,18.584417,1.198346,"ms/op",2500
+"commons.tensor.CopyBenchmark.testJSAT","avgt",1,3,118.543302,174.181794,"ms/op",5000
+"commons.tensor.CopyBenchmark.testJSAT","avgt",1,3,502.484663,1758.179072,"ms/op",10000

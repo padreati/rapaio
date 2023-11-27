@@ -75,7 +75,6 @@ public final class StrideLayout implements Layout {
 
     private static final int C_DENSE = 1;
     private static final int F_DENSE = 2;
-    private static final int CONTIGUOUS = 4;
 
     private final Shape shape;
     private final int offset;
@@ -128,10 +127,7 @@ public final class StrideLayout implements Layout {
     }
 
     public int stride(int i) {
-        if (i < 0) {
-            i += rank();
-        }
-        return strides[i];
+        return i >= 0 ? strides[i] : strides[i + strides.length];
     }
 
     @Override
@@ -412,6 +408,42 @@ public final class StrideLayout implements Layout {
         IntArrays.swap(askStrides, src, dst);
 
         return StrideLayout.of(Shape.of(askDims), offset, askStrides);
+    }
+
+    @Override
+    public StrideLayout truncate(int axis, int start, int end) {
+        if (axis < 0 || axis >= strides.length) {
+            throw new IllegalArgumentException("Axis is out of bounds.");
+        }
+        if (rank() == 1) {
+            return StrideLayout.of(
+                    Shape.of(end - start),
+                    offset + stride(axis) * start,
+                    strides
+            );
+        }
+        int[] newDims = Arrays.copyOf(shape.dims(), strides.length);
+        newDims[axis] = end - start;
+        int newOffset = offset + start * stride(axis);
+        return StrideLayout.of(Shape.of(newDims), newOffset, strides);
+    }
+
+    @Override
+    public StrideLayout truncateAll(int[] starts, int[] ends) {
+        if (strides.length != starts.length) {
+            throw new IllegalArgumentException("Start arrays must have dimension equal with rank.");
+        }
+        if (starts.length != ends.length) {
+            throw new IllegalArgumentException("Starts and ends does not have the same length.");
+        }
+        int[] newDims = Arrays.copyOf(dims(), strides.length);
+        int newOffset = offset;
+        for (int i = 0; i < newDims.length; i++) {
+            newDims[i] = ends[i] - starts[i];
+            newOffset += starts[i] * strides[i];
+
+        }
+        return StrideLayout.of(Shape.of(newDims), newOffset, strides);
     }
 
     @Override

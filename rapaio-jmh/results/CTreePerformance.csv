@@ -1,4 +1,0 @@
-"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"ml.tree.CTreePerformance.testCTree","avgt",1,5,13.278843,0.296050,"ms/op",1000
-"ml.tree.CTreePerformance.testCTree","avgt",1,5,209.334506,59.432582,"ms/op",10000
-"ml.tree.CTreePerformance.testCTree","avgt",1,5,3403.486422,395.739302,"ms/op",100000

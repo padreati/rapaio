@@ -171,10 +171,10 @@ public class ChunkIteratorTest {
     }
 
     void testChunkDescriptor(StrideChunkIterator it, Shape shape, int offset, int[] strides, Order order) {
-        var descriptor = new StrideChunkDescriptor(shape, offset, strides, order);
+        var descriptor = StrideChunkDescriptor.of(shape, offset, strides, order);
         assertEquals(it.loopStep(), descriptor.loopStep());
         assertEquals(it.loopSize(), descriptor.loopSize());
         assertEquals(it.chunkCount(), descriptor.chunkCount());
-        assertArrayEquals(it.computeChunkOffsets(), descriptor.getChunkOffsets());
+        assertArrayEquals(it.computeChunkOffsets(), descriptor.chunkOffsets());
     }
 }

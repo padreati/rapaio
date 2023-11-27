@@ -40,16 +40,24 @@ import rapaio.util.collection.IntArrays;
 
 public final class StrideChunkDescriptor {
 
+    public static StrideChunkDescriptor of(Shape shape, int offset, int[] strides, Order askOrder) {
+        return new StrideChunkDescriptor(shape, offset, strides, askOrder);
+    }
+
+    public static StrideChunkDescriptor of(StrideLayout layout, Order askOrder) {
+        return new StrideChunkDescriptor(layout, askOrder);
+    }
+
     private final int loopSize;
     private final int loopStep;
     private final int chunkCount;
     private final int[] chunkOffsets;
 
-    public StrideChunkDescriptor(Shape shape, int offset, int[] strides, Order askOrder) {
+    private StrideChunkDescriptor(Shape shape, int offset, int[] strides, Order askOrder) {
         this(new StrideLayout(shape, offset, strides), askOrder);
     }
 
-    public StrideChunkDescriptor(StrideLayout layout, Order askOrder) {
+    private StrideChunkDescriptor(StrideLayout layout, Order askOrder) {
 
         if (layout.shape().rank() == 0) {
             loopSize = 1;
@@ -107,7 +115,11 @@ public final class StrideChunkDescriptor {
         return loopStep;
     }
 
-    public int[] getChunkOffsets() {
+    public int loopLength() {
+        return loopStep * loopSize;
+    }
+
+    public int[] chunkOffsets() {
         return chunkOffsets;
     }
 }

@@ -61,13 +61,13 @@ public final class Shape {
     private int[] fStrides = null;
 
     private Shape(int[] dims) {
-        for (int dimSize : dims) {
-            if (dimSize <= 0) {
+        for (int dim : dims) {
+            if (dim <= 0) {
                 throw new IllegalArgumentException("Invalid shape dimensions: ["
                         + Arrays.stream(dims).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "]");
             }
         }
-        this.dims = Arrays.copyOf(dims, dims.length);
+        this.dims = dims;
         this.size = IntArrays.prod(dims, 0, dims.length);
     }
 

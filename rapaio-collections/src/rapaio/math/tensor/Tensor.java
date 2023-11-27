@@ -31,7 +31,6 @@
 
 package rapaio.math.tensor;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -308,23 +307,19 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
 
     T div_(N value);
 
+    N vdot(T tensor);
+
     T matmul(T tensor);
 
     T mv(T tensor);
 
     T mm(T tensor);
 
-    N vdot(T tensor);
-
     Iterator<N> iterator(Order askOrder);
 
     T iteratorApply(Order order, IntIntBiFunction<N> apply);
 
     PointerIterator ptrIterator(Order askOrder);
-
-    default ChunkIterator chunkIterator() {
-        return chunkIterator(Order.S);
-    }
 
     ChunkIterator chunkIterator(Order askOrder);
 
@@ -359,7 +354,23 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      *
      * @return a transposed view of the tensor
      */
-    T t();
+    T t_();
+
+    /**
+     * Computes a new tensor which contains transpose of a given tensor. A transposed tensor is a tensor which reverts axis,
+     * the first axis becomes the last, the second axis becomes the second to last and so on.
+     * The new tensor will be stored in the given order.
+     */
+    default T t() {
+        return t(Order.defaultOrder());
+    }
+
+    /**
+     * Computes a new tensor which contains transpose of a given tensor. A transposed tensor is a tensor which reverts axis,
+     * the first axis becomes the last, the second axis becomes the second to last and so on.
+     * The new tensor will be stored in the given order.
+     */
+    T t(Order askOrder);
 
     /**
      * Collapses the tensor into one dimension in the order given as parameter. It creates a new tensor copy
@@ -423,6 +434,8 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      */
     T truncate(int axis, int start, int end);
 
+    T truncateAll(int[] starts, int[] ends);
+
     /**
      * Splits the tensor into multiple view tensors along a given axis.
      * The resulting tensors are truncated versions of the original tensor, with the start index being the current index, and the end
@@ -434,6 +447,8 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      */
     List<T> split(int axis, int... indexes);
 
+    List<T> splitAll(int[][] indexes);
+
     /**
      * Slices the tensor along a given axis.
      * The resulting tensors are truncated versions of the original one with size given by step.
@@ -444,11 +459,28 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @return list of new tensors with truncated data.
      */
     default List<T> slice(int axis, int step) {
-        List<Integer> indexes = new ArrayList<>();
-        for (int i = 0; i < layout().shape().dim(axis); i += step) {
-            indexes.add(i);
+        int dim = layout().shape().dim(axis);
+        int[] indexes = new int[Math.ceilDiv(dim, step)];
+        indexes[0] = 0;
+        for (int i = 1; i < indexes.length; i++) {
+            indexes[i] = Math.min(indexes[i - 1] + step, dim);
         }
-        return split(axis, indexes.stream().mapToInt(i -> i).toArray());
+        return split(axis, indexes);
+    }
+
+    default List<T> sliceAll(int[] steps) {
+        if (layout().rank() != steps.length) {
+            throw new IllegalArgumentException("Array of steps must have the length equals with rank.");
+        }
+        int[][] indexes = new int[steps.length][];
+        for (int i = 0; i < steps.length; i++) {
+            indexes[i] = new int[Math.ceilDiv(layout().shape().dim(i), steps[i])];
+            indexes[i][0] = 0;
+            for (int j = 1; j < indexes[i].length; j++) {
+                indexes[i][j] = Math.min(indexes[i][j - 1] + steps[i], layout().shape().dim(i));
+            }
+        }
+        return splitAll(indexes);
     }
 
     T repeat(int axis, int repeat, boolean stack);

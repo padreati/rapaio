@@ -101,8 +101,8 @@ public final class IntArrays {
      * Builds a new int array with values from the given chunk transformed
      * with a function.
      *
-     * @param len    length of the array
-     * @param fun    transforming function
+     * @param len length of the array
+     * @param fun transforming function
      * @return transformed values array
      */
     public static int[] newFrom(int len, Int2IntFunction fun) {
@@ -300,6 +300,21 @@ public final class IntArrays {
             }
         }
         return true;
+    }
+
+    public static int argmax(int[] array, int start, int end) {
+        if (array.length == 0) {
+            return -1;
+        }
+        int max = array[start];
+        int argmax = start;
+        for (int i = start + 1; i < end; i++) {
+            if (max < array[i]) {
+                argmax = i;
+                max = array[i];
+            }
+        }
+        return argmax;
     }
 
     /**
@@ -748,9 +763,10 @@ public final class IntArrays {
         if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
             quickSort(x, from, to, comp);
         } else {
-            final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-            pool.invoke(new ForkJoinQuickSortComp(x, from, to, comp));
-            pool.shutdown();
+            try (ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors())) {
+                pool.invoke(new ForkJoinQuickSortComp(x, from, to, comp));
+                pool.shutdown();
+            }
         }
     }
 
@@ -988,9 +1004,10 @@ public final class IntArrays {
         if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
             quickSort(x, from, to);
         } else {
-            final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-            pool.invoke(new ForkJoinQuickSort(x, from, to));
-            pool.shutdown();
+            try (ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors())) {
+                pool.invoke(new ForkJoinQuickSort(x, from, to));
+                pool.shutdown();
+            }
         }
     }
 
@@ -1230,9 +1247,10 @@ public final class IntArrays {
         if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
             quickSortIndirect(perm, x, from, to);
         } else {
-            final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-            pool.invoke(new ForkJoinQuickSortIndirect(perm, x, from, to));
-            pool.shutdown();
+            try (ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors())) {
+                pool.invoke(new ForkJoinQuickSortIndirect(perm, x, from, to));
+                pool.shutdown();
+            }
         }
     }
 
@@ -1550,9 +1568,10 @@ public final class IntArrays {
         if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
             quickSort(x, y, from, to);
         }
-        final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-        pool.invoke(new ForkJoinQuickSort2(x, y, from, to));
-        pool.shutdown();
+        try (ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors())) {
+            pool.invoke(new ForkJoinQuickSort2(x, y, from, to));
+            pool.shutdown();
+        }
     }
 
     /**

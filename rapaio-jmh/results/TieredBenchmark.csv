@@ -1,2 +1,0 @@
-"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit"
-"jmh.tiered.TieredBenchmark.testMain","avgt",1,1,1.623248,NaN,"ms/op"

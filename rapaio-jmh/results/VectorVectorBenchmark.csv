@@ -1,3 +1,0 @@
-"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"jmh.VectorVectorBenchmark.testArray","avgt",1,5,0.021458,0.001391,"ms/op",10000
-"jmh.VectorVectorBenchmark.testArrayInlined","avgt",1,5,0.003542,0.000171,"ms/op",10000

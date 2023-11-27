@@ -49,14 +49,6 @@ import rapaio.util.collection.IntArrays;
 public class TensorTest {
 
     @Test
-    void testSandbox() {
-
-        var engine = TensorMill.array();
-
-
-    }
-
-    @Test
     @Disabled
     void profileTest() {
         var engine = TensorMill.array();
@@ -70,7 +62,7 @@ public class TensorTest {
         }
 
         var t1 = engine.ofDouble().stride(Shape.of(m, n), Order.C, array);
-        var res1 = t1.copy(Order.C).mm(t1.copy(Order.C).t());
+        var res1 = t1.copy(Order.C).mm(t1.copy(Order.C).t_());
         java.lang.System.out.println(res1.shape());
     }
 
@@ -357,10 +349,10 @@ public class TensorTest {
             Shape shape = Shape.of(2, 3, 4);
             var t = g.seq(shape);
 
-            var tt = t.t();
+            var tt = t.t_();
             assertArrayEquals(new int[] {4, 3, 2}, tt.shape().dims());
 
-            var ttt = tt.t();
+            var ttt = tt.t_();
 
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 3; j++) {
@@ -421,7 +413,7 @@ public class TensorTest {
             assertArrayEquals(new int[] {2, 3, 4}, s.shape().dims());
 
             assertTrue(t.deepEquals(s));
-            assertTrue(t.t().deepEquals(t.t().copy(Order.C)));
+            assertTrue(t.t_().deepEquals(t.t_().copy(Order.C)));
         }
 
         void testMathUnary() {

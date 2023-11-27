@@ -103,7 +103,7 @@ public class DMatrixDMatrixDotBenchmark {
             }
 
             t = TensorMill.array().ofDouble().stride(Shape.of(n, n), Order.C, array);
-            tc = t.t().copy(Order.F);
+            tc = t.t_().copy(Order.F);
         }
     }
 

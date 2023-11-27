@@ -1,7 +1,0 @@
-"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"algebra.base.FlatVsStripeMatrixBenchmark.testAddFlatMatrix","avgt",1,10,0.001701,0.000199,"ms/op",100
-"algebra.base.FlatVsStripeMatrixBenchmark.testAddFlatMatrix","avgt",1,10,0.271695,0.019277,"ms/op",1000
-"algebra.base.FlatVsStripeMatrixBenchmark.testAddFlatMatrix","avgt",1,10,2.433356,0.420965,"ms/op",2000
-"algebra.base.FlatVsStripeMatrixBenchmark.testAddStripeMatrix","avgt",1,10,0.001676,0.000230,"ms/op",100
-"algebra.base.FlatVsStripeMatrixBenchmark.testAddStripeMatrix","avgt",1,10,0.636671,0.063204,"ms/op",1000
-"algebra.base.FlatVsStripeMatrixBenchmark.testAddStripeMatrix","avgt",1,10,2.630650,0.225067,"ms/op",2000
