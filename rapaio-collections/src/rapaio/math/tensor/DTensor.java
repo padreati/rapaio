@@ -94,4 +94,10 @@ public interface DTensor extends Tensor<Double, DTensor> {
     }
 
     double vdotDouble(DTensor tensor);
+
+    default Double vdot(DTensor tensor, int start, int end) {
+        return vdotDouble(tensor, start, end);
+    }
+
+    double vdotDouble(DTensor tensor, int start, int end);
 }

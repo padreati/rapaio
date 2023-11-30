@@ -3,6 +3,8 @@ module rapaio.experiment {
     requires java.logging;
     requires java.sql;
 
+    requires jdk.incubator.vector;
+
     requires rapaio.commons;
     requires rapaio.collections;
     requires rapaio.statml;

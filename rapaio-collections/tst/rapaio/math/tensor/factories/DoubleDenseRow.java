@@ -29,31 +29,31 @@
  *
  */
 
-package rapaio.math.tensor;
+package rapaio.math.tensor.factories;
 
-public enum Order {
-    C("C-style row major order"),
-    F("Fortran-style col major order"),
-    S("Storage order");
+import rapaio.math.tensor.DTensor;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorMill;
 
-    public static Order defaultOrder() {
-        return C;
+public final class DoubleDenseRow extends DoubleDense {
+
+    public DoubleDenseRow(TensorMill manager) {
+        super(manager);
     }
 
-    public static Order autoFC(Order askOrder) {
-        return switch (askOrder) {
-            case F, C -> askOrder;
-            default -> throw new IllegalArgumentException();
-        };
+    @Override
+    public DTensor seq(Shape shape) {
+        return ofType.seq(shape, Order.C);
     }
 
-    private final String description;
-
-    Order(String description) {
-        this.description = description;
+    @Override
+    public DTensor zeros(Shape shape) {
+        return ofType.zeros(shape, Order.C);
     }
 
-    public String description() {
-        return description;
+    @Override
+    public DTensor random(Shape shape) {
+        return ofType.random(shape, random, Order.C);
     }
 }

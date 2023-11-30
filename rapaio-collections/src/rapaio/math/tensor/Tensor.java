@@ -309,11 +309,19 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
 
     N vdot(T tensor);
 
-    T matmul(T tensor);
+    N vdot(T tensor, int start, int end);
 
     T mv(T tensor);
 
-    T mm(T tensor);
+    default T mm(T tensor) {
+        return mm(tensor, Order.defaultOrder());
+    }
+
+    T mm(T tensor, Order askOrder);
+
+    default Iterator<N> iterator() {
+        return iterator(Order.defaultOrder());
+    }
 
     Iterator<N> iterator(Order askOrder);
 

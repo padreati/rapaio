@@ -94,4 +94,10 @@ public interface FTensor extends Tensor<Float, FTensor> {
     }
 
     float vdotFloat(FTensor tensor);
+
+    default Float vdot(FTensor tensor, int start, int end) {
+        return vdotFloat(tensor, start, end);
+    }
+
+    float vdotFloat(FTensor tensor, int start, int end);
 }

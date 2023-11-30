@@ -222,8 +222,7 @@ public final class StrideLayout implements Layout {
     public StrideLayout computeFortranLayout(Order askOrder, boolean compact) {
         int[] newDims;
         int[] newStrides;
-        Order order = askOrder == Order.A ? storageFastOrder() : askOrder;
-        switch (order) {
+        switch (askOrder) {
             case F -> {
                 newDims = Arrays.copyOf(shape.dims(), shape.rank());
                 newStrides = Arrays.copyOf(strides, shape.rank());
@@ -270,8 +269,7 @@ public final class StrideLayout implements Layout {
     public StrideLayout computeCLayout(Order askOrder, boolean compact) {
         int[] newDims;
         int[] newStrides;
-        Order order = askOrder == Order.A ? storageFastOrder() : askOrder;
-        switch (order) {
+        switch (askOrder) {
             case F -> {
                 newDims = Arrays.copyOf(shape.dims(), shape.rank());
                 newStrides = Arrays.copyOf(strides, shape.rank());

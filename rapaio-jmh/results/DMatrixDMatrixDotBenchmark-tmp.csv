@@ -1,0 +1,13 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotBaseBase","avgt",1,3,0.102850,0.014551,"ms/op",100
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotBaseBase","avgt",1,3,0.794618,0.054745,"ms/op",250
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotBaseBase","avgt",1,3,8.026224,15.734431,"ms/op",500
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testDotBaseBase","avgt",1,3,66.263473,78.485723,"ms/op",1000
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testJSAT","avgt",1,3,0.317706,0.532565,"ms/op",100
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testJSAT","avgt",1,3,1.946027,12.345276,"ms/op",250
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testJSAT","avgt",1,3,12.130074,54.977917,"ms/op",500
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testJSAT","avgt",1,3,113.958003,168.230577,"ms/op",1000
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testTensorRC","avgt",1,3,0.535603,0.032002,"ms/op",100
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testTensorRC","avgt",1,3,1.553464,0.619833,"ms/op",250
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testTensorRC","avgt",1,3,8.667060,2.392027,"ms/op",500
+"algebra.rapaio.DMatrixDMatrixDotBenchmark.testTensorRC","avgt",1,3,61.757691,9.546169,"ms/op",1000

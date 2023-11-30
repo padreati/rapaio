@@ -29,31 +29,39 @@
  *
  */
 
-package rapaio.math.tensor;
+package rapaio.math.tensor.factories;
 
-public enum Order {
-    C("C-style row major order"),
-    F("Fortran-style col major order"),
-    S("Storage order");
+import java.util.Random;
 
-    public static Order defaultOrder() {
-        return C;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorMill;
+
+public abstract class DataFactory<N extends Number, T extends Tensor<N, T>> {
+
+    final TensorMill mill;
+    final TensorMill.OfType<N, T> ofType;
+    final Random random = new Random(42);
+
+
+    public DataFactory(TensorMill tensorMill, TensorMill.OfType<N, T> ofType) {
+        this.mill = tensorMill;
+        this.ofType = ofType;
     }
 
-    public static Order autoFC(Order askOrder) {
-        return switch (askOrder) {
-            case F, C -> askOrder;
-            default -> throw new IllegalArgumentException();
-        };
+    public TensorMill mill() {
+        return mill;
     }
 
-    private final String description;
+    public abstract N value(double x);
 
-    Order(String description) {
-        this.description = description;
-    }
+    public abstract N inc(N x);
 
-    public String description() {
-        return description;
-    }
+    public abstract N sum(N x, N y);
+
+    public abstract T seq(Shape shape);
+
+    public abstract T zeros(Shape shape);
+
+    public abstract T random(Shape shape);
 }

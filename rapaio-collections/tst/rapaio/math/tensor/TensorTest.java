@@ -37,14 +37,21 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.util.collection.IntArrays;
+import rapaio.math.tensor.factories.DataFactory;
+import rapaio.math.tensor.factories.DoubleDenseCol;
+import rapaio.math.tensor.factories.DoubleDenseRow;
+import rapaio.math.tensor.factories.DoubleDenseStride;
+import rapaio.math.tensor.factories.DoubleDenseStrideView;
+import rapaio.math.tensor.factories.FloatDenseCol;
+import rapaio.math.tensor.factories.FloatDenseRow;
+import rapaio.math.tensor.factories.FloatDenseStride;
+import rapaio.math.tensor.factories.FloatDenseStrideView;
 
 public class TensorTest {
 
@@ -71,22 +78,24 @@ public class TensorTest {
 
         var eng = TensorMill.array();
 
-        new TestSuite<>(new DoubleDenseRow(eng)).run();
-        new TestSuite<>(new DoubleDenseCol(eng)).run();
-        new TestSuite<>(new DoubleDenseStride(eng)).run();
-        new TestSuite<>(new DoubleDenseStrideView(eng)).run();
-        new TestSuite<>(new FloatDenseRow(eng)).run();
-        new TestSuite<>(new FloatDenseCol(eng)).run();
-        new TestSuite<>(new FloatDenseStride(eng)).run();
-        new TestSuite<>(new FloatDenseStrideView(eng)).run();
+        new TestSuite<>(this, new DoubleDenseRow(eng)).run();
+        new TestSuite<>(this, new DoubleDenseCol(eng)).run();
+        new TestSuite<>(this, new DoubleDenseStride(eng)).run();
+        new TestSuite<>(this, new DoubleDenseStrideView(eng)).run();
+        new TestSuite<>(this, new FloatDenseRow(eng)).run();
+        new TestSuite<>(this, new FloatDenseCol(eng)).run();
+        new TestSuite<>(this, new FloatDenseStride(eng)).run();
+        new TestSuite<>(this, new FloatDenseStrideView(eng)).run();
     }
 
     static class TestSuite<N extends Number, T extends Tensor<N, T>> {
 
         private final DataFactory<N, T> g;
+        private final TensorTest self;
 
-        private TestSuite(DataFactory<N, T> g) {
+        private TestSuite(TensorTest self, DataFactory<N, T> g) {
             this.g = g;
+            this.self = self;
         }
 
         void run() {
@@ -103,7 +112,10 @@ public class TensorTest {
             testMathUnary();
             testMathBinaryScalar();
             testMathBinaryVector();
-            testVDot();
+            vdotTest();
+            mvTest();
+            mmTest();
+            splitTest();
         }
 
         void testBuild() {
@@ -115,7 +127,7 @@ public class TensorTest {
             if (value instanceof Float) {
                 assertEquals(t.dtype(), DType.FLOAT);
             }
-            assertEquals(g.engine, t.mill());
+            assertEquals(g.mill(), t.mill());
         }
 
         void testGet() {
@@ -409,102 +421,104 @@ public class TensorTest {
             Shape shape = Shape.of(2, 3, 4);
             var t = g.seq(shape);
 
-            var s = t.copy(Order.C);
-            assertArrayEquals(new int[] {2, 3, 4}, s.shape().dims());
+            assertTrue(t.deepEquals(t.copy(Order.C)));
+            assertTrue(t.deepEquals(t.copy(Order.F)));
 
-            assertTrue(t.deepEquals(s));
-            assertTrue(t.t_().deepEquals(t.t_().copy(Order.C)));
+            shape = Shape.of(21, 33, 21, 21);
+            t = g.random(shape);
+            assertTrue(t.deepEquals(t.copy(Order.C)));
+            assertTrue(t.deepEquals(t.copy(Order.F)));
         }
 
         void testMathUnary() {
 
-            var t1 = g.random(Shape.of(41, 31), g.random).sub_(g.value(0.5));
+            var t1 = g.random(Shape.of(41, 31)).sub_(g.value(0.5));
             assertTrue(t1.abs().deepEquals(t1.abs_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.abs(Order.F).deepEquals(t1.copy(Order.C).abs_()));
             assertTrue(t1.copy(Order.F).abs_().deepEquals(t1.abs(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.neg().deepEquals(t1.neg_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).neg_().deepEquals(t1.neg(Order.F)));
             assertTrue(t1.copy(Order.F).neg_().deepEquals(t1.neg(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy().log_().deepEquals(t1.log()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).log_().deepEquals(t1.log(Order.F)));
             assertTrue(t1.copy(Order.F).log_().deepEquals(t1.log(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.log1p().deepEquals(t1.log1p_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).log1p_().deepEquals(t1.log1p(Order.F)));
             assertTrue(t1.copy(Order.F).log1p_().deepEquals(t1.log1p(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.exp().deepEquals(t1.exp_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).exp_().deepEquals(t1.exp(Order.F)));
             assertTrue(t1.copy(Order.F).exp_().deepEquals(t1.exp(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.expm1().deepEquals(t1.copy().expm1_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).expm1_().deepEquals(t1.expm1(Order.F)));
             assertTrue(t1.copy(Order.F).expm1_().deepEquals(t1.expm1(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.sin().deepEquals(t1.sin_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).sin_().deepEquals(t1.sin(Order.F)));
             assertTrue(t1.copy(Order.F).sin_().deepEquals(t1.sin(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.asin().deepEquals(t1.asin_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).asin_().deepEquals(t1.asin(Order.F)));
             assertTrue(t1.copy(Order.F).asin_().deepEquals(t1.asin(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.sinh().deepEquals(t1.sinh_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).sinh_().deepEquals(t1.sinh(Order.F)));
             assertTrue(t1.copy(Order.F).sinh_().deepEquals(t1.sinh(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.cos().deepEquals(t1.cos_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).cos_().deepEquals(t1.cos(Order.F)));
             assertTrue(t1.copy(Order.F).cos_().deepEquals(t1.cos(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.acos().deepEquals(t1.acos_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).acos_().deepEquals(t1.acos(Order.F)));
             assertTrue(t1.copy(Order.F).acos_().deepEquals(t1.acos(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.cosh().deepEquals(t1.cosh_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).cosh_().deepEquals(t1.cosh(Order.F)));
             assertTrue(t1.copy(Order.F).cosh_().deepEquals(t1.cosh(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.tan().deepEquals(t1.tan_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).tan_().deepEquals(t1.tan(Order.F)));
             assertTrue(t1.copy(Order.F).tan_().deepEquals(t1.tan(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.atan().deepEquals(t1.atan_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).atan_().deepEquals(t1.atan(Order.F)));
             assertTrue(t1.copy(Order.F).atan_().deepEquals(t1.atan(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.tanh().deepEquals(t1.tanh_()));
-            t1 = g.random(Shape.of(41, 31), g.random).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy(Order.C).tanh_().deepEquals(t1.tanh(Order.F)));
             assertTrue(t1.copy(Order.F).tanh_().deepEquals(t1.tanh(Order.C)));
         }
@@ -538,7 +552,7 @@ public class TensorTest {
 
             var t1 = g.seq(shape);
             var c1 = t1.copy();
-            var t2 = g.random(shape, g.random);
+            var t2 = g.random(shape);
             var c2 = t2.copy();
 
             assertTrue(c1.add(c2).deepEquals(t1.add_(t2)));
@@ -559,452 +573,133 @@ public class TensorTest {
             assertTrue(c1.mul(c2).div(c2).deepEquals(t1.mul_(t2).div_(t2)));
         }
 
-        void testVDot() {
+        void vdotTest() {
 
             int vLen = 23;
             Shape shape = Shape.of(50, vLen);
             var t1 = g.seq(shape);
 
-            var vdots = t1.slice(0, 1).stream().map(t -> {
+            var vdots = new ArrayList<N>();
+            for(var t : t1.slice(0, 1)) {
                 t = t.squeeze();
-                return t.vdot(t);
-            }).toList();
+                vdots.add(t.vdot(t));
+            }
 
             for (int i = 0; i < vdots.size(); i++) {
                 var sum = g.value(0);
                 for (int j = 0; j < vLen; j++) {
                     sum = g.sum(sum, g.value((i * vLen + j) * (i * vLen + j)));
                 }
-                assertEquals(sum, vdots.get(i));
+                assertEquals(sum, vdots.get(i), "i: " + i);
             }
+
+            var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10)).vdot(g.seq(Shape.of(20))));
+            assertEquals("Operands are not valid for vector dot product (v = Shape: [10], v = Shape: [20]).", e.getMessage());
+
+            e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10)).vdot(g.seq(Shape.of(10)), -1, 10));
+            assertEquals("Start and end indexes are invalid (start: -1, end: 10).", e.getMessage());
+
+            var t2 = g.seq(Shape.of(50));
+            assertEquals(g.value(40425), t2.vdot(t2));
+            assertEquals(g.value(4 * 4 + 5 * 5 + 6 * 6), t2.vdot(t2, 4, 7));
         }
 
-    }
+        void mvTest() {
+            var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 1)).mv(g.seq(Shape.of(2))));
+            assertEquals("Operands are not valid for matrix-vector multiplication (m = Shape: [10,1], v = Shape: [2]).", e.getMessage());
 
-    abstract static class DataFactory<N extends Number, T extends Tensor<N, T>> {
+            var m1 = g.seq(Shape.of(200, 31));
+            var v1 = g.seq(Shape.of(31));
 
-        final TensorMill engine;
-        final TensorMill.OfType<N, T> ofType;
-        final Random random = new Random(42);
+            var r1 = m1.mv(v1);
+            assertEquals(Shape.of(200), r1.shape());
 
+            for (int i = 0; i < 200; i++) {
+                assertEquals(v1.add(g.value(i * 31)).vdot(v1), r1.get(i));
+            }
 
-        public DataFactory(TensorMill tensorMill, TensorMill.OfType<N, T> ofType) {
-            this.engine = tensorMill;
-            this.ofType = ofType;
+            var r2 = v1.unsqueeze(0).mv(v1);
+            assertEquals(Shape.of(1), r2.shape());
+            assertEquals(v1.vdot(v1), r2.get(0));
         }
 
-        abstract N value(double x);
+        void mmTest() {
 
-        abstract N inc(N x);
+            var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(2, 3)).mm(g.seq(Shape.of(4, 3))));
+            assertEquals("Operands are not valid for matrix-matrix multiplication (m = Shape: [2,3], v = Shape: [4,3]).", e.getMessage());
 
-        abstract N sum(N x, N y);
+            e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(2, 3)).mm(g.seq(Shape.of(3, 2)), Order.S));
+            assertEquals("Illegal askOrder value, must be Order.C or Order.F", e.getMessage());
 
-        abstract T seq(Shape shape);
+            var t1 = g.seq(Shape.of(31, 42));
+            var t2 = g.seq(Shape.of(42, 1));
 
-        abstract T zeros(Shape shape);
+            var r1 = t1.mm(t2, Order.C);
+            var e1 = t1.mv(g.seq(Shape.of(42)));
+            assertTrue(e1.deepEquals(r1.squeeze()));
 
-        abstract T random(Shape shape, Random random);
-    }
+            var r2 = t1.mm(t2, Order.F);
+            var e2 = t1.mv(g.seq(Shape.of(42)));
+            assertTrue(e2.deepEquals(r2.squeeze()));
 
-    abstract static class DoubleDense extends DataFactory<Double, DTensor> {
+            var t3 = g.random(Shape.of(31, 42));
+            var t4 = g.random(Shape.of(42, 700));
 
-        public DoubleDense(TensorMill tensorMill) {
-            super(tensorMill, tensorMill.ofDouble());
-        }
+            var r3 = t3.mm(t4, Order.C);
+            var rows = t3.slice(0, 1);
+            var cols = t4.slice(1, 1);
+            for (int i = 0; i < t3.shape().dim(0); i++) {
+                for (int j = 0; j < t4.shape().dim(1); j++) {
+                    N expected = rows.get(i).squeeze().vdot(cols.get(j).squeeze());
+                    N realized = r3.get(i, j);
+                    if (!expected.equals(realized)) {
+                        System.out.println("Expected: " + expected);
+                        System.out.println("Realized: " + realized);
 
-        @Override
-        public final Double value(double x) {
-            return x;
-        }
-
-        @Override
-        public final Double inc(Double x) {
-            return x + 1;
-        }
-
-        @Override
-        Double sum(Double x, Double y) {
-            return x + y;
-        }
-    }
-
-    static final class DoubleDenseCol extends DoubleDense {
-
-        public DoubleDenseCol(TensorMill tensorMill) {
-            super(tensorMill);
-        }
-
-        @Override
-        public DTensor seq(Shape shape) {
-            return ofType.seq(shape, Order.F);
-        }
-
-        @Override
-        public DTensor zeros(Shape shape) {
-            return ofType.zeros(shape, Order.F);
-        }
-
-        @Override
-        DTensor random(Shape shape, Random random) {
-            return ofType.random(shape, random, Order.F);
-        }
-    }
-
-    static final class DoubleDenseRow extends DoubleDense {
-
-        public DoubleDenseRow(TensorMill manager) {
-            super(manager);
-        }
-
-        @Override
-        public DTensor seq(Shape shape) {
-            return ofType.seq(shape, Order.C);
-        }
-
-        @Override
-        public DTensor zeros(Shape shape) {
-            return ofType.zeros(shape, Order.C);
-        }
-
-        @Override
-        DTensor random(Shape shape, Random random) {
-            return ofType.random(shape, random, Order.C);
-        }
-    }
-
-    static final class DoubleDenseStride extends DoubleDense {
-
-        public DoubleDenseStride(TensorMill manager) {
-            super(manager);
-        }
-
-        @Override
-        public DTensor seq(Shape shape) {
-            int[] strides = IntArrays.newFill(shape.rank(), 1);
-            int[] ordering = IntArrays.newSeq(0, shape.rank());
-            IntArrays.shuffle(ordering, new Random(42));
-            for (int i = 1; i < shape.rank(); i++) {
-                int next = -1;
-                int prev = -1;
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i) {
-                        next = j;
-                        break;
+                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
+                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
+                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
+                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
+                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
+                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
+                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
+                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
+                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
+                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
+                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
                     }
+                    assertEquals(expected, realized, "i: %d, j: %d".formatted(i, j));
                 }
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i - 1) {
-                        prev = j;
-                        break;
-                    }
-                }
-                strides[next] = strides[prev] * shape.dim(prev);
             }
 
-            int offset = 10;
-            var t = ofType.stride(shape, offset, strides, new double[offset + shape.size()]);
-
-            t.iteratorApply(Order.C, (i, p) -> (double) i);
-
-            return t;
-        }
-
-        @Override
-        public DTensor zeros(Shape shape) {
-            int offset = 10;
-            int[] strides = IntArrays.newFill(shape.rank(), 1);
-            int[] ordering = IntArrays.newSeq(0, shape.rank());
-            IntArrays.shuffle(ordering, new Random(42));
-
-            for (int i = 1; i < shape.rank(); i++) {
-                int next = -1;
-                int prev = -1;
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i) {
-                        next = j;
-                        break;
-                    }
+            r3 = t3.mm(t4, Order.F);
+            rows = t3.slice(0, 1);
+            cols = t4.slice(1, 1);
+            for (int i = 0; i < t3.shape().dim(0); i++) {
+                for (int j = 0; j < t4.shape().dim(1); j++) {
+                    assertEquals(r3.get(i, j), rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
                 }
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i - 1) {
-                        prev = j;
-                        break;
-                    }
-                }
-                strides[next] = strides[prev] * shape.dim(prev);
             }
 
-            return ofType.stride(shape, offset, strides, new double[offset + shape.size()]);
         }
 
-        @Override
-        DTensor random(Shape shape, Random random) {
-            int offset = 10;
-            int[] strides = IntArrays.newFill(shape.rank(), 1);
-            int[] ordering = IntArrays.newSeq(0, shape.rank());
-            IntArrays.shuffle(ordering, new Random(42));
+        void splitTest() {
+//            var t1 = g.seq(Shape.of(4, 4, 4));
+//            for (var t : t1.split(0, 1)) {
+//                t.printContent();
+//            }
 
-            for (int i = 1; i < shape.rank(); i++) {
-                int next = -1;
-                int prev = -1;
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i) {
-                        next = j;
-                        break;
-                    }
-                }
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i - 1) {
-                        prev = j;
-                        break;
-                    }
-                }
-                strides[next] = strides[prev] * shape.dim(prev);
-            }
-
-            double[] array = new double[offset + shape.size()];
-            for (int i = 0; i < array.length; i++) {
-                array[i] = random.nextDouble();
-            }
-            return ofType.stride(shape, offset, strides, array);
-        }
-    }
-
-    static final class DoubleDenseStrideView extends DoubleDense {
-
-        public DoubleDenseStrideView(TensorMill manager) {
-            super(manager);
-        }
-
-        @Override
-        public DTensor seq(Shape shape) {
-            var t = zeros(shape);
-            t.iteratorApply(Order.C, (i, p) -> (double) i);
-            return t;
-        }
-
-        @Override
-        public DTensor zeros(Shape shape) {
-            int offset = 7;
-            var l = StrideLayout.ofDense(shape, offset, Order.F);
-            int[] strides = Arrays.copyOf(l.strides(), l.strides().length);
-            strides[0]++;
-            for (int i = 1; i < strides.length; i++) {
-                strides[i] = l.dim(i - 1) * strides[i - 1] + 1;
-            }
-            int len = offset;
-            for (int i = 0; i < l.strides().length; i++) {
-                len += l.dim(i) * strides[i];
-            }
-            return engine.ofDouble().stride(StrideLayout.of(shape, offset, strides), new double[len]);
-        }
-
-        @Override
-        DTensor random(Shape shape, Random random) {
-            var t = zeros(shape);
-            t.iteratorApply(Order.C, (pos, ptr) -> random.nextDouble());
-            return t;
-        }
-    }
-
-    abstract static class FloatDense extends DataFactory<Float, FTensor> {
-
-        public FloatDense(TensorMill tensorMill) {
-            super(tensorMill, tensorMill.ofFloat());
-        }
-
-        @Override
-        public final Float value(double x) {
-            return (float) x;
-        }
-
-        @Override
-        public final Float inc(Float x) {
-            return x + 1;
-        }
-
-        @Override
-        Float sum(Float x, Float y) {
-            return x + y;
-        }
-    }
-
-    static final class FloatDenseCol extends FloatDense {
-
-        public FloatDenseCol(TensorMill tensorMill) {
-            super(tensorMill);
-        }
-
-        @Override
-        public FTensor seq(Shape shape) {
-            return ofType.seq(shape, Order.F);
-        }
-
-        @Override
-        public FTensor zeros(Shape shape) {
-            return ofType.zeros(shape, Order.F);
-        }
-
-        @Override
-        FTensor random(Shape shape, Random random) {
-            return ofType.random(shape, random, Order.F);
-        }
-    }
-
-    static final class FloatDenseRow extends FloatDense {
-
-        public FloatDenseRow(TensorMill manager) {
-            super(manager);
-        }
-
-        @Override
-        public FTensor seq(Shape shape) {
-            return ofType.seq(shape, Order.C);
-        }
-
-        @Override
-        public FTensor zeros(Shape shape) {
-            return ofType.zeros(shape, Order.F);
-        }
-
-        @Override
-        FTensor random(Shape shape, Random random) {
-            return ofType.random(shape, random, Order.C);
-        }
-    }
-
-    static final class FloatDenseStride extends FloatDense {
-
-        public FloatDenseStride(TensorMill manager) {
-            super(manager);
-        }
-
-        @Override
-        public FTensor seq(Shape shape) {
-            int[] strides = IntArrays.newFill(shape.rank(), 1);
-            int[] ordering = IntArrays.newSeq(0, shape.rank());
-            IntArrays.shuffle(ordering, new Random(42));
-            for (int i = 1; i < shape.rank(); i++) {
-                int next = -1;
-                int prev = -1;
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i) {
-                        next = j;
-                        break;
-                    }
-                }
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i - 1) {
-                        prev = j;
-                        break;
-                    }
-                }
-                strides[next] = strides[prev] * shape.dim(prev);
-            }
-
-            int offset = 10;
-            var t = ofType.stride(shape, offset, strides, new float[offset + shape.size()]);
-
-            t.iteratorApply(Order.C, (i, p) -> (float) i);
-
-            return t;
-        }
-
-        @Override
-        public FTensor zeros(Shape shape) {
-            int offset = 10;
-            int[] strides = IntArrays.newFill(shape.rank(), 1);
-            int[] ordering = IntArrays.newSeq(0, shape.rank());
-            IntArrays.shuffle(ordering, new Random(42));
-
-            for (int i = 1; i < shape.rank(); i++) {
-                int next = -1;
-                int prev = -1;
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i) {
-                        next = j;
-                        break;
-                    }
-                }
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i - 1) {
-                        prev = j;
-                        break;
-                    }
-                }
-                strides[next] = strides[prev] * shape.dim(prev);
-            }
-
-            return ofType.stride(shape, offset, strides, new float[offset + shape.size()]);
-        }
-
-        @Override
-        FTensor random(Shape shape, Random random) {
-            int offset = 10;
-            int[] strides = IntArrays.newFill(shape.rank(), 1);
-            int[] ordering = IntArrays.newSeq(0, shape.rank());
-            IntArrays.shuffle(ordering, new Random(42));
-
-            for (int i = 1; i < shape.rank(); i++) {
-                int next = -1;
-                int prev = -1;
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i) {
-                        next = j;
-                        break;
-                    }
-                }
-                for (int j = 0; j < ordering.length; j++) {
-                    if (ordering[j] == i - 1) {
-                        prev = j;
-                        break;
-                    }
-                }
-                strides[next] = strides[prev] * shape.dim(prev);
-            }
-
-            float[] array = new float[offset + shape.size()];
-            for (int i = 0; i < array.length; i++) {
-                array[i] = random.nextFloat();
-            }
-            return ofType.stride(shape, offset, strides, array);
-        }
-    }
-
-    static final class FloatDenseStrideView extends FloatDense {
-
-        public FloatDenseStrideView(TensorMill manager) {
-            super(manager);
-        }
-
-        @Override
-        public FTensor seq(Shape shape) {
-            var t = zeros(shape);
-            t.iteratorApply(Order.C, (i, p) -> (float) i);
-            return t;
-        }
-
-        @Override
-        public FTensor zeros(Shape shape) {
-            int offset = 7;
-            var l = StrideLayout.ofDense(shape, offset, Order.F);
-            int[] strides = Arrays.copyOf(l.strides(), l.strides().length);
-            strides[0]++;
-            for (int i = 1; i < strides.length; i++) {
-                strides[i] = l.dim(i - 1) * strides[i - 1] + 1;
-            }
-            int len = offset;
-            for (int i = 0; i < l.strides().length; i++) {
-                len += l.dim(i) * strides[i];
-            }
-            return engine.ofFloat().stride(StrideLayout.of(shape, offset, strides), new float[len]);
-        }
-
-        @Override
-        FTensor random(Shape shape, Random random) {
-            var t = zeros(shape);
-            t.iteratorApply(Order.C, (pos, ptr) -> random.nextFloat());
-            return t;
         }
     }
 }

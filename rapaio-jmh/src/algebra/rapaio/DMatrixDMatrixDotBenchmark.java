@@ -24,7 +24,10 @@ package algebra.rapaio;
 import static rapaio.graphics.opt.GOptions.color;
 import static rapaio.graphics.opt.GOptions.labels;
 
+import java.io.IOException;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -68,8 +71,8 @@ public class DMatrixDMatrixDotBenchmark {
 
     @State(Scope.Benchmark)
     public static class StateDMDM {
-//                @Param( {"100","250","500","1000","1500","2000","3000","4000"})
-        @Param( {"100","250", "500", "1000"})
+        //                @Param( {"100","250","500","1000","1500","2000","3000","4000"})
+        @Param( {"100", "250", "500", "1000"})
         private int n;
 
         private DMatrixBase mb;
@@ -107,10 +110,10 @@ public class DMatrixDMatrixDotBenchmark {
         }
     }
 
-//    @Benchmark
-//    public void testDotBaseBase(StateDMDM s, Blackhole bh) {
-//        bh.consume(s.mb.dot(s.mb));
-//    }
+    @Benchmark
+    public void testDotBaseBase(StateDMDM s, Blackhole bh) {
+        bh.consume(s.mb.dot(s.mb));
+    }
 
 //    @Benchmark
 //    public void testDotCC(StateDMDM s, Blackhole bh) {
@@ -131,36 +134,21 @@ public class DMatrixDMatrixDotBenchmark {
 //    public void testDotRC(StateDMDM s, Blackhole bh) {
 //        bh.consume(s.mr.dot(s.mc));
 //    }
-//
-//    @Benchmark
-//    public void testJSAT(StateDMDM s, Blackhole bh) throws InterruptedException {
-//        ExecutorService service = Executors.newCachedThreadPool();
-//        bh.consume(s.jsatDM.multiply(s.jsatDM, service));
-//        service.shutdownNow();
-//        service.awaitTermination(1L, TimeUnit.MILLISECONDS);
-//    }
-
-//    @Benchmark
-//    public void testTensorRC(StateDMDM s, Blackhole bh) {
-//        bh.consume(s.t.mm(s.tc));
-//    }
 
     @Benchmark
-    public void testTensorAbs(StateDMDM s, Blackhole bh) {
-        bh.consume(s.t.abs_());
+    public void testJSAT(StateDMDM s, Blackhole bh) throws InterruptedException {
+        ExecutorService service = Executors.newCachedThreadPool();
+        bh.consume(s.jsatDM.multiply(s.jsatDM, service));
+        service.shutdownNow();
+        service.awaitTermination(1L, TimeUnit.MILLISECONDS);
     }
 
     @Benchmark
-    public void testMatrixAbs(StateDMDM s, Blackhole bh) {
-        bh.consume(s.mb.sub(1.));
+    public void testTensorRC(StateDMDM s, Blackhole bh) {
+        bh.consume(s.t.mm(s.tc));
     }
 
-    @Benchmark
-    public void testAbsJSAT(StateDMDM s, Blackhole bh) {
-        bh.consume(s.jsatDM.add(1.));
-    }
-
-    public static void main(String[] args) throws RunnerException {
+    public static void main(String[] args) throws RunnerException, IOException {
         Options opt = new OptionsBuilder()
                 .include(DMatrixDMatrixDotBenchmark.class.getSimpleName())
                 .warmupTime(TimeValue.seconds(1))
@@ -173,6 +161,7 @@ public class DMatrixDMatrixDotBenchmark {
                 .build();
 
         new Runner(opt).run();
+        Utils.resultPromote(DMatrixDMatrixDotBenchmark.class);
         printResults();
     }
 
