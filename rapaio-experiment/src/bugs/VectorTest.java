@@ -40,6 +40,7 @@ import jdk.incubator.vector.VectorSpecies;
 public class VectorTest {
 
     private static final VectorSpecies<Double> SPEC = DoubleVector.SPECIES_PREFERRED;
+    private static final Random random = new Random(42);
 
     private int[] indexes(int stride) {
         int[] indexes = new int[SPEC.length()];
@@ -127,8 +128,6 @@ public class VectorTest {
     public void run() {
 
         boolean failure = true;
-
-        Random random = new Random(42);
 
         int times = 20_000;
         final int N = 100_000_000;
