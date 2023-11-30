@@ -40,18 +40,17 @@ import jdk.incubator.vector.VectorSpecies;
 public class VectorTest {
 
     private static final VectorSpecies<Double> SPEC = DoubleVector.SPECIES_PREFERRED;
-    private static final int SPEC_LEN = SPEC.length();
-    private static final double TOL = 1e-10;
 
     private int[] indexes(int stride) {
-        int[] indexes = new int[SPEC_LEN];
+        int[] indexes = new int[SPEC.length()];
         for (int i = 1; i < indexes.length; i++) {
             indexes[i] = indexes[i - 1] + stride;
         }
         return indexes;
     }
 
-    public double vdotVectorizedFailure(double[] array1, int offset1, int stride1, double[] array2, int offset2, int stride2, int start, int end) {
+    public double vdotVectorizedFailure(double[] array1, int offset1, int stride1, double[] array2, int offset2, int stride2, int start,
+            int end) {
         int start1 = offset1 + start * stride1;
         int start2 = offset2 + start * stride2;
         int i = 0;
@@ -61,10 +60,13 @@ public class VectorTest {
         int[] indexes1 = indexes(stride1);
         int[] indexes2 = indexes(stride2);
 
+        // we collect info about strides outside the loop for performance reasons
+        // (it creates better conditions for JIT optimizations)
+        // but it fails to execute properly
         boolean unit1 = stride1 == 1;
         boolean unit2 = stride2 == 1;
 
-        for (; i < loopBound; i += SPEC_LEN) {
+        for (; i < loopBound; i += SPEC.length()) {
             DoubleVector a = unit1 ?
                     DoubleVector.fromArray(SPEC, array1, start1) :
                     DoubleVector.fromArray(SPEC, array1, start1, indexes1, 0);
@@ -72,8 +74,8 @@ public class VectorTest {
                     DoubleVector.fromArray(SPEC, array2, start2) :
                     DoubleVector.fromArray(SPEC, array2, start2, indexes2, 0);
             vsum = vsum.add(a.mul(b));
-            start1 += SPEC_LEN * stride1;
-            start2 += SPEC_LEN * stride2;
+            start1 += SPEC.length() * stride1;
+            start2 += SPEC.length() * stride2;
         }
 
         double sum = vsum.reduceLanes(VectorOperators.ADD);
@@ -85,7 +87,8 @@ public class VectorTest {
         return sum;
     }
 
-    public double vdotVectorizedSuccess(double[] array1, int offset1, int stride1, double[] array2, int offset2, int stride2, int start, int end) {
+    public double vdotVectorizedSuccess(double[] array1, int offset1, int stride1, double[] array2, int offset2, int stride2, int start,
+            int end) {
         int start1 = offset1 + start * stride1;
         int start2 = offset2 + start * stride2;
         int i = 0;
@@ -95,7 +98,8 @@ public class VectorTest {
         int[] indexes1 = indexes(stride1);
         int[] indexes2 = indexes(stride2);
 
-        for (; i < loopBound; i += SPEC_LEN) {
+        // if conditions are inside the loop it does not fail
+        for (; i < loopBound; i += SPEC.length()) {
             DoubleVector a = stride1 == 1 ?
                     DoubleVector.fromArray(SPEC, array1, start1) :
                     DoubleVector.fromArray(SPEC, array1, start1, indexes1, 0);
@@ -103,25 +107,12 @@ public class VectorTest {
                     DoubleVector.fromArray(SPEC, array2, start2) :
                     DoubleVector.fromArray(SPEC, array2, start2, indexes2, 0);
             vsum = vsum.add(a.mul(b));
-            start1 += SPEC_LEN * stride1;
-            start2 += SPEC_LEN * stride2;
+            start1 += SPEC.length() * stride1;
+            start2 += SPEC.length() * stride2;
         }
 
         double sum = vsum.reduceLanes(VectorOperators.ADD);
         for (; i < end - start; i++) {
-            sum += array1[start1] * array2[start2];
-            start1 += stride1;
-            start2 += stride2;
-        }
-        return sum;
-    }
-
-    public double vdotLoop(double[] array1, int offset1, int stride1, double[] array2, int offset2, int stride2, int start, int end) {
-        int start1 = offset1 + start * stride1;
-        int start2 = offset2 + start * stride2;
-
-        double sum = 0;
-        for (int i = start; i < end; i++) {
             sum += array1[start1] * array2[start2];
             start1 += stride1;
             start2 += stride2;
@@ -162,14 +153,10 @@ public class VectorTest {
             int stride1 = random.nextInt(100) + 1;
             int stride2 = random.nextInt(100) + 1;
 
-            double vectorValue = failure ?
-                    vdotVectorizedFailure(array1, offset1, stride1, array2, offset2, stride2, start, end) :
-                    vdotVectorizedSuccess(array1, offset1, stride1, array2, offset2, stride2, start, end);
-            double loopValue = vdotLoop(array1, offset1, stride1, array2, offset2, stride2, start, end);
-
-            if (Math.abs(vectorValue - loopValue) > TOL) {
-                System.out.println("Error. Vector value: " + vectorValue + ", loop value: " + loopValue);
-                System.exit(0);
+            if (failure) {
+                vdotVectorizedFailure(array1, offset1, stride1, array2, offset2, stride2, start, end);
+            } else {
+                vdotVectorizedSuccess(array1, offset1, stride1, array2, offset2, stride2, start, end);
             }
         }
     }
