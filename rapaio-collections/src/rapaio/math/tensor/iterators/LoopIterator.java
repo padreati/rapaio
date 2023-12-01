@@ -34,28 +34,37 @@ package rapaio.math.tensor.iterators;
 import java.util.PrimitiveIterator;
 
 /**
- * A chunk iterator iterates over chunks of contiguous blocks of memory.
- *
- * All chunks are of the same size. The iterator is backed by a {@link PrimitiveIterator.OfInt}
+ * A loop iterator is an iterator over sets of equally distanced pointers which can be used in a for loop.
+ * <p>
+ * All loops are of the same size. The iterator is backed by a {@link PrimitiveIterator.OfInt}
  */
-public interface ChunkIterator extends PrimitiveIterator.OfInt {
+public interface LoopIterator extends PrimitiveIterator.OfInt {
 
     /**
-     * @return number of chunks
+     * @return number of loops
      */
-    int chunkCount();
+    int loopCount();
 
     /**
-     * @return chunk size
+     * @return loop size
      */
     int loopSize();
 
+    /**
+     * @return loop step
+     */
     int loopStep();
 
+    /**
+     * @return loop bound which is the product between loop size and loop step
+     */
     default int loopBound() {
         return loopSize() * loopStep();
     }
 
-    int[] computeChunkOffsets();
+    /**
+     * @return offset pointers where loops starts
+     */
+    int[] computeOffsets();
 }
 

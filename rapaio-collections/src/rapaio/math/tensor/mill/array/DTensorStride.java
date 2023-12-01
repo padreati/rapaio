@@ -60,12 +60,12 @@ import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
-import rapaio.math.tensor.iterators.ChunkIterator;
+import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.DensePointerIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
-import rapaio.math.tensor.iterators.ScalarChunkIterator;
-import rapaio.math.tensor.iterators.StrideChunkDescriptor;
-import rapaio.math.tensor.iterators.StrideChunkIterator;
+import rapaio.math.tensor.iterators.ScalarLoopIterator;
+import rapaio.math.tensor.iterators.StrideLoopDescriptor;
+import rapaio.math.tensor.iterators.StrideLoopIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.mill.AbstractTensor;
@@ -84,7 +84,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     private final ArrayTensorMill mill;
     private final double[] array;
 
-    private final StrideChunkDescriptor chd;
+    private final StrideLoopDescriptor chd;
     private final int[] chdIndexes;
 
     public DTensorStride(ArrayTensorMill mill, Shape shape, int offset, int[] strides, double[] array) {
@@ -99,7 +99,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         this.layout = layout;
         this.mill = mill;
         this.array = array;
-        this.chd = StrideChunkDescriptor.of(layout, layout.storageFastOrder());
+        this.chd = StrideLoopDescriptor.of(layout, layout.storageFastOrder());
         this.chdIndexes = chd.loopStep() == 1 ? null : chunkIndexes(chd.loopStep());
     }
 
@@ -147,7 +147,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     private void unaryOpUnit(TensorUnaryOp op) {
-        for (int off : chd.chunkOffsets()) {
+        for (int off : chd.loopOffsets()) {
             int loopBound = SPEC.loopBound(chd.loopSize()) + off;
             int i = off;
             for (; i < loopBound; i += SPEC_LEN) {
@@ -162,7 +162,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     private void unaryOpStep(TensorUnaryOp op) {
-        for (int off : chd.chunkOffsets()) {
+        for (int off : chd.loopOffsets()) {
             int loopLen = chd.loopSize() * chd.loopStep() + off;
             int loopBound = SPEC.loopBound(chd.loopSize()) * chd.loopStep() + off;
             int i = off;
@@ -316,7 +316,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     void binaryScalarOpUnit(TensorBinaryOp op, double value) {
-        for (int off : chd.chunkOffsets()) {
+        for (int off : chd.loopOffsets()) {
             int loopBound = SPEC.loopBound(chd.loopSize()) + off;
             int i = off;
             for (; i < loopBound; i += SPEC_LEN) {
@@ -331,7 +331,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     void binaryScalarOpStep(TensorBinaryOp op, double value) {
-        for (int off : chd.chunkOffsets()) {
+        for (int off : chd.loopOffsets()) {
             int loopLen = chd.loopSize() * chd.loopStep() + off;
             int loopBound = SPEC.loopBound(chd.loopSize()) * chd.loopStep() + off;
             int i = off;
@@ -537,11 +537,11 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public ChunkIterator chunkIterator(Order askOrder) {
+    public LoopIterator chunkIterator(Order askOrder) {
         if (layout.rank() == 0) {
-            return new ScalarChunkIterator(layout.offset());
+            return new ScalarLoopIterator(layout.offset());
         }
-        return new StrideChunkIterator(layout, askOrder);
+        return new StrideLoopIterator(layout, askOrder);
     }
 
     @Override
@@ -712,9 +712,9 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     private void sameLayoutCopy(double[] copy, Order askOrder) {
-        var chd = StrideChunkDescriptor.of(layout, askOrder);
+        var chd = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
-        for (int ptr : chd.chunkOffsets()) {
+        for (int ptr : chd.loopOffsets()) {
             if (chd.loopStep() == 1) {
                 int i = ptr;
                 int loopBound = SPEC.loopBound(chd.loopSize()) + ptr;
@@ -804,9 +804,9 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     private void directCopyTo(DTensorStride src, DTensorStride dst, Order askOrder) {
-        var chd = StrideChunkDescriptor.of(src.layout, askOrder);
+        var chd = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
-        for (int ptr : chd.chunkOffsets()) {
+        for (int ptr : chd.loopOffsets()) {
             for (int i = ptr; i < ptr + chd.loopLength(); i += chd.loopStep()) {
                 dst.array[it2.nextInt()] = src.array[i];
             }

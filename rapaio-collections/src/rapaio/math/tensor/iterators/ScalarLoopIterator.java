@@ -33,17 +33,17 @@ package rapaio.math.tensor.iterators;
 
 import java.util.NoSuchElementException;
 
-public final class ScalarChunkIterator implements ChunkIterator {
+public final class ScalarLoopIterator implements LoopIterator {
 
     private final int offset;
     private boolean consumed = false;
 
-    public ScalarChunkIterator(int offset) {
+    public ScalarLoopIterator(int offset) {
         this.offset = offset;
     }
 
     @Override
-    public int chunkCount() {
+    public int loopCount() {
         return 1;
     }
 
@@ -72,7 +72,7 @@ public final class ScalarChunkIterator implements ChunkIterator {
     }
 
     @Override
-    public int[] computeChunkOffsets() {
+    public int[] computeOffsets() {
         return new int[] {offset};
     }
 }

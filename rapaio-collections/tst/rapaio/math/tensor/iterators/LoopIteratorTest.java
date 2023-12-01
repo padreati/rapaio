@@ -44,23 +44,23 @@ import org.junit.jupiter.api.Test;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 
-public class ChunkIteratorTest {
+public class LoopIteratorTest {
 
     @Test
     void testScalarIterator() {
-        var it = new ScalarChunkIterator(3);
+        var it = new ScalarLoopIterator(3);
         testScalar(it, 3);
     }
 
     @Test
     void testStrideIterator() {
-        var it = new StrideChunkIterator(Shape.of(), 10, new int[0], Order.S);
+        var it = new StrideLoopIterator(Shape.of(), 10, new int[0], Order.S);
         testChunkDescriptor(it, Shape.of(), 10, new int[0], Order.S);
         testScalar(it, 10);
 
         // test stride in fixed c order
-        it = new StrideChunkIterator(Shape.of(2, 3, 4), 10, new int[] {10, 4, 7}, Order.C);
-        int[] chunkOffsets = it.computeChunkOffsets();
+        it = new StrideLoopIterator(Shape.of(2, 3, 4), 10, new int[] {10, 4, 7}, Order.C);
+        int[] chunkOffsets = it.computeOffsets();
         int pos = 0;
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 3; j++) {
@@ -70,7 +70,7 @@ public class ChunkIteratorTest {
                 assertEquals(4, it.loopSize());
                 assertEquals(7, it.loopStep());
                 assertEquals(4 * 7, it.loopBound());
-                assertEquals(6, it.chunkCount());
+                assertEquals(6, it.loopCount());
             }
         }
         assertFalse(it.hasNext());
@@ -78,8 +78,8 @@ public class ChunkIteratorTest {
         testChunkDescriptor(it, Shape.of(2,3,4), 10, new int[]{10,4,7}, Order.C);
 
         // test stride in fixed fortran order
-        it = new StrideChunkIterator(Shape.of(2, 3, 4), 10, new int[] {10, 4, 7}, Order.F);
-        chunkOffsets = it.computeChunkOffsets();
+        it = new StrideLoopIterator(Shape.of(2, 3, 4), 10, new int[] {10, 4, 7}, Order.F);
+        chunkOffsets = it.computeOffsets();
         pos = 0;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 3; j++) {
@@ -89,7 +89,7 @@ public class ChunkIteratorTest {
                 assertEquals(2, it.loopSize());
                 assertEquals(10, it.loopStep());
                 assertEquals(2 * 10, it.loopBound());
-                assertEquals(12, it.chunkCount());
+                assertEquals(12, it.loopCount());
             }
         }
         assertFalse(it.hasNext());
@@ -97,9 +97,9 @@ public class ChunkIteratorTest {
         testChunkDescriptor(it, Shape.of(2, 3, 4), 10, new int[] {10, 4, 7}, Order.F);
 
         // test stride no compaction
-        it = new StrideChunkIterator(Shape.of(2, 3, 4), 10, new int[] {10, 4, 7}, Order.S);
+        it = new StrideLoopIterator(Shape.of(2, 3, 4), 10, new int[] {10, 4, 7}, Order.S);
         pos = 0;
-        chunkOffsets = it.computeChunkOffsets();
+        chunkOffsets = it.computeOffsets();
         for (int i = 0; i < 2; i++) {
             for (int k = 0; k < 4; k++) {
                 assertTrue(it.hasNext());
@@ -108,7 +108,7 @@ public class ChunkIteratorTest {
                 assertEquals(3, it.loopSize());
                 assertEquals(4, it.loopStep());
                 assertEquals(3 * 4, it.loopBound());
-                assertEquals(8, it.chunkCount());
+                assertEquals(8, it.loopCount());
             }
         }
         assertFalse(it.hasNext());
@@ -116,65 +116,65 @@ public class ChunkIteratorTest {
         testChunkDescriptor(it, Shape.of(2, 3, 4), 10, new int[] {10, 4, 7}, Order.S);
 
         // test stride with compaction of first 3 levels
-        it = new StrideChunkIterator(Shape.of(5, 3, 4, 3), 10, new int[] {1, 20, 5, 100}, Order.S);
+        it = new StrideLoopIterator(Shape.of(5, 3, 4, 3), 10, new int[] {1, 20, 5, 100}, Order.S);
         pos = 0;
-        chunkOffsets = it.computeChunkOffsets();
+        chunkOffsets = it.computeOffsets();
         for (int i = 0; i < 3; i++) {
             assertTrue(it.hasNext());
             assertEquals(chunkOffsets[pos++], it.nextInt());
             assertEquals(10 + i * 100, chunkOffsets[pos-1]);
             assertEquals(60, it.loopSize());
             assertEquals(1, it.loopStep());
-            assertEquals(3, it.chunkCount());
+            assertEquals(3, it.loopCount());
         }
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::nextInt);
         testChunkDescriptor(it, Shape.of(5, 3, 4, 3), 10, new int[] {1, 20, 5, 100}, Order.S);
 
         // test compaction with all levels
-        it = new StrideChunkIterator(Shape.of(5, 3, 4, 3), 10, new int[] {1, 20, 5, 60}, Order.S);
+        it = new StrideLoopIterator(Shape.of(5, 3, 4, 3), 10, new int[] {1, 20, 5, 60}, Order.S);
         testChunkDescriptor(it, Shape.of(5, 3, 4, 3), 10, new int[] {1, 20, 5, 60}, Order.S);
         pos = 0;
-        chunkOffsets = it.computeChunkOffsets();
+        chunkOffsets = it.computeOffsets();
         assertTrue(it.hasNext());
         assertEquals(chunkOffsets[pos++], it.nextInt());
         assertEquals(10, chunkOffsets[pos-1]);
         assertEquals(180, it.loopSize());
         assertEquals(1, it.loopStep());
-        assertEquals(1, it.chunkCount());
+        assertEquals(1, it.loopCount());
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::nextInt);
 
         // test compaction with all levels and stride 2
-        it = new StrideChunkIterator(Shape.of(5, 3, 4, 3), 10, new int[] {2, 40, 10, 120}, Order.S);
+        it = new StrideLoopIterator(Shape.of(5, 3, 4, 3), 10, new int[] {2, 40, 10, 120}, Order.S);
         assertTrue(it.hasNext());
         assertEquals(10, it.nextInt());
         assertEquals(2, it.loopStep());
         assertEquals(180, it.loopSize());
-        assertEquals(1, it.chunkCount());
+        assertEquals(1, it.loopCount());
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::nextInt);
         testChunkDescriptor(it, Shape.of(5, 3, 4, 3), 10, new int[] {2, 40, 10, 120}, Order.S);
     }
 
-    void testScalar(ChunkIterator it, int offset) {
+    void testScalar(LoopIterator it, int offset) {
         assertTrue(it.hasNext());
         assertEquals(offset, it.nextInt());
-        assertArrayEquals(new int[]{offset}, it.computeChunkOffsets());
+        assertArrayEquals(new int[]{offset}, it.computeOffsets());
         assertEquals(1, it.loopStep());
         assertEquals(1, it.loopSize());
-        assertEquals(1, it.chunkCount());
+        assertEquals(1, it.loopCount());
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::nextInt);
 
-        assertArrayEquals(new int[] {offset}, it.computeChunkOffsets());
+        assertArrayEquals(new int[] {offset}, it.computeOffsets());
     }
 
-    void testChunkDescriptor(StrideChunkIterator it, Shape shape, int offset, int[] strides, Order order) {
-        var descriptor = StrideChunkDescriptor.of(shape, offset, strides, order);
+    void testChunkDescriptor(StrideLoopIterator it, Shape shape, int offset, int[] strides, Order order) {
+        var descriptor = StrideLoopDescriptor.of(shape, offset, strides, order);
         assertEquals(it.loopStep(), descriptor.loopStep());
         assertEquals(it.loopSize(), descriptor.loopSize());
-        assertEquals(it.chunkCount(), descriptor.chunkCount());
-        assertArrayEquals(it.computeChunkOffsets(), descriptor.chunkOffsets());
+        assertEquals(it.loopCount(), descriptor.chunkCount());
+        assertArrayEquals(it.computeOffsets(), descriptor.loopOffsets());
     }
 }

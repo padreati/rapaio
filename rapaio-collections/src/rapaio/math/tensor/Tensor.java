@@ -34,7 +34,7 @@ package rapaio.math.tensor;
 import java.util.Iterator;
 import java.util.List;
 
-import rapaio.math.tensor.iterators.ChunkIterator;
+import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
 import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
@@ -329,7 +329,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
 
     PointerIterator ptrIterator(Order askOrder);
 
-    ChunkIterator chunkIterator(Order askOrder);
+    LoopIterator chunkIterator(Order askOrder);
 
     /**
      * Creates a new tensor with a different shape. If possible, the data will not be copied.

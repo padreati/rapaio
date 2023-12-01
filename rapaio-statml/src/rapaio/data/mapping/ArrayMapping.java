@@ -32,14 +32,14 @@
 package rapaio.data.mapping;
 
 import java.io.Serial;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.stream.IntStream;
 
 import rapaio.data.Mapping;
 import rapaio.util.IntIterator;
-import rapaio.util.collection.IntArrayList;
-import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Int2IntFunction;
 
 /**
@@ -49,22 +49,31 @@ public final class ArrayMapping implements Mapping {
 
     @Serial
     private static final long serialVersionUID = 5485844129188037454L;
-    private final IntArrayList data;
+    private final ArrayList<Integer> data;
 
     public ArrayMapping() {
-        this.data = new IntArrayList(0);
+        this.data = new ArrayList<>();
     }
 
     public ArrayMapping(int[] array, int start, int end) {
-        this.data = new IntArrayList(array, start, end - start);
+        this();
+        for (int i = start; i < end; i++) {
+            data.add(array[i]);
+        }
     }
 
     public ArrayMapping(int start, int end) {
-        this.data = new IntArrayList(IntArrays.newSeq(start, end));
+        this();
+        for (int i = start; i < end; i++) {
+            data.add(i);
+        }
     }
 
     public ArrayMapping(int[] array, int start, int end, Int2IntFunction fun) {
-        this.data = new IntArrayList(IntArrays.newFrom(array, start, end, fun));
+        this();
+        for (int i = start; i < end; i++) {
+            data.add(fun.applyAsInt(array[i]));
+        }
     }
 
     public int size() {
@@ -72,7 +81,7 @@ public final class ArrayMapping implements Mapping {
     }
 
     public int get(int pos) {
-        return data.getInt(pos);
+        return data.get(pos);
     }
 
     @Override
@@ -90,7 +99,7 @@ public final class ArrayMapping implements Mapping {
 
     @Override
     public void remove(int pos) {
-        data.removeInt(pos);
+        data.remove(pos);
     }
 
     @Override
@@ -108,22 +117,34 @@ public final class ArrayMapping implements Mapping {
 
     @Override
     public IntIterator iterator() {
-        return IntArrays.iterator(data.elements(), 0, data.size());
+        return new IntIterator() {
+            private final Iterator<Integer> it = data.iterator();
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public int nextInt() {
+                return it.next();
+            }
+        };
     }
 
     @Override
     public int[] elements() {
-        return data.elements();
+        return data.stream().mapToInt(v -> v).toArray();
     }
 
     @Override
     public void shuffle(Random random) {
-        IntArrays.shuffle(data.elements(), 0, data.size(), random);
+        Collections.shuffle(data, random);
     }
 
     @Override
     public IntStream stream() {
-        return Arrays.stream(data.elements(), 0, data.size());
+        return data.stream().mapToInt(v -> v);
     }
 }
 

@@ -79,7 +79,7 @@ public class BinarySMOTest {
                 .splitStrategy.set(new StratifiedKFold(10, "Class"))
                 .seed.set(1L)
                 .run();
-        assertEquals(0.8953094777562862, result.getMeanTrainScore(Accuracy.newMetric(true).getName()), 1e-7);
+        assertEquals(0.8942342701103653, result.getMeanTrainScore(Accuracy.newMetric(true).getName()), 1e-7);
     }
 
     @Test

@@ -36,29 +36,30 @@ import java.util.Arrays;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.util.collection.IntArrays;
 
-public final class StrideChunkIterator implements ChunkIterator {
+public final class StrideLoopIterator implements LoopIterator {
 
     private final int loopSize;
     private final int loopStep;
-    private final int chunkCount;
+    private final int loopCount;
 
     private final int outerOffset;
     private final Shape outerShape;
     private final int[] outerStrides;
     private final PointerIterator it;
 
-    public StrideChunkIterator(Shape shape, int offset, int[] strides, Order askOrder) {
+    public StrideLoopIterator(Shape shape, int offset, int[] strides, Order askOrder) {
         this(new StrideLayout(shape, offset, strides), askOrder);
     }
 
-    public StrideChunkIterator(StrideLayout layout, Order askOrder) {
+    public StrideLoopIterator(StrideLayout layout, Order askOrder) {
         outerOffset = layout.offset();
 
         if (layout.shape().rank() == 0) {
             loopSize = 1;
             loopStep = 1;
-            chunkCount = 1;
+            loopCount = 1;
             outerShape = null;
             outerStrides = null;
             it = new ScalarPointerIterator(layout.offset());
@@ -70,7 +71,7 @@ public final class StrideChunkIterator implements ChunkIterator {
         loopStep = compact.stride(0);
 
         if (compact.shape().rank() == 1) {
-            chunkCount = 1;
+            loopCount = 1;
             outerShape = null;
             outerStrides = null;
             it = new ScalarPointerIterator(layout.offset());
@@ -80,13 +81,13 @@ public final class StrideChunkIterator implements ChunkIterator {
         outerShape = Shape.of(Arrays.copyOfRange(compact.shape().dims(), 1, compact.shape().rank()));
         outerStrides = Arrays.copyOfRange(compact.strides(), 1, compact.shape().rank());
 
-        this.chunkCount = outerShape.size();
+        this.loopCount = outerShape.size();
         this.it = new StridePointerIterator(new StrideLayout(outerShape, outerOffset, outerStrides), Order.F);
     }
 
     @Override
-    public int chunkCount() {
-        return chunkCount;
+    public int loopCount() {
+        return loopCount;
     }
 
     @Override
@@ -110,12 +111,11 @@ public final class StrideChunkIterator implements ChunkIterator {
     }
 
     @Override
-    public int[] computeChunkOffsets() {
+    public int[] computeOffsets() {
         if (outerShape == null) {
             return new int[] {outerOffset};
         }
-        int[] offsets = new int[chunkCount];
-        Arrays.fill(offsets, outerOffset);
+        int[] offsets = IntArrays.newFill(loopCount, outerOffset);
         int inner = 1;
         for (int i = 0; i < outerShape.rank(); i++) {
             int dim = outerShape.dim(i);

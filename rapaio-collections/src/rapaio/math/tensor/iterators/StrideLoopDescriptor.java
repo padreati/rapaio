@@ -38,32 +38,36 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.util.collection.IntArrays;
 
-public final class StrideChunkDescriptor {
+/**
+ * A loop stride descriptor contains the same information as a loop iterator, but in a precomputed form.
+ * It is an alternative to loop iterator, when you want pre-computed loop offsets.
+ */
+public final class StrideLoopDescriptor {
 
-    public static StrideChunkDescriptor of(Shape shape, int offset, int[] strides, Order askOrder) {
-        return new StrideChunkDescriptor(shape, offset, strides, askOrder);
+    public static StrideLoopDescriptor of(Shape shape, int offset, int[] strides, Order askOrder) {
+        return new StrideLoopDescriptor(shape, offset, strides, askOrder);
     }
 
-    public static StrideChunkDescriptor of(StrideLayout layout, Order askOrder) {
-        return new StrideChunkDescriptor(layout, askOrder);
+    public static StrideLoopDescriptor of(StrideLayout layout, Order askOrder) {
+        return new StrideLoopDescriptor(layout, askOrder);
     }
 
     private final int loopSize;
     private final int loopStep;
-    private final int chunkCount;
-    private final int[] chunkOffsets;
+    private final int loopCount;
+    private final int[] loopOffsets;
 
-    private StrideChunkDescriptor(Shape shape, int offset, int[] strides, Order askOrder) {
+    private StrideLoopDescriptor(Shape shape, int offset, int[] strides, Order askOrder) {
         this(new StrideLayout(shape, offset, strides), askOrder);
     }
 
-    private StrideChunkDescriptor(StrideLayout layout, Order askOrder) {
+    private StrideLoopDescriptor(StrideLayout layout, Order askOrder) {
 
         if (layout.shape().rank() == 0) {
             loopSize = 1;
             loopStep = 1;
-            chunkCount = 1;
-            chunkOffsets = new int[] {layout.offset()};
+            loopCount = 1;
+            loopOffsets = new int[] {layout.offset()};
             return;
         }
 
@@ -71,29 +75,28 @@ public final class StrideChunkDescriptor {
         loopSize = compact.dim(0);
         loopStep = compact.stride(0);
 
-        if (compact.shape().rank() == 1) {
-            chunkCount = 1;
-            chunkOffsets = new int[] {layout.offset()};
+        if (compact.rank() == 1) {
+            loopCount = 1;
+            loopOffsets = new int[] {layout.offset()};
             return;
         }
 
         int[] outerDims = Arrays.copyOfRange(compact.shape().dims(), 1, compact.shape().rank());
         int[] outerStrides = Arrays.copyOfRange(compact.strides(), 1, compact.shape().rank());
 
-        this.chunkCount = IntArrays.prod(outerDims, 0, outerDims.length);
+        this.loopCount = IntArrays.prod(outerDims, 0, outerDims.length);
+        this.loopOffsets = IntArrays.newFill(loopCount, layout.offset());
 
-        this.chunkOffsets = new int[chunkCount];
-        Arrays.fill(chunkOffsets, layout.offset());
         int inner = 1;
         for (int i = 0; i < outerDims.length; i++) {
             int dim = outerDims[i];
             int stride = outerStrides[i];
             int pos = 0;
-            while (pos < chunkOffsets.length) {
+            while (pos < loopOffsets.length) {
                 int value = 0;
                 for (int k = 0; k < dim; k++) {
                     for (int j = 0; j < inner; j++) {
-                        chunkOffsets[pos + j] += value;
+                        loopOffsets[pos + j] += value;
                     }
                     value += stride;
                     pos += inner;
@@ -104,7 +107,7 @@ public final class StrideChunkDescriptor {
     }
 
     public int chunkCount() {
-        return chunkCount;
+        return loopCount;
     }
 
     public int loopSize() {
@@ -119,7 +122,7 @@ public final class StrideChunkDescriptor {
         return loopStep * loopSize;
     }
 
-    public int[] chunkOffsets() {
-        return chunkOffsets;
+    public int[] loopOffsets() {
+        return loopOffsets;
     }
 }

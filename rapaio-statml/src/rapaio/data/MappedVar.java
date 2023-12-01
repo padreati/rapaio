@@ -36,7 +36,6 @@ import java.time.Instant;
 import java.util.List;
 
 import rapaio.linear.DVector;
-import rapaio.linear.dense.DVectorDense;
 import rapaio.linear.dense.DVectorVar;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -245,17 +244,11 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public DVector dv() {
-        if (source instanceof VarDouble vd) {
-            new DVectorDense(0, vd.size(), vd.elements()).map(mapping.elements());
-        }
         return new DVectorVar<>(this);
     }
 
     @Override
     public DVector dvNew() {
-        if (source instanceof VarDouble vd) {
-            new DVectorDense(0, vd.size(), vd.elements()).map(mapping.elements());
-        }
         return new DVectorVar<>(this);
     }
 

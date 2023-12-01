@@ -32,13 +32,13 @@
 package rapaio.ml.model.tree.ctree;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import rapaio.data.Frame;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.tree.CTree;
 import rapaio.util.DoublePair;
-import rapaio.util.collection.IntArrayList;
 import rapaio.util.collection.IntOpenHashSet;
 
 /**
@@ -85,7 +85,7 @@ public enum Pruning implements Serializable {
 
             // test for pruning
 
-            IntArrayList ids = new IntArrayList(nodes.keySet());
+            ArrayList<Integer> ids = new ArrayList<>(nodes.keySet());
             IntOpenHashSet pruned = new IntOpenHashSet();
             boolean found = true;
             while (found) {
@@ -97,7 +97,7 @@ public enum Pruning implements Serializable {
 
                 var it = ids.iterator();
                 while (it.hasNext()) {
-                    int id = it.nextInt();
+                    int id = it.next();
                     if (pruned.contains(id)) {
                         it.remove();
                         continue;
