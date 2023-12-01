@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.Disabled;
@@ -116,6 +117,8 @@ public class TensorTest {
             mvTest();
             mmTest();
             splitTest();
+            chunkTest();
+            repeatStackConcatTest();
         }
 
         void testBuild() {
@@ -361,7 +364,7 @@ public class TensorTest {
             Shape shape = Shape.of(2, 3, 4);
             var t = g.seq(shape);
 
-            var tt = t.t_();
+            var tt = t.t();
             assertArrayEquals(new int[] {4, 3, 2}, tt.shape().dims());
 
             var ttt = tt.t_();
@@ -401,6 +404,8 @@ public class TensorTest {
             var t = g.seq(shape);
             var s = t.squeeze();
             assertArrayEquals(new int[] {2, 3, 4}, s.shape().dims());
+
+            assertTrue(t.squeeze(5).squeeze(3).squeeze(1).deepEquals(s));
 
             var it1 = t.ptrIterator(Order.C);
             var it2 = s.ptrIterator(Order.C);
@@ -580,7 +585,7 @@ public class TensorTest {
             var t1 = g.seq(shape);
 
             var vdots = new ArrayList<N>();
-            for(var t : t1.slice(0, 1)) {
+            for (var t : t1.chunk(0, true, 1)) {
                 t = t.squeeze();
                 vdots.add(t.vdot(t));
             }
@@ -643,63 +648,171 @@ public class TensorTest {
             assertTrue(e2.deepEquals(r2.squeeze()));
 
             var t3 = g.random(Shape.of(31, 42));
-            var t4 = g.random(Shape.of(42, 700));
+            var t4 = g.random(Shape.of(42, 200));
 
             var r3 = t3.mm(t4, Order.C);
-            var rows = t3.slice(0, 1);
-            var cols = t4.slice(1, 1);
+            var rows = t3.chunk(0, false, 1);
+            var cols = t4.chunk(1, false, 1);
             for (int i = 0; i < t3.shape().dim(0); i++) {
                 for (int j = 0; j < t4.shape().dim(1); j++) {
-                    N expected = rows.get(i).squeeze().vdot(cols.get(j).squeeze());
+                    N expected = rows.get(i).vdot(cols.get(j));
                     N realized = r3.get(i, j);
-                    if (!expected.equals(realized)) {
-                        System.out.println("Expected: " + expected);
-                        System.out.println("Realized: " + realized);
-
-                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
-                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
-                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
-                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
-                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
-                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
-                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
-                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
-                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
-                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
-                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
-                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
-                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
-                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
-                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
-                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
-                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
-                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
-                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
-                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
-                        System.out.println("Recomputed expected: " + rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
-                        System.out.println("Recomputed realized: " + t3.mm(t4, Order.C).get(i, j));
-                    }
                     assertEquals(expected, realized, "i: %d, j: %d".formatted(i, j));
                 }
             }
 
             r3 = t3.mm(t4, Order.F);
-            rows = t3.slice(0, 1);
-            cols = t4.slice(1, 1);
+            rows = t3.chunk(0, false, 1);
+            cols = t4.chunk(1, false, 1);
             for (int i = 0; i < t3.shape().dim(0); i++) {
                 for (int j = 0; j < t4.shape().dim(1); j++) {
-                    assertEquals(r3.get(i, j), rows.get(i).squeeze().vdot(cols.get(j).squeeze()));
+                    assertEquals(r3.get(i, j), rows.get(i).vdot(cols.get(j)));
                 }
             }
 
         }
 
         void splitTest() {
-//            var t1 = g.seq(Shape.of(4, 4, 4));
-//            for (var t : t1.split(0, 1)) {
-//                t.printContent();
-//            }
+            var t1 = g.seq(Shape.of(4, 4, 4));
 
+            var split1 = t1.split(0, false, 0, 1, 2);
+            assertEquals(3, split1.size());
+            assertEquals(Shape.of(4, 4), split1.get(0).shape());
+            assertEquals(Shape.of(4, 4), split1.get(1).shape());
+            assertEquals(Shape.of(2, 4, 4), split1.get(2).shape());
+
+            split1 = t1.split(0, true, 0, 1, 2);
+            assertEquals(3, split1.size());
+            assertEquals(Shape.of(1, 4, 4), split1.get(0).shape());
+            assertEquals(Shape.of(1, 4, 4), split1.get(1).shape());
+            assertEquals(Shape.of(2, 4, 4), split1.get(2).shape());
+
+            var t2 = g.mill().concat(0, split1);
+            assertEquals(t1.shape(), t2.shape());
+            assertTrue(t1.deepEquals(t2));
+
+
+            var e = assertThrows(IllegalArgumentException.class, () -> t1.splitAll(true, new int[][] {
+                    {0}, {0}, {0}, {0}
+            }));
+            assertEquals("Indexes length of 4 is not the same as shape rank 3.", e.getMessage());
+
+            var split2 = t1.splitAll(true, new int[][] {{0}, {0}, {0}});
+            assertEquals(1, split2.size());
+            assertTrue(t1.deepEquals(split2.get(0)));
+
+            var split3 = t1.splitAll(true, new int[][] {{0, 1}, {0, 2}, {0, 3}});
+            assertEquals(8, split3.size());
+            List<Shape> expectedShapes = List.of(
+                    Shape.of(1, 2, 3), Shape.of(1, 2, 1),
+                    Shape.of(1, 2, 3), Shape.of(1, 2, 1),
+                    Shape.of(3, 2, 3), Shape.of(3, 2, 1),
+                    Shape.of(3, 2, 3), Shape.of(3, 2, 1)
+            );
+            assertEquals(expectedShapes.size(), split3.size());
+            for (int i = 0; i < expectedShapes.size(); i++) {
+                assertEquals(expectedShapes.get(i), split3.get(i).shape());
+            }
+
+            var p1 = g.mill().concat(2, split3.subList(0, 2));
+            var p2 = g.mill().concat(2, split3.subList(2, 4));
+            var p3 = g.mill().concat(2, split3.subList(4, 6));
+            var p4 = g.mill().concat(2, split3.subList(6, 8));
+
+            var p5 = g.mill().concat(1, List.of(p1, p2));
+            var p6 = g.mill().concat(1, List.of(p3, p4));
+
+            var p7 = g.mill().concat(0, List.of(p5, p6));
+
+            assertTrue(t1.deepEquals(p7));
+        }
+
+        void chunkTest() {
+            var t1 = g.seq(Shape.of(13, 13, 19, 17));
+
+            var chunk1 = t1.chunk(0, true, 4);
+            assertEquals(4, chunk1.size());
+            assertEquals(Shape.of(4, 13, 19, 17), chunk1.get(0).shape());
+            assertEquals(Shape.of(4, 13, 19, 17), chunk1.get(1).shape());
+            assertEquals(Shape.of(4, 13, 19, 17), chunk1.get(2).shape());
+            assertEquals(Shape.of(1, 13, 19, 17), chunk1.get(3).shape());
+            assertTrue(t1.deepEquals(g.mill().concat(0, chunk1)));
+
+            var chunk2 = t1.chunk(0, false, 4);
+            assertEquals(4, chunk2.size());
+            assertEquals(Shape.of(4, 13, 19, 17), chunk2.get(0).shape());
+            assertEquals(Shape.of(4, 13, 19, 17), chunk2.get(1).shape());
+            assertEquals(Shape.of(4, 13, 19, 17), chunk2.get(2).shape());
+            assertEquals(Shape.of(13, 19, 17), chunk2.get(3).shape());
+
+            var chunk3 = t1.chunk(2, true, 5);
+            assertEquals(4, chunk3.size());
+            assertEquals(Shape.of(13, 13, 5, 17), chunk3.get(0).shape());
+            assertEquals(Shape.of(13, 13, 5, 17), chunk3.get(1).shape());
+            assertEquals(Shape.of(13, 13, 5, 17), chunk3.get(2).shape());
+            assertEquals(Shape.of(13, 13, 4, 17), chunk3.get(3).shape());
+
+            var chunk4 = t1.chunkAll(true, new int[] {10, 10, 10, 10});
+            assertEquals(16, chunk4.size());
+            assertEquals(Shape.of(10, 10, 10, 10), chunk4.get(0).shape());
+            assertEquals(Shape.of(10, 10, 10, 7), chunk4.get(1).shape());
+            assertEquals(Shape.of(10, 10, 9, 10), chunk4.get(2).shape());
+            assertEquals(Shape.of(10, 10, 9, 7), chunk4.get(3).shape());
+            assertEquals(Shape.of(10, 3, 10, 10), chunk4.get(4).shape());
+            assertEquals(Shape.of(10, 3, 10, 7), chunk4.get(5).shape());
+            assertEquals(Shape.of(10, 3, 9, 10), chunk4.get(6).shape());
+            assertEquals(Shape.of(10, 3, 9, 7), chunk4.get(7).shape());
+            assertEquals(Shape.of(3, 10, 10, 10), chunk4.get(8).shape());
+            assertEquals(Shape.of(3, 10, 10, 7), chunk4.get(9).shape());
+            assertEquals(Shape.of(3, 10, 9, 10), chunk4.get(10).shape());
+            assertEquals(Shape.of(3, 10, 9, 7), chunk4.get(11).shape());
+            assertEquals(Shape.of(3, 3, 10, 10), chunk4.get(12).shape());
+            assertEquals(Shape.of(3, 3, 10, 7), chunk4.get(13).shape());
+            assertEquals(Shape.of(3, 3, 9, 10), chunk4.get(14).shape());
+            assertEquals(Shape.of(3, 3, 9, 7), chunk4.get(15).shape());
+
+            var c1 = g.mill().concat(3, chunk4.subList(0, 2));
+            var c2 = g.mill().concat(3, chunk4.subList(2, 4));
+            var c3 = g.mill().concat(3, chunk4.subList(4, 6));
+            var c4 = g.mill().concat(3, chunk4.subList(6, 8));
+            var c5 = g.mill().concat(3, chunk4.subList(8, 10));
+            var c6 = g.mill().concat(3, chunk4.subList(10, 12));
+            var c7 = g.mill().concat(3, chunk4.subList(12, 14));
+            var c8 = g.mill().concat(3, chunk4.subList(14, 16));
+
+            var c9 = g.mill().concat(2, List.of(c1, c2));
+            var c10 = g.mill().concat(2, List.of(c3, c4));
+            var c11 = g.mill().concat(2, List.of(c5, c6));
+            var c12 = g.mill().concat(2, List.of(c7, c8));
+
+            var c13 = g.mill().concat(1, List.of(c9, c10));
+            var c14 = g.mill().concat(1, List.of(c11, c12));
+
+            var c15 = g.mill().concat(0, List.of(c13, c14));
+
+            assertTrue(t1.deepEquals(c15));
+        }
+
+        void repeatStackConcatTest() {
+
+            var t1 = g.seq(Shape.of(10));
+
+            var t2 = t1.repeat(0, 10, true);
+            assertEquals(Shape.of(10, 10), t2.shape());
+
+            var list1 = new ArrayList<T>();
+            for (int i = 0; i < 10; i++) {
+                list1.add(t1.unsqueeze(0));
+            }
+            assertTrue(t2.deepEquals(g.mill().concat(0, list1)));
+
+            var t3 = t1.repeat(0, 10, false);
+            assertEquals(Shape.of(10 * 10), t3.shape());
+            var list2 = new ArrayList<T>();
+            for (int i = 0; i < 10; i++) {
+                list2.add(t1);
+            }
+            assertTrue(t3.deepEquals(g.mill().concat(0, list2)));
         }
     }
 }

@@ -45,13 +45,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.StructuredTaskScope;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
 import jdk.incubator.vector.DoubleVector;
@@ -74,7 +72,6 @@ import rapaio.math.tensor.mill.AbstractTensor;
 import rapaio.math.tensor.mill.TensorValidation;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
-import rapaio.util.Hardware;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
@@ -460,8 +457,8 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         var result = new double[m * p];
         var ret = mill.ofDouble().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
 
-        List<DTensor> rows = slice(0, 1).stream().map(DTensor::squeeze).toList();
-        List<DTensor> cols = t.slice(1, 1).stream().map(DTensor::squeeze).toList();
+        List<DTensor> rows = chunk(0, false, 1);
+        List<DTensor> cols = t.chunk(1, false, 1);
 
         int chunk = (int) floor(sqrt((double) L2_CACHE_SIZE / 2 / CORES / dtype().bytes()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
@@ -473,7 +470,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         int jStride = ((StrideLayout) ret.layout()).stride(1);
 
         List<Future<?>> futures = new ArrayList<>();
-        try (ExecutorService service = Executors.newFixedThreadPool(Hardware.CORES)) {
+        try (ExecutorService service = Executors.newFixedThreadPool(mill.cpuThreads())) {
             for (int r = 0; r < m; r += innerChunk) {
                 int rs = r;
                 int re = min(m, r + innerChunk);
@@ -502,9 +499,9 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
                     future.get();
                 }
                 service.shutdown();
-                service.awaitTermination(1, TimeUnit.HOURS);
+                service.shutdownNow();
             } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         }
 
@@ -612,6 +609,11 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
+    public DTensor squeeze(int axis) {
+        return layout.shape().dim(axis) != 1 ? this : mill.ofDouble().stride(layout.squeeze(axis), array);
+    }
+
+    @Override
     public DTensor unsqueeze(int axis) {
         return mill.ofDouble().stride(layout().unsqueeze(axis), array);
     }
@@ -637,34 +639,38 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor truncate(int axis, int start, int end) {
-        return mill.ofDouble().stride(layout.truncate(axis, start, end), array);
+    public DTensor narrow(int axis, boolean keepdim, int start, int end) {
+        return mill.ofDouble().stride(layout.narrow(axis, keepdim, start, end), array);
     }
 
     @Override
-    public DTensor truncateAll(int[] starts, int[] ends) {
-        return mill.ofDouble().stride(layout.truncateAll(starts, ends), array);
+    public DTensor narrowAll(boolean keepdim, int[] starts, int[] ends) {
+        return mill.ofDouble().stride(layout.narrowAll(keepdim, starts, ends), array);
     }
 
     @Override
-    public List<DTensor> split(int axis, int... indexes) {
+    public List<DTensor> split(int axis, boolean keepdim, int... indexes) {
         List<DTensor> result = new ArrayList<>(indexes.length);
         for (int i = 0; i < indexes.length; i++) {
-            result.add(truncate(axis, indexes[i], i < indexes.length - 1 ? indexes[i + 1] : shape().dim(axis)));
+            result.add(narrow(axis, keepdim, indexes[i], i < indexes.length - 1 ? indexes[i + 1] : shape().dim(axis)));
         }
         return result;
     }
 
     @Override
-    public List<DTensor> splitAll(int[][] indexes) {
+    public List<DTensor> splitAll(boolean keepdim, int[][] indexes) {
+        if (indexes.length != rank()) {
+            throw new IllegalArgumentException(
+                    "Indexes length of %d is not the same as shape rank %d.".formatted(indexes.length, rank()));
+        }
         List<DTensor> results = new ArrayList<>();
         int[] starts = new int[indexes.length];
         int[] ends = new int[indexes.length];
-        splitAllRec(results, indexes, starts, ends, 0);
+        splitAllRec(results, indexes, keepdim, starts, ends, 0);
         return results;
     }
 
-    private void splitAllRec(List<DTensor> results, int[][] indexes, int[] starts, int[] ends, int level) {
+    private void splitAllRec(List<DTensor> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
         if (level == indexes.length) {
             return;
         }
@@ -672,9 +678,9 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
             starts[level] = indexes[level][i];
             ends[level] = i < indexes[level].length - 1 ? indexes[level][i + 1] : shape().dim(level);
             if (level == indexes.length - 1) {
-                results.add(truncateAll(starts, ends));
+                results.add(narrowAll(keepdim, starts, ends));
             } else {
-                splitAllRec(results, indexes, starts, ends, level + 1);
+                splitAllRec(results, indexes, keepdim, starts, ends, level + 1);
             }
         }
     }
@@ -730,72 +736,80 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
 
     private void copyTo(DTensorStride dst, Order askOrder) {
 
-        Predicate<Integer> sizePredicate = size -> size > 2 * 16 * 1024 / dtype().bytes();
+        int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * mill.cpuThreads() * 8);
 
-        if (sizePredicate.test(layout.size())) {
+        if (layout.size() > limit) {
 
-            int[] dims = Arrays.copyOf(layout.dims(), layout.rank());
-            int size = IntArrays.prod(dims, 0, dims.length);
-            while (sizePredicate.test(size)) {
-                int axis = IntArrays.argmax(dims, 0, dims.length);
-                size = size * (dims[axis] / 2) / dims[axis];
-                dims[axis] = dims[axis] / 2;
+            int[] slices = Arrays.copyOf(layout.dims(), layout.rank());
+            int size = IntArrays.prod(slices, 0, slices.length);
+            while (size > limit) {
+                int axis = IntArrays.argmax(slices, 0, slices.length);
+                size = size * (slices[axis] / 2) / slices[axis];
+                slices[axis] = slices[axis] / 2;
             }
 
-            int[][] indexes = new int[dims.length][];
-            for (int i = 0; i < dims.length; i++) {
-                indexes[i] = new int[Math.ceilDiv(layout().shape().dim(i), dims[i])];
-                indexes[i][0] = 0;
-                for (int j = 1; j < indexes[i].length; j++) {
-                    indexes[i][j] = min(indexes[i][j - 1] + dims[i], layout.shape().dim(i));
+            int[] lens = new int[slices.length];
+            for (int i = 0; i < lens.length; i++) {
+                lens[i] = Math.ceilDiv(layout().dim(i), slices[i]);
+            }
+
+            int[] starts = new int[slices.length];
+            int[] ends = new int[slices.length];
+
+            try (ExecutorService executor = Executors.newFixedThreadPool(mill.cpuThreads())) {
+                List<Future<?>> futures = new ArrayList<>();
+                Stack<Integer> stack = new Stack<>();
+                boolean loop = true;
+                while (!stack.isEmpty() || loop) {
+                    int level = stack.size();
+                    if (loop) {
+                        if (level == slices.length) {
+                            int[] ss = IntArrays.copy(starts);
+                            int[] es = IntArrays.copy(ends);
+                            futures.add(executor.submit(() -> {
+                                DTensorStride s = (DTensorStride) this.narrowAll(false, ss, es);
+                                DTensorStride d = (DTensorStride) dst.narrowAll(false, ss, es);
+                                directCopyTo(s, d, askOrder);
+                                return null;
+                            }));
+                            loop = false;
+                        } else {
+                            stack.push(0);
+                            starts[level] = 0;
+                            ends[level] = Math.min(slices[level], layout.dim(level));
+                        }
+                    } else {
+                        int last = stack.pop();
+                        if (last != lens[level - 1] - 1) {
+                            last++;
+                            stack.push(last);
+                            starts[level - 1] = last * slices[level - 1];
+                            ends[level - 1] = Math.min((last + 1) * slices[level - 1], layout.dim(level - 1));
+                            loop = true;
+                        }
+                    }
                 }
-            }
-
-            int[] starts = new int[indexes.length];
-            int[] ends = new int[indexes.length];
-
-            try (var scope = new StructuredTaskScope<>()) {
-                copyToRec(new RecursiveCopyInfo(scope, askOrder, dst, indexes, starts, ends), 0);
-                scope.join();
-            } catch (InterruptedException e) {
+                for (var future : futures) {
+                    future.get();
+                }
+                executor.shutdown();
+            } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
 
             return;
         }
 
-        var chd = StrideChunkDescriptor.of(layout, askOrder);
+        directCopyTo(this, dst, askOrder);
+    }
+
+    private void directCopyTo(DTensorStride src, DTensorStride dst, Order askOrder) {
+        var chd = StrideChunkDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
         for (int ptr : chd.chunkOffsets()) {
             for (int i = ptr; i < ptr + chd.loopLength(); i += chd.loopStep()) {
-                dst.array[it2.nextInt()] = array[i];
+                dst.array[it2.nextInt()] = src.array[i];
             }
         }
-    }
-
-    private void copyToRec(RecursiveCopyInfo rec, int level) {
-        if (level == rec.indexes.length) {
-            return;
-        }
-        for (int i = 0; i < rec.indexes[level].length; i++) {
-            rec.starts[level] = rec.indexes[level][i];
-            rec.ends[level] = i < rec.indexes[level].length - 1 ? rec.indexes[level][i + 1] : shape().dim(level);
-            if (level == rec.indexes.length - 1) {
-                int[] starts = Arrays.copyOf(rec.starts, rec.starts.length);
-                int[] ends = Arrays.copyOf(rec.ends, rec.ends.length);
-                rec.scope.fork(() -> {
-                    DTensorStride s = (DTensorStride) this.truncateAll(starts, ends);
-                    DTensorStride d = (DTensorStride) rec.dst.truncateAll(starts, ends);
-                    s.copyTo(d, rec.askOrder);
-                    return null;
-                });
-            } else {
-                copyToRec(rec, level + 1);
-            }
-        }
-    }
-
-    record RecursiveCopyInfo(StructuredTaskScope<?> scope, Order askOrder, DTensorStride dst, int[][] indexes, int[] starts, int[] ends) {
-
     }
 }

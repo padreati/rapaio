@@ -42,6 +42,10 @@ public interface TensorMill {
         return new ArrayTensorMill();
     }
 
+    static TensorMill array(int cpuThreads) {
+        return new ArrayTensorMill(cpuThreads);
+    }
+
     interface OfType<N extends Number, T extends Tensor<N, T>> {
 
         DType<N, T> dtype();

@@ -40,11 +40,25 @@ import rapaio.math.tensor.FTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.mill.AbstractTensorMill;
+import rapaio.util.Hardware;
 
 public class ArrayTensorMill extends AbstractTensorMill {
 
     private final BaseArrayOfDouble ofDouble = new BaseArrayOfDouble(this);
     private final BaseArrayOfFloat ofFloat = new BaseArrayOfFloat(this);
+    private final int cpuThreads;
+
+    public ArrayTensorMill() {
+        this(Hardware.CORES);
+    }
+
+    public ArrayTensorMill(int cpuThreads) {
+        this.cpuThreads = cpuThreads;
+    }
+
+    public int cpuThreads() {
+        return cpuThreads;
+    }
 
     @Override
     public OfType<Double, DTensor> ofDouble() {

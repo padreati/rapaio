@@ -316,7 +316,7 @@ public final class StrideLayout implements Layout {
 
     @Override
     public StrideLayout squeeze() {
-        int count = shape().unitDimCount();
+        int count = shape.unitDimCount();
         if (count == 0) {
             return this;
         }
@@ -331,6 +331,23 @@ public final class StrideLayout implements Layout {
             newDims[pos] = dim(i);
             newStrides[pos] = strides[i];
             pos++;
+        }
+        return new StrideLayout(Shape.of(newDims), offset, newStrides);
+    }
+
+    @Override
+    public StrideLayout squeeze(int axis) {
+        if (dim(axis) != 1) {
+            return this;
+        }
+        int[] newDims = new int[rank() - 1];
+        int[] newStrides = new int[rank() - 1];
+        for (int i = 0; i < rank(); i++) {
+            if (i == axis) {
+                continue;
+            }
+            newDims[i < axis ? i : i - 1] = dim(i);
+            newStrides[i < axis ? i : i - 1] = strides[i];
         }
         return new StrideLayout(Shape.of(newDims), offset, newStrides);
     }
@@ -409,7 +426,12 @@ public final class StrideLayout implements Layout {
     }
 
     @Override
-    public StrideLayout truncate(int axis, int start, int end) {
+    public StrideLayout narrow(int axis, int start, int end) {
+        return narrow(axis, true, start, end);
+    }
+
+    @Override
+    public StrideLayout narrow(int axis, boolean keepdim, int start, int end) {
         if (axis < 0 || axis >= strides.length) {
             throw new IllegalArgumentException("Axis is out of bounds.");
         }
@@ -423,11 +445,17 @@ public final class StrideLayout implements Layout {
         int[] newDims = Arrays.copyOf(shape.dims(), strides.length);
         newDims[axis] = end - start;
         int newOffset = offset + start * stride(axis);
-        return StrideLayout.of(Shape.of(newDims), newOffset, strides);
+        var result = StrideLayout.of(Shape.of(newDims), newOffset, strides);
+        return keepdim ? result : result.squeeze(axis);
     }
 
     @Override
-    public StrideLayout truncateAll(int[] starts, int[] ends) {
+    public StrideLayout narrowAll(int[] starts, int[] ends) {
+        return narrowAll(true, starts, ends);
+    }
+
+    @Override
+    public StrideLayout narrowAll(boolean keepdim, int[] starts, int[] ends) {
         if (strides.length != starts.length) {
             throw new IllegalArgumentException("Start arrays must have dimension equal with rank.");
         }

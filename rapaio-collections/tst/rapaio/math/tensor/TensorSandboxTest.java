@@ -33,14 +33,14 @@ package rapaio.math.tensor;
 
 import java.util.Random;
 
-import org.junit.jupiter.api.Test;
-
 public class TensorSandboxTest {
 
-    @Test
-    void testSandbox() {
-        var t = TensorMill.array().random(DType.DOUBLE, Shape.of(100, 100), new Random());
+    public static void main(String[] args) {
 
-        t.slice(0, 1).forEach(tt -> System.out.println(tt.shape()));
+        var random = new Random(42);
+        var t = TensorMill.array().ofDouble().random(Shape.of(2000, 300, 400), random);
+
+        t.t();
+
     }
 }

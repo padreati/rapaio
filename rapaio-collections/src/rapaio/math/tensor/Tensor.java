@@ -406,6 +406,14 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
     T squeeze();
 
     /**
+     * Collapses the given axis if equals with one. This operation does not create a new copy of the data.
+     * If dimension doesn't have size one, the same tensor is returned.
+     *
+     * @return view of the same tensor with the given dimension equal with one collapsed
+     */
+    T squeeze(int axis);
+
+    /**
      * Creates a new tensor view with an additional dimension at the position specified by {@param axis}.
      * Specified axis value should be between 0 (inclusive) and the number of dimensions (inclusive).
      *
@@ -436,13 +444,14 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * Creates a new tensor view with truncated axis, all other axes remain the same.
      *
      * @param axis  axis to be truncated
+     * @param keepDim keep dimension or not
      * @param start start index inclusive
      * @param end   end index exclusive
      * @return new view tensor with truncated axis
      */
-    T truncate(int axis, int start, int end);
+    T narrow(int axis, boolean keepDim, int start, int end);
 
-    T truncateAll(int[] starts, int[] ends);
+    T narrowAll(boolean keepDim, int[] starts, int[] ends);
 
     /**
      * Splits the tensor into multiple view tensors along a given axis.
@@ -453,9 +462,9 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param indexes indexes to split along, being start indexes for truncation
      * @return list of new tensors with truncated data.
      */
-    List<T> split(int axis, int... indexes);
+    List<T> split(int axis, boolean keepDim, int... indexes);
 
-    List<T> splitAll(int[][] indexes);
+    List<T> splitAll(boolean keepDim, int[][] indexes);
 
     /**
      * Slices the tensor along a given axis.
@@ -466,17 +475,17 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param step step size
      * @return list of new tensors with truncated data.
      */
-    default List<T> slice(int axis, int step) {
+    default List<T> chunk(int axis, boolean keepDim, int step) {
         int dim = layout().shape().dim(axis);
         int[] indexes = new int[Math.ceilDiv(dim, step)];
         indexes[0] = 0;
         for (int i = 1; i < indexes.length; i++) {
             indexes[i] = Math.min(indexes[i - 1] + step, dim);
         }
-        return split(axis, indexes);
+        return split(axis, keepDim, indexes);
     }
 
-    default List<T> sliceAll(int[] steps) {
+    default List<T> chunkAll(boolean keepDim, int[] steps) {
         if (layout().rank() != steps.length) {
             throw new IllegalArgumentException("Array of steps must have the length equals with rank.");
         }
@@ -488,7 +497,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
                 indexes[i][j] = Math.min(indexes[i][j - 1] + steps[i], layout().shape().dim(i));
             }
         }
-        return splitAll(indexes);
+        return splitAll(keepDim, indexes);
     }
 
     T repeat(int axis, int repeat, boolean stack);

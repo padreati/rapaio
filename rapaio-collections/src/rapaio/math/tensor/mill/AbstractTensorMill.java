@@ -56,7 +56,7 @@ public abstract class AbstractTensorMill implements TensorMill {
         int start = 0;
         for (T tensor : tensors) {
             int end = start + tensor.shape().dim(axis);
-            var dst = result.truncate(axis, start, end);
+            var dst = result.narrow(axis, true, start, end);
 
             var it1 = tensor.ptrIterator(Order.defaultOrder());
             var it2 = dst.ptrIterator(Order.defaultOrder());
@@ -87,7 +87,7 @@ public abstract class AbstractTensorMill implements TensorMill {
         }
         newDims[axis] = tensorList.size();
         var result = ofType(tensorList.get(0).dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
-        var slices = result.slice(axis, 1);
+        var slices = result.chunk(axis, true, 1);
         for (int i = 0; i < tensorList.size(); i++) {
             var it1 = slices.get(i).squeeze().ptrIterator(Order.defaultOrder());
             var it2 = tensorList.get(i).ptrIterator(Order.defaultOrder());

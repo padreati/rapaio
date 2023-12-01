@@ -120,6 +120,13 @@ public interface Layout {
     Layout squeeze();
 
     /**
+     * Removes the given dimension if is equal with 1.
+     *
+     * @return same layout if dimension is not unitary, otherwise a new layout with all unitary dimensions removed
+     */
+    Layout squeeze(int axis);
+
+    /**
      * Introduce a new dimension of length 1 on position given by axis.
      * @param axis index of the new axis
      * @return layout with new dimension
@@ -137,7 +144,11 @@ public interface Layout {
 
     Layout swapAxis(int src, int dst);
 
-    Layout truncate(int axis, int start, int end);
+    Layout narrow(int axis, int start, int end);
 
-    Layout truncateAll(int[] starts, int[] ends);
+    Layout narrow(int axis, boolean keepDim, int start, int end);
+
+    Layout narrowAll(int[] starts, int[] ends);
+
+    Layout narrowAll(boolean keepDim, int[] starts, int[] ends);
 }
