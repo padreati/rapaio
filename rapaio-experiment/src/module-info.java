@@ -5,9 +5,7 @@ module rapaio.experiment {
 
     requires jdk.incubator.vector;
 
-    requires rapaio.commons;
-    requires rapaio.collections;
-    requires rapaio.statml;
+    requires rapaio.core;
 
     requires javafx.base;
     requires javafx.fxml;

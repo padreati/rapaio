@@ -55,17 +55,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.padreati</groupId>
-            <artifactId>rapaio-commons</artifactId>
-            <version>6.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.padreati</groupId>
-            <artifactId>rapaio-collections</artifactId>
-            <version>6.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.padreati</groupId>
-            <artifactId>rapaio-statml</artifactId>
+            <artifactId>rapaio-core</artifactId>
             <version>6.0.0</version>
         </dependency>
         <dependency>
