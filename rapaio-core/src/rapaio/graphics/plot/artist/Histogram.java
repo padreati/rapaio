@@ -48,7 +48,7 @@ import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
-import rapaio.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorDense;
 
 /**
  * Plot component which allows one to add a histogram to a plot.

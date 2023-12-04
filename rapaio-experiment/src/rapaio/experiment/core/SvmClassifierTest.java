@@ -43,7 +43,7 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.model.svm.SvmClassifier;
 import rapaio.sys.Experimental;

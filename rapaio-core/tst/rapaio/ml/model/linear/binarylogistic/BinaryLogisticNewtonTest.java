@@ -32,8 +32,8 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
-import rapaio.linear.DMatrix;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 
 public class BinaryLogisticNewtonTest {
 

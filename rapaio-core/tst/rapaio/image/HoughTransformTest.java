@@ -37,7 +37,7 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 import rapaio.printer.ImageTools;
 
 /**

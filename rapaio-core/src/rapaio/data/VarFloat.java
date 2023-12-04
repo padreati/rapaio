@@ -51,9 +51,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import rapaio.data.stream.VSpot;
-import rapaio.linear.DVector;
-import rapaio.linear.dense.DVectorDense;
-import rapaio.linear.dense.DVectorVar;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorVar;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;

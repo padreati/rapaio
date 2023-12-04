@@ -49,7 +49,7 @@ import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**

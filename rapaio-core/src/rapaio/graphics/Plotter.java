@@ -61,7 +61,7 @@ import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.PolyPath;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Text;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.ml.eval.ClusterSilhouette;

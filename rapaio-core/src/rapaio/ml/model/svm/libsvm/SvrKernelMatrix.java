@@ -31,8 +31,8 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.linear.DVector;
-import rapaio.linear.dense.DVectorDense;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;

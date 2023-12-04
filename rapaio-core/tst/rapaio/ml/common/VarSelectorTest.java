@@ -34,7 +34,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 
 public class ChiSqTest {
 

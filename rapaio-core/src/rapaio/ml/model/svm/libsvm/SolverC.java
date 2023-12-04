@@ -33,7 +33,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.logging.Logger;
 
-import rapaio.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.util.collection.TArrays;
 
 /**

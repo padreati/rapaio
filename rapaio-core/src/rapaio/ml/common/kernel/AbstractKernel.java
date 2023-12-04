@@ -35,7 +35,7 @@ import java.io.Serial;
 import java.util.Arrays;
 
 import rapaio.data.Frame;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.cache.KernelCache;
 import rapaio.ml.common.kernel.cache.MapKernelCache;
 import rapaio.ml.common.kernel.cache.SolidKernelCache;

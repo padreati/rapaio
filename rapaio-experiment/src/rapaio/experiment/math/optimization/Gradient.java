@@ -32,7 +32,7 @@
 package rapaio.experiment.math.optimization;
 
 import rapaio.math.MathTools;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 import rapaio.util.Pair;
 
 /**

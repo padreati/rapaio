@@ -39,7 +39,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.preprocessing.Jitter;
 import rapaio.datasets.Datasets;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 import rapaio.ml.eval.RandIndex;
 
 public class MWKMeansTest {

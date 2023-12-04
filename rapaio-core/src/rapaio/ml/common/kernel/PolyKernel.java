@@ -37,7 +37,7 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.math.MathTools;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 
 /**
  * The Polynomial kernel is a non-stationary kernel. Polynomial kernels

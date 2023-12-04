@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.

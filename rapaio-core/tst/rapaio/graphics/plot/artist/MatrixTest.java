@@ -36,8 +36,8 @@ import rapaio.core.tools.DistanceMatrix;
 import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.printer.ImageTools;
-import rapaio.linear.DMatrix;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 
 public class MatrixTest extends AbstractArtistTest {
 

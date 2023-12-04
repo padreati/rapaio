@@ -45,7 +45,7 @@ import java.util.stream.DoubleStream;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
-import rapaio.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;

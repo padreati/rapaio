@@ -49,7 +49,7 @@ import java.util.List;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.VarDouble;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.sys.Experimental;

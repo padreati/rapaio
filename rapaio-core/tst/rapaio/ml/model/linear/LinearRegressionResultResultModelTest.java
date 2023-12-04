@@ -34,8 +34,8 @@ import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
-import rapaio.linear.DMatrix;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 
 /**
  * Test for linear regression.

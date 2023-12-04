@@ -54,7 +54,7 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
-import rapaio.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.sys.WS;
 
 @BenchmarkMode( {Mode.AverageTime})

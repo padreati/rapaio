@@ -32,7 +32,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 
 /**
  * Tests for pearson correlation

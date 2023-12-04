@@ -31,7 +31,7 @@
 
 package rapaio.experiment.ml.feature.relief;
 
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/19/18.

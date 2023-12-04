@@ -51,8 +51,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import rapaio.linear.DVector;
-import rapaio.linear.dense.DVectorDense;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.core.distributions.Distribution;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;

@@ -43,7 +43,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
 import rapaio.core.param.ValueParam;
 import rapaio.ml.loss.L2Loss;

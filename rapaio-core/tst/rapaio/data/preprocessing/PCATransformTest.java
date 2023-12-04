@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 
 public class PCATransformTest {
 

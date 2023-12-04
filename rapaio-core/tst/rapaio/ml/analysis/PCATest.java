@@ -34,7 +34,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.model.ensemble.CForest;
 

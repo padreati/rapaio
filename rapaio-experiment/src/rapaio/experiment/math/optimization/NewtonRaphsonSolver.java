@@ -41,15 +41,15 @@ import java.util.List;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.data.VarDouble;
-import rapaio.linear.DMatrix;
-import rapaio.linear.DVector;
-import rapaio.linear.decomposition.DoubleCholeskyDecomposition;
-import rapaio.optimization.Solver;
-import rapaio.optimization.functions.RDerivative;
-import rapaio.optimization.functions.RFunction;
-import rapaio.optimization.functions.RHessian;
-import rapaio.optimization.linesearch.BacktrackLineSearch;
-import rapaio.optimization.linesearch.LineSearch;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.decomposition.DoubleCholeskyDecomposition;
+import rapaio.math.optimization.Solver;
+import rapaio.math.optimization.functions.RDerivative;
+import rapaio.math.optimization.functions.RFunction;
+import rapaio.math.optimization.functions.RHessian;
+import rapaio.math.optimization.linesearch.BacktrackLineSearch;
+import rapaio.math.optimization.linesearch.LineSearch;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.

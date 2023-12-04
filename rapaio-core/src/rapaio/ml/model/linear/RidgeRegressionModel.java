@@ -39,7 +39,7 @@ import java.util.Objects;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.preprocessing.AddIntercept;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 import rapaio.core.param.ValueParam;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 

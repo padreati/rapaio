@@ -32,7 +32,7 @@
 package rapaio.ml.common.distance;
 
 import rapaio.data.Frame;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 import rapaio.core.param.ParametricEquals;
 
 /**

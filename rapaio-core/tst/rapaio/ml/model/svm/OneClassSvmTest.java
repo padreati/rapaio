@@ -33,7 +33,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 

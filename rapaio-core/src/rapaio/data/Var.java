@@ -45,7 +45,8 @@ import rapaio.core.SamplingTools;
 import rapaio.data.preprocessing.VarTransform;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
@@ -382,7 +383,7 @@ public interface Var extends Serializable, Printable {
     Var copy();
 
     /**
-     * Wrap double values into a {@link rapaio.linear.dense.DVectorDense} instance.
+     * Wrap double values into a {@link DVectorDense} instance.
      * If wrapping is not possible, a copy is created. Only {@link VarDouble}
      * allows wrapping of values.
      *
@@ -391,7 +392,7 @@ public interface Var extends Serializable, Printable {
     DVector dv();
 
     /**
-     * Wrap double values into a new copy {@link rapaio.linear.dense.DVectorDense} instance.
+     * Wrap double values into a new copy {@link DVectorDense} instance.
      *
      * @return new copy DVector
      */

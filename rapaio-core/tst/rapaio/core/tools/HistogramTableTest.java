@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.data.VarDouble;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 
 public class HistogramTableTest {
 

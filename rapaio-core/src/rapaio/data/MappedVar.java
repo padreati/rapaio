@@ -35,8 +35,8 @@ import java.io.Serial;
 import java.time.Instant;
 import java.util.List;
 
-import rapaio.linear.DVector;
-import rapaio.linear.dense.DVectorVar;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorVar;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;

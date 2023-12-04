@@ -34,7 +34,7 @@ package rapaio.ml.common.distance;
 import static java.lang.StrictMath.abs;
 
 import rapaio.data.Frame;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 
 public class Manhattan implements Distance {
 

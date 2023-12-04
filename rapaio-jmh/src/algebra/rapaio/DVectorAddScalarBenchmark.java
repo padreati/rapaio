@@ -53,11 +53,11 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
-import rapaio.linear.DVector;
-import rapaio.linear.base.DVectorBase;
-import rapaio.linear.dense.DVectorDense;
-import rapaio.linear.dense.DVectorMap;
-import rapaio.linear.dense.DVectorStride;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.base.DVectorBase;
+import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorMap;
+import rapaio.math.linear.dense.DVectorStride;
 import rapaio.sys.WS;
 
 @BenchmarkMode( {Mode.AverageTime})

@@ -45,7 +45,7 @@ import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 import rapaio.util.collection.IntArrays;
 
 /**

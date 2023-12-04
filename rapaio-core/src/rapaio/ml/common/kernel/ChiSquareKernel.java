@@ -34,7 +34,7 @@ package rapaio.ml.common.kernel;
 import java.io.Serial;
 
 import rapaio.data.Frame;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 
 /**
  * The Chi-Square kernel comes from the Chi-Square distribution.

@@ -38,9 +38,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rapaio.math.MathTools;
-import rapaio.linear.DMatrix;
-import rapaio.linear.DVector;
-import rapaio.linear.decomposition.DoubleCholeskyDecomposition;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.decomposition.DoubleCholeskyDecomposition;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 

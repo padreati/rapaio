@@ -35,7 +35,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.stream.IntStream;
 
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
 /**

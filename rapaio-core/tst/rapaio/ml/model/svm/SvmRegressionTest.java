@@ -29,8 +29,8 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.linear.DMatrix;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 

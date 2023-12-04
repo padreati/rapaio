@@ -44,8 +44,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * Utility class which simplifies access to common java math utilities and also
- * enrich the mathematical operations set.
+ * Utility class which simplifies access to common java math utilities and also enrich the mathematical operations set.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */

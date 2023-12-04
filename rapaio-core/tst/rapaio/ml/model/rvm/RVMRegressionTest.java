@@ -32,7 +32,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 import rapaio.ml.common.kernel.LinearKernel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.linear.LinearRegressionModel;

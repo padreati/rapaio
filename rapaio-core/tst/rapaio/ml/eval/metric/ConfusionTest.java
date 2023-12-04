@@ -35,8 +35,8 @@ import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.linear.DMatrix;
-import rapaio.linear.dense.DMatrixDenseR;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixDenseR;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

@@ -38,7 +38,7 @@ import java.util.Set;
 
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;

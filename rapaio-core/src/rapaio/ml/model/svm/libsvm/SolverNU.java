@@ -31,7 +31,7 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorDense;
 
 /**
  * Solver for nu-svm classification and regression.

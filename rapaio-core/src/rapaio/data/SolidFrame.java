@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 
 /**
  * A frame which is not mapped, its values are contained in vectors.

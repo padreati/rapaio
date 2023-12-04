@@ -34,7 +34,7 @@ package rapaio.ml.common.distance;
 import static java.lang.StrictMath.pow;
 
 import rapaio.data.Frame;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 
 public class MinkowskiDistance implements Distance {
 

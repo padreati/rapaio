@@ -57,7 +57,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.preprocessing.RefSort;
 import rapaio.data.sample.RowSampler;
-import rapaio.linear.DMatrix;
+import rapaio.math.linear.DMatrix;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ClassWeights;
 import rapaio.ml.common.VarSelector;

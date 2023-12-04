@@ -34,7 +34,7 @@ package rapaio.experiment.math.optimization;
 import java.io.Serial;
 import java.io.Serializable;
 
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 import rapaio.util.Pair;
 
 /**

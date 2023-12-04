@@ -34,7 +34,7 @@ package rapaio.ml.common.distance;
 import static rapaio.printer.Format.floatFlex;
 
 import rapaio.data.Frame;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 
 public class Constant implements Distance {
 

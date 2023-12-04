@@ -35,7 +35,7 @@ import java.io.Serial;
 import java.util.function.Function;
 
 import rapaio.data.Frame;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**

@@ -34,8 +34,8 @@ package rapaio.experiment.ml.svm.libsvm;
 import java.io.IOException;
 import java.util.Vector;
 
-import rapaio.linear.DMatrix;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 
 public class svm_train {
     private svm_parameter param;        // set by parse_command_line

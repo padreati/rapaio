@@ -33,7 +33,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.Random;
 
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 
 public class SvmProblem implements java.io.Serializable {
     public Random random;

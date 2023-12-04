@@ -45,8 +45,8 @@ import org.openjdk.jmh.runner.options.TimeValue;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
-import rapaio.linear.DMatrix;
-import rapaio.linear.dense.DMatrixDenseR;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.util.collection.DoubleArrays;
 
 /**

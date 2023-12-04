@@ -40,14 +40,14 @@ module rapaio.core {
 
     exports rapaio.io;
 
-    exports rapaio.optimization.functions;
-    exports rapaio.linear;
-    exports rapaio.linear.base;
-    exports rapaio.linear.dense;
-    exports rapaio.linear.decomposition;
-    exports rapaio.optimization;
-    exports rapaio.optimization.linesearch;
-    exports rapaio.optimization.scalar;
+    exports rapaio.math.optimization.functions;
+    exports rapaio.math.linear;
+    exports rapaio.math.linear.base;
+    exports rapaio.math.linear.dense;
+    exports rapaio.math.linear.decomposition;
+    exports rapaio.math.optimization;
+    exports rapaio.math.optimization.linesearch;
+    exports rapaio.math.optimization.scalar;
 
     exports rapaio.math;
     exports rapaio.math.tensor;

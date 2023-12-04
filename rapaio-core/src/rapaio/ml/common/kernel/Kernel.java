@@ -34,7 +34,7 @@ package rapaio.ml.common.kernel;
 import java.io.Serializable;
 
 import rapaio.data.Frame;
-import rapaio.linear.DVector;
+import rapaio.math.linear.DVector;
 
 /**
  * Kernel function interface

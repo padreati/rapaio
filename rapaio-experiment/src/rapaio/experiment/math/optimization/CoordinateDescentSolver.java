@@ -38,12 +38,12 @@ import java.util.List;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.data.VarDouble;
-import rapaio.linear.DVector;
-import rapaio.optimization.Solver;
-import rapaio.optimization.functions.RDerivative;
-import rapaio.optimization.functions.RFunction;
-import rapaio.optimization.linesearch.BacktrackLineSearch;
-import rapaio.optimization.linesearch.LineSearch;
+import rapaio.math.linear.DVector;
+import rapaio.math.optimization.Solver;
+import rapaio.math.optimization.functions.RDerivative;
+import rapaio.math.optimization.functions.RFunction;
+import rapaio.math.optimization.linesearch.BacktrackLineSearch;
+import rapaio.math.optimization.linesearch.LineSearch;
 
 /**
  * Steepest descent for L1 norm

@@ -40,7 +40,7 @@ import org.openjdk.jmh.runner.options.TimeValue;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
-import rapaio.linear.dense.DVectorDense;
+import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
