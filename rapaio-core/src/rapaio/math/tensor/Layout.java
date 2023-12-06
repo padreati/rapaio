@@ -151,4 +151,6 @@ public interface Layout {
     Layout narrowAll(int[] starts, int[] ends);
 
     Layout narrowAll(boolean keepDim, int[] starts, int[] ends);
+
+    Layout permute(int[] dims);
 }

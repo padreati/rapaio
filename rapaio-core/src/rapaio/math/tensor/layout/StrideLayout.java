@@ -473,6 +473,32 @@ public final class StrideLayout implements Layout {
     }
 
     @Override
+    public StrideLayout permute(int[] dims) {
+        if (strides.length != dims.length) {
+            throw new IllegalArgumentException("Numer of dimension is not equal with rank.");
+        }
+        boolean[] flags = new boolean[rank()];
+        int flagCount = 0;
+        for (int dim : dims) {
+            if (dim < 0 || dim >= rank() - 1) {
+                throw new IllegalArgumentException("Dimension value is invalid: [" +
+                        IntStream.of(dims).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "]");
+            }
+            if (!flags[dim]) {
+                flags[dim] = true;
+                flagCount++;
+            }
+        }
+        if (flagCount != rank()) {
+            throw new IllegalArgumentException("Dimension values contains duplicates: [" +
+                    IntStream.of(dims).mapToObj(String::valueOf).collect(Collectors.joining("")) + "]");
+        }
+        int[] newDims = IntArrays.newPermutation(dims(), dims);
+        int[] newStrides = IntArrays.newPermutation(strides, dims);
+        return StrideLayout.of(Shape.of(newDims), offset, newStrides);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

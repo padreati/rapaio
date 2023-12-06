@@ -170,6 +170,16 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
     T unsqueeze(int axis);
 
     /**
+     * Creates a tensor view with dimensions permuted in the order specified in parameter. The
+     * parameter is an integer array containing all values from closed interval {@code [0,(rank-1)]}.
+     * The order in which those values are passed defined the dimension permutation.
+     *
+     * @param dims dimension permutation
+     * @return new tensor view with permuted dimensions
+     */
+    T permute(int[] dims);
+
+    /**
      * Creates a new tensor view with source axis moved into the given destination position.
      *
      * @param src source axis
@@ -248,6 +258,17 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
         return splitAll(keepDim, indexes);
     }
 
+    /**
+     * Removes a tensor dimension. Returns a list of all chunks along a given dimension, already without it.
+     * All tensors from view will be tensor views.
+     *
+     * @param axis axis to be removed
+     * @return list of tensor views
+     */
+    default List<T> unbind(int axis) {
+        return chunk(axis, false, 1);
+    }
+
     @SuppressWarnings("unchecked")
     default T stack(int axis, Collection<? extends T> tensors) {
         List<T> list = new ArrayList<>();
@@ -265,6 +286,8 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
     }
 
     T repeat(int axis, int repeat, boolean stack);
+
+    T tile(int[] repeats);
 
     T take(Order order, int... indexes);
 

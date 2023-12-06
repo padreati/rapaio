@@ -272,6 +272,16 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
+    public FTensor tile(int[] repeats) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public FTensor permute(int[] dims) {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public float getFloat(int... indexes) {
         return array[layout.pointer(indexes)];
     }

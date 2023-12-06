@@ -272,6 +272,16 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
+    public DTensor tile(int[] repeats) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public DTensor permute(int[] dims) {
+        return mill.ofDouble().stride(layout().permute(dims), array);
+    }
+
+    @Override
     public double getDouble(int... indexes) {
         return array[layout.pointer(indexes)];
     }
