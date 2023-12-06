@@ -10,7 +10,7 @@
     </parent>
     <artifactId>rapaio-core</artifactId>
     <version>6.0.0</version>
-    <name>rapaio-statml</name>
+    <name>rapaio-core</name>
 
     <url>https://github.com/padreati/rapaio/tree/master/rapaio-core</url>
     <licenses>

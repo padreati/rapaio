@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.mill.array;
+package rapaio.math.tensor.mill.varray;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
@@ -49,6 +49,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 import jdk.incubator.vector.FloatVector;
@@ -56,7 +57,6 @@ import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.FTensor;
-import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Statistics;
@@ -74,6 +74,7 @@ import rapaio.math.tensor.mill.TensorValidation;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
+import rapaio.util.NotImplementedException;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
@@ -114,11 +115,6 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public DType<Float, FTensor> dtype() {
-        return DType.FLOAT;
-    }
-
-    @Override
     public TensorMill mill() {
         return mill;
     }
@@ -126,6 +122,153 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     @Override
     public StrideLayout layout() {
         return layout;
+    }
+
+    @Override
+    public FTensor reshape(Shape askShape, Order askOrder) {
+        if (layout.shape().size() != askShape.size()) {
+            throw new IllegalArgumentException("Incompatible shape size.");
+        }
+
+        Order cmpOrder = askOrder == Order.C ? Order.C : Order.F;
+        var baseLayout = layout.computeFortranLayout(cmpOrder, true);
+        var compact = StrideLayout.ofDense(shape(), layout.offset(), cmpOrder).computeFortranLayout(cmpOrder, true);
+
+        if (baseLayout.equals(compact)) {
+            // we can create a view over tensor
+            int newOffset = layout.offset();
+            int[] newStrides = new int[askShape.rank()];
+            for (int i = 0; i < askShape.rank(); i++) {
+                int[] ione = new int[askShape.rank()];
+                ione[i] = 1;
+                int pos2 = askShape.position(cmpOrder, ione);
+                int[] v1 = layout.shape().index(cmpOrder, pos2);
+                int pointer2 = layout.pointer(v1);
+                newStrides[i] = pointer2 - newOffset;
+            }
+            if (askOrder == Order.C) {
+                IntArrays.reverse(newStrides);
+            }
+        }
+        var it = new StridePointerIterator(layout, askOrder);
+        FTensor copy = mill.ofFloat().zeros(askShape, askOrder);
+        var copyIt = copy.ptrIterator(Order.C);
+        while (it.hasNext()) {
+            copy.ptrSetFloat(copyIt.nextInt(), array[it.nextInt()]);
+        }
+        return copy;
+    }
+
+    @Override
+    public FTensor transpose() {
+        return mill.ofFloat().stride(layout.revert(), array);
+    }
+
+    @Override
+    public FTensor ravel(Order askOrder) {
+        var compact = layout.computeFortranLayout(askOrder, true);
+        if (compact.shape().rank() == 1) {
+            return mill.ofFloat().stride(compact, array);
+        }
+        return flatten(askOrder);
+    }
+
+    @Override
+    public FTensor flatten(Order askOrder) {
+        askOrder = Order.autoFC(askOrder);
+        var out = new float[layout.size()];
+        int p = 0;
+        var it = loopIterator(askOrder);
+        while (it.hasNext()) {
+            int pointer = it.nextInt();
+            for (int i = pointer; i < pointer + it.bound(); i += it.step()) {
+                out[p++] = array[i];
+            }
+        }
+        return mill.ofFloat().stride(Shape.of(layout.size()), 0, new int[] {1}, out);
+    }
+
+    @Override
+    public FTensor squeeze() {
+        return layout.shape().unitDimCount() == 0 ? this : mill.ofFloat().stride(layout.squeeze(), array);
+    }
+
+    @Override
+    public FTensor squeeze(int axis) {
+        return layout.shape().dim(axis) != 1 ? this : mill.ofFloat().stride(layout.squeeze(axis), array);
+    }
+
+    @Override
+    public FTensor unsqueeze(int axis) {
+        return mill.ofFloat().stride(layout().unsqueeze(axis), array);
+    }
+
+    @Override
+    public FTensor moveAxis(int src, int dst) {
+        return mill.ofFloat().stride(layout.moveAxis(src, dst), array);
+    }
+
+    @Override
+    public FTensor swapAxis(int src, int dst) {
+        return mill.ofFloat().stride(layout.swapAxis(src, dst), array);
+    }
+
+    @Override
+    public FTensor narrow(int axis, boolean keepdim, int start, int end) {
+        return mill.ofFloat().stride(layout.narrow(axis, keepdim, start, end), array);
+    }
+
+    @Override
+    public FTensor narrowAll(boolean keepdim, int[] starts, int[] ends) {
+        return mill.ofFloat().stride(layout.narrowAll(keepdim, starts, ends), array);
+    }
+
+    @Override
+    public List<FTensor> split(int axis, boolean keepdim, int... indexes) {
+        List<FTensor> result = new ArrayList<>(indexes.length);
+        for (int i = 0; i < indexes.length; i++) {
+            result.add(narrow(axis, keepdim, indexes[i], i < indexes.length - 1 ? indexes[i + 1] : shape().dim(axis)));
+        }
+        return result;
+    }
+
+    @Override
+    public List<FTensor> splitAll(boolean keepdim, int[][] indexes) {
+        if (indexes.length != rank()) {
+            throw new IllegalArgumentException(
+                    "Indexes length of %d is not the same as shape rank %d.".formatted(indexes.length, rank()));
+        }
+        List<FTensor> results = new ArrayList<>();
+        int[] starts = new int[indexes.length];
+        int[] ends = new int[indexes.length];
+        splitAllRec(results, indexes, keepdim, starts, ends, 0);
+        return results;
+    }
+
+    private void splitAllRec(List<FTensor> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
+        if (level == indexes.length) {
+            return;
+        }
+        for (int i = 0; i < indexes[level].length; i++) {
+            starts[level] = indexes[level][i];
+            ends[level] = i < indexes[level].length - 1 ? indexes[level][i + 1] : shape().dim(level);
+            if (level == indexes.length - 1) {
+                results.add(narrowAll(keepdim, starts, ends));
+            } else {
+                splitAllRec(results, indexes, keepdim, starts, ends, level + 1);
+            }
+        }
+    }
+
+    @Override
+    public FTensor repeat(int axis, int repeat, boolean stack) {
+        FTensor[] copies = new FTensor[repeat];
+        Arrays.fill(copies, this);
+        if (stack) {
+            return mill.stack(axis, Arrays.asList(copies));
+        } else {
+            return mill.concat(axis, Arrays.asList(copies));
+        }
     }
 
     @Override
@@ -146,6 +289,153 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     @Override
     public void ptrSetFloat(int ptr, float value) {
         array[ptr] = value;
+    }
+
+    @Override
+    public Iterator<Float> iterator(Order askOrder) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
+                .map(i -> array[i]).iterator();
+    }
+
+    @Override
+    public PointerIterator ptrIterator(Order askOrder) {
+        if (layout.isCOrdered() && askOrder != Order.F) {
+            return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(-1));
+        }
+        if (layout.isFOrdered() && askOrder != Order.C) {
+            return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(0));
+        }
+        return new StridePointerIterator(layout, askOrder);
+    }
+
+    @Override
+    public LoopIterator loopIterator(Order askOrder) {
+        if (layout.rank() == 0) {
+            return new ScalarLoopIterator(layout.offset());
+        }
+        return new StrideLoopIterator(layout, askOrder);
+    }
+
+    @Override
+    public FTensorStride apply(Order askOrder, IntIntBiFunction<Float> apply) {
+        var it = ptrIterator(askOrder);
+        int i = 0;
+        while (it.hasNext()) {
+            int p = it.nextInt();
+            array[p] = apply.applyAsInt(i++, p);
+        }
+        return this;
+    }
+
+    @Override
+    public FTensor apply(Function<Float, Float> fun) {
+        var ptrIter = ptrIterator(Order.S);
+        while (ptrIter.hasNext()) {
+            int ptr = ptrIter.nextInt();
+            array[ptr] = fun.apply(array[ptr]);
+        }
+        return this;
+    }
+
+    @Override
+    public FTensor fill(Float value) {
+        for (int offset : loop.offsets) {
+            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
+            int i = offset;
+            if (bound > offset) {
+                FloatVector fill = FloatVector.broadcast(SPEC, value);
+                for (; i < bound; i += SPEC_LEN * loop.step) {
+                    if (loop.step == 1) {
+                        fill.intoArray(array, i);
+                    } else {
+                        fill.intoArray(array, i, loopIndexes, 0);
+                    }
+                }
+            }
+            for (; i < loop.bound + offset; i += loop.step) {
+                array[i] = value;
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public FTensor fillNan(Float value) {
+        for (int offset : loop.offsets) {
+            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
+            int i = offset;
+            if (bound > offset) {
+                FloatVector fill = FloatVector.broadcast(SPEC, value);
+                for (; i < bound; i += SPEC_LEN * loop.step) {
+                    if (loop.step == 1) {
+                        FloatVector a = FloatVector.fromArray(SPEC, array, i);
+                        VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
+                        fill.intoArray(array, i, m);
+                    } else {
+                        FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                        VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
+                        fill.intoArray(array, i, loopIndexes, 0, m);
+                    }
+                }
+            }
+            for (; i < loop.bound + offset; i += loop.step) {
+                if (Float.isNaN(array[i])) {
+                    array[i] = value;
+                }
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public FTensor clamp(Float min, Float max) {
+        for (int offset : loop.offsets) {
+            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
+            int i = offset;
+            if (bound > offset) {
+                for (; i < bound; i += SPEC_LEN * loop.step) {
+                    FloatVector a = loop.step == 1 ?
+                            FloatVector.fromArray(SPEC, array, i) :
+                            FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                    boolean any = false;
+                    if (!Float.isNaN(min)) {
+                        VectorMask<Float> m = a.compare(VectorOperators.LT, min);
+                        if (m.anyTrue()) {
+                            a = a.blend(min, m);
+                            any = true;
+                        }
+                    }
+                    if (!Float.isNaN(max)) {
+                        VectorMask<Float> m = a.compare(VectorOperators.GT, max);
+                        if (m.anyTrue()) {
+                            a = a.blend(max, m);
+                            any = true;
+                        }
+                    }
+                    if (any) {
+                        if (loop.step == 1) {
+                            a.intoArray(array, i);
+                        } else {
+                            a.intoArray(array, i, loopIndexes, 0);
+                        }
+                    }
+                }
+            }
+            for (; i < loop.bound + offset; i += loop.step) {
+                if (!Float.isNaN(min) && array[i] < min) {
+                    array[i] = min;
+                }
+                if (!Float.isNaN(max) && array[i] > max) {
+                    array[i] = max;
+                }
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public FTensor take(Order order, int... indexes) {
+        throw new NotImplementedException();
     }
 
     private void unaryOpUnit(TensorUnaryOp op) {
@@ -187,91 +477,91 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public FTensorStride abs_() {
+    public FTensorStride abs() {
         unaryOp(TensorUnaryOp.ABS);
         return this;
     }
 
     @Override
-    public FTensorStride neg_() {
+    public FTensorStride negate() {
         unaryOp(TensorUnaryOp.NEG);
         return this;
     }
 
     @Override
-    public FTensorStride log_() {
+    public FTensorStride log() {
         unaryOp(TensorUnaryOp.LOG);
         return this;
     }
 
     @Override
-    public FTensorStride log1p_() {
+    public FTensorStride log1p() {
         unaryOp(TensorUnaryOp.LOG1P);
         return this;
     }
 
     @Override
-    public FTensorStride exp_() {
+    public FTensorStride exp() {
         unaryOp(TensorUnaryOp.EXP);
         return this;
     }
 
     @Override
-    public FTensorStride expm1_() {
+    public FTensorStride expm1() {
         unaryOp(TensorUnaryOp.EXPM1);
         return this;
     }
 
     @Override
-    public FTensorStride sin_() {
+    public FTensorStride sin() {
         unaryOp(TensorUnaryOp.SIN);
         return this;
     }
 
     @Override
-    public FTensorStride asin_() {
+    public FTensorStride asin() {
         unaryOp(TensorUnaryOp.ASIN);
         return this;
     }
 
     @Override
-    public FTensorStride sinh_() {
+    public FTensorStride sinh() {
         unaryOp(TensorUnaryOp.SINH);
         return this;
     }
 
     @Override
-    public FTensorStride cos_() {
+    public FTensorStride cos() {
         unaryOp(TensorUnaryOp.COS);
         return this;
     }
 
     @Override
-    public FTensorStride acos_() {
+    public FTensorStride acos() {
         unaryOp(TensorUnaryOp.ACOS);
         return this;
     }
 
     @Override
-    public FTensorStride cosh_() {
+    public FTensorStride cosh() {
         unaryOp(TensorUnaryOp.COSH);
         return this;
     }
 
     @Override
-    public FTensorStride tan_() {
+    public FTensorStride tan() {
         unaryOp(TensorUnaryOp.TAN);
         return this;
     }
 
     @Override
-    public FTensorStride atan_() {
+    public FTensorStride atan() {
         unaryOp(TensorUnaryOp.ATAN);
         return this;
     }
 
     @Override
-    public FTensorStride tanh_() {
+    public FTensorStride tanh() {
         unaryOp(TensorUnaryOp.TANH);
         return this;
     }
@@ -289,28 +579,28 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public FTensorStride add_(FTensor tensor) {
+    public FTensorStride add(FTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.ADD, tensor);
         return this;
     }
 
     @Override
-    public FTensorStride sub_(FTensor tensor) {
+    public FTensorStride sub(FTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.SUB, tensor);
         return this;
     }
 
     @Override
-    public FTensorStride mul_(FTensor tensor) {
+    public FTensorStride mul(FTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.MUL, tensor);
         return this;
     }
 
     @Override
-    public FTensorStride div_(FTensor tensor) {
+    public FTensorStride div(FTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.DIV, tensor);
         return this;
@@ -355,36 +645,36 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public FTensorStride add_(float value) {
+    public FTensorStride add(Float value) {
         binaryScalarOp(TensorBinaryOp.ADD, value);
         return this;
     }
 
     @Override
-    public FTensorStride sub_(float value) {
+    public FTensorStride sub(Float value) {
         binaryScalarOp(TensorBinaryOp.SUB, value);
         return this;
     }
 
     @Override
-    public FTensorStride mul_(float value) {
+    public FTensorStride mul(Float value) {
         binaryScalarOp(TensorBinaryOp.MUL, value);
         return this;
     }
 
     @Override
-    public FTensorStride div_(float value) {
+    public FTensorStride div(Float value) {
         binaryScalarOp(TensorBinaryOp.DIV, value);
         return this;
     }
 
     @Override
-    public float vdotFloat(FTensor tensor) {
-        return vdotFloat(tensor, 0, shape().dim(0));
+    public Float vdot(FTensor tensor) {
+        return vdot(tensor, 0, shape().dim(0));
     }
 
     @Override
-    public float vdotFloat(FTensor tensor, int start, int end) {
+    public Float vdot(FTensor tensor, int start, int end) {
         if (shape().rank() != 1 || tensor.shape().rank() != 1 || shape().dim(0) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(
                     "Operands are not valid for vector dot product (v = %s, v = %s)."
@@ -484,7 +774,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
                             for (int i = rs; i < re; i++) {
                                 var krow = (FTensorStride) rows.get(i);
                                 for (int j = c; j < ce; j++) {
-                                    result[i * iStride + j * jStride] += krow.vdotFloat(cols.get(j), k, end);
+                                    result[i * iStride + j * jStride] += krow.vdot(cols.get(j), k, end);
                                 }
                             }
                         }
@@ -508,9 +798,9 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public float meanFloat() {
+    public Float mean() {
         float size = size();
-        float mean = sumFloat() / size;
+        float mean = sum() / size;
         float sum2 = (float) 0;
 
         if (loop.step == 1) {
@@ -565,9 +855,9 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public float nanMeanFloat() {
+    public Float nanMean() {
         float size = size() - nanCount();
-        float mean = nanSumFloat() / size;
+        float mean = nanSum() / size;
         float sum2 = (float) 0;
 
         if (loop.step == 1) {
@@ -629,26 +919,26 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public float stdFloat() {
-        return (float) Math.sqrt(varianceFloat());
+    public Float std() {
+        return (float) Math.sqrt(variance());
     }
 
     @Override
-    public float nanStdFloat() {
-        return (float) Math.sqrt(nanVarianceFloat());
+    public Float nanStd() {
+        return (float) Math.sqrt(nanVariance());
     }
 
     @Override
-    public float varianceFloat() {
-        float mean = meanFloat();
+    public Float variance() {
+        float mean = mean();
         float size = size();
         if (loop.step == 1) {
-            return unitVarianceFloat(mean, size);
+            return unitVariance(mean, size);
         }
-        return strideVarianceFloat(mean, size);
+        return strideVariance(mean, size);
     }
 
-    private float unitVarianceFloat(float mean, float size) {
+    private float unitVariance(float mean, float size) {
         float sum2 = 0;
         float sum3 = 0;
         for (int offset : loop.offsets) {
@@ -676,7 +966,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         return (sum2 - (float) (sum3 * sum3) / size) / size;
     }
 
-    private float strideVarianceFloat(float mean, float size) {
+    private float strideVariance(float mean, float size) {
         float sum2 = 0;
         float sum3 = 0;
         for (int offset : loop.offsets) {
@@ -705,15 +995,15 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public float nanVarianceFloat() {
-        float mean = nanMeanFloat();
+    public Float nanVariance() {
+        float mean = nanMean();
         if (loop.step == 1) {
-            return nanUnitVarianceFloat(mean);
+            return nanUnitVariance(mean);
         }
-        return nanStrideVarianceFloat(mean);
+        return nanStrideVariance(mean);
     }
 
-    private float nanUnitVarianceFloat(float mean) {
+    private float nanUnitVariance(float mean) {
         float sum2 = 0;
         float sum3 = 0;
         int count = 0;
@@ -747,7 +1037,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         return (sum2 - (float) (sum3 * sum3) / count) / count;
     }
 
-    private float nanStrideVarianceFloat(float mean) {
+    private float nanStrideVariance(float mean) {
         float sum2 = 0;
         float sum3 = 0;
         int count = 0;
@@ -1005,42 +1295,42 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public float sumFloat() {
+    public Float sum() {
         return associativeOp(TensorAssociativeOp.ADD);
     }
 
     @Override
-    public float nanSumFloat() {
+    public Float nanSum() {
         return nanAssociativeOp(TensorAssociativeOp.ADD);
     }
 
     @Override
-    public float prodFloat() {
+    public Float prod() {
         return associativeOp(TensorAssociativeOp.MUL);
     }
 
     @Override
-    public float nanProdFloat() {
+    public Float nanProd() {
         return nanAssociativeOp(TensorAssociativeOp.MUL);
     }
 
     @Override
-    public float maxFloat() {
+    public Float max() {
         return associativeOp(TensorAssociativeOp.MAX);
     }
 
     @Override
-    public float nanMaxFloat() {
+    public Float nanMax() {
         return nanAssociativeOp(TensorAssociativeOp.MAX);
     }
 
     @Override
-    public float minFloat() {
+    public Float min() {
         return associativeOp(TensorAssociativeOp.MIN);
     }
 
     @Override
-    public float nanMinFloat() {
+    public Float nanMin() {
         return nanAssociativeOp(TensorAssociativeOp.MIN);
     }
 
@@ -1224,194 +1514,6 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public Iterator<Float> iterator(Order askOrder) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
-                .map(i -> array[i]).iterator();
-    }
-
-    @Override
-    public FTensorStride iteratorApply(Order askOrder, IntIntBiFunction<Float> apply) {
-        var it = ptrIterator(askOrder);
-        int i = 0;
-        while (it.hasNext()) {
-            int p = it.nextInt();
-            array[p] = apply.applyAsInt(i++, p);
-        }
-        return this;
-    }
-
-    @Override
-    public PointerIterator ptrIterator(Order askOrder) {
-        if (layout.isCOrdered() && askOrder != Order.F) {
-            return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(-1));
-        }
-        if (layout.isFOrdered() && askOrder != Order.C) {
-            return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(0));
-        }
-        return new StridePointerIterator(layout, askOrder);
-    }
-
-    @Override
-    public LoopIterator loopIterator(Order askOrder) {
-        if (layout.rank() == 0) {
-            return new ScalarLoopIterator(layout.offset());
-        }
-        return new StrideLoopIterator(layout, askOrder);
-    }
-
-    @Override
-    public FTensor reshape(Shape askShape, Order askOrder) {
-        if (layout.shape().size() != askShape.size()) {
-            throw new IllegalArgumentException("Incompatible shape size.");
-        }
-
-        Order cmpOrder = askOrder == Order.C ? Order.C : Order.F;
-        var baseLayout = layout.computeFortranLayout(cmpOrder, true);
-        var compact = StrideLayout.ofDense(shape(), layout.offset(), cmpOrder).computeFortranLayout(cmpOrder, true);
-
-        if (baseLayout.equals(compact)) {
-            // we can create a view over tensor
-            int newOffset = layout.offset();
-            int[] newStrides = new int[askShape.rank()];
-            for (int i = 0; i < askShape.rank(); i++) {
-                int[] ione = new int[askShape.rank()];
-                ione[i] = 1;
-                int pos2 = askShape.position(cmpOrder, ione);
-                int[] v1 = layout.shape().index(cmpOrder, pos2);
-                int pointer2 = layout.pointer(v1);
-                newStrides[i] = pointer2 - newOffset;
-            }
-            if (askOrder == Order.C) {
-                IntArrays.reverse(newStrides);
-            }
-        }
-        var it = new StridePointerIterator(layout, askOrder);
-        FTensor copy = mill.ofFloat().zeros(askShape, askOrder);
-        var copyIt = copy.ptrIterator(Order.C);
-        while (it.hasNext()) {
-            copy.ptrSetFloat(copyIt.nextInt(), array[it.nextInt()]);
-        }
-        return copy;
-    }
-
-    @Override
-    public FTensor ravel(Order askOrder) {
-        var compact = layout.computeFortranLayout(askOrder, true);
-        if (compact.shape().rank() == 1) {
-            return mill.ofFloat().stride(compact, array);
-        }
-        return flatten(askOrder);
-    }
-
-    @Override
-    public FTensor flatten(Order askOrder) {
-        askOrder = Order.autoFC(askOrder);
-        var out = new float[layout.size()];
-        int p = 0;
-        var it = loopIterator(askOrder);
-        while (it.hasNext()) {
-            int pointer = it.nextInt();
-            for (int i = pointer; i < pointer + it.bound(); i += it.step()) {
-                out[p++] = array[i];
-            }
-        }
-        return mill.ofFloat().stride(Shape.of(layout.size()), 0, new int[] {1}, out);
-    }
-
-    @Override
-    public FTensor squeeze() {
-        return layout.shape().unitDimCount() == 0 ? this : mill.ofFloat().stride(layout.squeeze(), array);
-    }
-
-    @Override
-    public FTensor squeeze(int axis) {
-        return layout.shape().dim(axis) != 1 ? this : mill.ofFloat().stride(layout.squeeze(axis), array);
-    }
-
-    @Override
-    public FTensor unsqueeze(int axis) {
-        return mill.ofFloat().stride(layout().unsqueeze(axis), array);
-    }
-
-    @Override
-    public FTensor t_() {
-        return mill.ofFloat().stride(layout.revert(), array);
-    }
-
-    @Override
-    public FTensor t(Order askOrder) {
-        return t_().copy(askOrder);
-    }
-
-    @Override
-    public FTensor moveAxis(int src, int dst) {
-        return mill.ofFloat().stride(layout.moveAxis(src, dst), array);
-    }
-
-    @Override
-    public FTensor swapAxis(int src, int dst) {
-        return mill.ofFloat().stride(layout.swapAxis(src, dst), array);
-    }
-
-    @Override
-    public FTensor narrow(int axis, boolean keepdim, int start, int end) {
-        return mill.ofFloat().stride(layout.narrow(axis, keepdim, start, end), array);
-    }
-
-    @Override
-    public FTensor narrowAll(boolean keepdim, int[] starts, int[] ends) {
-        return mill.ofFloat().stride(layout.narrowAll(keepdim, starts, ends), array);
-    }
-
-    @Override
-    public List<FTensor> split(int axis, boolean keepdim, int... indexes) {
-        List<FTensor> result = new ArrayList<>(indexes.length);
-        for (int i = 0; i < indexes.length; i++) {
-            result.add(narrow(axis, keepdim, indexes[i], i < indexes.length - 1 ? indexes[i + 1] : shape().dim(axis)));
-        }
-        return result;
-    }
-
-    @Override
-    public List<FTensor> splitAll(boolean keepdim, int[][] indexes) {
-        if (indexes.length != rank()) {
-            throw new IllegalArgumentException(
-                    "Indexes length of %d is not the same as shape rank %d.".formatted(indexes.length, rank()));
-        }
-        List<FTensor> results = new ArrayList<>();
-        int[] starts = new int[indexes.length];
-        int[] ends = new int[indexes.length];
-        splitAllRec(results, indexes, keepdim, starts, ends, 0);
-        return results;
-    }
-
-    private void splitAllRec(List<FTensor> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
-        if (level == indexes.length) {
-            return;
-        }
-        for (int i = 0; i < indexes[level].length; i++) {
-            starts[level] = indexes[level][i];
-            ends[level] = i < indexes[level].length - 1 ? indexes[level][i + 1] : shape().dim(level);
-            if (level == indexes.length - 1) {
-                results.add(narrowAll(keepdim, starts, ends));
-            } else {
-                splitAllRec(results, indexes, keepdim, starts, ends, level + 1);
-            }
-        }
-    }
-
-    @Override
-    public FTensor repeat(int axis, int repeat, boolean stack) {
-        FTensor[] copies = new FTensor[repeat];
-        Arrays.fill(copies, this);
-        if (stack) {
-            return mill.stack(axis, Arrays.asList(copies));
-        } else {
-            return mill.concat(axis, Arrays.asList(copies));
-        }
-    }
-
-    @Override
     public FTensor copy(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
 
@@ -1449,73 +1551,79 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         }
     }
 
-    private void copyTo(FTensorStride dst, Order askOrder) {
+    @Override
+    public FTensor copyTo(FTensor to, Order askOrder) {
 
-        int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * mill.cpuThreads() * 8);
+        if (to instanceof FTensorStride dst) {
 
-        if (layout.size() > limit) {
+            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * mill.cpuThreads() * 8);
 
-            int[] slices = Arrays.copyOf(layout.dims(), layout.rank());
-            int size = IntArrays.prod(slices, 0, slices.length);
-            while (size > limit) {
-                int axis = IntArrays.argmax(slices, 0, slices.length);
-                size = size * (slices[axis] / 2) / slices[axis];
-                slices[axis] = slices[axis] / 2;
-            }
+            if (layout.size() > limit) {
 
-            int[] lens = new int[slices.length];
-            for (int i = 0; i < lens.length; i++) {
-                lens[i] = Math.ceilDiv(layout().dim(i), slices[i]);
-            }
+                int[] slices = Arrays.copyOf(layout.dims(), layout.rank());
+                int size = IntArrays.prod(slices, 0, slices.length);
+                while (size > limit) {
+                    int axis = IntArrays.argmax(slices, 0, slices.length);
+                    size = size * (slices[axis] / 2) / slices[axis];
+                    slices[axis] = slices[axis] / 2;
+                }
 
-            int[] starts = new int[slices.length];
-            int[] ends = new int[slices.length];
+                int[] lens = new int[slices.length];
+                for (int i = 0; i < lens.length; i++) {
+                    lens[i] = Math.ceilDiv(layout().dim(i), slices[i]);
+                }
 
-            try (ExecutorService executor = Executors.newFixedThreadPool(mill.cpuThreads())) {
-                List<Future<?>> futures = new ArrayList<>();
-                Stack<Integer> stack = new Stack<>();
-                boolean loop = true;
-                while (!stack.isEmpty() || loop) {
-                    int level = stack.size();
-                    if (loop) {
-                        if (level == slices.length) {
-                            int[] ss = IntArrays.copy(starts);
-                            int[] es = IntArrays.copy(ends);
-                            futures.add(executor.submit(() -> {
-                                FTensorStride s = (FTensorStride) this.narrowAll(false, ss, es);
-                                FTensorStride d = (FTensorStride) dst.narrowAll(false, ss, es);
-                                directCopyTo(s, d, askOrder);
-                                return null;
-                            }));
-                            loop = false;
+                int[] starts = new int[slices.length];
+                int[] ends = new int[slices.length];
+
+                try (ExecutorService executor = Executors.newFixedThreadPool(mill.cpuThreads())) {
+                    List<Future<?>> futures = new ArrayList<>();
+                    Stack<Integer> stack = new Stack<>();
+                    boolean loop = true;
+                    while (!stack.isEmpty() || loop) {
+                        int level = stack.size();
+                        if (loop) {
+                            if (level == slices.length) {
+                                int[] ss = IntArrays.copy(starts);
+                                int[] es = IntArrays.copy(ends);
+                                futures.add(executor.submit(() -> {
+                                    FTensorStride s = (FTensorStride) this.narrowAll(false, ss, es);
+                                    FTensorStride d = (FTensorStride) dst.narrowAll(false, ss, es);
+                                    directCopyTo(s, d, askOrder);
+                                    return null;
+                                }));
+                                loop = false;
+                            } else {
+                                stack.push(0);
+                                starts[level] = 0;
+                                ends[level] = Math.min(slices[level], layout.dim(level));
+                            }
                         } else {
-                            stack.push(0);
-                            starts[level] = 0;
-                            ends[level] = Math.min(slices[level], layout.dim(level));
-                        }
-                    } else {
-                        int last = stack.pop();
-                        if (last != lens[level - 1] - 1) {
-                            last++;
-                            stack.push(last);
-                            starts[level - 1] = last * slices[level - 1];
-                            ends[level - 1] = Math.min((last + 1) * slices[level - 1], layout.dim(level - 1));
-                            loop = true;
+                            int last = stack.pop();
+                            if (last != lens[level - 1] - 1) {
+                                last++;
+                                stack.push(last);
+                                starts[level - 1] = last * slices[level - 1];
+                                ends[level - 1] = Math.min((last + 1) * slices[level - 1], layout.dim(level - 1));
+                                loop = true;
+                            }
                         }
                     }
+                    for (var future : futures) {
+                        future.get();
+                    }
+                    executor.shutdown();
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
                 }
-                for (var future : futures) {
-                    future.get();
-                }
-                executor.shutdown();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
+
+                return dst;
             }
 
-            return;
+            directCopyTo(this, dst, askOrder);
+            return dst;
         }
-
-        directCopyTo(this, dst, askOrder);
+        throw new IllegalArgumentException("Not implemented for this tensor type.");
     }
 
     private void directCopyTo(FTensorStride src, FTensorStride dst, Order askOrder) {
@@ -1526,5 +1634,35 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
                 dst.array[it2.nextInt()] = src.array[i];
             }
         }
+    }
+
+    @Override
+    public float[] toArray() {
+        if (shape().rank() != 1) {
+            throw new IllegalArgumentException("Only one dimensional tensors can be transformed into array.");
+        }
+        float[] copy = new float[size()];
+        int pos = 0;
+        for (int offset : loop.offsets) {
+            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
+            int i = offset;
+            if (bound > offset) {
+                for (; i < bound; i += SPEC_LEN * loop.step) {
+                    if (loop.step == 1) {
+                        FloatVector a = FloatVector.fromArray(SPEC, array, i);
+                        a.intoArray(copy, pos);
+                        pos += SPEC_LEN;
+                    } else {
+                        FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                        a.intoArray(copy, pos);
+                        pos += SPEC_LEN;
+                    }
+                }
+            }
+            for (; i < loop.bound + offset; i++) {
+                copy[pos++] = array[i];
+            }
+        }
+        return copy;
     }
 }

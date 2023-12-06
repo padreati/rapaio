@@ -44,7 +44,10 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.DTensor;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorMill;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 
@@ -125,12 +128,12 @@ public class Grid2D implements Serializable {
     private final Var x;
     private final Var y;
 
-    private final DVector values;
+    private final DTensor values;
 
     public Grid2D(Var x, Var y) {
         this.x = x;
         this.y = y;
-        this.values = DVector.zeros(x.size() * y.size());
+        this.values = TensorMill.varray().ofDouble().zeros(Shape.of(x.size(), y.size()));
     }
 
     public Var x() {
@@ -142,11 +145,11 @@ public class Grid2D implements Serializable {
     }
 
     public double value(int i, int j) {
-        return values.get(i * y.size() + j);
+        return values.get(i, j);
     }
 
     public void setValue(int i, int j, double value) {
-        values.set(i * y.size() + j, value);
+        values.set(value, i, j);
     }
 
     /**
@@ -156,7 +159,7 @@ public class Grid2D implements Serializable {
      * @return array of corresponding quantile values
      */
     public double[] quantiles(double... qs) {
-        return Quantiles.of(values.dv(), qs).values();
+        return Quantiles.of(VarDouble.wrap(values.flatten(Order.C).toArray()), qs).values();
     }
 
     /**
@@ -174,11 +177,7 @@ public class Grid2D implements Serializable {
      * @param fill fill value
      */
     public void fillNan(double fill) {
-        for (int i = 0; i < values.size(); i++) {
-            if (Double.isNaN(values.get(i))) {
-                values.set(i, fill);
-            }
-        }
+        values.fillNan(fill);
     }
 
     /**

@@ -106,7 +106,7 @@ public class CopyBenchmark {
                 }
             }
 
-            tc = TensorMill.array().stride(DType.DOUBLE, Shape.of(n, n), Order.C, array);
+            tc = TensorMill.varray().stride(DType.DOUBLE, Shape.of(n, n), Order.C, array);
             tf = tc.copy(Order.F);
         }
     }
@@ -118,13 +118,13 @@ public class CopyBenchmark {
 
     @Benchmark
     public void tensorTransposeOrderC(BenchmarkState bs, Blackhole bh) {
-        DTensor transpose = bs.tc.t();
+        DTensor transpose = bs.tc.transposeNew();
         bh.consume(transpose);
     }
 
     @Benchmark
     public void tensorTransposeOrderF(BenchmarkState bs, Blackhole bh) {
-        DTensor transpose = bs.tf.t();
+        DTensor transpose = bs.tf.transposeNew();
         bh.consume(transpose);
     }
 

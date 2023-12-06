@@ -47,8 +47,8 @@ public class CodeGenApp {
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/mill/array/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/mill/array/FTensorStride.java")
+                .src.set("rapaio/math/tensor/mill/varray/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/varray/FTensorStride.java")
                 .replaces.set(floatReplaces)
         );
     }

@@ -48,7 +48,7 @@ public final class DoubleDenseStrideView extends DoubleDense {
     @Override
     public DTensor seq(Shape shape) {
         var t = zeros(shape);
-        t.iteratorApply(Order.C, (i, p) -> (double) i);
+        t.apply(Order.C, (i, p) -> (double) i);
         return t;
     }
 
@@ -71,7 +71,7 @@ public final class DoubleDenseStrideView extends DoubleDense {
     @Override
     public DTensor random(Shape shape) {
         var t = zeros(shape);
-        t.iteratorApply(Order.C, (pos, ptr) -> random.nextDouble());
+        t.apply(Order.C, (pos, ptr) -> random.nextDouble());
         return t;
     }
 }

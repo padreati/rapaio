@@ -32,20 +32,21 @@
 package rapaio.math.tensor.mill;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import rapaio.math.tensor.TensorMill;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorMill;
 
 public abstract class AbstractTensorMill implements TensorMill {
 
     @Override
-    public <N extends Number, T extends Tensor<N, T>> T concat(int axis, Iterable<T> tensors) {
-        var tensorList = StreamSupport.stream(tensors.spliterator(), false).toList();
+    public <N extends Number, T extends Tensor<N, T>> T concat(int axis, Collection<? extends T> tensors) {
+        var tensorList = tensors.stream().toList();
         validateForConcatenation(axis, tensorList.stream().map(t -> t.shape().dims()).collect(Collectors.toList()));
 
         int newDim = tensorList.stream().mapToInt(tensor -> tensor.layout().shape().dim(axis)).sum();
@@ -70,8 +71,8 @@ public abstract class AbstractTensorMill implements TensorMill {
     }
 
     @Override
-    public <N extends Number, T extends Tensor<N, T>> T stack(int axis, Iterable<T> tensors) {
-        var tensorList = StreamSupport.stream(tensors.spliterator(), false).toList();
+    public <N extends Number, T extends Tensor<N, T>> T stack(int axis, Collection<? extends T> tensors) {
+        var tensorList = tensors.stream().toList();
         for (int i = 1; i < tensorList.size(); i++) {
             if (!tensorList.get(i - 1).shape().equals(tensorList.get(i).shape())) {
                 throw new IllegalArgumentException("Tensors are not valid for stack, they have to have the same dimensions.");

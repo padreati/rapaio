@@ -71,7 +71,7 @@ public final class DoubleDenseStride extends DoubleDense {
         int offset = 10;
         var t = ofType.stride(shape, offset, strides, new double[offset + shape.size()]);
 
-        t.iteratorApply(Order.C, (i, p) -> (double) i);
+        t.apply(Order.C, (i, p) -> (double) i);
 
         return t;
     }

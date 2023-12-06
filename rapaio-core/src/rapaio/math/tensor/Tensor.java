@@ -31,8 +31,11 @@
 
 package rapaio.math.tensor;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
@@ -84,330 +87,6 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
     }
 
     /**
-     * Get value at indexed position. An indexed position is a tuple of rank dimension, with an integer value on each dimension.
-     *
-     * @param indexes indexed position
-     * @return value at index
-     */
-    N get(int... indexes);
-
-    /**
-     * Sets value at indexed position
-     *
-     * @param value   value to be set
-     * @param indexes indexed position
-     */
-    void set(N value, int... indexes);
-
-    /**
-     * Get value at pointer. A pointer is an index value at the memory layout.
-     *
-     * @param ptr data pointer
-     * @return element at data pointer
-     */
-    N ptrGet(int ptr);
-
-    /**
-     * Sets value at given pointer.
-     *
-     * @param ptr   data pointer
-     * @param value element value to be set at data pointer
-     */
-    void ptrSet(int ptr, N value);
-
-    default PointerIterator ptrIterator() {
-        return ptrIterator(Order.S);
-    }
-
-    default T abs() {
-        return abs(Order.defaultOrder());
-    }
-
-    default T abs(Order order) {
-        return copy(order).abs_();
-    }
-
-    T abs_();
-
-    default T neg() {
-        return neg(Order.defaultOrder());
-    }
-
-    default T neg(Order order) {
-        return copy(order).neg_();
-    }
-
-    T neg_();
-
-    default T log() {
-        return log(Order.defaultOrder());
-    }
-
-    default T log(Order order) {
-        return copy(order).log_();
-    }
-
-    T log_();
-
-    default T log1p() {
-        return log1p(Order.defaultOrder());
-    }
-
-    default T log1p(Order order) {
-        return copy(order).log1p_();
-    }
-
-    T log1p_();
-
-    default T exp() {
-        return exp(Order.defaultOrder());
-    }
-
-    default T exp(Order order) {
-        return copy(order).exp_();
-    }
-
-    T exp_();
-
-    default T expm1() {
-        return expm1(Order.defaultOrder());
-    }
-
-    default T expm1(Order order) {
-        return copy(order).expm1_();
-    }
-
-    T expm1_();
-
-    default T sin() {
-        return sin(Order.defaultOrder());
-    }
-
-    default T sin(Order order) {
-        return copy(order).sin_();
-    }
-
-    T sin_();
-
-    default T asin() {
-        return asin(Order.defaultOrder());
-    }
-
-    default T asin(Order order) {
-        return copy(order).asin_();
-    }
-
-    T asin_();
-
-    default T sinh() {
-        return sinh(Order.defaultOrder());
-    }
-
-    default T sinh(Order order) {
-        return copy(order).sinh_();
-    }
-
-    T sinh_();
-
-    default T cos() {
-        return cos(Order.defaultOrder());
-    }
-
-    default T cos(Order order) {
-        return copy(order).cos_();
-    }
-
-    T cos_();
-
-    default T acos() {
-        return acos(Order.defaultOrder());
-    }
-
-    default T acos(Order order) {
-        return copy(order).acos_();
-    }
-
-    T acos_();
-
-    default T cosh() {
-        return cosh(Order.defaultOrder());
-    }
-
-    default T cosh(Order order) {
-        return copy(order).cosh_();
-    }
-
-    T cosh_();
-
-    default T tan() {
-        return tan(Order.defaultOrder());
-    }
-
-    default T tan(Order order) {
-        return copy(order).tan_();
-    }
-
-    T tan_();
-
-    default T atan() {
-        return atan(Order.defaultOrder());
-    }
-
-    default T atan(Order order) {
-        return copy(order).atan_();
-    }
-
-    T atan_();
-
-    default T tanh() {
-        return tanh(Order.defaultOrder());
-    }
-
-    default T tanh(Order order) {
-        return copy(order).tanh_();
-    }
-
-    T tanh_();
-
-    default T add(T tensor) {
-        return add(tensor, Order.defaultOrder());
-    }
-
-    default T add(T tensor, Order order) {
-        return copy(order).add_(tensor);
-    }
-
-    T add_(T tensor);
-
-    default T sub(T tensor) {
-        return sub(tensor, Order.defaultOrder());
-    }
-
-    default T sub(T tensor, Order order) {
-        return copy(order).sub_(tensor);
-    }
-
-    T sub_(T tensor);
-
-    default T mul(T tensor) {
-        return mul(tensor, Order.defaultOrder());
-    }
-
-    default T mul(T tensor, Order order) {
-        return copy(order).mul_(tensor);
-    }
-
-    T mul_(T tensor);
-
-    default T div(T tensor) {
-        return div(tensor, Order.defaultOrder());
-    }
-
-    default T div(T tensor, Order order) {
-        return copy(order).div_(tensor);
-    }
-
-    T div_(T tensor);
-
-    default T add(N value) {
-        return add(value, Order.defaultOrder());
-    }
-
-    default T add(N value, Order order) {
-        return copy(order).add_(value);
-    }
-
-    T add_(N value);
-
-    default T sub(N value) {
-        return sub(value, Order.defaultOrder());
-    }
-
-    default T sub(N value, Order order) {
-        return copy(order).sub_(value);
-    }
-
-    T sub_(N value);
-
-    default T mul(N value) {
-        return mul(value, Order.defaultOrder());
-    }
-
-    default T mul(N value, Order order) {
-        return copy(order).mul_(value);
-    }
-
-    T mul_(N value);
-
-    default T div(N value) {
-        return div(value, Order.defaultOrder());
-    }
-
-    default T div(N value, Order order) {
-        return copy(order).div_(value);
-    }
-
-    T div_(N value);
-
-    N vdot(T tensor);
-
-    N vdot(T tensor, int start, int end);
-
-    T mv(T tensor);
-
-    default T mm(T tensor) {
-        return mm(tensor, Order.defaultOrder());
-    }
-
-    T mm(T tensor, Order askOrder);
-
-    N mean();
-
-    N nanMean();
-
-    N std();
-
-    N nanStd();
-
-    N variance();
-
-    N nanVariance();
-
-    Statistics<N, T> stats();
-
-    N sum();
-
-    N nanSum();
-
-    N prod();
-
-    N nanProd();
-
-    N max();
-
-    N nanMax();
-
-    N min();
-
-    N nanMin();
-
-    int nanCount();
-
-    int zeroCount();
-
-    default Iterator<N> iterator() {
-        return iterator(Order.defaultOrder());
-    }
-
-    Iterator<N> iterator(Order askOrder);
-
-    T iteratorApply(Order order, IntIntBiFunction<N> apply);
-
-    PointerIterator ptrIterator(Order askOrder);
-
-    LoopIterator loopIterator(Order askOrder);
-
-    /**
      * Creates a new tensor with a different shape. If possible, the data will not be copied.
      * If data is copied, the result will be a dense tensor of default order.
      * <p>
@@ -431,6 +110,14 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      */
     T reshape(Shape shape, Order askOrder);
 
+    default T transposeNew() {
+        return transposeNew(Order.defaultOrder());
+    }
+
+    default T transposeNew(Order askOrder) {
+        return copy(askOrder).transpose();
+    }
+
     /**
      * Transpose of a tensor. A transposed tensor is a tensor which reverts axis, the first axis becomes the last,
      * the second axis becomes the second to last and so on. Data storage remain the same, no new storage copy is created.
@@ -438,23 +125,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      *
      * @return a transposed view of the tensor
      */
-    T t_();
-
-    /**
-     * Computes a new tensor which contains transpose of a given tensor. A transposed tensor is a tensor which reverts axis,
-     * the first axis becomes the last, the second axis becomes the second to last and so on.
-     * The new tensor will be stored in the given order.
-     */
-    default T t() {
-        return t(Order.defaultOrder());
-    }
-
-    /**
-     * Computes a new tensor which contains transpose of a given tensor. A transposed tensor is a tensor which reverts axis,
-     * the first axis becomes the last, the second axis becomes the second to last and so on.
-     * The new tensor will be stored in the given order.
-     */
-    T t(Order askOrder);
+    T transpose();
 
     /**
      * Collapses the tensor into one dimension in the order given as parameter. It creates a new tensor copy
@@ -531,7 +202,8 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
 
     /**
      * Splits the tensor into multiple view tensors along a given axis.
-     * The resulting tensors are truncated versions of the original tensor, with the start index being the current index, and the end
+     * The resulting tensors are narrowed versions of the original tensor,
+     * with the start index being the current index, and the end
      * being the next index or the end of the dimension.
      *
      * @param axis    axis to split along
@@ -576,7 +248,437 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
         return splitAll(keepDim, indexes);
     }
 
+    @SuppressWarnings("unchecked")
+    default T stack(int axis, Collection<? extends T> tensors) {
+        List<T> list = new ArrayList<>();
+        list.add((T) this);
+        list.addAll(tensors);
+        return mill().stack(axis, list);
+    }
+
+    @SuppressWarnings("unchecked")
+    default T concat(int axis, Collection<? extends T> tensors) {
+        List<T> list = new ArrayList<>();
+        list.add((T) this);
+        list.addAll(tensors);
+        return mill().concat(axis, list);
+    }
+
     T repeat(int axis, int repeat, boolean stack);
+
+    T take(Order order, int... indexes);
+
+    /**
+     * Get value at indexed position. An indexed position is a tuple of rank
+     * dimension, with an integer value on each dimension.
+     *
+     * @param indexes indexed position
+     * @return value at indexed position
+     */
+    N get(int... indexes);
+
+    /**
+     * Sets value at indexed position.
+     *
+     * @param value   value to be set
+     * @param indexes indexed position
+     */
+    void set(N value, int... indexes);
+
+    /**
+     * Get value at pointer. A pointer is an index value at the memory layout.
+     *
+     * @param ptr data pointer
+     * @return element at data pointer
+     */
+    N ptrGet(int ptr);
+
+    /**
+     * Sets value at given pointer.
+     *
+     * @param ptr   data pointer
+     * @param value element value to be set at data pointer
+     */
+    void ptrSet(int ptr, N value);
+
+    /**
+     * Produces an iterator over the values from this tensor in the
+     * storage order.
+     *
+     * @return value iterator
+     */
+    default Iterator<N> iterator() {
+        return iterator(Order.S);
+    }
+
+    /**
+     * Produces an iterator over values from this tensor in the order
+     * specified by parameter value.
+     *
+     * @param askOrder traversing order
+     * @return value iterator
+     */
+    Iterator<N> iterator(Order askOrder);
+
+    /**
+     * Produces an iterator of data pointer values in the storage order.
+     *
+     * @return data pointer iterator
+     */
+    default PointerIterator ptrIterator() {
+        return ptrIterator(Order.S);
+    }
+
+    /**
+     * Produces an iterator of data pointer values in the order specified
+     * by parameter value.
+     *
+     * @param askOrder traversing order
+     * @return data pointer iterator
+     */
+    PointerIterator ptrIterator(Order askOrder);
+
+    /**
+     * Produces a loop iterator in the storage order. A loop iterator iterates
+     * through a series of objects which contains information which can be used
+     * in a for loop instruction. All loops have the same size and step.
+     * <p>
+     * This kind of iterators are useful for computational reasons. In general
+     * a for loop is faster than an iterator because it avoids the artifacts
+     * produced. On the other side it requires more code on the usage side,
+     * which eventually can be optimized by the compiler.
+     *
+     * @return loop iterator in storage order
+     */
+    default LoopIterator loopIterator() {
+        return loopIterator(Order.S);
+    }
+
+    /**
+     * Produces a loop iterator in the given order. A loop iterator iterates
+     * through a series of objects which contains information which can be used
+     * in a for loop instruction. All loops have the same size and step.
+     * <p>
+     * This kind of iterators are useful for computational reasons. In general
+     * a for loop is faster than an iterator because it avoids the artifacts
+     * produced. On the other side it requires more code on the usage side,
+     * which eventually can be optimized by the compiler.
+     *
+     * @return loop iterator in storage order
+     */
+    LoopIterator loopIterator(Order askOrder);
+
+    default T applyNew(IntIntBiFunction<N> fun) {
+        return applyNew(Order.defaultOrder(), fun);
+    }
+
+    default T applyNew(Order askOrder, IntIntBiFunction<N> fun) {
+        return copy(askOrder).apply(askOrder, fun);
+    }
+
+    /**
+     * Applies the given function over the elements of the tensor. The function has
+     * two parameters: position and data pointer. The position describes
+     * the index element in the order specified by {@code askOrder}. The data pointer values do not
+     * depend on order.
+     *
+     * @param askOrder order used to iterate over positions
+     * @param fun      function which produces values
+     * @return new tensor with applied values
+     */
+    T apply(Order askOrder, IntIntBiFunction<N> fun);
+
+    default T applyNew(Function<N, N> fun) {
+        return applyNew(Order.defaultOrder(), fun);
+    }
+
+    default T applyNew(Order askOrder, Function<N, N> fun) {
+        return copy(askOrder).apply(fun);
+    }
+
+    T apply(Function<N, N> fun);
+
+    T fill(N value);
+
+    T fillNan(N value);
+
+    T clamp(N min, N max);
+
+    default T absNew() {
+        return absNew(Order.defaultOrder());
+    }
+
+    default T absNew(Order order) {
+        return copy(order).abs();
+    }
+
+    T abs();
+
+    default T negateNew() {
+        return negateNew(Order.defaultOrder());
+    }
+
+    default T negateNew(Order order) {
+        return copy(order).negate();
+    }
+
+    T negate();
+
+    default T logNew() {
+        return logNew(Order.defaultOrder());
+    }
+
+    default T logNew(Order order) {
+        return copy(order).log();
+    }
+
+    T log();
+
+    default T log1pNew() {
+        return log1pNew(Order.defaultOrder());
+    }
+
+    default T log1pNew(Order order) {
+        return copy(order).log1p();
+    }
+
+    T log1p();
+
+    default T expNew() {
+        return expNew(Order.defaultOrder());
+    }
+
+    default T expNew(Order order) {
+        return copy(order).exp();
+    }
+
+    T exp();
+
+    default T expm1New() {
+        return expm1New(Order.defaultOrder());
+    }
+
+    default T expm1New(Order order) {
+        return copy(order).expm1();
+    }
+
+    T expm1();
+
+    default T sinNew() {
+        return sinNew(Order.defaultOrder());
+    }
+
+    default T sinNew(Order order) {
+        return copy(order).sin();
+    }
+
+    T sin();
+
+    default T asinNew() {
+        return asinNew(Order.defaultOrder());
+    }
+
+    default T asinNew(Order order) {
+        return copy(order).asin();
+    }
+
+    T asin();
+
+    default T sinhNew() {
+        return sinhNew(Order.defaultOrder());
+    }
+
+    default T sinhNew(Order order) {
+        return copy(order).sinh();
+    }
+
+    T sinh();
+
+    default T cosNew() {
+        return cosNew(Order.defaultOrder());
+    }
+
+    default T cosNew(Order order) {
+        return copy(order).cos();
+    }
+
+    T cos();
+
+    default T acosNew() {
+        return acosNew(Order.defaultOrder());
+    }
+
+    default T acosNew(Order order) {
+        return copy(order).acos();
+    }
+
+    T acos();
+
+    default T coshNew() {
+        return coshNew(Order.defaultOrder());
+    }
+
+    default T coshNew(Order order) {
+        return copy(order).cosh();
+    }
+
+    T cosh();
+
+    default T tanNew() {
+        return tanNew(Order.defaultOrder());
+    }
+
+    default T tanNew(Order order) {
+        return copy(order).tan();
+    }
+
+    T tan();
+
+    default T atanNew() {
+        return atanNew(Order.defaultOrder());
+    }
+
+    default T atanNew(Order order) {
+        return copy(order).atan();
+    }
+
+    T atan();
+
+    default T tanhNew() {
+        return tanhNew(Order.defaultOrder());
+    }
+
+    default T tanhNew(Order order) {
+        return copy(order).tanh();
+    }
+
+    T tanh();
+
+    default T addNew(T tensor) {
+        return addNew(tensor, Order.defaultOrder());
+    }
+
+    default T addNew(T tensor, Order order) {
+        return copy(order).add(tensor);
+    }
+
+    T add(T tensor);
+
+    default T subNew(T tensor) {
+        return subNew(tensor, Order.defaultOrder());
+    }
+
+    default T subNew(T tensor, Order order) {
+        return copy(order).sub(tensor);
+    }
+
+    T sub(T tensor);
+
+    default T mulNew(T tensor) {
+        return mulNew(tensor, Order.defaultOrder());
+    }
+
+    default T mulNew(T tensor, Order order) {
+        return copy(order).mul(tensor);
+    }
+
+    T mul(T tensor);
+
+    default T divNew(T tensor) {
+        return divNew(tensor, Order.defaultOrder());
+    }
+
+    default T divNew(T tensor, Order order) {
+        return copy(order).div(tensor);
+    }
+
+    T div(T tensor);
+
+    default T addNew(N value) {
+        return addNew(value, Order.defaultOrder());
+    }
+
+    default T addNew(N value, Order order) {
+        return copy(order).add(value);
+    }
+
+    T add(N value);
+
+    default T subNew(N value) {
+        return subNew(value, Order.defaultOrder());
+    }
+
+    default T subNew(N value, Order order) {
+        return copy(order).sub(value);
+    }
+
+    T sub(N value);
+
+    default T mulNew(N value) {
+        return mulNew(value, Order.defaultOrder());
+    }
+
+    default T mulNew(N value, Order order) {
+        return copy(order).mul(value);
+    }
+
+    T mul(N value);
+
+    default T divNew(N value) {
+        return divNew(value, Order.defaultOrder());
+    }
+
+    default T divNew(N value, Order order) {
+        return copy(order).div(value);
+    }
+
+    T div(N value);
+
+    N vdot(T tensor);
+
+    N vdot(T tensor, int start, int end);
+
+    T mv(T tensor);
+
+    default T mm(T tensor) {
+        return mm(tensor, Order.defaultOrder());
+    }
+
+    T mm(T tensor, Order askOrder);
+
+    N mean();
+
+    N nanMean();
+
+    N std();
+
+    N nanStd();
+
+    N variance();
+
+    N nanVariance();
+
+    Statistics<N, T> stats();
+
+    N sum();
+
+    N nanSum();
+
+    N prod();
+
+    N nanProd();
+
+    N max();
+
+    N nanMax();
+
+    N min();
+
+    N nanMin();
+
+    int nanCount();
+
+    int zeroCount();
 
     /**
      * Creates a copy of the original tensor with the given order. Only {@link Order#C} or {@link Order#F} are allowed.
@@ -598,6 +700,12 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @return new copy of the tensor
      */
     T copy(Order askOrder);
+
+    default T copyTo(T dst) {
+        return copyTo(dst, Order.S);
+    }
+
+    T copyTo(T dst, Order askOrder);
 
     default boolean deepEquals(Object t) {
         return deepEquals(t, 1e-100);

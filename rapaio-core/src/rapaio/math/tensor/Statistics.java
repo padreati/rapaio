@@ -99,7 +99,7 @@ public final class Statistics<N extends Number, T extends Tensor<N, T>> {
         return dType.castValue(Math.sqrt(sampleVariance().doubleValue()));
     }
 
-    public N sampleNanStd() {
+    public N nanSampleStd() {
         return dType.castValue(Math.sqrt(nanSampleVariance().doubleValue()));
     }
 }

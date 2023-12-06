@@ -46,7 +46,7 @@ import rapaio.math.tensor.TensorMill;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.mill.array.ArrayTensorMill;
+import rapaio.math.tensor.mill.varray.ArrayTensorMill;
 
 public class TensorMillTest {
 
@@ -191,7 +191,7 @@ public class TensorMillTest {
             }
         }
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> tensorMill.stack(0, List.of(t1, t2.t_())));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> tensorMill.stack(0, List.of(t1, t2.transpose())));
         assertEquals("Tensors are not valid for stack, they have to have the same dimensions.", ex.getMessage());
     }
 }

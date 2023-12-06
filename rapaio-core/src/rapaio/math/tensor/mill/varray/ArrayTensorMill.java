@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.mill.array;
+package rapaio.math.tensor.mill.varray;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -106,12 +106,12 @@ public class ArrayTensorMill extends AbstractTensorMill {
 
         @Override
         public DTensorStride seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).iteratorApply(Order.C, (i, p) -> (double) i);
+            return zeros(shape, Order.autoFC(order)).apply(Order.C, (i, p) -> (double) i);
         }
 
         @Override
         public DTensorStride random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).iteratorApply(order, (i, p) -> random.nextDouble());
+            return zeros(shape, Order.autoFC(order)).apply(order, (i, p) -> random.nextDouble());
         }
 
         @Override
@@ -165,12 +165,12 @@ public class ArrayTensorMill extends AbstractTensorMill {
 
         @Override
         public FTensorStride seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).iteratorApply(Order.C, (i, p) -> (float) i);
+            return zeros(shape, Order.autoFC(order)).apply(Order.C, (i, p) -> (float) i);
         }
 
         @Override
         public FTensorStride random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).iteratorApply(order, (i, p) -> random.nextFloat());
+            return zeros(shape, Order.autoFC(order)).apply(order, (i, p) -> random.nextFloat());
         }
 
         @Override

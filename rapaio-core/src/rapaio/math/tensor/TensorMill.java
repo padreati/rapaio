@@ -31,18 +31,19 @@
 
 package rapaio.math.tensor;
 
+import java.util.Collection;
 import java.util.Random;
 
 import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.math.tensor.mill.array.ArrayTensorMill;
+import rapaio.math.tensor.mill.varray.ArrayTensorMill;
 
 public interface TensorMill {
 
-    static TensorMill array() {
+    static TensorMill varray() {
         return new ArrayTensorMill();
     }
 
-    static TensorMill array(int cpuThreads) {
+    static TensorMill varray(int cpuThreads) {
         return new ArrayTensorMill(cpuThreads);
     }
 
@@ -188,7 +189,7 @@ public interface TensorMill {
      * @param tensors tensors to concatenate
      * @return new tensor with concatenated data
      */
-    <N extends Number, T extends Tensor<N, T>> T concat(int axis, Iterable<T> tensors);
+    <N extends Number, T extends Tensor<N, T>> T concat(int axis, Collection<? extends T> tensors);
 
     /**
      * Concatenates multiple tensors along a new axis.
@@ -199,5 +200,5 @@ public interface TensorMill {
      * @param tensors tensors to concatenate
      * @return new tensor with concatenated data
      */
-    <N extends Number, T extends Tensor<N, T>> T stack(int axis, Iterable<T> tensors);
+    <N extends Number, T extends Tensor<N, T>> T stack(int axis, Collection<? extends T> tensors);
 }

@@ -34,10 +34,23 @@ package rapaio.math.tensor;
 public interface FTensor extends Tensor<Float, FTensor> {
 
     @Override
+    default DType<Float, FTensor> dtype() {
+        return DType.FLOAT;
+    }
+
+    @Override
     default Float get(int... indexes) {
         return getFloat(indexes);
     }
 
+    /**
+     * Gets unboxed value at indexed position. An indexed position is a tuple with
+     * an index value for each dimension. Index values must be between 0 and
+     * dimension minus one.
+     *
+     * @param indexes indexed position
+     * @return unboxed float value
+     */
     float getFloat(int... indexes);
 
     @Override
@@ -45,6 +58,12 @@ public interface FTensor extends Tensor<Float, FTensor> {
         setFloat(value, indexes);
     }
 
+    /**
+     * Sets unboxed value at indexed position.
+     *
+     * @param value unboxed value
+     * @param indexes indexed position
+     */
     void setFloat(float value, int... indexes);
 
     @Override
@@ -52,6 +71,13 @@ public interface FTensor extends Tensor<Float, FTensor> {
         return ptrGetFloat(ptr);
     }
 
+    /**
+     * Get value at the given data pointer. A data pointer is a position
+     * in the internal memory layout.
+     *
+     * @param ptr data pointer
+     * @return unboxed value
+     */
     float ptrGetFloat(int ptr);
 
     @Override
@@ -59,134 +85,14 @@ public interface FTensor extends Tensor<Float, FTensor> {
         ptrSetFloat(ptr, value);
     }
 
+    /**
+     * Sets value at given data pointer. A data pointer  is a position
+     * in the internal memory layout.
+     *
+     * @param ptr data pointer
+     * @param value unboxed value
+     */
     void ptrSetFloat(int ptr, float value);
 
-    @Override
-    default FTensor add_(Float value) {
-        return add_(value.floatValue());
-    }
-
-    FTensor add_(float value);
-
-    @Override
-    default FTensor sub_(Float value) {
-        return sub_(value.floatValue());
-    }
-
-    FTensor sub_(float value);
-
-    @Override
-    default FTensor mul_(Float value) {
-        return mul_(value.floatValue());
-    }
-
-    FTensor mul_(float value);
-
-    @Override
-    default FTensor div_(Float value) {
-        return div_(value.floatValue());
-    }
-
-    FTensor div_(float value);
-
-    default Float vdot(FTensor tensor) {
-        return vdotFloat(tensor);
-    }
-
-    float vdotFloat(FTensor tensor);
-
-    default Float vdot(FTensor tensor, int start, int end) {
-        return vdotFloat(tensor, start, end);
-    }
-
-    float vdotFloat(FTensor tensor, int start, int end);
-
-    default Float mean() {
-        return meanFloat();
-    }
-
-    float meanFloat();
-
-    default Float nanMean() {
-        return nanMeanFloat();
-    }
-
-    float nanMeanFloat();
-
-    default Float std() {
-        return stdFloat();
-    }
-
-    float stdFloat();
-
-    default Float nanStd() {
-        return nanStdFloat();
-    }
-
-    float nanStdFloat();
-
-    default Float variance() {
-        return varianceFloat();
-    }
-
-    float varianceFloat();
-
-    default Float nanVariance() {
-        return nanVarianceFloat();
-    }
-
-    float nanVarianceFloat();
-
-    default Float sum() {
-        return sumFloat();
-    }
-
-    float sumFloat();
-
-    default Float nanSum() {
-        return nanSumFloat();
-    }
-
-    float nanSumFloat();
-
-    default Float prod() {
-        return prodFloat();
-    }
-
-    float prodFloat();
-
-    default Float nanProd() {
-        return nanProdFloat();
-    }
-
-    float nanProdFloat();
-
-    default Float max() {
-        return maxFloat();
-    }
-
-    float maxFloat();
-
-    default Float nanMax() {
-        return nanMaxFloat();
-    }
-
-    float nanMaxFloat();
-
-    default Float min() {
-        return minFloat();
-    }
-
-    float minFloat();
-
-    default Float nanMin() {
-        return nanMinFloat();
-    }
-
-    float nanMinFloat();
-
-    int nanCount();
-
-    int zeroCount();
-
+    float[] toArray();
 }
