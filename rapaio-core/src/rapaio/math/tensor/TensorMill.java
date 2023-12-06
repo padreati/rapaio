@@ -85,6 +85,12 @@ public interface TensorMill {
             return stride(StrideLayout.ofDense(shape, 0, order), array);
         }
 
+        default T stride(StrideLayout layout, int[] array) {
+            return stride(layout.shape(), layout.offset(), layout.strides(), array);
+        }
+
+        T stride(Shape shape, int offset, int[] strides, int[] array);
+
         default T stride(StrideLayout layout, float[] array) {
             return stride(layout.shape(), layout.offset(), layout.strides(), array);
         }
@@ -170,6 +176,8 @@ public interface TensorMill {
 
     OfType<Float, FTensor> ofFloat();
 
+    OfType<Integer, ITensor> ofInt();
+
     @SuppressWarnings("unchecked")
     default <N extends Number, T extends Tensor<N, T>> OfType<N, T> ofType(DType<N, T> dType) {
         if (dType.equals(DType.FLOAT)) {
@@ -177,6 +185,9 @@ public interface TensorMill {
         }
         if (dType.equals(DType.DOUBLE)) {
             return (OfType<N, T>) ofDouble();
+        }
+        if(dType.equals(DType.INTEGER)) {
+            return (OfType<N, T>) ofInt();
         }
         return null;
     }

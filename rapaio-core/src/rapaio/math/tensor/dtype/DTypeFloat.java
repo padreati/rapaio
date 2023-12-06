@@ -68,4 +68,9 @@ public final class DTypeFloat extends DType<Float, FTensor> {
     public <M extends Number> Function<Float, M> castFunction(DType<M, ?> dType) {
         return dType::castValue;
     }
+
+    @Override
+    public boolean isNaN(Float value) {
+        return Float.isNaN(value);
+    }
 }

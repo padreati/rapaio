@@ -52,11 +52,11 @@ import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
-import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
-import rapaio.math.tensor.DTensor;
+import rapaio.math.tensor.ITensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Statistics;
@@ -78,27 +78,27 @@ import rapaio.util.NotImplementedException;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
-public final class DTensorStride extends AbstractTensor<Double, DTensor> implements DTensor {
+public final class ITensorStride extends AbstractTensor<Integer, ITensor> implements ITensor {
 
-    private static final VectorSpecies<Double> SPEC = DoubleVector.SPECIES_PREFERRED;
+    private static final VectorSpecies<Integer> SPEC = IntVector.SPECIES_PREFERRED;
     private static final int SPEC_LEN = SPEC.length();
 
     private final StrideLayout layout;
     private final ArrayTensorMill mill;
-    private final double[] array;
+    private final int[] array;
 
     private final StrideLoopDescriptor loop;
     private final int[] loopIndexes;
 
-    public DTensorStride(ArrayTensorMill mill, Shape shape, int offset, int[] strides, double[] array) {
+    public ITensorStride(ArrayTensorMill mill, Shape shape, int offset, int[] strides, int[] array) {
         this(mill, StrideLayout.of(shape, offset, strides), array);
     }
 
-    public DTensorStride(ArrayTensorMill mill, Shape shape, int offset, Order order, double[] array) {
+    public ITensorStride(ArrayTensorMill mill, Shape shape, int offset, Order order, int[] array) {
         this(mill, StrideLayout.ofDense(shape, offset, order), array);
     }
 
-    public DTensorStride(ArrayTensorMill mill, StrideLayout layout, double[] array) {
+    public ITensorStride(ArrayTensorMill mill, StrideLayout layout, int[] array) {
         this.layout = layout;
         this.mill = mill;
         this.array = array;
@@ -125,7 +125,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor reshape(Shape askShape, Order askOrder) {
+    public ITensor reshape(Shape askShape, Order askOrder) {
         if (layout.shape().size() != askShape.size()) {
             throw new IllegalArgumentException("Incompatible shape size.");
         }
@@ -151,32 +151,32 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
             }
         }
         var it = new StridePointerIterator(layout, askOrder);
-        DTensor copy = mill.ofDouble().zeros(askShape, askOrder);
+        ITensor copy = mill.ofInt().zeros(askShape, askOrder);
         var copyIt = copy.ptrIterator(Order.C);
         while (it.hasNext()) {
-            copy.ptrSetDouble(copyIt.nextInt(), array[it.nextInt()]);
+            copy.ptrSetInteger(copyIt.nextInt(), array[it.nextInt()]);
         }
         return copy;
     }
 
     @Override
-    public DTensor transpose() {
-        return mill.ofDouble().stride(layout.revert(), array);
+    public ITensor transpose() {
+        return mill.ofInt().stride(layout.revert(), array);
     }
 
     @Override
-    public DTensor ravel(Order askOrder) {
+    public ITensor ravel(Order askOrder) {
         var compact = layout.computeFortranLayout(askOrder, true);
         if (compact.shape().rank() == 1) {
-            return mill.ofDouble().stride(compact, array);
+            return mill.ofInt().stride(compact, array);
         }
         return flatten(askOrder);
     }
 
     @Override
-    public DTensor flatten(Order askOrder) {
+    public ITensor flatten(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
-        var out = new double[layout.size()];
+        var out = new int[layout.size()];
         int p = 0;
         var it = loopIterator(askOrder);
         while (it.hasNext()) {
@@ -185,47 +185,47 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
                 out[p++] = array[i];
             }
         }
-        return mill.ofDouble().stride(Shape.of(layout.size()), 0, new int[] {1}, out);
+        return mill.ofInt().stride(Shape.of(layout.size()), 0, new int[] {1}, out);
     }
 
     @Override
-    public DTensor squeeze() {
-        return layout.shape().unitDimCount() == 0 ? this : mill.ofDouble().stride(layout.squeeze(), array);
+    public ITensor squeeze() {
+        return layout.shape().unitDimCount() == 0 ? this : mill.ofInt().stride(layout.squeeze(), array);
     }
 
     @Override
-    public DTensor squeeze(int axis) {
-        return layout.shape().dim(axis) != 1 ? this : mill.ofDouble().stride(layout.squeeze(axis), array);
+    public ITensor squeeze(int axis) {
+        return layout.shape().dim(axis) != 1 ? this : mill.ofInt().stride(layout.squeeze(axis), array);
     }
 
     @Override
-    public DTensor unsqueeze(int axis) {
-        return mill.ofDouble().stride(layout().unsqueeze(axis), array);
+    public ITensor unsqueeze(int axis) {
+        return mill.ofInt().stride(layout().unsqueeze(axis), array);
     }
 
     @Override
-    public DTensor moveAxis(int src, int dst) {
-        return mill.ofDouble().stride(layout.moveAxis(src, dst), array);
+    public ITensor moveAxis(int src, int dst) {
+        return mill.ofInt().stride(layout.moveAxis(src, dst), array);
     }
 
     @Override
-    public DTensor swapAxis(int src, int dst) {
-        return mill.ofDouble().stride(layout.swapAxis(src, dst), array);
+    public ITensor swapAxis(int src, int dst) {
+        return mill.ofInt().stride(layout.swapAxis(src, dst), array);
     }
 
     @Override
-    public DTensor narrow(int axis, boolean keepdim, int start, int end) {
-        return mill.ofDouble().stride(layout.narrow(axis, keepdim, start, end), array);
+    public ITensor narrow(int axis, boolean keepdim, int start, int end) {
+        return mill.ofInt().stride(layout.narrow(axis, keepdim, start, end), array);
     }
 
     @Override
-    public DTensor narrowAll(boolean keepdim, int[] starts, int[] ends) {
-        return mill.ofDouble().stride(layout.narrowAll(keepdim, starts, ends), array);
+    public ITensor narrowAll(boolean keepdim, int[] starts, int[] ends) {
+        return mill.ofInt().stride(layout.narrowAll(keepdim, starts, ends), array);
     }
 
     @Override
-    public List<DTensor> split(int axis, boolean keepdim, int... indexes) {
-        List<DTensor> result = new ArrayList<>(indexes.length);
+    public List<ITensor> split(int axis, boolean keepdim, int... indexes) {
+        List<ITensor> result = new ArrayList<>(indexes.length);
         for (int i = 0; i < indexes.length; i++) {
             result.add(narrow(axis, keepdim, indexes[i], i < indexes.length - 1 ? indexes[i + 1] : shape().dim(axis)));
         }
@@ -233,19 +233,19 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public List<DTensor> splitAll(boolean keepdim, int[][] indexes) {
+    public List<ITensor> splitAll(boolean keepdim, int[][] indexes) {
         if (indexes.length != rank()) {
             throw new IllegalArgumentException(
                     "Indexes length of %d is not the same as shape rank %d.".formatted(indexes.length, rank()));
         }
-        List<DTensor> results = new ArrayList<>();
+        List<ITensor> results = new ArrayList<>();
         int[] starts = new int[indexes.length];
         int[] ends = new int[indexes.length];
         splitAllRec(results, indexes, keepdim, starts, ends, 0);
         return results;
     }
 
-    private void splitAllRec(List<DTensor> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
+    private void splitAllRec(List<ITensor> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
         if (level == indexes.length) {
             return;
         }
@@ -261,8 +261,8 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor repeat(int axis, int repeat, boolean stack) {
-        DTensor[] copies = new DTensor[repeat];
+    public ITensor repeat(int axis, int repeat, boolean stack) {
+        ITensor[] copies = new ITensor[repeat];
         Arrays.fill(copies, this);
         if (stack) {
             return mill.stack(axis, Arrays.asList(copies));
@@ -272,37 +272,37 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor tile(int[] repeats) {
+    public ITensor tile(int[] repeats) {
         throw new NotImplementedException();
     }
 
     @Override
-    public DTensor permute(int[] dims) {
-        return mill.ofDouble().stride(layout().permute(dims), array);
+    public ITensor permute(int[] dims) {
+        return mill.ofInt().stride(layout().permute(dims), array);
     }
 
     @Override
-    public double getDouble(int... indexes) {
+    public int getInt(int... indexes) {
         return array[layout.pointer(indexes)];
     }
 
     @Override
-    public void setDouble(double value, int... indexes) {
+    public void setInt(int value, int... indexes) {
         array[layout.pointer(indexes)] = value;
     }
 
     @Override
-    public double ptrGetDouble(int ptr) {
+    public int ptrGetInteger(int ptr) {
         return array[ptr];
     }
 
     @Override
-    public void ptrSetDouble(int ptr, double value) {
+    public void ptrSetInteger(int ptr, int value) {
         array[ptr] = value;
     }
 
     @Override
-    public Iterator<Double> iterator(Order askOrder) {
+    public Iterator<Integer> iterator(Order askOrder) {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
                 .map(i -> array[i]).iterator();
     }
@@ -327,7 +327,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensorStride apply(Order askOrder, IntIntBiFunction<Double> apply) {
+    public ITensorStride apply(Order askOrder, IntIntBiFunction<Integer> apply) {
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
@@ -338,7 +338,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor apply(Function<Double, Double> fun) {
+    public ITensor apply(Function<Integer, Integer> fun) {
         var ptrIter = ptrIterator(Order.S);
         while (ptrIter.hasNext()) {
             int ptr = ptrIter.nextInt();
@@ -348,12 +348,12 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor fill(Double value) {
+    public ITensor fill(Integer value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;
             if (bound > offset) {
-                DoubleVector fill = DoubleVector.broadcast(SPEC, value);
+                IntVector fill = IntVector.broadcast(SPEC, value);
                 for (; i < bound; i += SPEC_LEN * loop.step) {
                     if (loop.step == 1) {
                         fill.intoArray(array, i);
@@ -370,20 +370,20 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor fillNan(Double value) {
+    public ITensor fillNan(Integer value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;
             if (bound > offset) {
-                DoubleVector fill = DoubleVector.broadcast(SPEC, value);
+                IntVector fill = IntVector.broadcast(SPEC, value);
                 for (; i < bound; i += SPEC_LEN * loop.step) {
                     if (loop.step == 1) {
-                        DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
-                        VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
+                        IntVector a = IntVector.fromArray(SPEC, array, i);
+                        VectorMask<Integer> m = a.test(VectorOperators.IS_NAN);
                         fill.intoArray(array, i, m);
                     } else {
-                        DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                        VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
+                        IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                        VectorMask<Integer> m = a.test(VectorOperators.IS_NAN);
                         fill.intoArray(array, i, loopIndexes, 0, m);
                     }
                 }
@@ -398,25 +398,25 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor clamp(Double min, Double max) {
+    public ITensor clamp(Integer min, Integer max) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;
             if (bound > offset) {
                 for (; i < bound; i += SPEC_LEN * loop.step) {
-                    DoubleVector a = loop.step == 1 ?
-                            DoubleVector.fromArray(SPEC, array, i) :
-                            DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                    IntVector a = loop.step == 1 ?
+                            IntVector.fromArray(SPEC, array, i) :
+                            IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
                     boolean any = false;
                     if (!dtype().isNaN(min)) {
-                        VectorMask<Double> m = a.compare(VectorOperators.LT, min);
+                        VectorMask<Integer> m = a.compare(VectorOperators.LT, min);
                         if (m.anyTrue()) {
                             a = a.blend(min, m);
                             any = true;
                         }
                     }
                     if (!dtype().isNaN(max)) {
-                        VectorMask<Double> m = a.compare(VectorOperators.GT, max);
+                        VectorMask<Integer> m = a.compare(VectorOperators.GT, max);
                         if (m.anyTrue()) {
                             a = a.blend(max, m);
                             any = true;
@@ -444,7 +444,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor take(Order order, int... indexes) {
+    public ITensor take(Order order, int... indexes) {
         throw new NotImplementedException();
     }
 
@@ -453,12 +453,12 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
             int bound = SPEC.loopBound(loop.size) + off;
             int i = off;
             for (; i < bound; i += SPEC_LEN) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
+                IntVector a = IntVector.fromArray(SPEC, array, i);
                 a = a.lanewise(op.vop());
                 a.intoArray(array, i);
             }
             for (; i < loop.bound + off; i++) {
-                array[i] = op.applyDouble(array[i]);
+                array[i] = op.applyInt(array[i]);
             }
         }
     }
@@ -468,12 +468,12 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
             int bound = SPEC.loopBound(loop.size) * loop.step + off;
             int i = off;
             for (; i < bound; i += SPEC_LEN * loop.step) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
                 a = a.lanewise(op.vop());
                 a.intoArray(array, i, loopIndexes, 0);
             }
             for (; i < loop.bound + off; i += loop.step) {
-                array[i] = op.applyDouble(array[i]);
+                array[i] = op.applyInt(array[i]);
             }
         }
     }
@@ -490,96 +490,96 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensorStride abs() {
+    public ITensorStride abs() {
         unaryOp(TensorUnaryOp.ABS);
         return this;
     }
 
     @Override
-    public DTensorStride negate() {
+    public ITensorStride negate() {
         unaryOp(TensorUnaryOp.NEG);
         return this;
     }
 
     @Override
-    public DTensorStride log() {
+    public ITensorStride log() {
         unaryOp(TensorUnaryOp.LOG);
         return this;
     }
 
     @Override
-    public DTensorStride log1p() {
+    public ITensorStride log1p() {
         unaryOp(TensorUnaryOp.LOG1P);
         return this;
     }
 
     @Override
-    public DTensorStride exp() {
+    public ITensorStride exp() {
         unaryOp(TensorUnaryOp.EXP);
         return this;
     }
 
     @Override
-    public DTensorStride expm1() {
+    public ITensorStride expm1() {
         unaryOp(TensorUnaryOp.EXPM1);
         return this;
     }
 
     @Override
-    public DTensorStride sin() {
+    public ITensorStride sin() {
         unaryOp(TensorUnaryOp.SIN);
         return this;
     }
 
     @Override
-    public DTensorStride asin() {
+    public ITensorStride asin() {
         unaryOp(TensorUnaryOp.ASIN);
         return this;
     }
 
     @Override
-    public DTensorStride sinh() {
+    public ITensorStride sinh() {
         unaryOp(TensorUnaryOp.SINH);
         return this;
     }
 
     @Override
-    public DTensorStride cos() {
+    public ITensorStride cos() {
         unaryOp(TensorUnaryOp.COS);
         return this;
     }
 
     @Override
-    public DTensorStride acos() {
+    public ITensorStride acos() {
         unaryOp(TensorUnaryOp.ACOS);
         return this;
     }
 
     @Override
-    public DTensorStride cosh() {
+    public ITensorStride cosh() {
         unaryOp(TensorUnaryOp.COSH);
         return this;
     }
 
     @Override
-    public DTensorStride tan() {
+    public ITensorStride tan() {
         unaryOp(TensorUnaryOp.TAN);
         return this;
     }
 
     @Override
-    public DTensorStride atan() {
+    public ITensorStride atan() {
         unaryOp(TensorUnaryOp.ATAN);
         return this;
     }
 
     @Override
-    public DTensorStride tanh() {
+    public ITensorStride tanh() {
         unaryOp(TensorUnaryOp.TANH);
         return this;
     }
 
-    void binaryVectorOp(TensorBinaryOp op, DTensor b) {
+    void binaryVectorOp(TensorBinaryOp op, ITensor b) {
         var order = layout.storageFastOrder();
         order = order == Order.C || order == Order.F ? order : Order.defaultOrder();
 
@@ -587,69 +587,69 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         var refIt = b.ptrIterator(order);
         while (it.hasNext()) {
             int next = it.nextInt();
-            array[next] = op.applyDouble(array[next], b.ptrGet(refIt.nextInt()));
+            array[next] = op.applyInt(array[next], b.ptrGet(refIt.nextInt()));
         }
     }
 
     @Override
-    public DTensorStride add(DTensor tensor) {
+    public ITensorStride add(ITensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.ADD, tensor);
         return this;
     }
 
     @Override
-    public DTensorStride sub(DTensor tensor) {
+    public ITensorStride sub(ITensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.SUB, tensor);
         return this;
     }
 
     @Override
-    public DTensorStride mul(DTensor tensor) {
+    public ITensorStride mul(ITensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.MUL, tensor);
         return this;
     }
 
     @Override
-    public DTensorStride div(DTensor tensor) {
+    public ITensorStride div(ITensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.DIV, tensor);
         return this;
     }
 
-    void binaryScalarOpUnit(TensorBinaryOp op, double value) {
+    void binaryScalarOpUnit(TensorBinaryOp op, int value) {
         for (int off : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) + off;
             int i = off;
             for (; i < bound; i += SPEC_LEN) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
+                IntVector a = IntVector.fromArray(SPEC, array, i);
                 a = a.lanewise(op.vop(), value);
                 a.intoArray(array, i);
             }
             for (; i < loop.bound + off; i++) {
-                array[i] = op.applyDouble(array[i], value);
+                array[i] = op.applyInt(array[i], value);
             }
         }
     }
 
-    void binaryScalarOpStep(TensorBinaryOp op, double value) {
+    void binaryScalarOpStep(TensorBinaryOp op, int value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;
             for (; i < bound; i += SPEC_LEN * loop.step) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
                 a = a.lanewise(op.vop(), value);
                 a.intoArray(array, i, loopIndexes, 0);
             }
             for (; i < loop.bound + offset; i += loop.step) {
-                array[i] = op.applyDouble(array[i], value);
+                array[i] = op.applyInt(array[i], value);
             }
         }
     }
 
-    void binaryScalarOp(TensorBinaryOp op, double value) {
+    void binaryScalarOp(TensorBinaryOp op, int value) {
         if (loop.step == 1) {
             binaryScalarOpUnit(op, value);
         } else {
@@ -658,36 +658,36 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensorStride add(Double value) {
+    public ITensorStride add(Integer value) {
         binaryScalarOp(TensorBinaryOp.ADD, value);
         return this;
     }
 
     @Override
-    public DTensorStride sub(Double value) {
+    public ITensorStride sub(Integer value) {
         binaryScalarOp(TensorBinaryOp.SUB, value);
         return this;
     }
 
     @Override
-    public DTensorStride mul(Double value) {
+    public ITensorStride mul(Integer value) {
         binaryScalarOp(TensorBinaryOp.MUL, value);
         return this;
     }
 
     @Override
-    public DTensorStride div(Double value) {
+    public ITensorStride div(Integer value) {
         binaryScalarOp(TensorBinaryOp.DIV, value);
         return this;
     }
 
     @Override
-    public Double vdot(DTensor tensor) {
+    public Integer vdot(ITensor tensor) {
         return vdot(tensor, 0, shape().dim(0));
     }
 
     @Override
-    public Double vdot(DTensor tensor, int start, int end) {
+    public Integer vdot(ITensor tensor, int start, int end) {
         if (shape().rank() != 1 || tensor.shape().rank() != 1 || shape().dim(0) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(
                     "Operands are not valid for vector dot product (v = %s, v = %s)."
@@ -696,26 +696,26 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         if (start >= end || start < 0 || end > tensor.shape().dim(0)) {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
-        DTensorStride dts = (DTensorStride) tensor;
+        ITensorStride dts = (ITensorStride) tensor;
         int step1 = layout.stride(0);
         int step2 = dts.layout.stride(0);
         int start1 = layout.offset() + start * step1;
         int start2 = dts.layout.offset() + start * step2;
         int i = 0;
         int bound = SPEC.loopBound(end - start);
-        DoubleVector vsum = DoubleVector.zero(SPEC);
+        IntVector vsum = IntVector.zero(SPEC);
         for (; i < bound; i += SPEC_LEN) {
-            DoubleVector a = loop.step == 1 ?
-                    DoubleVector.fromArray(SPEC, array, start1) :
-                    DoubleVector.fromArray(SPEC, array, start1, loopIndexes, 0);
-            DoubleVector b = dts.loop.step == 1 ?
-                    DoubleVector.fromArray(SPEC, dts.array, start2) :
-                    DoubleVector.fromArray(SPEC, dts.array, start2, dts.loopIndexes, 0);
+            IntVector a = loop.step == 1 ?
+                    IntVector.fromArray(SPEC, array, start1) :
+                    IntVector.fromArray(SPEC, array, start1, loopIndexes, 0);
+            IntVector b = dts.loop.step == 1 ?
+                    IntVector.fromArray(SPEC, dts.array, start2) :
+                    IntVector.fromArray(SPEC, dts.array, start2, dts.loopIndexes, 0);
             vsum = vsum.add(a.mul(b));
             start1 += SPEC_LEN * step1;
             start2 += SPEC_LEN * step2;
         }
-        double sum = vsum.reduceLanes(VectorOperators.ADD);
+        int sum = vsum.reduceLanes(VectorOperators.ADD);
         for (; i < end - start; i++) {
             sum += array[start1] * dts.array[start2];
             start1 += step1;
@@ -725,27 +725,27 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor mv(DTensor tensor) {
+    public ITensor mv(ITensor tensor) {
         if (shape().rank() != 2 || tensor.shape().rank() != 1 || shape().dim(1) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException("Operands are not valid for matrix-vector multiplication "
                     + "(m = %s, v = %s).".formatted(shape().toString(), tensor.shape().toString()));
         }
-        double[] result = new double[shape().dim(0)];
+        int[] result = new int[shape().dim(0)];
         var it = ptrIterator(Order.C);
         for (int i = 0; i < shape().dim(0); i++) {
             var innerIt = tensor.ptrIterator(Order.C);
-            double sum = 0;
+            int sum = 0;
             for (int j = 0; j < shape().dim(1); j++) {
-                sum += ptrGetDouble(it.nextInt()) * tensor.ptrGetDouble(innerIt.nextInt());
+                sum += ptrGetInteger(it.nextInt()) * tensor.ptrGetInteger(innerIt.nextInt());
             }
             result[i] = sum;
         }
         StrideLayout layout = StrideLayout.ofDense(Shape.of(shape().dim(0)), 0, Order.C);
-        return mill.ofDouble().stride(layout, result);
+        return mill.ofInt().stride(layout, result);
     }
 
     @Override
-    public DTensor mm(DTensor t, Order askOrder) {
+    public ITensor mm(ITensor t, Order askOrder) {
         if (shape().rank() != 2 || t.shape().rank() != 2 || shape().dim(1) != t.shape().dim(0)) {
             throw new IllegalArgumentException("Operands are not valid for matrix-matrix multiplication "
                     + "(m = %s, v = %s).".formatted(shape().toString(), t.shape().toString()));
@@ -757,13 +757,13 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         int n = shape().dim(1);
         int p = t.shape().dim(1);
 
-        var result = new double[m * p];
-        var ret = mill.ofDouble().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
+        var result = new int[m * p];
+        var ret = mill.ofInt().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
 
-        List<DTensor> rows = chunk(0, false, 1);
-        List<DTensor> cols = t.chunk(1, false, 1);
+        List<ITensor> rows = chunk(0, false, 1);
+        List<ITensor> cols = t.chunk(1, false, 1);
 
-        int chunk = (int) floor(sqrt((double) L2_CACHE_SIZE / 2 / CORES / dtype().bytes()));
+        int chunk = (int) floor(sqrt((int) L2_CACHE_SIZE / 2 / CORES / dtype().bytes()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
 
         int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
@@ -785,7 +785,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
                         for (int k = 0; k < n; k += vectorChunk) {
                             int end = Math.min(n, k + vectorChunk);
                             for (int i = rs; i < re; i++) {
-                                var krow = (DTensorStride) rows.get(i);
+                                var krow = (ITensorStride) rows.get(i);
                                 for (int j = c; j < ce; j++) {
                                     result[i * iStride + j * jStride] += krow.vdot(cols.get(j), k, end);
                                 }
@@ -811,7 +811,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public Statistics<Double, DTensor> stats() {
+    public Statistics<Integer, ITensor> stats() {
         if(!dtype().isFloat()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
@@ -821,31 +821,31 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         return computeStrideStats();
     }
 
-    private Statistics<Double, DTensor> computeUnitStats() {
+    private Statistics<Integer, ITensor> computeUnitStats() {
         int size = size();
         int nanSize = 0;
-        double mean = 0;
-        double nanMean = 0;
-        double variance = 0;
-        double nanVariance = 0;
+        int mean = 0;
+        int nanMean = 0;
+        int variance = 0;
+        int nanVariance = 0;
 
         // first pass compute raw mean
-        double sum = 0;
-        double nanSum = 0;
+        int sum = 0;
+        int nanSum = 0;
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) + offset;
             int i = offset;
-            DoubleVector vsum = DoubleVector.zero(SPEC);
-            DoubleVector vnanSum = DoubleVector.zero(SPEC);
+            IntVector vsum = IntVector.zero(SPEC);
+            IntVector vnanSum = IntVector.zero(SPEC);
             for (; i < bound; i += SPEC_LEN) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
-                VectorMask<Double> mask = a.test(VectorOperators.IS_NAN).not();
+                IntVector a = IntVector.fromArray(SPEC, array, i);
+                VectorMask<Integer> mask = a.test(VectorOperators.IS_NAN).not();
                 nanSize += mask.trueCount();
                 vsum = vsum.add(a);
                 vnanSum = vnanSum.add(a, mask);
             }
             sum += vsum.reduceLanes(VectorOperators.ADD);
-            VectorMask<Double> mask = vnanSum.test(VectorOperators.IS_NAN).not();
+            VectorMask<Integer> mask = vnanSum.test(VectorOperators.IS_NAN).not();
             nanSum += vnanSum.reduceLanes(VectorOperators.ADD, mask);
             for (; i < loop.bound + offset; i++) {
                 sum += array[i];
@@ -863,17 +863,17 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         nanSum = 0;
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) + offset;
-            DoubleVector vsum = DoubleVector.zero(SPEC);
-            DoubleVector vnanSum = DoubleVector.zero(SPEC);
+            IntVector vsum = IntVector.zero(SPEC);
+            IntVector vnanSum = IntVector.zero(SPEC);
             int i = offset;
             for (; i < bound; i += SPEC_LEN) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
-                VectorMask<Double> mask = a.test(VectorOperators.IS_NAN).not();
+                IntVector a = IntVector.fromArray(SPEC, array, i);
+                VectorMask<Integer> mask = a.test(VectorOperators.IS_NAN).not();
                 vsum = vsum.add(a.sub(mean));
                 vnanSum = vnanSum.add(a.sub(mean), mask);
             }
             sum += vsum.reduceLanes(VectorOperators.ADD);
-            VectorMask<Double> mask = vnanSum.test(VectorOperators.IS_NAN).not();
+            VectorMask<Integer> mask = vnanSum.test(VectorOperators.IS_NAN).not();
             nanSum += vnanSum.reduceLanes(VectorOperators.ADD, mask);
 
             for (; i < loop.bound + offset; i++) {
@@ -887,22 +887,22 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         nanMean += nanSum / nanSize;
 
         // third pass compute variance
-        double sum2 = 0;
-        double sum3 = 0;
-        double nanSum2 = 0;
-        double nanSum3 = 0;
+        int sum2 = 0;
+        int sum3 = 0;
+        int nanSum2 = 0;
+        int nanSum3 = 0;
 
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) + offset;
-            DoubleVector vsum2 = DoubleVector.zero(SPEC);
-            DoubleVector vsum3 = DoubleVector.zero(SPEC);
-            DoubleVector vnanSum2 = DoubleVector.zero(SPEC);
-            DoubleVector vnanSum3 = DoubleVector.zero(SPEC);
+            IntVector vsum2 = IntVector.zero(SPEC);
+            IntVector vsum3 = IntVector.zero(SPEC);
+            IntVector vnanSum2 = IntVector.zero(SPEC);
+            IntVector vnanSum3 = IntVector.zero(SPEC);
             int i = offset;
             for (; i < bound; i += SPEC_LEN) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
-                VectorMask<Double> mask = a.test(VectorOperators.IS_NAN).not();
-                DoubleVector b = a.sub(mean);
+                IntVector a = IntVector.fromArray(SPEC, array, i);
+                VectorMask<Integer> mask = a.test(VectorOperators.IS_NAN).not();
+                IntVector b = a.sub(mean);
                 vsum2 = vsum2.add(b.mul(b));
                 vsum3 = vsum3.add(b);
                 b = a.sub(nanMean, mask);
@@ -923,37 +923,37 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
                 }
             }
         }
-        variance = (sum2 - (double) (sum3 * sum3) / size) / size;
-        nanVariance = (nanSum2 - (double) (nanSum3 * nanSum3) / nanSize) / nanSize;
+        variance = (sum2 - (int) (sum3 * sum3) / size) / size;
+        nanVariance = (nanSum2 - (int) (nanSum3 * nanSum3) / nanSize) / nanSize;
 
         return new Statistics<>(dtype(), size, nanSize, mean, nanMean, variance, nanVariance);
     }
 
-    private Statistics<Double, DTensor> computeStrideStats() {
+    private Statistics<Integer, ITensor> computeStrideStats() {
         int size = size();
         int nanSize = 0;
-        double mean = 0;
-        double nanMean = 0;
-        double variance = 0;
-        double nanVariance = 0;
+        int mean = 0;
+        int nanMean = 0;
+        int variance = 0;
+        int nanVariance = 0;
 
         // first pass compute raw mean
-        double sum = 0;
-        double nanSum = 0;
+        int sum = 0;
+        int nanSum = 0;
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;
-            DoubleVector vsum = DoubleVector.zero(SPEC);
-            DoubleVector vnanSum = DoubleVector.zero(SPEC);
+            IntVector vsum = IntVector.zero(SPEC);
+            IntVector vnanSum = IntVector.zero(SPEC);
             for (; i < bound; i += SPEC_LEN * loop.step) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                VectorMask<Double> mask = a.test(VectorOperators.IS_NAN).not();
+                IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                VectorMask<Integer> mask = a.test(VectorOperators.IS_NAN).not();
                 nanSize += mask.trueCount();
                 vsum = vsum.add(a);
                 vnanSum = vnanSum.add(a, mask);
             }
             sum += vsum.reduceLanes(VectorOperators.ADD);
-            VectorMask<Double> mask = vnanSum.test(VectorOperators.IS_NAN).not();
+            VectorMask<Integer> mask = vnanSum.test(VectorOperators.IS_NAN).not();
             nanSum += vnanSum.reduceLanes(VectorOperators.ADD, mask);
             for (; i < loop.bound + offset; i += loop.step) {
                 sum += array[i];
@@ -971,17 +971,17 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         nanSum = 0;
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            DoubleVector vsum = DoubleVector.zero(SPEC);
-            DoubleVector vnanSum = DoubleVector.zero(SPEC);
+            IntVector vsum = IntVector.zero(SPEC);
+            IntVector vnanSum = IntVector.zero(SPEC);
             int i = offset;
             for (; i < bound; i += SPEC_LEN * loop.step) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                VectorMask<Double> mask = a.test(VectorOperators.IS_NAN).not();
+                IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                VectorMask<Integer> mask = a.test(VectorOperators.IS_NAN).not();
                 vsum = vsum.add(a.sub(mean));
                 vnanSum = vnanSum.add(a.sub(mean), mask);
             }
             sum += vsum.reduceLanes(VectorOperators.ADD);
-            VectorMask<Double> mask = vnanSum.test(VectorOperators.IS_NAN).not();
+            VectorMask<Integer> mask = vnanSum.test(VectorOperators.IS_NAN).not();
             nanSum += vnanSum.reduceLanes(VectorOperators.ADD, mask);
 
             for (; i < loop.bound + offset; i += loop.step) {
@@ -995,24 +995,24 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         nanMean += nanSum / nanSize;
 
         // third pass compute variance
-        double sum2 = 0;
-        double sum3 = 0;
-        double nanSum2 = 0;
-        double nanSum3 = 0;
+        int sum2 = 0;
+        int sum3 = 0;
+        int nanSum2 = 0;
+        int nanSum3 = 0;
 
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) + offset;
-            DoubleVector vsum2 = DoubleVector.zero(SPEC);
-            DoubleVector vsum3 = DoubleVector.zero(SPEC);
-            DoubleVector vnanSum2 = DoubleVector.zero(SPEC);
-            DoubleVector vnanSum3 = DoubleVector.zero(SPEC);
+            IntVector vsum2 = IntVector.zero(SPEC);
+            IntVector vsum3 = IntVector.zero(SPEC);
+            IntVector vnanSum2 = IntVector.zero(SPEC);
+            IntVector vnanSum3 = IntVector.zero(SPEC);
             int i = offset;
             for (; i < bound; i += SPEC_LEN * loop.step) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                DoubleVector b = a.sub(mean);
+                IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                IntVector b = a.sub(mean);
                 vsum2 = vsum2.add(b.mul(b));
                 vsum3 = vsum3.add(b);
-                VectorMask<Double> mask = a.test(VectorOperators.IS_NAN).not();
+                VectorMask<Integer> mask = a.test(VectorOperators.IS_NAN).not();
                 b = a.sub(nanMean);
                 vnanSum2 = vnanSum2.add(b.mul(b), mask);
                 vnanSum3 = vnanSum3.add(b, mask);
@@ -1030,49 +1030,49 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
                 }
             }
         }
-        variance = (sum2 - (double) (sum3 * sum3) / size) / size;
-        nanVariance = (nanSum2 - (double) (nanSum3 * nanSum3) / nanSize) / nanSize;
+        variance = (sum2 - (int) (sum3 * sum3) / size) / size;
+        nanVariance = (nanSum2 - (int) (nanSum3 * nanSum3) / nanSize) / nanSize;
 
         return new Statistics<>(dtype(), size, nanSize, mean, nanMean, variance, nanVariance);
     }
 
     @Override
-    public Double sum() {
+    public Integer sum() {
         return associativeOp(TensorAssociativeOp.ADD);
     }
 
     @Override
-    public Double nanSum() {
+    public Integer nanSum() {
         return nanAssociativeOp(TensorAssociativeOp.ADD);
     }
 
     @Override
-    public Double prod() {
+    public Integer prod() {
         return associativeOp(TensorAssociativeOp.MUL);
     }
 
     @Override
-    public Double nanProd() {
+    public Integer nanProd() {
         return nanAssociativeOp(TensorAssociativeOp.MUL);
     }
 
     @Override
-    public Double max() {
+    public Integer max() {
         return associativeOp(TensorAssociativeOp.MAX);
     }
 
     @Override
-    public Double nanMax() {
+    public Integer nanMax() {
         return nanAssociativeOp(TensorAssociativeOp.MAX);
     }
 
     @Override
-    public Double min() {
+    public Integer min() {
         return associativeOp(TensorAssociativeOp.MIN);
     }
 
     @Override
-    public Double nanMin() {
+    public Integer nanMin() {
         return nanAssociativeOp(TensorAssociativeOp.MIN);
     }
 
@@ -1085,7 +1085,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
                 int i = offset;
                 if (bound > offset && dtype().isFloat()) {
                     for (; i < bound; i += SPEC_LEN) {
-                        DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
+                        IntVector a = IntVector.fromArray(SPEC, array, i);
                         count += a.test(VectorOperators.IS_NAN).trueCount();
                     }
                 }
@@ -1101,7 +1101,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
                 int i = offset;
                 if (bound > offset && dtype().isFloat()) {
                     for (; i < bound; i += SPEC_LEN * loop.step) {
-                        DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                        IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
                         count += a.test(VectorOperators.IS_NAN).trueCount();
                     }
                 }
@@ -1122,9 +1122,9 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
             for (int offset : loop.offsets) {
                 int bound = SPEC.loopBound(loop.size) + offset;
                 int i = offset;
-                DoubleVector zeros = DoubleVector.zero(SPEC);
+                IntVector zeros = IntVector.zero(SPEC);
                 for (; i < bound; i += SPEC_LEN) {
-                    DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
+                    IntVector a = IntVector.fromArray(SPEC, array, i);
                     count += a.compare(VectorOperators.EQ, zeros).trueCount();
                 }
                 for (; i < loop.bound + offset; i++) {
@@ -1137,9 +1137,9 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
             for (int offset : loop.offsets) {
                 int bound = SPEC.loopBound(loop.size) * loop.step + offset;
                 int i = offset;
-                DoubleVector zeros = DoubleVector.zero(SPEC);
+                IntVector zeros = IntVector.zero(SPEC);
                 for (; i < bound; i += SPEC_LEN * loop.step) {
-                    DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                    IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
                     count += a.compare(VectorOperators.EQ, zeros).trueCount();
                 }
                 for (; i < loop.bound + offset; i += loop.step) {
@@ -1153,106 +1153,106 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
 
-    private double associativeOp(TensorAssociativeOp op) {
+    private int associativeOp(TensorAssociativeOp op) {
         if (loop.step == 1) {
             return unitAssociativeOp(op);
         }
         return strideAssociativeOp(op);
     }
 
-    private double unitAssociativeOp(TensorAssociativeOp op) {
-        double aggregate = op.initialDouble();
+    private int unitAssociativeOp(TensorAssociativeOp op) {
+        int aggregate = op.initialInt();
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) + offset;
 
             int i = offset;
             if (bound > offset) {
-                DoubleVector vectorAggregate = op.initialVectorDouble(SPEC);
+                IntVector vectorAggregate = op.initialVectorInt(SPEC);
                 for (; i < bound; i += SPEC_LEN) {
-                    DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
+                    IntVector a = IntVector.fromArray(SPEC, array, i);
                     vectorAggregate = vectorAggregate.lanewise(op.vop(), a);
                 }
-                aggregate = op.applyDouble(aggregate, vectorAggregate.reduceLanes(op.vop()));
+                aggregate = op.applyInt(aggregate, vectorAggregate.reduceLanes(op.vop()));
             }
             for (; i < loop.bound + offset; i++) {
-                aggregate = op.applyDouble(aggregate, array[i]);
+                aggregate = op.applyInt(aggregate, array[i]);
             }
         }
         return aggregate;
     }
 
-    private double strideAssociativeOp(TensorAssociativeOp op) {
-        double aggregate = op.initialDouble();
+    private int strideAssociativeOp(TensorAssociativeOp op) {
+        int aggregate = op.initialInt();
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
 
             int i = offset;
             if (bound > offset) {
-                DoubleVector vsum = op.initialVectorDouble(SPEC);
+                IntVector vsum = op.initialVectorInt(SPEC);
                 for (; i < bound; i += SPEC_LEN * loop.step) {
-                    DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                    IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
                     vsum = vsum.lanewise(op.vop(), a);
                 }
-                aggregate = op.applyDouble(aggregate, vsum.reduceLanes(op.vop()));
+                aggregate = op.applyInt(aggregate, vsum.reduceLanes(op.vop()));
             }
             for (; i < loop.bound + offset; i += loop.step) {
-                aggregate = op.applyDouble(aggregate, array[i]);
+                aggregate = op.applyInt(aggregate, array[i]);
             }
         }
         return aggregate;
     }
 
-    private double nanAssociativeOp(TensorAssociativeOp op) {
+    private int nanAssociativeOp(TensorAssociativeOp op) {
         if (loop.step == 1) {
             return nanUnitAssociativeOp(op);
         }
         return nanStrideAssociativeOp(op);
     }
 
-    private double nanUnitAssociativeOp(TensorAssociativeOp op) {
-        double aggregate = op.initialDouble();
+    private int nanUnitAssociativeOp(TensorAssociativeOp op) {
+        int aggregate = op.initialInt();
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) + offset;
 
             int i = offset;
             if (bound > offset && dtype().isFloat()) {
-                DoubleVector vectorAggregate = op.initialVectorDouble(SPEC);
+                IntVector vectorAggregate = op.initialVectorInt(SPEC);
                 for (; i < bound; i += SPEC_LEN) {
-                    DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
-                    VectorMask<Double> mask = a.test(VectorOperators.IS_NAN).not();
+                    IntVector a = IntVector.fromArray(SPEC, array, i);
+                    VectorMask<Integer> mask = a.test(VectorOperators.IS_NAN).not();
                     vectorAggregate = vectorAggregate.lanewise(op.vop(), a, mask);
                 }
-                VectorMask<Double> mask = vectorAggregate.test(VectorOperators.IS_NAN).not();
-                aggregate = op.applyDouble(aggregate, vectorAggregate.reduceLanes(op.vop(), mask));
+                VectorMask<Integer> mask = vectorAggregate.test(VectorOperators.IS_NAN).not();
+                aggregate = op.applyInt(aggregate, vectorAggregate.reduceLanes(op.vop(), mask));
             }
             for (; i < loop.bound + offset; i++) {
                 if (!dtype().isNaN(array[i])) {
-                    aggregate = op.applyDouble(aggregate, array[i]);
+                    aggregate = op.applyInt(aggregate, array[i]);
                 }
             }
         }
         return aggregate;
     }
 
-    private double nanStrideAssociativeOp(TensorAssociativeOp op) {
-        double aggregate = op.initialDouble();
+    private int nanStrideAssociativeOp(TensorAssociativeOp op) {
+        int aggregate = op.initialInt();
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
 
             int i = offset;
             if (bound > offset && dtype().isFloat()) {
-                DoubleVector vectorAggregate = op.initialVectorDouble(SPEC);
+                IntVector vectorAggregate = op.initialVectorInt(SPEC);
                 for (; i < bound; i += SPEC_LEN * loop.step) {
-                    DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                    VectorMask<Double> mask = a.test(VectorOperators.IS_NAN).not();
+                    IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                    VectorMask<Integer> mask = a.test(VectorOperators.IS_NAN).not();
                     vectorAggregate = vectorAggregate.lanewise(op.vop(), a, mask);
                 }
-                VectorMask<Double> mask = vectorAggregate.test(VectorOperators.IS_NAN).not();
-                aggregate = op.applyDouble(aggregate, vectorAggregate.reduceLanes(op.vop(), mask));
+                VectorMask<Integer> mask = vectorAggregate.test(VectorOperators.IS_NAN).not();
+                aggregate = op.applyInt(aggregate, vectorAggregate.reduceLanes(op.vop(), mask));
             }
             for (; i < loop.bound + offset; i += loop.step) {
                 if (!dtype().isNaN(array[i])) {
-                    aggregate = op.applyDouble(aggregate, array[i]);
+                    aggregate = op.applyInt(aggregate, array[i]);
                 }
             }
         }
@@ -1260,11 +1260,11 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor copy(Order askOrder) {
+    public ITensor copy(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
 
-        double[] copy = new double[size()];
-        DTensorStride dst = (DTensorStride) mill.ofDouble().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
+        int[] copy = new int[size()];
+        ITensorStride dst = (ITensorStride) mill.ofInt().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
 
         if (layout.storageFastOrder() == askOrder) {
             sameLayoutCopy(copy, askOrder);
@@ -1274,7 +1274,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         return dst;
     }
 
-    private void sameLayoutCopy(double[] copy, Order askOrder) {
+    private void sameLayoutCopy(int[] copy, Order askOrder) {
         var chd = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
         for (int ptr : chd.offsets) {
@@ -1282,7 +1282,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
                 int i = ptr;
                 int bound = SPEC.loopBound(chd.size) + ptr;
                 for (; i < bound; i += SPEC_LEN) {
-                    DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
+                    IntVector a = IntVector.fromArray(SPEC, array, i);
                     a.intoArray(copy, last);
                     last += SPEC_LEN;
                 }
@@ -1298,9 +1298,9 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public DTensor copyTo(DTensor to, Order askOrder) {
+    public ITensor copyTo(ITensor to, Order askOrder) {
 
-        if (to instanceof DTensorStride dst) {
+        if (to instanceof ITensorStride dst) {
 
             int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * mill.cpuThreads() * 8);
 
@@ -1333,8 +1333,8 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
                                 int[] ss = IntArrays.copy(starts);
                                 int[] es = IntArrays.copy(ends);
                                 futures.add(executor.submit(() -> {
-                                    DTensorStride s = (DTensorStride) this.narrowAll(false, ss, es);
-                                    DTensorStride d = (DTensorStride) dst.narrowAll(false, ss, es);
+                                    ITensorStride s = (ITensorStride) this.narrowAll(false, ss, es);
+                                    ITensorStride d = (ITensorStride) dst.narrowAll(false, ss, es);
                                     directCopyTo(s, d, askOrder);
                                     return null;
                                 }));
@@ -1372,7 +1372,7 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
         throw new IllegalArgumentException("Not implemented for this tensor type.");
     }
 
-    private void directCopyTo(DTensorStride src, DTensorStride dst, Order askOrder) {
+    private void directCopyTo(ITensorStride src, ITensorStride dst, Order askOrder) {
         var chd = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
         for (int ptr : chd.offsets) {
@@ -1383,11 +1383,11 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
     }
 
     @Override
-    public double[] toArray() {
+    public int[] toArray() {
         if (shape().rank() != 1) {
             throw new IllegalArgumentException("Only one dimensional tensors can be transformed into array.");
         }
-        double[] copy = new double[size()];
+        int[] copy = new int[size()];
         int pos = 0;
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
@@ -1395,11 +1395,11 @@ public final class DTensorStride extends AbstractTensor<Double, DTensor> impleme
             if (bound > offset) {
                 for (; i < bound; i += SPEC_LEN * loop.step) {
                     if (loop.step == 1) {
-                        DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
+                        IntVector a = IntVector.fromArray(SPEC, array, i);
                         a.intoArray(copy, pos);
                         pos += SPEC_LEN;
                     } else {
-                        DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                        IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
                         a.intoArray(copy, pos);
                         pos += SPEC_LEN;
                     }

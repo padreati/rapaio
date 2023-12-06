@@ -37,6 +37,7 @@ import java.util.Random;
 import rapaio.math.tensor.DTensor;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.FTensor;
+import rapaio.math.tensor.ITensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.mill.AbstractTensorMill;
@@ -46,6 +47,7 @@ public class ArrayTensorMill extends AbstractTensorMill {
 
     private final BaseArrayOfDouble ofDouble = new BaseArrayOfDouble(this);
     private final BaseArrayOfFloat ofFloat = new BaseArrayOfFloat(this);
+    private final BaseArrayOfInt ofInt = new BaseArrayOfInt(this);
     private final int cpuThreads;
 
     public ArrayTensorMill() {
@@ -68,6 +70,11 @@ public class ArrayTensorMill extends AbstractTensorMill {
     @Override
     public OfType<Float, FTensor> ofFloat() {
         return ofFloat;
+    }
+
+    @Override
+    public OfType<Integer, ITensor> ofInt() {
+        return ofInt;
     }
 
     protected static class BaseArrayOfDouble implements OfType<Double, DTensor> {
@@ -112,6 +119,15 @@ public class ArrayTensorMill extends AbstractTensorMill {
         @Override
         public DTensorStride random(Shape shape, Random random, Order order) {
             return zeros(shape, Order.autoFC(order)).apply(order, (i, p) -> random.nextDouble());
+        }
+
+        @Override
+        public DTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
+            double[] darray = new double[array.length];
+            for (int i = 0; i < array.length; i++) {
+                darray[i] = array[i];
+            }
+            return stride(shape, offset, strides, darray);
         }
 
         @Override
@@ -174,6 +190,15 @@ public class ArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
+        public FTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
+            float[] darray = new float[array.length];
+            for (int i = 0; i < array.length; i++) {
+                darray[i] = (float) array[i];
+            }
+            return stride(shape, offset, strides, darray);
+        }
+
+        @Override
         public FTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
             return new FTensorStride(parent, shape, offset, strides, array);
         }
@@ -183,6 +208,74 @@ public class ArrayTensorMill extends AbstractTensorMill {
             float[] darray = new float[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = (float) array[i];
+            }
+            return stride(shape, offset, strides, darray);
+        }
+    }
+
+    protected static class BaseArrayOfInt implements OfType<Integer, ITensor> {
+
+        private final ArrayTensorMill parent;
+
+        public BaseArrayOfInt(ArrayTensorMill parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public DType<Integer, ITensor> dtype() {
+            return DType.INTEGER;
+        }
+
+        @Override
+        public ITensorStride zeros(Shape shape, Order order) {
+            return new ITensorStride(parent, shape, 0, Order.autoFC(order), new int[shape.size()]);
+        }
+
+        @Override
+        public ITensorStride eye(int n, Order order) {
+            ITensorStride eye = zeros(Shape.of(n, n), order);
+            for (int i = 0; i < n; i++) {
+                eye.setInt(1, i, i);
+            }
+            return eye;
+        }
+
+        @Override
+        public ITensor full(Shape shape, Integer value, Order order) {
+            float[] array = new float[shape.size()];
+            Arrays.fill(array, value);
+            return stride(shape, Order.autoFC(order), array);
+        }
+
+        @Override
+        public ITensorStride seq(Shape shape, Order order) {
+            return zeros(shape, Order.autoFC(order)).apply(Order.C, (i, p) -> (int) i);
+        }
+
+        @Override
+        public ITensorStride random(Shape shape, Random random, Order order) {
+            return zeros(shape, Order.autoFC(order)).apply(order, (i, p) -> random.nextInt());
+        }
+
+        @Override
+        public ITensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
+            return new ITensorStride(parent, shape, offset, strides, array);
+        }
+
+        @Override
+        public ITensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
+            int[] darray = new int[array.length];
+            for (int i = 0; i < array.length; i++) {
+                darray[i] = (int) array[i];
+            }
+            return stride(shape, offset, strides, darray);
+        }
+
+        @Override
+        public ITensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
+            int[] darray = new int[array.length];
+            for (int i = 0; i < array.length; i++) {
+                darray[i] = (int) array[i];
             }
             return stride(shape, offset, strides, darray);
         }

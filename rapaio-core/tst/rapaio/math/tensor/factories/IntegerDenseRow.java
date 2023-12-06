@@ -31,28 +31,29 @@
 
 package rapaio.math.tensor.factories;
 
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.FTensor;
+import rapaio.math.tensor.ITensor;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
 
-public abstract class FloatDense extends DataFactory<Float, FTensor> {
+public final class IntegerDenseRow extends IntegerDense {
 
-    public FloatDense(TensorMill tensorMill) {
-        super(tensorMill, tensorMill.ofFloat(), DType.FLOAT);
+    public IntegerDenseRow(TensorMill manager) {
+        super(manager);
     }
 
     @Override
-    public final Float value(double x) {
-        return (float) x;
+    public ITensor seq(Shape shape) {
+        return ofType.seq(shape, Order.C);
     }
 
     @Override
-    public final Float inc(Float x) {
-        return x + 1;
+    public ITensor zeros(Shape shape) {
+        return ofType.zeros(shape, Order.C);
     }
 
     @Override
-    public Float sum(Float x, Float y) {
-        return x + y;
+    public ITensor random(Shape shape) {
+        return ofType.random(shape, random, Order.C);
     }
 }

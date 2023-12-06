@@ -36,8 +36,21 @@ public class CodeGenApp {
                 Replace.of("double", "float"),
                 Replace.of("Double", "Float"),
                 Replace.of("DTensor", "FTensor"),
-                Replace.of("DStorage", "FStorage"),
                 Replace.of("DOUBLE", "FLOAT")
+        };
+
+        Replace[] intReplaces = new Replace[] {
+                Replace.of("DoubleVector", "IntVector"),
+                Replace.of("ofDouble", "ofInt"),
+                Replace.of("setDouble", "setInt"),
+                Replace.of("getDouble", "getInt"),
+                Replace.of("initialVectorDouble", "initialVectorInt"),
+                Replace.of("initialDouble", "initialInt"),
+                Replace.of("applyDouble", "applyInt"),
+                Replace.of("double", "int"),
+                Replace.of("Double", "Integer"),
+                Replace.of("DTensor", "ITensor"),
+                Replace.of("DOUBLE", "INTEGER")
         };
 
         templates.add(new CodeGenTemplate()
@@ -51,6 +64,19 @@ public class CodeGenApp {
                 .dst.set("rapaio/math/tensor/mill/varray/FTensorStride.java")
                 .replaces.set(floatReplaces)
         );
+
+        templates.add(new CodeGenTemplate()
+                .src.set("rapaio/math/tensor/DTensor.java")
+                .dst.set("rapaio/math/tensor/ITensor.java")
+                .replaces.set(intReplaces)
+        );
+
+        templates.add(new CodeGenTemplate()
+                .src.set("rapaio/math/tensor/mill/varray/DTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/varray/ITensorStride.java")
+                .replaces.set(intReplaces)
+        );
+
     }
 
     public static void main(String[] args) {

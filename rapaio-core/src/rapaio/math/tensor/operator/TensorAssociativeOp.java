@@ -33,6 +33,7 @@ package rapaio.math.tensor.operator;
 
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 
@@ -47,6 +48,8 @@ public abstract class TensorAssociativeOp {
 
     public abstract FloatVector initialVectorFloat(VectorSpecies<Float> species);
 
+    public abstract IntVector initialVectorInt(VectorSpecies<Integer> species);
+
     public abstract VectorOperators.Associative vop();
 
     public abstract double initialDouble();
@@ -56,6 +59,10 @@ public abstract class TensorAssociativeOp {
     public abstract float initialFloat();
 
     public abstract float applyFloat(float a, float b);
+
+    public abstract int initialInt();
+
+    public abstract int applyInt(int a, int b);
 
     private static final class OpAdd extends TensorAssociativeOp {
 
@@ -67,6 +74,11 @@ public abstract class TensorAssociativeOp {
         @Override
         public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
             return FloatVector.zero(species);
+        }
+
+        @Override
+        public IntVector initialVectorInt(VectorSpecies<Integer> species) {
+            return IntVector.zero(species);
         }
 
         @Override
@@ -93,6 +105,16 @@ public abstract class TensorAssociativeOp {
         public float applyFloat(float a, float b) {
             return a + b;
         }
+
+        @Override
+        public int initialInt() {
+            return 0;
+        }
+
+        @Override
+        public int applyInt(int a, int b) {
+            return a + b;
+        }
     }
 
     private static final class OpMul extends TensorAssociativeOp {
@@ -105,6 +127,11 @@ public abstract class TensorAssociativeOp {
         @Override
         public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
             return FloatVector.broadcast(species, 1);
+        }
+
+        @Override
+        public IntVector initialVectorInt(VectorSpecies<Integer> species) {
+            return IntVector.broadcast(species, 1);
         }
 
         @Override
@@ -131,6 +158,16 @@ public abstract class TensorAssociativeOp {
         public float applyFloat(float a, float b) {
             return a * b;
         }
+
+        @Override
+        public int initialInt() {
+            return 1;
+        }
+
+        @Override
+        public int applyInt(int a, int b) {
+            return a * b;
+        }
     }
 
     private static final class OpMax extends TensorAssociativeOp {
@@ -143,6 +180,11 @@ public abstract class TensorAssociativeOp {
         @Override
         public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
             return FloatVector.broadcast(species, Float.NEGATIVE_INFINITY);
+        }
+
+        @Override
+        public IntVector initialVectorInt(VectorSpecies<Integer> species) {
+            return IntVector.broadcast(species, Integer.MIN_VALUE);
         }
 
         @Override
@@ -169,6 +211,16 @@ public abstract class TensorAssociativeOp {
         public float applyFloat(float a, float b) {
             return Math.max(a, b);
         }
+
+        @Override
+        public int initialInt() {
+            return Integer.MIN_VALUE;
+        }
+
+        @Override
+        public int applyInt(int a, int b) {
+            return Math.max(a, b);
+        }
     }
 
     private static final class OpMin extends TensorAssociativeOp {
@@ -181,6 +233,11 @@ public abstract class TensorAssociativeOp {
         @Override
         public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
             return FloatVector.broadcast(species, Float.POSITIVE_INFINITY);
+        }
+
+        @Override
+        public IntVector initialVectorInt(VectorSpecies<Integer> species) {
+            return IntVector.broadcast(species, Integer.MAX_VALUE);
         }
 
         @Override
@@ -205,6 +262,16 @@ public abstract class TensorAssociativeOp {
 
         @Override
         public float applyFloat(float a, float b) {
+            return Math.min(a, b);
+        }
+
+        @Override
+        public int initialInt() {
+            return Integer.MAX_VALUE;
+        }
+
+        @Override
+        public int applyInt(int a, int b) {
             return Math.min(a, b);
         }
     }

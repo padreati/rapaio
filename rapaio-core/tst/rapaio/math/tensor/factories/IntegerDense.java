@@ -32,27 +32,27 @@
 package rapaio.math.tensor.factories;
 
 import rapaio.math.tensor.DType;
-import rapaio.math.tensor.FTensor;
+import rapaio.math.tensor.ITensor;
 import rapaio.math.tensor.TensorMill;
 
-public abstract class FloatDense extends DataFactory<Float, FTensor> {
+public abstract class IntegerDense extends DataFactory<Integer, ITensor> {
 
-    public FloatDense(TensorMill tensorMill) {
-        super(tensorMill, tensorMill.ofFloat(), DType.FLOAT);
+    public IntegerDense(TensorMill tensorMill) {
+        super(tensorMill, tensorMill.ofInt(), DType.INTEGER);
     }
 
     @Override
-    public final Float value(double x) {
-        return (float) x;
+    public final Integer value(double x) {
+        return (int) x;
     }
 
     @Override
-    public final Float inc(Float x) {
+    public final Integer inc(Integer x) {
         return x + 1;
     }
 
     @Override
-    public Float sum(Float x, Float y) {
+    public Integer sum(Integer x, Integer y) {
         return x + y;
     }
 }

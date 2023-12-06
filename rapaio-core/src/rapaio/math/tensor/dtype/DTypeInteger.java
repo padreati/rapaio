@@ -29,30 +29,48 @@
  *
  */
 
-package rapaio.math.tensor.factories;
+package rapaio.math.tensor.dtype;
+
+import java.util.function.Function;
 
 import rapaio.math.tensor.DType;
-import rapaio.math.tensor.FTensor;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.ITensor;
 
-public abstract class FloatDense extends DataFactory<Float, FTensor> {
+public final class DTypeInteger extends DType<Integer, ITensor> {
 
-    public FloatDense(TensorMill tensorMill) {
-        super(tensorMill, tensorMill.ofFloat(), DType.FLOAT);
+    private static final String ID = "INTEGER";
+
+    public DTypeInteger() {
+        super(ID, (byte)4, true);
     }
 
     @Override
-    public final Float value(double x) {
-        return (float) x;
+    public <M extends Number> Integer castValue(M value) {
+        return value.intValue();
     }
 
     @Override
-    public final Float inc(Float x) {
-        return x + 1;
+    public Integer castValue(int value) {
+        return (int) value;
     }
 
     @Override
-    public Float sum(Float x, Float y) {
-        return x + y;
+    public Integer castValue(float value) {
+        return (int) value;
+    }
+
+    @Override
+    public Integer castValue(double value) {
+        return (int) value;
+    }
+
+    @Override
+    public <M extends Number> Function<Integer, M> castFunction(DType<M, ?> dType) {
+        return dType::castValue;
+    }
+
+    @Override
+    public boolean isNaN(Integer value) {
+        return false;
     }
 }

@@ -669,18 +669,6 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
 
     T mm(T tensor, Order askOrder);
 
-    N mean();
-
-    N nanMean();
-
-    N std();
-
-    N nanStd();
-
-    N variance();
-
-    N nanVariance();
-
     Statistics<N, T> stats();
 
     N sum();

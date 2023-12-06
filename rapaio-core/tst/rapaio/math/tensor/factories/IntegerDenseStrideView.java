@@ -31,28 +31,47 @@
 
 package rapaio.math.tensor.factories;
 
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.FTensor;
+import java.util.Arrays;
+
+import rapaio.math.tensor.ITensor;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.layout.StrideLayout;
 
-public abstract class FloatDense extends DataFactory<Float, FTensor> {
+public final class IntegerDenseStrideView extends IntegerDense {
 
-    public FloatDense(TensorMill tensorMill) {
-        super(tensorMill, tensorMill.ofFloat(), DType.FLOAT);
+    public IntegerDenseStrideView(TensorMill manager) {
+        super(manager);
     }
 
     @Override
-    public final Float value(double x) {
-        return (float) x;
+    public ITensor seq(Shape shape) {
+        var t = zeros(shape);
+        t.apply(Order.C, (i, p) -> i);
+        return t;
     }
 
     @Override
-    public final Float inc(Float x) {
-        return x + 1;
+    public ITensor zeros(Shape shape) {
+        int offset = 7;
+        var l = StrideLayout.ofDense(shape, offset, Order.F);
+        int[] strides = Arrays.copyOf(l.strides(), l.strides().length);
+        strides[0]++;
+        for (int i = 1; i < strides.length; i++) {
+            strides[i] = l.dim(i - 1) * strides[i - 1] + 1;
+        }
+        int len = offset;
+        for (int i = 0; i < l.strides().length; i++) {
+            len += l.dim(i) * strides[i];
+        }
+        return mill.ofInt().stride(StrideLayout.of(shape, offset, strides), new double[len]);
     }
 
     @Override
-    public Float sum(Float x, Float y) {
-        return x + y;
+    public ITensor random(Shape shape) {
+        var t = zeros(shape);
+        t.apply(Order.C, (pos, ptr) -> random.nextInt());
+        return t;
     }
 }

@@ -32,12 +32,13 @@
 package rapaio.math.tensor.factories;
 
 import rapaio.math.tensor.DTensor;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.TensorMill;
 
 public abstract class DoubleDense extends DataFactory<Double, DTensor> {
 
     public DoubleDense(TensorMill tensorMill) {
-        super(tensorMill, tensorMill.ofDouble());
+        super(tensorMill, tensorMill.ofDouble(), DType.DOUBLE);
     }
 
     @Override

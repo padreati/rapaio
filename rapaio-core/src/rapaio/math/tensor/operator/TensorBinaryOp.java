@@ -45,9 +45,11 @@ public abstract class TensorBinaryOp {
 
     public abstract VectorOperators.Binary vop();
 
-    public abstract double applyDouble(double v, double a);
+    public abstract double applyDouble(double a, double b);
 
-    public abstract float applyFloat(float v, float a);
+    public abstract float applyFloat(float a, float b);
+
+    public abstract int applyInt(int a, int b);
 
     private static class OpAdd extends TensorBinaryOp {
 
@@ -64,6 +66,11 @@ public abstract class TensorBinaryOp {
         @Override
         public float applyFloat(float v, float a) {
             return v + a;
+        }
+
+        @Override
+        public int applyInt(int a, int b) {
+            return a + b;
         }
     }
 
@@ -83,6 +90,11 @@ public abstract class TensorBinaryOp {
         public float applyFloat(float v, float a) {
             return v - a;
         }
+
+        @Override
+        public int applyInt(int a, int b) {
+            return a - b;
+        }
     }
 
     private static class OpMul extends TensorBinaryOp {
@@ -101,6 +113,11 @@ public abstract class TensorBinaryOp {
         public float applyFloat(float v, float a) {
             return v * a;
         }
+
+        @Override
+        public int applyInt(int a, int b) {
+            return a * b;
+        }
     }
 
     private static class OpDiv extends TensorBinaryOp {
@@ -118,6 +135,11 @@ public abstract class TensorBinaryOp {
         @Override
         public float applyFloat(float v, float a) {
             return v / a;
+        }
+
+        @Override
+        public int applyInt(int a, int b) {
+            return a / b;
         }
     }
 }

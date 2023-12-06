@@ -68,4 +68,9 @@ public final class DTypeDouble extends DType<Double, DTensor> {
     public <M extends Number> Function<Double, M> castFunction(DType<M, ?> dType) {
         return dType::castValue;
     }
+
+    @Override
+    public boolean isNaN(Double value) {
+        return Double.isNaN(value);
+    }
 }

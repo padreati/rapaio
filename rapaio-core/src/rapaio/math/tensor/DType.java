@@ -36,11 +36,13 @@ import java.util.function.Function;
 
 import rapaio.math.tensor.dtype.DTypeDouble;
 import rapaio.math.tensor.dtype.DTypeFloat;
+import rapaio.math.tensor.dtype.DTypeInteger;
 
 public abstract class DType<N extends Number, T extends Tensor<N, T>> {
 
     public static DTypeFloat FLOAT = new DTypeFloat();
     public static DTypeDouble DOUBLE = new DTypeDouble();
+    public static DTypeInteger INTEGER = new DTypeInteger();
 
     private final String id;
     private final byte bytes;
@@ -77,6 +79,8 @@ public abstract class DType<N extends Number, T extends Tensor<N, T>> {
     public abstract N castValue(double value);
 
     public abstract <M extends Number> Function<N, M> castFunction(DType<M, ?> dType);
+
+    public abstract boolean isNaN(N value);
 
     @Override
     public boolean equals(Object o) {
