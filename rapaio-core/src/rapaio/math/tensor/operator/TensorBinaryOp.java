@@ -33,113 +33,113 @@ package rapaio.math.tensor.operator;
 
 import jdk.incubator.vector.VectorOperators;
 
-public abstract class TensorBinaryOp {
+public interface TensorBinaryOp {
 
-    public static final TensorBinaryOp ADD = new OpAdd();
+    TensorBinaryOp ADD = new BinaryOpAdd();
 
-    public static final TensorBinaryOp SUB = new OpSub();
+    TensorBinaryOp SUB = new BinaryOpSub();
 
-    public static final TensorBinaryOp MUL = new OpMul();
+    TensorBinaryOp MUL = new BinaryOpMul();
 
-    public static final TensorBinaryOp DIV = new OpDiv();
+    TensorBinaryOp DIV = new BinaryOpDiv();
 
-    public abstract VectorOperators.Binary vop();
+    VectorOperators.Binary vop();
 
-    public abstract double applyDouble(double a, double b);
+    double applyDouble(double a, double b);
 
-    public abstract float applyFloat(float a, float b);
+    float applyFloat(float a, float b);
 
-    public abstract int applyInt(int a, int b);
+    int applyInt(int a, int b);
+}
 
-    private static class OpAdd extends TensorBinaryOp {
+final class BinaryOpAdd implements TensorBinaryOp {
 
-        @Override
-        public VectorOperators.Binary vop() {
-            return VectorOperators.ADD;
-        }
-
-        @Override
-        public double applyDouble(double v, double a) {
-            return v + a;
-        }
-
-        @Override
-        public float applyFloat(float v, float a) {
-            return v + a;
-        }
-
-        @Override
-        public int applyInt(int a, int b) {
-            return a + b;
-        }
+    @Override
+    public VectorOperators.Binary vop() {
+        return VectorOperators.ADD;
     }
 
-    private static class OpSub extends TensorBinaryOp {
-
-        @Override
-        public VectorOperators.Binary vop() {
-            return VectorOperators.SUB;
-        }
-
-        @Override
-        public double applyDouble(double v, double a) {
-            return v - a;
-        }
-
-        @Override
-        public float applyFloat(float v, float a) {
-            return v - a;
-        }
-
-        @Override
-        public int applyInt(int a, int b) {
-            return a - b;
-        }
+    @Override
+    public double applyDouble(double v, double a) {
+        return v + a;
     }
 
-    private static class OpMul extends TensorBinaryOp {
-
-        @Override
-        public VectorOperators.Binary vop() {
-            return VectorOperators.MUL;
-        }
-
-        @Override
-        public double applyDouble(double v, double a) {
-            return v * a;
-        }
-
-        @Override
-        public float applyFloat(float v, float a) {
-            return v * a;
-        }
-
-        @Override
-        public int applyInt(int a, int b) {
-            return a * b;
-        }
+    @Override
+    public float applyFloat(float v, float a) {
+        return v + a;
     }
 
-    private static class OpDiv extends TensorBinaryOp {
+    @Override
+    public int applyInt(int a, int b) {
+        return a + b;
+    }
+}
 
-        @Override
-        public VectorOperators.Binary vop() {
-            return VectorOperators.DIV;
-        }
+final class BinaryOpSub implements TensorBinaryOp {
 
-        @Override
-        public double applyDouble(double v, double a) {
-            return v / a;
-        }
+    @Override
+    public VectorOperators.Binary vop() {
+        return VectorOperators.SUB;
+    }
 
-        @Override
-        public float applyFloat(float v, float a) {
-            return v / a;
-        }
+    @Override
+    public double applyDouble(double v, double a) {
+        return v - a;
+    }
 
-        @Override
-        public int applyInt(int a, int b) {
-            return a / b;
-        }
+    @Override
+    public float applyFloat(float v, float a) {
+        return v - a;
+    }
+
+    @Override
+    public int applyInt(int a, int b) {
+        return a - b;
+    }
+}
+
+final class BinaryOpMul implements TensorBinaryOp {
+
+    @Override
+    public VectorOperators.Binary vop() {
+        return VectorOperators.MUL;
+    }
+
+    @Override
+    public double applyDouble(double v, double a) {
+        return v * a;
+    }
+
+    @Override
+    public float applyFloat(float v, float a) {
+        return v * a;
+    }
+
+    @Override
+    public int applyInt(int a, int b) {
+        return a * b;
+    }
+}
+
+final class BinaryOpDiv implements TensorBinaryOp {
+
+    @Override
+    public VectorOperators.Binary vop() {
+        return VectorOperators.DIV;
+    }
+
+    @Override
+    public double applyDouble(double v, double a) {
+        return v / a;
+    }
+
+    @Override
+    public float applyFloat(float v, float a) {
+        return v / a;
+    }
+
+    @Override
+    public int applyInt(int a, int b) {
+        return a / b;
     }
 }

@@ -33,444 +33,389 @@ package rapaio.math.tensor.operator;
 
 import jdk.incubator.vector.VectorOperators;
 
-public abstract class TensorUnaryOp {
+public interface TensorUnaryOp {
 
-    public static final TensorUnaryOp ABS = new OpAbs(false);
-    public static final TensorUnaryOp NEG = new OpNeg(false);
-    public static final TensorUnaryOp LOG = new OpLog(true);
-    public static final TensorUnaryOp LOG1P = new OpLog1p(true);
-    public static final TensorUnaryOp EXP = new OpExp(true);
-    public static final TensorUnaryOp EXPM1 = new OpExpm1(true);
-    public static final TensorUnaryOp SIN = new OpSin(true);
-    public static final TensorUnaryOp ASIN = new OpAsin(true);
-    public static final TensorUnaryOp SINH = new OpSinh(true);
-    public static final TensorUnaryOp COS = new OpCos(true);
-    public static final TensorUnaryOp ACOS = new OpAcos(true);
-    public static final TensorUnaryOp COSH = new OpCosh(true);
-    public static final TensorUnaryOp TAN = new OpTan(true);
-    public static final TensorUnaryOp ATAN = new OpAtan(true);
-    public static final TensorUnaryOp TANH = new OpTanh(true);
+    TensorUnaryOp ABS = new OpAbs();
+    TensorUnaryOp NEG = new OpNeg();
+    TensorUnaryOp LOG = new OpLog();
+    TensorUnaryOp LOG1P = new OpLog1p();
+    TensorUnaryOp EXP = new OpExp();
+    TensorUnaryOp EXPM1 = new OpExpm1();
+    TensorUnaryOp SIN = new OpSin();
+    TensorUnaryOp ASIN = new OpAsin();
+    TensorUnaryOp SINH = new OpSinh();
+    TensorUnaryOp COS = new OpCos();
+    TensorUnaryOp ACOS = new OpAcos();
+    TensorUnaryOp COSH = new OpCosh();
+    TensorUnaryOp TAN = new OpTan();
+    TensorUnaryOp ATAN = new OpAtan();
+    TensorUnaryOp TANH = new OpTanh();
 
-    protected final boolean floatOnly;
+    VectorOperators.Unary vop();
 
-    public TensorUnaryOp(boolean floatOnly) {
-        this.floatOnly = floatOnly;
+    double applyDouble(double v);
+
+    float applyFloat(float v);
+
+    default int applyInt(int v) {
+        // default implementation for float only
+        return 0;
     }
 
-    public abstract VectorOperators.Unary vop();
+    boolean isFloatOnly();
+}
 
-    public abstract double applyDouble(double v);
+final class OpAbs implements TensorUnaryOp {
 
-    public abstract float applyFloat(float v);
-
-    public abstract int applyInt(int v);
-
+    @Override
     public boolean isFloatOnly() {
-        return floatOnly;
+        return false;
     }
 
-    private static class OpAbs extends TensorUnaryOp {
-
-        public OpAbs(boolean floatOnly) {
-            super(floatOnly);
-        }
-
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.ABS;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.abs(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return Math.abs(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return Math.abs(v);
-        }
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.ABS;
     }
 
-    private static class OpNeg extends TensorUnaryOp {
-
-        public OpNeg(boolean floatOnly) {
-            super(floatOnly);
-        }
-
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.NEG;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return -v;
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return -v;
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return -v;
-        }
+    @Override
+    public double applyDouble(double v) {
+        return Math.abs(v);
     }
 
-    private static class OpLog extends TensorUnaryOp {
-
-        public OpLog(boolean floatOnly) {
-            super(floatOnly);
-        }
-
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.LOG;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.log(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.log(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.log(v);
-        }
+    @Override
+    public float applyFloat(float v) {
+        return Math.abs(v);
     }
 
-    private static class OpLog1p extends TensorUnaryOp {
+    @Override
+    public int applyInt(int v) {
+        return Math.abs(v);
+    }
+}
 
-        public OpLog1p(boolean floatOnly) {
-            super(floatOnly);
-        }
+final class OpNeg implements TensorUnaryOp {
 
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.LOG1P;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.log1p(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.log1p(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.log1p(v);
-        }
+    @Override
+    public boolean isFloatOnly() {
+        return false;
     }
 
-    private static class OpExp extends TensorUnaryOp {
-
-        public OpExp(boolean floatOnly) {
-            super(floatOnly);
-        }
-
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.EXP;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.exp(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.exp(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.exp(v);
-        }
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.NEG;
     }
 
-    private static class OpExpm1 extends TensorUnaryOp {
-
-        public OpExpm1(boolean floatOnly) {
-            super(floatOnly);
-        }
-
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.EXPM1;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.expm1(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.expm1(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.expm1(v);
-        }
+    @Override
+    public double applyDouble(double v) {
+        return -v;
     }
 
-    private static class OpSin extends TensorUnaryOp {
-
-        public OpSin(boolean floatOnly) {
-            super(floatOnly);
-        }
-
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.SIN;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.sin(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.sin(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.sin(v);
-        }
+    @Override
+    public float applyFloat(float v) {
+        return -v;
     }
 
-    private static class OpAsin extends TensorUnaryOp {
+    @Override
+    public int applyInt(int v) {
+        return -v;
+    }
+}
 
-        public OpAsin(boolean floatOnly) {
-            super(floatOnly);
-        }
+final class OpLog implements TensorUnaryOp {
 
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.ASIN;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.asin(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.asin(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.asin(v);
-        }
+    @Override
+    public boolean isFloatOnly() {
+        return true;
     }
 
-    private static class OpSinh extends TensorUnaryOp {
-
-        public OpSinh(boolean floatOnly) {
-            super(floatOnly);
-        }
-
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.SINH;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.sinh(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.sinh(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.sinh(v);
-        }
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.LOG;
     }
 
-    private static class OpCos extends TensorUnaryOp {
-
-        public OpCos(boolean floatOnly) {
-            super(floatOnly);
-        }
-
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.COS;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.cos(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.cos(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.cosh(v);
-        }
+    @Override
+    public double applyDouble(double v) {
+        return Math.log(v);
     }
 
-    private static class OpAcos extends TensorUnaryOp {
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.log(v);
+    }
+}
 
-        public OpAcos(boolean floatOnly) {
-            super(floatOnly);
-        }
+final class OpLog1p implements TensorUnaryOp {
 
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.ACOS;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.acos(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.acos(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.acos(v);
-        }
+    @Override
+    public boolean isFloatOnly() {
+        return true;
     }
 
-    private static class OpCosh extends TensorUnaryOp {
-
-        public OpCosh(boolean floatOnly) {
-            super(floatOnly);
-        }
-
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.COSH;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.cosh(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.cosh(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.cosh(v);
-        }
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.LOG1P;
     }
 
-    private static class OpTan extends TensorUnaryOp {
-
-        public OpTan(boolean floatOnly) {
-            super(floatOnly);
-        }
-
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.TAN;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.tan(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.tan(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.tan(v);
-        }
+    @Override
+    public double applyDouble(double v) {
+        return Math.log1p(v);
     }
 
-    private static class OpAtan extends TensorUnaryOp {
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.log1p(v);
+    }
+}
 
-        public OpAtan(boolean floatOnly) {
-            super(floatOnly);
-        }
+final class OpExp implements TensorUnaryOp {
 
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.ATAN;
-        }
-
-        @Override
-        public double applyDouble(double v) {
-            return Math.atan(v);
-        }
-
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.atan(v);
-        }
-
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.atan(v);
-        }
+    @Override
+    public boolean isFloatOnly() {
+        return true;
     }
 
-    private static class OpTanh extends TensorUnaryOp {
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.EXP;
+    }
 
-        public OpTanh(boolean floatOnly) {
-            super(floatOnly);
-        }
+    @Override
+    public double applyDouble(double v) {
+        return Math.exp(v);
+    }
 
-        @Override
-        public VectorOperators.Unary vop() {
-            return VectorOperators.TANH;
-        }
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.exp(v);
+    }
+}
 
-        @Override
-        public double applyDouble(double v) {
-            return Math.tanh(v);
-        }
+final class OpExpm1 implements TensorUnaryOp {
 
-        @Override
-        public float applyFloat(float v) {
-            return (float) Math.tanh(v);
-        }
+    @Override
+    public boolean isFloatOnly() {
+        return true;
+    }
 
-        @Override
-        public int applyInt(int v) {
-            return (int) Math.tanh(v);
-        }
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.EXPM1;
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.expm1(v);
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.expm1(v);
+    }
+}
+
+final class OpSin implements TensorUnaryOp {
+
+    @Override
+    public boolean isFloatOnly() {
+        return true;
+    }
+
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.SIN;
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.sin(v);
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.sin(v);
+    }
+}
+
+final class OpAsin implements TensorUnaryOp {
+
+    @Override
+    public boolean isFloatOnly() {
+        return true;
+    }
+
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.ASIN;
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.asin(v);
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.asin(v);
+    }
+}
+
+final class OpSinh implements TensorUnaryOp {
+
+    @Override
+    public boolean isFloatOnly() {
+        return true;
+    }
+
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.SINH;
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.sinh(v);
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.sinh(v);
+    }
+}
+
+final class OpCos implements TensorUnaryOp {
+
+    @Override
+    public boolean isFloatOnly() {
+        return true;
+    }
+
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.COS;
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.cos(v);
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.cos(v);
+    }
+}
+
+final class OpAcos implements TensorUnaryOp {
+
+    @Override
+    public boolean isFloatOnly() {
+        return true;
+    }
+
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.ACOS;
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.acos(v);
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.acos(v);
+    }
+}
+
+final class OpCosh implements TensorUnaryOp {
+
+    @Override
+    public boolean isFloatOnly() {
+        return true;
+    }
+
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.COSH;
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.cosh(v);
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.cosh(v);
+    }
+}
+
+final class OpTan implements TensorUnaryOp {
+
+    @Override
+    public boolean isFloatOnly() {
+        return true;
+    }
+
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.TAN;
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.tan(v);
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.tan(v);
+    }
+}
+
+final class OpAtan implements TensorUnaryOp {
+
+    @Override
+    public boolean isFloatOnly() {
+        return true;
+    }
+
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.ATAN;
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.atan(v);
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.atan(v);
+    }
+}
+
+final class OpTanh implements TensorUnaryOp {
+
+    @Override
+    public boolean isFloatOnly() {
+        return true;
+    }
+
+    @Override
+    public VectorOperators.Unary vop() {
+        return VectorOperators.TANH;
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.tanh(v);
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.tanh(v);
     }
 }

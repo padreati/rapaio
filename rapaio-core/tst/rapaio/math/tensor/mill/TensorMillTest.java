@@ -46,7 +46,7 @@ import rapaio.math.tensor.TensorMill;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.mill.varray.ArrayTensorMill;
+import rapaio.math.tensor.mill.varray.VectorizedArrayTensorMill;
 
 public class TensorMillTest {
 
@@ -60,7 +60,7 @@ public class TensorMillTest {
     @Test
     void mainTestLoop() {
 
-        ArrayTensorMill baseArrayEngine = new ArrayTensorMill();
+        VectorizedArrayTensorMill baseArrayEngine = new VectorizedArrayTensorMill();
         testManager(baseArrayEngine, baseArrayEngine.ofType(DType.DOUBLE));
         testManager(baseArrayEngine, baseArrayEngine.ofType(DType.FLOAT));
     }

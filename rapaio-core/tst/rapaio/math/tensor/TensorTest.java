@@ -79,9 +79,11 @@ public class TensorTest {
 
     @Test
     void managerTestRunner() {
+        managerTestSuite(TensorMill.barray());
+        managerTestSuite(TensorMill.varray());
+    }
 
-        var eng = TensorMill.varray();
-
+    private void managerTestSuite(TensorMill eng) {
         new TestSuite<>(this, new DoubleDenseRow(eng)).run();
         new TestSuite<>(this, new DoubleDenseCol(eng)).run();
         new TestSuite<>(this, new DoubleDenseStride(eng)).run();

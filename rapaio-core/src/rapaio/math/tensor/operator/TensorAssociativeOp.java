@@ -37,242 +37,243 @@ import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 
-public abstract class TensorAssociativeOp {
+public interface TensorAssociativeOp {
 
-    public static final TensorAssociativeOp ADD = new OpAdd();
-    public static final TensorAssociativeOp MUL = new OpMul();
-    public static final TensorAssociativeOp MAX = new OpMax();
-    public static final TensorAssociativeOp MIN = new OpMin();
+    TensorAssociativeOp ADD = new AssocOpAdd();
+    TensorAssociativeOp MUL = new AssocOpMul();
+    TensorAssociativeOp MAX = new AssocOpMax();
+    TensorAssociativeOp MIN = new AssocOpMin();
 
-    public abstract DoubleVector initialVectorDouble(VectorSpecies<Double> species);
+    DoubleVector initialVectorDouble(VectorSpecies<Double> species);
 
-    public abstract FloatVector initialVectorFloat(VectorSpecies<Float> species);
+    FloatVector initialVectorFloat(VectorSpecies<Float> species);
 
-    public abstract IntVector initialVectorInt(VectorSpecies<Integer> species);
+    IntVector initialVectorInt(VectorSpecies<Integer> species);
 
-    public abstract VectorOperators.Associative vop();
+    VectorOperators.Associative vop();
 
-    public abstract double initialDouble();
+    double initialDouble();
 
-    public abstract double applyDouble(double a, double b);
+    double applyDouble(double a, double b);
 
-    public abstract float initialFloat();
+    float initialFloat();
 
-    public abstract float applyFloat(float a, float b);
+    float applyFloat(float a, float b);
 
-    public abstract int initialInt();
+    int initialInt();
 
-    public abstract int applyInt(int a, int b);
+    int applyInt(int a, int b);
+}
 
-    private static final class OpAdd extends TensorAssociativeOp {
+final class AssocOpAdd implements TensorAssociativeOp {
 
-        @Override
-        public DoubleVector initialVectorDouble(VectorSpecies<Double> species) {
-            return DoubleVector.zero(species);
-        }
-
-        @Override
-        public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
-            return FloatVector.zero(species);
-        }
-
-        @Override
-        public IntVector initialVectorInt(VectorSpecies<Integer> species) {
-            return IntVector.zero(species);
-        }
-
-        @Override
-        public VectorOperators.Associative vop() {
-            return VectorOperators.ADD;
-        }
-
-        @Override
-        public double initialDouble() {
-            return 0;
-        }
-
-        @Override
-        public double applyDouble(double a, double b) {
-            return a + b;
-        }
-
-        @Override
-        public float initialFloat() {
-            return 0f;
-        }
-
-        @Override
-        public float applyFloat(float a, float b) {
-            return a + b;
-        }
-
-        @Override
-        public int initialInt() {
-            return 0;
-        }
-
-        @Override
-        public int applyInt(int a, int b) {
-            return a + b;
-        }
+    @Override
+    public DoubleVector initialVectorDouble(VectorSpecies<Double> species) {
+        return DoubleVector.zero(species);
     }
 
-    private static final class OpMul extends TensorAssociativeOp {
-
-        @Override
-        public DoubleVector initialVectorDouble(VectorSpecies<Double> species) {
-            return DoubleVector.broadcast(species, 1);
-        }
-
-        @Override
-        public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
-            return FloatVector.broadcast(species, 1);
-        }
-
-        @Override
-        public IntVector initialVectorInt(VectorSpecies<Integer> species) {
-            return IntVector.broadcast(species, 1);
-        }
-
-        @Override
-        public VectorOperators.Associative vop() {
-            return VectorOperators.MUL;
-        }
-
-        @Override
-        public double initialDouble() {
-            return 1;
-        }
-
-        @Override
-        public double applyDouble(double a, double b) {
-            return a * b;
-        }
-
-        @Override
-        public float initialFloat() {
-            return 1f;
-        }
-
-        @Override
-        public float applyFloat(float a, float b) {
-            return a * b;
-        }
-
-        @Override
-        public int initialInt() {
-            return 1;
-        }
-
-        @Override
-        public int applyInt(int a, int b) {
-            return a * b;
-        }
+    @Override
+    public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
+        return FloatVector.zero(species);
     }
 
-    private static final class OpMax extends TensorAssociativeOp {
-
-        @Override
-        public DoubleVector initialVectorDouble(VectorSpecies<Double> species) {
-            return DoubleVector.broadcast(species, Double.NEGATIVE_INFINITY);
-        }
-
-        @Override
-        public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
-            return FloatVector.broadcast(species, Float.NEGATIVE_INFINITY);
-        }
-
-        @Override
-        public IntVector initialVectorInt(VectorSpecies<Integer> species) {
-            return IntVector.broadcast(species, Integer.MIN_VALUE);
-        }
-
-        @Override
-        public VectorOperators.Associative vop() {
-            return VectorOperators.MAX;
-        }
-
-        @Override
-        public double initialDouble() {
-            return Double.NEGATIVE_INFINITY;
-        }
-
-        @Override
-        public double applyDouble(double a, double b) {
-            return Math.max(a, b);
-        }
-
-        @Override
-        public float initialFloat() {
-            return Float.NEGATIVE_INFINITY;
-        }
-
-        @Override
-        public float applyFloat(float a, float b) {
-            return Math.max(a, b);
-        }
-
-        @Override
-        public int initialInt() {
-            return Integer.MIN_VALUE;
-        }
-
-        @Override
-        public int applyInt(int a, int b) {
-            return Math.max(a, b);
-        }
+    @Override
+    public IntVector initialVectorInt(VectorSpecies<Integer> species) {
+        return IntVector.zero(species);
     }
 
-    private static final class OpMin extends TensorAssociativeOp {
+    @Override
+    public VectorOperators.Associative vop() {
+        return VectorOperators.ADD;
+    }
 
-        @Override
-        public DoubleVector initialVectorDouble(VectorSpecies<Double> species) {
-            return DoubleVector.broadcast(species, Double.POSITIVE_INFINITY);
-        }
+    @Override
+    public double initialDouble() {
+        return 0;
+    }
 
-        @Override
-        public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
-            return FloatVector.broadcast(species, Float.POSITIVE_INFINITY);
-        }
+    @Override
+    public double applyDouble(double a, double b) {
+        return a + b;
+    }
 
-        @Override
-        public IntVector initialVectorInt(VectorSpecies<Integer> species) {
-            return IntVector.broadcast(species, Integer.MAX_VALUE);
-        }
+    @Override
+    public float initialFloat() {
+        return 0f;
+    }
 
-        @Override
-        public VectorOperators.Associative vop() {
-            return VectorOperators.MIN;
-        }
+    @Override
+    public float applyFloat(float a, float b) {
+        return a + b;
+    }
 
-        @Override
-        public double initialDouble() {
-            return Double.POSITIVE_INFINITY;
-        }
+    @Override
+    public int initialInt() {
+        return 0;
+    }
 
-        @Override
-        public double applyDouble(double a, double b) {
-            return Math.min(a, b);
-        }
-
-        @Override
-        public float initialFloat() {
-            return Float.POSITIVE_INFINITY;
-        }
-
-        @Override
-        public float applyFloat(float a, float b) {
-            return Math.min(a, b);
-        }
-
-        @Override
-        public int initialInt() {
-            return Integer.MAX_VALUE;
-        }
-
-        @Override
-        public int applyInt(int a, int b) {
-            return Math.min(a, b);
-        }
+    @Override
+    public int applyInt(int a, int b) {
+        return a + b;
     }
 }
+
+final class AssocOpMul implements TensorAssociativeOp {
+
+    @Override
+    public DoubleVector initialVectorDouble(VectorSpecies<Double> species) {
+        return DoubleVector.broadcast(species, 1);
+    }
+
+    @Override
+    public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
+        return FloatVector.broadcast(species, 1);
+    }
+
+    @Override
+    public IntVector initialVectorInt(VectorSpecies<Integer> species) {
+        return IntVector.broadcast(species, 1);
+    }
+
+    @Override
+    public VectorOperators.Associative vop() {
+        return VectorOperators.MUL;
+    }
+
+    @Override
+    public double initialDouble() {
+        return 1;
+    }
+
+    @Override
+    public double applyDouble(double a, double b) {
+        return a * b;
+    }
+
+    @Override
+    public float initialFloat() {
+        return 1f;
+    }
+
+    @Override
+    public float applyFloat(float a, float b) {
+        return a * b;
+    }
+
+    @Override
+    public int initialInt() {
+        return 1;
+    }
+
+    @Override
+    public int applyInt(int a, int b) {
+        return a * b;
+    }
+}
+
+final class AssocOpMax implements TensorAssociativeOp {
+
+    @Override
+    public DoubleVector initialVectorDouble(VectorSpecies<Double> species) {
+        return DoubleVector.broadcast(species, Double.NEGATIVE_INFINITY);
+    }
+
+    @Override
+    public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
+        return FloatVector.broadcast(species, Float.NEGATIVE_INFINITY);
+    }
+
+    @Override
+    public IntVector initialVectorInt(VectorSpecies<Integer> species) {
+        return IntVector.broadcast(species, Integer.MIN_VALUE);
+    }
+
+    @Override
+    public VectorOperators.Associative vop() {
+        return VectorOperators.MAX;
+    }
+
+    @Override
+    public double initialDouble() {
+        return Double.NEGATIVE_INFINITY;
+    }
+
+    @Override
+    public double applyDouble(double a, double b) {
+        return Math.max(a, b);
+    }
+
+    @Override
+    public float initialFloat() {
+        return Float.NEGATIVE_INFINITY;
+    }
+
+    @Override
+    public float applyFloat(float a, float b) {
+        return Math.max(a, b);
+    }
+
+    @Override
+    public int initialInt() {
+        return Integer.MIN_VALUE;
+    }
+
+    @Override
+    public int applyInt(int a, int b) {
+        return Math.max(a, b);
+    }
+}
+
+final class AssocOpMin implements TensorAssociativeOp {
+
+    @Override
+    public DoubleVector initialVectorDouble(VectorSpecies<Double> species) {
+        return DoubleVector.broadcast(species, Double.POSITIVE_INFINITY);
+    }
+
+    @Override
+    public FloatVector initialVectorFloat(VectorSpecies<Float> species) {
+        return FloatVector.broadcast(species, Float.POSITIVE_INFINITY);
+    }
+
+    @Override
+    public IntVector initialVectorInt(VectorSpecies<Integer> species) {
+        return IntVector.broadcast(species, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public VectorOperators.Associative vop() {
+        return VectorOperators.MIN;
+    }
+
+    @Override
+    public double initialDouble() {
+        return Double.POSITIVE_INFINITY;
+    }
+
+    @Override
+    public double applyDouble(double a, double b) {
+        return Math.min(a, b);
+    }
+
+    @Override
+    public float initialFloat() {
+        return Float.POSITIVE_INFINITY;
+    }
+
+    @Override
+    public float applyFloat(float a, float b) {
+        return Math.min(a, b);
+    }
+
+    @Override
+    public int initialInt() {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public int applyInt(int a, int b) {
+        return Math.min(a, b);
+    }
+}
+

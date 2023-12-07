@@ -60,8 +60,13 @@ public class CodeGenApp {
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/mill/varray/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/mill/varray/FTensorStride.java")
+                .src.set("rapaio/math/tensor/mill/varray/VectorizedDTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/varray/VectorizedFTensorStride.java")
+                .replaces.set(floatReplaces)
+        );
+        templates.add(new CodeGenTemplate()
+                .src.set("rapaio/math/tensor/mill/barray/BaseDTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/barray/BaseFTensorStride.java")
                 .replaces.set(floatReplaces)
         );
 
@@ -72,8 +77,13 @@ public class CodeGenApp {
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/mill/varray/DTensorStride.java")
-                .dst.set("rapaio/math/tensor/mill/varray/ITensorStride.java")
+                .src.set("rapaio/math/tensor/mill/varray/VectorizedDTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/varray/VectorizedITensorStride.java")
+                .replaces.set(intReplaces)
+        );
+        templates.add(new CodeGenTemplate()
+                .src.set("rapaio/math/tensor/mill/barray/BaseDTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/barray/BaseITensorStride.java")
                 .replaces.set(intReplaces)
         );
 

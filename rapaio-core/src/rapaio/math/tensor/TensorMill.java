@@ -35,16 +35,29 @@ import java.util.Collection;
 import java.util.Random;
 
 import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.math.tensor.mill.varray.ArrayTensorMill;
+import rapaio.math.tensor.mill.barray.BaseArrayTensorMill;
+import rapaio.math.tensor.mill.varray.VectorizedArrayTensorMill;
 
 public interface TensorMill {
 
+    static TensorMill defaultMill() {
+        return barray();
+    }
+
+    static TensorMill barray() {
+        return new BaseArrayTensorMill();
+    }
+
+    static TensorMill barray(int cpuThreads) {
+        return new BaseArrayTensorMill(cpuThreads);
+    }
+
     static TensorMill varray() {
-        return new ArrayTensorMill();
+        return new VectorizedArrayTensorMill();
     }
 
     static TensorMill varray(int cpuThreads) {
-        return new ArrayTensorMill(cpuThreads);
+        return new VectorizedArrayTensorMill(cpuThreads);
     }
 
     interface OfType<N extends Number, T extends Tensor<N, T>> {
@@ -140,35 +153,35 @@ public interface TensorMill {
         return ofType(dType).seq(shape, order);
     }
 
-    default <N extends Number, T extends Tensor<N, T>> T random(DType<N,T> dType, Shape shape, Random random) {
+    default <N extends Number, T extends Tensor<N, T>> T random(DType<N, T> dType, Shape shape, Random random) {
         return ofType(dType).random(shape, random, Order.defaultOrder());
     }
 
-    default <N extends Number, T extends Tensor<N, T>> T random(DType<N,T> dType, Shape shape, Random random, Order order) {
+    default <N extends Number, T extends Tensor<N, T>> T random(DType<N, T> dType, Shape shape, Random random, Order order) {
         return ofType(dType).random(shape, random, order);
     }
 
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N,T> dType, Shape shape, Order order, float[] array) {
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, Order order, float[] array) {
         return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), array);
     }
 
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N,T> dType, StrideLayout layout, float[] array) {
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, StrideLayout layout, float[] array) {
         return ofType(dType).stride(layout.shape(), layout.offset(), layout.strides(), array);
     }
 
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N,T> dType, Shape shape, int offset, int[] strides, float[] array) {
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, int offset, int[] strides, float[] array) {
         return ofType(dType).stride(shape, offset, strides, array);
     }
 
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N,T> dType, Shape shape, Order order, double[] array) {
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, Order order, double[] array) {
         return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), array);
     }
 
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N,T> dType, StrideLayout layout, double[] array) {
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, StrideLayout layout, double[] array) {
         return ofType(dType).stride(layout.shape(), layout.offset(), layout.strides(), array);
     }
 
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N,T> dType, Shape shape, int offset, int[] strides, double[] array) {
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, int offset, int[] strides, double[] array) {
         return ofType(dType).stride(shape, offset, strides, array);
     }
 
@@ -186,11 +199,13 @@ public interface TensorMill {
         if (dType.equals(DType.DOUBLE)) {
             return (OfType<N, T>) ofDouble();
         }
-        if(dType.equals(DType.INTEGER)) {
+        if (dType.equals(DType.INTEGER)) {
             return (OfType<N, T>) ofInt();
         }
         return null;
     }
+
+    int cpuThreads();
 
     /**
      * Concatenates multiple tensors along a given axis.

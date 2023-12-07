@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.mill.varray;
+package rapaio.math.tensor.mill.barray;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
@@ -52,10 +52,6 @@ import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
-import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.VectorMask;
-import jdk.incubator.vector.VectorOperators;
-import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.FTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -71,6 +67,7 @@ import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.mill.AbstractTensor;
 import rapaio.math.tensor.mill.TensorValidation;
+import rapaio.math.tensor.mill.varray.VectorizedFTensorStride;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
@@ -78,40 +75,27 @@ import rapaio.util.NotImplementedException;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
-public final class FTensorStride extends AbstractTensor<Float, FTensor> implements FTensor {
+public sealed class BaseFTensorStride extends AbstractTensor<Float, FTensor> implements FTensor
+        permits VectorizedFTensorStride {
 
-    private static final VectorSpecies<Float> SPEC = FloatVector.SPECIES_PREFERRED;
-    private static final int SPEC_LEN = SPEC.length();
+    protected final StrideLayout layout;
+    protected final TensorMill mill;
+    protected final float[] array;
+    protected final StrideLoopDescriptor loop;
 
-    private final StrideLayout layout;
-    private final ArrayTensorMill mill;
-    private final float[] array;
-
-    private final StrideLoopDescriptor loop;
-    private final int[] loopIndexes;
-
-    public FTensorStride(ArrayTensorMill mill, Shape shape, int offset, int[] strides, float[] array) {
+    public BaseFTensorStride(TensorMill mill, Shape shape, int offset, int[] strides, float[] array) {
         this(mill, StrideLayout.of(shape, offset, strides), array);
     }
 
-    public FTensorStride(ArrayTensorMill mill, Shape shape, int offset, Order order, float[] array) {
+    public BaseFTensorStride(TensorMill mill, Shape shape, int offset, Order order, float[] array) {
         this(mill, StrideLayout.ofDense(shape, offset, order), array);
     }
 
-    public FTensorStride(ArrayTensorMill mill, StrideLayout layout, float[] array) {
+    public BaseFTensorStride(TensorMill mill, StrideLayout layout, float[] array) {
         this.layout = layout;
         this.mill = mill;
         this.array = array;
         this.loop = StrideLoopDescriptor.of(layout, layout.storageFastOrder());
-        this.loopIndexes = loop.step == 1 ? null : loopIndexes(loop.step);
-    }
-
-    private int[] loopIndexes(int step) {
-        int[] indexes = new int[SPEC_LEN];
-        for (int i = 1; i < SPEC_LEN; i++) {
-            indexes[i] = indexes[i - 1] + step;
-        }
-        return indexes;
     }
 
     @Override
@@ -327,7 +311,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public FTensorStride apply(Order askOrder, IntIntBiFunction<Float> apply) {
+    public BaseFTensorStride apply(Order askOrder, IntIntBiFunction<Float> apply) {
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
@@ -350,19 +334,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     @Override
     public FTensor fill(Float value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
-            if (bound > offset) {
-                FloatVector fill = FloatVector.broadcast(SPEC, value);
-                for (; i < bound; i += SPEC_LEN * loop.step) {
-                    if (loop.step == 1) {
-                        fill.intoArray(array, i);
-                    } else {
-                        fill.intoArray(array, i, loopIndexes, 0);
-                    }
-                }
-            }
-            for (; i < loop.bound + offset; i += loop.step) {
+            for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 array[i] = value;
             }
         }
@@ -372,23 +344,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     @Override
     public FTensor fillNan(Float value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
-            if (bound > offset) {
-                FloatVector fill = FloatVector.broadcast(SPEC, value);
-                for (; i < bound; i += SPEC_LEN * loop.step) {
-                    if (loop.step == 1) {
-                        FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                        VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
-                        fill.intoArray(array, i, m);
-                    } else {
-                        FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                        VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
-                        fill.intoArray(array, i, loopIndexes, 0, m);
-                    }
-                }
-            }
-            for (; i < loop.bound + offset; i += loop.step) {
+            for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 if (dtype().isNaN(array[i])) {
                     array[i] = value;
                 }
@@ -400,38 +356,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     @Override
     public FTensor clamp(Float min, Float max) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
-            if (bound > offset) {
-                for (; i < bound; i += SPEC_LEN * loop.step) {
-                    FloatVector a = loop.step == 1 ?
-                            FloatVector.fromArray(SPEC, array, i) :
-                            FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                    boolean any = false;
-                    if (!dtype().isNaN(min)) {
-                        VectorMask<Float> m = a.compare(VectorOperators.LT, min);
-                        if (m.anyTrue()) {
-                            a = a.blend(min, m);
-                            any = true;
-                        }
-                    }
-                    if (!dtype().isNaN(max)) {
-                        VectorMask<Float> m = a.compare(VectorOperators.GT, max);
-                        if (m.anyTrue()) {
-                            a = a.blend(max, m);
-                            any = true;
-                        }
-                    }
-                    if (any) {
-                        if (loop.step == 1) {
-                            a.intoArray(array, i);
-                        } else {
-                            a.intoArray(array, i, loopIndexes, 0);
-                        }
-                    }
-                }
-            }
-            for (; i < loop.bound + offset; i += loop.step) {
+            for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 if (!dtype().isNaN(min) && array[i] < min) {
                     array[i] = min;
                 }
@@ -448,140 +373,114 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         throw new NotImplementedException();
     }
 
-    private void unaryOpUnit(TensorUnaryOp op) {
-        for (int off : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + off;
-            int i = off;
-            for (; i < bound; i += SPEC_LEN) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                a = a.lanewise(op.vop());
-                a.intoArray(array, i);
-            }
-            for (; i < loop.bound + off; i++) {
-                array[i] = op.applyFloat(array[i]);
-            }
-        }
-    }
-
     private void unaryOpStep(TensorUnaryOp op) {
         for (int off : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + off;
-            int i = off;
-            for (; i < bound; i += SPEC_LEN * loop.step) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                a = a.lanewise(op.vop());
-                a.intoArray(array, i, loopIndexes, 0);
-            }
-            for (; i < loop.bound + off; i += loop.step) {
+            for (int i = off; i < loop.bound + off; i += loop.step) {
                 array[i] = op.applyFloat(array[i]);
             }
         }
     }
 
-    private void unaryOp(TensorUnaryOp op) {
+    protected void unaryOp(TensorUnaryOp op) {
         if (op.isFloatOnly() && !dtype().isFloat()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
-        if (loop.step == 1) {
-            unaryOpUnit(op);
-        } else {
-            unaryOpStep(op);
-        }
+        unaryOpStep(op);
     }
 
     @Override
-    public FTensorStride abs() {
+    public BaseFTensorStride abs() {
         unaryOp(TensorUnaryOp.ABS);
         return this;
     }
 
     @Override
-    public FTensorStride negate() {
+    public BaseFTensorStride negate() {
         unaryOp(TensorUnaryOp.NEG);
         return this;
     }
 
     @Override
-    public FTensorStride log() {
+    public BaseFTensorStride log() {
         unaryOp(TensorUnaryOp.LOG);
         return this;
     }
 
     @Override
-    public FTensorStride log1p() {
+    public BaseFTensorStride log1p() {
         unaryOp(TensorUnaryOp.LOG1P);
         return this;
     }
 
     @Override
-    public FTensorStride exp() {
+    public BaseFTensorStride exp() {
         unaryOp(TensorUnaryOp.EXP);
         return this;
     }
 
     @Override
-    public FTensorStride expm1() {
+    public BaseFTensorStride expm1() {
         unaryOp(TensorUnaryOp.EXPM1);
         return this;
     }
 
     @Override
-    public FTensorStride sin() {
+    public BaseFTensorStride sin() {
         unaryOp(TensorUnaryOp.SIN);
         return this;
     }
 
     @Override
-    public FTensorStride asin() {
+    public BaseFTensorStride asin() {
         unaryOp(TensorUnaryOp.ASIN);
         return this;
     }
 
     @Override
-    public FTensorStride sinh() {
+    public BaseFTensorStride sinh() {
         unaryOp(TensorUnaryOp.SINH);
         return this;
     }
 
     @Override
-    public FTensorStride cos() {
+    public BaseFTensorStride cos() {
         unaryOp(TensorUnaryOp.COS);
         return this;
     }
 
     @Override
-    public FTensorStride acos() {
+    public BaseFTensorStride acos() {
         unaryOp(TensorUnaryOp.ACOS);
         return this;
     }
 
     @Override
-    public FTensorStride cosh() {
+    public BaseFTensorStride cosh() {
         unaryOp(TensorUnaryOp.COSH);
         return this;
     }
 
     @Override
-    public FTensorStride tan() {
+    public BaseFTensorStride tan() {
         unaryOp(TensorUnaryOp.TAN);
         return this;
     }
 
     @Override
-    public FTensorStride atan() {
+    public BaseFTensorStride atan() {
         unaryOp(TensorUnaryOp.ATAN);
         return this;
     }
 
     @Override
-    public FTensorStride tanh() {
+    public BaseFTensorStride tanh() {
         unaryOp(TensorUnaryOp.TANH);
         return this;
     }
 
-    void binaryVectorOp(TensorBinaryOp op, FTensor b) {
+    protected void binaryVectorOp(TensorBinaryOp op, FTensor b) {
         var order = layout.storageFastOrder();
-        order = order == Order.C || order == Order.F ? order : Order.defaultOrder();
+        order = order == Order.S ? Order.defaultOrder() : order;
 
         var it = ptrIterator(order);
         var refIt = b.ptrIterator(order);
@@ -592,91 +491,65 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     }
 
     @Override
-    public FTensorStride add(FTensor tensor) {
+    public BaseFTensorStride add(FTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.ADD, tensor);
         return this;
     }
 
     @Override
-    public FTensorStride sub(FTensor tensor) {
+    public BaseFTensorStride sub(FTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.SUB, tensor);
         return this;
     }
 
     @Override
-    public FTensorStride mul(FTensor tensor) {
+    public BaseFTensorStride mul(FTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.MUL, tensor);
         return this;
     }
 
     @Override
-    public FTensorStride div(FTensor tensor) {
+    public BaseFTensorStride div(FTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.DIV, tensor);
         return this;
     }
 
-    void binaryScalarOpUnit(TensorBinaryOp op, float value) {
-        for (int off : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + off;
-            int i = off;
-            for (; i < bound; i += SPEC_LEN) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                a = a.lanewise(op.vop(), value);
-                a.intoArray(array, i);
-            }
-            for (; i < loop.bound + off; i++) {
-                array[i] = op.applyFloat(array[i], value);
-            }
-        }
-    }
-
     void binaryScalarOpStep(TensorBinaryOp op, float value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
-            for (; i < bound; i += SPEC_LEN * loop.step) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                a = a.lanewise(op.vop(), value);
-                a.intoArray(array, i, loopIndexes, 0);
-            }
-            for (; i < loop.bound + offset; i += loop.step) {
+            for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 array[i] = op.applyFloat(array[i], value);
             }
         }
     }
 
-    void binaryScalarOp(TensorBinaryOp op, float value) {
-        if (loop.step == 1) {
-            binaryScalarOpUnit(op, value);
-        } else {
-            binaryScalarOpStep(op, value);
-        }
+    protected void binaryScalarOp(TensorBinaryOp op, float value) {
+        binaryScalarOpStep(op, value);
     }
 
     @Override
-    public FTensorStride add(Float value) {
+    public BaseFTensorStride add(Float value) {
         binaryScalarOp(TensorBinaryOp.ADD, value);
         return this;
     }
 
     @Override
-    public FTensorStride sub(Float value) {
+    public BaseFTensorStride sub(Float value) {
         binaryScalarOp(TensorBinaryOp.SUB, value);
         return this;
     }
 
     @Override
-    public FTensorStride mul(Float value) {
+    public BaseFTensorStride mul(Float value) {
         binaryScalarOp(TensorBinaryOp.MUL, value);
         return this;
     }
 
     @Override
-    public FTensorStride div(Float value) {
+    public BaseFTensorStride div(Float value) {
         binaryScalarOp(TensorBinaryOp.DIV, value);
         return this;
     }
@@ -696,29 +569,17 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         if (start >= end || start < 0 || end > tensor.shape().dim(0)) {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
-        FTensorStride dts = (FTensorStride) tensor;
+        BaseFTensorStride dts = (BaseFTensorStride) tensor;
         int step1 = layout.stride(0);
         int step2 = dts.layout.stride(0);
+
         int start1 = layout.offset() + start * step1;
+        int end1 = layout.offset() + end * step1;
         int start2 = dts.layout.offset() + start * step2;
-        int i = 0;
-        int bound = SPEC.loopBound(end - start);
-        FloatVector vsum = FloatVector.zero(SPEC);
-        for (; i < bound; i += SPEC_LEN) {
-            FloatVector a = loop.step == 1 ?
-                    FloatVector.fromArray(SPEC, array, start1) :
-                    FloatVector.fromArray(SPEC, array, start1, loopIndexes, 0);
-            FloatVector b = dts.loop.step == 1 ?
-                    FloatVector.fromArray(SPEC, dts.array, start2) :
-                    FloatVector.fromArray(SPEC, dts.array, start2, dts.loopIndexes, 0);
-            vsum = vsum.add(a.mul(b));
-            start1 += SPEC_LEN * step1;
-            start2 += SPEC_LEN * step2;
-        }
-        float sum = vsum.reduceLanes(VectorOperators.ADD);
-        for (; i < end - start; i++) {
-            sum += array[start1] * dts.array[start2];
-            start1 += step1;
+
+        float sum = 0;
+        for (int i = start1; i < end1; i += step1) {
+            sum += array[i] * dts.array[start2];
             start2 += step2;
         }
         return sum;
@@ -727,8 +588,9 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     @Override
     public FTensor mv(FTensor tensor) {
         if (shape().rank() != 2 || tensor.shape().rank() != 1 || shape().dim(1) != tensor.shape().dim(0)) {
-            throw new IllegalArgumentException("Operands are not valid for matrix-vector multiplication "
-                    + "(m = %s, v = %s).".formatted(shape().toString(), tensor.shape().toString()));
+            throw new IllegalArgumentException(
+                    STR."Operands are not valid for matrix-vector multiplication \{"(m = %s, v = %s).".formatted(shape(),
+                            tensor.shape())}");
         }
         float[] result = new float[shape().dim(0)];
         var it = ptrIterator(Order.C);
@@ -747,8 +609,8 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     @Override
     public FTensor mm(FTensor t, Order askOrder) {
         if (shape().rank() != 2 || t.shape().rank() != 2 || shape().dim(1) != t.shape().dim(0)) {
-            throw new IllegalArgumentException("Operands are not valid for matrix-matrix multiplication "
-                    + "(m = %s, v = %s).".formatted(shape().toString(), t.shape().toString()));
+            throw new IllegalArgumentException(
+                    STR."Operands are not valid for matrix-matrix multiplication \{"(m = %s, v = %s).".formatted(shape(), t.shape())}");
         }
         if (askOrder == Order.S) {
             throw new IllegalArgumentException("Illegal askOrder value, must be Order.C or Order.F");
@@ -785,7 +647,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
                         for (int k = 0; k < n; k += vectorChunk) {
                             int end = Math.min(n, k + vectorChunk);
                             for (int i = rs; i < re; i++) {
-                                var krow = (FTensorStride) rows.get(i);
+                                var krow = (BaseFTensorStride) rows.get(i);
                                 for (int j = c; j < ce; j++) {
                                     result[i * iStride + j * jStride] += krow.vdot(cols.get(j), k, end);
                                 }
@@ -812,149 +674,22 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
 
     @Override
     public Statistics<Float, FTensor> stats() {
-        if(!dtype().isFloat()) {
+        if (!dtype().isFloat()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
-        if (loop.step == 1) {
-            return computeUnitStats();
-        }
-        return computeStrideStats();
-    }
 
-    private Statistics<Float, FTensor> computeUnitStats() {
         int size = size();
         int nanSize = 0;
-        float mean = 0;
-        float nanMean = 0;
-        float variance = 0;
-        float nanVariance = 0;
+        float mean;
+        float nanMean;
+        float variance;
+        float nanVariance;
 
         // first pass compute raw mean
         float sum = 0;
         float nanSum = 0;
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + offset;
             int i = offset;
-            FloatVector vsum = FloatVector.zero(SPEC);
-            FloatVector vnanSum = FloatVector.zero(SPEC);
-            for (; i < bound; i += SPEC_LEN) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                VectorMask<Float> mask = a.test(VectorOperators.IS_NAN).not();
-                nanSize += mask.trueCount();
-                vsum = vsum.add(a);
-                vnanSum = vnanSum.add(a, mask);
-            }
-            sum += vsum.reduceLanes(VectorOperators.ADD);
-            VectorMask<Float> mask = vnanSum.test(VectorOperators.IS_NAN).not();
-            nanSum += vnanSum.reduceLanes(VectorOperators.ADD, mask);
-            for (; i < loop.bound + offset; i++) {
-                sum += array[i];
-                if (!dtype().isNaN(array[i])) {
-                    nanSum += array[i];
-                    nanSize++;
-                }
-            }
-        }
-        mean = sum / size;
-        nanMean = nanSum / nanSize;
-
-        // second pass adjustments for mean
-        sum = 0;
-        nanSum = 0;
-        for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + offset;
-            FloatVector vsum = FloatVector.zero(SPEC);
-            FloatVector vnanSum = FloatVector.zero(SPEC);
-            int i = offset;
-            for (; i < bound; i += SPEC_LEN) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                VectorMask<Float> mask = a.test(VectorOperators.IS_NAN).not();
-                vsum = vsum.add(a.sub(mean));
-                vnanSum = vnanSum.add(a.sub(mean), mask);
-            }
-            sum += vsum.reduceLanes(VectorOperators.ADD);
-            VectorMask<Float> mask = vnanSum.test(VectorOperators.IS_NAN).not();
-            nanSum += vnanSum.reduceLanes(VectorOperators.ADD, mask);
-
-            for (; i < loop.bound + offset; i++) {
-                sum += array[i] - mean;
-                if (!dtype().isNaN(array[i])) {
-                    nanSum += array[i] - nanMean;
-                }
-            }
-        }
-        mean += sum / size;
-        nanMean += nanSum / nanSize;
-
-        // third pass compute variance
-        float sum2 = 0;
-        float sum3 = 0;
-        float nanSum2 = 0;
-        float nanSum3 = 0;
-
-        for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + offset;
-            FloatVector vsum2 = FloatVector.zero(SPEC);
-            FloatVector vsum3 = FloatVector.zero(SPEC);
-            FloatVector vnanSum2 = FloatVector.zero(SPEC);
-            FloatVector vnanSum3 = FloatVector.zero(SPEC);
-            int i = offset;
-            for (; i < bound; i += SPEC_LEN) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                VectorMask<Float> mask = a.test(VectorOperators.IS_NAN).not();
-                FloatVector b = a.sub(mean);
-                vsum2 = vsum2.add(b.mul(b));
-                vsum3 = vsum3.add(b);
-                b = a.sub(nanMean, mask);
-                vnanSum2 = vnanSum2.add(b.mul(b), mask);
-                vnanSum3 = vnanSum3.add(b, mask);
-            }
-            sum2 += vsum2.reduceLanes(VectorOperators.ADD);
-            sum3 += vsum3.reduceLanes(VectorOperators.ADD);
-            nanSum2 += vnanSum2.reduceLanes(VectorOperators.ADD, vnanSum2.test(VectorOperators.IS_NAN).not());
-            nanSum3 += vnanSum3.reduceLanes(VectorOperators.ADD, vnanSum3.test(VectorOperators.IS_NAN).not());
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum2 += (array[i] - mean) * (array[i] - mean);
-                sum3 += (array[i] - mean);
-
-                if (!dtype().isNaN(array[i])) {
-                    nanSum2 += (array[i] - nanMean) * (array[i] - nanMean);
-                    nanSum3 += (array[i] - nanMean);
-                }
-            }
-        }
-        variance = (sum2 - (float) (sum3 * sum3) / size) / size;
-        nanVariance = (nanSum2 - (float) (nanSum3 * nanSum3) / nanSize) / nanSize;
-
-        return new Statistics<>(dtype(), size, nanSize, mean, nanMean, variance, nanVariance);
-    }
-
-    private Statistics<Float, FTensor> computeStrideStats() {
-        int size = size();
-        int nanSize = 0;
-        float mean = 0;
-        float nanMean = 0;
-        float variance = 0;
-        float nanVariance = 0;
-
-        // first pass compute raw mean
-        float sum = 0;
-        float nanSum = 0;
-        for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
-            FloatVector vsum = FloatVector.zero(SPEC);
-            FloatVector vnanSum = FloatVector.zero(SPEC);
-            for (; i < bound; i += SPEC_LEN * loop.step) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                VectorMask<Float> mask = a.test(VectorOperators.IS_NAN).not();
-                nanSize += mask.trueCount();
-                vsum = vsum.add(a);
-                vnanSum = vnanSum.add(a, mask);
-            }
-            sum += vsum.reduceLanes(VectorOperators.ADD);
-            VectorMask<Float> mask = vnanSum.test(VectorOperators.IS_NAN).not();
-            nanSum += vnanSum.reduceLanes(VectorOperators.ADD, mask);
             for (; i < loop.bound + offset; i += loop.step) {
                 sum += array[i];
                 if (!dtype().isNaN(array[i])) {
@@ -970,20 +705,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         sum = 0;
         nanSum = 0;
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            FloatVector vsum = FloatVector.zero(SPEC);
-            FloatVector vnanSum = FloatVector.zero(SPEC);
             int i = offset;
-            for (; i < bound; i += SPEC_LEN * loop.step) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                VectorMask<Float> mask = a.test(VectorOperators.IS_NAN).not();
-                vsum = vsum.add(a.sub(mean));
-                vnanSum = vnanSum.add(a.sub(mean), mask);
-            }
-            sum += vsum.reduceLanes(VectorOperators.ADD);
-            VectorMask<Float> mask = vnanSum.test(VectorOperators.IS_NAN).not();
-            nanSum += vnanSum.reduceLanes(VectorOperators.ADD, mask);
-
             for (; i < loop.bound + offset; i += loop.step) {
                 sum += array[i] - mean;
                 if (!dtype().isNaN(array[i])) {
@@ -1001,26 +723,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         float nanSum3 = 0;
 
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + offset;
-            FloatVector vsum2 = FloatVector.zero(SPEC);
-            FloatVector vsum3 = FloatVector.zero(SPEC);
-            FloatVector vnanSum2 = FloatVector.zero(SPEC);
-            FloatVector vnanSum3 = FloatVector.zero(SPEC);
             int i = offset;
-            for (; i < bound; i += SPEC_LEN * loop.step) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                FloatVector b = a.sub(mean);
-                vsum2 = vsum2.add(b.mul(b));
-                vsum3 = vsum3.add(b);
-                VectorMask<Float> mask = a.test(VectorOperators.IS_NAN).not();
-                b = a.sub(nanMean);
-                vnanSum2 = vnanSum2.add(b.mul(b), mask);
-                vnanSum3 = vnanSum3.add(b, mask);
-            }
-            sum2 += vsum2.reduceLanes(VectorOperators.ADD);
-            sum3 += vsum3.reduceLanes(VectorOperators.ADD);
-            nanSum2 += vnanSum2.reduceLanes(VectorOperators.ADD, vnanSum2.test(VectorOperators.IS_NAN).not());
-            nanSum3 += vnanSum3.reduceLanes(VectorOperators.ADD, vnanSum3.test(VectorOperators.IS_NAN).not());
             for (; i < loop.bound + offset; i += loop.step) {
                 sum2 += (array[i] - mean) * (array[i] - mean);
                 sum3 += (array[i] - mean);
@@ -1079,36 +782,11 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     @Override
     public int nanCount() {
         int count = 0;
-        if (loop.step == 1) {
-            for (int offset : loop.offsets) {
-                int bound = SPEC.loopBound(loop.size) + offset;
-                int i = offset;
-                if (bound > offset && dtype().isFloat()) {
-                    for (; i < bound; i += SPEC_LEN) {
-                        FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                        count += a.test(VectorOperators.IS_NAN).trueCount();
-                    }
-                }
-                for (; i < loop.bound + offset; i++) {
-                    if (dtype().isNaN(array[i])) {
-                        count++;
-                    }
-                }
-            }
-        } else {
-            for (int offset : loop.offsets) {
-                int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-                int i = offset;
-                if (bound > offset && dtype().isFloat()) {
-                    for (; i < bound; i += SPEC_LEN * loop.step) {
-                        FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                        count += a.test(VectorOperators.IS_NAN).trueCount();
-                    }
-                }
-                for (; i < loop.bound + offset; i += loop.step) {
-                    if (dtype().isNaN(array[i])) {
-                        count++;
-                    }
+        for (int offset : loop.offsets) {
+            int i = offset;
+            for (; i < loop.bound + offset; i += loop.step) {
+                if (dtype().isNaN(array[i])) {
+                    count++;
                 }
             }
         }
@@ -1118,139 +796,30 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     @Override
     public int zeroCount() {
         int count = 0;
-        if (loop.step == 1) {
-            for (int offset : loop.offsets) {
-                int bound = SPEC.loopBound(loop.size) + offset;
-                int i = offset;
-                FloatVector zeros = FloatVector.zero(SPEC);
-                for (; i < bound; i += SPEC_LEN) {
-                    FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                    count += a.compare(VectorOperators.EQ, zeros).trueCount();
-                }
-                for (; i < loop.bound + offset; i++) {
-                    if (array[i] == 0) {
-                        count++;
-                    }
-                }
-            }
-        } else {
-            for (int offset : loop.offsets) {
-                int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-                int i = offset;
-                FloatVector zeros = FloatVector.zero(SPEC);
-                for (; i < bound; i += SPEC_LEN * loop.step) {
-                    FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                    count += a.compare(VectorOperators.EQ, zeros).trueCount();
-                }
-                for (; i < loop.bound + offset; i += loop.step) {
-                    if (array[i] == 0) {
-                        count++;
-                    }
+        for (int offset : loop.offsets) {
+            for (int i = offset; i < loop.bound + offset; i += loop.step) {
+                if (array[i] == 0) {
+                    count++;
                 }
             }
         }
         return count;
     }
 
-
-    private float associativeOp(TensorAssociativeOp op) {
-        if (loop.step == 1) {
-            return unitAssociativeOp(op);
-        }
-        return strideAssociativeOp(op);
-    }
-
-    private float unitAssociativeOp(TensorAssociativeOp op) {
+    protected float associativeOp(TensorAssociativeOp op) {
         float aggregate = op.initialFloat();
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + offset;
-
-            int i = offset;
-            if (bound > offset) {
-                FloatVector vectorAggregate = op.initialVectorFloat(SPEC);
-                for (; i < bound; i += SPEC_LEN) {
-                    FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                    vectorAggregate = vectorAggregate.lanewise(op.vop(), a);
-                }
-                aggregate = op.applyFloat(aggregate, vectorAggregate.reduceLanes(op.vop()));
-            }
-            for (; i < loop.bound + offset; i++) {
+            for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 aggregate = op.applyFloat(aggregate, array[i]);
             }
         }
         return aggregate;
     }
 
-    private float strideAssociativeOp(TensorAssociativeOp op) {
+    protected float nanAssociativeOp(TensorAssociativeOp op) {
         float aggregate = op.initialFloat();
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-
-            int i = offset;
-            if (bound > offset) {
-                FloatVector vsum = op.initialVectorFloat(SPEC);
-                for (; i < bound; i += SPEC_LEN * loop.step) {
-                    FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                    vsum = vsum.lanewise(op.vop(), a);
-                }
-                aggregate = op.applyFloat(aggregate, vsum.reduceLanes(op.vop()));
-            }
-            for (; i < loop.bound + offset; i += loop.step) {
-                aggregate = op.applyFloat(aggregate, array[i]);
-            }
-        }
-        return aggregate;
-    }
-
-    private float nanAssociativeOp(TensorAssociativeOp op) {
-        if (loop.step == 1) {
-            return nanUnitAssociativeOp(op);
-        }
-        return nanStrideAssociativeOp(op);
-    }
-
-    private float nanUnitAssociativeOp(TensorAssociativeOp op) {
-        float aggregate = op.initialFloat();
-        for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + offset;
-
-            int i = offset;
-            if (bound > offset && dtype().isFloat()) {
-                FloatVector vectorAggregate = op.initialVectorFloat(SPEC);
-                for (; i < bound; i += SPEC_LEN) {
-                    FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                    VectorMask<Float> mask = a.test(VectorOperators.IS_NAN).not();
-                    vectorAggregate = vectorAggregate.lanewise(op.vop(), a, mask);
-                }
-                VectorMask<Float> mask = vectorAggregate.test(VectorOperators.IS_NAN).not();
-                aggregate = op.applyFloat(aggregate, vectorAggregate.reduceLanes(op.vop(), mask));
-            }
-            for (; i < loop.bound + offset; i++) {
-                if (!dtype().isNaN(array[i])) {
-                    aggregate = op.applyFloat(aggregate, array[i]);
-                }
-            }
-        }
-        return aggregate;
-    }
-
-    private float nanStrideAssociativeOp(TensorAssociativeOp op) {
-        float aggregate = op.initialFloat();
-        for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-
-            int i = offset;
-            if (bound > offset && dtype().isFloat()) {
-                FloatVector vectorAggregate = op.initialVectorFloat(SPEC);
-                for (; i < bound; i += SPEC_LEN * loop.step) {
-                    FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                    VectorMask<Float> mask = a.test(VectorOperators.IS_NAN).not();
-                    vectorAggregate = vectorAggregate.lanewise(op.vop(), a, mask);
-                }
-                VectorMask<Float> mask = vectorAggregate.test(VectorOperators.IS_NAN).not();
-                aggregate = op.applyFloat(aggregate, vectorAggregate.reduceLanes(op.vop(), mask));
-            }
-            for (; i < loop.bound + offset; i += loop.step) {
+            for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 if (!dtype().isNaN(array[i])) {
                     aggregate = op.applyFloat(aggregate, array[i]);
                 }
@@ -1264,7 +833,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         askOrder = Order.autoFC(askOrder);
 
         float[] copy = new float[size()];
-        FTensorStride dst = (FTensorStride) mill.ofFloat().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
+        BaseFTensorStride dst = (BaseFTensorStride) mill.ofFloat().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
 
         if (layout.storageFastOrder() == askOrder) {
             sameLayoutCopy(copy, askOrder);
@@ -1279,14 +848,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         var last = 0;
         for (int ptr : chd.offsets) {
             if (chd.step == 1) {
-                int i = ptr;
-                int bound = SPEC.loopBound(chd.size) + ptr;
-                for (; i < bound; i += SPEC_LEN) {
-                    FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                    a.intoArray(copy, last);
-                    last += SPEC_LEN;
-                }
-                for (; i < ptr + chd.size; i++) {
+                for (int i = ptr; i < ptr + chd.size; i++) {
                     copy[last++] = array[i];
                 }
             } else {
@@ -1300,7 +862,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
     @Override
     public FTensor copyTo(FTensor to, Order askOrder) {
 
-        if (to instanceof FTensorStride dst) {
+        if (to instanceof BaseFTensorStride dst) {
 
             int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * mill.cpuThreads() * 8);
 
@@ -1333,8 +895,8 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
                                 int[] ss = IntArrays.copy(starts);
                                 int[] es = IntArrays.copy(ends);
                                 futures.add(executor.submit(() -> {
-                                    FTensorStride s = (FTensorStride) this.narrowAll(false, ss, es);
-                                    FTensorStride d = (FTensorStride) dst.narrowAll(false, ss, es);
+                                    BaseFTensorStride s = (BaseFTensorStride) this.narrowAll(false, ss, es);
+                                    BaseFTensorStride d = (BaseFTensorStride) dst.narrowAll(false, ss, es);
                                     directCopyTo(s, d, askOrder);
                                     return null;
                                 }));
@@ -1372,7 +934,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         throw new IllegalArgumentException("Not implemented for this tensor type.");
     }
 
-    private void directCopyTo(FTensorStride src, FTensorStride dst, Order askOrder) {
+    private void directCopyTo(BaseFTensorStride src, BaseFTensorStride dst, Order askOrder) {
         var chd = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
         for (int ptr : chd.offsets) {
@@ -1390,22 +952,7 @@ public final class FTensorStride extends AbstractTensor<Float, FTensor> implemen
         float[] copy = new float[size()];
         int pos = 0;
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
-            if (bound > offset) {
-                for (; i < bound; i += SPEC_LEN * loop.step) {
-                    if (loop.step == 1) {
-                        FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                        a.intoArray(copy, pos);
-                        pos += SPEC_LEN;
-                    } else {
-                        FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                        a.intoArray(copy, pos);
-                        pos += SPEC_LEN;
-                    }
-                }
-            }
-            for (; i < loop.bound + offset; i++) {
+            for (int i = offset; i < loop.bound + offset; i++) {
                 copy[pos++] = array[i];
             }
         }
