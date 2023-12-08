@@ -58,7 +58,7 @@ import rapaio.io.Csv;
 import rapaio.math.linear.base.DMatrixBase;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
-import rapaio.math.tensor.DTensor;
+import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
@@ -81,8 +81,8 @@ public class DMatrixDMatrixDotBenchmark {
 
         private DenseMatrix jsatDM;
 
-        private DTensor t;
-        private DTensor tc;
+        private DoubleTensor t;
+        private DoubleTensor tc;
 
         @Setup(Level.Invocation)
         public void setup() {

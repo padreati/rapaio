@@ -53,14 +53,19 @@ public interface TensorUnaryOp {
 
     VectorOperators.Unary vop();
 
-    double applyDouble(double v);
-
-    float applyFloat(float v);
+    default byte applyByte(byte v) {
+        // default implementation for float only
+        return 0;
+    }
 
     default int applyInt(int v) {
         // default implementation for float only
         return 0;
     }
+
+    double applyDouble(double v);
+
+    float applyFloat(float v);
 
     boolean isFloatOnly();
 }
@@ -91,6 +96,11 @@ final class OpAbs implements TensorUnaryOp {
     public int applyInt(int v) {
         return Math.abs(v);
     }
+
+    @Override
+    public byte applyByte(byte v) {
+        return (byte) Math.abs(v);
+    }
 }
 
 final class OpNeg implements TensorUnaryOp {
@@ -118,6 +128,11 @@ final class OpNeg implements TensorUnaryOp {
     @Override
     public int applyInt(int v) {
         return -v;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        return (byte) -v;
     }
 }
 

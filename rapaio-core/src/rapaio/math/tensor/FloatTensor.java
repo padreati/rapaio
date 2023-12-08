@@ -31,16 +31,16 @@
 
 package rapaio.math.tensor;
 
-public interface ITensor extends Tensor<Integer, ITensor> {
+public interface FloatTensor extends Tensor<Float, FloatTensor> {
 
     @Override
-    default DType<Integer, ITensor> dtype() {
-        return DType.INTEGER;
+    default DType<Float, FloatTensor> dtype() {
+        return DTypes.FLOAT;
     }
 
     @Override
-    default Integer get(int... indexes) {
-        return getInt(indexes);
+    default Float get(int... indexes) {
+        return getFloat(indexes);
     }
 
     /**
@@ -49,13 +49,13 @@ public interface ITensor extends Tensor<Integer, ITensor> {
      * dimension minus one.
      *
      * @param indexes indexed position
-     * @return unboxed int value
+     * @return unboxed float value
      */
-    int getInt(int... indexes);
+    float getFloat(int... indexes);
 
     @Override
-    default void set(Integer value, int... indexes) {
-        setInt(value, indexes);
+    default void set(Float value, int... indexes) {
+        setFloat(value, indexes);
     }
 
     /**
@@ -64,11 +64,11 @@ public interface ITensor extends Tensor<Integer, ITensor> {
      * @param value unboxed value
      * @param indexes indexed position
      */
-    void setInt(int value, int... indexes);
+    void setFloat(float value, int... indexes);
 
     @Override
-    default Integer ptrGet(int ptr) {
-        return ptrGetInteger(ptr);
+    default Float ptrGet(int ptr) {
+        return ptrGetFloat(ptr);
     }
 
     /**
@@ -78,11 +78,11 @@ public interface ITensor extends Tensor<Integer, ITensor> {
      * @param ptr data pointer
      * @return unboxed value
      */
-    int ptrGetInteger(int ptr);
+    float ptrGetFloat(int ptr);
 
     @Override
-    default void ptrSet(int ptr, Integer value) {
-        ptrSetInteger(ptr, value);
+    default void ptrSet(int ptr, Float value) {
+        ptrSetFloat(ptr, value);
     }
 
     /**
@@ -92,7 +92,7 @@ public interface ITensor extends Tensor<Integer, ITensor> {
      * @param ptr data pointer
      * @param value unboxed value
      */
-    void ptrSetInteger(int ptr, int value);
+    void ptrSetFloat(int ptr, float value);
 
-    int[] toArray();
+    float[] toArray();
 }

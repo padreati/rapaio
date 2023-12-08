@@ -29,48 +29,30 @@
  *
  */
 
-package rapaio.math.tensor.dtype;
+package rapaio.math.tensor.factories;
 
-import java.util.function.Function;
+import rapaio.math.tensor.ByteTensor;
+import rapaio.math.tensor.DTypes;
+import rapaio.math.tensor.TensorMill;
 
-import rapaio.math.tensor.DTensor;
-import rapaio.math.tensor.DType;
+public abstract class ByteDense extends DataFactory<Byte, ByteTensor> {
 
-public final class DTypeDouble extends DType<Double, DTensor> {
-
-    private static final String ID = "DOUBLE";
-
-    public DTypeDouble() {
-        super(ID, (byte)8, false);
+    public ByteDense(TensorMill tensorMill) {
+        super(tensorMill, tensorMill.ofByte(), DTypes.BYTE);
     }
 
     @Override
-    public <M extends Number> Double castValue(M value) {
-        return value.doubleValue();
+    public final Byte value(double x) {
+        return (byte) x;
     }
 
     @Override
-    public Double castValue(int value) {
-        return (double) value;
+    public final Byte inc(Byte x) {
+        return (byte) (x + 1);
     }
 
     @Override
-    public Double castValue(float value) {
-        return (double) value;
-    }
-
-    @Override
-    public Double castValue(double value) {
-        return value;
-    }
-
-    @Override
-    public <M extends Number> Function<Double, M> castFunction(DType<M, ?> dType) {
-        return dType::castValue;
-    }
-
-    @Override
-    public boolean isNaN(Double value) {
-        return Double.isNaN(value);
+    public Byte sum(Byte x, Byte y) {
+        return (byte) (x + y);
     }
 }

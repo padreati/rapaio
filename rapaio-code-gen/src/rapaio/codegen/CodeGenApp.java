@@ -35,7 +35,7 @@ public class CodeGenApp {
         Replace[] floatReplaces = new Replace[] {
                 Replace.of("double", "float"),
                 Replace.of("Double", "Float"),
-                Replace.of("DTensor", "FTensor"),
+                Replace.of("DoubleTensor", "FloatTensor"),
                 Replace.of("DOUBLE", "FLOAT")
         };
 
@@ -47,44 +47,66 @@ public class CodeGenApp {
                 Replace.of("initialVectorDouble", "initialVectorInt"),
                 Replace.of("initialDouble", "initialInt"),
                 Replace.of("applyDouble", "applyInt"),
+                Replace.of("VectorizedDouble", "VectorizedInt"),
+                Replace.of("DoubleTensor","IntTensor"),
                 Replace.of("double", "int"),
                 Replace.of("Double", "Integer"),
-                Replace.of("DTensor", "ITensor"),
                 Replace.of("DOUBLE", "INTEGER")
         };
 
+        Replace[] byteReplaces = new Replace[] {
+                Replace.of("double", "byte"),
+                Replace.of("Double", "Byte"),
+                Replace.of("DoubleTensor", "ByteTensor"),
+                Replace.of("DOUBLE", "BYTE")
+        };
+
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/DTensor.java")
-                .dst.set("rapaio/math/tensor/FTensor.java")
+                .src.set("rapaio/math/tensor/DoubleTensor.java")
+                .dst.set("rapaio/math/tensor/FloatTensor.java")
+                .replaces.set(floatReplaces)
+        );
+        templates.add(new CodeGenTemplate()
+                .src.set("rapaio/math/tensor/mill/varray/VectorizedDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/varray/VectorizedFloatTensorStride.java")
+                .replaces.set(floatReplaces)
+        );
+        templates.add(new CodeGenTemplate()
+                .src.set("rapaio/math/tensor/mill/barray/BaseDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/barray/BaseFloatTensorStride.java")
                 .replaces.set(floatReplaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/mill/varray/VectorizedDTensorStride.java")
-                .dst.set("rapaio/math/tensor/mill/varray/VectorizedFTensorStride.java")
-                .replaces.set(floatReplaces)
+                .src.set("rapaio/math/tensor/DoubleTensor.java")
+                .dst.set("rapaio/math/tensor/IntTensor.java")
+                .replaces.set(intReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/mill/barray/BaseDTensorStride.java")
-                .dst.set("rapaio/math/tensor/mill/barray/BaseFTensorStride.java")
-                .replaces.set(floatReplaces)
+                .src.set("rapaio/math/tensor/mill/varray/VectorizedDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/varray/VectorizedIntTensorStride.java")
+                .replaces.set(intReplaces)
         );
-
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/DTensor.java")
-                .dst.set("rapaio/math/tensor/ITensor.java")
+                .src.set("rapaio/math/tensor/mill/barray/BaseDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/barray/BaseIntTensorStride.java")
                 .replaces.set(intReplaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/mill/varray/VectorizedDTensorStride.java")
-                .dst.set("rapaio/math/tensor/mill/varray/VectorizedITensorStride.java")
-                .replaces.set(intReplaces)
+                .src.set("rapaio/math/tensor/DoubleTensor.java")
+                .dst.set("rapaio/math/tensor/ByteTensor.java")
+                .replaces.set(byteReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/mill/barray/BaseDTensorStride.java")
-                .dst.set("rapaio/math/tensor/mill/barray/BaseITensorStride.java")
-                .replaces.set(intReplaces)
+                .src.set("rapaio/math/tensor/mill/varray/VectorizedDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/varray/VectorizedByteTensorStride.java")
+                .replaces.set(byteReplaces)
+        );
+        templates.add(new CodeGenTemplate()
+                .src.set("rapaio/math/tensor/mill/barray/BaseDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/mill/barray/BaseByteTensorStride.java")
+                .replaces.set(byteReplaces)
         );
 
     }

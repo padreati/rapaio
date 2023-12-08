@@ -52,7 +52,7 @@ import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
-import rapaio.math.tensor.ITensor;
+import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Statistics;
@@ -67,7 +67,7 @@ import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.mill.AbstractTensor;
 import rapaio.math.tensor.mill.TensorValidation;
-import rapaio.math.tensor.mill.varray.VectorizedITensorStride;
+import rapaio.math.tensor.mill.varray.VectorizedIntTensorStride;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
@@ -75,23 +75,23 @@ import rapaio.util.NotImplementedException;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
-public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> implements ITensor
-        permits VectorizedITensorStride {
+public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTensor> implements IntTensor
+        permits VectorizedIntTensorStride {
 
     protected final StrideLayout layout;
     protected final TensorMill mill;
     protected final int[] array;
     protected final StrideLoopDescriptor loop;
 
-    public BaseITensorStride(TensorMill mill, Shape shape, int offset, int[] strides, int[] array) {
+    public BaseIntTensorStride(TensorMill mill, Shape shape, int offset, int[] strides, int[] array) {
         this(mill, StrideLayout.of(shape, offset, strides), array);
     }
 
-    public BaseITensorStride(TensorMill mill, Shape shape, int offset, Order order, int[] array) {
+    public BaseIntTensorStride(TensorMill mill, Shape shape, int offset, Order order, int[] array) {
         this(mill, StrideLayout.ofDense(shape, offset, order), array);
     }
 
-    public BaseITensorStride(TensorMill mill, StrideLayout layout, int[] array) {
+    public BaseIntTensorStride(TensorMill mill, StrideLayout layout, int[] array) {
         this.layout = layout;
         this.mill = mill;
         this.array = array;
@@ -109,7 +109,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor reshape(Shape askShape, Order askOrder) {
+    public IntTensor reshape(Shape askShape, Order askOrder) {
         if (layout.shape().size() != askShape.size()) {
             throw new IllegalArgumentException("Incompatible shape size.");
         }
@@ -135,7 +135,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
             }
         }
         var it = new StridePointerIterator(layout, askOrder);
-        ITensor copy = mill.ofInt().zeros(askShape, askOrder);
+        IntTensor copy = mill.ofInt().zeros(askShape, askOrder);
         var copyIt = copy.ptrIterator(Order.C);
         while (it.hasNext()) {
             copy.ptrSetInteger(copyIt.nextInt(), array[it.nextInt()]);
@@ -144,12 +144,12 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor transpose() {
+    public IntTensor transpose() {
         return mill.ofInt().stride(layout.revert(), array);
     }
 
     @Override
-    public ITensor ravel(Order askOrder) {
+    public IntTensor ravel(Order askOrder) {
         var compact = layout.computeFortranLayout(askOrder, true);
         if (compact.shape().rank() == 1) {
             return mill.ofInt().stride(compact, array);
@@ -158,7 +158,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor flatten(Order askOrder) {
+    public IntTensor flatten(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
         var out = new int[layout.size()];
         int p = 0;
@@ -173,43 +173,43 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor squeeze() {
+    public IntTensor squeeze() {
         return layout.shape().unitDimCount() == 0 ? this : mill.ofInt().stride(layout.squeeze(), array);
     }
 
     @Override
-    public ITensor squeeze(int axis) {
+    public IntTensor squeeze(int axis) {
         return layout.shape().dim(axis) != 1 ? this : mill.ofInt().stride(layout.squeeze(axis), array);
     }
 
     @Override
-    public ITensor unsqueeze(int axis) {
+    public IntTensor unsqueeze(int axis) {
         return mill.ofInt().stride(layout().unsqueeze(axis), array);
     }
 
     @Override
-    public ITensor moveAxis(int src, int dst) {
+    public IntTensor moveAxis(int src, int dst) {
         return mill.ofInt().stride(layout.moveAxis(src, dst), array);
     }
 
     @Override
-    public ITensor swapAxis(int src, int dst) {
+    public IntTensor swapAxis(int src, int dst) {
         return mill.ofInt().stride(layout.swapAxis(src, dst), array);
     }
 
     @Override
-    public ITensor narrow(int axis, boolean keepdim, int start, int end) {
+    public IntTensor narrow(int axis, boolean keepdim, int start, int end) {
         return mill.ofInt().stride(layout.narrow(axis, keepdim, start, end), array);
     }
 
     @Override
-    public ITensor narrowAll(boolean keepdim, int[] starts, int[] ends) {
+    public IntTensor narrowAll(boolean keepdim, int[] starts, int[] ends) {
         return mill.ofInt().stride(layout.narrowAll(keepdim, starts, ends), array);
     }
 
     @Override
-    public List<ITensor> split(int axis, boolean keepdim, int... indexes) {
-        List<ITensor> result = new ArrayList<>(indexes.length);
+    public List<IntTensor> split(int axis, boolean keepdim, int... indexes) {
+        List<IntTensor> result = new ArrayList<>(indexes.length);
         for (int i = 0; i < indexes.length; i++) {
             result.add(narrow(axis, keepdim, indexes[i], i < indexes.length - 1 ? indexes[i + 1] : shape().dim(axis)));
         }
@@ -217,19 +217,19 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public List<ITensor> splitAll(boolean keepdim, int[][] indexes) {
+    public List<IntTensor> splitAll(boolean keepdim, int[][] indexes) {
         if (indexes.length != rank()) {
             throw new IllegalArgumentException(
                     "Indexes length of %d is not the same as shape rank %d.".formatted(indexes.length, rank()));
         }
-        List<ITensor> results = new ArrayList<>();
+        List<IntTensor> results = new ArrayList<>();
         int[] starts = new int[indexes.length];
         int[] ends = new int[indexes.length];
         splitAllRec(results, indexes, keepdim, starts, ends, 0);
         return results;
     }
 
-    private void splitAllRec(List<ITensor> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
+    private void splitAllRec(List<IntTensor> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
         if (level == indexes.length) {
             return;
         }
@@ -245,8 +245,8 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor repeat(int axis, int repeat, boolean stack) {
-        ITensor[] copies = new ITensor[repeat];
+    public IntTensor repeat(int axis, int repeat, boolean stack) {
+        IntTensor[] copies = new IntTensor[repeat];
         Arrays.fill(copies, this);
         if (stack) {
             return mill.stack(axis, Arrays.asList(copies));
@@ -256,12 +256,12 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor tile(int[] repeats) {
+    public IntTensor tile(int[] repeats) {
         throw new NotImplementedException();
     }
 
     @Override
-    public ITensor permute(int[] dims) {
+    public IntTensor permute(int[] dims) {
         return mill.ofInt().stride(layout().permute(dims), array);
     }
 
@@ -311,7 +311,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public BaseITensorStride apply(Order askOrder, IntIntBiFunction<Integer> apply) {
+    public BaseIntTensorStride apply(Order askOrder, IntIntBiFunction<Integer> apply) {
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
@@ -322,7 +322,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor apply(Function<Integer, Integer> fun) {
+    public IntTensor apply(Function<Integer, Integer> fun) {
         var ptrIter = ptrIterator(Order.S);
         while (ptrIter.hasNext()) {
             int ptr = ptrIter.nextInt();
@@ -332,7 +332,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor fill(Integer value) {
+    public IntTensor fill(Integer value) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 array[i] = value;
@@ -342,7 +342,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor fillNan(Integer value) {
+    public IntTensor fillNan(Integer value) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 if (dtype().isNaN(array[i])) {
@@ -354,7 +354,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor clamp(Integer min, Integer max) {
+    public IntTensor clamp(Integer min, Integer max) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 if (!dtype().isNaN(min) && array[i] < min) {
@@ -369,7 +369,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor take(Order order, int... indexes) {
+    public IntTensor take(Order order, int... indexes) {
         throw new NotImplementedException();
     }
 
@@ -389,96 +389,96 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public BaseITensorStride abs() {
+    public BaseIntTensorStride abs() {
         unaryOp(TensorUnaryOp.ABS);
         return this;
     }
 
     @Override
-    public BaseITensorStride negate() {
+    public BaseIntTensorStride negate() {
         unaryOp(TensorUnaryOp.NEG);
         return this;
     }
 
     @Override
-    public BaseITensorStride log() {
+    public BaseIntTensorStride log() {
         unaryOp(TensorUnaryOp.LOG);
         return this;
     }
 
     @Override
-    public BaseITensorStride log1p() {
+    public BaseIntTensorStride log1p() {
         unaryOp(TensorUnaryOp.LOG1P);
         return this;
     }
 
     @Override
-    public BaseITensorStride exp() {
+    public BaseIntTensorStride exp() {
         unaryOp(TensorUnaryOp.EXP);
         return this;
     }
 
     @Override
-    public BaseITensorStride expm1() {
+    public BaseIntTensorStride expm1() {
         unaryOp(TensorUnaryOp.EXPM1);
         return this;
     }
 
     @Override
-    public BaseITensorStride sin() {
+    public BaseIntTensorStride sin() {
         unaryOp(TensorUnaryOp.SIN);
         return this;
     }
 
     @Override
-    public BaseITensorStride asin() {
+    public BaseIntTensorStride asin() {
         unaryOp(TensorUnaryOp.ASIN);
         return this;
     }
 
     @Override
-    public BaseITensorStride sinh() {
+    public BaseIntTensorStride sinh() {
         unaryOp(TensorUnaryOp.SINH);
         return this;
     }
 
     @Override
-    public BaseITensorStride cos() {
+    public BaseIntTensorStride cos() {
         unaryOp(TensorUnaryOp.COS);
         return this;
     }
 
     @Override
-    public BaseITensorStride acos() {
+    public BaseIntTensorStride acos() {
         unaryOp(TensorUnaryOp.ACOS);
         return this;
     }
 
     @Override
-    public BaseITensorStride cosh() {
+    public BaseIntTensorStride cosh() {
         unaryOp(TensorUnaryOp.COSH);
         return this;
     }
 
     @Override
-    public BaseITensorStride tan() {
+    public BaseIntTensorStride tan() {
         unaryOp(TensorUnaryOp.TAN);
         return this;
     }
 
     @Override
-    public BaseITensorStride atan() {
+    public BaseIntTensorStride atan() {
         unaryOp(TensorUnaryOp.ATAN);
         return this;
     }
 
     @Override
-    public BaseITensorStride tanh() {
+    public BaseIntTensorStride tanh() {
         unaryOp(TensorUnaryOp.TANH);
         return this;
     }
 
-    protected void binaryVectorOp(TensorBinaryOp op, ITensor b) {
+    protected void binaryVectorOp(TensorBinaryOp op, IntTensor b) {
         var order = layout.storageFastOrder();
         order = order == Order.S ? Order.defaultOrder() : order;
 
@@ -491,28 +491,28 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public BaseITensorStride add(ITensor tensor) {
+    public BaseIntTensorStride add(IntTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.ADD, tensor);
         return this;
     }
 
     @Override
-    public BaseITensorStride sub(ITensor tensor) {
+    public BaseIntTensorStride sub(IntTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.SUB, tensor);
         return this;
     }
 
     @Override
-    public BaseITensorStride mul(ITensor tensor) {
+    public BaseIntTensorStride mul(IntTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.MUL, tensor);
         return this;
     }
 
     @Override
-    public BaseITensorStride div(ITensor tensor) {
+    public BaseIntTensorStride div(IntTensor tensor) {
         TensorValidation.sameShape(this, tensor);
         binaryVectorOp(TensorBinaryOp.DIV, tensor);
         return this;
@@ -531,36 +531,36 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public BaseITensorStride add(Integer value) {
+    public BaseIntTensorStride add(Integer value) {
         binaryScalarOp(TensorBinaryOp.ADD, value);
         return this;
     }
 
     @Override
-    public BaseITensorStride sub(Integer value) {
+    public BaseIntTensorStride sub(Integer value) {
         binaryScalarOp(TensorBinaryOp.SUB, value);
         return this;
     }
 
     @Override
-    public BaseITensorStride mul(Integer value) {
+    public BaseIntTensorStride mul(Integer value) {
         binaryScalarOp(TensorBinaryOp.MUL, value);
         return this;
     }
 
     @Override
-    public BaseITensorStride div(Integer value) {
+    public BaseIntTensorStride div(Integer value) {
         binaryScalarOp(TensorBinaryOp.DIV, value);
         return this;
     }
 
     @Override
-    public Integer vdot(ITensor tensor) {
+    public Integer vdot(IntTensor tensor) {
         return vdot(tensor, 0, shape().dim(0));
     }
 
     @Override
-    public Integer vdot(ITensor tensor, int start, int end) {
+    public Integer vdot(IntTensor tensor, int start, int end) {
         if (shape().rank() != 1 || tensor.shape().rank() != 1 || shape().dim(0) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(
                     "Operands are not valid for vector dot product (v = %s, v = %s)."
@@ -569,7 +569,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
         if (start >= end || start < 0 || end > tensor.shape().dim(0)) {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
-        BaseITensorStride dts = (BaseITensorStride) tensor;
+        BaseIntTensorStride dts = (BaseIntTensorStride) tensor;
         int step1 = layout.stride(0);
         int step2 = dts.layout.stride(0);
 
@@ -579,14 +579,14 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
 
         int sum = 0;
         for (int i = start1; i < end1; i += step1) {
-            sum += array[i] * dts.array[start2];
+            sum += (int)(array[i] * dts.array[start2]);
             start2 += step2;
         }
         return sum;
     }
 
     @Override
-    public ITensor mv(ITensor tensor) {
+    public IntTensor mv(IntTensor tensor) {
         if (shape().rank() != 2 || tensor.shape().rank() != 1 || shape().dim(1) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(
                     STR."Operands are not valid for matrix-vector multiplication \{"(m = %s, v = %s).".formatted(shape(),
@@ -598,7 +598,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
             var innerIt = tensor.ptrIterator(Order.C);
             int sum = 0;
             for (int j = 0; j < shape().dim(1); j++) {
-                sum += ptrGetInteger(it.nextInt()) * tensor.ptrGetInteger(innerIt.nextInt());
+                sum += (int)(ptrGetInteger(it.nextInt()) * tensor.ptrGetInteger(innerIt.nextInt()));
             }
             result[i] = sum;
         }
@@ -607,7 +607,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor mm(ITensor t, Order askOrder) {
+    public IntTensor mm(IntTensor t, Order askOrder) {
         if (shape().rank() != 2 || t.shape().rank() != 2 || shape().dim(1) != t.shape().dim(0)) {
             throw new IllegalArgumentException(
                     STR."Operands are not valid for matrix-matrix multiplication \{"(m = %s, v = %s).".formatted(shape(), t.shape())}");
@@ -622,10 +622,10 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
         var result = new int[m * p];
         var ret = mill.ofInt().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
 
-        List<ITensor> rows = chunk(0, false, 1);
-        List<ITensor> cols = t.chunk(1, false, 1);
+        List<IntTensor> rows = chunk(0, false, 1);
+        List<IntTensor> cols = t.chunk(1, false, 1);
 
-        int chunk = (int) floor(sqrt((int) L2_CACHE_SIZE / 2 / CORES / dtype().bytes()));
+        int chunk = (int) floor(sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().bytes()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
 
         int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
@@ -647,7 +647,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
                         for (int k = 0; k < n; k += vectorChunk) {
                             int end = Math.min(n, k + vectorChunk);
                             for (int i = rs; i < re; i++) {
-                                var krow = (BaseITensorStride) rows.get(i);
+                                var krow = (BaseIntTensorStride) rows.get(i);
                                 for (int j = c; j < ce; j++) {
                                     result[i * iStride + j * jStride] += krow.vdot(cols.get(j), k, end);
                                 }
@@ -673,7 +673,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public Statistics<Integer, ITensor> stats() {
+    public Statistics<Integer, IntTensor> stats() {
         if (!dtype().isFloat()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
@@ -698,8 +698,8 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
                 }
             }
         }
-        mean = sum / size;
-        nanMean = nanSum / nanSize;
+        mean = (int) (sum / size);
+        nanMean = (int) (nanSum / nanSize);
 
         // second pass adjustments for mean
         sum = 0;
@@ -707,14 +707,14 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
         for (int offset : loop.offsets) {
             int i = offset;
             for (; i < loop.bound + offset; i += loop.step) {
-                sum += array[i] - mean;
+                sum += (int)(array[i] - mean);
                 if (!dtype().isNaN(array[i])) {
-                    nanSum += array[i] - nanMean;
+                    nanSum += (int)(array[i] - nanMean);
                 }
             }
         }
-        mean += sum / size;
-        nanMean += nanSum / nanSize;
+        mean += (int) (sum / size);
+        nanMean += (int)(nanSum / nanSize);
 
         // third pass compute variance
         int sum2 = 0;
@@ -725,16 +725,16 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
         for (int offset : loop.offsets) {
             int i = offset;
             for (; i < loop.bound + offset; i += loop.step) {
-                sum2 += (array[i] - mean) * (array[i] - mean);
-                sum3 += (array[i] - mean);
+                sum2 += (int)((array[i] - mean) * (array[i] - mean));
+                sum3 += (int)(array[i] - mean);
                 if (!dtype().isNaN(array[i])) {
-                    nanSum2 += (array[i] - nanMean) * (array[i] - nanMean);
-                    nanSum3 += (array[i] - nanMean);
+                    nanSum2 += (int)((array[i] - nanMean) * (array[i] - nanMean));
+                    nanSum3 += (int)(array[i] - nanMean);
                 }
             }
         }
-        variance = (sum2 - (int) (sum3 * sum3) / size) / size;
-        nanVariance = (nanSum2 - (int) (nanSum3 * nanSum3) / nanSize) / nanSize;
+        variance = (int) ((sum2 - (sum3 * sum3) / size) / size);
+        nanVariance = (int) ((nanSum2 - (nanSum3 * nanSum3) / nanSize) / nanSize);
 
         return new Statistics<>(dtype(), size, nanSize, mean, nanMean, variance, nanVariance);
     }
@@ -807,13 +807,13 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     protected int associativeOp(TensorAssociativeOp op) {
-        int aggregate = op.initialInt();
+        int agg = op.initialInt();
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                aggregate = op.applyInt(aggregate, array[i]);
+                agg = op.applyInt(agg, array[i]);
             }
         }
-        return aggregate;
+        return agg;
     }
 
     protected int nanAssociativeOp(TensorAssociativeOp op) {
@@ -829,11 +829,11 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
     }
 
     @Override
-    public ITensor copy(Order askOrder) {
+    public IntTensor copy(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
 
         int[] copy = new int[size()];
-        BaseITensorStride dst = (BaseITensorStride) mill.ofInt().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
+        var dst = mill.ofInt().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
 
         if (layout.storageFastOrder() == askOrder) {
             sameLayoutCopy(copy, askOrder);
@@ -847,22 +847,16 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
         var chd = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
         for (int ptr : chd.offsets) {
-            if (chd.step == 1) {
-                for (int i = ptr; i < ptr + chd.size; i++) {
-                    copy[last++] = array[i];
-                }
-            } else {
-                for (int i = ptr; i < ptr + chd.bound; i += chd.step) {
-                    copy[last++] = array[i];
-                }
+            for (int i = ptr; i < ptr + chd.bound; i += chd.step) {
+                copy[last++] = array[i];
             }
         }
     }
 
     @Override
-    public ITensor copyTo(ITensor to, Order askOrder) {
+    public IntTensor copyTo(IntTensor to, Order askOrder) {
 
-        if (to instanceof BaseITensorStride dst) {
+        if (to instanceof BaseIntTensorStride dst) {
 
             int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * mill.cpuThreads() * 8);
 
@@ -895,8 +889,8 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
                                 int[] ss = IntArrays.copy(starts);
                                 int[] es = IntArrays.copy(ends);
                                 futures.add(executor.submit(() -> {
-                                    BaseITensorStride s = (BaseITensorStride) this.narrowAll(false, ss, es);
-                                    BaseITensorStride d = (BaseITensorStride) dst.narrowAll(false, ss, es);
+                                    BaseIntTensorStride s = (BaseIntTensorStride) this.narrowAll(false, ss, es);
+                                    BaseIntTensorStride d = (BaseIntTensorStride) dst.narrowAll(false, ss, es);
                                     directCopyTo(s, d, askOrder);
                                     return null;
                                 }));
@@ -934,7 +928,7 @@ public sealed class BaseITensorStride extends AbstractTensor<Integer, ITensor> i
         throw new IllegalArgumentException("Not implemented for this tensor type.");
     }
 
-    private void directCopyTo(BaseITensorStride src, BaseITensorStride dst, Order askOrder) {
+    private void directCopyTo(BaseIntTensorStride src, BaseIntTensorStride dst, Order askOrder) {
         var chd = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
         for (int ptr : chd.offsets) {

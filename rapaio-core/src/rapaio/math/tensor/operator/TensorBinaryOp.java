@@ -36,11 +36,8 @@ import jdk.incubator.vector.VectorOperators;
 public interface TensorBinaryOp {
 
     TensorBinaryOp ADD = new BinaryOpAdd();
-
     TensorBinaryOp SUB = new BinaryOpSub();
-
     TensorBinaryOp MUL = new BinaryOpMul();
-
     TensorBinaryOp DIV = new BinaryOpDiv();
 
     VectorOperators.Binary vop();
@@ -50,6 +47,8 @@ public interface TensorBinaryOp {
     float applyFloat(float a, float b);
 
     int applyInt(int a, int b);
+
+    byte applyByte(int a, int b);
 }
 
 final class BinaryOpAdd implements TensorBinaryOp {
@@ -72,6 +71,11 @@ final class BinaryOpAdd implements TensorBinaryOp {
     @Override
     public int applyInt(int a, int b) {
         return a + b;
+    }
+
+    @Override
+    public byte applyByte(int a, int b) {
+        return (byte) (a + b);
     }
 }
 
@@ -96,6 +100,11 @@ final class BinaryOpSub implements TensorBinaryOp {
     public int applyInt(int a, int b) {
         return a - b;
     }
+
+    @Override
+    public byte applyByte(int a, int b) {
+        return (byte) (a - b);
+    }
 }
 
 final class BinaryOpMul implements TensorBinaryOp {
@@ -119,6 +128,11 @@ final class BinaryOpMul implements TensorBinaryOp {
     public int applyInt(int a, int b) {
         return a * b;
     }
+
+    @Override
+    public byte applyByte(int a, int b) {
+        return (byte) (a * b);
+    }
 }
 
 final class BinaryOpDiv implements TensorBinaryOp {
@@ -141,5 +155,10 @@ final class BinaryOpDiv implements TensorBinaryOp {
     @Override
     public int applyInt(int a, int b) {
         return a / b;
+    }
+
+    @Override
+    public byte applyByte(int a, int b) {
+        return (byte) (a / b);
     }
 }

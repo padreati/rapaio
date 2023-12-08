@@ -31,16 +31,16 @@
 
 package rapaio.math.tensor;
 
-public interface FTensor extends Tensor<Float, FTensor> {
+public interface DoubleTensor extends Tensor<Double, DoubleTensor> {
 
     @Override
-    default DType<Float, FTensor> dtype() {
-        return DType.FLOAT;
+    default DType<Double, DoubleTensor> dtype() {
+        return DTypes.DOUBLE;
     }
 
     @Override
-    default Float get(int... indexes) {
-        return getFloat(indexes);
+    default Double get(int... indexes) {
+        return getDouble(indexes);
     }
 
     /**
@@ -49,13 +49,13 @@ public interface FTensor extends Tensor<Float, FTensor> {
      * dimension minus one.
      *
      * @param indexes indexed position
-     * @return unboxed float value
+     * @return unboxed double value
      */
-    float getFloat(int... indexes);
+    double getDouble(int... indexes);
 
     @Override
-    default void set(Float value, int... indexes) {
-        setFloat(value, indexes);
+    default void set(Double value, int... indexes) {
+        setDouble(value, indexes);
     }
 
     /**
@@ -64,11 +64,11 @@ public interface FTensor extends Tensor<Float, FTensor> {
      * @param value unboxed value
      * @param indexes indexed position
      */
-    void setFloat(float value, int... indexes);
+    void setDouble(double value, int... indexes);
 
     @Override
-    default Float ptrGet(int ptr) {
-        return ptrGetFloat(ptr);
+    default Double ptrGet(int ptr) {
+        return ptrGetDouble(ptr);
     }
 
     /**
@@ -78,11 +78,11 @@ public interface FTensor extends Tensor<Float, FTensor> {
      * @param ptr data pointer
      * @return unboxed value
      */
-    float ptrGetFloat(int ptr);
+    double ptrGetDouble(int ptr);
 
     @Override
-    default void ptrSet(int ptr, Float value) {
-        ptrSetFloat(ptr, value);
+    default void ptrSet(int ptr, Double value) {
+        ptrSetDouble(ptr, value);
     }
 
     /**
@@ -92,7 +92,7 @@ public interface FTensor extends Tensor<Float, FTensor> {
      * @param ptr data pointer
      * @param value unboxed value
      */
-    void ptrSetFloat(int ptr, float value);
+    void ptrSetDouble(int ptr, double value);
 
-    float[] toArray();
+    double[] toArray();
 }

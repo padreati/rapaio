@@ -33,27 +33,27 @@ package rapaio.math.tensor.factories;
 
 import java.util.Arrays;
 
-import rapaio.math.tensor.FloatTensor;
+import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
 import rapaio.math.tensor.layout.StrideLayout;
 
-public final class FloatDenseStrideView extends FloatDense {
+public final class ByteDenseStrideView extends ByteDense {
 
-    public FloatDenseStrideView(TensorMill manager) {
+    public ByteDenseStrideView(TensorMill manager) {
         super(manager);
     }
 
     @Override
-    public FloatTensor seq(Shape shape) {
+    public ByteTensor seq(Shape shape) {
         var t = zeros(shape);
-        t.apply(Order.C, (i, p) -> (float) i);
+        t.apply(Order.C, (i, p) -> (byte) i);
         return t;
     }
 
     @Override
-    public FloatTensor zeros(Shape shape) {
+    public ByteTensor zeros(Shape shape) {
         int offset = 7;
         var l = StrideLayout.ofDense(shape, offset, Order.F);
         int[] strides = Arrays.copyOf(l.strides(), l.strides().length);
@@ -65,13 +65,15 @@ public final class FloatDenseStrideView extends FloatDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return mill.ofFloat().stride(StrideLayout.of(shape, offset, strides), new float[len]);
+        return mill.ofByte().stride(StrideLayout.of(shape, offset, strides), new byte[len]);
     }
 
     @Override
-    public FloatTensor random(Shape shape) {
+    public ByteTensor random(Shape shape) {
         var t = zeros(shape);
-        t.apply(Order.C, (pos, ptr) -> random.nextFloat());
+        byte[] buff = new byte[1];
+        random.nextBytes(buff);
+        t.apply(Order.C, (pos, ptr) -> buff[0]);
         return t;
     }
 }

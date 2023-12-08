@@ -33,7 +33,7 @@ package rapaio.math.tensor.factories;
 
 import java.util.Arrays;
 
-import rapaio.math.tensor.DTensor;
+import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
@@ -46,14 +46,14 @@ public final class DoubleDenseStrideView extends DoubleDense {
     }
 
     @Override
-    public DTensor seq(Shape shape) {
+    public DoubleTensor seq(Shape shape) {
         var t = zeros(shape);
         t.apply(Order.C, (i, p) -> (double) i);
         return t;
     }
 
     @Override
-    public DTensor zeros(Shape shape) {
+    public DoubleTensor zeros(Shape shape) {
         int offset = 7;
         var l = StrideLayout.ofDense(shape, offset, Order.F);
         int[] strides = Arrays.copyOf(l.strides(), l.strides().length);
@@ -69,7 +69,7 @@ public final class DoubleDenseStrideView extends DoubleDense {
     }
 
     @Override
-    public DTensor random(Shape shape) {
+    public DoubleTensor random(Shape shape) {
         var t = zeros(shape);
         t.apply(Order.C, (pos, ptr) -> random.nextDouble());
         return t;

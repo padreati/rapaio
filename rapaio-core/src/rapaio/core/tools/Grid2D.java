@@ -44,7 +44,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.tensor.DTensor;
+import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
@@ -128,7 +128,7 @@ public class Grid2D implements Serializable {
     private final Var x;
     private final Var y;
 
-    private final DTensor values;
+    private final DoubleTensor values;
 
     public Grid2D(Var x, Var y) {
         this.x = x;

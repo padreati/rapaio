@@ -29,48 +29,12 @@
  *
  */
 
-package rapaio.math.tensor.dtype;
+package rapaio.math.tensor;
 
-import java.util.function.Function;
+public final class DTypes {
 
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.FTensor;
-
-public final class DTypeFloat extends DType<Float, FTensor> {
-
-    private static final String ID = "FLOAT";
-
-    public DTypeFloat() {
-        super(ID, (byte) 4, false);
-    }
-
-    @Override
-    public <M extends Number> Float castValue(M value) {
-        return value.floatValue();
-    }
-
-    @Override
-    public Float castValue(int value) {
-        return (float) value;
-    }
-
-    @Override
-    public Float castValue(float value) {
-        return value;
-    }
-
-    @Override
-    public Float castValue(double value) {
-        return (float) value;
-    }
-
-    @Override
-    public <M extends Number> Function<Float, M> castFunction(DType<M, ?> dType) {
-        return dType::castValue;
-    }
-
-    @Override
-    public boolean isNaN(Float value) {
-        return Float.isNaN(value);
-    }
+    public static final DType.DTypeByte BYTE = new DType.DTypeByte();
+    public static final DType.DTypeInteger INTEGER = new DType.DTypeInteger();
+    public static final DType.DTypeFloat FLOAT = new DType.DTypeFloat();
+    public static final DType.DTypeDouble DOUBLE = new DType.DTypeDouble();
 }

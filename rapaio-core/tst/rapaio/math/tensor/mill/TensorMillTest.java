@@ -41,11 +41,11 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.DTypes;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorMill;
 import rapaio.math.tensor.mill.varray.VectorizedArrayTensorMill;
 
 public class TensorMillTest {
@@ -60,9 +60,14 @@ public class TensorMillTest {
     @Test
     void mainTestLoop() {
 
-        VectorizedArrayTensorMill baseArrayEngine = new VectorizedArrayTensorMill();
-        testManager(baseArrayEngine, baseArrayEngine.ofType(DType.DOUBLE));
-        testManager(baseArrayEngine, baseArrayEngine.ofType(DType.FLOAT));
+        testManagerSuite(new VectorizedArrayTensorMill());
+        testManagerSuite(new VectorizedArrayTensorMill());
+    }
+
+    <N extends Number, T extends Tensor<N, T>> void testManagerSuite(TensorMill tensorMill) {
+        testManager(tensorMill, tensorMill.ofType(DTypes.DOUBLE));
+        testManager(tensorMill, tensorMill.ofType(DTypes.FLOAT));
+        testManager(tensorMill, tensorMill.ofType(DTypes.INTEGER));
     }
 
     <N extends Number, T extends Tensor<N, T>> void testManager(TensorMill tensorMill, TensorMill.OfType<N, T> ofType) {
@@ -100,7 +105,7 @@ public class TensorMillTest {
         }
     }
 
-    <N extends Number, T extends Tensor<N, T>>void testFull(TensorMill tensorMill, TensorMill.OfType<N, T> ofType) {
+    <N extends Number, T extends Tensor<N, T>> void testFull(TensorMill tensorMill, TensorMill.OfType<N, T> ofType) {
         var t = ofType.full(Shape.of(2, 3), ofType.dtype().castValue(5));
         assertEquals(2, t.rank());
         assertEquals(6, t.size());

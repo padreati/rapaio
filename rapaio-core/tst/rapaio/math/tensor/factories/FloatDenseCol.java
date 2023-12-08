@@ -31,7 +31,7 @@
 
 package rapaio.math.tensor.factories;
 
-import rapaio.math.tensor.FTensor;
+import rapaio.math.tensor.FloatTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
@@ -43,17 +43,17 @@ public final class FloatDenseCol extends FloatDense {
     }
 
     @Override
-    public FTensor seq(Shape shape) {
+    public FloatTensor seq(Shape shape) {
         return ofType.seq(shape, Order.F);
     }
 
     @Override
-    public FTensor zeros(Shape shape) {
+    public FloatTensor zeros(Shape shape) {
         return ofType.zeros(shape, Order.F);
     }
 
     @Override
-    public FTensor random(Shape shape) {
+    public FloatTensor random(Shape shape) {
         return ofType.random(shape, random, Order.F);
     }
 }

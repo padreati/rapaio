@@ -33,20 +33,20 @@ package rapaio.math.tensor.factories;
 
 import java.util.Random;
 
-import rapaio.math.tensor.DoubleTensor;
+import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
 import rapaio.util.collection.IntArrays;
 
-public final class DoubleDenseStride extends DoubleDense {
+public final class ByteDenseStride extends ByteDense {
 
-    public DoubleDenseStride(TensorMill manager) {
+    public ByteDenseStride(TensorMill manager) {
         super(manager);
     }
 
     @Override
-    public DoubleTensor seq(Shape shape) {
+    public ByteTensor seq(Shape shape) {
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
         IntArrays.shuffle(ordering, new Random(42));
@@ -69,15 +69,15 @@ public final class DoubleDenseStride extends DoubleDense {
         }
 
         int offset = 10;
-        var t = ofType.stride(shape, offset, strides, new double[offset + shape.size()]);
+        var t = ofType.stride(shape, offset, strides, new byte[offset + shape.size()]);
 
-        t.apply(Order.C, (i, p) -> (double) i);
+        t.apply(Order.C, (i, p) -> (byte) i);
 
         return t;
     }
 
     @Override
-    public DoubleTensor zeros(Shape shape) {
+    public ByteTensor zeros(Shape shape) {
         int offset = 10;
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
@@ -101,11 +101,11 @@ public final class DoubleDenseStride extends DoubleDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        return ofType.stride(shape, offset, strides, new double[offset + shape.size()]);
+        return ofType.stride(shape, offset, strides, new byte[offset + shape.size()]);
     }
 
     @Override
-    public DoubleTensor random(Shape shape) {
+    public ByteTensor random(Shape shape) {
         int offset = 10;
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
@@ -129,9 +129,11 @@ public final class DoubleDenseStride extends DoubleDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        double[] array = new double[offset + shape.size()];
+        byte[] array = new byte[offset + shape.size()];
+        byte[] buff = new byte[1];
         for (int i = 0; i < array.length; i++) {
-            array[i] = random.nextDouble();
+            random.nextBytes(buff);
+            array[i] = buff[0];
         }
         return ofType.stride(shape, offset, strides, array);
     }

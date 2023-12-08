@@ -31,16 +31,16 @@
 
 package rapaio.math.tensor;
 
-public interface DTensor extends Tensor<Double, DTensor> {
+public interface IntTensor extends Tensor<Integer, IntTensor> {
 
     @Override
-    default DType<Double, DTensor> dtype() {
-        return DType.DOUBLE;
+    default DType<Integer, IntTensor> dtype() {
+        return DTypes.INTEGER;
     }
 
     @Override
-    default Double get(int... indexes) {
-        return getDouble(indexes);
+    default Integer get(int... indexes) {
+        return getInt(indexes);
     }
 
     /**
@@ -49,13 +49,13 @@ public interface DTensor extends Tensor<Double, DTensor> {
      * dimension minus one.
      *
      * @param indexes indexed position
-     * @return unboxed double value
+     * @return unboxed int value
      */
-    double getDouble(int... indexes);
+    int getInt(int... indexes);
 
     @Override
-    default void set(Double value, int... indexes) {
-        setDouble(value, indexes);
+    default void set(Integer value, int... indexes) {
+        setInt(value, indexes);
     }
 
     /**
@@ -64,11 +64,11 @@ public interface DTensor extends Tensor<Double, DTensor> {
      * @param value unboxed value
      * @param indexes indexed position
      */
-    void setDouble(double value, int... indexes);
+    void setInt(int value, int... indexes);
 
     @Override
-    default Double ptrGet(int ptr) {
-        return ptrGetDouble(ptr);
+    default Integer ptrGet(int ptr) {
+        return ptrGetInteger(ptr);
     }
 
     /**
@@ -78,11 +78,11 @@ public interface DTensor extends Tensor<Double, DTensor> {
      * @param ptr data pointer
      * @return unboxed value
      */
-    double ptrGetDouble(int ptr);
+    int ptrGetInteger(int ptr);
 
     @Override
-    default void ptrSet(int ptr, Double value) {
-        ptrSetDouble(ptr, value);
+    default void ptrSet(int ptr, Integer value) {
+        ptrSetInteger(ptr, value);
     }
 
     /**
@@ -92,7 +92,7 @@ public interface DTensor extends Tensor<Double, DTensor> {
      * @param ptr data pointer
      * @param value unboxed value
      */
-    void ptrSetDouble(int ptr, double value);
+    void ptrSetInteger(int ptr, int value);
 
-    double[] toArray();
+    int[] toArray();
 }

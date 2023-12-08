@@ -33,7 +33,7 @@ package rapaio.math.tensor.factories;
 
 import java.util.Arrays;
 
-import rapaio.math.tensor.ITensor;
+import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
@@ -46,14 +46,14 @@ public final class IntegerDenseStrideView extends IntegerDense {
     }
 
     @Override
-    public ITensor seq(Shape shape) {
+    public IntTensor seq(Shape shape) {
         var t = zeros(shape);
         t.apply(Order.C, (i, p) -> i);
         return t;
     }
 
     @Override
-    public ITensor zeros(Shape shape) {
+    public IntTensor zeros(Shape shape) {
         int offset = 7;
         var l = StrideLayout.ofDense(shape, offset, Order.F);
         int[] strides = Arrays.copyOf(l.strides(), l.strides().length);
@@ -65,11 +65,11 @@ public final class IntegerDenseStrideView extends IntegerDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return mill.ofInt().stride(StrideLayout.of(shape, offset, strides), new double[len]);
+        return mill.ofInt().stride(StrideLayout.of(shape, offset, strides), new int[len]);
     }
 
     @Override
-    public ITensor random(Shape shape) {
+    public IntTensor random(Shape shape) {
         var t = zeros(shape);
         t.apply(Order.C, (pos, ptr) -> random.nextInt());
         return t;

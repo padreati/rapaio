@@ -33,7 +33,7 @@ package rapaio.math.tensor.factories;
 
 import java.util.Random;
 
-import rapaio.math.tensor.ITensor;
+import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
@@ -46,7 +46,7 @@ public final class IntegerDenseStride extends IntegerDense {
     }
 
     @Override
-    public ITensor seq(Shape shape) {
+    public IntTensor seq(Shape shape) {
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
         IntArrays.shuffle(ordering, new Random(42));
@@ -77,7 +77,7 @@ public final class IntegerDenseStride extends IntegerDense {
     }
 
     @Override
-    public ITensor zeros(Shape shape) {
+    public IntTensor zeros(Shape shape) {
         int offset = 10;
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
@@ -105,7 +105,7 @@ public final class IntegerDenseStride extends IntegerDense {
     }
 
     @Override
-    public ITensor random(Shape shape) {
+    public IntTensor random(Shape shape) {
         int offset = 10;
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());

@@ -31,7 +31,7 @@
 
 package rapaio.math.tensor.factories;
 
-import rapaio.math.tensor.DTensor;
+import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorMill;
@@ -43,17 +43,17 @@ public final class DoubleDenseCol extends DoubleDense {
     }
 
     @Override
-    public DTensor seq(Shape shape) {
+    public DoubleTensor seq(Shape shape) {
         return ofType.seq(shape, Order.F);
     }
 
     @Override
-    public DTensor zeros(Shape shape) {
+    public DoubleTensor zeros(Shape shape) {
         return ofType.zeros(shape, Order.F);
     }
 
     @Override
-    public DTensor random(Shape shape) {
+    public DoubleTensor random(Shape shape) {
         return ofType.random(shape, random, Order.F);
     }
 }

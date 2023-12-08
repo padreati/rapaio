@@ -94,7 +94,17 @@ public interface TensorMill {
 
         T random(Shape shape, Random random, Order order);
 
-        default T stride(Shape shape, Order order, float[] array) {
+        default T stride(Shape shape, Order order, byte[] array) {
+            return stride(StrideLayout.ofDense(shape, 0, order), array);
+        }
+
+        default T stride(StrideLayout layout, byte[] array) {
+            return stride(layout.shape(), layout.offset(), layout.strides(), array);
+        }
+
+        T stride(Shape shape, int offset, int[] strides, byte[] array);
+
+        default T stride(Shape shape, Order order, int[] array) {
             return stride(StrideLayout.ofDense(shape, 0, order), array);
         }
 
@@ -103,6 +113,10 @@ public interface TensorMill {
         }
 
         T stride(Shape shape, int offset, int[] strides, int[] array);
+
+        default T stride(Shape shape, Order order, float[] array) {
+            return stride(StrideLayout.ofDense(shape, 0, order), array);
+        }
 
         default T stride(StrideLayout layout, float[] array) {
             return stride(layout.shape(), layout.offset(), layout.strides(), array);
@@ -161,6 +175,30 @@ public interface TensorMill {
         return ofType(dType).random(shape, random, order);
     }
 
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, Order order, byte[] array) {
+        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), array);
+    }
+
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, StrideLayout layout, byte[] array) {
+        return ofType(dType).stride(layout.shape(), layout.offset(), layout.strides(), array);
+    }
+
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, int offset, int[] strides, byte[] array) {
+        return ofType(dType).stride(shape, offset, strides, array);
+    }
+
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, Order order, int[] array) {
+        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), array);
+    }
+
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, StrideLayout layout, int[] array) {
+        return ofType(dType).stride(layout.shape(), layout.offset(), layout.strides(), array);
+    }
+
+    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, int offset, int[] strides, int[] array) {
+        return ofType(dType).stride(shape, offset, strides, array);
+    }
+
     default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, Order order, float[] array) {
         return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), array);
     }
@@ -185,22 +223,27 @@ public interface TensorMill {
         return ofType(dType).stride(shape, offset, strides, array);
     }
 
-    OfType<Double, DTensor> ofDouble();
+    OfType<Double, DoubleTensor> ofDouble();
 
-    OfType<Float, FTensor> ofFloat();
+    OfType<Float, FloatTensor> ofFloat();
 
-    OfType<Integer, ITensor> ofInt();
+    OfType<Integer, IntTensor> ofInt();
+
+    OfType<Byte, ByteTensor> ofByte();
 
     @SuppressWarnings("unchecked")
     default <N extends Number, T extends Tensor<N, T>> OfType<N, T> ofType(DType<N, T> dType) {
-        if (dType.equals(DType.FLOAT)) {
+        if (dType.equals(DTypes.FLOAT)) {
             return (OfType<N, T>) ofFloat();
         }
-        if (dType.equals(DType.DOUBLE)) {
+        if (dType.equals(DTypes.DOUBLE)) {
             return (OfType<N, T>) ofDouble();
         }
-        if (dType.equals(DType.INTEGER)) {
+        if (dType.equals(DTypes.INTEGER)) {
             return (OfType<N, T>) ofInt();
+        }
+        if(dType.equals(DTypes.BYTE)) {
+            return (OfType<N, T>) ofByte();
         }
         return null;
     }

@@ -29,48 +29,31 @@
  *
  */
 
-package rapaio.math.tensor.dtype;
+package rapaio.math.tensor.factories;
 
-import java.util.function.Function;
+import rapaio.math.tensor.ByteTensor;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorMill;
 
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.ITensor;
+public final class ByteDenseRow extends ByteDense {
 
-public final class DTypeInteger extends DType<Integer, ITensor> {
-
-    private static final String ID = "INTEGER";
-
-    public DTypeInteger() {
-        super(ID, (byte)4, true);
+    public ByteDenseRow(TensorMill manager) {
+        super(manager);
     }
 
     @Override
-    public <M extends Number> Integer castValue(M value) {
-        return value.intValue();
+    public ByteTensor seq(Shape shape) {
+        return ofType.seq(shape, Order.C);
     }
 
     @Override
-    public Integer castValue(int value) {
-        return (int) value;
+    public ByteTensor zeros(Shape shape) {
+        return ofType.zeros(shape, Order.C);
     }
 
     @Override
-    public Integer castValue(float value) {
-        return (int) value;
-    }
-
-    @Override
-    public Integer castValue(double value) {
-        return (int) value;
-    }
-
-    @Override
-    public <M extends Number> Function<Integer, M> castFunction(DType<M, ?> dType) {
-        return dType::castValue;
-    }
-
-    @Override
-    public boolean isNaN(Integer value) {
-        return false;
+    public ByteTensor random(Shape shape) {
+        return ofType.random(shape, random, Order.C);
     }
 }

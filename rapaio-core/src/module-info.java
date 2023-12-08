@@ -51,7 +51,6 @@ module rapaio.core {
 
     exports rapaio.math;
     exports rapaio.math.tensor;
-    exports rapaio.math.tensor.dtype;
     exports rapaio.math.tensor.mill;
     exports rapaio.math.tensor.iterators;
     exports rapaio.math.tensor.layout;
