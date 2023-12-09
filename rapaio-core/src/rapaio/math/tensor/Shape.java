@@ -67,8 +67,19 @@ public final class Shape {
                         + Arrays.stream(dims).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "]");
             }
         }
+        /*
+        This limit is imposed by the maximum length of an allocated array in Java.
+        If there are other considerations, we could raise or lower this limit.
+         */
+        long longSize = 1;
+        for (int dim : dims) {
+            longSize *= dim;
+            if (longSize > Integer.MAX_VALUE - 2) {
+                throw new IllegalArgumentException("Shape exceeds maximum number of elements which is Integer.MAX_VALUE - 2");
+            }
+        }
         this.dims = dims;
-        this.size = IntArrays.prod(dims, 0, dims.length);
+        this.size = (int) longSize;
     }
 
     /**
@@ -140,7 +151,7 @@ public final class Shape {
      * Computes the position of the element for a given index in the specified order.
      *
      * @param askOrder desired order
-     * @param indexes     int array which described the element index
+     * @param indexes  int array which described the element index
      * @return position of the element with index in specified order
      */
     public int position(Order askOrder, int... indexes) {
