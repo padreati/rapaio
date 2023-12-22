@@ -48,7 +48,7 @@ public final class ByteDenseStrideView extends ByteDense {
     @Override
     public ByteTensor seq(Shape shape) {
         var t = zeros(shape);
-        t.apply(Order.C, (i, p) -> (byte) i);
+        t.apply_(Order.C, (i, p) -> (byte) i);
         return t;
     }
 
@@ -73,7 +73,7 @@ public final class ByteDenseStrideView extends ByteDense {
         var t = zeros(shape);
         byte[] buff = new byte[1];
         random.nextBytes(buff);
-        t.apply(Order.C, (pos, ptr) -> buff[0]);
+        t.apply_(Order.C, (pos, ptr) -> buff[0]);
         return t;
     }
 }

@@ -31,14 +31,22 @@
 
 package rapaio.datasets;
 
-import rapaio.data.*;
-import rapaio.io.ArffPersistence;
-import rapaio.io.Csv;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarBinary;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.VarLong;
+import rapaio.data.VarNominal;
+import rapaio.data.VarType;
+import rapaio.io.ArffPersistence;
+import rapaio.io.Csv;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -73,16 +81,6 @@ public class Datasets {
         } catch (IOException e) {
             throw new RuntimeException("Error loading old_faithful.tsv datasets.", e);
         }
-    }
-
-    public static Frame loadCarMpgDataset() throws IOException {
-        return Csv.instance()
-                .separatorChar.set(',')
-                .header.set(true)
-                .quotes.set(true)
-                .defaultTypes.set(VarType.DOUBLE)
-                .types.add(VarType.NOMINAL, "carname", "origin")
-                .read(Datasets.class, "carmpg.csv");
     }
 
     public static Frame loadSpamBase() throws IOException {
@@ -160,7 +158,7 @@ public class Datasets {
     }
 
     public static Frame loadSonar() throws IOException {
-        return new ArffPersistence().read(Datasets.class.getResourceAsStream("UCI/sonar.arff"));
+        return new ArffPersistence().read(Datasets.class.getResourceAsStream("sonar.arff"));
     }
 
     public static Frame loasSAheart() {
@@ -171,54 +169,6 @@ public class Datasets {
         } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage());
         }
-    }
-
-    public static Frame loadChestDataset() throws IOException {
-        return Csv.instance()
-                .separatorChar.set(',')
-                .quotes.set(true)
-                .defaultTypes.set(VarType.DOUBLE)
-                .read(Datasets.class, "chest.csv");
-    }
-
-    public static Frame loadMtcars() throws IOException {
-        return Csv.instance()
-                .read(Datasets.class, "mtcars.csv");
-    }
-
-    public static Frame loadOlympic() throws IOException {
-        return Csv.instance()
-                .quotes.set(false)
-                .types.add(VarType.DOUBLE, "Edition")
-                .read(Datasets.class, "olympic.csv");
-    }
-
-    public static Frame loadProstateCancer() throws IOException {
-        return Csv.instance()
-                .separatorChar.set('\t')
-                .defaultTypes.set(VarType.DOUBLE, VarType.NOMINAL)
-                .read(Datasets.class, "prostate.csv");
-    }
-
-    public static Frame loadCoverType() throws IOException {
-        return Csv.instance()
-                .quotes.set(true)
-                .read(Datasets.class.getResourceAsStream("covtype.csv"));
-    }
-
-
-    public static Frame loadVowelTrain() {
-        return Csv.instance()
-                .keepCols.set(t -> t != 0)
-                .types.add(VarType.NOMINAL, "y")
-                .readUrl("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/vowel.train");
-    }
-
-    public static Frame loadVowelTest() {
-        return Csv.instance()
-                .keepCols.set(t -> t != 0)
-                .types.add(VarType.NOMINAL, "y")
-                .readUrl("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/vowel.test");
     }
 
     public static Frame loadMyWeights() {

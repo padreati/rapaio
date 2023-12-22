@@ -100,6 +100,11 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
+        public DoubleTensor scalar(Double value) {
+            return stride(Shape.of(), 0, new int[0], new double[] {value});
+        }
+
+        @Override
         public BaseDoubleTensorStride zeros(Shape shape, Order order) {
             return new BaseDoubleTensorStride(parent, shape, 0, Order.autoFC(order), new double[shape.size()]);
         }
@@ -122,12 +127,12 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
 
         @Override
         public BaseDoubleTensorStride seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply(Order.C, (i, p) -> (double) i);
+            return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (double) i);
         }
 
         @Override
         public BaseDoubleTensorStride random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply(order, (i, p) -> random.nextDouble());
+            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextDouble());
         }
 
         @Override
@@ -177,6 +182,11 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
+        public FloatTensor scalar(Float value) {
+            return stride(Shape.of(), 0, new int[0], new float[] {value});
+        }
+
+        @Override
         public BaseFloatTensorStride zeros(Shape shape, Order order) {
             return new BaseFloatTensorStride(parent, shape, 0, Order.autoFC(order), new float[shape.size()]);
         }
@@ -199,12 +209,12 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
 
         @Override
         public BaseFloatTensorStride seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply(Order.C, (i, p) -> (float) i);
+            return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (float) i);
         }
 
         @Override
         public BaseFloatTensorStride random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply(order, (i, p) -> random.nextFloat());
+            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextFloat());
         }
 
         @Override
@@ -254,6 +264,11 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
+        public IntTensor scalar(Integer value) {
+            return stride(Shape.of(), 0, new int[0], new int[] {value});
+        }
+
+        @Override
         public BaseIntTensorStride zeros(Shape shape, Order order) {
             return new BaseIntTensorStride(parent, shape, 0, Order.autoFC(order), new int[shape.size()]);
         }
@@ -276,12 +291,12 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
 
         @Override
         public BaseIntTensorStride seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply(Order.C, (i, p) -> (int) i);
+            return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (int) i);
         }
 
         @Override
         public BaseIntTensorStride random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply(order, (i, p) -> random.nextInt());
+            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextInt());
         }
 
         @Override
@@ -331,6 +346,11 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
+        public ByteTensor scalar(Byte value) {
+            return stride(Shape.of(), 0, new int[0], new byte[] {value});
+        }
+
+        @Override
         public BaseByteTensorStride zeros(Shape shape, Order order) {
             return new BaseByteTensorStride(parent, shape, 0, Order.autoFC(order), new byte[shape.size()]);
         }
@@ -353,12 +373,12 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
 
         @Override
         public BaseByteTensorStride seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply(Order.C, (i, p) -> (byte) i);
+            return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (byte) i);
         }
 
         @Override
         public BaseByteTensorStride random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply(order, (i, p) -> {
+            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> {
                 byte[] buff = new byte[1];
                 random.nextBytes(buff);
                 return buff[0];

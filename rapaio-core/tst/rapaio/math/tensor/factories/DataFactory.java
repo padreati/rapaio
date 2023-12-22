@@ -66,6 +66,10 @@ public abstract class DataFactory<N extends Number, T extends Tensor<N, T>> {
 
     public abstract N sum(N x, N y);
 
+    public T scalar(N value) {
+        return ofType.scalar(value);
+    }
+
     public abstract T seq(Shape shape);
 
     public abstract T zeros(Shape shape);

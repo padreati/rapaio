@@ -48,7 +48,7 @@ public final class IntegerDenseStrideView extends IntegerDense {
     @Override
     public IntTensor seq(Shape shape) {
         var t = zeros(shape);
-        t.apply(Order.C, (i, p) -> i);
+        t.apply_(Order.C, (i, p) -> i);
         return t;
     }
 
@@ -71,7 +71,7 @@ public final class IntegerDenseStrideView extends IntegerDense {
     @Override
     public IntTensor random(Shape shape) {
         var t = zeros(shape);
-        t.apply(Order.C, (pos, ptr) -> random.nextInt());
+        t.apply_(Order.C, (pos, ptr) -> random.nextInt());
         return t;
     }
 }

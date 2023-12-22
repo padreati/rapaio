@@ -38,15 +38,18 @@ import rapaio.math.tensor.Tensor;
  */
 public final class TensorValidation {
 
-    @SafeVarargs
-    public static <N extends Number, T extends Tensor<N, T>> void sameShape(T t1, T t2, T... otherTensors) {
+    public static <N extends Number, T extends Tensor<N, T>> void sameShape(T t1, T t2) {
         if (!t1.shape().equals(t2.shape())) {
             throw new IllegalArgumentException("Tensors does not have the same shape.");
         }
-        for (var t : otherTensors) {
-            if (!t1.shape().equals(t.shape())) {
-                throw new IllegalArgumentException("Tensors does not have the same shape.");
-            }
+    }
+
+    public static <N extends Number, T extends Tensor<N, T>> void sameShapeOrScalar(T t1, T t2) {
+        if(t1.isScalar()||t2.isScalar()) {
+            return;
+        }
+        if (!t1.shape().equals(t2.shape())) {
+            throw new IllegalArgumentException("Tensors does not have the same shape.");
         }
     }
 }

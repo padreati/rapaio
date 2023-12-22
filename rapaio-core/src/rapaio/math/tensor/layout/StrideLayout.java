@@ -127,6 +127,9 @@ public final class StrideLayout implements Layout {
     }
 
     public int stride(int i) {
+        if(strides.length==0) {
+            return 1;
+        }
         return i >= 0 ? strides[i] : strides[i + strides.length];
     }
 

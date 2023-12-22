@@ -86,6 +86,10 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
         return layout().size();
     }
 
+    default boolean isScalar() {
+        return shape().dims().length == 0;
+    }
+
     /**
      * Creates a new tensor with a different shape. If possible, the data will not be copied.
      * If data is copied, the result will be a dense tensor of default order.
@@ -391,12 +395,12 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      */
     LoopIterator loopIterator(Order askOrder);
 
-    default T applyNew(IntIntBiFunction<N> fun) {
-        return applyNew(Order.defaultOrder(), fun);
+    default T apply(IntIntBiFunction<N> fun) {
+        return apply(Order.defaultOrder(), fun);
     }
 
-    default T applyNew(Order askOrder, IntIntBiFunction<N> fun) {
-        return copy(askOrder).apply(askOrder, fun);
+    default T apply(Order askOrder, IntIntBiFunction<N> fun) {
+        return copy(askOrder).apply_(askOrder, fun);
     }
 
     /**
@@ -409,253 +413,265 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param fun      function which produces values
      * @return new tensor with applied values
      */
-    T apply(Order askOrder, IntIntBiFunction<N> fun);
+    T apply_(Order askOrder, IntIntBiFunction<N> fun);
 
-    default T applyNew(Function<N, N> fun) {
-        return applyNew(Order.defaultOrder(), fun);
+    default T apply(Function<N, N> fun) {
+        return apply(Order.defaultOrder(), fun);
     }
 
-    default T applyNew(Order askOrder, Function<N, N> fun) {
-        return copy(askOrder).apply(fun);
+    default T apply(Order askOrder, Function<N, N> fun) {
+        return copy(askOrder).apply_(fun);
     }
 
-    T apply(Function<N, N> fun);
+    T apply_(Function<N, N> fun);
 
-    T fill(N value);
+    T fill_(N value);
 
-    T fillNan(N value);
+    T fillNan_(N value);
 
-    T clamp(N min, N max);
+    T clamp_(N min, N max);
 
-    default T absNew() {
-        return absNew(Order.defaultOrder());
+    default T abs() {
+        return abs(Order.defaultOrder());
     }
 
-    default T absNew(Order order) {
-        return copy(order).abs();
+    default T abs(Order order) {
+        return copy(order).abs_();
     }
 
-    T abs();
+    T abs_();
 
-    default T negateNew() {
-        return negateNew(Order.defaultOrder());
+    default T negate() {
+        return negate(Order.defaultOrder());
     }
 
-    default T negateNew(Order order) {
-        return copy(order).negate();
+    default T negate(Order order) {
+        return copy(order).negate_();
     }
 
-    T negate();
+    T negate_();
 
-    default T logNew() {
-        return logNew(Order.defaultOrder());
+    default T log() {
+        return log(Order.defaultOrder());
     }
 
-    default T logNew(Order order) {
-        return copy(order).log();
+    default T log(Order order) {
+        return copy(order).log_();
     }
 
-    T log();
+    T log_();
 
-    default T log1pNew() {
-        return log1pNew(Order.defaultOrder());
+    default T log1p() {
+        return log1p(Order.defaultOrder());
     }
 
-    default T log1pNew(Order order) {
-        return copy(order).log1p();
+    default T log1p(Order order) {
+        return copy(order).log1p_();
     }
 
-    T log1p();
+    T log1p_();
 
-    default T expNew() {
-        return expNew(Order.defaultOrder());
+    default T exp() {
+        return exp(Order.defaultOrder());
     }
 
-    default T expNew(Order order) {
-        return copy(order).exp();
+    default T exp(Order order) {
+        return copy(order).exp_();
     }
 
-    T exp();
+    T exp_();
 
-    default T expm1New() {
-        return expm1New(Order.defaultOrder());
+    default T expm1() {
+        return expm1(Order.defaultOrder());
     }
 
-    default T expm1New(Order order) {
-        return copy(order).expm1();
+    default T expm1(Order order) {
+        return copy(order).expm1_();
     }
 
-    T expm1();
+    T expm1_();
 
-    default T sinNew() {
-        return sinNew(Order.defaultOrder());
+    default T sin() {
+        return sin(Order.defaultOrder());
     }
 
-    default T sinNew(Order order) {
-        return copy(order).sin();
+    default T sin(Order order) {
+        return copy(order).sin_();
     }
 
-    T sin();
+    T sin_();
 
-    default T asinNew() {
-        return asinNew(Order.defaultOrder());
+    default T asin() {
+        return asin(Order.defaultOrder());
     }
 
-    default T asinNew(Order order) {
-        return copy(order).asin();
+    default T asin(Order order) {
+        return copy(order).asin_();
     }
 
-    T asin();
+    T asin_();
 
-    default T sinhNew() {
-        return sinhNew(Order.defaultOrder());
+    default T sinh() {
+        return sinh(Order.defaultOrder());
     }
 
-    default T sinhNew(Order order) {
-        return copy(order).sinh();
+    default T sinh(Order order) {
+        return copy(order).sinh_();
     }
 
-    T sinh();
+    T sinh_();
 
-    default T cosNew() {
-        return cosNew(Order.defaultOrder());
+    default T cos() {
+        return cos(Order.defaultOrder());
     }
 
-    default T cosNew(Order order) {
-        return copy(order).cos();
+    default T cos(Order order) {
+        return copy(order).cos_();
     }
 
-    T cos();
+    T cos_();
 
-    default T acosNew() {
-        return acosNew(Order.defaultOrder());
+    default T acos() {
+        return acos(Order.defaultOrder());
     }
 
-    default T acosNew(Order order) {
-        return copy(order).acos();
+    default T acos(Order order) {
+        return copy(order).acos_();
     }
 
-    T acos();
+    T acos_();
 
-    default T coshNew() {
-        return coshNew(Order.defaultOrder());
+    default T cosh() {
+        return cosh(Order.defaultOrder());
     }
 
-    default T coshNew(Order order) {
-        return copy(order).cosh();
+    default T cosh(Order order) {
+        return copy(order).cosh_();
     }
 
-    T cosh();
+    T cosh_();
 
-    default T tanNew() {
-        return tanNew(Order.defaultOrder());
+    default T tan() {
+        return tan(Order.defaultOrder());
     }
 
-    default T tanNew(Order order) {
-        return copy(order).tan();
+    default T tan(Order order) {
+        return copy(order).tan_();
     }
 
-    T tan();
+    T tan_();
 
-    default T atanNew() {
-        return atanNew(Order.defaultOrder());
+    default T atan() {
+        return atan(Order.defaultOrder());
     }
 
-    default T atanNew(Order order) {
-        return copy(order).atan();
+    default T atan(Order order) {
+        return copy(order).atan_();
     }
 
-    T atan();
+    T atan_();
 
-    default T tanhNew() {
-        return tanhNew(Order.defaultOrder());
+    default T tanh() {
+        return tanh(Order.defaultOrder());
     }
 
-    default T tanhNew(Order order) {
-        return copy(order).tanh();
+    default T tanh(Order order) {
+        return copy(order).tanh_();
     }
 
-    T tanh();
+    T tanh_();
 
-    default T addNew(T tensor) {
-        return addNew(tensor, Order.defaultOrder());
+    default T add(T tensor) {
+        return add(tensor, Order.defaultOrder());
     }
 
-    default T addNew(T tensor, Order order) {
-        return copy(order).add(tensor);
+    default T add(T tensor, Order order) {
+        if(isScalar()) {
+            return tensor.copy(order).add_(get());
+        }
+        return copy(order).add_(tensor);
     }
 
-    T add(T tensor);
+    T add_(T tensor);
 
-    default T subNew(T tensor) {
-        return subNew(tensor, Order.defaultOrder());
+    default T sub(T tensor) {
+        return sub(tensor, Order.defaultOrder());
     }
 
-    default T subNew(T tensor, Order order) {
-        return copy(order).sub(tensor);
+    default T sub(T tensor, Order order) {
+        if(isScalar()) {
+            return tensor.copy(order).sub_(get());
+        }
+        return copy(order).sub_(tensor);
     }
 
-    T sub(T tensor);
+    T sub_(T tensor);
 
-    default T mulNew(T tensor) {
-        return mulNew(tensor, Order.defaultOrder());
+    default T mul(T tensor) {
+        return mul(tensor, Order.defaultOrder());
     }
 
-    default T mulNew(T tensor, Order order) {
-        return copy(order).mul(tensor);
+    default T mul(T tensor, Order order) {
+        if(isScalar()) {
+            return tensor.copy(order).mul_(get());
+        }
+        return copy(order).mul_(tensor);
     }
 
-    T mul(T tensor);
+    T mul_(T tensor);
 
-    default T divNew(T tensor) {
-        return divNew(tensor, Order.defaultOrder());
+    default T div(T tensor) {
+        return div(tensor, Order.defaultOrder());
     }
 
-    default T divNew(T tensor, Order order) {
-        return copy(order).div(tensor);
+    default T div(T tensor, Order order) {
+        if(isScalar()) {
+            return tensor.copy(order).div_(get());
+        }
+        return copy(order).div_(tensor);
     }
 
-    T div(T tensor);
+    T div_(T tensor);
 
-    default T addNew(N value) {
-        return addNew(value, Order.defaultOrder());
+    default T add(N value) {
+        return add(value, Order.defaultOrder());
     }
 
-    default T addNew(N value, Order order) {
-        return copy(order).add(value);
+    default T add(N value, Order order) {
+        return copy(order).add_(value);
     }
 
-    T add(N value);
+    T add_(N value);
 
-    default T subNew(N value) {
-        return subNew(value, Order.defaultOrder());
+    default T sub(N value) {
+        return sub(value, Order.defaultOrder());
     }
 
-    default T subNew(N value, Order order) {
-        return copy(order).sub(value);
+    default T sub(N value, Order order) {
+        return copy(order).sub_(value);
     }
 
-    T sub(N value);
+    T sub_(N value);
 
-    default T mulNew(N value) {
-        return mulNew(value, Order.defaultOrder());
+    default T mul(N value) {
+        return mul(value, Order.defaultOrder());
     }
 
-    default T mulNew(N value, Order order) {
-        return copy(order).mul(value);
+    default T mul(N value, Order order) {
+        return copy(order).mul_(value);
     }
 
-    T mul(N value);
+    T mul_(N value);
 
-    default T divNew(N value) {
-        return divNew(value, Order.defaultOrder());
+    default T div(N value) {
+        return div(value, Order.defaultOrder());
     }
 
-    default T divNew(N value, Order order) {
-        return copy(order).div(value);
+    default T div(N value, Order order) {
+        return copy(order).div_(value);
     }
 
-    T div(N value);
+    T div_(N value);
 
     N vdot(T tensor);
 

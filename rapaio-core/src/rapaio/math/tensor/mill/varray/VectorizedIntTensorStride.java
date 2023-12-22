@@ -121,7 +121,7 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
     }
 
     @Override
-    public VectorizedIntTensorStride apply(Order askOrder, IntIntBiFunction<Integer> apply) {
+    public VectorizedIntTensorStride apply_(Order askOrder, IntIntBiFunction<Integer> apply) {
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
@@ -132,7 +132,7 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
     }
 
     @Override
-    public IntTensor fill(Integer value) {
+    public IntTensor fill_(Integer value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;
@@ -154,7 +154,7 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
     }
 
     @Override
-    public IntTensor fillNan(Integer value) {
+    public IntTensor fillNan_(Integer value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;
@@ -182,7 +182,7 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
     }
 
     @Override
-    public IntTensor clamp(Integer min, Integer max) {
+    public IntTensor clamp_(Integer min, Integer max) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;
@@ -269,8 +269,11 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
         }
     }
 
-    @Override
     protected void binaryVectorOp(TensorBinaryOp op, IntTensor b) {
+        if(b.isScalar()) {
+            binaryScalarOp(op, b.getInt());
+            return;
+        }
         var order = layout.storageFastOrder();
         order = order == Order.C || order == Order.F ? order : Order.defaultOrder();
 
@@ -312,7 +315,6 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
         }
     }
 
-    @Override
     protected void binaryScalarOp(TensorBinaryOp op, int value) {
         if (loop.step == 1) {
             binaryScalarOpUnit(op, value);

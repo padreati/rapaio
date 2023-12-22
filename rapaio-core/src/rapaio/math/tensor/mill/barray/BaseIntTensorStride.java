@@ -311,7 +311,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
     }
 
     @Override
-    public BaseIntTensorStride apply(Order askOrder, IntIntBiFunction<Integer> apply) {
+    public BaseIntTensorStride apply_(Order askOrder, IntIntBiFunction<Integer> apply) {
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
@@ -322,7 +322,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
     }
 
     @Override
-    public IntTensor apply(Function<Integer, Integer> fun) {
+    public IntTensor apply_(Function<Integer, Integer> fun) {
         var ptrIter = ptrIterator(Order.S);
         while (ptrIter.hasNext()) {
             int ptr = ptrIter.nextInt();
@@ -332,7 +332,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
     }
 
     @Override
-    public IntTensor fill(Integer value) {
+    public IntTensor fill_(Integer value) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 array[i] = value;
@@ -342,7 +342,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
     }
 
     @Override
-    public IntTensor fillNan(Integer value) {
+    public IntTensor fillNan_(Integer value) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 if (dtype().isNaN(array[i])) {
@@ -354,7 +354,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
     }
 
     @Override
-    public IntTensor clamp(Integer min, Integer max) {
+    public IntTensor clamp_(Integer min, Integer max) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 if (!dtype().isNaN(min) && array[i] < min) {
@@ -389,96 +389,101 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
     }
 
     @Override
-    public BaseIntTensorStride abs() {
+    public BaseIntTensorStride abs_() {
         unaryOp(TensorUnaryOp.ABS);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride negate() {
+    public BaseIntTensorStride negate_() {
         unaryOp(TensorUnaryOp.NEG);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride log() {
+    public BaseIntTensorStride log_() {
         unaryOp(TensorUnaryOp.LOG);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride log1p() {
+    public BaseIntTensorStride log1p_() {
         unaryOp(TensorUnaryOp.LOG1P);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride exp() {
+    public BaseIntTensorStride exp_() {
         unaryOp(TensorUnaryOp.EXP);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride expm1() {
+    public BaseIntTensorStride expm1_() {
         unaryOp(TensorUnaryOp.EXPM1);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride sin() {
+    public BaseIntTensorStride sin_() {
         unaryOp(TensorUnaryOp.SIN);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride asin() {
+    public BaseIntTensorStride asin_() {
         unaryOp(TensorUnaryOp.ASIN);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride sinh() {
+    public BaseIntTensorStride sinh_() {
         unaryOp(TensorUnaryOp.SINH);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride cos() {
+    public BaseIntTensorStride cos_() {
         unaryOp(TensorUnaryOp.COS);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride acos() {
+    public BaseIntTensorStride acos_() {
         unaryOp(TensorUnaryOp.ACOS);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride cosh() {
+    public BaseIntTensorStride cosh_() {
         unaryOp(TensorUnaryOp.COSH);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride tan() {
+    public BaseIntTensorStride tan_() {
         unaryOp(TensorUnaryOp.TAN);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride atan() {
+    public BaseIntTensorStride atan_() {
         unaryOp(TensorUnaryOp.ATAN);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride tanh() {
+    public BaseIntTensorStride tanh_() {
         unaryOp(TensorUnaryOp.TANH);
         return this;
     }
 
     protected void binaryVectorOp(TensorBinaryOp op, IntTensor b) {
+        if(b.isScalar()) {
+            binaryScalarOp(op, b.getInt());
+            return;
+        }
+        TensorValidation.sameShape(this, b);
         var order = layout.storageFastOrder();
         order = order == Order.S ? Order.defaultOrder() : order;
 
@@ -491,29 +496,25 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
     }
 
     @Override
-    public BaseIntTensorStride add(IntTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseIntTensorStride add_(IntTensor tensor) {
         binaryVectorOp(TensorBinaryOp.ADD, tensor);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride sub(IntTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseIntTensorStride sub_(IntTensor tensor) {
         binaryVectorOp(TensorBinaryOp.SUB, tensor);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride mul(IntTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseIntTensorStride mul_(IntTensor tensor) {
         binaryVectorOp(TensorBinaryOp.MUL, tensor);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride div(IntTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseIntTensorStride div_(IntTensor tensor) {
         binaryVectorOp(TensorBinaryOp.DIV, tensor);
         return this;
     }
@@ -531,25 +532,25 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
     }
 
     @Override
-    public BaseIntTensorStride add(Integer value) {
+    public BaseIntTensorStride add_(Integer value) {
         binaryScalarOp(TensorBinaryOp.ADD, value);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride sub(Integer value) {
+    public BaseIntTensorStride sub_(Integer value) {
         binaryScalarOp(TensorBinaryOp.SUB, value);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride mul(Integer value) {
+    public BaseIntTensorStride mul_(Integer value) {
         binaryScalarOp(TensorBinaryOp.MUL, value);
         return this;
     }
 
     @Override
-    public BaseIntTensorStride div(Integer value) {
+    public BaseIntTensorStride div_(Integer value) {
         binaryScalarOp(TensorBinaryOp.DIV, value);
         return this;
     }

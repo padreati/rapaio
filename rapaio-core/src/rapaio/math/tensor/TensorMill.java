@@ -64,6 +64,8 @@ public interface TensorMill {
 
         DType<N, T> dtype();
 
+        T scalar(N value);
+
         default T zeros(Shape shape) {
             return zeros(shape, Order.defaultOrder());
         }
@@ -135,8 +137,12 @@ public interface TensorMill {
         T stride(Shape shape, int offset, int[] strides, double[] array);
     }
 
+    default <N extends Number, T extends Tensor<N, T>> T scalar(DType<N, T> dType, N value) {
+        return ofType(dType).scalar(value);
+    }
+
     default <N extends Number, T extends Tensor<N, T>> T zeros(DType<N, T> dType, Shape shape) {
-        return zeros(dType, shape, Order.defaultOrder());
+        return ofType(dType).zeros(shape, Order.defaultOrder());
     }
 
     default <N extends Number, T extends Tensor<N, T>> T zeros(DType<N, T> dType, Shape shape, Order order) {

@@ -61,7 +61,7 @@ public interface IntTensor extends Tensor<Integer, IntTensor> {
     /**
      * Sets unboxed value at indexed position.
      *
-     * @param value unboxed value
+     * @param value   unboxed value
      * @param indexes indexed position
      */
     void setInt(int value, int... indexes);
@@ -89,7 +89,7 @@ public interface IntTensor extends Tensor<Integer, IntTensor> {
      * Sets value at given data pointer. A data pointer  is a position
      * in the internal memory layout.
      *
-     * @param ptr data pointer
+     * @param ptr   data pointer
      * @param value unboxed value
      */
     void ptrSetInteger(int ptr, int value);

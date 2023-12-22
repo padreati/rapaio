@@ -168,7 +168,7 @@ public class Grid2D implements Serializable {
      * @param fill fill value
      */
     public void fill(double fill) {
-        values.fill(fill);
+        values.fill_(fill);
     }
 
     /**
@@ -177,7 +177,7 @@ public class Grid2D implements Serializable {
      * @param fill fill value
      */
     public void fillNan(double fill) {
-        values.fillNan(fill);
+        values.fillNan_(fill);
     }
 
     /**

@@ -71,7 +71,7 @@ public final class ByteDenseStride extends ByteDense {
         int offset = 10;
         var t = ofType.stride(shape, offset, strides, new byte[offset + shape.size()]);
 
-        t.apply(Order.C, (i, p) -> (byte) i);
+        t.apply_(Order.C, (i, p) -> (byte) i);
 
         return t;
     }

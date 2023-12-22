@@ -61,7 +61,7 @@ public interface DoubleTensor extends Tensor<Double, DoubleTensor> {
     /**
      * Sets unboxed value at indexed position.
      *
-     * @param value unboxed value
+     * @param value   unboxed value
      * @param indexes indexed position
      */
     void setDouble(double value, int... indexes);
@@ -89,7 +89,7 @@ public interface DoubleTensor extends Tensor<Double, DoubleTensor> {
      * Sets value at given data pointer. A data pointer  is a position
      * in the internal memory layout.
      *
-     * @param ptr data pointer
+     * @param ptr   data pointer
      * @param value unboxed value
      */
     void ptrSetDouble(int ptr, double value);

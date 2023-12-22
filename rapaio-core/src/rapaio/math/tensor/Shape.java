@@ -104,6 +104,9 @@ public final class Shape {
      * @return size of the given dimension
      */
     public int dim(int pos) {
+        if(dims.length==0) {
+            return 1;
+        }
         return pos >= 0 ? dims[pos] : dims[dims.length + pos];
     }
 

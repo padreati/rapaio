@@ -122,6 +122,7 @@ public class TensorTest {
 
         void run() {
             buildTest();
+            scalarTest();
             testGet();
             testSet();
             testPrinting();
@@ -157,6 +158,19 @@ public class TensorTest {
                 assertEquals(t.dtype(), DTypes.INTEGER);
             }
             assertEquals(g.mill(), t.mill());
+        }
+
+        void scalarTest() {
+            var t1 = g.scalar(g.value(10));
+            var t2 = g.scalar(g.value(2));
+
+            assertTrue(g.scalar(g.value(20)).deepEquals(t1.mul(t2)));
+
+            var t3 = g.scalar(g.value(2));
+            var t4 = g.seq(Shape.of(2, 3));
+
+            assertTrue(t3.mul(t4).deepEquals(t4.mul(t3)));
+            assertTrue(t4.mul(t3).deepEquals(t4.mul(g.zeros(Shape.of(2, 3)).add(g.value(2)))));
         }
 
         void testGet() {
@@ -591,183 +605,183 @@ public class TensorTest {
 
         void testMathUnary() {
 
-            var t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
-            assertTrue(t1.absNew().deepEquals(t1.abs()));
-            t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-            assertTrue(t1.absNew(Order.F).deepEquals(t1.copy(Order.C).abs()));
-            assertTrue(t1.copy(Order.F).abs().deepEquals(t1.absNew(Order.C)));
+            var t1 = g.random(Shape.of(41, 31)).sub_(g.value(0.5));
+            assertTrue(t1.abs().deepEquals(t1.abs_()));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            assertTrue(t1.abs(Order.F).deepEquals(t1.copy(Order.C).abs_()));
+            assertTrue(t1.copy(Order.F).abs_().deepEquals(t1.abs(Order.C)));
 
-            t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-            assertTrue(t1.negateNew().deepEquals(t1.negate()));
-            t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-            assertTrue(t1.copy(Order.C).negate().deepEquals(t1.negateNew(Order.F)));
-            assertTrue(t1.copy(Order.F).negate().deepEquals(t1.negateNew(Order.C)));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            assertTrue(t1.negate().deepEquals(t1.negate_()));
+            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            assertTrue(t1.copy(Order.C).negate_().deepEquals(t1.negate(Order.F)));
+            assertTrue(t1.copy(Order.F).negate_().deepEquals(t1.negate(Order.C)));
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy().log().deepEquals(t1.logNew()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).log().deepEquals(t1.logNew(Order.F)));
-                assertTrue(t1.copy(Order.F).log().deepEquals(t1.logNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy().log_().deepEquals(t1.log()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).log_().deepEquals(t1.log(Order.F)));
+                assertTrue(t1.copy(Order.F).log_().deepEquals(t1.log(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).log());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).log_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.log1pNew().deepEquals(t1.log1p()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).log1p().deepEquals(t1.log1pNew(Order.F)));
-                assertTrue(t1.copy(Order.F).log1p().deepEquals(t1.log1pNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.log1p().deepEquals(t1.log1p_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).log1p_().deepEquals(t1.log1p(Order.F)));
+                assertTrue(t1.copy(Order.F).log1p_().deepEquals(t1.log1p(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).log1p());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).log1p_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.expNew().deepEquals(t1.exp()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).exp().deepEquals(t1.expNew(Order.F)));
-                assertTrue(t1.copy(Order.F).exp().deepEquals(t1.expNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.exp().deepEquals(t1.exp_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).exp_().deepEquals(t1.exp(Order.F)));
+                assertTrue(t1.copy(Order.F).exp_().deepEquals(t1.exp(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).exp());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).exp_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.expm1New().deepEquals(t1.copy().expm1()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).expm1().deepEquals(t1.expm1New(Order.F)));
-                assertTrue(t1.copy(Order.F).expm1().deepEquals(t1.expm1New(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.expm1().deepEquals(t1.copy().expm1_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).expm1_().deepEquals(t1.expm1(Order.F)));
+                assertTrue(t1.copy(Order.F).expm1_().deepEquals(t1.expm1(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).expm1());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).expm1_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.sinNew().deepEquals(t1.sin()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).sin().deepEquals(t1.sinNew(Order.F)));
-                assertTrue(t1.copy(Order.F).sin().deepEquals(t1.sinNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.sin().deepEquals(t1.sin_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).sin_().deepEquals(t1.sin(Order.F)));
+                assertTrue(t1.copy(Order.F).sin_().deepEquals(t1.sin(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).sin());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).sin_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.asinNew().deepEquals(t1.asin()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).asin().deepEquals(t1.asinNew(Order.F)));
-                assertTrue(t1.copy(Order.F).asin().deepEquals(t1.asinNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.asin().deepEquals(t1.asin_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).asin_().deepEquals(t1.asin(Order.F)));
+                assertTrue(t1.copy(Order.F).asin_().deepEquals(t1.asin(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).asin());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).asin_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.sinhNew().deepEquals(t1.sinh()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).sinh().deepEquals(t1.sinhNew(Order.F)));
-                assertTrue(t1.copy(Order.F).sinh().deepEquals(t1.sinhNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.sinh().deepEquals(t1.sinh_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).sinh_().deepEquals(t1.sinh(Order.F)));
+                assertTrue(t1.copy(Order.F).sinh_().deepEquals(t1.sinh(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).sinh());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).sinh_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.cosNew().deepEquals(t1.cos()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).cos().deepEquals(t1.cosNew(Order.F)));
-                assertTrue(t1.copy(Order.F).cos().deepEquals(t1.cosNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.cos().deepEquals(t1.cos_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).cos_().deepEquals(t1.cos(Order.F)));
+                assertTrue(t1.copy(Order.F).cos_().deepEquals(t1.cos(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).cos());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).cos_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.acosNew().deepEquals(t1.acos()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).acos().deepEquals(t1.acosNew(Order.F)));
-                assertTrue(t1.copy(Order.F).acos().deepEquals(t1.acosNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.acos().deepEquals(t1.acos_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).acos_().deepEquals(t1.acos(Order.F)));
+                assertTrue(t1.copy(Order.F).acos_().deepEquals(t1.acos(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).acos());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).acos_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.coshNew().deepEquals(t1.cosh()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).cosh().deepEquals(t1.coshNew(Order.F)));
-                assertTrue(t1.copy(Order.F).cosh().deepEquals(t1.coshNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.cosh().deepEquals(t1.cosh_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).cosh_().deepEquals(t1.cosh(Order.F)));
+                assertTrue(t1.copy(Order.F).cosh_().deepEquals(t1.cosh(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).cosh());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).cosh_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.tanNew().deepEquals(t1.tan()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).tan().deepEquals(t1.tanNew(Order.F)));
-                assertTrue(t1.copy(Order.F).tan().deepEquals(t1.tanNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.tan().deepEquals(t1.tan_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).tan_().deepEquals(t1.tan(Order.F)));
+                assertTrue(t1.copy(Order.F).tan_().deepEquals(t1.tan(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).tan());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).tan_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.atanNew().deepEquals(t1.atan()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).atan().deepEquals(t1.atanNew(Order.F)));
-                assertTrue(t1.copy(Order.F).atan().deepEquals(t1.atanNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.atan().deepEquals(t1.atan_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).atan_().deepEquals(t1.atan(Order.F)));
+                assertTrue(t1.copy(Order.F).atan_().deepEquals(t1.atan(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).atan());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).atan_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
             if (g.dType().isFloat()) {
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.tanhNew().deepEquals(t1.tanh()));
-                t1 = g.random(Shape.of(41, 31)).subNew(g.value(0.5));
-                assertTrue(t1.copy(Order.C).tanh().deepEquals(t1.tanhNew(Order.F)));
-                assertTrue(t1.copy(Order.F).tanh().deepEquals(t1.tanhNew(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.tanh().deepEquals(t1.tanh_()));
+                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                assertTrue(t1.copy(Order.C).tanh_().deepEquals(t1.tanh(Order.F)));
+                assertTrue(t1.copy(Order.F).tanh_().deepEquals(t1.tanh(Order.C)));
             } else {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).tanh());
+                var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).tanh_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
         }
 
         void testMathBinaryScalar() {
             var t = g.seq(Shape.of(2, 3, 2));
-            var c = t.addNew(g.value(10));
-            assertTrue(t.add(g.value(10)).deepEquals(c));
+            var c = t.add(g.value(10));
+            assertTrue(t.add_(g.value(10)).deepEquals(c));
 
             t = g.seq(Shape.of(2, 3, 2));
-            c = t.subNew(g.value(2));
-            assertTrue(t.sub(g.value(2)).deepEquals(c));
+            c = t.sub(g.value(2));
+            assertTrue(t.sub_(g.value(2)).deepEquals(c));
 
             t = g.seq(Shape.of(2, 3, 2));
-            c = t.mulNew(g.value(5));
-            assertTrue(t.mul(g.value(5)).deepEquals(c));
+            c = t.mul(g.value(5));
+            assertTrue(t.mul_(g.value(5)).deepEquals(c));
 
             t = g.seq(Shape.of(2, 3, 2));
-            c = t.divNew(g.value(4));
-            assertTrue(t.div(g.value(4)).deepEquals(c));
+            c = t.div(g.value(4));
+            assertTrue(t.div_(g.value(4)).deepEquals(c));
 
             t = g.seq(Shape.of(2, 3, 2));
             c = t.copy();
-            assertTrue(c.deepEquals(t.add(g.value(10)).sub(g.value(10))));
-            assertTrue(c.deepEquals(t.mulNew(g.value(2)).divNew(g.value(2))));
+            assertTrue(c.deepEquals(t.add_(g.value(10)).sub_(g.value(10))));
+            assertTrue(c.deepEquals(t.mul(g.value(2)).div(g.value(2))));
         }
 
         void testMathBinaryVector() {
@@ -779,22 +793,22 @@ public class TensorTest {
             var t2 = g.random(shape);
             var c2 = t2.copy();
 
-            assertTrue(c1.addNew(c2).deepEquals(t1.add(t2)));
+            assertTrue(c1.add(c2).deepEquals(t1.add_(t2)));
 
             t1 = g.seq(shape);
-            assertTrue(c1.subNew(c2).deepEquals(t1.sub(t2)));
+            assertTrue(c1.sub(c2).deepEquals(t1.sub_(t2)));
 
             t1 = g.seq(shape);
-            assertTrue(c1.mulNew(c2).deepEquals(t1.mul(t2)));
+            assertTrue(c1.mul(c2).deepEquals(t1.mul_(t2)));
 
             t1 = g.seq(shape);
-            assertTrue(c1.divNew(c2).deepEquals(t1.div(t2)));
+            assertTrue(c1.div(c2).deepEquals(t1.div_(t2)));
 
             t1 = g.seq(shape);
-            assertTrue(c1.addNew(c2).subNew(c2).deepEquals(t1.add(t2).sub(t2)));
+            assertTrue(c1.add(c2).sub(c2).deepEquals(t1.add_(t2).sub_(t2)));
 
             t1 = g.seq(shape);
-            assertTrue(c1.mulNew(c2).divNew(c2).deepEquals(t1.mul(t2).div(t2)));
+            assertTrue(c1.mul(c2).div(c2).deepEquals(t1.mul_(t2).div_(t2)));
         }
 
         void vdotTest() {
@@ -839,7 +853,7 @@ public class TensorTest {
             assertEquals(Shape.of(200), r1.shape());
 
             for (int i = 0; i < 200; i++) {
-                assertEquals(v1.addNew(g.value(i * 31)).vdot(v1), r1.get(i));
+                assertEquals(v1.add(g.value(i * 31)).vdot(v1), r1.get(i));
             }
 
             var r2 = v1.unsqueeze(0).mv(v1);
@@ -1136,8 +1150,8 @@ public class TensorTest {
             assertEquals(sum2, t2.sum().doubleValue());
             assertEquals(sum2 / size, stat2.mean().doubleValue(), 1e-5);
 
-            var diff2 = t2.subNew(stat2.mean());
-            var std2 = Math.sqrt(diff2.mulNew(diff2).divNew(g.value(t2.size())).sum().doubleValue());
+            var diff2 = t2.sub(stat2.mean());
+            var std2 = Math.sqrt(diff2.mul(diff2).div(g.value(t2.size())).sum().doubleValue());
             assertEquals(std2, stat2.std().doubleValue(), 1e-3);
 
             int k = 119;
@@ -1153,8 +1167,8 @@ public class TensorTest {
             assertEquals(0.5, stat3.nanMean().doubleValue(), 1e-3);
             double mean3 = stat3.nanMean().doubleValue();
             double count3 = t3.size() - t3.nanCount();
-            var diff3 = t3.subNew(g.value(mean3));
-            double var3 = diff3.mulNew(diff3).nanSum().doubleValue() / count3;
+            var diff3 = t3.sub(g.value(mean3));
+            double var3 = diff3.mul(diff3).nanSum().doubleValue() / count3;
             assertEquals(Math.sqrt(var3), stat3.nanStd().doubleValue(), 1e-3);
 
             assertEquals(t3.size() - t3.nanCount(), stat3.nanSize());

@@ -311,7 +311,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
     }
 
     @Override
-    public BaseByteTensorStride apply(Order askOrder, IntIntBiFunction<Byte> apply) {
+    public BaseByteTensorStride apply_(Order askOrder, IntIntBiFunction<Byte> apply) {
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
@@ -322,7 +322,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
     }
 
     @Override
-    public ByteTensor apply(Function<Byte, Byte> fun) {
+    public ByteTensor apply_(Function<Byte, Byte> fun) {
         var ptrIter = ptrIterator(Order.S);
         while (ptrIter.hasNext()) {
             int ptr = ptrIter.nextInt();
@@ -332,7 +332,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
     }
 
     @Override
-    public ByteTensor fill(Byte value) {
+    public ByteTensor fill_(Byte value) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 array[i] = value;
@@ -342,7 +342,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
     }
 
     @Override
-    public ByteTensor fillNan(Byte value) {
+    public ByteTensor fillNan_(Byte value) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 if (dtype().isNaN(array[i])) {
@@ -354,7 +354,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
     }
 
     @Override
-    public ByteTensor clamp(Byte min, Byte max) {
+    public ByteTensor clamp_(Byte min, Byte max) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 if (!dtype().isNaN(min) && array[i] < min) {
@@ -389,96 +389,101 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
     }
 
     @Override
-    public BaseByteTensorStride abs() {
+    public BaseByteTensorStride abs_() {
         unaryOp(TensorUnaryOp.ABS);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride negate() {
+    public BaseByteTensorStride negate_() {
         unaryOp(TensorUnaryOp.NEG);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride log() {
+    public BaseByteTensorStride log_() {
         unaryOp(TensorUnaryOp.LOG);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride log1p() {
+    public BaseByteTensorStride log1p_() {
         unaryOp(TensorUnaryOp.LOG1P);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride exp() {
+    public BaseByteTensorStride exp_() {
         unaryOp(TensorUnaryOp.EXP);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride expm1() {
+    public BaseByteTensorStride expm1_() {
         unaryOp(TensorUnaryOp.EXPM1);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride sin() {
+    public BaseByteTensorStride sin_() {
         unaryOp(TensorUnaryOp.SIN);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride asin() {
+    public BaseByteTensorStride asin_() {
         unaryOp(TensorUnaryOp.ASIN);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride sinh() {
+    public BaseByteTensorStride sinh_() {
         unaryOp(TensorUnaryOp.SINH);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride cos() {
+    public BaseByteTensorStride cos_() {
         unaryOp(TensorUnaryOp.COS);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride acos() {
+    public BaseByteTensorStride acos_() {
         unaryOp(TensorUnaryOp.ACOS);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride cosh() {
+    public BaseByteTensorStride cosh_() {
         unaryOp(TensorUnaryOp.COSH);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride tan() {
+    public BaseByteTensorStride tan_() {
         unaryOp(TensorUnaryOp.TAN);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride atan() {
+    public BaseByteTensorStride atan_() {
         unaryOp(TensorUnaryOp.ATAN);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride tanh() {
+    public BaseByteTensorStride tanh_() {
         unaryOp(TensorUnaryOp.TANH);
         return this;
     }
 
     protected void binaryVectorOp(TensorBinaryOp op, ByteTensor b) {
+        if(b.isScalar()) {
+            binaryScalarOp(op, b.getByte());
+            return;
+        }
+        TensorValidation.sameShape(this, b);
         var order = layout.storageFastOrder();
         order = order == Order.S ? Order.defaultOrder() : order;
 
@@ -491,29 +496,25 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
     }
 
     @Override
-    public BaseByteTensorStride add(ByteTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseByteTensorStride add_(ByteTensor tensor) {
         binaryVectorOp(TensorBinaryOp.ADD, tensor);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride sub(ByteTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseByteTensorStride sub_(ByteTensor tensor) {
         binaryVectorOp(TensorBinaryOp.SUB, tensor);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride mul(ByteTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseByteTensorStride mul_(ByteTensor tensor) {
         binaryVectorOp(TensorBinaryOp.MUL, tensor);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride div(ByteTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseByteTensorStride div_(ByteTensor tensor) {
         binaryVectorOp(TensorBinaryOp.DIV, tensor);
         return this;
     }
@@ -531,25 +532,25 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
     }
 
     @Override
-    public BaseByteTensorStride add(Byte value) {
+    public BaseByteTensorStride add_(Byte value) {
         binaryScalarOp(TensorBinaryOp.ADD, value);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride sub(Byte value) {
+    public BaseByteTensorStride sub_(Byte value) {
         binaryScalarOp(TensorBinaryOp.SUB, value);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride mul(Byte value) {
+    public BaseByteTensorStride mul_(Byte value) {
         binaryScalarOp(TensorBinaryOp.MUL, value);
         return this;
     }
 
     @Override
-    public BaseByteTensorStride div(Byte value) {
+    public BaseByteTensorStride div_(Byte value) {
         binaryScalarOp(TensorBinaryOp.DIV, value);
         return this;
     }

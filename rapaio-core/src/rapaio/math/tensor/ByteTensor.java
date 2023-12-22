@@ -61,7 +61,7 @@ public interface ByteTensor extends Tensor<Byte, ByteTensor> {
     /**
      * Sets unboxed value at indexed position.
      *
-     * @param value unboxed value
+     * @param value   unboxed value
      * @param indexes indexed position
      */
     void setByte(byte value, int... indexes);
@@ -89,7 +89,7 @@ public interface ByteTensor extends Tensor<Byte, ByteTensor> {
      * Sets value at given data pointer. A data pointer  is a position
      * in the internal memory layout.
      *
-     * @param ptr data pointer
+     * @param ptr   data pointer
      * @param value unboxed value
      */
     void ptrSetByte(int ptr, byte value);

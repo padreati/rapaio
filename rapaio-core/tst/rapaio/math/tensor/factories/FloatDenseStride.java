@@ -71,7 +71,7 @@ public final class FloatDenseStride extends FloatDense {
         int offset = 10;
         var t = ofType.stride(shape, offset, strides, new float[offset + shape.size()]);
 
-        t.apply(Order.C, (i, p) -> (float) i);
+        t.apply_(Order.C, (i, p) -> (float) i);
 
         return t;
     }

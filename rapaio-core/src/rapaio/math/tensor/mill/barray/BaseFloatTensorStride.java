@@ -311,7 +311,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
     }
 
     @Override
-    public BaseFloatTensorStride apply(Order askOrder, IntIntBiFunction<Float> apply) {
+    public BaseFloatTensorStride apply_(Order askOrder, IntIntBiFunction<Float> apply) {
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
@@ -322,7 +322,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
     }
 
     @Override
-    public FloatTensor apply(Function<Float, Float> fun) {
+    public FloatTensor apply_(Function<Float, Float> fun) {
         var ptrIter = ptrIterator(Order.S);
         while (ptrIter.hasNext()) {
             int ptr = ptrIter.nextInt();
@@ -332,7 +332,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
     }
 
     @Override
-    public FloatTensor fill(Float value) {
+    public FloatTensor fill_(Float value) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 array[i] = value;
@@ -342,7 +342,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
     }
 
     @Override
-    public FloatTensor fillNan(Float value) {
+    public FloatTensor fillNan_(Float value) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 if (dtype().isNaN(array[i])) {
@@ -354,7 +354,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
     }
 
     @Override
-    public FloatTensor clamp(Float min, Float max) {
+    public FloatTensor clamp_(Float min, Float max) {
         for (int offset : loop.offsets) {
             for (int i = offset; i < loop.bound + offset; i += loop.step) {
                 if (!dtype().isNaN(min) && array[i] < min) {
@@ -389,96 +389,101 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
     }
 
     @Override
-    public BaseFloatTensorStride abs() {
+    public BaseFloatTensorStride abs_() {
         unaryOp(TensorUnaryOp.ABS);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride negate() {
+    public BaseFloatTensorStride negate_() {
         unaryOp(TensorUnaryOp.NEG);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride log() {
+    public BaseFloatTensorStride log_() {
         unaryOp(TensorUnaryOp.LOG);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride log1p() {
+    public BaseFloatTensorStride log1p_() {
         unaryOp(TensorUnaryOp.LOG1P);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride exp() {
+    public BaseFloatTensorStride exp_() {
         unaryOp(TensorUnaryOp.EXP);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride expm1() {
+    public BaseFloatTensorStride expm1_() {
         unaryOp(TensorUnaryOp.EXPM1);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride sin() {
+    public BaseFloatTensorStride sin_() {
         unaryOp(TensorUnaryOp.SIN);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride asin() {
+    public BaseFloatTensorStride asin_() {
         unaryOp(TensorUnaryOp.ASIN);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride sinh() {
+    public BaseFloatTensorStride sinh_() {
         unaryOp(TensorUnaryOp.SINH);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride cos() {
+    public BaseFloatTensorStride cos_() {
         unaryOp(TensorUnaryOp.COS);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride acos() {
+    public BaseFloatTensorStride acos_() {
         unaryOp(TensorUnaryOp.ACOS);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride cosh() {
+    public BaseFloatTensorStride cosh_() {
         unaryOp(TensorUnaryOp.COSH);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride tan() {
+    public BaseFloatTensorStride tan_() {
         unaryOp(TensorUnaryOp.TAN);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride atan() {
+    public BaseFloatTensorStride atan_() {
         unaryOp(TensorUnaryOp.ATAN);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride tanh() {
+    public BaseFloatTensorStride tanh_() {
         unaryOp(TensorUnaryOp.TANH);
         return this;
     }
 
     protected void binaryVectorOp(TensorBinaryOp op, FloatTensor b) {
+        if(b.isScalar()) {
+            binaryScalarOp(op, b.getFloat());
+            return;
+        }
+        TensorValidation.sameShape(this, b);
         var order = layout.storageFastOrder();
         order = order == Order.S ? Order.defaultOrder() : order;
 
@@ -491,29 +496,25 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
     }
 
     @Override
-    public BaseFloatTensorStride add(FloatTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseFloatTensorStride add_(FloatTensor tensor) {
         binaryVectorOp(TensorBinaryOp.ADD, tensor);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride sub(FloatTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseFloatTensorStride sub_(FloatTensor tensor) {
         binaryVectorOp(TensorBinaryOp.SUB, tensor);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride mul(FloatTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseFloatTensorStride mul_(FloatTensor tensor) {
         binaryVectorOp(TensorBinaryOp.MUL, tensor);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride div(FloatTensor tensor) {
-        TensorValidation.sameShape(this, tensor);
+    public BaseFloatTensorStride div_(FloatTensor tensor) {
         binaryVectorOp(TensorBinaryOp.DIV, tensor);
         return this;
     }
@@ -531,25 +532,25 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
     }
 
     @Override
-    public BaseFloatTensorStride add(Float value) {
+    public BaseFloatTensorStride add_(Float value) {
         binaryScalarOp(TensorBinaryOp.ADD, value);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride sub(Float value) {
+    public BaseFloatTensorStride sub_(Float value) {
         binaryScalarOp(TensorBinaryOp.SUB, value);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride mul(Float value) {
+    public BaseFloatTensorStride mul_(Float value) {
         binaryScalarOp(TensorBinaryOp.MUL, value);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride div(Float value) {
+    public BaseFloatTensorStride div_(Float value) {
         binaryScalarOp(TensorBinaryOp.DIV, value);
         return this;
     }

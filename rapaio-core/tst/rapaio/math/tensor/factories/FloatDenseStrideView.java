@@ -48,7 +48,7 @@ public final class FloatDenseStrideView extends FloatDense {
     @Override
     public FloatTensor seq(Shape shape) {
         var t = zeros(shape);
-        t.apply(Order.C, (i, p) -> (float) i);
+        t.apply_(Order.C, (i, p) -> (float) i);
         return t;
     }
 
@@ -71,7 +71,7 @@ public final class FloatDenseStrideView extends FloatDense {
     @Override
     public FloatTensor random(Shape shape) {
         var t = zeros(shape);
-        t.apply(Order.C, (pos, ptr) -> random.nextFloat());
+        t.apply_(Order.C, (pos, ptr) -> random.nextFloat());
         return t;
     }
 }

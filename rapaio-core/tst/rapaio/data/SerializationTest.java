@@ -40,7 +40,6 @@ public class SerializationTest {
     @Test
     void testFrames() throws IOException, ClassNotFoundException {
         testFrame(Datasets.loadIrisDataset());
-        testFrame(Datasets.loadCarMpgDataset());
         testFrame(Datasets.loadRandom(new Random()));
     }
 

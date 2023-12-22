@@ -121,7 +121,7 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
     }
 
     @Override
-    public VectorizedDoubleTensorStride apply(Order askOrder, IntIntBiFunction<Double> apply) {
+    public VectorizedDoubleTensorStride apply_(Order askOrder, IntIntBiFunction<Double> apply) {
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
@@ -132,7 +132,7 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
     }
 
     @Override
-    public DoubleTensor fill(Double value) {
+    public DoubleTensor fill_(Double value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;
@@ -154,7 +154,7 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
     }
 
     @Override
-    public DoubleTensor fillNan(Double value) {
+    public DoubleTensor fillNan_(Double value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;
@@ -182,7 +182,7 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
     }
 
     @Override
-    public DoubleTensor clamp(Double min, Double max) {
+    public DoubleTensor clamp_(Double min, Double max) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;
@@ -269,8 +269,11 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
         }
     }
 
-    @Override
     protected void binaryVectorOp(TensorBinaryOp op, DoubleTensor b) {
+        if(b.isScalar()) {
+            binaryScalarOp(op, b.getDouble());
+            return;
+        }
         var order = layout.storageFastOrder();
         order = order == Order.C || order == Order.F ? order : Order.defaultOrder();
 
@@ -312,7 +315,6 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
         }
     }
 
-    @Override
     protected void binaryScalarOp(TensorBinaryOp op, double value) {
         if (loop.step == 1) {
             binaryScalarOpUnit(op, value);

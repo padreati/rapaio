@@ -71,7 +71,7 @@ public final class IntegerDenseStride extends IntegerDense {
         int offset = 10;
         var t = ofType.stride(shape, offset, strides, new int[offset + shape.size()]);
 
-        t.apply(Order.C, (i, p) -> i);
+        t.apply_(Order.C, (i, p) -> i);
 
         return t;
     }
