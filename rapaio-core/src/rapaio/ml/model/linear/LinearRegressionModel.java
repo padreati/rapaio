@@ -40,7 +40,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegressionModel> {
 

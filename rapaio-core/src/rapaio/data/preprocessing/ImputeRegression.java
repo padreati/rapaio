@@ -40,7 +40,7 @@ import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
 public class ImputeRegression extends AbstractTransform {
 

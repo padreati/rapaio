@@ -41,7 +41,7 @@ import rapaio.math.linear.DVector;
  * where it is known in advance an approximately good step size so any calculation can
  * be avoided, or for simulation purposes.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
 public class LearningRateLineSearch implements LineSearch {
 

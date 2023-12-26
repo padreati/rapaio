@@ -43,7 +43,7 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/30/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/30/19.
  */
 public class RenameVars extends AbstractTransform {
 

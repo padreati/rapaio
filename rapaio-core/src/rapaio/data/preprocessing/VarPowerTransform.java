@@ -41,7 +41,7 @@ import rapaio.printer.opt.POpt;
 
 /**
  * Filter to create monotonic power transformations
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
 public class VarPowerTransform extends AbstractVarTransform {
 

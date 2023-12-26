@@ -43,7 +43,7 @@ import rapaio.printer.opt.POpt;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/23/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/23/18.
  */
 public abstract class AbstractUnique implements Unique {
 

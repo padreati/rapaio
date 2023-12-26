@@ -42,7 +42,7 @@ import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LearningRateLineSearch;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/31/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/31/21.
  */
 public class SteepestDescentSolverTest {
 

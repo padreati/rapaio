@@ -63,7 +63,7 @@ import rapaio.printer.opt.POpt;
  *     sequentially, repeating headers</li>
  * </ul>
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/5/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/5/18.
  */
 public class TextTable {
 

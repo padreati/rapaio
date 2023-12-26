@@ -63,7 +63,7 @@ import rapaio.printer.Format;
  * By default, adding this artist will turn all markers and tickers for the given axes.
  * If one wants a different behaviour it must turn them on explicitly.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/16.
  */
 public class CorrGram extends Artist {
 

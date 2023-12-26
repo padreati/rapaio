@@ -41,7 +41,7 @@ import rapaio.ml.model.ensemble.CForest;
 /**
  * Principal component analysis decomposition test
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
  */
 public class PCATest {
 

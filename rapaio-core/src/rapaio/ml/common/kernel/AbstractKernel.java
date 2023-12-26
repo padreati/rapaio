@@ -41,7 +41,7 @@ import rapaio.ml.common.kernel.cache.MapKernelCache;
 import rapaio.ml.common.kernel.cache.SolidKernelCache;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 public abstract class AbstractKernel implements Kernel {
 

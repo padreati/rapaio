@@ -55,7 +55,7 @@ import rapaio.printer.opt.POpt;
  * distributed as a chi-square with n_Z(n_X-1)(n_Y-1) degrees
  * of freedom.
  * <p/>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/2/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/2/17.
  *
  * @see <a href="https://onlinecourses.science.psu.edu/stat504/node/112">https://onlinecourses.science.psu.edu/stat504/node/112</a>
  */

@@ -34,7 +34,7 @@ import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/3/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/3/16.
  */
 public class RandomProjectionTest {
 

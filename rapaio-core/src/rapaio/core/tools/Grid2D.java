@@ -47,12 +47,12 @@ import rapaio.data.VarDouble;
 import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/22/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/22/15.
  */
 public class Grid2D implements Serializable {
 
@@ -133,7 +133,7 @@ public class Grid2D implements Serializable {
     public Grid2D(Var x, Var y) {
         this.x = x;
         this.y = y;
-        this.values = TensorMill.varray().ofDouble().zeros(Shape.of(x.size(), y.size()));
+        this.values = TensorEngine.varray().ofDouble().zeros(Shape.of(x.size(), y.size()));
     }
 
     public Var x() {

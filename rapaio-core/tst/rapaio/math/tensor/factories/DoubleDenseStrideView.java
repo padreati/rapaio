@@ -36,12 +36,12 @@ import java.util.Arrays;
 import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.layout.StrideLayout;
 
 public final class DoubleDenseStrideView extends DoubleDense {
 
-    public DoubleDenseStrideView(TensorMill manager) {
+    public DoubleDenseStrideView(TensorEngine manager) {
         super(manager);
     }
 
@@ -65,7 +65,7 @@ public final class DoubleDenseStrideView extends DoubleDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return mill.ofDouble().stride(StrideLayout.of(shape, offset, strides), new double[len]);
+        return engine.ofDouble().stride(StrideLayout.of(shape, offset, strides), new double[len]);
     }
 
     @Override

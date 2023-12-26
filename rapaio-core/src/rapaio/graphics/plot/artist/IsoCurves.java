@@ -50,7 +50,7 @@ import java.util.List;
 import static java.lang.Math.*;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/20/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/20/15.
  */
 public class IsoCurves extends Artist {
 
@@ -305,7 +305,7 @@ public class IsoCurves extends Artist {
     }
 
     /**
-     * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/27/15.
+     * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/27/15.
      */
     private static final class MeshStripe implements Serializable {
 

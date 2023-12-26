@@ -49,7 +49,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/17/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/17/18.
  */
 @Deprecated
 public class Join {

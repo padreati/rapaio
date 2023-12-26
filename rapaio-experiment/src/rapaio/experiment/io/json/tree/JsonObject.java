@@ -42,7 +42,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
  */
 public final class JsonObject extends JsonValue {
 

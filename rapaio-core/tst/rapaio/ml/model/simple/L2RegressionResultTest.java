@@ -37,7 +37,7 @@ import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/9/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/9/19.
  */
 public class L2RegressionResultTest {
 

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.datasets.Datasets;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class AbstractFrameTest {
 

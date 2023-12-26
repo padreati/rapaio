@@ -48,7 +48,7 @@ import rapaio.printer.opt.POpt;
  * The stored data type is a long, which is actually the number of milliseconds
  * from epoch. The exposed data type is {@link java.time.Instant}.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/29/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/29/19.
  */
 public class VarInstant extends AbstractVar {
 

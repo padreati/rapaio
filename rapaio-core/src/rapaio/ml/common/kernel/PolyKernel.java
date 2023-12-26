@@ -55,7 +55,7 @@ import rapaio.math.linear.DVector;
  * using a linear kernel are often equivalent to their non-kernel
  * counterparts, i.e. KPCA with linear kernel is the same as standard PCA.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 public class PolyKernel extends AbstractKernel {
 

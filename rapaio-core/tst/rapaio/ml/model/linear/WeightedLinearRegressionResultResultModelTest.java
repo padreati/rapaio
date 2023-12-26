@@ -34,7 +34,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/20.
  */
 public class WeightedLinearRegressionResultResultModelTest {
 

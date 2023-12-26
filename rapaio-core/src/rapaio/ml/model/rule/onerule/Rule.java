@@ -39,7 +39,7 @@ import rapaio.core.tools.DensityVector;
 /**
  * Base class for a rule in one rule algorithm
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/15.
  */
 public abstract class Rule implements Serializable {
 

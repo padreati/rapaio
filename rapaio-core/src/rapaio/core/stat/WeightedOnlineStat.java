@@ -34,7 +34,7 @@ package rapaio.core.stat;
 /**
  * Weighted online mean and variance.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/10/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/10/17.
  */
 public class WeightedOnlineStat {
 

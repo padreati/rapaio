@@ -37,7 +37,7 @@ import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/9/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/9/20.
  */
 public class PoissonEstimatorTest {
 

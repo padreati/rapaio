@@ -58,7 +58,7 @@ import rapaio.printer.Format;
  * A more detailed study on sigmoid kernels can be found in the
  * works by Hsuan-Tien and Chih-Jen.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class SigmoidKernel extends AbstractKernel {
 

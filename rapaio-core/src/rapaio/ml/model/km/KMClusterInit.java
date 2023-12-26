@@ -46,7 +46,7 @@ import rapaio.util.collection.IntArrays;
 /**
  * Function which produces initial centroids for KMeans algorithm
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/23/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/23/15.
  */
 public enum KMClusterInit implements Serializable {
 

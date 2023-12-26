@@ -34,7 +34,7 @@ package rapaio.experiment.io.json.tree;
 import java.util.Optional;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
  */
 public final class JsonBool extends JsonValue {
 

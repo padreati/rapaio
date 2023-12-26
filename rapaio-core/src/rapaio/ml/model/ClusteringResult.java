@@ -37,7 +37,7 @@ import rapaio.data.VarInt;
 import rapaio.printer.Printable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/31/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/31/20.
  */
 public class ClusteringResult<M extends ClusteringModel<?, ?, ?>> implements Printable {
 

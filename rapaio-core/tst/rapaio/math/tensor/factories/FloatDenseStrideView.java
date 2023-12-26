@@ -36,12 +36,12 @@ import java.util.Arrays;
 import rapaio.math.tensor.FloatTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.layout.StrideLayout;
 
 public final class FloatDenseStrideView extends FloatDense {
 
-    public FloatDenseStrideView(TensorMill manager) {
+    public FloatDenseStrideView(TensorEngine manager) {
         super(manager);
     }
 
@@ -65,7 +65,7 @@ public final class FloatDenseStrideView extends FloatDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return mill.ofFloat().stride(StrideLayout.of(shape, offset, strides), new float[len]);
+        return engine.ofFloat().stride(StrideLayout.of(shape, offset, strides), new float[len]);
     }
 
     @Override

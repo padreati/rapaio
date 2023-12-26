@@ -45,7 +45,7 @@ import rapaio.util.Pair;
 
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class VSpotsTest {
 

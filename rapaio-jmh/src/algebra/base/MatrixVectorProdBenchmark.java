@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/1/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/1/21.
  */
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @BenchmarkMode(Mode.AverageTime)

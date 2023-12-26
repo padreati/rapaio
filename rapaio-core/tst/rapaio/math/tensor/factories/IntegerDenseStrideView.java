@@ -36,12 +36,12 @@ import java.util.Arrays;
 import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.layout.StrideLayout;
 
 public final class IntegerDenseStrideView extends IntegerDense {
 
-    public IntegerDenseStrideView(TensorMill manager) {
+    public IntegerDenseStrideView(TensorEngine manager) {
         super(manager);
     }
 
@@ -65,7 +65,7 @@ public final class IntegerDenseStrideView extends IntegerDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return mill.ofInt().stride(StrideLayout.of(shape, offset, strides), new int[len]);
+        return engine.ofInt().stride(StrideLayout.of(shape, offset, strides), new int[len]);
     }
 
     @Override

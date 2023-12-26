@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 /**
  * Base class for a json value. Json values are linked as top-down trees.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
  */
 public abstract class JsonValue {
 

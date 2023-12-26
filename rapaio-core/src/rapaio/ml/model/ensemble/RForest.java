@@ -59,7 +59,7 @@ import rapaio.printer.opt.POpt;
 import rapaio.util.parralel.ParallelStreamCollector;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
  */
 public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<RForest>> {
 

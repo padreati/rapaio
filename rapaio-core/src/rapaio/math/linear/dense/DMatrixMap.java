@@ -38,7 +38,7 @@ import rapaio.math.linear.DVector;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
  */
 public class DMatrixMap extends AbstractDMatrix {
 

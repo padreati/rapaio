@@ -55,7 +55,7 @@ import rapaio.ml.model.tree.rtree.Splitter;
 /**
  * Test for regression decision trees
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/5/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/5/15.
  */
 public class RTreeTest {
 

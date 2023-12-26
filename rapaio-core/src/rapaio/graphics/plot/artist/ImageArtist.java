@@ -46,7 +46,7 @@ import rapaio.graphics.plot.Axis;
 /**
  * Artist which displays an image onto a plot.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/21.
  */
 public class ImageArtist extends Artist {
 

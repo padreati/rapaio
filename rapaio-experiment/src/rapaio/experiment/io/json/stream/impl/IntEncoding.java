@@ -38,7 +38,7 @@ import java.io.IOException;
 /**
  * Integer encoding used in lz json format
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/9/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/9/15.
  */
 @Deprecated
 public interface IntEncoding {

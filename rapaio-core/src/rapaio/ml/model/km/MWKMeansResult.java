@@ -49,7 +49,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/2/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/2/20.
  */
 public class MWKMeansResult extends ClusteringResult<MWKMeans> {
 

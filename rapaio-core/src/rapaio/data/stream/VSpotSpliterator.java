@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/18.
  */
 public class VSpotSpliterator extends Spliterators.AbstractSpliterator<VSpot> {
 

@@ -42,7 +42,7 @@ import rapaio.data.VarNominal;
 import rapaio.data.VarType;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/5/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/5/20.
  */
 public class GaussianEstimatorTest {
 

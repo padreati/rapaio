@@ -40,7 +40,7 @@ import rapaio.data.Frame;
  * A kernel cache is a in memory data structure which is able to cache results of
  * operations to fasten th training and prediction of a svm.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
  */
 public interface KernelCache extends Serializable {
 

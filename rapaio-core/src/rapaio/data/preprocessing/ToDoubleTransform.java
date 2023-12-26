@@ -45,7 +45,7 @@ import rapaio.data.VarRange;
  * Convert to numeric double values all the selected variables which are nominal.
  * All the other columns remain the same.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
 public class ToDoubleTransform extends AbstractTransform {
 

@@ -37,7 +37,7 @@ import java.util.Random;
 import rapaio.experiment.math.nn.data.DoubleDiffTensor;
 import rapaio.experiment.math.nn.gradient.GradientTape;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 
 public class SandboxLayer {
 
@@ -61,7 +61,7 @@ public class SandboxLayer {
 //        System.out.println(id1);
 
 
-        var mill = TensorMill.defaultMill();
+        var mill = TensorEngine.defaultEngine();
 
         var random = new Random(10);
         GradientTape tape = new GradientTape();

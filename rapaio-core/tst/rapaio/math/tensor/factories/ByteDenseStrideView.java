@@ -36,12 +36,12 @@ import java.util.Arrays;
 import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.layout.StrideLayout;
 
 public final class ByteDenseStrideView extends ByteDense {
 
-    public ByteDenseStrideView(TensorMill manager) {
+    public ByteDenseStrideView(TensorEngine manager) {
         super(manager);
     }
 
@@ -65,7 +65,7 @@ public final class ByteDenseStrideView extends ByteDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return mill.ofByte().stride(StrideLayout.of(shape, offset, strides), new byte[len]);
+        return engine.ofByte().stride(StrideLayout.of(shape, offset, strides), new byte[len]);
     }
 
     @Override

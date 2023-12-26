@@ -41,7 +41,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Compute covariance of two variables
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/15.
  */
 public class Covariance implements Printable {
 

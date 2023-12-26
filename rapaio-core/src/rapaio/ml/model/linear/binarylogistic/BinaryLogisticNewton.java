@@ -45,7 +45,7 @@ import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
  */
 public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
 

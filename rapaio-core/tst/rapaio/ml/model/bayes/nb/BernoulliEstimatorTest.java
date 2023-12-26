@@ -39,7 +39,7 @@ import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/24/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/24/20.
  */
 public class BernoulliEstimatorTest {
 

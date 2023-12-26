@@ -54,7 +54,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
 public class ClassifierEvaluationResult implements Printable {
 

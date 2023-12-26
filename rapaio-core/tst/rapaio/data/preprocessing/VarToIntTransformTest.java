@@ -36,7 +36,7 @@ import rapaio.data.VarLong;
 import rapaio.data.VarNominal;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
  */
 public class VarToIntTransformTest {
 

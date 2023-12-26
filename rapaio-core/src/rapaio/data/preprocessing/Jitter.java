@@ -40,7 +40,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarRange;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/10/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/10/14.
  */
 public class Jitter extends AbstractTransform {
 

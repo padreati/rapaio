@@ -44,7 +44,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/20/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/20/19.
  */
 public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
 

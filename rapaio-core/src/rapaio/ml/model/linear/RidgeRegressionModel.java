@@ -44,7 +44,7 @@ import rapaio.core.param.ValueParam;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
  */
 public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegressionModel> {
 

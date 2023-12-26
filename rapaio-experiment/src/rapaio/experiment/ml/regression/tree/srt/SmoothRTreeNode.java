@@ -42,7 +42,7 @@ import rapaio.data.VarDouble;
 import rapaio.ml.common.VarSelector;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
  */
 public class SmoothRTreeNode {
 

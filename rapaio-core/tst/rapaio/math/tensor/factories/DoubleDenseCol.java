@@ -34,12 +34,12 @@ package rapaio.math.tensor.factories;
 import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 
 public final class DoubleDenseCol extends DoubleDense {
 
-    public DoubleDenseCol(TensorMill tensorMill) {
-        super(tensorMill);
+    public DoubleDenseCol(TensorEngine tensorEngine) {
+        super(tensorEngine);
     }
 
     @Override

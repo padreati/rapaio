@@ -43,7 +43,7 @@ import rapaio.ml.model.tree.RTreeLoss;
 import rapaio.ml.model.tree.rtree.SearchPayload;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
  */
 public class L2Loss implements Loss, RTreeLoss {
 

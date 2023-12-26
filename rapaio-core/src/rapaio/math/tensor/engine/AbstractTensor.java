@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.mill;
+package rapaio.math.tensor.engine;
 
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -113,17 +113,12 @@ public abstract class AbstractTensor<N extends Number, T extends Tensor<N, T>> i
     }
 
     private void appendValues(Printer printer, TextTable tt, int row, int cols, boolean maxColHit) {
+        for (int i = 0; i < cols - 2; i++) {
+            double value = get(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
+            tt.floatString(row, i + 1, printer.getOptions().getFloatFormat().format(value));
+        }
         if (maxColHit) {
-            for (int i = 0; i < cols - 2; i++) {
-                double value = get(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
-                tt.floatString(row, i + 1, printer.getOptions().getFloatFormat().format(value));
-            }
             tt.textCenter(row, cols - 2, "...");
-        } else {
-            for (int i = 0; i < cols - 2; i++) {
-                double value = get(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
-                tt.floatString(row, i + 1, printer.getOptions().getFloatFormat().format(value));
-            }
         }
     }
 
@@ -146,7 +141,7 @@ public abstract class AbstractTensor<N extends Number, T extends Tensor<N, T>> i
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + " {" + layout().toString() + "}";
+        return STR."\{this.getClass().getSimpleName()} {\{layout().toString()}}";
     }
 
 }

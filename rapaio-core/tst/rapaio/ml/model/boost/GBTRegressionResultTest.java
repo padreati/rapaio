@@ -36,7 +36,7 @@ import rapaio.ml.model.tree.RTree;
 import rapaio.ml.model.tree.rtree.Splitter;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/20.
  */
 public class GBTRegressionResultTest {
 

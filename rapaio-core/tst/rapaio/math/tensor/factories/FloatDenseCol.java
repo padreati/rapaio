@@ -34,12 +34,12 @@ package rapaio.math.tensor.factories;
 import rapaio.math.tensor.FloatTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 
 public final class FloatDenseCol extends FloatDense {
 
-    public FloatDenseCol(TensorMill tensorMill) {
-        super(tensorMill);
+    public FloatDenseCol(TensorEngine tensorEngine) {
+        super(tensorEngine);
     }
 
     @Override

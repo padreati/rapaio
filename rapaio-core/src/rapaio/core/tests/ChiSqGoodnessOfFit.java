@@ -46,7 +46,7 @@ import rapaio.printer.opt.POpt;
  * This test allows one to test if a given observed frequency of a categorical variable
  * differs from a theoretical distribution.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/31/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/31/17.
  */
 public class ChiSqGoodnessOfFit implements HTest {
 

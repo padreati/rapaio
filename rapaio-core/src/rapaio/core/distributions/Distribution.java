@@ -41,7 +41,7 @@ import rapaio.data.VarDouble;
 /**
  * Interface which models all types of uni-variate statistical distributions.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 11/3/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 11/3/14.
  */
 public interface Distribution extends Serializable {
 

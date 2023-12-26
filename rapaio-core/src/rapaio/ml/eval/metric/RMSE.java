@@ -42,7 +42,7 @@ import rapaio.ml.model.RegressionResult;
  * values of the residuals for all pairs of actual and
  * prediction variables.
  * <p>
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class RMSE extends AbstractRegressionMetric {
 

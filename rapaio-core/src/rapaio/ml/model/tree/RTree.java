@@ -71,7 +71,7 @@ import rapaio.core.param.ValueParam;
 /**
  * Implements a regression decision tree.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/14.
  */
 public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
 

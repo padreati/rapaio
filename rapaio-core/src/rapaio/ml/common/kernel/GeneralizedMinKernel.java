@@ -45,7 +45,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x,y) = \sum_{i=1}^m \min(|x_i|^\alpha,|y_i|^\beta)
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
 public class GeneralizedMinKernel extends AbstractKernel {
 

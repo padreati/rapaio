@@ -49,7 +49,7 @@ import rapaio.util.function.Int2IntFunction;
  * A class providing static methods and objects that do useful things with
  * type-specific arrays of ints.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/8/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/8/19.
  */
 public final class IntArrays {
 

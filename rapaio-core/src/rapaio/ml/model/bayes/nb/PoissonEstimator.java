@@ -56,7 +56,7 @@ import rapaio.printer.Format;
  * The Poisson distribution is fitted by approximating the lambda (frequency) parameter
  * with the sample mean value. This MLE estimator is efficient in statistical sense.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/4/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/4/20.
  */
 public class PoissonEstimator extends AbstractEstimator {
 

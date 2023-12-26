@@ -53,7 +53,7 @@ import rapaio.printer.Printable;
  * other possible data. This step is executed by calling
  * {@link #apply(Var)} method.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
  */
 public interface VarTransform extends Serializable, Printable {
 

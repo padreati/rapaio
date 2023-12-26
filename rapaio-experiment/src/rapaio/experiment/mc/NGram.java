@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/1/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/1/15.
  */
 public record NGram(int n) implements ChainAdapter {
 

@@ -39,7 +39,7 @@ import rapaio.ml.eval.split.SplitStrategy;
 import rapaio.ml.model.rule.ZeroRule;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/28/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/28/20.
  */
 public class ClassifierModelEvaluationTest {
 

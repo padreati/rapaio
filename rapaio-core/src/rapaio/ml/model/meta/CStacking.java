@@ -52,7 +52,7 @@ import java.util.logging.Logger;
 /**
  * Stacking with a stacking classifier
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
 public class CStacking extends ClassifierModel<CStacking, ClassifierResult, RunInfo<CStacking>> implements Printable {
 

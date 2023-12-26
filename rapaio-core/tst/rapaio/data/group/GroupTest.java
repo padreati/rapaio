@@ -53,7 +53,7 @@ import rapaio.datasets.Datasets;
 import rapaio.printer.opt.POpt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/21/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/21/19.
  */
 public class GroupTest {
 

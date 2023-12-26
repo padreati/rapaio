@@ -34,7 +34,7 @@ package rapaio.experiment.ml.feature.relief;
 import rapaio.math.linear.DMatrix;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/18.
  */
 public interface ReliefDifferenceFunction {
 

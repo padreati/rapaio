@@ -46,7 +46,7 @@ import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
 public class Histogram2D extends Artist {
 

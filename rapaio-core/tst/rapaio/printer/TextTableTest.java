@@ -40,7 +40,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/18.
  */
 public class TextTableTest {
 

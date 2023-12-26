@@ -52,7 +52,7 @@ import rapaio.printer.opt.POpt;
  * <p>
  * This utility class computes ROC for a given scores and binary prediction.
  * <p>
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class ROC implements Printable, Serializable {
 

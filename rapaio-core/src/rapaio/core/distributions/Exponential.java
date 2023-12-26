@@ -41,7 +41,7 @@ import java.io.Serial;
 import rapaio.printer.Format;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/20.
  */
 public record Exponential(double lambda) implements Distribution {
 

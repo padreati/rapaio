@@ -42,7 +42,7 @@ import rapaio.data.Var;
 import rapaio.graphics.opt.GOption;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/26/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/26/20.
  */
 public class PolyLine extends BasePoly {
 

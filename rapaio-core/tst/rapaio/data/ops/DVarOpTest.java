@@ -37,7 +37,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/11/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/11/19.
  */
 public class DVarOpTest {
 

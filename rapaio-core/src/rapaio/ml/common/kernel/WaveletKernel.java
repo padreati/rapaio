@@ -58,7 +58,7 @@ import rapaio.printer.Format;
  * <p>
  * Which they also prove as an admissible kernel function.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
 public class WaveletKernel extends AbstractKernel {
 

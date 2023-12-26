@@ -56,7 +56,7 @@ import rapaio.printer.opt.POpt;
  * the correction which works for classification with multiple
  * labels.
  * <p>
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, RunInfo<AdaBoost>> implements Printable {
 

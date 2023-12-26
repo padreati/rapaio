@@ -34,7 +34,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class OnlineStatTest {
 

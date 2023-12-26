@@ -46,7 +46,7 @@ import rapaio.data.Var;
  * Implements bootstrap row sampling (sampling with replacement)
  * <p>
  * By default
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
  */
 final class Bootstrap implements RowSampler {
 

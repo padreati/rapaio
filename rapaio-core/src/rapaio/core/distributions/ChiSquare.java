@@ -43,7 +43,7 @@ import rapaio.printer.Format;
 /**
  * ChiSquare distribution.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/29/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/29/15.
  */
 public final class ChiSquare implements Distribution {
 

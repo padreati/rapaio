@@ -52,7 +52,7 @@ import rapaio.printer.opt.POpt;
  * This classification algorithm it is not designed for production prediction,
  * but it it used as a baseline prediction.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/24/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/24/20.
  */
 public class ZeroRule extends ClassifierModel<ZeroRule, ClassifierResult, RunInfo<ZeroRule>> {
 

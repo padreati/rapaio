@@ -42,7 +42,7 @@ import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/4/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/4/19.
  */
 public abstract class AbstractCorrelation implements Correlation {
 

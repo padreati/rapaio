@@ -52,7 +52,7 @@ import rapaio.data.VarRange;
  * to not alter the original vector you have to pass to the filter a solid copy
  * of the original vector.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
 public class StandardScaler extends AbstractTransform {
 

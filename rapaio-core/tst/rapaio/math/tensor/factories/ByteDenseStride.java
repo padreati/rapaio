@@ -36,12 +36,12 @@ import java.util.Random;
 import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.util.collection.IntArrays;
 
 public final class ByteDenseStride extends ByteDense {
 
-    public ByteDenseStride(TensorMill manager) {
+    public ByteDenseStride(TensorEngine manager) {
         super(manager);
     }
 

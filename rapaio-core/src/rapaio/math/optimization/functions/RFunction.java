@@ -38,7 +38,7 @@ import rapaio.math.linear.DVector;
 /**
  * Interface which describes an n-dimensional real valued function.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
  */
 @FunctionalInterface
 public interface RFunction extends Serializable {

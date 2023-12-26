@@ -47,7 +47,7 @@ import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.IntOpenHashSet;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/23/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/23/21.
  */
 public class IntOpenHashSetTest {
 

@@ -47,7 +47,7 @@ import rapaio.util.function.IntInt2DoubleBiFunction;
  * we hold only the upper triangular shape. Any update on an element
  * updates also the symmetric one, since it is stored only ne.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/13/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/13/17.
  */
 public class DistanceMatrix implements Serializable {
 

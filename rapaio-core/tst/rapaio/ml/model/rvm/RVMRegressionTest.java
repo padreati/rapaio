@@ -38,7 +38,7 @@ import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.linear.LinearRegressionModel;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/16/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/16/21.
  */
 public class RVMRegressionTest {
 

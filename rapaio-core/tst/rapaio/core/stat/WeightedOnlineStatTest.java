@@ -33,7 +33,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/10/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/10/17.
  */
 public class WeightedOnlineStatTest {
 

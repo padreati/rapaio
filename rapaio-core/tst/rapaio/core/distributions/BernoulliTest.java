@@ -42,7 +42,7 @@ import rapaio.core.stat.Sum;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/17/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/17/16.
  */
 public class BernoulliTest {
 

@@ -45,7 +45,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x,y) = - log (\lVert x-y \rVert ^d + 1)
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class LogKernel extends AbstractKernel {
 

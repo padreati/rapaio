@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/2/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/2/15.
  */
 public record TokenizerChainAdapter(int n) implements ChainAdapter {
 

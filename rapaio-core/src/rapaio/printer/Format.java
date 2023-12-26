@@ -34,7 +34,7 @@ package rapaio.printer;
 import java.text.DecimalFormat;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/18.
  */
 public class Format {
 

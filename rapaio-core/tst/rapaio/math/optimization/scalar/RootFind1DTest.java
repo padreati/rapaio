@@ -39,7 +39,7 @@ import rapaio.math.optimization.scalar.RootFind1D;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/26/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/26/21.
  */
 public class RootFind1DTest {
 

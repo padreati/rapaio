@@ -57,7 +57,7 @@ import rapaio.printer.opt.POpt;
  * Container for the results of a cross validation evaluation on regression
  * models.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/19.
  */
 public final class RegressionEvaluationResult implements Printable {
 

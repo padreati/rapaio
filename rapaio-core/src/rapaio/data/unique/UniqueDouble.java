@@ -45,7 +45,7 @@ import rapaio.util.collection.IntArrays;
 /**
  * Unique value feature for double values.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
  */
 public class UniqueDouble extends AbstractUnique {
 

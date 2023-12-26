@@ -36,7 +36,7 @@ import rapaio.math.linear.DVector;
 import rapaio.util.Pair;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
  */
 @Deprecated
 public interface Gradient {
@@ -74,7 +74,7 @@ public interface Gradient {
  * L = 1/2n ||A weights-y||^2
  * See also the documentation for the precise formulation.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
  */
 @Deprecated
 class LeastSquareGradient implements Gradient {
@@ -179,7 +179,7 @@ class LeastSquareGradient implements Gradient {
  * numClasses the number of possible outcomes for k classes classification problem in
  * Multinomial Logistic Regression. By default, it is binary logistic regression
  * so numClasses will be set to 2.
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
  */
 @Deprecated
 class LogisticGradient implements Gradient {
@@ -298,7 +298,7 @@ class LogisticGradient implements Gradient {
 }
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
  */
 @Deprecated
 class HingeGradient implements Gradient {

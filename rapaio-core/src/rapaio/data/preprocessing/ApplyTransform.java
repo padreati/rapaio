@@ -44,7 +44,7 @@ import rapaio.util.function.Int2IntFunction;
 /**
  * Update a double variable by changing it's value using a function.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
 public class ApplyTransform extends AbstractTransform {
 

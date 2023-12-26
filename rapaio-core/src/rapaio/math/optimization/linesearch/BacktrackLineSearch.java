@@ -42,7 +42,7 @@ import rapaio.core.param.ValueParam;
 /**
  * Backtracking strategy for line search.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
 public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implements LineSearch {
 

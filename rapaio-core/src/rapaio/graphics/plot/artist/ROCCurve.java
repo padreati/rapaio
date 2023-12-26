@@ -44,7 +44,7 @@ import rapaio.graphics.plot.Plot;
 import rapaio.ml.eval.metric.ROC;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class ROCCurve extends Artist {
 

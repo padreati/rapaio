@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
  */
 public class GiniTest {
 

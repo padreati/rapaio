@@ -55,7 +55,7 @@ import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/15.
  */
 public class CStepwiseSelection
         extends ClassifierModel<CStepwiseSelection, ClassifierResult, RunInfo<CStepwiseSelection>> implements Printable {

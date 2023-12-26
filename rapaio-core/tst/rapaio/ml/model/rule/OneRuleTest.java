@@ -39,7 +39,7 @@ import rapaio.datasets.Datasets;
 import rapaio.ml.model.rule.onerule.HolteBinning;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class OneRuleTest {
 

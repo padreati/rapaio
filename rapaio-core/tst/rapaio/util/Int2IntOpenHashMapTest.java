@@ -43,7 +43,7 @@ import rapaio.util.collection.Int2IntOpenHashMap;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/21.
  */
 public class Int2IntOpenHashMapTest {
 

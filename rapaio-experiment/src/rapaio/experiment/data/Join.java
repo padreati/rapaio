@@ -35,7 +35,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/26/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/26/19.
  */
 public class Join {
 

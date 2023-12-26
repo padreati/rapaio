@@ -54,7 +54,7 @@ import rapaio.data.VarType;
  * rather than rows. This is a read only data frame, if one wants to do operations with it it must solidify
  * it.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/22/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/22/19.
  */
 public class JoinFrame extends AbstractFrame {
 

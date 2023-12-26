@@ -36,7 +36,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
 public record Split(int round, int fold, Frame trainDf, Var trainWeights, Frame testDf, Var testWeights) {
 

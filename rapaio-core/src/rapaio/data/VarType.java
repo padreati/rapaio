@@ -56,7 +56,7 @@ import rapaio.util.function.SFunction;
  * What operations are allowed depends on the programs which uses variables,
  * however some hints are provided also by type class.
  * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public enum VarType {
 

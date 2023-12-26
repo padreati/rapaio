@@ -43,7 +43,7 @@ import rapaio.printer.opt.POpt;
  * <a href="https://en.wikipedia.org/wiki/Kurtosis#Sample_kurtosis">Sample_kurtosis</a>.
  * <p>
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
  */
 public class Kurtosis implements Printable {
 

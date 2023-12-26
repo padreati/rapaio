@@ -37,7 +37,7 @@ import rapaio.data.VarRange;
 import rapaio.ml.model.simple.L2Regression;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/28/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/28/19.
  */
 public class ImputeRegressionTest {
 

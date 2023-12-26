@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.math.optimization.linesearch.LearningRateLineSearch;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/31/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/31/21.
  */
 public class LearningRateLineSearchTest {
 

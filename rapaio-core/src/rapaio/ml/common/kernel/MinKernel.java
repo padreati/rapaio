@@ -42,7 +42,7 @@ import rapaio.math.linear.DVector;
  * <p>
  * k(x,y) = \sum_{i=1}^n \min(x_i,y_i)
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
 public class MinKernel extends AbstractKernel {
 

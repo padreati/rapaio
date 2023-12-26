@@ -36,7 +36,7 @@ import rapaio.data.VarType;
 import rapaio.io.Csv;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/28/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/28/15.
  */
 public class StudentTTest {
 

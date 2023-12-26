@@ -32,7 +32,7 @@
 package rapaio.util.collection;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
 public final class LongArrays {
 

@@ -42,7 +42,7 @@ import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
  */
 public class VarRefSort extends AbstractVarTransform {
 

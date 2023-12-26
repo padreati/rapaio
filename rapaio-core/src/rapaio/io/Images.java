@@ -41,7 +41,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/14/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/14/21.
  */
 public final class Images {
 

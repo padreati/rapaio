@@ -47,7 +47,7 @@ import rapaio.experiment.io.json.tree.JsonValue;
 /**
  * Utility class able to produce json values from an input stream formatted as lzjson.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/9/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/9/15.
  */
 @Deprecated
 public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {

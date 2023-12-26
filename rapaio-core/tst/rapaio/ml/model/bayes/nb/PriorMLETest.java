@@ -30,7 +30,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/14/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/14/19.
  */
 public class PriorMLETest {
 

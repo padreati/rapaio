@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/19/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/19/18.
  */
 public class VarStringTest {
 

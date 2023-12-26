@@ -33,7 +33,7 @@ import rapaio.data.VarInt;
 import rapaio.util.IntIterator;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/26/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/26/18.
  */
 public class ArrayMappingTest {
 

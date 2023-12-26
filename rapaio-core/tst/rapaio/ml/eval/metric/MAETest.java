@@ -32,7 +32,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/6/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/6/17.
  */
 public class MAETest {
 

@@ -50,7 +50,7 @@ import rapaio.printer.opt.POpt;
  * the the logarithmic approach. As such the geometric mean is computed as
  * \exp(\frac{1}{n}\sum{log{x_i}}).
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/7/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/7/15.
  */
 public class GeometricMean implements Printable {
 

@@ -49,7 +49,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/19.
  */
 public class NestedBoostingRTree
         extends GBTRtree<NestedBoostingRTree, RegressionResult, RunInfo<NestedBoostingRTree>> {

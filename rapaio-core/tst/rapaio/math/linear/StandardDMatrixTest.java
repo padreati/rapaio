@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.math.linear.dense.DMatrixDenseR;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/14/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/14/20.
  */
 public abstract class StandardDMatrixTest {
 

@@ -33,12 +33,12 @@ package rapaio.math.tensor.factories;
 
 import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.DTypes;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 
 public abstract class ByteDense extends DataFactory<Byte, ByteTensor> {
 
-    public ByteDense(TensorMill tensorMill) {
-        super(tensorMill, tensorMill.ofByte(), DTypes.BYTE);
+    public ByteDense(TensorEngine tensorEngine) {
+        super(tensorEngine, tensorEngine.ofByte(), DTypes.BYTE);
     }
 
     @Override

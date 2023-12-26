@@ -48,7 +48,7 @@ import rapaio.experiment.io.json.tree.JsonValue;
 
 /**
  * JsonSpliterator
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/6/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/6/15.
  */
 public class JsonSpliterator implements Spliterator<JsonValue> {
 

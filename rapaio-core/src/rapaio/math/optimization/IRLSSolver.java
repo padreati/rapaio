@@ -46,7 +46,7 @@ import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/17.
  * <p>
  * Implemented using as reference: "Iterative Reweighted Least Squares  - c. Sidney Burrus"
  */

@@ -47,7 +47,7 @@ import rapaio.printer.opt.POpt;
  * A bound variable is a variable which is obtained by binding observations
  * from multiple variables of the same type.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class BoundVar extends AbstractVar {
 

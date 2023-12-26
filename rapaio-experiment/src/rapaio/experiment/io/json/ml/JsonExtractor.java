@@ -43,7 +43,7 @@ import rapaio.data.Var;
 /**
  * Utility class used to extract features from a JsonValue steam.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/10/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/10/15.
  */
 @Deprecated
 public class JsonExtractor {

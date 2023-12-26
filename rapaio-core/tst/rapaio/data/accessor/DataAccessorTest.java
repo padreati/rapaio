@@ -33,7 +33,7 @@ import rapaio.data.VarInt;
 import rapaio.data.VarLong;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/18/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/18/18.
  */
 public class DataAccessorTest {
 

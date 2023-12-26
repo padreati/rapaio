@@ -41,7 +41,7 @@ import rapaio.util.IntIterator;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/27/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/27/18.
  */
 public final class IntervalMapping implements Mapping {
 

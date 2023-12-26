@@ -43,7 +43,7 @@ import rapaio.ml.model.ClassifierResult;
 /**
  * Describes and implements how a class is obtained from ensemble results.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
 public enum BaggingMode implements Serializable {
 

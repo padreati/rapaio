@@ -43,7 +43,7 @@ import rapaio.printer.Format;
 /**
  * F distribution, also known as Fisher-Snedecor distribution.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/17.
  *
  * @see <a href="https://en.wikipedia.org/wiki/F-distribution">https://en.wikipedia.org/wiki/F-distribution</a>
  */

@@ -52,7 +52,7 @@ import rapaio.printer.opt.POpt;
  * A trivial regression which predicts using random
  * values provided by a distribution.
  * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class RandomValueRegression extends RegressionModel<RandomValueRegression, RegressionResult, RunInfo<RandomValueRegression>> {
 

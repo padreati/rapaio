@@ -65,7 +65,7 @@ import rapaio.printer.opt.POpt;
  * The placeholder for missing value is Double.NaN. Any form of usage of Double.NaN
  * on set/add operation will result in a missing value.
  * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class VarDouble extends AbstractVar implements Iterable<Double> {
 

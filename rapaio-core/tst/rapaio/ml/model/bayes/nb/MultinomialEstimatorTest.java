@@ -39,7 +39,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/14/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/14/20.
  */
 public class MultinomialEstimatorTest {
 

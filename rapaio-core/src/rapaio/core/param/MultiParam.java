@@ -41,7 +41,7 @@ import rapaio.util.function.SFunction;
 /**
  * This implementation models a parameter which is a map of keys and values.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/3/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/3/20.
  */
 public class MultiParam<K, T, S extends ParamSet<S>> implements Param<Map<K, T>, S> {
 

@@ -32,7 +32,7 @@
 package rapaio.util.function;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.
  */
 @FunctionalInterface
 public interface Double2IntFunction extends SFunction<Double, Integer> {

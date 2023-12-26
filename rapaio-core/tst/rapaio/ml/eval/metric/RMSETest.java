@@ -36,7 +36,7 @@ import rapaio.datasets.Datasets;
 import rapaio.ml.model.linear.LinearRegressionModel;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/17.
  */
 public class RMSETest {
 

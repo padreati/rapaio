@@ -52,7 +52,7 @@ import rapaio.core.param.ValueParam;
  * Since this is a minimization algorithm, with each iteration it advances in the direction
  * of negative gradient to improve the function.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
 public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> implements Solver {
 

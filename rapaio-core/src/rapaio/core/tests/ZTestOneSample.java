@@ -42,7 +42,7 @@ import rapaio.printer.opt.POpt;
 /**
  * one sample z test
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/24/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/24/16.
  */
 public class ZTestOneSample implements HTest {
 

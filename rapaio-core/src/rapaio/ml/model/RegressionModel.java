@@ -56,7 +56,7 @@ import rapaio.printer.TextTable;
 /**
  * Abstract class needed to implement prerequisites for all regression algorithms.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
 @SuppressWarnings("unchecked")
 public abstract class RegressionModel<M extends RegressionModel<M, R, H>, R extends RegressionResult, H extends RunInfo<M>>

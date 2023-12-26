@@ -55,7 +55,7 @@ import rapaio.printer.opt.POpt;
  * Linear discriminant analysis
  * <p>
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/5/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/5/15.
  */
 public class LDA implements Printable {
     private static final Logger logger = Logger.getLogger(LDA.class.getName());

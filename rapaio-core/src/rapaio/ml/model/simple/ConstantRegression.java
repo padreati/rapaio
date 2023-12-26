@@ -46,7 +46,7 @@ import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 
 /**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class ConstantRegression extends RegressionModel<ConstantRegression, RegressionResult, RunInfo<ConstantRegression>> {
 

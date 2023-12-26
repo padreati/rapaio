@@ -49,7 +49,7 @@ import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/19.
  */
 public class StringBagTest {
 

@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/7/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/7/20.
  */
 public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
 

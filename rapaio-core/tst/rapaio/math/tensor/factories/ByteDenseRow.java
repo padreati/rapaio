@@ -34,11 +34,11 @@ package rapaio.math.tensor.factories;
 import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 
 public final class ByteDenseRow extends ByteDense {
 
-    public ByteDenseRow(TensorMill manager) {
+    public ByteDenseRow(TensorEngine manager) {
         super(manager);
     }
 

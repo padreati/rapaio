@@ -44,7 +44,7 @@ import rapaio.math.linear.DVector;
  * any property of the function. It simply acts as a black box which wraps an optimization algorithm. Any aspect of the
  * optimization procedure is handled by the implementing classes.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/31/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/31/21.
  */
 public interface Solver {
 

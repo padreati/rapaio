@@ -42,7 +42,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Compensated weighted mean.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/14.
  */
 public final class WeightedMean implements Printable {
 

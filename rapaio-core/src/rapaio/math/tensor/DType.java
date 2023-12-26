@@ -34,7 +34,8 @@ package rapaio.math.tensor;
 import java.util.Objects;
 import java.util.function.Function;
 
-public abstract class DType<N extends Number, T extends Tensor<N, T>> {
+public sealed abstract class DType<N extends Number, T extends Tensor<N, T>>
+        permits DType.DTypeDouble, DType.DTypeFloat, DType.DTypeInteger, DType.DTypeByte {
 
     private final String id;
     private final byte bytes;
@@ -97,7 +98,7 @@ public abstract class DType<N extends Number, T extends Tensor<N, T>> {
         private static final String ID = "DOUBLE";
 
         public DTypeDouble() {
-            super(ID, (byte)8, false);
+            super(ID, (byte) 8, false);
         }
 
         @Override
@@ -185,7 +186,7 @@ public abstract class DType<N extends Number, T extends Tensor<N, T>> {
         private static final String ID = "INTEGER";
 
         public DTypeInteger() {
-            super(ID, (byte)4, true);
+            super(ID, (byte) 4, true);
         }
 
         @Override
@@ -229,7 +230,7 @@ public abstract class DType<N extends Number, T extends Tensor<N, T>> {
         private static final String ID = "BYTE";
 
         public DTypeByte() {
-            super(ID, (byte)4, true);
+            super(ID, (byte) 4, true);
         }
 
         @Override

@@ -36,7 +36,7 @@ import java.io.Serial;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
  */
 public class VarCumSum extends AbstractVarTransform {
 

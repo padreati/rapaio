@@ -53,7 +53,7 @@ import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
  */
 public class PCA extends ParamSet<PCA> implements Printable {
 

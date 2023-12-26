@@ -41,7 +41,7 @@ import rapaio.data.Var;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
 public record KFold(int rounds, int folds) implements SplitStrategy {
 

@@ -42,7 +42,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Partial auto correlation function
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/17.
  */
 public class Pacf extends Correlation {
 

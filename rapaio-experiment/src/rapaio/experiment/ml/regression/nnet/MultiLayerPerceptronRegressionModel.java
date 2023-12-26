@@ -48,7 +48,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
 /**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
 public class MultiLayerPerceptronRegressionModel

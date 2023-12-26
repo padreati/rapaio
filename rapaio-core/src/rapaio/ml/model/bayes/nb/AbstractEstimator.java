@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/2/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/2/20.
  */
 public abstract class AbstractEstimator implements Estimator {
 

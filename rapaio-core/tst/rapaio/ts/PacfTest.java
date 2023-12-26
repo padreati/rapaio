@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/17.
  */
 public class PacfTest {
 

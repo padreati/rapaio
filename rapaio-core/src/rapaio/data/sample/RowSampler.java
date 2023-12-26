@@ -45,7 +45,7 @@ import rapaio.data.Var;
  * Interface which defines a function which produces a data frame with a sample
  * of rows from the given data frame.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/29/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/29/15.
  */
 public interface RowSampler extends Serializable {
 
@@ -82,7 +82,7 @@ public interface RowSampler extends Serializable {
     /**
      * A sample taken from a data set, eventually from a corresponding set of weights.
      * <p>
-     * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
+     * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
      */
     record Sample(Frame df, Var weights, Mapping mapping, int originalRowCount) {
 

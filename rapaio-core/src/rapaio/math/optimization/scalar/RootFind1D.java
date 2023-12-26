@@ -43,7 +43,7 @@ import rapaio.util.function.Double2DoubleFunction;
 /**
  * Models a root finding algorithm for a single dimensional function
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/26/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/26/21.
  */
 public class RootFind1D extends ParamSet<RootFind1D> implements Serializable {
 

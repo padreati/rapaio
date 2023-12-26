@@ -37,7 +37,7 @@ import java.io.IOException;
 import rapaio.experiment.io.json.tree.JsonValue;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/12/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/12/15.
  */
 @Deprecated
 public interface JsonInput extends Closeable {

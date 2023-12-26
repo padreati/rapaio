@@ -54,7 +54,7 @@ import rapaio.printer.opt.POpt;
 import rapaio.util.Pair;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/23/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/23/15.
  */
 public class Apriori implements Printable {
 

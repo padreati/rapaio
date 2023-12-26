@@ -50,7 +50,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
  */
 public class SmoothRTree extends GBTRtree<SmoothRTree, RegressionResult, RunInfo<SmoothRTree>> {
 

@@ -57,7 +57,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
  */
 public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, ClassifierResult, RunInfo<GBTClassifierModel>> {
 

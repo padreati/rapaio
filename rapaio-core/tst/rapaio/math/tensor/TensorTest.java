@@ -67,7 +67,7 @@ public class TensorTest {
     @Test
     @Disabled
     void profileTest() {
-        var engine = TensorMill.varray();
+        var engine = TensorEngine.varray();
 
         int m = 3000;
         int n = 3000;
@@ -84,11 +84,11 @@ public class TensorTest {
 
     @Test
     void managerTestRunner() {
-        managerTestSuite(TensorMill.barray());
-        managerTestSuite(TensorMill.varray());
+        managerTestSuite(TensorEngine.barray());
+        managerTestSuite(TensorEngine.varray());
     }
 
-    private void managerTestSuite(TensorMill eng) {
+    private void managerTestSuite(TensorEngine eng) {
         new TestSuite<>(this, new DoubleDenseRow(eng)).run();
         new TestSuite<>(this, new DoubleDenseCol(eng)).run();
         new TestSuite<>(this, new DoubleDenseStride(eng)).run();
@@ -157,7 +157,7 @@ public class TensorTest {
             if (value instanceof Integer) {
                 assertEquals(t.dtype(), DTypes.INTEGER);
             }
-            assertEquals(g.mill(), t.mill());
+            assertEquals(g.engine(), t.engine());
         }
 
         void scalarTest() {
@@ -920,7 +920,7 @@ public class TensorTest {
             assertEquals(Shape.of(1, 4, 4), split1.get(1).shape());
             assertEquals(Shape.of(2, 4, 4), split1.get(2).shape());
 
-            var t2 = g.mill().concat(0, split1);
+            var t2 = g.engine().concat(0, split1);
             assertEquals(t1.shape(), t2.shape());
             assertTrue(t1.deepEquals(t2));
 
@@ -947,15 +947,15 @@ public class TensorTest {
                 assertEquals(expectedShapes.get(i), split3.get(i).shape());
             }
 
-            var p1 = g.mill().concat(2, split3.subList(0, 2));
-            var p2 = g.mill().concat(2, split3.subList(2, 4));
-            var p3 = g.mill().concat(2, split3.subList(4, 6));
-            var p4 = g.mill().concat(2, split3.subList(6, 8));
+            var p1 = g.engine().concat(2, split3.subList(0, 2));
+            var p2 = g.engine().concat(2, split3.subList(2, 4));
+            var p3 = g.engine().concat(2, split3.subList(4, 6));
+            var p4 = g.engine().concat(2, split3.subList(6, 8));
 
-            var p5 = g.mill().concat(1, List.of(p1, p2));
-            var p6 = g.mill().concat(1, List.of(p3, p4));
+            var p5 = g.engine().concat(1, List.of(p1, p2));
+            var p6 = g.engine().concat(1, List.of(p3, p4));
 
-            var p7 = g.mill().concat(0, List.of(p5, p6));
+            var p7 = g.engine().concat(0, List.of(p5, p6));
 
             assertTrue(t1.deepEquals(p7));
         }
@@ -969,7 +969,7 @@ public class TensorTest {
             assertEquals(Shape.of(4, 13, 19, 17), chunk1.get(1).shape());
             assertEquals(Shape.of(4, 13, 19, 17), chunk1.get(2).shape());
             assertEquals(Shape.of(1, 13, 19, 17), chunk1.get(3).shape());
-            assertTrue(t1.deepEquals(g.mill().concat(0, chunk1)));
+            assertTrue(t1.deepEquals(g.engine().concat(0, chunk1)));
 
             var chunk2 = t1.chunk(0, false, 4);
             assertEquals(4, chunk2.size());
@@ -1004,24 +1004,24 @@ public class TensorTest {
             assertEquals(Shape.of(3, 3, 9, 10), chunk4.get(14).shape());
             assertEquals(Shape.of(3, 3, 9, 7), chunk4.get(15).shape());
 
-            var c1 = g.mill().concat(3, chunk4.subList(0, 2));
-            var c2 = g.mill().concat(3, chunk4.subList(2, 4));
-            var c3 = g.mill().concat(3, chunk4.subList(4, 6));
-            var c4 = g.mill().concat(3, chunk4.subList(6, 8));
-            var c5 = g.mill().concat(3, chunk4.subList(8, 10));
-            var c6 = g.mill().concat(3, chunk4.subList(10, 12));
-            var c7 = g.mill().concat(3, chunk4.subList(12, 14));
-            var c8 = g.mill().concat(3, chunk4.subList(14, 16));
+            var c1 = g.engine().concat(3, chunk4.subList(0, 2));
+            var c2 = g.engine().concat(3, chunk4.subList(2, 4));
+            var c3 = g.engine().concat(3, chunk4.subList(4, 6));
+            var c4 = g.engine().concat(3, chunk4.subList(6, 8));
+            var c5 = g.engine().concat(3, chunk4.subList(8, 10));
+            var c6 = g.engine().concat(3, chunk4.subList(10, 12));
+            var c7 = g.engine().concat(3, chunk4.subList(12, 14));
+            var c8 = g.engine().concat(3, chunk4.subList(14, 16));
 
-            var c9 = g.mill().concat(2, List.of(c1, c2));
-            var c10 = g.mill().concat(2, List.of(c3, c4));
-            var c11 = g.mill().concat(2, List.of(c5, c6));
-            var c12 = g.mill().concat(2, List.of(c7, c8));
+            var c9 = g.engine().concat(2, List.of(c1, c2));
+            var c10 = g.engine().concat(2, List.of(c3, c4));
+            var c11 = g.engine().concat(2, List.of(c5, c6));
+            var c12 = g.engine().concat(2, List.of(c7, c8));
 
-            var c13 = g.mill().concat(1, List.of(c9, c10));
-            var c14 = g.mill().concat(1, List.of(c11, c12));
+            var c13 = g.engine().concat(1, List.of(c9, c10));
+            var c14 = g.engine().concat(1, List.of(c11, c12));
 
-            var c15 = g.mill().concat(0, List.of(c13, c14));
+            var c15 = g.engine().concat(0, List.of(c13, c14));
 
             assertTrue(t1.deepEquals(c15));
         }
@@ -1037,7 +1037,7 @@ public class TensorTest {
             for (int i = 0; i < 10; i++) {
                 list1.add(t1.unsqueeze(0));
             }
-            assertTrue(t2.deepEquals(g.mill().concat(0, list1)));
+            assertTrue(t2.deepEquals(g.engine().concat(0, list1)));
 
             var t3 = t1.repeat(0, 10, false);
             assertEquals(Shape.of(10 * 10), t3.shape());
@@ -1045,7 +1045,7 @@ public class TensorTest {
             for (int i = 0; i < 10; i++) {
                 list2.add(t1);
             }
-            assertTrue(t3.deepEquals(g.mill().concat(0, list2)));
+            assertTrue(t3.deepEquals(g.engine().concat(0, list2)));
         }
 
         void aggregateOpsTest() {

@@ -56,7 +56,7 @@ import rapaio.printer.opt.POpt;
  * pValue is the computed p-value for the KS test against the given densities
  * <p>
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/28/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/28/17.
  */
 public class KSTestOneSample implements HTest {
 

@@ -34,7 +34,7 @@ package rapaio.ml.model.tree.rtree;
 /**
  * Class used to pass information computed by search function to the method used to evaluate split
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/28/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/28/15.
  */
 public class SearchPayload {
 

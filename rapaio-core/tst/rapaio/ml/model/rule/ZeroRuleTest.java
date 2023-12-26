@@ -34,7 +34,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarNominal;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/20.
  */
 public class ZeroRuleTest {
 

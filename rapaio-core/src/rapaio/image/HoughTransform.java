@@ -57,7 +57,7 @@ import rapaio.util.DoubleComparators;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/21.
  */
 @Experimental
 public class HoughTransform extends ParamSet<HoughTransform> {

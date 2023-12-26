@@ -32,7 +32,7 @@
 package rapaio.ml.eval.metric;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/28/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/28/20.
  */
 public record ClassifierScore(double value) {
 }

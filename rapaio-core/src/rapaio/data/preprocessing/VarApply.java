@@ -54,7 +54,7 @@ import rapaio.util.function.Int2IntFunction;
  * and {@link Var#setDouble(int, double)}. The variable itself does not have to be
  * of type {@link rapaio.data.VarType#DOUBLE}.
  *
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
 public class VarApply extends AbstractVarTransform {
 

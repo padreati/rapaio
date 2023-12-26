@@ -67,7 +67,7 @@ import rapaio.printer.Format;
  * in the extended case of Multinomial distribution, we prefer this setup to cover both
  * situations.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/20.
  */
 public class MultinomialEstimator extends AbstractEstimator {
 

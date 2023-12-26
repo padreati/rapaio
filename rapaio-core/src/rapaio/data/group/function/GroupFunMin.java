@@ -39,7 +39,7 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
 public class GroupFunMin extends DefaultSingleGroupFun {
 

@@ -59,7 +59,7 @@ import rapaio.printer.Printable;
  * the unique values to be sorted for speed purposes, than he had this option using
  * the sorted parameter flag.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
  */
 public interface Unique extends Printable {
 

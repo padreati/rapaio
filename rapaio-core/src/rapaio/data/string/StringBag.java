@@ -52,7 +52,7 @@ import rapaio.data.stream.FSpot;
  * This kind of object can be used to filter or identify rows in data frames
  * in a different way than by row numbers, but from a composed identifier.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/19.
  */
 public class StringBag implements Comparable<StringBag> {
 

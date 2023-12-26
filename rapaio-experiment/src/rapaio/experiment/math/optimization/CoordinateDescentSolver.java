@@ -48,7 +48,7 @@ import rapaio.math.optimization.linesearch.LineSearch;
 /**
  * Steepest descent for L1 norm
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/19/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/19/17.
  */
 public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> implements Solver {
 

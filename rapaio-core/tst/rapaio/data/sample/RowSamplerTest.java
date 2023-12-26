@@ -39,7 +39,7 @@ import rapaio.datasets.Datasets;
 /**
  * Test for row sampling tools
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/26/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/26/16.
  */
 public class RowSamplerTest {
 

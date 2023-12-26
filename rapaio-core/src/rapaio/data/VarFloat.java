@@ -65,7 +65,7 @@ import rapaio.printer.opt.POpt;
  * The placeholder for missing value is Float.NaN. Any form of usage of Float.NaN
  * on set/add operation will result in a missing value.
  * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class VarFloat extends AbstractVar implements Iterable<Float> {
 

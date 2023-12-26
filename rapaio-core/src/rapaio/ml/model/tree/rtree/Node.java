@@ -45,7 +45,7 @@ import rapaio.ml.loss.Loss;
 import rapaio.ml.model.tree.RowPredicate;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/2/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/2/17.
  */
 public class Node implements Serializable {
 

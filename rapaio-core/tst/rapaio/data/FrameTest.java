@@ -35,7 +35,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class FrameTest {
 

@@ -40,7 +40,7 @@ import rapaio.math.linear.DVector;
 /**
  * Test for linear regression.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/15.
  */
 public class LinearRegressionResultResultModelTest {
 

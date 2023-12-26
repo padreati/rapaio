@@ -77,7 +77,7 @@ import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/18/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/18/19.
  */
 public class DoubleArraysTest {
 

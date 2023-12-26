@@ -49,9 +49,6 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
-/**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
- */
 public class L2Regression extends RegressionModel<L2Regression, RegressionResult, RunInfo<L2Regression>>
         implements ParametricEquals<L2Regression> {
 

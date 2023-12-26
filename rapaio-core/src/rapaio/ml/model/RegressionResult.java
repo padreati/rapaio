@@ -51,7 +51,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Result of a regression prediction.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
 public class RegressionResult implements Printable {
 

@@ -29,7 +29,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/19.
  */
 public final class DataTestingTools {
 

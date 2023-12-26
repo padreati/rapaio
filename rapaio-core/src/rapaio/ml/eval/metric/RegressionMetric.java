@@ -37,7 +37,7 @@ import rapaio.data.Var;
 import rapaio.ml.model.RegressionResult;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/15/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/15/20.
  */
 public interface RegressionMetric extends Serializable {
 

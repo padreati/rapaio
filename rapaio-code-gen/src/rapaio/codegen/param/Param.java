@@ -36,7 +36,7 @@ import java.io.Serializable;
  * At the same time, declaring a parameter in a class at the construction time of the parameter
  * register itself in the parent parameter set wih default values.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/3/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/3/20.
  */
 public interface Param<T, S extends ParamSet<S>> extends Serializable {
 

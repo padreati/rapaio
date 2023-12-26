@@ -41,7 +41,7 @@ import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.model.ClassifierResult;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/22/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/22/20.
  */
 public class BinaryLogisticTest {
 

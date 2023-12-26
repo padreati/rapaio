@@ -48,7 +48,7 @@ import rapaio.util.IntComparator;
  * This evaluation tool computes Gini and Normalized Gini Coefficients
  * int the normal and weighted versions, depending if a weight is provided.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
  */
 public class Gini implements Printable {
 

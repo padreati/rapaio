@@ -42,7 +42,7 @@ import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/14/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/14/20.
  */
 public class CForestTest {
 

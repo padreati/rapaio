@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.mill.barray;
+package rapaio.math.tensor.engine.barray;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
@@ -56,7 +56,9 @@ import rapaio.math.tensor.FloatTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Statistics;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.engine.AbstractTensor;
+import rapaio.math.tensor.engine.varray.VectorizedFloatTensorStride;
 import rapaio.math.tensor.iterators.DensePointerIterator;
 import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
@@ -65,9 +67,6 @@ import rapaio.math.tensor.iterators.StrideLoopDescriptor;
 import rapaio.math.tensor.iterators.StrideLoopIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.math.tensor.mill.AbstractTensor;
-import rapaio.math.tensor.mill.TensorValidation;
-import rapaio.math.tensor.mill.varray.VectorizedFloatTensorStride;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
@@ -79,28 +78,28 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
         permits VectorizedFloatTensorStride {
 
     protected final StrideLayout layout;
-    protected final TensorMill mill;
+    protected final TensorEngine engine;
     protected final float[] array;
     protected final StrideLoopDescriptor loop;
 
-    public BaseFloatTensorStride(TensorMill mill, Shape shape, int offset, int[] strides, float[] array) {
-        this(mill, StrideLayout.of(shape, offset, strides), array);
+    public BaseFloatTensorStride(TensorEngine engine, Shape shape, int offset, int[] strides, float[] array) {
+        this(engine, StrideLayout.of(shape, offset, strides), array);
     }
 
-    public BaseFloatTensorStride(TensorMill mill, Shape shape, int offset, Order order, float[] array) {
-        this(mill, StrideLayout.ofDense(shape, offset, order), array);
+    public BaseFloatTensorStride(TensorEngine engine, Shape shape, int offset, Order order, float[] array) {
+        this(engine, StrideLayout.ofDense(shape, offset, order), array);
     }
 
-    public BaseFloatTensorStride(TensorMill mill, StrideLayout layout, float[] array) {
+    public BaseFloatTensorStride(TensorEngine engine, StrideLayout layout, float[] array) {
         this.layout = layout;
-        this.mill = mill;
+        this.engine = engine;
         this.array = array;
         this.loop = StrideLoopDescriptor.of(layout, layout.storageFastOrder());
     }
 
     @Override
-    public TensorMill mill() {
-        return mill;
+    public TensorEngine engine() {
+        return engine;
     }
 
     @Override
@@ -135,7 +134,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
             }
         }
         var it = new StridePointerIterator(layout, askOrder);
-        FloatTensor copy = mill.ofFloat().zeros(askShape, askOrder);
+        FloatTensor copy = engine.ofFloat().zeros(askShape, askOrder);
         var copyIt = copy.ptrIterator(Order.C);
         while (it.hasNext()) {
             copy.ptrSetFloat(copyIt.nextInt(), array[it.nextInt()]);
@@ -145,14 +144,14 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
 
     @Override
     public FloatTensor transpose() {
-        return mill.ofFloat().stride(layout.revert(), array);
+        return engine.ofFloat().stride(layout.revert(), array);
     }
 
     @Override
     public FloatTensor ravel(Order askOrder) {
         var compact = layout.computeFortranLayout(askOrder, true);
         if (compact.shape().rank() == 1) {
-            return mill.ofFloat().stride(compact, array);
+            return engine.ofFloat().stride(compact, array);
         }
         return flatten(askOrder);
     }
@@ -169,42 +168,42 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
                 out[p++] = array[i];
             }
         }
-        return mill.ofFloat().stride(Shape.of(layout.size()), 0, new int[] {1}, out);
+        return engine.ofFloat().stride(Shape.of(layout.size()), 0, new int[] {1}, out);
     }
 
     @Override
     public FloatTensor squeeze() {
-        return layout.shape().unitDimCount() == 0 ? this : mill.ofFloat().stride(layout.squeeze(), array);
+        return layout.shape().unitDimCount() == 0 ? this : engine.ofFloat().stride(layout.squeeze(), array);
     }
 
     @Override
     public FloatTensor squeeze(int axis) {
-        return layout.shape().dim(axis) != 1 ? this : mill.ofFloat().stride(layout.squeeze(axis), array);
+        return layout.shape().dim(axis) != 1 ? this : engine.ofFloat().stride(layout.squeeze(axis), array);
     }
 
     @Override
     public FloatTensor unsqueeze(int axis) {
-        return mill.ofFloat().stride(layout().unsqueeze(axis), array);
+        return engine.ofFloat().stride(layout().unsqueeze(axis), array);
     }
 
     @Override
     public FloatTensor moveAxis(int src, int dst) {
-        return mill.ofFloat().stride(layout.moveAxis(src, dst), array);
+        return engine.ofFloat().stride(layout.moveAxis(src, dst), array);
     }
 
     @Override
     public FloatTensor swapAxis(int src, int dst) {
-        return mill.ofFloat().stride(layout.swapAxis(src, dst), array);
+        return engine.ofFloat().stride(layout.swapAxis(src, dst), array);
     }
 
     @Override
     public FloatTensor narrow(int axis, boolean keepdim, int start, int end) {
-        return mill.ofFloat().stride(layout.narrow(axis, keepdim, start, end), array);
+        return engine.ofFloat().stride(layout.narrow(axis, keepdim, start, end), array);
     }
 
     @Override
     public FloatTensor narrowAll(boolean keepdim, int[] starts, int[] ends) {
-        return mill.ofFloat().stride(layout.narrowAll(keepdim, starts, ends), array);
+        return engine.ofFloat().stride(layout.narrowAll(keepdim, starts, ends), array);
     }
 
     @Override
@@ -249,9 +248,9 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
         FloatTensor[] copies = new FloatTensor[repeat];
         Arrays.fill(copies, this);
         if (stack) {
-            return mill.stack(axis, Arrays.asList(copies));
+            return engine.stack(axis, Arrays.asList(copies));
         } else {
-            return mill.concat(axis, Arrays.asList(copies));
+            return engine.concat(axis, Arrays.asList(copies));
         }
     }
 
@@ -262,7 +261,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
 
     @Override
     public FloatTensor permute(int[] dims) {
-        return mill.ofFloat().stride(layout().permute(dims), array);
+        return engine.ofFloat().stride(layout().permute(dims), array);
     }
 
     @Override
@@ -483,7 +482,9 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
             binaryScalarOp(op, b.getFloat());
             return;
         }
-        TensorValidation.sameShape(this, b);
+        if (!shape().equals(b.shape())) {
+            throw new IllegalArgumentException("Tensors does not have the same shape.");
+        }
         var order = layout.storageFastOrder();
         order = order == Order.S ? Order.defaultOrder() : order;
 
@@ -604,7 +605,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
             result[i] = sum;
         }
         StrideLayout layout = StrideLayout.ofDense(Shape.of(shape().dim(0)), 0, Order.C);
-        return mill.ofFloat().stride(layout, result);
+        return engine.ofFloat().stride(layout, result);
     }
 
     @Override
@@ -621,7 +622,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
         int p = t.shape().dim(1);
 
         var result = new float[m * p];
-        var ret = mill.ofFloat().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
+        var ret = engine.ofFloat().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
 
         List<FloatTensor> rows = chunk(0, false, 1);
         List<FloatTensor> cols = t.chunk(1, false, 1);
@@ -636,7 +637,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
         int jStride = ((StrideLayout) ret.layout()).stride(1);
 
         List<Future<?>> futures = new ArrayList<>();
-        try (ExecutorService service = Executors.newFixedThreadPool(mill.cpuThreads())) {
+        try (ExecutorService service = Executors.newFixedThreadPool(engine.cpuThreads())) {
             for (int r = 0; r < m; r += innerChunk) {
                 int rs = r;
                 int re = Math.min(m, r + innerChunk);
@@ -834,7 +835,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
         askOrder = Order.autoFC(askOrder);
 
         float[] copy = new float[size()];
-        var dst = mill.ofFloat().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
+        var dst = engine.ofFloat().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
 
         if (layout.storageFastOrder() == askOrder) {
             sameLayoutCopy(copy, askOrder);
@@ -859,7 +860,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
 
         if (to instanceof BaseFloatTensorStride dst) {
 
-            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * mill.cpuThreads() * 8);
+            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * engine.cpuThreads() * 8);
 
             if (layout.size() > limit) {
 
@@ -879,7 +880,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
                 int[] starts = new int[slices.length];
                 int[] ends = new int[slices.length];
 
-                try (ExecutorService executor = Executors.newFixedThreadPool(mill.cpuThreads())) {
+                try (ExecutorService executor = Executors.newFixedThreadPool(engine.cpuThreads())) {
                     List<Future<?>> futures = new ArrayList<>();
                     Stack<Integer> stack = new Stack<>();
                     boolean loop = true;

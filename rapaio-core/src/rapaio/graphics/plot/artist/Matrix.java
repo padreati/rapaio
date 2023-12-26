@@ -49,7 +49,7 @@ import rapaio.graphics.plot.Axis;
 import rapaio.math.linear.DMatrix;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/19.
  */
 public class Matrix extends Artist {
 

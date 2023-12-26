@@ -36,12 +36,12 @@ import java.util.Random;
 import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.util.collection.IntArrays;
 
 public final class DoubleDenseStride extends DoubleDense {
 
-    public DoubleDenseStride(TensorMill manager) {
+    public DoubleDenseStride(TensorEngine manager) {
         super(manager);
     }
 

@@ -39,7 +39,7 @@ import static java.lang.Math.sqrt;
 import rapaio.sys.WS;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/17.
  */
 public class AnDarl {
 

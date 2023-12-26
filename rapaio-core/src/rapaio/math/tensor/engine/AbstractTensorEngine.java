@@ -29,20 +29,19 @@
  *
  */
 
-package rapaio.math.tensor.mill;
+package rapaio.math.tensor.engine;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 
-public abstract class AbstractTensorMill implements TensorMill {
+public abstract class AbstractTensorEngine implements TensorEngine {
 
     @Override
     public <N extends Number, T extends Tensor<N, T>> T concat(int axis, Collection<? extends T> tensors) {

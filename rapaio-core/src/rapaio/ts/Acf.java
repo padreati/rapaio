@@ -43,7 +43,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Sample AutoCorrelation Function
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
  */
 public final class Acf extends Correlation {
 

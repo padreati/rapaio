@@ -37,7 +37,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
  */
 public interface Prior extends Serializable {
 

@@ -39,7 +39,7 @@ import java.util.Random;
 import rapaio.core.SamplingTools;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarSelector implements Serializable {
 

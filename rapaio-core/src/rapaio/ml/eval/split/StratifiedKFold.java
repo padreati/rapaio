@@ -42,7 +42,7 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
 public record StratifiedKFold(int rounds, int folds, String strata) implements SplitStrategy {
 

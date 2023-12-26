@@ -47,7 +47,7 @@ import rapaio.util.function.Int2DoubleFunction;
 /**
  * Utility class to handle the manipulation of arrays of double 64 floating point values.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
  */
 public final class DoubleArrays {
 

@@ -35,29 +35,29 @@ import java.util.Collection;
 import java.util.Random;
 
 import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.math.tensor.mill.barray.BaseArrayTensorMill;
-import rapaio.math.tensor.mill.varray.VectorizedArrayTensorMill;
+import rapaio.math.tensor.engine.barray.BaseArrayTensorEngine;
+import rapaio.math.tensor.engine.varray.VectorizedArrayTensorEngine;
 
-public interface TensorMill {
+public interface TensorEngine {
 
-    static TensorMill defaultMill() {
+    static TensorEngine defaultEngine() {
         return barray();
     }
 
-    static TensorMill barray() {
-        return new BaseArrayTensorMill();
+    static TensorEngine barray() {
+        return new BaseArrayTensorEngine();
     }
 
-    static TensorMill barray(int cpuThreads) {
-        return new BaseArrayTensorMill(cpuThreads);
+    static TensorEngine barray(int cpuThreads) {
+        return new BaseArrayTensorEngine(cpuThreads);
     }
 
-    static TensorMill varray() {
-        return new VectorizedArrayTensorMill();
+    static TensorEngine varray() {
+        return new VectorizedArrayTensorEngine();
     }
 
-    static TensorMill varray(int cpuThreads) {
-        return new VectorizedArrayTensorMill(cpuThreads);
+    static TensorEngine varray(int cpuThreads) {
+        return new VectorizedArrayTensorEngine(cpuThreads);
     }
 
     interface OfType<N extends Number, T extends Tensor<N, T>> {

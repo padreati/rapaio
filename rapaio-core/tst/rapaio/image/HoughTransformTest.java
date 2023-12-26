@@ -41,7 +41,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.printer.ImageTools;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/17/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/17/21.
  */
 public class HoughTransformTest {
 

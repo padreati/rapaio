@@ -40,7 +40,7 @@ import rapaio.data.format.InstantFormatter;
 import rapaio.data.format.InstantParser;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/10/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/10/20.
  */
 public class VarInstantTest {
 

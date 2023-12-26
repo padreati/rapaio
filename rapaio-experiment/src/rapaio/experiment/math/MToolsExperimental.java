@@ -34,7 +34,7 @@ package rapaio.experiment.math;
 import java.util.ArrayList;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/2/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/2/19.
  */
 public class MToolsExperimental {
 

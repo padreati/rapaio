@@ -37,7 +37,7 @@ import rapaio.datasets.Datasets;
 import rapaio.ml.model.tree.RTree;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/19.
  */
 public class SearchTest {
 

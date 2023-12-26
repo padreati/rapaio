@@ -33,7 +33,7 @@ import rapaio.ml.model.tree.ctree.Candidate;
 import rapaio.ml.model.tree.ctree.Node;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.
  */
 public class CTreeTest {
 

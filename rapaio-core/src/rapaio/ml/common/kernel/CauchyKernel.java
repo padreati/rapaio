@@ -44,7 +44,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x, y) = \frac{1}{1 + \frac{\lVert x-y \rVert^2}{\sigma^2} }
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
 public class CauchyKernel extends AbstractKernel {
 

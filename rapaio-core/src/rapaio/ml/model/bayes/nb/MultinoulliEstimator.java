@@ -45,7 +45,7 @@ import rapaio.data.VarType;
 import rapaio.printer.Format;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/28/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/28/20.
  */
 public class MultinoulliEstimator extends AbstractEstimator {
 

@@ -32,7 +32,7 @@
 package rapaio.util;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/18.
  */
 public final class DoublePair {
 

@@ -40,7 +40,7 @@ import java.util.List;
 import rapaio.util.hash.Murmur3;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.
  */
 public class Int2IntOpenHashMap implements Serializable {
 

@@ -40,7 +40,7 @@ import rapaio.ml.eval.split.SplitStrategy;
 import rapaio.ml.model.simple.L2Regression;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/19.
  */
 public class RegressionResultEvaluationTest {
 

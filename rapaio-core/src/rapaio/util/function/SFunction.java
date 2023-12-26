@@ -35,7 +35,7 @@ import java.io.Serializable;
 import java.util.function.Function;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/19.
  */
 @FunctionalInterface
 public interface SFunction<T, R> extends Function<T, R>, Serializable {

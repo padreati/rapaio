@@ -34,7 +34,7 @@ package rapaio.graphics.opt;
 import java.awt.Color;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/27/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/27/21.
  */
 public class NColor {
 

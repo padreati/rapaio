@@ -39,7 +39,7 @@ import rapaio.core.tests.ChiSqIndependence;
 import rapaio.core.tools.DensityTable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public enum Purity implements Serializable {
 

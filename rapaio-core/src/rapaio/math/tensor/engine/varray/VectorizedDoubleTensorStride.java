@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.mill.varray;
+package rapaio.math.tensor.engine.varray;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
@@ -57,7 +57,7 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Statistics;
 import rapaio.math.tensor.iterators.StrideLoopDescriptor;
 import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.math.tensor.mill.barray.BaseDoubleTensorStride;
+import rapaio.math.tensor.engine.barray.BaseDoubleTensorStride;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
@@ -71,16 +71,16 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
 
     private final int[] loopIndexes;
 
-    public VectorizedDoubleTensorStride(VectorizedArrayTensorMill mill, Shape shape, int offset, int[] strides, double[] array) {
-        this(mill, StrideLayout.of(shape, offset, strides), array);
+    public VectorizedDoubleTensorStride(VectorizedArrayTensorEngine engine, Shape shape, int offset, int[] strides, double[] array) {
+        this(engine, StrideLayout.of(shape, offset, strides), array);
     }
 
-    public VectorizedDoubleTensorStride(VectorizedArrayTensorMill mill, Shape shape, int offset, Order order, double[] array) {
-        this(mill, StrideLayout.ofDense(shape, offset, order), array);
+    public VectorizedDoubleTensorStride(VectorizedArrayTensorEngine engine, Shape shape, int offset, Order order, double[] array) {
+        this(engine, StrideLayout.ofDense(shape, offset, order), array);
     }
 
-    public VectorizedDoubleTensorStride(VectorizedArrayTensorMill mill, StrideLayout layout, double[] array) {
-        super(mill, layout, array);
+    public VectorizedDoubleTensorStride(VectorizedArrayTensorEngine engine, StrideLayout layout, double[] array) {
+        super(engine, layout, array);
         this.loopIndexes = loop.step == 1 ? null : loopIndexes(loop.step);
     }
 
@@ -383,7 +383,7 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
             result[i] = sum;
         }
         StrideLayout layout = StrideLayout.ofDense(Shape.of(shape().dim(0)), 0, Order.C);
-        return mill.ofDouble().stride(layout, result);
+        return engine.ofDouble().stride(layout, result);
     }
 
     @Override
@@ -400,7 +400,7 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
         int p = t.shape().dim(1);
 
         var result = new double[m * p];
-        var ret = mill.ofDouble().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
+        var ret = engine.ofDouble().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
 
         List<DoubleTensor> rows = chunk(0, false, 1);
         List<DoubleTensor> cols = t.chunk(1, false, 1);
@@ -415,7 +415,7 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
         int jStride = ((StrideLayout) ret.layout()).stride(1);
 
         List<Future<?>> futures = new ArrayList<>();
-        try (ExecutorService service = Executors.newFixedThreadPool(mill.cpuThreads())) {
+        try (ExecutorService service = Executors.newFixedThreadPool(engine.cpuThreads())) {
             for (int r = 0; r < m; r += innerChunk) {
                 int rs = r;
                 int re = Math.min(m, r + innerChunk);
@@ -868,7 +868,7 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
 
         double[] copy = new double[size()];
         VectorizedDoubleTensorStride dst = (VectorizedDoubleTensorStride)
-                mill.ofDouble().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
+                engine.ofDouble().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
 
         if (layout.storageFastOrder() == askOrder) {
             sameLayoutCopy(copy, askOrder);
@@ -906,7 +906,7 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
 
         if (to instanceof VectorizedDoubleTensorStride dst) {
 
-            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * mill.cpuThreads() * 8);
+            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * engine.cpuThreads() * 8);
 
             if (layout.size() > limit) {
 
@@ -926,7 +926,7 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
                 int[] starts = new int[slices.length];
                 int[] ends = new int[slices.length];
 
-                try (ExecutorService executor = Executors.newFixedThreadPool(mill.cpuThreads())) {
+                try (ExecutorService executor = Executors.newFixedThreadPool(engine.cpuThreads())) {
                     List<Future<?>> futures = new ArrayList<>();
                     Stack<Integer> stack = new Stack<>();
                     boolean loop = true;

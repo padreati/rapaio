@@ -39,7 +39,7 @@ import java.util.List;
 import rapaio.ml.model.tree.RowPredicate;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/12/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/12/20.
  */
 public record Candidate(double score, String testName, List<RowPredicate> groupPredicates) implements Serializable {
 

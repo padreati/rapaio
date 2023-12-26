@@ -34,7 +34,7 @@ package rapaio.data;
 import java.io.Serial;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/29/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/29/19.
  */
 public class OperationNotAvailableException extends RuntimeException {
 

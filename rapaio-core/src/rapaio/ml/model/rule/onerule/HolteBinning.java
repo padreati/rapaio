@@ -40,7 +40,7 @@ import rapaio.ml.model.rule.OneRule;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/30/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/30/20.
  */
 public class HolteBinning implements OneRule.Binning {
 

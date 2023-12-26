@@ -63,7 +63,7 @@ import java.util.stream.Stream;
 import rapaio.experiment.io.json.tree.JsonValue;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/15.
  */
 public class JsonStream implements Stream<JsonValue> {
 

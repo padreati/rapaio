@@ -37,7 +37,7 @@ import rapaio.data.Group;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/18.
  */
 public interface GroupFun {
 

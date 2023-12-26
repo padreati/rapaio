@@ -39,7 +39,7 @@ import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/21/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/21/19.
  */
 public abstract class GBTRtree<M extends RegressionModel<M, R, H>, R extends RegressionResult, H extends RunInfo<M>> extends RegressionModel<M, R, H> {
 

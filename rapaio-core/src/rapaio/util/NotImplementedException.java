@@ -34,7 +34,7 @@ package rapaio.util;
 import java.io.Serial;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/22/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/22/20.
  */
 public class NotImplementedException extends RuntimeException {
 

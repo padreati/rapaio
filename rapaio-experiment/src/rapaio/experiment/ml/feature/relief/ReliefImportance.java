@@ -38,7 +38,7 @@ import rapaio.data.VarNominal;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/19/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/19/18.
  */
 public record ReliefImportance(String[] names, double[] weights) {
 

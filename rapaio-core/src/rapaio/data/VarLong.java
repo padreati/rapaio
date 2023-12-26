@@ -54,7 +54,7 @@ import rapaio.printer.opt.POpt;
  * necessary and specific usage scenarios this type of variable
  * is useful.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarLong extends AbstractVar {
 

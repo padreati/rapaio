@@ -49,7 +49,7 @@ import rapaio.ml.model.tree.RowPredicate;
  * method describes with which variable representation works to implement
  * the selection of the best candidate.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/19.
  */
 public enum Search implements Serializable {
 

@@ -34,7 +34,7 @@ import rapaio.ml.common.VarSelector;
 import rapaio.ml.model.tree.RTree;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.
  */
 public class GBTClassifierModelTest {
 

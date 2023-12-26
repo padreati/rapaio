@@ -32,7 +32,7 @@ import rapaio.datasets.Datasets;
 import rapaio.ml.model.tree.CTree;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/20.
  */
 public class PruningTest {
 

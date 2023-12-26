@@ -57,7 +57,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Minkowsky Weighted KMeans
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/17.
  */
 public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<MWKMeans>> {
 

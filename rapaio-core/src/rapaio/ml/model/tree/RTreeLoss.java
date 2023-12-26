@@ -39,7 +39,7 @@ import rapaio.ml.model.tree.rtree.SearchPayload;
  * The argument contains needed information required to compute the reduce in loss after
  * the split.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/12/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/12/20.
  */
 public interface RTreeLoss extends Loss {
 

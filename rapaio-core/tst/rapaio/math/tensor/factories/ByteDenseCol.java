@@ -34,12 +34,12 @@ package rapaio.math.tensor.factories;
 import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorMill;
+import rapaio.math.tensor.TensorEngine;
 
 public final class ByteDenseCol extends ByteDense {
 
-    public ByteDenseCol(TensorMill tensorMill) {
-        super(tensorMill);
+    public ByteDenseCol(TensorEngine tensorEngine) {
+        super(tensorEngine);
     }
 
     @Override

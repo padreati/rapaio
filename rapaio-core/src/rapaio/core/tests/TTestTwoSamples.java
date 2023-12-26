@@ -43,7 +43,7 @@ import rapaio.printer.opt.POpt;
 /**
  * t test for checking if two samples have the same mean
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
  */
 public class TTestTwoSamples implements HTest {
 

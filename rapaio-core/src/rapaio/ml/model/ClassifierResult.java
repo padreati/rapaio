@@ -42,7 +42,7 @@ import java.util.*;
 /**
  * Classification predict result.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class ClassifierResult implements Printable {
 

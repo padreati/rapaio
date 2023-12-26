@@ -51,7 +51,7 @@ import rapaio.printer.Printable;
 import rapaio.util.function.SConsumer;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/31/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/31/20.
  */
 @SuppressWarnings("unchecked")
 public abstract class ClusteringModel<M extends ClusteringModel<M, R, H>, R extends ClusteringResult<M>, H>

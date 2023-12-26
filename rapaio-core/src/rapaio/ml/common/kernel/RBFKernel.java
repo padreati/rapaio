@@ -54,7 +54,7 @@ import rapaio.math.linear.DVector;
  * In the other hand, if underestimated, the function will lack regularization
  * and the decision boundary will be highly sensitive to noise in training data.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 public class RBFKernel extends AbstractKernel {
 

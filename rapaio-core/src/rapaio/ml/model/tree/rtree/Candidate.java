@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import rapaio.ml.model.tree.RowPredicate;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/1/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/1/17.
  */
 public class Candidate implements Serializable {
 

@@ -47,7 +47,7 @@ import rapaio.sys.WS;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
  */
 public abstract class AbstractDMatrix implements DMatrix {
 

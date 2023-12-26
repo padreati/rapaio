@@ -76,7 +76,7 @@ import rapaio.util.parralel.ParallelStreamCollector;
 /**
  * Breiman random forest implementation.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
 public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<CForest>> {
 

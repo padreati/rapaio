@@ -39,7 +39,7 @@ import rapaio.printer.Format;
 /**
  * Printing options.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/25/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/25/20.
  */
 public class POpts extends NamedParamSet<POpts, POpt<?>> implements Serializable {
 

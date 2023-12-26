@@ -46,7 +46,7 @@ import rapaio.printer.opt.POpt;
  * variables (in other words the total sum of the absolute
  * value of residuals).
  * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class MAE implements Printable {
 

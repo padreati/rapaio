@@ -34,7 +34,7 @@ package rapaio.ml.eval.metric;
 import java.io.Serial;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/28/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/28/20.
  */
 public abstract class AbstractClassifierMetric implements ClassifierMetric {
 

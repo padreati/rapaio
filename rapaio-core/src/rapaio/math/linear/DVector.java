@@ -55,7 +55,7 @@ import rapaio.util.function.Int2DoubleFunction;
 /**
  * Vector of values in double floating precision.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
 public interface DVector extends Serializable, Printable, Iterable<Double> {
 

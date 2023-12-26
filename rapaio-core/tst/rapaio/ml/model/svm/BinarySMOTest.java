@@ -60,7 +60,7 @@ import rapaio.ml.eval.split.StratifiedKFold;
 /**
  * Test for binary smo
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/20/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class BinarySMOTest {
 

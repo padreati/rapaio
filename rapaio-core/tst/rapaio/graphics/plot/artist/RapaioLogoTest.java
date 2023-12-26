@@ -52,7 +52,7 @@ import rapaio.printer.Figure;
  * new generated image is the same. When something is changed in graphic system,
  * other images might be generated, with additionally human check.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/4/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/4/15.
  */
 
 public class RapaioLogoTest extends AbstractArtistTest {

@@ -51,7 +51,7 @@ import rapaio.experiment.util.stream.StreamUtil;
 /**
  * Utility class for manipulating json files.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/12/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/12/15.
  */
 public class JsonUtil {
 

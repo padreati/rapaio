@@ -42,7 +42,7 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
 public class QuantileTransform extends AbstractTransform {
 

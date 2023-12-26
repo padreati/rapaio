@@ -48,7 +48,7 @@ import rapaio.ml.model.tree.rowpredicate.NumLess;
 import rapaio.ml.model.tree.rowpredicate.NumLessEqual;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/21/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/21/17.
  */
 @FunctionalInterface
 public interface RowPredicate extends Serializable {

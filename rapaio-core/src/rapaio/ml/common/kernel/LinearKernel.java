@@ -42,7 +42,7 @@ import rapaio.printer.Format;
  * Kernel algorithms using a linear kernel are often equivalent to their non-kernel counterparts,
  * i.e. KPCA with linear kernel is the same as standard PCA.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/14/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/14/21.
  */
 public class LinearKernel extends AbstractKernel {
 

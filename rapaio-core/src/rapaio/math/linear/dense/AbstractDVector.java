@@ -48,7 +48,7 @@ import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
  */
 public abstract class AbstractDVector implements DVector {
 

@@ -58,7 +58,7 @@ import rapaio.printer.opt.POpt;
  * Distance matrix should have the same length as the number of clusters
  * considered.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/13/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/13/17.
  */
 public class ClusterSilhouette extends ParamSet<ClusterSilhouette> implements Printable {
 

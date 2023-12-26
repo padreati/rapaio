@@ -51,7 +51,7 @@ import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/20.
  */
 public class Text extends Artist {
 

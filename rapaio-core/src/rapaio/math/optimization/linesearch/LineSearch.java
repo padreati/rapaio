@@ -36,7 +36,7 @@ import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.linear.DVector;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
 public interface LineSearch {
 

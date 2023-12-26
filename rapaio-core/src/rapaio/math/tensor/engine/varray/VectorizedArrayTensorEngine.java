@@ -29,35 +29,35 @@
  *
  */
 
-package rapaio.math.tensor.mill.barray;
+package rapaio.math.tensor.engine.varray;
 
 import java.util.Arrays;
 import java.util.Random;
 
 import rapaio.math.tensor.ByteTensor;
-import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.DTypes;
+import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.FloatTensor;
 import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.mill.AbstractTensorMill;
+import rapaio.math.tensor.engine.AbstractTensorEngine;
 import rapaio.util.Hardware;
 
-public class BaseArrayTensorMill extends AbstractTensorMill {
+public class VectorizedArrayTensorEngine extends AbstractTensorEngine {
 
-    private final BaseArrayOfDouble ofDouble = new BaseArrayOfDouble(this);
-    private final BaseArrayOfFloat ofFloat = new BaseArrayOfFloat(this);
-    private final BaseArrayOfInt ofInt = new BaseArrayOfInt(this);
-    private final BaseArrayOfByte ofByte = new BaseArrayOfByte(this);
+    private final VArrayOfDouble ofDouble = new VArrayOfDouble(this);
+    private final VArrayOfFloat ofFloat = new VArrayOfFloat(this);
+    private final VArrayOfInt ofInt = new VArrayOfInt(this);
+    private final VArrayOfByte ofByte = new VArrayOfByte(this);
     private final int cpuThreads;
 
-    public BaseArrayTensorMill() {
+    public VectorizedArrayTensorEngine() {
         this(Hardware.CORES);
     }
 
-    public BaseArrayTensorMill(int cpuThreads) {
+    public VectorizedArrayTensorEngine(int cpuThreads) {
         this.cpuThreads = cpuThreads;
     }
 
@@ -86,11 +86,11 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         return ofByte;
     }
 
-    protected static class BaseArrayOfDouble implements OfType<Double, DoubleTensor> {
+    protected static class VArrayOfDouble implements OfType<Double, DoubleTensor> {
 
-        private final BaseArrayTensorMill parent;
+        private final VectorizedArrayTensorEngine parent;
 
-        public BaseArrayOfDouble(BaseArrayTensorMill parent) {
+        public VArrayOfDouble(VectorizedArrayTensorEngine parent) {
             this.parent = parent;
         }
 
@@ -105,13 +105,13 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseDoubleTensorStride zeros(Shape shape, Order order) {
-            return new BaseDoubleTensorStride(parent, shape, 0, Order.autoFC(order), new double[shape.size()]);
+        public VectorizedDoubleTensorStride zeros(Shape shape, Order order) {
+            return new VectorizedDoubleTensorStride(parent, shape, 0, Order.autoFC(order), new double[shape.size()]);
         }
 
         @Override
-        public BaseDoubleTensorStride eye(int n, Order order) {
-            BaseDoubleTensorStride eye = zeros(Shape.of(n, n), order);
+        public VectorizedDoubleTensorStride eye(int n, Order order) {
+            VectorizedDoubleTensorStride eye = zeros(Shape.of(n, n), order);
             for (int i = 0; i < n; i++) {
                 eye.setDouble(1, i, i);
             }
@@ -126,17 +126,17 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseDoubleTensorStride seq(Shape shape, Order order) {
+        public VectorizedDoubleTensorStride seq(Shape shape, Order order) {
             return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (double) i);
         }
 
         @Override
-        public BaseDoubleTensorStride random(Shape shape, Random random, Order order) {
+        public VectorizedDoubleTensorStride random(Shape shape, Random random, Order order) {
             return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextDouble());
         }
 
         @Override
-        public BaseDoubleTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
+        public VectorizedDoubleTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
             double[] darray = new double[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = array[i];
@@ -145,7 +145,7 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseDoubleTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
+        public VectorizedDoubleTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
             double[] darray = new double[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = array[i];
@@ -154,7 +154,7 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseDoubleTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
+        public VectorizedDoubleTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
             double[] darray = new double[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = array[i];
@@ -163,16 +163,16 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseDoubleTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
-            return new BaseDoubleTensorStride(parent, shape, offset, strides, array);
+        public VectorizedDoubleTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
+            return new VectorizedDoubleTensorStride(parent, shape, offset, strides, array);
         }
     }
 
-    protected static class BaseArrayOfFloat implements OfType<Float, FloatTensor> {
+    protected static class VArrayOfFloat implements OfType<Float, FloatTensor> {
 
-        private final BaseArrayTensorMill parent;
+        private final VectorizedArrayTensorEngine parent;
 
-        public BaseArrayOfFloat(BaseArrayTensorMill parent) {
+        public VArrayOfFloat(VectorizedArrayTensorEngine parent) {
             this.parent = parent;
         }
 
@@ -187,13 +187,13 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseFloatTensorStride zeros(Shape shape, Order order) {
-            return new BaseFloatTensorStride(parent, shape, 0, Order.autoFC(order), new float[shape.size()]);
+        public VectorizedFloatTensorStride zeros(Shape shape, Order order) {
+            return new VectorizedFloatTensorStride(parent, shape, 0, Order.autoFC(order), new float[shape.size()]);
         }
 
         @Override
-        public BaseFloatTensorStride eye(int n, Order order) {
-            BaseFloatTensorStride eye = zeros(Shape.of(n, n), order);
+        public VectorizedFloatTensorStride eye(int n, Order order) {
+            VectorizedFloatTensorStride eye = zeros(Shape.of(n, n), order);
             for (int i = 0; i < n; i++) {
                 eye.setFloat(1, i, i);
             }
@@ -208,17 +208,17 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseFloatTensorStride seq(Shape shape, Order order) {
+        public VectorizedFloatTensorStride seq(Shape shape, Order order) {
             return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (float) i);
         }
 
         @Override
-        public BaseFloatTensorStride random(Shape shape, Random random, Order order) {
+        public VectorizedFloatTensorStride random(Shape shape, Random random, Order order) {
             return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextFloat());
         }
 
         @Override
-        public BaseFloatTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
+        public VectorizedFloatTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
             float[] darray = new float[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = (float) array[i];
@@ -227,7 +227,7 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseFloatTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
+        public VectorizedFloatTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
             float[] darray = new float[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = (float) array[i];
@@ -236,12 +236,12 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseFloatTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
-            return new BaseFloatTensorStride(parent, shape, offset, strides, array);
+        public VectorizedFloatTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
+            return new VectorizedFloatTensorStride(parent, shape, offset, strides, array);
         }
 
         @Override
-        public BaseFloatTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
+        public VectorizedFloatTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
             float[] darray = new float[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = (float) array[i];
@@ -250,11 +250,11 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
     }
 
-    protected static class BaseArrayOfInt implements OfType<Integer, IntTensor> {
+    protected static class VArrayOfInt implements OfType<Integer, IntTensor> {
 
-        private final BaseArrayTensorMill parent;
+        private final VectorizedArrayTensorEngine parent;
 
-        public BaseArrayOfInt(BaseArrayTensorMill parent) {
+        public VArrayOfInt(VectorizedArrayTensorEngine parent) {
             this.parent = parent;
         }
 
@@ -269,13 +269,13 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseIntTensorStride zeros(Shape shape, Order order) {
-            return new BaseIntTensorStride(parent, shape, 0, Order.autoFC(order), new int[shape.size()]);
+        public VectorizedIntTensorStride zeros(Shape shape, Order order) {
+            return new VectorizedIntTensorStride(parent, shape, 0, Order.autoFC(order), new int[shape.size()]);
         }
 
         @Override
-        public BaseIntTensorStride eye(int n, Order order) {
-            BaseIntTensorStride eye = zeros(Shape.of(n, n), order);
+        public VectorizedIntTensorStride eye(int n, Order order) {
+            VectorizedIntTensorStride eye = zeros(Shape.of(n, n), order);
             for (int i = 0; i < n; i++) {
                 eye.setInt(1, i, i);
             }
@@ -290,17 +290,17 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseIntTensorStride seq(Shape shape, Order order) {
+        public VectorizedIntTensorStride seq(Shape shape, Order order) {
             return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (int) i);
         }
 
         @Override
-        public BaseIntTensorStride random(Shape shape, Random random, Order order) {
+        public VectorizedIntTensorStride random(Shape shape, Random random, Order order) {
             return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextInt());
         }
 
         @Override
-        public BaseIntTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
+        public VectorizedIntTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
             int[] darray = new int[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = array[i];
@@ -309,12 +309,12 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseIntTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
-            return new BaseIntTensorStride(parent, shape, offset, strides, array);
+        public VectorizedIntTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
+            return new VectorizedIntTensorStride(parent, shape, offset, strides, array);
         }
 
         @Override
-        public BaseIntTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
+        public VectorizedIntTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
             int[] darray = new int[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = (int) array[i];
@@ -323,7 +323,7 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseIntTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
+        public VectorizedIntTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
             int[] darray = new int[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = (int) array[i];
@@ -332,11 +332,12 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
     }
 
-    protected static class BaseArrayOfByte implements OfType<Byte, ByteTensor> {
+    protected static class VArrayOfByte implements OfType<Byte, ByteTensor> {
 
-        private final BaseArrayTensorMill parent;
 
-        public BaseArrayOfByte(BaseArrayTensorMill parent) {
+        private final VectorizedArrayTensorEngine parent;
+
+        public VArrayOfByte(VectorizedArrayTensorEngine parent) {
             this.parent = parent;
         }
 
@@ -351,13 +352,13 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseByteTensorStride zeros(Shape shape, Order order) {
-            return new BaseByteTensorStride(parent, shape, 0, Order.autoFC(order), new byte[shape.size()]);
+        public VectorizedByteTensorStride zeros(Shape shape, Order order) {
+            return new VectorizedByteTensorStride(parent, shape, 0, Order.autoFC(order), new byte[shape.size()]);
         }
 
         @Override
-        public BaseByteTensorStride eye(int n, Order order) {
-            BaseByteTensorStride eye = zeros(Shape.of(n, n), order);
+        public VectorizedByteTensorStride eye(int n, Order order) {
+            VectorizedByteTensorStride eye = zeros(Shape.of(n, n), order);
             for (int i = 0; i < n; i++) {
                 eye.setByte((byte) 1, i, i);
             }
@@ -366,18 +367,18 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
 
         @Override
         public ByteTensor full(Shape shape, Byte value, Order order) {
-            byte[] array = new byte[shape.size()];
+            int[] array = new int[shape.size()];
             Arrays.fill(array, value);
             return stride(shape, Order.autoFC(order), array);
         }
 
         @Override
-        public BaseByteTensorStride seq(Shape shape, Order order) {
+        public VectorizedByteTensorStride seq(Shape shape, Order order) {
             return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (byte) i);
         }
 
         @Override
-        public BaseByteTensorStride random(Shape shape, Random random, Order order) {
+        public VectorizedByteTensorStride random(Shape shape, Random random, Order order) {
             return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> {
                 byte[] buff = new byte[1];
                 random.nextBytes(buff);
@@ -386,12 +387,12 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseByteTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
-            return new BaseByteTensorStride(parent, shape, offset, strides, array);
+        public VectorizedByteTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
+            return new VectorizedByteTensorStride(parent, shape, offset, strides, array);
         }
 
         @Override
-        public BaseByteTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
+        public VectorizedByteTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
             byte[] darray = new byte[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = (byte) array[i];
@@ -400,7 +401,7 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseByteTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
+        public VectorizedByteTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
             byte[] darray = new byte[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = (byte) array[i];
@@ -409,7 +410,7 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
         }
 
         @Override
-        public BaseByteTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
+        public VectorizedByteTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
             byte[] darray = new byte[array.length];
             for (int i = 0; i < array.length; i++) {
                 darray[i] = (byte) array[i];
@@ -417,6 +418,4 @@ public class BaseArrayTensorMill extends AbstractTensorMill {
             return stride(shape, offset, strides, darray);
         }
     }
-
-
 }

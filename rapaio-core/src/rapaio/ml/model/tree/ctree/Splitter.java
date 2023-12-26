@@ -47,7 +47,7 @@ import rapaio.ml.model.tree.RowPredicate;
 import rapaio.util.Pair;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.
  */
 public enum Splitter implements Serializable {
 

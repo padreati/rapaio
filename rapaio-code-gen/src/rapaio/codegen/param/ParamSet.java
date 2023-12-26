@@ -40,7 +40,7 @@ import java.util.function.Function;
  * of this facility is {@link #getStringParameterValues(boolean)}, but any other
  * can be implemented.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/29/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/29/20.
  */
 public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
 

@@ -38,7 +38,7 @@ import rapaio.data.VarNominal;
 import rapaio.ml.model.rule.OneRule;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/31/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/31/20.
  */
 public class HolteBinningTest {
 

@@ -60,7 +60,7 @@ import rapaio.printer.opt.POpts;
 import rapaio.core.param.ValueParam;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
 public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierResult, RunInfo<BinaryLogistic>> {
 

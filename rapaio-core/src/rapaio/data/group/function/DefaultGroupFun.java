@@ -36,7 +36,7 @@ import java.util.List;
 import rapaio.data.group.GroupFun;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/21/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/21/19.
  */
 public abstract class DefaultGroupFun implements GroupFun {
 

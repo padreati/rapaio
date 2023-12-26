@@ -56,7 +56,7 @@ import rapaio.util.function.IntInt2DoubleBiFunction;
 /**
  * Dense matrix with double precision floating point values
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
 public interface DMatrix extends Serializable, Printable {
 

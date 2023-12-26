@@ -33,7 +33,7 @@ import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/4/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/4/20.
  */
 public class KMeansResultTest {
 

@@ -43,7 +43,7 @@ import rapaio.util.function.Double2IntFunction;
 import rapaio.util.function.Int2IntFunction;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
 public class VarToIntTransform extends AbstractVarTransform {
 

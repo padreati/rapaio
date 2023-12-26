@@ -49,7 +49,7 @@ import rapaio.util.function.SConsumer;
 /**
  * Utility class for following progress while fitting a classifier during runs.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/20.
  */
 public class ClassifierRunHook<M extends ClassifierModel<M, ?, ?>> extends ParamSet<ClassifierRunHook<M>>
         implements SConsumer<RunInfo<M>> {

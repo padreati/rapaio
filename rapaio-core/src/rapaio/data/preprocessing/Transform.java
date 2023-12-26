@@ -60,7 +60,7 @@ import rapaio.data.Preprocessing;
  * <li>also, if the transformation is fitted, it can be serialized and deserialized for later usage</li>
  * </ul>
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
 public interface Transform extends Serializable {
 

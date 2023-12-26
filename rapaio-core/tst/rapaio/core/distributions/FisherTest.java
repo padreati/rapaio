@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.Test;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/17.
  */
 public class FisherTest {
 

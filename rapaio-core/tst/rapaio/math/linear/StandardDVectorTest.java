@@ -47,7 +47,7 @@ import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/9/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/9/20.
  */
 public abstract class StandardDVectorTest {
 

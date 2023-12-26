@@ -43,7 +43,7 @@ import rapaio.util.IntIterator;
 import rapaio.util.function.Int2IntFunction;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/27/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/27/18.
  */
 public final class ArrayMapping implements Mapping {
 

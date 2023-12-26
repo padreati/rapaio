@@ -46,7 +46,7 @@ import rapaio.math.linear.DVector;
 /**
  * Builds a random projection of some give numeric features.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/28/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/28/16.
  */
 public class RandomProjection extends AbstractTransform {
 

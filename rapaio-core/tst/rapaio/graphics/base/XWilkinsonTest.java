@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.sys.WS;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
  */
 public class XWilkinsonTest {
 

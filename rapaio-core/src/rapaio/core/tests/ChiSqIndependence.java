@@ -49,7 +49,7 @@ import rapaio.printer.opt.POpt;
  * Allows one to test whether unpaired observations on two variables,
  * expressed in a contingency table, are independent of each other.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/31/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/31/17.
  */
 public final class ChiSqIndependence implements HTest {
 

@@ -37,7 +37,7 @@ import rapaio.data.VarInt;
 import rapaio.math.linear.DVector;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarSelectorTest {
 

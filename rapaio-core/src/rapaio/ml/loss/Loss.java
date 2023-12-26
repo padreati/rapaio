@@ -42,7 +42,7 @@ import rapaio.core.param.ParametricEquals;
  * <p>
  * Interface which describes a regression loss function and connected operations with it.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
  */
 public interface Loss extends ParametricEquals<Loss>, Serializable {
 

@@ -50,7 +50,7 @@ import rapaio.printer.opt.POpt;
  * Hypothesis test which assess if a given samples belongs to a normal distribution.
  * Andreson-Darling test is based on A^2 distance statistic.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/17.
  */
 public class ADTestGoodness implements HTest {
 

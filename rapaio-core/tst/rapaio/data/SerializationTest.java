@@ -33,7 +33,7 @@ import rapaio.datasets.Datasets;
 import rapaio.io.JavaIO;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/15.
  */
 public class SerializationTest {
 

@@ -32,7 +32,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/18.
  */
 public class StandardScalerTest {
 

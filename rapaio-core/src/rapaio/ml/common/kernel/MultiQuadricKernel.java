@@ -44,7 +44,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x, y) = \sqrt{\lVert x-y \rVert^2 + c^2}
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class MultiQuadricKernel extends AbstractKernel {
 

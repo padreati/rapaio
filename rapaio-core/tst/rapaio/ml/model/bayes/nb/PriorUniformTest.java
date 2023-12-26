@@ -33,7 +33,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/4/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/4/20.
  */
 public class PriorUniformTest {
 

@@ -40,7 +40,7 @@ import rapaio.util.Pair;
 /**
  * Tests splitters implementations for CTree
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/29/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/29/15.
  */
 public class SplitterTest {
 

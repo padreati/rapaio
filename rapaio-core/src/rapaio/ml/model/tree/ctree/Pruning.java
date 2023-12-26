@@ -44,7 +44,7 @@ import rapaio.util.collection.IntOpenHashSet;
 /**
  * Pruning techniques
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/20/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/20/15.
  */
 public enum Pruning implements Serializable {
 

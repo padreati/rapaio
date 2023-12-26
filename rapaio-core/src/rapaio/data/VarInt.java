@@ -61,7 +61,7 @@ import rapaio.util.function.Int2IntFunction;
  * <p>
  * Missing value is {@link Integer#MIN_VALUE}. Any use of this value in add/set operations will lead to missing values.
  * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class VarInt extends AbstractVar implements Iterable<Integer> {
 

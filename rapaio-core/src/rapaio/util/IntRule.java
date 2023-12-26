@@ -35,7 +35,7 @@ import java.util.Objects;
 import java.util.function.IntPredicate;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/12/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/12/20.
  */
 @FunctionalInterface
 public interface IntRule {

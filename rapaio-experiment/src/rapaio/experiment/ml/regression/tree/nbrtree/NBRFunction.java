@@ -49,7 +49,7 @@ import rapaio.ml.model.linear.LinearRegressionResult;
 import rapaio.ml.model.simple.L2Regression;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/23/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/23/19.
  */
 public interface NBRFunction {
 

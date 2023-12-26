@@ -46,7 +46,7 @@ import rapaio.printer.Format;
  * <p>
  * \mbox{if}~ \lVert x-y \rVert < \sigma \mbox{, zero otherwise}
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class SphericalKernel extends AbstractKernel {
 

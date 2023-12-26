@@ -39,7 +39,7 @@ import rapaio.data.VarNominal;
 import rapaio.data.stream.FSpot;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/21/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/21/17.
  */
 public class RowPredicateTest {
 

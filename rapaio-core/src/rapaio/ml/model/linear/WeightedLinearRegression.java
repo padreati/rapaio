@@ -40,7 +40,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/20.
  */
 public class WeightedLinearRegression extends BaseLinearRegressionModel<WeightedLinearRegression> {
 

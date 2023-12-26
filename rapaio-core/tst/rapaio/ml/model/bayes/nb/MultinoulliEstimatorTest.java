@@ -36,7 +36,7 @@ import rapaio.data.VarType;
 import rapaio.data.preprocessing.OneHotEncoding;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/2/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/2/20.
  */
 public class MultinoulliEstimatorTest {
 

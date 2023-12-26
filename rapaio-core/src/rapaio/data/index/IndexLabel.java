@@ -44,7 +44,7 @@ import rapaio.data.Var;
 import rapaio.data.VarNominal;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/20.
  */
 public class IndexLabel implements Index<String> {
 

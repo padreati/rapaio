@@ -45,7 +45,7 @@ import rapaio.data.VarType;
 /**
  * Capabilities describes what a machine learning algorithm can predict and predict.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
 public final class Capabilities {
 

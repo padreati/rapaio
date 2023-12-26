@@ -45,7 +45,7 @@ import rapaio.printer.opt.POpt;
  * The null hypothesis of this test is that both data sets comes from the same densities,
  * The altString hypothesis is that the two samples comes from different densities.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/29/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/29/17.
  */
 public class KSTestTwoSamples implements HTest {
 

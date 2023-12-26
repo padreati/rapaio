@@ -39,7 +39,7 @@ import rapaio.util.Pair;
 /**
  * Fast Fourier Transform
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/16.
  */
 public class FFT {
 

@@ -45,7 +45,7 @@ import rapaio.printer.opt.POpt;
 import rapaio.util.function.SFunction;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarString extends AbstractVar {
 

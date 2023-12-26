@@ -57,7 +57,7 @@ import rapaio.printer.opt.POpt;
  * This regression implements the regression by a constant paradigm using
  * sum of absolute deviations loss function: L1(y - y_hat) = \sum(|y - y_hat|).
  * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class L1Regression extends RegressionModel<L1Regression, RegressionResult, RunInfo<L1Regression>> {
 

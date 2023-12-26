@@ -40,7 +40,7 @@ import rapaio.core.tools.DensityVector;
 /**
  * Rule for one rule model for numeric variables
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/15.
  */
 public class NumericRule extends Rule {
 

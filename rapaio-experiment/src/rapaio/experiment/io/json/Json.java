@@ -52,7 +52,7 @@ import rapaio.experiment.io.json.stream.JsonSpliterator;
 import rapaio.experiment.io.json.tree.JsonValue;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/20/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/20/15.
  */
 public final class Json {
 

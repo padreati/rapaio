@@ -36,7 +36,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
  */
 public interface SmoothRFunction {
 

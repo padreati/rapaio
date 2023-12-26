@@ -42,7 +42,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Two sample z test: tests the difference between two sample means
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/27/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/27/16.
  */
 public class ZTestTwoSamples implements HTest {
 

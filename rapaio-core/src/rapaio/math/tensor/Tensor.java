@@ -51,9 +51,9 @@ import rapaio.util.function.IntIntBiFunction;
 public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printable, Iterable<N> {
 
     /**
-     * @return tensor mill
+     * @return tensor engine
      */
-    TensorMill mill();
+    TensorEngine engine();
 
     /**
      * @return tensor data type
@@ -278,7 +278,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
         List<T> list = new ArrayList<>();
         list.add((T) this);
         list.addAll(tensors);
-        return mill().stack(axis, list);
+        return engine().stack(axis, list);
     }
 
     @SuppressWarnings("unchecked")
@@ -286,7 +286,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
         List<T> list = new ArrayList<>();
         list.add((T) this);
         list.addAll(tensors);
-        return mill().concat(axis, list);
+        return engine().concat(axis, list);
     }
 
     T repeat(int axis, int repeat, boolean stack);

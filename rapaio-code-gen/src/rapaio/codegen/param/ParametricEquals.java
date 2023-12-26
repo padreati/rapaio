@@ -28,7 +28,7 @@ package rapaio.codegen.param;
  * which returns true if two classes of the same type have the same parameter values,
  * and, as a consequence, will behave the same.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/20.
  */
 public interface ParametricEquals<T> {
 

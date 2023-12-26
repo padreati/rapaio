@@ -35,7 +35,7 @@ import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
  */
 public enum Centering {
     NONE {

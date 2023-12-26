@@ -49,7 +49,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
  */
 @SuppressWarnings("unchecked")
 public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionModel<M>>

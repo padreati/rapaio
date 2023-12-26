@@ -34,7 +34,7 @@ package rapaio.graphics.opt;
 import rapaio.util.collection.DoubleArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/20.
  */
 public record Sizes(boolean absolute, double[] relativeSizes, int[] absoluteSizes) {
 

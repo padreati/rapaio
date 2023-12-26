@@ -36,7 +36,7 @@ import rapaio.math.linear.StandardDVectorTest;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/21.
  */
 public class DVectorMapTest extends StandardDVectorTest {
 

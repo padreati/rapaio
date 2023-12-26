@@ -48,7 +48,7 @@ import rapaio.data.VarType;
 import rapaio.printer.Format;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
  */
 public class KernelEstimator extends AbstractEstimator {
 

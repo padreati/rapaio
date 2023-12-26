@@ -38,7 +38,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/4/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/4/20.
  */
 public interface Estimator extends Serializable {
 

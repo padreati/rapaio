@@ -56,7 +56,7 @@ import rapaio.util.parralel.ParallelStreamCollector;
  * Classifier evaluation tool.
  *
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/26/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/26/20.
  */
 public class ClassifierEvaluation extends ParamSet<ClassifierEvaluation> {
 

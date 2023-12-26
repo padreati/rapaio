@@ -34,7 +34,7 @@ package rapaio.util.collection;
 import java.util.Arrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/22/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/22/20.
  */
 public final class TArrays {
 

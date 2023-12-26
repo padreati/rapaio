@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/8/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/8/16.
  */
 public class TTestTwoPairedTest {
 

@@ -45,7 +45,7 @@ import rapaio.printer.opt.POpt;
  * There are 3 types of computed sample skewness, according with:
  * <a href="https://www.rdocumentation.org/packages/e1071/versions/1.7-0/topics/skewness">R e1071 skewness</a>
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
  */
 public class Skewness implements Printable {
 

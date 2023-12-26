@@ -38,7 +38,7 @@ import rapaio.math.linear.DVector;
 import rapaio.util.Pair;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
  */
 @Deprecated
 public interface Updater extends Serializable {

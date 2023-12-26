@@ -39,7 +39,7 @@ import rapaio.util.function.SFunction;
 /**
  * This implementation models a parameter which has a single value of given generic type {@link T}.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/29/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/29/20.
  */
 public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
 

@@ -42,7 +42,7 @@ import rapaio.data.VarDouble;
  *
  *
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/9/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/9/18.
  */
 public class KDevianceLoss implements Loss {
 

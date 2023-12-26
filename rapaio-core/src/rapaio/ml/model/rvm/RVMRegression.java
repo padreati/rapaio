@@ -67,7 +67,7 @@ import rapaio.printer.opt.POpt;
 import rapaio.util.collection.IntArrays;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/21.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/21.
  */
 public class RVMRegression extends RegressionModel<RVMRegression, RegressionResult, RVMRegression.RvmRunInfo> {
 

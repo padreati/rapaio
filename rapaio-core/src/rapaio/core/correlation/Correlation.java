@@ -37,7 +37,7 @@ import rapaio.core.tools.DistanceMatrix;
 import rapaio.printer.Printable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/12/17.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/12/17.
  */
 public interface Correlation extends Serializable, Printable {
 

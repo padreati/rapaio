@@ -37,7 +37,7 @@ import rapaio.data.Var;
 import rapaio.ml.model.ClassifierResult;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
 public class LogLoss extends AbstractClassifierMetric {
 

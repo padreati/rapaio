@@ -59,7 +59,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Gradient Boosting Tree
  * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, RegressionResult, RunInfo<GBTRegressionModel>> {
 

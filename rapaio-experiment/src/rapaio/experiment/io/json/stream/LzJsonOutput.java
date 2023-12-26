@@ -57,7 +57,7 @@ import rapaio.util.Pair;
 /**
  * Utility class able to write json values to an output stream formatted as lzjson.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/9/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/9/15.
  */
 @Deprecated
 public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {

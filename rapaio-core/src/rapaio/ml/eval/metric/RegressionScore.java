@@ -37,7 +37,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/28/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/28/20.
  */
 public record RegressionScore(RegressionMetric metric, double value) implements Printable {
 

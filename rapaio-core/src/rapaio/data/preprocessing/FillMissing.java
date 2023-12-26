@@ -37,7 +37,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarRange;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/22/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/22/16.
  */
 public class FillMissing extends AbstractTransform {
 

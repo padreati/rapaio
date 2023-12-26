@@ -39,7 +39,7 @@ import rapaio.math.linear.DVector;
 /**
  * Kernel function interface
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 public interface Kernel extends Serializable {
 

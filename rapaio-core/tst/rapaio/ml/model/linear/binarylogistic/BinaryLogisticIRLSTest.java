@@ -36,7 +36,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
  */
 public class BinaryLogisticIRLSTest {
 

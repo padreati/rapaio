@@ -47,7 +47,7 @@ import rapaio.ml.model.linear.LinearRegressionModel;
 import rapaio.ml.model.linear.LinearRegressionResult;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/20/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/20/19.
  */
 public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
 

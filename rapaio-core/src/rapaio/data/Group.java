@@ -62,7 +62,7 @@ import rapaio.util.collection.Int2IntOpenHashMap;
  * values from one or more key variables. This data structure index is used as
  * basis for aggregation operations realized with GroupByAggregate.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/18.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/18.
  */
 public class Group implements Printable {
 
@@ -522,7 +522,7 @@ public class Group implements Printable {
      * GroubBy aggregate data structure is the result of applying aggregation functions
      * on features of a GroupBy data structure.
      * <p>
-     * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
+     * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
      */
     public static class Aggregate implements Printable {
 

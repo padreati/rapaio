@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 /**
  * Various useful stream collectors.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/19/15.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/19/15.
  */
 @Deprecated
 public class SCollectors {

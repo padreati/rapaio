@@ -40,7 +40,7 @@ import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
 public class ImputeClassifier extends AbstractTransform {
 
