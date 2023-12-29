@@ -46,8 +46,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
-import rapaio.finance.data.FinBar;
-import rapaio.finance.data.FinBarSize;
+import rapaio.data.finance.FinBar;
+import rapaio.data.finance.FinBarSize;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.NColor;

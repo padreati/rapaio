@@ -310,7 +310,7 @@ public final class VarFloat extends AbstractVar implements Iterable<Float> {
      */
     private VarFloat(int rows, int capacity, float fill) {
         if (rows < 0) {
-            throw new IllegalArgumentException("Illegal row count: " + rows);
+            throw new IllegalArgumentException(STR."Illegal row count: \{rows}");
         }
         this.data = new float[capacity];
         this.rows = rows;
@@ -378,17 +378,8 @@ public final class VarFloat extends AbstractVar implements Iterable<Float> {
         return rows;
     }
 
-    public boolean isMissingValue(float value) {
-        return Float.isNaN(value);
-    }
-
     public float[] elements() {
         return data;
-    }
-
-    public void setElements(float[] values, int rowCount) {
-        data = values;
-        rows = rowCount;
     }
 
     @Override

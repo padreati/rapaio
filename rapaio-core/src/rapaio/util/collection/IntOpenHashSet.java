@@ -35,10 +35,10 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.PrimitiveIterator;
 import java.util.stream.IntStream;
 
 import rapaio.util.IntIterable;
-import rapaio.util.IntIterator;
 import rapaio.util.hash.Murmur3;
 
 /**
@@ -130,7 +130,7 @@ public class IntOpenHashSet implements Serializable, IntIterable {
      *
      * @return an iterator over the elements in this set
      */
-    public IntIterator iterator() {
+    public PrimitiveIterator.OfInt iterator() {
         int[] copy = toArray();
         return IntArrays.iterator(copy, 0, copy.length);
     }

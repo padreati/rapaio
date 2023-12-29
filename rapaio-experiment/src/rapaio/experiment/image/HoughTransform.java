@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.image;
+package rapaio.experiment.image;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.cos;

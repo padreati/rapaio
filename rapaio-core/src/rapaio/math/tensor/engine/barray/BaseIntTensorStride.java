@@ -260,6 +260,22 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
     }
 
     @Override
+    public IntTensor expand(int axis, int dim) {
+        if (layout.dim(axis) != 1) {
+            throw new IllegalArgumentException(STR."Dimension \{axis} does not have dimension 1.");
+        }
+        if (dim < 1) {
+            throw new IllegalArgumentException(STR."Dimension of the new axis \{dim} must be positive.");
+        }
+        int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
+        int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
+
+        newDims[axis] = dim;
+        newStrides[axis] = 0;
+        return engine.ofInt().stride(StrideLayout.of(Shape.of(newDims), layout.offset(), newStrides), array);
+    }
+
+    @Override
     public IntTensor permute(int[] dims) {
         return engine.ofInt().stride(layout().permute(dims), array);
     }
@@ -478,7 +494,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
     }
 
     protected void binaryVectorOp(TensorBinaryOp op, IntTensor b) {
-        if(b.isScalar()) {
+        if (b.isScalar()) {
             binaryScalarOp(op, b.getInt());
             return;
         }
@@ -581,7 +597,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
 
         int sum = 0;
         for (int i = start1; i < end1; i += step1) {
-            sum += (int)(array[i] * dts.array[start2]);
+            sum += (int) (array[i] * dts.array[start2]);
             start2 += step2;
         }
         return sum;
@@ -600,7 +616,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
             var innerIt = tensor.ptrIterator(Order.C);
             int sum = 0;
             for (int j = 0; j < shape().dim(1); j++) {
-                sum += (int)(ptrGetInteger(it.nextInt()) * tensor.ptrGetInteger(innerIt.nextInt()));
+                sum += (int) (ptrGetInteger(it.nextInt()) * tensor.ptrGetInteger(innerIt.nextInt()));
             }
             result[i] = sum;
         }
@@ -709,14 +725,14 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
         for (int offset : loop.offsets) {
             int i = offset;
             for (; i < loop.bound + offset; i += loop.step) {
-                sum += (int)(array[i] - mean);
+                sum += (int) (array[i] - mean);
                 if (!dtype().isNaN(array[i])) {
-                    nanSum += (int)(array[i] - nanMean);
+                    nanSum += (int) (array[i] - nanMean);
                 }
             }
         }
         mean += (int) (sum / size);
-        nanMean += (int)(nanSum / nanSize);
+        nanMean += (int) (nanSum / nanSize);
 
         // third pass compute variance
         int sum2 = 0;
@@ -727,11 +743,11 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer, IntTenso
         for (int offset : loop.offsets) {
             int i = offset;
             for (; i < loop.bound + offset; i += loop.step) {
-                sum2 += (int)((array[i] - mean) * (array[i] - mean));
-                sum3 += (int)(array[i] - mean);
+                sum2 += (int) ((array[i] - mean) * (array[i] - mean));
+                sum3 += (int) (array[i] - mean);
                 if (!dtype().isNaN(array[i])) {
-                    nanSum2 += (int)((array[i] - nanMean) * (array[i] - nanMean));
-                    nanSum3 += (int)(array[i] - nanMean);
+                    nanSum2 += (int) ((array[i] - nanMean) * (array[i] - nanMean));
+                    nanSum3 += (int) (array[i] - nanMean);
                 }
             }
         }

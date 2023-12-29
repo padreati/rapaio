@@ -260,6 +260,22 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double, Double
     }
 
     @Override
+    public DoubleTensor expand(int axis, int dim) {
+        if (layout.dim(axis) != 1) {
+            throw new IllegalArgumentException(STR."Dimension \{axis} does not have dimension 1.");
+        }
+        if (dim < 1) {
+            throw new IllegalArgumentException(STR."Dimension of the new axis \{dim} must be positive.");
+        }
+        int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
+        int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
+
+        newDims[axis] = dim;
+        newStrides[axis] = 0;
+        return engine.ofDouble().stride(StrideLayout.of(Shape.of(newDims), layout.offset(), newStrides), array);
+    }
+
+    @Override
     public DoubleTensor permute(int[] dims) {
         return engine.ofDouble().stride(layout().permute(dims), array);
     }
@@ -478,7 +494,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double, Double
     }
 
     protected void binaryVectorOp(TensorBinaryOp op, DoubleTensor b) {
-        if(b.isScalar()) {
+        if (b.isScalar()) {
             binaryScalarOp(op, b.getDouble());
             return;
         }
@@ -581,7 +597,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double, Double
 
         double sum = 0;
         for (int i = start1; i < end1; i += step1) {
-            sum += (double)(array[i] * dts.array[start2]);
+            sum += (double) (array[i] * dts.array[start2]);
             start2 += step2;
         }
         return sum;
@@ -600,7 +616,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double, Double
             var innerIt = tensor.ptrIterator(Order.C);
             double sum = 0;
             for (int j = 0; j < shape().dim(1); j++) {
-                sum += (double)(ptrGetDouble(it.nextInt()) * tensor.ptrGetDouble(innerIt.nextInt()));
+                sum += (double) (ptrGetDouble(it.nextInt()) * tensor.ptrGetDouble(innerIt.nextInt()));
             }
             result[i] = sum;
         }
@@ -709,14 +725,14 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double, Double
         for (int offset : loop.offsets) {
             int i = offset;
             for (; i < loop.bound + offset; i += loop.step) {
-                sum += (double)(array[i] - mean);
+                sum += (double) (array[i] - mean);
                 if (!dtype().isNaN(array[i])) {
-                    nanSum += (double)(array[i] - nanMean);
+                    nanSum += (double) (array[i] - nanMean);
                 }
             }
         }
         mean += (double) (sum / size);
-        nanMean += (double)(nanSum / nanSize);
+        nanMean += (double) (nanSum / nanSize);
 
         // third pass compute variance
         double sum2 = 0;
@@ -727,11 +743,11 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double, Double
         for (int offset : loop.offsets) {
             int i = offset;
             for (; i < loop.bound + offset; i += loop.step) {
-                sum2 += (double)((array[i] - mean) * (array[i] - mean));
-                sum3 += (double)(array[i] - mean);
+                sum2 += (double) ((array[i] - mean) * (array[i] - mean));
+                sum3 += (double) (array[i] - mean);
                 if (!dtype().isNaN(array[i])) {
-                    nanSum2 += (double)((array[i] - nanMean) * (array[i] - nanMean));
-                    nanSum3 += (double)(array[i] - nanMean);
+                    nanSum2 += (double) ((array[i] - nanMean) * (array[i] - nanMean));
+                    nanSum3 += (double) (array[i] - nanMean);
                 }
             }
         }

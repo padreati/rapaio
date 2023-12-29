@@ -260,6 +260,22 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
     }
 
     @Override
+    public ByteTensor expand(int axis, int dim) {
+        if (layout.dim(axis) != 1) {
+            throw new IllegalArgumentException(STR."Dimension \{axis} does not have dimension 1.");
+        }
+        if (dim < 1) {
+            throw new IllegalArgumentException(STR."Dimension of the new axis \{dim} must be positive.");
+        }
+        int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
+        int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
+
+        newDims[axis] = dim;
+        newStrides[axis] = 0;
+        return engine.ofByte().stride(StrideLayout.of(Shape.of(newDims), layout.offset(), newStrides), array);
+    }
+
+    @Override
     public ByteTensor permute(int[] dims) {
         return engine.ofByte().stride(layout().permute(dims), array);
     }
@@ -478,7 +494,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
     }
 
     protected void binaryVectorOp(TensorBinaryOp op, ByteTensor b) {
-        if(b.isScalar()) {
+        if (b.isScalar()) {
             binaryScalarOp(op, b.getByte());
             return;
         }
@@ -581,7 +597,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
 
         byte sum = 0;
         for (int i = start1; i < end1; i += step1) {
-            sum += (byte)(array[i] * dts.array[start2]);
+            sum += (byte) (array[i] * dts.array[start2]);
             start2 += step2;
         }
         return sum;
@@ -600,7 +616,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
             var innerIt = tensor.ptrIterator(Order.C);
             byte sum = 0;
             for (int j = 0; j < shape().dim(1); j++) {
-                sum += (byte)(ptrGetByte(it.nextInt()) * tensor.ptrGetByte(innerIt.nextInt()));
+                sum += (byte) (ptrGetByte(it.nextInt()) * tensor.ptrGetByte(innerIt.nextInt()));
             }
             result[i] = sum;
         }
@@ -709,14 +725,14 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
         for (int offset : loop.offsets) {
             int i = offset;
             for (; i < loop.bound + offset; i += loop.step) {
-                sum += (byte)(array[i] - mean);
+                sum += (byte) (array[i] - mean);
                 if (!dtype().isNaN(array[i])) {
-                    nanSum += (byte)(array[i] - nanMean);
+                    nanSum += (byte) (array[i] - nanMean);
                 }
             }
         }
         mean += (byte) (sum / size);
-        nanMean += (byte)(nanSum / nanSize);
+        nanMean += (byte) (nanSum / nanSize);
 
         // third pass compute variance
         byte sum2 = 0;
@@ -727,11 +743,11 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
         for (int offset : loop.offsets) {
             int i = offset;
             for (; i < loop.bound + offset; i += loop.step) {
-                sum2 += (byte)((array[i] - mean) * (array[i] - mean));
-                sum3 += (byte)(array[i] - mean);
+                sum2 += (byte) ((array[i] - mean) * (array[i] - mean));
+                sum3 += (byte) (array[i] - mean);
                 if (!dtype().isNaN(array[i])) {
-                    nanSum2 += (byte)((array[i] - nanMean) * (array[i] - nanMean));
-                    nanSum3 += (byte)(array[i] - nanMean);
+                    nanSum2 += (byte) ((array[i] - nanMean) * (array[i] - nanMean));
+                    nanSum3 += (byte) (array[i] - nanMean);
                 }
             }
         }

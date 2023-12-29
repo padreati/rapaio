@@ -35,11 +35,11 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.PrimitiveIterator;
 import java.util.Random;
 import java.util.stream.IntStream;
 
 import rapaio.data.Mapping;
-import rapaio.util.IntIterator;
 import rapaio.util.function.Int2IntFunction;
 
 /**
@@ -91,7 +91,7 @@ public final class ArrayMapping implements Mapping {
     }
 
     @Override
-    public void addAll(IntIterator it) {
+    public void addAll(PrimitiveIterator.OfInt it) {
         while (it.hasNext()) {
             add(it.nextInt());
         }
@@ -103,7 +103,7 @@ public final class ArrayMapping implements Mapping {
     }
 
     @Override
-    public void removeAll(IntIterator it) {
+    public void removeAll(PrimitiveIterator.OfInt it) {
         int offset = 0;
         while (it.hasNext()) {
             remove(it.nextInt() - (offset++));
@@ -116,8 +116,8 @@ public final class ArrayMapping implements Mapping {
     }
 
     @Override
-    public IntIterator iterator() {
-        return new IntIterator() {
+    public PrimitiveIterator.OfInt iterator() {
+        return new PrimitiveIterator.OfInt() {
             private final Iterator<Integer> it = data.iterator();
 
             @Override

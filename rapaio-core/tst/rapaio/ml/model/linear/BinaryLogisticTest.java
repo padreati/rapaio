@@ -139,8 +139,8 @@ public class BinaryLogisticTest {
         Frame df = iris.removeVars("petal-length", "sepal-length", "class").bindVars(clazz).copy();
 
         Normal normal = Normal.of(0, 0.5);
-        df.rvar(0).dv().apply(v -> v + normal.sampleNext());
-        df.rvar(1).dv().apply(v -> v + normal.sampleNext());
+        df.rvar(0).dv().apply(v -> v + normal.sampleNext(random));
+        df.rvar(1).dv().apply(v -> v + normal.sampleNext(random));
 
         var result = BinaryLogistic.newModel()
                 .solver.set(BinaryLogistic.Method.IRLS)

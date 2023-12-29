@@ -18,6 +18,7 @@ module rapaio.core {
     exports rapaio.data;
     exports rapaio.data.preprocessing;
     exports rapaio.data.format;
+    exports rapaio.data.finance;
     exports rapaio.data.group;
     exports rapaio.data.group.function;
     exports rapaio.data.index;
@@ -28,15 +29,12 @@ module rapaio.core {
 
     exports rapaio.datasets;
 
-    exports rapaio.finance.data;
 
     exports rapaio.graphics;
     exports rapaio.graphics.base;
     exports rapaio.graphics.opt;
     exports rapaio.graphics.plot;
     exports rapaio.graphics.plot.artist;
-
-    exports rapaio.image;
 
     exports rapaio.io;
 

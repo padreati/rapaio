@@ -33,11 +33,11 @@ package rapaio.data.mapping;
 
 import java.io.Serial;
 import java.util.NoSuchElementException;
+import java.util.PrimitiveIterator;
 import java.util.Random;
 import java.util.stream.IntStream;
 
 import rapaio.data.Mapping;
-import rapaio.util.IntIterator;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -82,7 +82,7 @@ public final class IntervalMapping implements Mapping {
     }
 
     @Override
-    public void addAll(IntIterator rows) {
+    public void addAll(PrimitiveIterator.OfInt rows) {
         if (!onList) {
             onList = true;
             listMapping = new ArrayMapping(start, end);
@@ -100,7 +100,7 @@ public final class IntervalMapping implements Mapping {
     }
 
     @Override
-    public void removeAll(IntIterator positions) {
+    public void removeAll(PrimitiveIterator.OfInt positions) {
         if (!onList) {
             onList = true;
             listMapping = new ArrayMapping(start, end);
@@ -118,7 +118,7 @@ public final class IntervalMapping implements Mapping {
     }
 
     @Override
-    public IntIterator iterator() {
+    public PrimitiveIterator.OfInt iterator() {
         return onList ? listMapping.iterator() : new IntervalIterator(start, end);
     }
 
@@ -139,7 +139,7 @@ public final class IntervalMapping implements Mapping {
         return onList ? listMapping.stream() : IntStream.range(start, end);
     }
 
-    static class IntervalIterator implements IntIterator {
+    static class IntervalIterator implements PrimitiveIterator.OfInt {
         private final int start;
         private final int end;
         private int s;

@@ -36,13 +36,13 @@ import static java.lang.StrictMath.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.PrimitiveIterator;
 import java.util.Random;
 
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.util.IntIterator;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -409,7 +409,7 @@ public final class SamplingTools {
         int mapPos = 0;
         for (Mapping group : groups) {
             group.shuffle(random);
-            IntIterator it = group.iterator();
+            PrimitiveIterator.OfInt it = group.iterator();
             while (it.hasNext()) {
                 maps[mapPos++].add(it.nextInt());
                 if (mapPos == freq.length) {

@@ -40,11 +40,6 @@ import rapaio.util.Reference;
 public class Cache {
 
     /**
-     * Number of training dataset instances.
-     */
-    private final int len;
-
-    /**
      * Number of entries available in cache. An entry is a value slot in any position.
      * When we add entries to cache we should remove others which are already there.
      */
@@ -64,7 +59,6 @@ public class Cache {
     private final Entry lruEntry;
 
     Cache(int len, long size) {
-        this.len = len;
         entries = new Entry[len];
         for (int i = 0; i < len; i++) {
             entries[i] = new Entry();

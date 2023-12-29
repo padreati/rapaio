@@ -26,11 +26,12 @@ package rapaio.data.mapping;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.PrimitiveIterator;
+
 import org.junit.jupiter.api.Test;
 
 import rapaio.data.Mapping;
 import rapaio.data.VarInt;
-import rapaio.util.IntIterator;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/26/18.
@@ -90,7 +91,7 @@ public class ArrayMappingTest {
         int[] values2 = mapping.stream().toArray();
         assertArrayEquals(values1, values2);
 
-        IntIterator it = mapping.iterator();
+        PrimitiveIterator.OfInt it = mapping.iterator();
         int index = 0;
         while (it.hasNext()) {
             assertEquals(values1[index++], it.nextInt());

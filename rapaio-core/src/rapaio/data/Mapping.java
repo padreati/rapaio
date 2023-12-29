@@ -33,6 +33,7 @@ package rapaio.data;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.PrimitiveIterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -44,7 +45,6 @@ import java.util.stream.IntStream;
 
 import rapaio.data.mapping.ArrayMapping;
 import rapaio.data.mapping.IntervalMapping;
-import rapaio.util.IntIterator;
 import rapaio.util.function.Int2IntFunction;
 
 /**
@@ -155,7 +155,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      *
      * @param rows collection of row numbers to be added to the mapping
      */
-    void addAll(IntIterator rows);
+    void addAll(PrimitiveIterator.OfInt rows);
 
     /**
      * Removes the element from the given position.
@@ -169,14 +169,14 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      *
      * @param positions collection with positions which will be removed
      */
-    void removeAll(IntIterator positions);
+    void removeAll(PrimitiveIterator.OfInt positions);
 
     /**
      * Removes all elements from mapping
      */
     void clear();
 
-    IntIterator iterator();
+    PrimitiveIterator.OfInt iterator();
 
     /**
      * Raw array of elements. The length of the array might be longer than
@@ -204,7 +204,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
             @Override
             public BinaryOperator<VarInt> combiner() {
                 return (list1, list2) -> {
-                    IntIterator it = list2.iterator();
+                    PrimitiveIterator.OfInt it = list2.iterator();
                     while (it.hasNext()) {
                         list1.addInt(it.nextInt());
                     }

@@ -50,6 +50,7 @@ import static rapaio.util.collection.IntArrays.sub;
 import static rapaio.util.collection.IntArrays.trim;
 
 import java.util.NoSuchElementException;
+import java.util.PrimitiveIterator;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -91,7 +92,7 @@ public class IntArraysTest {
         for (int i = 0; i < array.length; i++) {
             array[i] = random.nextInt(100);
         }
-        IntIterator it1 = iterator(array, 0, 10);
+        PrimitiveIterator.OfInt it1 = iterator(array, 0, 10);
         for (int i = 0; i < 10; i++) {
             assertTrue(it1.hasNext());
             assertEquals(array[i], it1.nextInt());

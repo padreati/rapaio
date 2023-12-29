@@ -34,6 +34,7 @@ package rapaio.util.collection;
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.PrimitiveIterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
@@ -42,7 +43,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import rapaio.util.IntComparator;
-import rapaio.util.IntIterator;
 import rapaio.util.function.Int2IntFunction;
 
 /**
@@ -162,8 +162,8 @@ public final class IntArrays {
         return Arrays.stream(array, start, end);
     }
 
-    public static IntIterator iterator(int[] array, int start, int end) {
-        return new IntIterator() {
+    public static PrimitiveIterator.OfInt iterator(int[] array, int start, int end) {
+        return new PrimitiveIterator.OfInt() {
             private int pos = start;
 
             @Override

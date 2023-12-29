@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.PrimitiveIterator;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -51,7 +52,6 @@ import java.util.stream.IntStream;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
-import rapaio.util.IntIterator;
 import rapaio.util.function.Int2IntFunction;
 
 /**
@@ -292,17 +292,17 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
         rows++;
     }
 
-    public void addAllInt(IntIterator it) {
+    public void addAllInt(PrimitiveIterator.OfInt it) {
         while (it.hasNext()) {
             addInt(it.nextInt());
         }
     }
 
-    public IntIterator iterator() {
+    public PrimitiveIterator.OfInt iterator() {
         return new VarIntIterator(this);
     }
 
-    public IntIterator iterator(int start, int end) {
+    public PrimitiveIterator.OfInt iterator(int start, int end) {
         return new VarIntIterator(this, start, end);
     }
 
@@ -505,12 +505,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
         return data;
     }
 
-    public void setElements(int[] values, int rowCount) {
-        data = values;
-        rows = rowCount;
-    }
-
-    private static final class VarIntIterator implements IntIterator {
+    private static final class VarIntIterator implements PrimitiveIterator.OfInt {
 
         private int pos;
         private final int start;

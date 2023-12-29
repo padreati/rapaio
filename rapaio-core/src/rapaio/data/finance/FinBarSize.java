@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.finance.data;
+package rapaio.data.finance;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;

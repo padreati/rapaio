@@ -44,19 +44,14 @@ import rapaio.printer.opt.POpt;
 import rapaio.printer.standard.StandardPrinter;
 
 /**
- * Working session tool. This class contains a printer instance and can be used as a single
- * pointer
+ * This class emulates a global working session. A global session
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class WS {
+public final class WS {
 
     private static final LogManager logManager = LogManager.getLogManager();
     private static Printer printer = new StandardPrinter();
-
-    public static void initLog() {
-        initLog(Level.FINEST);
-    }
 
     public static void initLog(Level level) {
         try {

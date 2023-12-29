@@ -323,18 +323,6 @@ public class VarIntTest {
     }
 
     @Test
-    void testDataAccessor() {
-        VarInt int1 = VarInt.seq(0, 100, 2);
-        for (int i = 0; i < int1.size(); i++) {
-            assertEquals(int1.getInt(i), int1.elements()[i]);
-        }
-        int[] values = new int[] {0, 1, Integer.MIN_VALUE, 3, 4};
-        int1.setElements(values, values.length);
-
-        assertTrue(VarInt.wrap(values).deepEquals(int1));
-    }
-
-    @Test
     void testString() {
         final VarInt x = VarInt.wrap(1, 2, VarInt.MISSING_VALUE,
                 -10, 0, 100, VarInt.MISSING_VALUE, 16, 1, 2, 3, 4, 5, 6,

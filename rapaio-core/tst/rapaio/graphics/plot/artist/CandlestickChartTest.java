@@ -34,8 +34,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
-import rapaio.finance.data.FinBar;
-import rapaio.finance.data.FinBarSize;
+import rapaio.data.finance.FinBar;
+import rapaio.data.finance.FinBarSize;
 import rapaio.printer.ImageTools;
 
 public class CandlestickChartTest extends AbstractArtistTest {

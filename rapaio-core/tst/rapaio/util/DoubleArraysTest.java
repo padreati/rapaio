@@ -104,14 +104,14 @@ public class DoubleArraysTest {
     @Test
     void testIterator() {
         double[] array = newFrom(0, 100, row -> random.nextDouble());
-        DoubleIterator it1 = iterator(array, 0, 10);
+        var it1 = iterator(array, 0, 10);
         for (int i = 0; i < 10; i++) {
             assertTrue(it1.hasNext());
             assertEquals(array[i], it1.nextDouble(), TOL);
         }
         Assertions.assertThrows(NoSuchElementException.class, it1::nextDouble);
 
-        DoubleIterator it2 = iterator(array, 0, 100);
+        var it2 = iterator(array, 0, 100);
         for (int i = 0; i < 100; i++) {
             assertTrue(it2.hasNext());
             assertEquals(array[i], it2.nextDouble(), TOL);

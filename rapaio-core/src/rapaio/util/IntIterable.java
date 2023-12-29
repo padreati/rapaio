@@ -31,6 +31,7 @@
 package rapaio.util;
 
 import java.util.Objects;
+import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 
 /**
@@ -60,7 +61,7 @@ public interface IntIterable extends Iterable<Integer> {
      * @see Iterable#iterator()
      */
     @Override
-    IntIterator iterator();
+    PrimitiveIterator.OfInt iterator();
 
     /**
      * Performs the given action for each element of this type-specific {@link Iterable}
@@ -74,7 +75,7 @@ public interface IntIterable extends Iterable<Integer> {
     @SuppressWarnings("overloads")
     default void forEach(final java.util.function.IntConsumer action) {
         Objects.requireNonNull(action);
-        for (final IntIterator iterator = iterator(); iterator.hasNext(); )
+        for (final PrimitiveIterator.OfInt iterator = iterator(); iterator.hasNext(); )
             action.accept(iterator.nextInt());
     }
 

@@ -398,17 +398,8 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         return rows;
     }
 
-    public boolean isMissingValue(double value) {
-        return Double.isNaN(value);
-    }
-
     public double[] elements() {
         return data;
-    }
-
-    public void setElements(double[] values, int rowCount) {
-        data = values;
-        rows = rowCount;
     }
 
     @Override

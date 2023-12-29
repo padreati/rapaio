@@ -293,6 +293,8 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
 
     T tile(int[] repeats);
 
+    T expand(int axis, int dim);
+
     T take(Order order, int... indexes);
 
     /**

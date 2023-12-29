@@ -35,12 +35,12 @@ package rapaio.util.collection;
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.PrimitiveIterator;
 import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
 import rapaio.util.DoubleComparator;
-import rapaio.util.DoubleIterator;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
 
@@ -139,7 +139,7 @@ public final class DoubleArrays {
     }
 
     /**
-     * Creates a {@link DoubleIterator} over the array with a given {@code start}
+     * Creates a {@link PrimitiveIterator.OfDouble} over the array with a given {@code start}
      * and {@code length}.
      *
      * @param array array of values
@@ -147,8 +147,8 @@ public final class DoubleArrays {
      * @param len   number of elements in the iterator
      * @return double value iterator
      */
-    public static DoubleIterator iterator(double[] array, int start, int len) {
-        return new DoubleIterator() {
+    public static PrimitiveIterator.OfDouble iterator(double[] array, int start, int len) {
+        return new PrimitiveIterator.OfDouble() {
             private int pos = start;
 
             @Override

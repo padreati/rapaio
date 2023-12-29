@@ -260,6 +260,22 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
     }
 
     @Override
+    public FloatTensor expand(int axis, int dim) {
+        if (layout.dim(axis) != 1) {
+            throw new IllegalArgumentException(STR."Dimension \{axis} does not have dimension 1.");
+        }
+        if (dim < 1) {
+            throw new IllegalArgumentException(STR."Dimension of the new axis \{dim} must be positive.");
+        }
+        int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
+        int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
+
+        newDims[axis] = dim;
+        newStrides[axis] = 0;
+        return engine.ofFloat().stride(StrideLayout.of(Shape.of(newDims), layout.offset(), newStrides), array);
+    }
+
+    @Override
     public FloatTensor permute(int[] dims) {
         return engine.ofFloat().stride(layout().permute(dims), array);
     }
@@ -478,7 +494,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
     }
 
     protected void binaryVectorOp(TensorBinaryOp op, FloatTensor b) {
-        if(b.isScalar()) {
+        if (b.isScalar()) {
             binaryScalarOp(op, b.getFloat());
             return;
         }
@@ -581,7 +597,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
 
         float sum = 0;
         for (int i = start1; i < end1; i += step1) {
-            sum += (float)(array[i] * dts.array[start2]);
+            sum += (float) (array[i] * dts.array[start2]);
             start2 += step2;
         }
         return sum;
@@ -600,7 +616,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
             var innerIt = tensor.ptrIterator(Order.C);
             float sum = 0;
             for (int j = 0; j < shape().dim(1); j++) {
-                sum += (float)(ptrGetFloat(it.nextInt()) * tensor.ptrGetFloat(innerIt.nextInt()));
+                sum += (float) (ptrGetFloat(it.nextInt()) * tensor.ptrGetFloat(innerIt.nextInt()));
             }
             result[i] = sum;
         }
@@ -709,14 +725,14 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
         for (int offset : loop.offsets) {
             int i = offset;
             for (; i < loop.bound + offset; i += loop.step) {
-                sum += (float)(array[i] - mean);
+                sum += (float) (array[i] - mean);
                 if (!dtype().isNaN(array[i])) {
-                    nanSum += (float)(array[i] - nanMean);
+                    nanSum += (float) (array[i] - nanMean);
                 }
             }
         }
         mean += (float) (sum / size);
-        nanMean += (float)(nanSum / nanSize);
+        nanMean += (float) (nanSum / nanSize);
 
         // third pass compute variance
         float sum2 = 0;
@@ -727,11 +743,11 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
         for (int offset : loop.offsets) {
             int i = offset;
             for (; i < loop.bound + offset; i += loop.step) {
-                sum2 += (float)((array[i] - mean) * (array[i] - mean));
-                sum3 += (float)(array[i] - mean);
+                sum2 += (float) ((array[i] - mean) * (array[i] - mean));
+                sum3 += (float) (array[i] - mean);
                 if (!dtype().isNaN(array[i])) {
-                    nanSum2 += (float)((array[i] - nanMean) * (array[i] - nanMean));
-                    nanSum3 += (float)(array[i] - nanMean);
+                    nanSum2 += (float) ((array[i] - nanMean) * (array[i] - nanMean));
+                    nanSum3 += (float) (array[i] - nanMean);
                 }
             }
         }
