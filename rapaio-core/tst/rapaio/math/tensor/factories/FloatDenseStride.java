@@ -33,6 +33,7 @@ package rapaio.math.tensor.factories;
 
 import java.util.Random;
 
+import rapaio.core.distributions.Normal;
 import rapaio.math.tensor.FloatTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -130,8 +131,9 @@ public final class FloatDenseStride extends FloatDense {
         }
 
         float[] array = new float[offset + shape.size()];
+        Normal normal = Normal.std();
         for (int i = 0; i < array.length; i++) {
-            array[i] = random.nextFloat();
+            array[i] = (float)normal.sampleNext(random);
         }
         return ofType.stride(shape, offset, strides, array);
     }

@@ -82,7 +82,7 @@ public enum Search implements Serializable {
             double score = function.compute(dt);
 
             if (c.missingPenalty.get()) {
-                double sum = w.dv().nansum();
+                double sum = w.dt().nanSum();
                 score = score * (sum - missingWeights) / sum;
             }
 
@@ -141,7 +141,7 @@ public enum Search implements Serializable {
             }
 
             if (c.missingPenalty.get()) {
-                double sum = weights.dv().nansum();
+                double sum = weights.dt().nanSum();
                 bestScore = bestScore * (sum - missingWeight) / sum;
             }
 
@@ -173,7 +173,7 @@ public enum Search implements Serializable {
                         missingWeights += w.getDouble(i);
                     }
                 }
-                double sum = w.dv().nansum();
+                double sum = w.dt().nanSum();
                 score = score * (sum - missingWeights) / sum;
             }
 

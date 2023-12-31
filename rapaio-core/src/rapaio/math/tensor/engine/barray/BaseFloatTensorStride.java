@@ -573,6 +573,34 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
     }
 
     @Override
+    public BaseFloatTensorStride fma_(Float a, FloatTensor t) {
+        float aVal = a;
+        if (t.isScalar()) {
+            var order = layout.storageFastOrder();
+            var it = ptrIterator(order);
+            float tVal = t.getFloat(0);
+            while (it.hasNext()) {
+                int next = it.nextInt();
+                array[next] = (float) Math.fma(array[next], aVal, tVal);
+            }
+            return this;
+        }
+        if (!shape().equals(t.shape())) {
+            throw new IllegalArgumentException("Tensors does not have the same shape.");
+        }
+        var order = layout.storageFastOrder();
+        order = order == Order.S ? Order.defaultOrder() : order;
+
+        var it = ptrIterator(order);
+        var refIt = t.ptrIterator(order);
+        while (it.hasNext()) {
+            int next = it.nextInt();
+            array[next] = (float) Math.fma(array[next], aVal, t.ptrGet(refIt.nextInt()));
+        }
+        return this;
+    }
+
+    @Override
     public Float vdot(FloatTensor tensor) {
         return vdot(tensor, 0, shape().dim(0));
     }
@@ -969,5 +997,16 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float, FloatTen
             }
         }
         return copy;
+    }
+
+    @Override
+    public float[] asArray() {
+        if (shape().rank() != 1) {
+            throw new IllegalArgumentException("Only one dimensional tensors can be transformed into array.");
+        }
+        if (array.length == shape().dim(0) && layout.stride(0) == 1) {
+            return array;
+        }
+        return toArray();
     }
 }

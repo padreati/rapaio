@@ -33,6 +33,7 @@ package rapaio.math.tensor.factories;
 
 import java.util.Random;
 
+import rapaio.core.distributions.Normal;
 import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -130,8 +131,9 @@ public final class DoubleDenseStride extends DoubleDense {
         }
 
         double[] array = new double[offset + shape.size()];
+        Normal normal = Normal.std();
         for (int i = 0; i < array.length; i++) {
-            array[i] = random.nextDouble();
+            array[i] = normal.sampleNext(random);
         }
         return ofType.stride(shape, offset, strides, array);
     }

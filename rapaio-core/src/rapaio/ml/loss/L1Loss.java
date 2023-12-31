@@ -62,7 +62,7 @@ public class L1Loss implements Loss {
 
     @Override
     public double additiveScalarMinimizer(Var y, Var fx) {
-        return Quantiles.of(y.dvNew().sub(fx.dv()).dv(), 0.5).values()[0];
+        return Quantiles.of(y.dtNew().sub_(fx.dt()).dv(), 0.5).values()[0];
     }
 
     @Override
@@ -72,17 +72,17 @@ public class L1Loss implements Loss {
 
     @Override
     public VarDouble error(Var y, Var y_hat) {
-        return y.dvNew().sub(y_hat.dv()).apply(Math::abs).dv();
+        return y.dtNew().sub_(y_hat.dt()).abs_().dv();
     }
 
     @Override
     public double errorScore(Var y, Var y_hat) {
-        return error(y, y_hat).dv().nansum();
+        return error(y, y_hat).dt().nanSum();
     }
 
     @Override
     public double residualErrorScore(Var residual) {
-        return residual.dvNew().apply(Math::abs).nansum();
+        return residual.dtNew().abs_().nanSum();
     }
 
     @Override

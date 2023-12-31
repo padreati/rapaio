@@ -45,7 +45,7 @@ public class Main {
         var dtype = DTypes.FLOAT;
 
         var g = new Graph();
-        var mill = TensorEngine.defaultEngine();
+        var mill = TensorEngine.base();
 
         var x = new Placeholder(g, "x");
         var w = new Variable(g, "w", mill.stride(dtype, Shape.of(2, 2), Order.C, new double[] {1, 1, 1, -1}));

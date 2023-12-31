@@ -75,7 +75,7 @@ public class GradientTape {
 
     public List<DiffTensor> grad(DiffTensor loss, List<DiffTensor> desiredDerivatives) {
 
-        DoubleTensor one = TensorEngine.defaultEngine().ofDouble().scalar(1d);
+        DoubleTensor one = TensorEngine.base().ofDouble().scalar(1d);
 
         // this map holds dL / dX for all values X
         HashMap<String, DiffTensor> dlMap = new HashMap<>();

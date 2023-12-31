@@ -89,7 +89,7 @@ public abstract class AbstractArtistTest {
         }
 //        TODO: fix me, suspend testing until we found a reliable way to do comparison
         var delta = s1.copy();
-        delta.dv().sub(s2.dv()).apply(Math::abs);
+        delta.dt().sub_(s2.dt()).abs_();
         double percent = 0.9;
         double threshold = 45;
         double quantile = Quantiles.of(delta, percent).values()[0];

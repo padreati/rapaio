@@ -40,6 +40,9 @@ import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POpt;
 import rapaio.util.DoubleComparator;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
@@ -47,6 +50,7 @@ import rapaio.util.function.Int2DoubleFunction;
 /**
  * Utility class to handle the manipulation of arrays of double 64 floating point values.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
  */
 public final class DoubleArrays {
@@ -2140,5 +2144,61 @@ public final class DoubleArrays {
             a[from + i] = t;
         }
         return a;
+    }
+
+    public static String toString(double[] array, Printer printer, POpt<?>... opts) {
+        var pOpts = printer.getOptions().bind(opts);
+        StringBuilder sb = new StringBuilder();
+        sb.append("double[]{length:").append(array.length).append(", values:");
+        sb.append("[");
+        for (int i = 0; i < Math.min(20, array.length); i++) {
+            sb.append(pOpts.getFloatFormat().format(array[i]));
+            if (i != array.length - 1) {
+                sb.append(",");
+            }
+        }
+        if (array.length > 20) {
+            sb.append("...");
+        }
+        sb.append("]}");
+        return sb.toString();
+    }
+
+    public static String toContent(double[] array, Printer printer, POpt<?>... options) {
+        int head = 20;
+        int tail = 2;
+
+        if (head + tail >= array.length) {
+            return toFullContent(array, printer, options);
+        }
+
+        int[] rows = new int[Math.min(head + tail + 1, array.length)];
+        for (int i = 0; i < head; i++) {
+            rows[i] = i;
+        }
+        rows[head] = -1;
+        for (int i = 0; i < tail; i++) {
+            rows[i + head + 1] = i + array.length - tail;
+        }
+        TextTable tt = TextTable.empty(rows.length, 2, 0, 1);
+        for (int i = 0; i < rows.length; i++) {
+            if (rows[i] == -1) {
+                tt.textCenter(i, 0, "...");
+                tt.textCenter(i, 1, "...");
+            } else {
+                tt.intRow(i, 0, rows[i]);
+                tt.floatFlexLong(i, 1, array[rows[i]]);
+            }
+        }
+        return tt.getDynamicText(printer, options);
+    }
+
+    public static String toFullContent(double[] array, Printer printer, POpt<?>... options) {
+        TextTable tt = TextTable.empty(array.length, 2, 0, 1);
+        for (int i = 0; i < array.length; i++) {
+            tt.intRow(i, 0, i);
+            tt.floatFlexLong(i, 1, array[i]);
+        }
+        return tt.getDynamicText(printer, options);
     }
 }

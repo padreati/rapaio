@@ -95,4 +95,6 @@ public interface DoubleTensor extends Tensor<Double, DoubleTensor> {
     void ptrSetDouble(int ptr, double value);
 
     double[] toArray();
+
+    double[] asArray();
 }

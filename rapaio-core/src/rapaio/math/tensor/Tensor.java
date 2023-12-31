@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
+import rapaio.data.VarDouble;
 import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
 import rapaio.printer.Printable;
@@ -675,6 +676,16 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
 
     T div_(N value);
 
+    default T fma(N a, T t) {
+        return fma(a, t, Order.defaultOrder());
+    }
+
+    default T fma(N a, T t, Order order) {
+        return copy(order).fma_(a, t);
+    }
+
+    T fma_(N value, T t);
+
     N vdot(T tensor);
 
     N vdot(T tensor, int start, int end);
@@ -735,6 +746,8 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
     }
 
     T copyTo(T dst, Order askOrder);
+
+    VarDouble dv();
 
     default boolean deepEquals(Object t) {
         return deepEquals(t, 1e-100);

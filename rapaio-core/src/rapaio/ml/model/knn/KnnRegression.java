@@ -37,13 +37,15 @@ import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.min;
 import static java.lang.StrictMath.pow;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MathTools.HALF_PI;
+import static rapaio.math.MathTools.PI;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.TreeSet;
 
 import rapaio.core.distributions.Normal;
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -52,7 +54,6 @@ import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.EuclideanDistance;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;

@@ -308,4 +308,14 @@ public class DoubleLUDecomposition implements Serializable, Printable {
         }
         return sb.toString();
     }
+
+    @Override
+    public String toFullContent(Printer printer, POpt<?>... options) {
+        return toString();
+    }
+
+    @Override
+    public String toContent(Printer printer, POpt<?>... options) {
+        return toString();
+    }
 }

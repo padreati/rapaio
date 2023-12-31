@@ -573,6 +573,34 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
     }
 
     @Override
+    public BaseByteTensorStride fma_(Byte a, ByteTensor t) {
+        byte aVal = a;
+        if (t.isScalar()) {
+            var order = layout.storageFastOrder();
+            var it = ptrIterator(order);
+            byte tVal = t.getByte(0);
+            while (it.hasNext()) {
+                int next = it.nextInt();
+                array[next] = (byte) Math.fma(array[next], aVal, tVal);
+            }
+            return this;
+        }
+        if (!shape().equals(t.shape())) {
+            throw new IllegalArgumentException("Tensors does not have the same shape.");
+        }
+        var order = layout.storageFastOrder();
+        order = order == Order.S ? Order.defaultOrder() : order;
+
+        var it = ptrIterator(order);
+        var refIt = t.ptrIterator(order);
+        while (it.hasNext()) {
+            int next = it.nextInt();
+            array[next] = (byte) Math.fma(array[next], aVal, t.ptrGet(refIt.nextInt()));
+        }
+        return this;
+    }
+
+    @Override
     public Byte vdot(ByteTensor tensor) {
         return vdot(tensor, 0, shape().dim(0));
     }
@@ -969,5 +997,16 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte, ByteTensor
             }
         }
         return copy;
+    }
+
+    @Override
+    public byte[] asArray() {
+        if (shape().rank() != 1) {
+            throw new IllegalArgumentException("Only one dimensional tensors can be transformed into array.");
+        }
+        if (array.length == shape().dim(0) && layout.stride(0) == 1) {
+            return array;
+        }
+        return toArray();
     }
 }

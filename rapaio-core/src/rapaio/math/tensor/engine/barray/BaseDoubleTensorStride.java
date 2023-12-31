@@ -573,6 +573,28 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double, Double
     }
 
     @Override
+    public BaseDoubleTensorStride fma_(Double a, DoubleTensor t) {
+        if (t.isScalar()) {
+            double tVal = t.getDouble(0);
+            return add_(a * tVal);
+        }
+        if (!shape().equals(t.shape())) {
+            throw new IllegalArgumentException("Tensors does not have the same shape.");
+        }
+        double aVal = a;
+        var order = layout.storageFastOrder();
+        order = order == Order.S ? Order.defaultOrder() : order;
+
+        var it = ptrIterator(order);
+        var refIt = t.ptrIterator(order);
+        while (it.hasNext()) {
+            int next = it.nextInt();
+            array[next] = (double) Math.fma(t.ptrGet(refIt.nextInt()), aVal, array[next]);
+        }
+        return this;
+    }
+
+    @Override
     public Double vdot(DoubleTensor tensor) {
         return vdot(tensor, 0, shape().dim(0));
     }
@@ -969,5 +991,16 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double, Double
             }
         }
         return copy;
+    }
+
+    @Override
+    public double[] asArray() {
+        if (shape().rank() != 1) {
+            throw new IllegalArgumentException("Only one dimensional tensors can be transformed into array.");
+        }
+        if (array.length == shape().dim(0) && layout.stride(0) == 1) {
+            return array;
+        }
+        return toArray();
     }
 }

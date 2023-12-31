@@ -31,14 +31,40 @@
 
 package rapaio.math.tensor.engine;
 
+import rapaio.data.VarDouble;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.engine.barray.BaseDoubleTensorStride;
+import rapaio.math.tensor.engine.varray.VectorizedDoubleTensorStride;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 
 public abstract class AbstractTensor<N extends Number, T extends Tensor<N, T>> implements Tensor<N, T> {
+
+    @Override
+    public VarDouble dv() {
+        if(layout().rank()!=1) {
+            throw new IllegalArgumentException("Only one dimensional tensors can be converted to VarDouble.");
+        }
+        if (this instanceof BaseDoubleTensorStride bs) {
+            if (bs.layout().offset() == 0 && bs.layout().stride(0) == 1) {
+                return VarDouble.wrap(bs.asArray());
+            }
+        }
+        if (this instanceof VectorizedDoubleTensorStride bs) {
+            if (bs.layout().offset() == 0 && bs.layout().stride(0) == 1) {
+                return VarDouble.wrap(bs.asArray());
+            }
+        }
+        double[] copy = new double[layout().size()];
+        var it = iterator(Order.C);
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = it.next().doubleValue();
+        }
+        return VarDouble.wrap(copy);
+    }
 
     @Override
     public String toContent(Printer printer, POpt<?>... options) {
@@ -144,4 +170,8 @@ public abstract class AbstractTensor<N extends Number, T extends Tensor<N, T>> i
         return STR."\{this.getClass().getSimpleName()} {\{layout().toString()}}";
     }
 
+    @Override
+    public String toSummary(Printer printer, POpt<?>... options) {
+        return toString();
+    }
 }

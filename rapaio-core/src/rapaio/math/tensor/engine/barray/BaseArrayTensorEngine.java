@@ -34,10 +34,11 @@ package rapaio.math.tensor.engine.barray;
 import java.util.Arrays;
 import java.util.Random;
 
+import rapaio.core.distributions.Normal;
 import rapaio.math.tensor.ByteTensor;
-import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.DTypes;
+import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.FloatTensor;
 import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Order;
@@ -132,7 +133,8 @@ public class BaseArrayTensorEngine extends AbstractTensorEngine {
 
         @Override
         public BaseDoubleTensorStride random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextDouble());
+            Normal normal = Normal.std();
+            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> normal.sampleNext(random));
         }
 
         @Override
@@ -214,7 +216,8 @@ public class BaseArrayTensorEngine extends AbstractTensorEngine {
 
         @Override
         public BaseFloatTensorStride random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextFloat());
+            Normal normal = Normal.std();
+            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> (float)normal.sampleNext(random));
         }
 
         @Override

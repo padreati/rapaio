@@ -111,4 +111,14 @@ public final class Acf extends Correlation {
         sb.append("\n");
         return sb.toString();
     }
+
+    @Override
+    public String toContent(Printer printer, POpt<?>... options) {
+        return toSummary(printer, options);
+    }
+
+    @Override
+    public String toFullContent(Printer printer, POpt<?>... options) {
+        return toSummary(printer, options);
+    }
 }

@@ -33,6 +33,7 @@ package rapaio.math.tensor.factories;
 
 import java.util.Arrays;
 
+import rapaio.core.distributions.Normal;
 import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -71,7 +72,8 @@ public final class DoubleDenseStrideView extends DoubleDense {
     @Override
     public DoubleTensor random(Shape shape) {
         var t = zeros(shape);
-        t.apply_(Order.C, (pos, ptr) -> random.nextDouble());
+        Normal normal = Normal.std();
+        t.apply_(Order.C, (pos, ptr) -> normal.sampleNext(random));
         return t;
     }
 }

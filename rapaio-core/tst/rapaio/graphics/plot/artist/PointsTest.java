@@ -52,15 +52,15 @@ public class PointsTest extends AbstractArtistTest {
     @Test
     void testPoints() throws IOException {
 
-        Var x = df.rvar(0).dv().add(11).log1p().dv();
-        Var y = df.rvar(1).dv().add(11).log1p().dv();
+        Var x = df.rvar(0).dt().add_(11.0).log1p_().dv();
+        Var y = df.rvar(1).dt().add_(11.0).log1p_().dv();
         Var h = VarDouble.from(x.size(), row -> Math.pow(Math.hypot(x.getDouble(row), y.getDouble(row)), 1.5));
 
         Figure fig = gridLayer(2, 2)
                 .add(points(x))
                 .add(points(x, y, pch.circleFull(), fill(2), color(1)))
-                .add(points(x, y, pch.circleFull(), fill(h), sz(4), palette(Palette.hue(0, 240, h.dv().min(), h.dv().max()))))
-                .add(points(x, pch.circleFull(), fill(y), sz(3), palette(Palette.hue(0, 120, y.dv().min(), y.dv().max()))));
+                .add(points(x, y, pch.circleFull(), fill(h), sz(4), palette(Palette.hue(0, 240, h.dt().min(), h.dt().max()))))
+                .add(points(x, pch.circleFull(), fill(y), sz(3), palette(Palette.hue(0, 120, y.dt().min(), y.dt().max()))));
         assertTest(fig, "points-test");
     }
 }

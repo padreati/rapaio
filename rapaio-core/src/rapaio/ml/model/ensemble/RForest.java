@@ -154,12 +154,12 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
         List<VarDouble> results = regressions
                 .parallelStream()
                 .map(r -> r.predict(df, false).firstPrediction()).toList();
-        var pred = fit.firstPrediction().dv();
-        pred.fill(0);
+        var pred = fit.firstPrediction().dt();
+        pred.fill_(0.0);
         for (VarDouble result : results) {
-            pred.add(result.dv());
+            pred.add_(result.dt());
         }
-        pred.div(regressions.size());
+        pred.div_((double) regressions.size());
         if (withResiduals) {
             fit.buildComplete();
         }
@@ -168,14 +168,12 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
 
     @Override
     public String toString() {
-        return fullName() + ", is fitted: " + isFitted();
+        return STR."\{fullName()}, is fitted: \{isFitted()}";
     }
 
     @Override
     public String toSummary(Printer printer, POpt<?>... options) {
-        return "Model:\n"
-                + fullName() + "\n"
-                + "fitted: " + isFitted() + "\n";
+        return STR."Model:\n\{fullName()}\nfitted: \{isFitted()}\n";
     }
 
     @Override

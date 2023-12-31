@@ -210,22 +210,24 @@ public class PCA extends ParamSet<PCA> implements Printable {
     }
 
     public String toSummary(Printer printer, POpt<?>... options) {
-        return "PCA decomposition\n"
-                + "=================\n"
-                + "input shape: rows=" + inputRows + ", vars=" + inputVars + "\n"
-                + "eigen values:\n"
-                + eigenValues.toSummary(printer, options) + "\n"
-                + "Eigen vectors\n"
-                + eigenVectors.toSummary(printer, options) + "\n";
+        return STR."""
+                PCA decomposition
+                =================
+                input shape: rows=\{inputRows}, vars=\{inputVars}
+                eigen values:
+                \{eigenValues.toSummary(printer, options)}
+                eigen vectors:
+                \{eigenVectors.toSummary(printer, options)}
+                """;
     }
 
     @Override
-    public String toContent(POpt<?>... options) {
+    public String toContent(Printer printer, POpt<?>... options) {
         return toSummary(options);
     }
 
     @Override
-    public String toFullContent(POpt<?>... options) {
+    public String toFullContent(Printer printer, POpt<?>... options) {
         return toSummary(options);
     }
 }

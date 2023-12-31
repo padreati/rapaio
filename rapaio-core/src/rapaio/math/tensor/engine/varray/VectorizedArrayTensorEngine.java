@@ -34,6 +34,7 @@ package rapaio.math.tensor.engine.varray;
 import java.util.Arrays;
 import java.util.Random;
 
+import rapaio.core.distributions.Normal;
 import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.DTypes;
@@ -132,7 +133,8 @@ public class VectorizedArrayTensorEngine extends AbstractTensorEngine {
 
         @Override
         public VectorizedDoubleTensorStride random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextDouble());
+            Normal normal = Normal.std();
+            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> normal.sampleNext(random));
         }
 
         @Override
@@ -214,7 +216,8 @@ public class VectorizedArrayTensorEngine extends AbstractTensorEngine {
 
         @Override
         public VectorizedFloatTensorStride random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextFloat());
+            Normal normal = Normal.std();
+            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> (float)normal.sampleNext(random));
         }
 
         @Override

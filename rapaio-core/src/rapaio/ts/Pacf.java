@@ -42,6 +42,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Partial auto correlation function
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/17.
  */
 public class Pacf extends Correlation {
@@ -53,7 +54,7 @@ public class Pacf extends Correlation {
     private VarDouble pacf;
 
     private Pacf(Var ts, VarInt indexes) {
-        super(ts,indexes);
+        super(ts, indexes);
         computeDurbinLevinson();
     }
 
@@ -78,12 +79,16 @@ public class Pacf extends Correlation {
             }
             c = a / b;
             pacf.setDouble(ll, c);
-            if (ll + 1 == nlag) break;
+            if (ll + 1 == nlag) {
+                break;
+            }
             w[ll] = c;
-            for (int i = 0; i < ll; i++)
+            for (int i = 0; i < ll; i++) {
                 v[ll - i - 1] = w[i];
-            for (int i = 0; i < ll; i++)
+            }
+            for (int i = 0; i < ll; i++) {
                 w[i] -= c * v[i];
+            }
         }
     }
 
@@ -112,5 +117,15 @@ public class Pacf extends Correlation {
         sb.append(tt.getDynamicText(printer, options));
         sb.append("\n");
         return sb.toString();
+    }
+
+    @Override
+    public String toContent(Printer printer, POpt<?>... options) {
+        return toSummary(printer, options);
+    }
+
+    @Override
+    public String toFullContent(Printer printer, POpt<?>... options) {
+        return toSummary(printer, options);
     }
 }

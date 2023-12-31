@@ -37,15 +37,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.model.RegressionModel;
@@ -162,7 +161,7 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
 
             // add next prediction to the predict values
             var pred = tree.predict(df, false).firstPrediction();
-            VarDouble nextFit = fitValues.dvNew().fma(shrinkage.get(), pred.dv()).dv();
+            VarDouble nextFit = fitValues.dtNew().fma_(shrinkage.get(), pred.dt()).dv();
 
             double initScore = loss.get().errorScore(y, fitValues);
             double nextScore = loss.get().errorScore(y, nextFit);
@@ -184,12 +183,12 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
     @Override
     protected RegressionResult corePredict(final Frame df, final boolean withResiduals, double[] quantiles) {
         RegressionResult result = RegressionResult.build(this, df, withResiduals, quantiles);
-        DVector prediction = result.firstPrediction().dv();
+        var prediction = result.firstPrediction().dt();
 
-        prediction.apply(v -> 0);
-        prediction.add(initModel.get().predict(df, false).firstPrediction().dv());
+        prediction.apply_(v -> 0.0);
+        prediction.add_(initModel.get().predict(df, false).firstPrediction().dt());
         for (var tree : trees) {
-            prediction.fma(shrinkage.get(), tree.predict(df, false).firstPrediction().dv());
+            prediction.fma_(shrinkage.get(), tree.predict(df, false).firstPrediction().dt());
         }
         result.buildComplete();
         return result;

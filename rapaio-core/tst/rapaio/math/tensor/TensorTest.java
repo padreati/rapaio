@@ -1164,7 +1164,7 @@ public class TensorTest {
             assertTrue(t3.nanCount() > 0);
             var stat3 = t3.stats();
 
-            assertEquals(0.5, stat3.nanMean().doubleValue(), 1e-3);
+            assertEquals(0, stat3.nanMean().doubleValue(), 1e-3);
             double mean3 = stat3.nanMean().doubleValue();
             double count3 = t3.size() - t3.nanCount();
             var diff3 = t3.sub(g.value(mean3));

@@ -47,7 +47,7 @@ public class RegressionResultEvaluationTest {
     private final SplitStrategy splitStrategy = (df, weights, __) -> List.of(
             new Split(0, 0, df, df), new Split(0, 1, df, df));
 
-    private final String targetName = "target";
+    private static final String TARGET_NAME = "target";
 
     private Random random;
 
@@ -58,7 +58,7 @@ public class RegressionResultEvaluationTest {
 
     @Test
     void testSmoke() {
-        Frame df = SolidFrame.byVars(VarDouble.copy(1.0, 1.0, 1.0, 2.0).name(targetName));
+        Frame df = SolidFrame.byVars(VarDouble.copy(1.0, 1.0, 1.0, 2.0).name(TARGET_NAME));
         var model = L2Regression.newModel();
         RegressionMetric metric = RMSE.newMetric();
 
@@ -68,14 +68,14 @@ public class RegressionResultEvaluationTest {
                 .splitStrategy.set(splitStrategy)
                 .threads.set(1)
                 .metrics.add(metric)
-                .targetName.set(targetName)
+                .targetName.set(TARGET_NAME)
                 .seed.set(123L);
 
-        Var target = df.rvar(targetName);
-        double mean = target.dv().nanmean();
+        Var target = df.rvar(TARGET_NAME);
+        double mean = target.dt().stats().nanMean();
         double count = target.size();
 
-        double expectedScore = Math.sqrt(target.dvNew().sub(mean).apply(x -> x * x).nansum() / count);
+        double expectedScore = Math.sqrt(target.dtNew().sub_(mean).apply_(x -> x * x).nanSum() / count);
 
         RegressionEvaluationResult result = eval.run();
         assertEquals(2, result.getTrainScores().rowCount());

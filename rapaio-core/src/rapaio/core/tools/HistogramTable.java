@@ -35,11 +35,15 @@ import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.tensor.DoubleTensor;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
+import rapaio.util.collection.DoubleArrays;
 
 public final class HistogramTable implements Printable {
 
@@ -49,10 +53,6 @@ public final class HistogramTable implements Printable {
 
     private final double step;
     private final double[] freq;
-
-    public HistogramTable(DVector v, double min, double max, int bins) {
-        this(v.dv(), min, max, bins);
-    }
 
     public HistogramTable(Var v, double min, double max, int bins) {
         this.min = Double.isFinite(min) ? min : Minimum.of(v).value();
@@ -93,8 +93,8 @@ public final class HistogramTable implements Printable {
         return bins;
     }
 
-    public DVectorDense freq() {
-        return DVectorDense.wrapAt(0, bins, freq);
+    public DoubleTensor freq() {
+        return TensorEngine.base().ofDouble().stride(Shape.of(bins), Order.C, freq);
     }
 
     @Override
@@ -121,40 +121,41 @@ public final class HistogramTable implements Printable {
     }
 
     @Override
-    public String toSummary(POpt<?>... options) {
-        return "HistogramTable\n"
-                + "==============\n"
-                + "min=" + Format.floatFlex(min) + "\n"
-                + "max=" + Format.floatFlex(max) + "\n"
-                + "bins=" + bins + "\n"
-                + "freq=[\n"
-                + DVector.wrap(freq).toContent(options)
-                + "]"
-                + "}";
+    public String toSummary(Printer printer, POpt<?>... options) {
+        var pOpts = printer.getOptions().bind(options);
+        return STR."""
+                HistogramTable
+                ==============
+                min=\{pOpts.getFloatFormat().format(min)}
+                max=\{pOpts.getFloatFormat().format(max)}
+                bins=\{bins}
+                freq=[
+                \{DoubleArrays.toContent(freq, printer, options)}]}""";
     }
 
     @Override
-    public String toContent(POpt<?>... options) {
-        return "HistogramTable\n"
-                + "==============\n"
-                + "min=" + Format.floatFlex(min) + "\n"
-                + "max=" + Format.floatFlex(max) + "\n"
-                + "bins=" + bins + "\n"
-                + "freq=[\n"
-                + DVector.wrap(freq).toContent(options)
-                + "]"
-                + "}";
+    public String toContent(Printer printer, POpt<?>... options) {
+        var pOpts = printer.getOptions().bind(options);
+        return STR."""
+                HistogramTable
+                ==============
+                min=\{pOpts.getFloatFormat().format(min)}
+                max=\{pOpts.getFloatFormat().format(max)}
+                bins=\{bins}
+                freq=[
+                \{DoubleArrays.toContent(freq, printer, options)}]}""";
     }
+
     @Override
-    public String toFullContent(POpt<?>... options) {
-        return "HistogramTable\n"
-                + "==============\n"
-                + "min=" + Format.floatFlex(min) + "\n"
-                + "max=" + Format.floatFlex(max) + "\n"
-                + "bins=" + bins + "\n"
-                + "freq=[\n"
-                + DVector.wrap(freq).toFullContent(options)
-                + "]"
-                + "}";
+    public String toFullContent(Printer printer, POpt<?>... options) {
+        var pOpts = printer.getOptions().bind(options);
+        return STR."""
+                HistogramTable
+                ==============
+                min=\{pOpts.getFloatFormat().format(min)}
+                max=\{pOpts.getFloatFormat().format(max)}
+                bins=\{bins}
+                freq=[
+                \{DoubleArrays.toFullContent(freq, printer, options)}]}""";
     }
 }

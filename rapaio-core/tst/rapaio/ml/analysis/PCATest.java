@@ -145,13 +145,13 @@ public class PCATest {
                 [0] 1.6710094305325662\s
                 [1] 0.8383259734162226\s
                 [2] 0.6819539303101686\s
-
-                Eigen vectors
+                                
+                eigen vectors:
                                    [0]                 [1]                  [2]\s
                 [0] 0.4921022293062838 -0.6467028606590822 -0.582761362761075  \s
                 [1] 0.4792790249461415 -0.3575693744632702  0.8015209034657932 \s
                 [2] 0.726723477093221   0.6737355211515162 -0.13399043018153664\s
-
+                                
                 """, pca.toSummary());
         assertEquals(pca.toSummary(), pca.toContent());
         assertEquals(pca.toSummary(), pca.toFullContent());

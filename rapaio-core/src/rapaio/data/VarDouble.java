@@ -51,9 +51,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import rapaio.core.distributions.Distribution;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.core.distributions.Distribution;
+import rapaio.math.tensor.DoubleTensor;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
@@ -601,6 +605,11 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     public DVector dvNew() {
         double[] values = Arrays.copyOf(data, size());
         return new DVectorDense(0, size(), values);
+    }
+
+    @Override
+    public DoubleTensor dt() {
+        return TensorEngine.base().ofDouble().stride(Shape.of(rows), Order.C, data);
     }
 
     @Serial

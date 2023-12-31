@@ -86,16 +86,16 @@ public class DVarOpTest {
 
         Var x = VarInt.from(100, row -> row % 4 == 0 ? VarInt.MISSING_VALUE : random.nextInt(100));
         Var apply1 = x.copy();
-        apply1.dv().apply(v -> v + 1);
+        apply1.dt().apply_(v -> v + 1);
         Var apply3 = x.copy();
-        apply3.dv().add(1);
+        apply3.dt().add_(1.0);
         Var apply4 = x.copy();
-        apply4.dv().add(VarDouble.fill(100, 1).dv());
+        apply4.dt().add_(VarDouble.fill(100, 1).dt());
 
         assertTrue(apply1.deepEquals(apply3));
         assertTrue(apply1.deepEquals(apply4));
 
-        double sum1 = x.dv().nansum();
+        double sum1 = x.dt().nanSum();
         assertEquals(sum1, x.dvNew().sortValues(true).nansum());
         assertEquals(sum1, x.dvNew().sortValues(false).nanmean() * 75);
 
@@ -123,55 +123,55 @@ public class DVarOpTest {
         VarBinary x4 = generateRandomBinaryVariable(10_000, 0.9);
 
         Var p1 = VarDouble.from(x1.size(), row -> x1.getDouble(row) + x2.getDouble(row));
-        assertTrue(p1.deepEquals(x1.copy().dv().add(x2.dv()).dv()));
+        assertTrue(p1.deepEquals(x1.copy().dt().add_(x2.dt()).dv()));
 
         Var p2 = VarDouble.from(x1.size(), row -> x1.getDouble(row) + x3.getDouble(row));
-        assertTrue(p2.deepEquals(x1.copy().dv().add(x3.dv()).dv()));
+        assertTrue(p2.deepEquals(x1.copy().dt().add_(x3.dt()).dv()));
 
         Var p3 = VarDouble.from(x1.size(), row -> x1.getDouble(row) + Math.PI);
-        assertTrue(p3.deepEquals(x1.copy().dv().add(Math.PI).dv()));
+        assertTrue(p3.deepEquals(x1.copy().dt().add_(Math.PI).dv()));
 
         Var p4 = VarDouble.from(x1.size(), row -> x1.getDouble(row) + x4.getDouble(row));
-        assertTrue(p4.deepEquals(x1.copy().dv().add(x4.dv()).dv()));
+        assertTrue(p4.deepEquals(x1.copy().dt().add_(x4.dt()).dv()));
 
 
         Var m1 = VarDouble.from(x1.size(), row -> x1.getDouble(row) - x2.getDouble(row));
-        assertTrue(m1.deepEquals(x1.copy().dv().sub(x2.dv()).dv()));
+        assertTrue(m1.deepEquals(x1.copy().dt().sub_(x2.dt()).dv()));
 
         Var m2 = VarDouble.from(x1.size(), row -> x1.getDouble(row) - x3.getDouble(row));
-        assertTrue(m2.deepEquals(x1.copy().dv().sub(x3.dv()).dv()));
+        assertTrue(m2.deepEquals(x1.copy().dt().sub_(x3.dt()).dv()));
 
         Var m3 = VarDouble.from(x1.size(), row -> x1.getDouble(row) - Math.PI);
-        assertTrue(m3.deepEquals(x1.copy().dv().sub(Math.PI).dv()));
+        assertTrue(m3.deepEquals(x1.copy().dt().sub_(Math.PI).dv()));
 
         Var m4 = VarDouble.from(x1.size(), row -> x1.getDouble(row) - x4.getDouble(row));
-        assertTrue(m4.deepEquals(x1.copy().dv().sub(x4.dv()).dv()));
+        assertTrue(m4.deepEquals(x1.copy().dt().sub_(x4.dt()).dv()));
 
 
         Var t1 = VarDouble.from(x1.size(), row -> x1.getDouble(row) * x2.getDouble(row));
-        assertTrue(t1.deepEquals(x1.copy().dv().mul(x2.dv()).dv()));
+        assertTrue(t1.deepEquals(x1.copy().dt().mul_(x2.dt()).dv()));
 
         Var t2 = VarDouble.from(x1.size(), row -> x1.getDouble(row) * x3.getDouble(row));
-        assertTrue(t2.deepEquals(x1.copy().dv().mul(x3.dv()).dv()));
+        assertTrue(t2.deepEquals(x1.copy().dt().mul_(x3.dt()).dv()));
 
         Var t3 = VarDouble.from(x1.size(), row -> x1.getDouble(row) * Math.PI);
-        assertTrue(t3.deepEquals(x1.copy().dv().mul(Math.PI).dv()));
+        assertTrue(t3.deepEquals(x1.copy().dt().mul_(Math.PI).dv()));
 
         Var t4 = VarDouble.from(x1.size(), row -> x1.getDouble(row) * x4.getDouble(row));
-        assertTrue(t4.deepEquals(x1.copy().dv().mul(x4.dv()).dv()));
+        assertTrue(t4.deepEquals(x1.copy().dt().mul_(x4.dt()).dv()));
 
 
         Var d1 = VarDouble.from(x1.size(), row -> x1.getDouble(row) / x2.getDouble(row));
-        assertTrue(d1.deepEquals(x1.copy().dv().div(x2.dv()).dv()));
+        assertTrue(d1.deepEquals(x1.copy().dt().div_(x2.dt()).dv()));
 
         Var d2 = VarDouble.from(x1.size(), row -> x1.getDouble(row) / x3.getDouble(row));
-        assertTrue(d2.deepEquals(x1.copy().dv().div(x3.dv()).dv()));
+        assertTrue(d2.deepEquals(x1.copy().dt().div_(x3.dt()).dv()));
 
         Var d3 = VarDouble.from(x1.size(), row -> x1.getDouble(row) / Math.PI);
-        assertTrue(d3.deepEquals(x1.copy().dv().div(Math.PI).dv()));
+        assertTrue(d3.deepEquals(x1.copy().dt().div_(Math.PI).dv()));
 
         Var d4 = VarDouble.from(x1.size(), row -> x1.getDouble(row) / x4.getDouble(row));
-        assertTrue(d4.deepEquals(x1.copy().dv().div(x4.dv()).dv()));
+        assertTrue(d4.deepEquals(x1.copy().dt().div_(x4.dt()).dv()));
     }
 
 

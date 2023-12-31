@@ -40,7 +40,7 @@ import rapaio.math.tensor.engine.varray.VectorizedArrayTensorEngine;
 
 public interface TensorEngine {
 
-    static TensorEngine defaultEngine() {
+    static TensorEngine base() {
         return barray();
     }
 

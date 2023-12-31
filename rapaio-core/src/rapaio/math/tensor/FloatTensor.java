@@ -95,4 +95,6 @@ public interface FloatTensor extends Tensor<Float, FloatTensor> {
     void ptrSetFloat(int ptr, float value);
 
     float[] toArray();
+
+    float[] asArray();
 }

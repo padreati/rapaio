@@ -31,13 +31,22 @@
 
 package rapaio.ml.model;
 
-import rapaio.data.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarBinary;
+import rapaio.data.VarInt;
+import rapaio.data.VarNominal;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
-
-import java.util.*;
 
 /**
  * Classification predict result.
@@ -239,5 +248,15 @@ public class ClassifierResult implements Printable {
             sb.append("data frame does not contain target variable.");
         }
         return sb.toString();
+    }
+
+    @Override
+    public String toContent(Printer printer, POpt<?>... options) {
+        return toSummary(printer, options);
+    }
+
+    @Override
+    public String toFullContent(Printer printer, POpt<?>... options) {
+        return toSummary(printer, options);
     }
 }

@@ -67,6 +67,6 @@ public class HistogramTest extends AbstractArtistTest {
         Frame iris = Datasets.loadIrisDataset();
         var v = iris.rvar("sepal-length");
         assertTest(hist(v, bins(30), prob(true), fill(NColor.tab_purple))
-                .densityLine(v, (v.dv().max() - v.dv().min()) / 15), "hist-density-test");
+                .densityLine(v, (v.dt().max() - v.dt().min()) / 15), "hist-density-test");
     }
 }

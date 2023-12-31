@@ -95,4 +95,6 @@ public interface ByteTensor extends Tensor<Byte, ByteTensor> {
     void ptrSetByte(int ptr, byte value);
 
     byte[] toArray();
+
+    byte[] asArray();
 }

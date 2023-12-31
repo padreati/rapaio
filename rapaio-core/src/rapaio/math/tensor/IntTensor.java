@@ -95,4 +95,6 @@ public interface IntTensor extends Tensor<Integer, IntTensor> {
     void ptrSetInteger(int ptr, int value);
 
     int[] toArray();
+
+    int[] asArray();
 }

@@ -21,8 +21,8 @@
 
 package rapaio.core.tools;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static rapaio.printer.opt.POpts.textWidth;
 
@@ -31,8 +31,11 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.DoubleTensor;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorEngine;
 
 public class HistogramTableTest {
 
@@ -45,18 +48,27 @@ public class HistogramTableTest {
 
     @Test
     void testBuilders() {
-        DVector vector = DVector.random(random, 10_000);
-        VarDouble variable = vector.dv().name("x");
+        DoubleTensor vector = TensorEngine.base().ofDouble().random(Shape.of(10_000), random);
+        VarDouble variable = VarDouble.wrap(vector.toArray()).name("x");
 
-        HistogramTable ht1 = new HistogramTable(vector, 0.1, 0.9, 20);
         HistogramTable ht2 = new HistogramTable(variable, 0.1, 0.9, 20);
-
-        assertArrayEquals(ht1.freq().array(), ht2.freq().array());
+        for (double value : ht2.freq()) {
+            assertTrue(value > 100);
+            assertTrue(value < 200);
+        }
+        int count = 0;
+        for(double value : vector) {
+            if(value>=ht2.min() && value<=ht2.max()) {
+                count++;
+            }
+        }
+        assertEquals(count, ht2.freq().sum());
     }
 
     @Test
     void testPrinter() {
-        DVector vector = DVector.random(random, 10_000);
+        Normal normal = Normal.std();
+        VarDouble vector = VarDouble.from(10_000, () -> normal.sampleNext(random));
         HistogramTable ht = new HistogramTable(vector, 0, 1, 300);
 
         assertEquals("HistogramTable{min=0,max=1,bins=300,freq=[5.0,15.0,6.0,14.0,11.0,19.0,9.0,14.0,12.0,11.0,23.0,15.0,...]}",
@@ -123,11 +135,12 @@ public class HistogramTableTest {
 
     @Test
     void testFriedmanDiaconis() {
-        DVector v = DVector.random(random, 1_000);
+        DoubleTensor t = TensorEngine.base().ofDouble().random(Shape.of(1_000), random);
+        VarDouble v = VarDouble.wrap(t.toArray());
         HistogramTable ht = new HistogramTable(v, Double.NaN, Double.NaN, 0);
         assertEquals(27, ht.bins());
-        assertEquals(v.min(), ht.min());
-        assertEquals(v.max(), ht.max());
+        assertEquals(t.min(), ht.min());
+        assertEquals(t.max(), ht.max());
     }
 
 }
