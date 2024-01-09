@@ -33,8 +33,6 @@ package rapaio.experiment.nn.graph;
 
 import java.util.List;
 
-import rapaio.math.tensor.DoubleTensor;
-import rapaio.math.tensor.FloatTensor;
 import rapaio.math.tensor.Tensor;
 import rapaio.util.NotImplementedException;
 
@@ -45,12 +43,12 @@ public class SigmoidOperation extends Operation{
     }
 
     @Override
-    public Tensor<?, ?> compute(List<? extends Tensor<?, ?>> operands) {
+    public Tensor<?> compute(List<? extends Tensor<?>> operands) {
         if(checkAllDouble(operands)) {
-            return ((DoubleTensor)operands.getFirst()).apply(x -> 1 / (1 + Math.exp(-x)));
+            return ((Tensor<Double>)operands.getFirst()).apply(x -> 1 / (1 + Math.exp(-x)));
         }
         if(checkAllFloat(operands)) {
-            return ((FloatTensor)operands.getFirst()).apply(x -> 1 / (1 + (float)Math.exp(-x)));
+            return ((Tensor<Float>)operands.getFirst()).apply(x -> 1 / (1 + (float)Math.exp(-x)));
         }
         throw new NotImplementedException();
     }

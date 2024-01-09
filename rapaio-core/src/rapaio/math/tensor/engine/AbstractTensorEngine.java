@@ -36,15 +36,69 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.StorageFactory;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 
 public abstract class AbstractTensorEngine implements TensorEngine {
 
+    private final int cpuThreads;
+    private final OfType<Double> ofDouble;
+    private final OfType<Float> ofFloat;
+    private final OfType<Integer> ofInt;
+    private final OfType<Byte> ofByte;
+    private final StorageFactory storageFactory;
+
+    public AbstractTensorEngine(int cpuThreads,
+            OfType<Double> ofDouble,
+            OfType<Float> ofFloat,
+            OfType<Integer> ofInt,
+            OfType<Byte> ofByte,
+            StorageFactory storageFactory) {
+        this.cpuThreads = cpuThreads;
+
+        this.ofDouble = ofDouble;
+        this.ofFloat = ofFloat;
+        this.ofInt = ofInt;
+        this.ofByte = ofByte;
+        this.storageFactory = storageFactory;
+
+        this.ofDouble.registerParent(this, storageFactory.ofType(DType.DOUBLE));
+        this.ofFloat.registerParent(this, storageFactory.ofType(DType.FLOAT));
+        this.ofInt.registerParent(this, storageFactory.ofType(DType.INTEGER));
+        this.ofByte.registerParent(this, storageFactory.ofType(DType.BYTE));
+    }
+
     @Override
-    public <N extends Number, T extends Tensor<N, T>> T concat(int axis, Collection<? extends T> tensors) {
+    public final int cpuThreads() {
+        return cpuThreads;
+    }
+
+    @Override
+    public final OfType<Double> ofDouble() {
+        return ofDouble;
+    }
+
+    @Override
+    public final OfType<Float> ofFloat() {
+        return ofFloat;
+    }
+
+    @Override
+    public final OfType<Integer> ofInt() {
+        return ofInt;
+    }
+
+    @Override
+    public final OfType<Byte> ofByte() {
+        return ofByte;
+    }
+
+    @Override
+    public final <N extends Number> Tensor<N> concat(int axis, Collection<? extends Tensor<N>> tensors) {
         var tensorList = tensors.stream().toList();
         validateForConcatenation(axis, tensorList.stream().map(t -> t.shape().dims()).collect(Collectors.toList()));
 
@@ -54,7 +108,7 @@ public abstract class AbstractTensorEngine implements TensorEngine {
         var result = ofType(tensorList.get(0).dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
 
         int start = 0;
-        for (T tensor : tensors) {
+        for (Tensor<N> tensor : tensors) {
             int end = start + tensor.shape().dim(axis);
             var dst = result.narrow(axis, true, start, end);
 
@@ -70,25 +124,26 @@ public abstract class AbstractTensorEngine implements TensorEngine {
     }
 
     @Override
-    public <N extends Number, T extends Tensor<N, T>> T stack(int axis, Collection<? extends T> tensors) {
+    public final <N extends Number> Tensor<N> stack(int axis, Collection<? extends Tensor<N>> tensors) {
         var tensorList = tensors.stream().toList();
         for (int i = 1; i < tensorList.size(); i++) {
             if (!tensorList.get(i - 1).shape().equals(tensorList.get(i).shape())) {
                 throw new IllegalArgumentException("Tensors are not valid for stack, they have to have the same dimensions.");
             }
         }
-        int[] newDims = new int[tensorList.get(0).shape().rank() + 1];
-        for (int i = 0; i < tensorList.get(0).shape().rank(); i++) {
-            if (i < axis) {
-                newDims[i] = tensorList.get(0).shape().dim(i);
-            } else {
-                newDims[i + 1] = tensorList.get(0).shape().dim(i);
-            }
+        int[] newDims = new int[tensorList.getFirst().rank() + 1];
+        int i = 0;
+        for (; i < axis; i++) {
+            newDims[i] = tensorList.getFirst().shape().dim(i);
+        }
+        for (; i < tensorList.getFirst().rank(); i++) {
+            newDims[i + 1] = tensorList.getFirst().shape().dim(i);
         }
         newDims[axis] = tensorList.size();
-        var result = ofType(tensorList.get(0).dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
+        var result = ofType(tensorList.getFirst().dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
         var slices = result.chunk(axis, true, 1);
-        for (int i = 0; i < tensorList.size(); i++) {
+        i = 0;
+        for (; i < tensorList.size(); i++) {
             var it1 = slices.get(i).squeeze().ptrIterator(Order.defaultOrder());
             var it2 = tensorList.get(i).ptrIterator(Order.defaultOrder());
             while (it1.hasNext() && it2.hasNext()) {
@@ -108,5 +163,10 @@ public abstract class AbstractTensorEngine implements TensorEngine {
                 }
             }
         }
+    }
+
+    @Override
+    public StorageFactory storage() {
+        return storageFactory;
     }
 }

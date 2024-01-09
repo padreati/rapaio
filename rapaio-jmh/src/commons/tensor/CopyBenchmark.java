@@ -66,10 +66,10 @@ import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
-import rapaio.math.tensor.DoubleTensor;
-import rapaio.math.tensor.DTypes;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.sys.WS;
 import rapaio.util.collection.DoubleArrays;
@@ -88,8 +88,8 @@ public class CopyBenchmark {
 
         private DenseMatrix jsatA;
 
-        private DoubleTensor tc;
-        private DoubleTensor tf;
+        private Tensor<Double> tc;
+        private Tensor<Double> tf;
 
         @Setup(Level.Invocation)
         public void setup() {
@@ -106,7 +106,7 @@ public class CopyBenchmark {
                 }
             }
 
-            tc = TensorEngine.varray().stride(DTypes.DOUBLE, Shape.of(n, n), Order.C, array);
+            tc = TensorEngine.varray().stride(DType.DOUBLE, Shape.of(n, n), Order.C, TensorEngine.varray().ofDouble().storageCast(array));
             tf = tc.copy(Order.F);
         }
     }
@@ -118,13 +118,13 @@ public class CopyBenchmark {
 
     @Benchmark
     public void tensorTransposeOrderC(BenchmarkState bs, Blackhole bh) {
-        DoubleTensor transpose = bs.tc.transposeNew();
+        var transpose = bs.tc.transposeNew();
         bh.consume(transpose);
     }
 
     @Benchmark
     public void tensorTransposeOrderF(BenchmarkState bs, Blackhole bh) {
-        DoubleTensor transpose = bs.tf.transposeNew();
+        var transpose = bs.tf.transposeNew();
         bh.consume(transpose);
     }
 

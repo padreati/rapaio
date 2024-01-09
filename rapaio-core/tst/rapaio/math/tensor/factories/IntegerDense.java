@@ -31,14 +31,13 @@
 
 package rapaio.math.tensor.factories;
 
-import rapaio.math.tensor.DTypes;
-import rapaio.math.tensor.IntTensor;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.TensorEngine;
 
-public abstract class IntegerDense extends DataFactory<Integer, IntTensor> {
+public abstract class IntegerDense extends DataFactory<Integer> {
 
     public IntegerDense(TensorEngine tensorEngine) {
-        super(tensorEngine, tensorEngine.ofInt(), DTypes.INTEGER);
+        super(tensorEngine, tensorEngine.ofInt(), DType.INTEGER);
     }
 
     @Override

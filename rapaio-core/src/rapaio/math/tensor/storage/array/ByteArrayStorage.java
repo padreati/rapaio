@@ -29,30 +29,40 @@
  *
  */
 
-package rapaio.experiment.nn.graph;
+package rapaio.math.tensor.storage.array;
 
-import java.util.List;
+import java.util.Arrays;
 
-import rapaio.math.tensor.Tensor;
-import rapaio.util.NotImplementedException;
+import rapaio.math.tensor.storage.ByteStorage;
 
-public class MatVecOperation extends Operation{
+public final class ByteArrayStorage extends ByteStorage {
 
-    public MatVecOperation(Graph graph, String name, Node a, Node b) {
-        super(graph, name, List.of(a, b));
+    private final byte[] array;
+
+    public ByteArrayStorage(byte[] array) {
+        this.array = array;
     }
 
     @Override
-    public Tensor<?> compute(List<? extends Tensor<?>> operands) {
-        if (checkAllDouble(operands)) {
-            return ((Tensor<Double>) operands.get(0)).mv((Tensor<Double>) operands.get(1));
-        }
-        if (checkAllFloat(operands)) {
-            return ((Tensor<Float>) operands.get(0)).mv((Tensor<Float>) operands.get(1));
-        }
-        if (checkAllInt(operands)) {
-            return ((Tensor<Integer>) operands.get(0)).mv((Tensor<Integer>) operands.get(1));
-        }
-        throw new NotImplementedException();
+    public int size() {
+        return array.length;
+    }
+
+    public byte getByte(int ptr) {
+        return array[ptr];
+    }
+
+    public void setByte(int ptr, byte v) {
+        array[ptr] = v;
+    }
+
+    @Override
+    public void incByte(int ptr, byte value) {
+        array[ptr] += value;
+    }
+
+    @Override
+    public void fillByte(byte value) {
+        Arrays.fill(array, value);
     }
 }

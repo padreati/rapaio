@@ -34,9 +34,7 @@ package rapaio.experiment.nn.graph;
 import java.util.ArrayList;
 import java.util.List;
 
-import rapaio.math.tensor.DoubleTensor;
-import rapaio.math.tensor.FloatTensor;
-import rapaio.math.tensor.IntTensor;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Tensor;
 
 public abstract class Operation extends Node {
@@ -55,29 +53,29 @@ public abstract class Operation extends Node {
         return inputs;
     }
 
-    public abstract Tensor<?, ?> compute(List<? extends Tensor<?, ?>> operands);
+    public abstract Tensor<?> compute(List<? extends Tensor<?>> operands);
 
-    protected boolean checkAllDouble(List<? extends Tensor<?,?>> operands) {
-        for(var op : operands) {
-            if(!(op instanceof DoubleTensor)) {
+    protected boolean checkAllDouble(List<? extends Tensor<?>> operands) {
+        for (var op : operands) {
+            if (op.dtype() != DType.DOUBLE) {
                 return false;
             }
         }
         return true;
     }
 
-    protected boolean checkAllFloat(List<? extends Tensor<?,?>> operands) {
-        for(var op : operands) {
-            if(!(op instanceof FloatTensor)) {
+    protected boolean checkAllFloat(List<? extends Tensor<?>> operands) {
+        for (var op : operands) {
+            if (op.dtype() != DType.FLOAT) {
                 return false;
             }
         }
         return true;
     }
 
-    protected boolean checkAllInt(List<? extends Tensor<?,?>> operands) {
-        for(var op : operands) {
-            if(!(op instanceof IntTensor)) {
+    protected boolean checkAllInt(List<? extends Tensor<?>> operands) {
+        for (var op : operands) {
+            if (op.dtype() != DType.INTEGER) {
                 return false;
             }
         }

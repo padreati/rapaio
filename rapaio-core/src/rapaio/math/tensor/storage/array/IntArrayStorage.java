@@ -29,30 +29,40 @@
  *
  */
 
-package rapaio.experiment.nn.graph;
+package rapaio.math.tensor.storage.array;
 
-import java.util.List;
+import java.util.Arrays;
 
-import rapaio.math.tensor.Tensor;
-import rapaio.util.NotImplementedException;
+import rapaio.math.tensor.storage.IntStorage;
 
-public class MatVecOperation extends Operation{
+public final class IntArrayStorage extends IntStorage {
 
-    public MatVecOperation(Graph graph, String name, Node a, Node b) {
-        super(graph, name, List.of(a, b));
+    private final int[] array;
+
+    public IntArrayStorage(int[] array) {
+        this.array = array;
     }
 
     @Override
-    public Tensor<?> compute(List<? extends Tensor<?>> operands) {
-        if (checkAllDouble(operands)) {
-            return ((Tensor<Double>) operands.get(0)).mv((Tensor<Double>) operands.get(1));
-        }
-        if (checkAllFloat(operands)) {
-            return ((Tensor<Float>) operands.get(0)).mv((Tensor<Float>) operands.get(1));
-        }
-        if (checkAllInt(operands)) {
-            return ((Tensor<Integer>) operands.get(0)).mv((Tensor<Integer>) operands.get(1));
-        }
-        throw new NotImplementedException();
+    public int size() {
+        return array.length;
+    }
+
+    public int getInt(int ptr) {
+        return array[ptr];
+    }
+
+    public void setInt(int ptr, int v) {
+        array[ptr] = v;
+    }
+
+    @Override
+    public void incInt(int ptr, int value) {
+        array[ptr] += value;
+    }
+
+    @Override
+    public void fillInt(int value) {
+        Arrays.fill(array, value);
     }
 }

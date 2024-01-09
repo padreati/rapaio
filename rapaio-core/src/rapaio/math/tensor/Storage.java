@@ -29,30 +29,56 @@
  *
  */
 
-package rapaio.experiment.nn.graph;
+package rapaio.math.tensor;
 
-import java.util.List;
+public interface Storage<N extends Number> {
 
-import rapaio.math.tensor.Tensor;
-import rapaio.util.NotImplementedException;
+    DType<N> dType();
 
-public class MatVecOperation extends Operation{
+    int size();
 
-    public MatVecOperation(Graph graph, String name, Node a, Node b) {
-        super(graph, name, List.of(a, b));
-    }
 
-    @Override
-    public Tensor<?> compute(List<? extends Tensor<?>> operands) {
-        if (checkAllDouble(operands)) {
-            return ((Tensor<Double>) operands.get(0)).mv((Tensor<Double>) operands.get(1));
-        }
-        if (checkAllFloat(operands)) {
-            return ((Tensor<Float>) operands.get(0)).mv((Tensor<Float>) operands.get(1));
-        }
-        if (checkAllInt(operands)) {
-            return ((Tensor<Integer>) operands.get(0)).mv((Tensor<Integer>) operands.get(1));
-        }
-        throw new NotImplementedException();
-    }
+    N get(int ptr);
+
+    void set(int ptr, N value);
+
+    void inc(int ptr, N value);
+
+    void fill(N value);
+
+
+    byte getByte(int ptr);
+
+    void setByte(int ptr, byte value);
+
+    void incByte(int ptr, byte value);
+
+    void fillByte(byte value);
+
+
+    int getInt(int ptr);
+
+    void setInt(int ptr, int value);
+
+    void incInt(int ptr, int value);
+
+    void fillInt(int value);
+
+
+    float getFloat(int ptr);
+
+    void setFloat(int ptr, float value);
+
+    void incFloat(int ptr, float value);
+
+    void fillFloat(float value);
+
+
+    double getDouble(int ptr);
+
+    void setDouble(int ptr, double value);
+
+    void incDouble(int ptr, double value);
+
+    void fillDouble(double value);
 }

@@ -49,6 +49,12 @@ public class CodeGenApp {
                 Replace.of("applyDouble", "applyInt"),
                 Replace.of("VectorizedDouble", "VectorizedInt"),
                 Replace.of("DoubleTensor","IntTensor"),
+                Replace.of("DoubleStorage", "IntStorage"),
+                Replace.of("DoubleArrayStorage", "IntArrayStorage"),
+                Replace.of("incDouble", "incInt"),
+                Replace.of("ptrGetDouble", "ptrGetInt"),
+                Replace.of("ptrSetDouble", "ptrSetInt"),
+                Replace.of("fillDouble", "fillInt"),
                 Replace.of("double", "int"),
                 Replace.of("Double", "Integer"),
                 Replace.of("DOUBLE", "INTEGER")
@@ -62,8 +68,8 @@ public class CodeGenApp {
         };
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/DoubleTensor.java")
-                .dst.set("rapaio/math/tensor/FloatTensor.java")
+                .src.set("rapaio/math/tensor/storage/array/DoubleArrayStorage.java")
+                .dst.set("rapaio/math/tensor/storage/array/FloatArrayStorage.java")
                 .replaces.set(floatReplaces)
         );
         templates.add(new CodeGenTemplate()
@@ -78,8 +84,8 @@ public class CodeGenApp {
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/DoubleTensor.java")
-                .dst.set("rapaio/math/tensor/IntTensor.java")
+                .src.set("rapaio/math/tensor/storage/array/DoubleArrayStorage.java")
+                .dst.set("rapaio/math/tensor/storage/array/IntArrayStorage.java")
                 .replaces.set(intReplaces)
         );
         templates.add(new CodeGenTemplate()
@@ -94,8 +100,8 @@ public class CodeGenApp {
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/DoubleTensor.java")
-                .dst.set("rapaio/math/tensor/ByteTensor.java")
+                .src.set("rapaio/math/tensor/storage/array/DoubleArrayStorage.java")
+                .dst.set("rapaio/math/tensor/storage/array/ByteArrayStorage.java")
                 .replaces.set(byteReplaces)
         );
         templates.add(new CodeGenTemplate()
@@ -112,10 +118,10 @@ public class CodeGenApp {
     }
 
     public static void main(String[] args) {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("Pass root as parameter.");
-        }
-        String root = args[0];
+//        if (args.length != 1) {
+//            throw new IllegalArgumentException("Pass root as parameter.");
+//        }
+        String root = args.length == 1 ? args[0] : "/home/ati/work/rapaio/rapaio-core/src/";
         templates.forEach(template -> {
             try {
                 template.run(root);

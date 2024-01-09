@@ -33,9 +33,9 @@ package rapaio.math.tensor.factories;
 
 import java.util.Arrays;
 
-import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.layout.StrideLayout;
 
@@ -46,14 +46,14 @@ public final class IntegerDenseStrideView extends IntegerDense {
     }
 
     @Override
-    public IntTensor seq(Shape shape) {
+    public Tensor<Integer> seq(Shape shape) {
         var t = zeros(shape);
         t.apply_(Order.C, (i, p) -> i);
         return t;
     }
 
     @Override
-    public IntTensor zeros(Shape shape) {
+    public Tensor<Integer> zeros(Shape shape) {
         int offset = 7;
         var l = StrideLayout.ofDense(shape, offset, Order.F);
         int[] strides = Arrays.copyOf(l.strides(), l.strides().length);
@@ -65,11 +65,11 @@ public final class IntegerDenseStrideView extends IntegerDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return engine.ofInt().stride(StrideLayout.of(shape, offset, strides), new int[len]);
+        return engine.ofInt().stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(len));
     }
 
     @Override
-    public IntTensor random(Shape shape) {
+    public Tensor<Integer> random(Shape shape) {
         var t = zeros(shape);
         t.apply_(Order.C, (pos, ptr) -> random.nextInt());
         return t;

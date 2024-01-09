@@ -33,36 +33,35 @@ package rapaio.experiment.math.nn.data;
 
 import rapaio.experiment.math.nn.gradient.GradientTape;
 import rapaio.math.tensor.DType;
-import rapaio.math.tensor.DTypes;
-import rapaio.math.tensor.FloatTensor;
+import rapaio.math.tensor.Tensor;
 
 public final class FloatDiffTensor extends AbstractDiffTensor {
 
-    public static FloatDiffTensor of(String name, FloatTensor tensor, GradientTape tape) {
+    public static FloatDiffTensor of(String name, Tensor<Float> tensor, GradientTape tape) {
         return new FloatDiffTensor(name, tensor, tape);
     }
 
     public static FloatDiffTensor ofAny(String name, Object object, GradientTape tape) {
-        if (object instanceof FloatTensor tensor) {
-            return new FloatDiffTensor(name, tensor, tape);
+        if (object instanceof Tensor<?> tensor && tensor.dtype() == DType.FLOAT) {
+            return new FloatDiffTensor(name, (Tensor<Float>) tensor, tape);
         }
         throw new IllegalArgumentException();
     }
 
-    private final FloatTensor tensor;
+    private final Tensor<Float> tensor;
 
-    private FloatDiffTensor(String name, FloatTensor tensor, GradientTape tape) {
+    private FloatDiffTensor(String name, Tensor<Float> tensor, GradientTape tape) {
         super(name, tape);
         this.tensor = tensor;
     }
 
     @Override
-    public DType<?, ?> dtype() {
-        return DTypes.FLOAT;
+    public DType<?> dtype() {
+        return DType.FLOAT;
     }
 
     @Override
-    public FloatTensor asFloat() {
+    public Tensor<Float> asFloat() {
         return tensor;
     }
 

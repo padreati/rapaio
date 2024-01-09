@@ -37,41 +37,40 @@ import java.util.function.Function;
 import rapaio.experiment.math.nn.DiffTensor;
 import rapaio.experiment.math.nn.gradient.GradientTape;
 import rapaio.math.tensor.DType;
-import rapaio.math.tensor.DTypes;
-import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 
 public final class DoubleDiffTensor extends AbstractDiffTensor {
 
-    public static DoubleDiffTensor of(DoubleTensor tensor, GradientTape tape) {
+    public static DoubleDiffTensor of(Tensor<Double> tensor, GradientTape tape) {
         return new DoubleDiffTensor(null, tensor, tape);
     }
 
-    public static DoubleDiffTensor of(String name, DoubleTensor tensor, GradientTape tape) {
+    public static DoubleDiffTensor of(String name, Tensor<Double> tensor, GradientTape tape) {
         return new DoubleDiffTensor(name, tensor, tape);
     }
 
     public static DoubleDiffTensor ofAny(String name, Object object, GradientTape tape) {
-        if (object instanceof DoubleTensor tensor) {
-            return new DoubleDiffTensor(name, tensor, tape);
+        if (object instanceof Tensor<?> tensor && tensor.dtype() == DType.DOUBLE) {
+            return new DoubleDiffTensor(name, (Tensor<Double>) tensor, tape);
         }
         throw new IllegalArgumentException();
     }
 
-    private final DoubleTensor tensor;
+    private final Tensor<Double> tensor;
 
-    private DoubleDiffTensor(String name, DoubleTensor tensor, GradientTape tape) {
+    private DoubleDiffTensor(String name, Tensor<Double> tensor, GradientTape tape) {
         super(name, tape);
         this.tensor = tensor;
     }
 
     @Override
-    public DType<?, ?> dtype() {
-        return DTypes.DOUBLE;
+    public DType<?> dtype() {
+        return DType.DOUBLE;
     }
 
     @Override
-    public DoubleTensor asDouble() {
+    public Tensor<Double> asDouble() {
         return tensor;
     }
 
@@ -85,7 +84,7 @@ public final class DoubleDiffTensor extends AbstractDiffTensor {
 
         // define backprop
         Function<List<DiffTensor>, List<DiffTensor>> propagate = (dL_doutputs) -> {
-            var dL_dr = dL_doutputs.get(0);
+            var dL_dr = dL_doutputs.getFirst();
 
             var dr_dself = t; // partial derivative of r = self * rhs
             var dr_drhs = this; // partial derivative of r = self * rhs

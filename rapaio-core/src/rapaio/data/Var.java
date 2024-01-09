@@ -47,7 +47,7 @@ import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.tensor.DoubleTensor;
+import rapaio.math.tensor.Tensor;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
@@ -399,9 +399,9 @@ public interface Var extends Serializable, Printable {
      */
     DVector dvNew();
 
-    DoubleTensor dt();
+    Tensor<Double> dt();
 
-    DoubleTensor dtNew();
+    Tensor<Double> dtNew();
 
     /**
      * Builds a new empty instance of given size

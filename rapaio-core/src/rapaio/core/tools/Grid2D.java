@@ -44,9 +44,9 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
@@ -128,7 +128,7 @@ public class Grid2D implements Serializable {
     private final Var x;
     private final Var y;
 
-    private final DoubleTensor values;
+    private final Tensor<Double> values;
 
     public Grid2D(Var x, Var y) {
         this.x = x;
@@ -159,7 +159,7 @@ public class Grid2D implements Serializable {
      * @return array of corresponding quantile values
      */
     public double[] quantiles(double... qs) {
-        return Quantiles.of(VarDouble.wrap(values.flatten(Order.C).toArray()), qs).values();
+        return Quantiles.of(values.flatten(Order.C).dv(), qs).values();
     }
 
     /**

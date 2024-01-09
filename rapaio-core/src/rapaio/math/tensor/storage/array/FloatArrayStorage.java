@@ -29,30 +29,40 @@
  *
  */
 
-package rapaio.experiment.nn.graph;
+package rapaio.math.tensor.storage.array;
 
-import java.util.List;
+import java.util.Arrays;
 
-import rapaio.math.tensor.Tensor;
-import rapaio.util.NotImplementedException;
+import rapaio.math.tensor.storage.FloatStorage;
 
-public class MatVecOperation extends Operation{
+public final class FloatArrayStorage extends FloatStorage {
 
-    public MatVecOperation(Graph graph, String name, Node a, Node b) {
-        super(graph, name, List.of(a, b));
+    private final float[] array;
+
+    public FloatArrayStorage(float[] array) {
+        this.array = array;
     }
 
     @Override
-    public Tensor<?> compute(List<? extends Tensor<?>> operands) {
-        if (checkAllDouble(operands)) {
-            return ((Tensor<Double>) operands.get(0)).mv((Tensor<Double>) operands.get(1));
-        }
-        if (checkAllFloat(operands)) {
-            return ((Tensor<Float>) operands.get(0)).mv((Tensor<Float>) operands.get(1));
-        }
-        if (checkAllInt(operands)) {
-            return ((Tensor<Integer>) operands.get(0)).mv((Tensor<Integer>) operands.get(1));
-        }
-        throw new NotImplementedException();
+    public int size() {
+        return array.length;
+    }
+
+    public float getFloat(int ptr) {
+        return array[ptr];
+    }
+
+    public void setFloat(int ptr, float v) {
+        array[ptr] = v;
+    }
+
+    @Override
+    public void incFloat(int ptr, float value) {
+        array[ptr] += value;
+    }
+
+    @Override
+    public void fillFloat(float value) {
+        Arrays.fill(array, value);
     }
 }

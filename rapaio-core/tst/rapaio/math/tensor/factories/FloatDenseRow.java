@@ -31,9 +31,9 @@
 
 package rapaio.math.tensor.factories;
 
-import rapaio.math.tensor.FloatTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 
 public final class FloatDenseRow extends FloatDense {
@@ -43,17 +43,17 @@ public final class FloatDenseRow extends FloatDense {
     }
 
     @Override
-    public FloatTensor seq(Shape shape) {
+    public Tensor<Float> seq(Shape shape) {
         return ofType.seq(shape, Order.C);
     }
 
     @Override
-    public FloatTensor zeros(Shape shape) {
+    public Tensor<Float> zeros(Shape shape) {
         return ofType.zeros(shape, Order.F);
     }
 
     @Override
-    public FloatTensor random(Shape shape) {
+    public Tensor<Float> random(Shape shape) {
         return ofType.random(shape, random, Order.C);
     }
 }

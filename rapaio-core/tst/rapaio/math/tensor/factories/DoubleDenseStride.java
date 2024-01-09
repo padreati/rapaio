@@ -34,9 +34,9 @@ package rapaio.math.tensor.factories;
 import java.util.Random;
 
 import rapaio.core.distributions.Normal;
-import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.util.collection.IntArrays;
 
@@ -47,7 +47,7 @@ public final class DoubleDenseStride extends DoubleDense {
     }
 
     @Override
-    public DoubleTensor seq(Shape shape) {
+    public Tensor<Double> seq(Shape shape) {
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
         IntArrays.shuffle(ordering, new Random(42));
@@ -70,7 +70,7 @@ public final class DoubleDenseStride extends DoubleDense {
         }
 
         int offset = 10;
-        var t = ofType.stride(shape, offset, strides, new double[offset + shape.size()]);
+        var t = ofType.stride(shape, offset, strides, ofType.storage().zeros(offset + shape.size()));
 
         t.apply_(Order.C, (i, p) -> (double) i);
 
@@ -78,7 +78,7 @@ public final class DoubleDenseStride extends DoubleDense {
     }
 
     @Override
-    public DoubleTensor zeros(Shape shape) {
+    public Tensor<Double> zeros(Shape shape) {
         int offset = 10;
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
@@ -102,11 +102,11 @@ public final class DoubleDenseStride extends DoubleDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        return ofType.stride(shape, offset, strides, new double[offset + shape.size()]);
+        return ofType.stride(shape, offset, strides, ofType.storage().zeros(offset + shape.size()));
     }
 
     @Override
-    public DoubleTensor random(Shape shape) {
+    public Tensor<Double> random(Shape shape) {
         int offset = 10;
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
@@ -130,10 +130,10 @@ public final class DoubleDenseStride extends DoubleDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        double[] array = new double[offset + shape.size()];
+        var array = ofType.storage().zeros(offset + shape.size());
         Normal normal = Normal.std();
-        for (int i = 0; i < array.length; i++) {
-            array[i] = normal.sampleNext(random);
+        for (int i = 0; i < array.size(); i++) {
+            array.setDouble(i, normal.sampleNext(random));
         }
         return ofType.stride(shape, offset, strides, array);
     }

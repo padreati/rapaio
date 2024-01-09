@@ -31,9 +31,9 @@
 
 package rapaio.math.tensor.factories;
 
-import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 
 public final class IntegerDenseCol extends IntegerDense {
@@ -43,17 +43,17 @@ public final class IntegerDenseCol extends IntegerDense {
     }
 
     @Override
-    public IntTensor seq(Shape shape) {
+    public Tensor<Integer> seq(Shape shape) {
         return ofType.seq(shape, Order.F);
     }
 
     @Override
-    public IntTensor zeros(Shape shape) {
+    public Tensor<Integer> zeros(Shape shape) {
         return ofType.zeros(shape, Order.F);
     }
 
     @Override
-    public IntTensor random(Shape shape) {
+    public Tensor<Integer> random(Shape shape) {
         return ofType.random(shape, random, Order.F);
     }
 }

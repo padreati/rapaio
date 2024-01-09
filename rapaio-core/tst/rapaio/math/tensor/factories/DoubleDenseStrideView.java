@@ -34,9 +34,9 @@ package rapaio.math.tensor.factories;
 import java.util.Arrays;
 
 import rapaio.core.distributions.Normal;
-import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.layout.StrideLayout;
 
@@ -47,14 +47,14 @@ public final class DoubleDenseStrideView extends DoubleDense {
     }
 
     @Override
-    public DoubleTensor seq(Shape shape) {
+    public Tensor<Double> seq(Shape shape) {
         var t = zeros(shape);
         t.apply_(Order.C, (i, p) -> (double) i);
         return t;
     }
 
     @Override
-    public DoubleTensor zeros(Shape shape) {
+    public Tensor<Double> zeros(Shape shape) {
         int offset = 7;
         var l = StrideLayout.ofDense(shape, offset, Order.F);
         int[] strides = Arrays.copyOf(l.strides(), l.strides().length);
@@ -66,11 +66,11 @@ public final class DoubleDenseStrideView extends DoubleDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return engine.ofDouble().stride(StrideLayout.of(shape, offset, strides), new double[len]);
+        return engine.ofDouble().stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(len));
     }
 
     @Override
-    public DoubleTensor random(Shape shape) {
+    public Tensor<Double> random(Shape shape) {
         var t = zeros(shape);
         Normal normal = Normal.std();
         t.apply_(Order.C, (pos, ptr) -> normal.sampleNext(random));

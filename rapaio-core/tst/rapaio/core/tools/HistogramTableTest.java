@@ -33,8 +33,8 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
-import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 
 public class HistogramTableTest {
@@ -48,8 +48,8 @@ public class HistogramTableTest {
 
     @Test
     void testBuilders() {
-        DoubleTensor vector = TensorEngine.base().ofDouble().random(Shape.of(10_000), random);
-        VarDouble variable = VarDouble.wrap(vector.toArray()).name("x");
+        Tensor<Double> vector = TensorEngine.base().ofDouble().random(Shape.of(10_000), random);
+        VarDouble variable = vector.dv().name("x");
 
         HistogramTable ht2 = new HistogramTable(variable, 0.1, 0.9, 20);
         for (double value : ht2.freq()) {
@@ -135,8 +135,8 @@ public class HistogramTableTest {
 
     @Test
     void testFriedmanDiaconis() {
-        DoubleTensor t = TensorEngine.base().ofDouble().random(Shape.of(1_000), random);
-        VarDouble v = VarDouble.wrap(t.toArray());
+        Tensor<Double> t = TensorEngine.base().ofDouble().random(Shape.of(1_000), random);
+        VarDouble v = t.dv();
         HistogramTable ht = new HistogramTable(v, Double.NaN, Double.NaN, 0);
         assertEquals(27, ht.bins());
         assertEquals(t.min(), ht.min());

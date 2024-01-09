@@ -34,8 +34,12 @@ package rapaio.math.tensor;
 import java.util.Objects;
 import java.util.function.Function;
 
-public sealed abstract class DType<N extends Number, T extends Tensor<N, T>>
-        permits DType.DTypeDouble, DType.DTypeFloat, DType.DTypeInteger, DType.DTypeByte {
+public abstract class DType<N extends Number> {
+
+    public static final DType<Byte> BYTE = new DTypeByte();
+    public static final DType<Integer> INTEGER = new DTypeInteger();
+    public static final DType<Float> FLOAT = new DTypeFloat();
+    public static final DType<Double> DOUBLE = new DTypeDouble();
 
     private final String id;
     private final byte bytes;
@@ -73,7 +77,7 @@ public sealed abstract class DType<N extends Number, T extends Tensor<N, T>>
 
     public abstract N castValue(double value);
 
-    public abstract <M extends Number> Function<N, M> castFunction(DType<M, ?> dType);
+    public abstract <M extends Number> Function<N, M> castFunction(DType<M> dType);
 
     public abstract boolean isNaN(N value);
 
@@ -82,7 +86,7 @@ public sealed abstract class DType<N extends Number, T extends Tensor<N, T>>
         if (this == o) {
             return true;
         }
-        if (!(o instanceof DType<?, ?> dType)) {
+        if (!(o instanceof DType<?> dType)) {
             return false;
         }
         return Objects.equals(id, dType.id);
@@ -93,139 +97,7 @@ public sealed abstract class DType<N extends Number, T extends Tensor<N, T>>
         return Objects.hash(id);
     }
 
-    public static final class DTypeDouble extends DType<Double, DoubleTensor> {
-
-        private static final String ID = "DOUBLE";
-
-        public DTypeDouble() {
-            super(ID, (byte) 8, false);
-        }
-
-        @Override
-        public <M extends Number> Double castValue(M value) {
-            return value.doubleValue();
-        }
-
-        @Override
-        public Double castValue(byte value) {
-            return (double) value;
-        }
-
-        @Override
-        public Double castValue(int value) {
-            return (double) value;
-        }
-
-        @Override
-        public Double castValue(float value) {
-            return (double) value;
-        }
-
-        @Override
-        public Double castValue(double value) {
-            return value;
-        }
-
-        @Override
-        public <M extends Number> Function<Double, M> castFunction(DType<M, ?> dType) {
-            return dType::castValue;
-        }
-
-        @Override
-        public boolean isNaN(Double value) {
-            return Double.isNaN(value);
-        }
-    }
-
-    public static final class DTypeFloat extends DType<Float, FloatTensor> {
-
-        private static final String ID = "FLOAT";
-
-        public DTypeFloat() {
-            super(ID, (byte) 4, false);
-        }
-
-        @Override
-        public <M extends Number> Float castValue(M value) {
-            return value.floatValue();
-        }
-
-        @Override
-        public Float castValue(byte value) {
-            return (float) value;
-        }
-
-        @Override
-        public Float castValue(int value) {
-            return (float) value;
-        }
-
-        @Override
-        public Float castValue(float value) {
-            return value;
-        }
-
-        @Override
-        public Float castValue(double value) {
-            return (float) value;
-        }
-
-        @Override
-        public <M extends Number> Function<Float, M> castFunction(DType<M, ?> dType) {
-            return dType::castValue;
-        }
-
-        @Override
-        public boolean isNaN(Float value) {
-            return Float.isNaN(value);
-        }
-    }
-
-    public static final class DTypeInteger extends DType<Integer, IntTensor> {
-
-        private static final String ID = "INTEGER";
-
-        public DTypeInteger() {
-            super(ID, (byte) 4, true);
-        }
-
-        @Override
-        public <M extends Number> Integer castValue(M value) {
-            return value.intValue();
-        }
-
-        @Override
-        public Integer castValue(byte value) {
-            return (int) value;
-        }
-
-        @Override
-        public Integer castValue(int value) {
-            return (int) value;
-        }
-
-        @Override
-        public Integer castValue(float value) {
-            return (int) value;
-        }
-
-        @Override
-        public Integer castValue(double value) {
-            return (int) value;
-        }
-
-        @Override
-        public <M extends Number> Function<Integer, M> castFunction(DType<M, ?> dType) {
-            return dType::castValue;
-        }
-
-        @Override
-        public boolean isNaN(Integer value) {
-            return false;
-        }
-    }
-
-    public static final class DTypeByte extends DType<Byte, ByteTensor> {
+    private static final class DTypeByte extends DType<Byte> {
 
         private static final String ID = "BYTE";
 
@@ -259,13 +131,146 @@ public sealed abstract class DType<N extends Number, T extends Tensor<N, T>>
         }
 
         @Override
-        public <M extends Number> Function<Byte, M> castFunction(DType<M, ?> dType) {
+        public <M extends Number> Function<Byte, M> castFunction(DType<M> dType) {
             return dType::castValue;
         }
 
         @Override
         public boolean isNaN(Byte value) {
             return false;
+        }
+    }
+
+    private static final class DTypeInteger extends DType<Integer> {
+
+        private static final String ID = "INTEGER";
+
+        public DTypeInteger() {
+            super(ID, (byte) 4, true);
+        }
+
+        @Override
+        public <M extends Number> Integer castValue(M value) {
+            return value.intValue();
+        }
+
+        @Override
+        public Integer castValue(byte value) {
+            return (int) value;
+        }
+
+        @Override
+        public Integer castValue(int value) {
+            return (int) value;
+        }
+
+        @Override
+        public Integer castValue(float value) {
+            return (int) value;
+        }
+
+        @Override
+        public Integer castValue(double value) {
+            return (int) value;
+        }
+
+        @Override
+        public <M extends Number> Function<Integer, M> castFunction(DType<M> dType) {
+            return dType::castValue;
+        }
+
+        @Override
+        public boolean isNaN(Integer value) {
+            return false;
+        }
+    }
+
+    private static final class DTypeFloat extends DType<Float> {
+
+
+        private static final String ID = "FLOAT";
+
+        public DTypeFloat() {
+            super(ID, (byte) 4, false);
+        }
+
+        @Override
+        public <M extends Number> Float castValue(M value) {
+            return value.floatValue();
+        }
+
+        @Override
+        public Float castValue(byte value) {
+            return (float) value;
+        }
+
+        @Override
+        public Float castValue(int value) {
+            return (float) value;
+        }
+
+        @Override
+        public Float castValue(float value) {
+            return value;
+        }
+
+        @Override
+        public Float castValue(double value) {
+            return (float) value;
+        }
+
+        @Override
+        public <M extends Number> Function<Float, M> castFunction(DType<M> dType) {
+            return dType::castValue;
+        }
+
+        @Override
+        public boolean isNaN(Float value) {
+            return Float.isNaN(value);
+        }
+    }
+
+    private static final class DTypeDouble extends DType<Double> {
+
+        private static final String ID = "DOUBLE";
+
+        public DTypeDouble() {
+            super(ID, (byte) 8, false);
+        }
+
+        @Override
+        public <M extends Number> Double castValue(M value) {
+            return value.doubleValue();
+        }
+
+        @Override
+        public Double castValue(byte value) {
+            return (double) value;
+        }
+
+        @Override
+        public Double castValue(int value) {
+            return (double) value;
+        }
+
+        @Override
+        public Double castValue(float value) {
+            return (double) value;
+        }
+
+        @Override
+        public Double castValue(double value) {
+            return value;
+        }
+
+        @Override
+        public <M extends Number> Function<Double, M> castFunction(DType<M> dType) {
+            return dType::castValue;
+        }
+
+        @Override
+        public boolean isNaN(Double value) {
+            return Double.isNaN(value);
         }
     }
 }

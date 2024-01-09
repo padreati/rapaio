@@ -33,36 +33,35 @@ package rapaio.experiment.math.nn.data;
 
 import rapaio.experiment.math.nn.gradient.GradientTape;
 import rapaio.math.tensor.DType;
-import rapaio.math.tensor.DTypes;
-import rapaio.math.tensor.IntTensor;
+import rapaio.math.tensor.Tensor;
 
 public final class IntDiffTensor extends AbstractDiffTensor {
 
-    public static IntDiffTensor of(String name, IntTensor tensor, GradientTape tape) {
+    public static IntDiffTensor of(String name, Tensor<Integer> tensor, GradientTape tape) {
         return new IntDiffTensor(name, tensor, tape);
     }
 
     public static IntDiffTensor ofAny(String name, Object object, GradientTape tape) {
-        if (object instanceof IntTensor tensor) {
-            return new IntDiffTensor(name, tensor, tape);
+        if (object instanceof Tensor<?> tensor && tensor.dtype() == DType.INTEGER) {
+            return new IntDiffTensor(name, (Tensor<Integer>) tensor, tape);
         }
         throw new IllegalArgumentException();
     }
 
-    private final IntTensor tensor;
+    private final Tensor<Integer> tensor;
 
-    private IntDiffTensor(String name, IntTensor tensor, GradientTape tape) {
+    private IntDiffTensor(String name, Tensor<Integer> tensor, GradientTape tape) {
         super(name, tape);
         this.tensor = tensor;
     }
 
     @Override
-    public DType<?, ?> dtype() {
-        return DTypes.INTEGER;
+    public DType<?> dtype() {
+        return DType.INTEGER;
     }
 
     @Override
-    public IntTensor asInt() {
+    public Tensor<Integer> asInt() {
         return tensor;
     }
 }

@@ -34,6 +34,7 @@ package rapaio.math.tensor.engine;
 import rapaio.data.VarDouble;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.engine.barray.BaseDoubleTensorStride;
 import rapaio.math.tensor.engine.varray.VectorizedDoubleTensorStride;
@@ -41,7 +42,95 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 
-public abstract class AbstractTensor<N extends Number, T extends Tensor<N, T>> implements Tensor<N, T> {
+public abstract class AbstractTensor<N extends Number> implements Tensor<N> {
+
+    protected final Storage<N> storage;
+
+    public AbstractTensor(Storage<N> storage) {
+        this.storage = storage;
+    }
+
+    @Override
+    public byte getByte(int... indexes) {
+        return storage.getByte(layout().pointer(indexes));
+    }
+
+    @Override
+    public int getInt(int... indexes) {
+        return storage.getInt(layout().pointer(indexes));
+    }
+
+    @Override
+    public float getFloat(int... indexes) {
+        return storage.getFloat(layout().pointer(indexes));
+    }
+
+    @Override
+    public double getDouble(int... indexes) {
+        return storage.getDouble(layout().pointer(indexes));
+    }
+
+    @Override
+    public void setByte(byte value, int... indexes) {
+        storage.setByte(layout().pointer(indexes), value);
+    }
+
+    @Override
+    public void setInt(int value, int... indexes) {
+        storage.setInt(layout().pointer(indexes), value);
+    }
+
+    @Override
+    public void setFloat(float value, int... indexes) {
+        storage.setFloat(layout().pointer(indexes), value);
+    }
+
+    @Override
+    public void setDouble(double value, int... indexes) {
+        storage.setDouble(layout().pointer(indexes), value);
+    }
+
+    @Override
+    public byte ptrGetByte(int ptr) {
+        return storage.getByte(ptr);
+    }
+
+    @Override
+    public int ptrGetInt(int ptr) {
+        return storage.getInt(ptr);
+    }
+
+    @Override
+    public float ptrGetFloat(int ptr) {
+        return storage.getFloat(ptr);
+    }
+
+    @Override
+    public double ptrGetDouble(int ptr) {
+        return storage.getDouble(ptr);
+    }
+
+    @Override
+    public void ptrSetByte(int ptr, byte value) {
+        storage.setByte(ptr, value);
+    }
+
+    @Override
+    public void ptrSetInt(int ptr, int value) {
+        storage.setInt(ptr, value);
+    }
+
+    @Override
+    public void ptrSetFloat(int ptr, float value) {
+        storage.setFloat(ptr, value);
+    }
+
+    @Override
+    public void ptrSetDouble(int ptr, double value) {
+        storage.setDouble(ptr, value);
+    }
+
+
 
     @Override
     public VarDouble dv() {

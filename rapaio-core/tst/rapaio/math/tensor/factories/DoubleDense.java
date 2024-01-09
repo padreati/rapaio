@@ -31,14 +31,13 @@
 
 package rapaio.math.tensor.factories;
 
-import rapaio.math.tensor.DoubleTensor;
-import rapaio.math.tensor.DTypes;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.TensorEngine;
 
-public abstract class DoubleDense extends DataFactory<Double, DoubleTensor> {
+public abstract class DoubleDense extends DataFactory<Double> {
 
     public DoubleDense(TensorEngine tensorEngine) {
-        super(tensorEngine, tensorEngine.ofDouble(), DTypes.DOUBLE);
+        super(tensorEngine, tensorEngine.ofDouble(), DType.DOUBLE);
     }
 
     @Override

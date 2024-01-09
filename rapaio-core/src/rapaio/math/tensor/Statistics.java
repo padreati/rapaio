@@ -31,9 +31,9 @@
 
 package rapaio.math.tensor;
 
-public final class Statistics<N extends Number, T extends Tensor<N, T>> {
+public final class Statistics<N extends Number> {
 
-    private final DType<N, T> dType;
+    private final DType<N> dType;
     private final int size;
     private final int nanSize;
     private final N mean;
@@ -41,7 +41,7 @@ public final class Statistics<N extends Number, T extends Tensor<N, T>> {
     private final N variance;
     private final N nanVariance;
 
-    public Statistics(final DType<N, T> dType, final int size, final int nanSize, N mean, N nanMean, N variance, N nanVariance) {
+    public Statistics(final DType<N> dType, final int size, final int nanSize, N mean, N nanMean, N variance, N nanVariance) {
         this.dType = dType;
         this.size = size;
         this.nanSize = nanSize;
@@ -51,7 +51,7 @@ public final class Statistics<N extends Number, T extends Tensor<N, T>> {
         this.nanVariance = nanVariance;
     }
 
-    public DType<N, T> dType() {
+    public DType<N> dType() {
         return dType;
     }
 

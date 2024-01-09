@@ -38,15 +38,15 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 
-public abstract class DataFactory<N extends Number, T extends Tensor<N, T>> {
+public abstract class DataFactory<N extends Number> {
 
     final TensorEngine engine;
-    final TensorEngine.OfType<N, T> ofType;
-    final DType<N, T> dType;
+    final TensorEngine.OfType<N> ofType;
+    final DType<N> dType;
     final Random random = new Random(42);
 
 
-    public DataFactory(TensorEngine tensorEngine, TensorEngine.OfType<N, T> ofType, DType<N, T> dType) {
+    public DataFactory(TensorEngine tensorEngine, TensorEngine.OfType<N> ofType, DType<N> dType) {
         this.engine = tensorEngine;
         this.ofType = ofType;
         this.dType = dType;
@@ -56,7 +56,7 @@ public abstract class DataFactory<N extends Number, T extends Tensor<N, T>> {
         return engine;
     }
 
-    public DType<N, T> dType() {
+    public DType<N> dType() {
         return dType;
     }
 
@@ -66,13 +66,13 @@ public abstract class DataFactory<N extends Number, T extends Tensor<N, T>> {
 
     public abstract N sum(N x, N y);
 
-    public T scalar(N value) {
+    public Tensor<N> scalar(N value) {
         return ofType.scalar(value);
     }
 
-    public abstract T seq(Shape shape);
+    public abstract Tensor<N> seq(Shape shape);
 
-    public abstract T zeros(Shape shape);
+    public abstract Tensor<N> zeros(Shape shape);
 
-    public abstract T random(Shape shape);
+    public abstract Tensor<N> random(Shape shape);
 }

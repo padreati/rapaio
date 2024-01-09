@@ -33,9 +33,9 @@ package rapaio.math.tensor.factories;
 
 import java.util.Random;
 
-import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.util.collection.IntArrays;
 
@@ -46,7 +46,7 @@ public final class IntegerDenseStride extends IntegerDense {
     }
 
     @Override
-    public IntTensor seq(Shape shape) {
+    public Tensor<Integer> seq(Shape shape) {
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
         IntArrays.shuffle(ordering, new Random(42));
@@ -69,7 +69,7 @@ public final class IntegerDenseStride extends IntegerDense {
         }
 
         int offset = 10;
-        var t = ofType.stride(shape, offset, strides, new int[offset + shape.size()]);
+        var t = ofType.stride(shape, offset, strides, ofType.storage().zeros(offset + shape.size()));
 
         t.apply_(Order.C, (i, p) -> i);
 
@@ -77,7 +77,7 @@ public final class IntegerDenseStride extends IntegerDense {
     }
 
     @Override
-    public IntTensor zeros(Shape shape) {
+    public Tensor<Integer> zeros(Shape shape) {
         int offset = 10;
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
@@ -101,11 +101,11 @@ public final class IntegerDenseStride extends IntegerDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        return ofType.stride(shape, offset, strides, new int[offset + shape.size()]);
+        return ofType.stride(shape, offset, strides, ofType.storage().zeros(offset + shape.size()));
     }
 
     @Override
-    public IntTensor random(Shape shape) {
+    public Tensor<Integer> random(Shape shape) {
         int offset = 10;
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
@@ -129,9 +129,9 @@ public final class IntegerDenseStride extends IntegerDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        int[] array = new int[offset + shape.size()];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = random.nextInt();
+        var array = ofType.storage().zeros(offset + shape.size());
+        for (int i = 0; i < array.size(); i++) {
+            array.setInt(i, random.nextInt());
         }
         return ofType.stride(shape, offset, strides, array);
     }

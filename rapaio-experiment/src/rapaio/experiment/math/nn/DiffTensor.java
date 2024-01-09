@@ -32,25 +32,22 @@
 package rapaio.experiment.math.nn;
 
 import rapaio.experiment.math.nn.gradient.GradientTape;
-import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.DType;
-import rapaio.math.tensor.DoubleTensor;
-import rapaio.math.tensor.FloatTensor;
-import rapaio.math.tensor.IntTensor;
+import rapaio.math.tensor.Tensor;
 
 public interface DiffTensor {
 
     String name();
 
-    DType<?,?> dtype();
+    DType<?> dtype();
 
-    DoubleTensor asDouble();
+    Tensor<Double> asDouble();
 
-    FloatTensor asFloat();
+    Tensor<Float> asFloat();
 
-    IntTensor asInt();
+    Tensor<Integer> asInt();
 
-    ByteTensor asByte();
+    Tensor<Byte> asByte();
 
     DiffTensor add(DiffTensor t, GradientTape tape);
 

@@ -33,9 +33,9 @@ package rapaio.math.tensor.factories;
 
 import java.util.Arrays;
 
-import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.layout.StrideLayout;
 
@@ -46,14 +46,14 @@ public final class ByteDenseStrideView extends ByteDense {
     }
 
     @Override
-    public ByteTensor seq(Shape shape) {
+    public Tensor<Byte> seq(Shape shape) {
         var t = zeros(shape);
         t.apply_(Order.C, (i, p) -> (byte) i);
         return t;
     }
 
     @Override
-    public ByteTensor zeros(Shape shape) {
+    public Tensor<Byte> zeros(Shape shape) {
         int offset = 7;
         var l = StrideLayout.ofDense(shape, offset, Order.F);
         int[] strides = Arrays.copyOf(l.strides(), l.strides().length);
@@ -65,11 +65,11 @@ public final class ByteDenseStrideView extends ByteDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return engine.ofByte().stride(StrideLayout.of(shape, offset, strides), new byte[len]);
+        return engine.ofByte().stride(StrideLayout.of(shape, offset, strides), engine.ofByte().storage().zeros(len));
     }
 
     @Override
-    public ByteTensor random(Shape shape) {
+    public Tensor<Byte> random(Shape shape) {
         var t = zeros(shape);
         byte[] buff = new byte[1];
         random.nextBytes(buff);

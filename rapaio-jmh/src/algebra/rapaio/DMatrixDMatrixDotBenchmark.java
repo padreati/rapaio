@@ -58,9 +58,9 @@ import rapaio.io.Csv;
 import rapaio.math.linear.base.DMatrixBase;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DMatrixDenseR;
-import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.sys.WS;
 
@@ -81,8 +81,8 @@ public class DMatrixDMatrixDotBenchmark {
 
         private DenseMatrix jsatDM;
 
-        private DoubleTensor t;
-        private DoubleTensor tc;
+        private Tensor<Double> t;
+        private Tensor<Double> tc;
 
         @Setup(Level.Invocation)
         public void setup() {
@@ -105,7 +105,7 @@ public class DMatrixDMatrixDotBenchmark {
                 }
             }
 
-            t = TensorEngine.varray().ofDouble().stride(Shape.of(n, n), Order.C, array);
+            t = TensorEngine.varray().ofDouble().stride(Shape.of(n, n), Order.C, TensorEngine.varray().ofDouble().storageCast(array));
             tc = t.transpose().copy(Order.F);
         }
     }

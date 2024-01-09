@@ -42,10 +42,10 @@ import rapaio.data.unique.UniqueLabel;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.linear.dense.DVectorVar;
-import rapaio.math.tensor.DTypes;
-import rapaio.math.tensor.DoubleTensor;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -145,17 +145,19 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public DoubleTensor dt() {
+    public Tensor<Double> dt() {
+        // TODO FIX
         return dtNew();
     }
 
     @Override
-    public DoubleTensor dtNew() {
+    public Tensor<Double> dtNew() {
+        // TODO FIX
         double[] values = new double[size()];
         for (int i = 0; i < size(); i++) {
             values[i] = getDouble(i);
         }
-        return TensorEngine.base().stride(DTypes.DOUBLE, Shape.of(size()), Order.C, values);
+        return TensorEngine.base().stride(DType.DOUBLE, Shape.of(size()), Order.C, TensorEngine.base().ofDouble().storage().cast(values));
     }
 
     @Serial

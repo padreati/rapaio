@@ -34,9 +34,9 @@ package rapaio.math.tensor;
 import java.util.Collection;
 import java.util.Random;
 
-import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.engine.barray.BaseArrayTensorEngine;
 import rapaio.math.tensor.engine.varray.VectorizedArrayTensorEngine;
+import rapaio.math.tensor.layout.StrideLayout;
 
 public interface TensorEngine {
 
@@ -60,201 +60,105 @@ public interface TensorEngine {
         return new VectorizedArrayTensorEngine(cpuThreads);
     }
 
-    interface OfType<N extends Number, T extends Tensor<N, T>> {
 
-        DType<N, T> dtype();
+    OfType<Double> ofDouble();
 
-        T scalar(N value);
+    OfType<Float> ofFloat();
 
-        default T zeros(Shape shape) {
-            return zeros(shape, Order.defaultOrder());
-        }
+    OfType<Integer> ofInt();
 
-        T zeros(Shape shape, Order order);
-
-        default T eye(int n) {
-            return eye(n, Order.defaultOrder());
-        }
-
-        T eye(int n, Order order);
-
-        default T full(Shape shape, N value) {
-            return full(shape, value, Order.defaultOrder());
-        }
-
-        T full(Shape shape, N value, Order order);
-
-        default T seq(Shape shape) {
-            return seq(shape, Order.defaultOrder());
-        }
-
-        T seq(Shape shape, Order order);
-
-        default T random(Shape shape, Random random) {
-            return random(shape, random, Order.defaultOrder());
-        }
-
-        T random(Shape shape, Random random, Order order);
-
-        default T stride(Shape shape, Order order, byte[] array) {
-            return stride(StrideLayout.ofDense(shape, 0, order), array);
-        }
-
-        default T stride(StrideLayout layout, byte[] array) {
-            return stride(layout.shape(), layout.offset(), layout.strides(), array);
-        }
-
-        T stride(Shape shape, int offset, int[] strides, byte[] array);
-
-        default T stride(Shape shape, Order order, int[] array) {
-            return stride(StrideLayout.ofDense(shape, 0, order), array);
-        }
-
-        default T stride(StrideLayout layout, int[] array) {
-            return stride(layout.shape(), layout.offset(), layout.strides(), array);
-        }
-
-        T stride(Shape shape, int offset, int[] strides, int[] array);
-
-        default T stride(Shape shape, Order order, float[] array) {
-            return stride(StrideLayout.ofDense(shape, 0, order), array);
-        }
-
-        default T stride(StrideLayout layout, float[] array) {
-            return stride(layout.shape(), layout.offset(), layout.strides(), array);
-        }
-
-        T stride(Shape shape, int offset, int[] strides, float[] array);
-
-        default T stride(Shape shape, Order order, double[] array) {
-            return stride(StrideLayout.ofDense(shape, 0, order), array);
-        }
-
-        default T stride(StrideLayout layout, double[] array) {
-            return stride(layout.shape(), layout.offset(), layout.strides(), array);
-        }
-
-        T stride(Shape shape, int offset, int[] strides, double[] array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T scalar(DType<N, T> dType, N value) {
-        return ofType(dType).scalar(value);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T zeros(DType<N, T> dType, Shape shape) {
-        return ofType(dType).zeros(shape, Order.defaultOrder());
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T zeros(DType<N, T> dType, Shape shape, Order order) {
-        return ofType(dType).zeros(shape, order);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T eye(DType<N, T> dType, int n) {
-        return ofType(dType).eye(n, Order.defaultOrder());
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T eye(DType<N, T> dType, int n, Order order) {
-        return ofType(dType).eye(n, order);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T full(DType<N, T> dType, Shape shape, N value) {
-        return ofType(dType).full(shape, value, Order.defaultOrder());
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T full(DType<N, T> dType, Shape shape, N value, Order order) {
-        return ofType(dType).full(shape, value, order);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T seq(DType<N, T> dType, Shape shape) {
-        return ofType(dType).seq(shape, Order.defaultOrder());
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T seq(DType<N, T> dType, Shape shape, Order order) {
-        return ofType(dType).seq(shape, order);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T random(DType<N, T> dType, Shape shape, Random random) {
-        return ofType(dType).random(shape, random, Order.defaultOrder());
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T random(DType<N, T> dType, Shape shape, Random random, Order order) {
-        return ofType(dType).random(shape, random, order);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, Order order, byte[] array) {
-        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, StrideLayout layout, byte[] array) {
-        return ofType(dType).stride(layout.shape(), layout.offset(), layout.strides(), array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, int offset, int[] strides, byte[] array) {
-        return ofType(dType).stride(shape, offset, strides, array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, Order order, int[] array) {
-        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, StrideLayout layout, int[] array) {
-        return ofType(dType).stride(layout.shape(), layout.offset(), layout.strides(), array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, int offset, int[] strides, int[] array) {
-        return ofType(dType).stride(shape, offset, strides, array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, Order order, float[] array) {
-        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, StrideLayout layout, float[] array) {
-        return ofType(dType).stride(layout.shape(), layout.offset(), layout.strides(), array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, int offset, int[] strides, float[] array) {
-        return ofType(dType).stride(shape, offset, strides, array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, Order order, double[] array) {
-        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, StrideLayout layout, double[] array) {
-        return ofType(dType).stride(layout.shape(), layout.offset(), layout.strides(), array);
-    }
-
-    default <N extends Number, T extends Tensor<N, T>> T stride(DType<N, T> dType, Shape shape, int offset, int[] strides, double[] array) {
-        return ofType(dType).stride(shape, offset, strides, array);
-    }
-
-    OfType<Double, DoubleTensor> ofDouble();
-
-    OfType<Float, FloatTensor> ofFloat();
-
-    OfType<Integer, IntTensor> ofInt();
-
-    OfType<Byte, ByteTensor> ofByte();
+    OfType<Byte> ofByte();
 
     @SuppressWarnings("unchecked")
-    default <N extends Number, T extends Tensor<N, T>> OfType<N, T> ofType(DType<N, T> dType) {
-        if (dType.equals(DTypes.FLOAT)) {
-            return (OfType<N, T>) ofFloat();
+    default <N extends Number> OfType<N> ofType(DType<N> dType) {
+        if (dType.equals(DType.FLOAT)) {
+            return (OfType<N>) ofFloat();
         }
-        if (dType.equals(DTypes.DOUBLE)) {
-            return (OfType<N, T>) ofDouble();
+        if (dType.equals(DType.DOUBLE)) {
+            return (OfType<N>) ofDouble();
         }
-        if (dType.equals(DTypes.INTEGER)) {
-            return (OfType<N, T>) ofInt();
+        if (dType.equals(DType.INTEGER)) {
+            return (OfType<N>) ofInt();
         }
-        if(dType.equals(DTypes.BYTE)) {
-            return (OfType<N, T>) ofByte();
+        if(dType.equals(DType.BYTE)) {
+            return (OfType<N>) ofByte();
         }
         return null;
     }
 
     int cpuThreads();
+
+    // Tensor methods
+
+    default <N extends Number> Tensor<N> scalar(DType<N> dType, N value) {
+        return ofType(dType).scalar(value);
+    }
+
+    default <N extends Number> Tensor<N> zeros(DType<N> dType, Shape shape) {
+        return ofType(dType).zeros(shape, Order.defaultOrder());
+    }
+
+    default <N extends Number> Tensor<N> zeros(DType<N> dType, Shape shape, Order order) {
+        return ofType(dType).zeros(shape, order);
+    }
+
+    default <N extends Number> Tensor<N> eye(DType<N> dType, int n) {
+        return ofType(dType).eye(n, Order.defaultOrder());
+    }
+
+    default <N extends Number> Tensor<N> eye(DType<N> dType, int n, Order order) {
+        return ofType(dType).eye(n, order);
+    }
+
+    default <N extends Number> Tensor<N> full(DType<N> dType, Shape shape, N value) {
+        return ofType(dType).full(shape, value, Order.defaultOrder());
+    }
+
+    default <N extends Number> Tensor<N> full(DType<N> dType, Shape shape, N value, Order order) {
+        return ofType(dType).full(shape, value, order);
+    }
+
+    default <N extends Number> Tensor<N> seq(DType<N> dType, Shape shape) {
+        return ofType(dType).seq(shape, Order.defaultOrder());
+    }
+
+    default <N extends Number> Tensor<N> seq(DType<N> dType, Shape shape, Order order) {
+        return ofType(dType).seq(shape, order);
+    }
+
+    default <N extends Number> Tensor<N> random(DType<N> dType, Shape shape, Random random) {
+        return ofType(dType).random(shape, random, Order.defaultOrder());
+    }
+
+    default <N extends Number> Tensor<N> random(DType<N> dType, Shape shape, Random random, Order order) {
+        return ofType(dType).random(shape, random, order);
+    }
+
+
+    default <N extends Number, M extends Number> Tensor<N> strideCast(DType<N> dType, Shape shape, Order order, Storage<M> storage) {
+        return ofType(dType).strideCast(StrideLayout.ofDense(shape, 0, order), storage);
+    }
+
+    default <N extends Number, M extends Number> Tensor<N> strideCast(DType<N> dType, StrideLayout layout, Storage<M> storage) {
+        return ofType(dType).strideCast(layout.shape(), layout.offset(), layout.strides(), storage);
+    }
+
+    default <N extends Number, M extends Number> Tensor<N> strideCast(DType<N> dType, Shape shape, int offset, int[] strides, Storage<M> storage) {
+        return ofType(dType).strideCast(shape, offset, strides, storage);
+    }
+
+
+    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, Storage<N> storage) {
+        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage);
+    }
+
+    default <N extends Number> Tensor<N> stride(DType<N> dType, StrideLayout layout, Storage<N> storage) {
+        return ofType(dType).stride(layout.shape(), layout.offset(), layout.strides(), storage);
+    }
+
+    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, int offset, int[] strides, Storage<N> storage) {
+        return ofType(dType).stride(shape, offset, strides, storage);
+    }
 
     /**
      * Concatenates multiple tensors along a given axis.
@@ -264,7 +168,7 @@ public interface TensorEngine {
      * @param tensors tensors to concatenate
      * @return new tensor with concatenated data
      */
-    <N extends Number, T extends Tensor<N, T>> T concat(int axis, Collection<? extends T> tensors);
+    <N extends Number> Tensor<N> concat(int axis, Collection<? extends Tensor<N>> tensors);
 
     /**
      * Concatenates multiple tensors along a new axis.
@@ -275,5 +179,52 @@ public interface TensorEngine {
      * @param tensors tensors to concatenate
      * @return new tensor with concatenated data
      */
-    <N extends Number, T extends Tensor<N, T>> T stack(int axis, Collection<? extends T> tensors);
+    <N extends Number> Tensor<N> stack(int axis, Collection<? extends Tensor<N>> tensors);
+
+    StorageFactory storage();
+
+    interface OfType<N extends Number> {
+
+        void registerParent(TensorEngine parent, StorageFactory.OfType<N> storageOfType);
+
+        DType<N> dtype();
+
+        StorageFactory.OfType<N> storage();
+
+        Tensor<N> scalar(N value);
+
+        Tensor<N> zeros(Shape shape);
+
+        Tensor<N> zeros(Shape shape, Order order);
+
+        Tensor<N> eye(int n);
+
+        Tensor<N> eye(int n, Order order);
+
+        Tensor<N> full(Shape shape, N value);
+
+        Tensor<N> full(Shape shape, N value, Order order);
+
+        Tensor<N> seq(Shape shape);
+
+        Tensor<N> seq(Shape shape, Order order);
+
+        Tensor<N> random(Shape shape, Random random);
+
+        Tensor<N> random(Shape shape, Random random, Order order);
+
+
+        <M extends Number> Tensor<N> strideCast(Shape shape, Order order, Storage<M> storage);
+
+        <M extends Number> Tensor<N> strideCast(StrideLayout layout, Storage<M> storage);
+
+        <M extends Number> Tensor<N> strideCast(Shape shape, int offset, int[] strides, Storage<M> storage);
+
+
+        Tensor<N> stride(Shape shape, Order order, Storage<N> storage);
+
+        Tensor<N> stride(StrideLayout layout, Storage<N> storage);
+
+        Tensor<N> stride(Shape shape, int offset, int[] strides, Storage<N> storage);
+    }
 }

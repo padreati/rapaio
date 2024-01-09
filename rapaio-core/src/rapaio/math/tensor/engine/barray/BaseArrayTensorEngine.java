@@ -31,395 +31,101 @@
 
 package rapaio.math.tensor.engine.barray;
 
-import java.util.Arrays;
 import java.util.Random;
 
 import rapaio.core.distributions.Normal;
-import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.DType;
-import rapaio.math.tensor.DTypes;
-import rapaio.math.tensor.DoubleTensor;
-import rapaio.math.tensor.FloatTensor;
-import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Storage;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.engine.AbstractEngineOfType;
 import rapaio.math.tensor.engine.AbstractTensorEngine;
+import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 import rapaio.util.Hardware;
 
 public class BaseArrayTensorEngine extends AbstractTensorEngine {
-
-    private final BaseArrayOfDouble ofDouble = new BaseArrayOfDouble(this);
-    private final BaseArrayOfFloat ofFloat = new BaseArrayOfFloat(this);
-    private final BaseArrayOfInt ofInt = new BaseArrayOfInt(this);
-    private final BaseArrayOfByte ofByte = new BaseArrayOfByte(this);
-    private final int cpuThreads;
 
     public BaseArrayTensorEngine() {
         this(Hardware.CORES);
     }
 
     public BaseArrayTensorEngine(int cpuThreads) {
-        this.cpuThreads = cpuThreads;
+        super(cpuThreads, new BaseArrayOfDouble(), new BaseArrayOfFloat(), new BaseArrayOfInt(), new BaseArrayOfByte(), new ArrayStorageFactory());
     }
 
-    @Override
-    public int cpuThreads() {
-        return cpuThreads;
-    }
+    protected static class BaseArrayOfDouble extends AbstractEngineOfType<Double> {
 
-    @Override
-    public OfType<Double, DoubleTensor> ofDouble() {
-        return ofDouble;
-    }
-
-    @Override
-    public OfType<Float, FloatTensor> ofFloat() {
-        return ofFloat;
-    }
-
-    @Override
-    public OfType<Integer, IntTensor> ofInt() {
-        return ofInt;
-    }
-
-    @Override
-    public OfType<Byte, ByteTensor> ofByte() {
-        return ofByte;
-    }
-
-    protected static class BaseArrayOfDouble implements OfType<Double, DoubleTensor> {
-
-        private final BaseArrayTensorEngine parent;
-
-        public BaseArrayOfDouble(BaseArrayTensorEngine parent) {
-            this.parent = parent;
+        public BaseArrayOfDouble() {
+            super(DType.DOUBLE);
         }
 
         @Override
-        public DType<Double, DoubleTensor> dtype() {
-            return DTypes.DOUBLE;
-        }
-
-        @Override
-        public DoubleTensor scalar(Double value) {
-            return stride(Shape.of(), 0, new int[0], new double[] {value});
-        }
-
-        @Override
-        public BaseDoubleTensorStride zeros(Shape shape, Order order) {
-            return new BaseDoubleTensorStride(parent, shape, 0, Order.autoFC(order), new double[shape.size()]);
-        }
-
-        @Override
-        public BaseDoubleTensorStride eye(int n, Order order) {
-            BaseDoubleTensorStride eye = zeros(Shape.of(n, n), order);
-            for (int i = 0; i < n; i++) {
-                eye.setDouble(1, i, i);
-            }
-            return eye;
-        }
-
-        @Override
-        public DoubleTensor full(Shape shape, Double value, Order order) {
-            double[] array = new double[shape.size()];
-            Arrays.fill(array, value);
-            return stride(shape, Order.autoFC(order), array);
-        }
-
-        @Override
-        public BaseDoubleTensorStride seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (double) i);
-        }
-
-        @Override
-        public BaseDoubleTensorStride random(Shape shape, Random random, Order order) {
+        public final Tensor<Double> random(Shape shape, Random random, Order order) {
             Normal normal = Normal.std();
             return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> normal.sampleNext(random));
         }
 
-        @Override
-        public BaseDoubleTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
-            double[] darray = new double[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = array[i];
-            }
-            return stride(shape, offset, strides, darray);
-        }
 
         @Override
-        public BaseDoubleTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
-            double[] darray = new double[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = array[i];
-            }
-            return stride(shape, offset, strides, darray);
-        }
-
-        @Override
-        public BaseDoubleTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
-            double[] darray = new double[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = array[i];
-            }
-            return stride(shape, offset, strides, darray);
-        }
-
-        @Override
-        public BaseDoubleTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
-            return new BaseDoubleTensorStride(parent, shape, offset, strides, array);
+        public Tensor<Double> stride(Shape shape, int offset, int[] strides, Storage<Double> storage) {
+            return new BaseDoubleTensorStride(parent, shape, offset, strides, storage);
         }
     }
 
-    protected static class BaseArrayOfFloat implements OfType<Float, FloatTensor> {
+    protected static class BaseArrayOfFloat extends AbstractEngineOfType<Float> {
 
-        private final BaseArrayTensorEngine parent;
-
-        public BaseArrayOfFloat(BaseArrayTensorEngine parent) {
-            this.parent = parent;
+        public BaseArrayOfFloat() {
+            super(DType.FLOAT);
         }
 
         @Override
-        public DType<Float, FloatTensor> dtype() {
-            return DTypes.FLOAT;
-        }
-
-        @Override
-        public FloatTensor scalar(Float value) {
-            return stride(Shape.of(), 0, new int[0], new float[] {value});
-        }
-
-        @Override
-        public BaseFloatTensorStride zeros(Shape shape, Order order) {
-            return new BaseFloatTensorStride(parent, shape, 0, Order.autoFC(order), new float[shape.size()]);
-        }
-
-        @Override
-        public BaseFloatTensorStride eye(int n, Order order) {
-            BaseFloatTensorStride eye = zeros(Shape.of(n, n), order);
-            for (int i = 0; i < n; i++) {
-                eye.setFloat(1, i, i);
-            }
-            return eye;
-        }
-
-        @Override
-        public FloatTensor full(Shape shape, Float value, Order order) {
-            float[] array = new float[shape.size()];
-            Arrays.fill(array, value);
-            return stride(shape, Order.autoFC(order), array);
-        }
-
-        @Override
-        public BaseFloatTensorStride seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (float) i);
-        }
-
-        @Override
-        public BaseFloatTensorStride random(Shape shape, Random random, Order order) {
+        public final Tensor<Float> random(Shape shape, Random random, Order order) {
             Normal normal = Normal.std();
             return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> (float)normal.sampleNext(random));
         }
 
         @Override
-        public BaseFloatTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
-            float[] darray = new float[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = (float) array[i];
-            }
-            return stride(shape, offset, strides, darray);
-        }
-
-        @Override
-        public BaseFloatTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
-            float[] darray = new float[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = (float) array[i];
-            }
-            return stride(shape, offset, strides, darray);
-        }
-
-        @Override
-        public BaseFloatTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
-            return new BaseFloatTensorStride(parent, shape, offset, strides, array);
-        }
-
-        @Override
-        public BaseFloatTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
-            float[] darray = new float[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = (float) array[i];
-            }
-            return stride(shape, offset, strides, darray);
+        public Tensor<Float> stride(Shape shape, int offset, int[] strides, Storage<Float> storage) {
+            return new BaseFloatTensorStride(parent, shape, offset, strides, storage);
         }
     }
 
-    protected static class BaseArrayOfInt implements OfType<Integer, IntTensor> {
+    protected static class BaseArrayOfInt extends AbstractEngineOfType<Integer> {
 
-        private final BaseArrayTensorEngine parent;
-
-        public BaseArrayOfInt(BaseArrayTensorEngine parent) {
-            this.parent = parent;
+        public BaseArrayOfInt() {
+            super(DType.INTEGER);
         }
 
         @Override
-        public DType<Integer, IntTensor> dtype() {
-            return DTypes.INTEGER;
-        }
-
-        @Override
-        public IntTensor scalar(Integer value) {
-            return stride(Shape.of(), 0, new int[0], new int[] {value});
-        }
-
-        @Override
-        public BaseIntTensorStride zeros(Shape shape, Order order) {
-            return new BaseIntTensorStride(parent, shape, 0, Order.autoFC(order), new int[shape.size()]);
-        }
-
-        @Override
-        public BaseIntTensorStride eye(int n, Order order) {
-            BaseIntTensorStride eye = zeros(Shape.of(n, n), order);
-            for (int i = 0; i < n; i++) {
-                eye.setInt(1, i, i);
-            }
-            return eye;
-        }
-
-        @Override
-        public IntTensor full(Shape shape, Integer value, Order order) {
-            int[] array = new int[shape.size()];
-            Arrays.fill(array, value);
-            return stride(shape, Order.autoFC(order), array);
-        }
-
-        @Override
-        public BaseIntTensorStride seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (int) i);
-        }
-
-        @Override
-        public BaseIntTensorStride random(Shape shape, Random random, Order order) {
+        public final Tensor<Integer> random(Shape shape, Random random, Order order) {
             return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextInt());
         }
 
         @Override
-        public BaseIntTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
-            int[] darray = new int[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = array[i];
-            }
-            return stride(shape, offset, strides, darray);
-        }
-
-        @Override
-        public BaseIntTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
-            return new BaseIntTensorStride(parent, shape, offset, strides, array);
-        }
-
-        @Override
-        public BaseIntTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
-            int[] darray = new int[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = (int) array[i];
-            }
-            return stride(shape, offset, strides, darray);
-        }
-
-        @Override
-        public BaseIntTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
-            int[] darray = new int[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = (int) array[i];
-            }
-            return stride(shape, offset, strides, darray);
+        public Tensor<Integer> stride(Shape shape, int offset, int[] strides, Storage<Integer> storage) {
+            return new BaseIntTensorStride(parent, shape, offset, strides, storage);
         }
     }
 
-    protected static class BaseArrayOfByte implements OfType<Byte, ByteTensor> {
+    protected static class BaseArrayOfByte extends AbstractEngineOfType<Byte> {
 
-        private final BaseArrayTensorEngine parent;
-
-        public BaseArrayOfByte(BaseArrayTensorEngine parent) {
-            this.parent = parent;
+        public BaseArrayOfByte() {
+            super(DType.BYTE);
         }
 
         @Override
-        public DType<Byte, ByteTensor> dtype() {
-            return DTypes.BYTE;
-        }
-
-        @Override
-        public ByteTensor scalar(Byte value) {
-            return stride(Shape.of(), 0, new int[0], new byte[] {value});
-        }
-
-        @Override
-        public BaseByteTensorStride zeros(Shape shape, Order order) {
-            return new BaseByteTensorStride(parent, shape, 0, Order.autoFC(order), new byte[shape.size()]);
-        }
-
-        @Override
-        public BaseByteTensorStride eye(int n, Order order) {
-            BaseByteTensorStride eye = zeros(Shape.of(n, n), order);
-            for (int i = 0; i < n; i++) {
-                eye.setByte((byte) 1, i, i);
-            }
-            return eye;
-        }
-
-        @Override
-        public ByteTensor full(Shape shape, Byte value, Order order) {
-            byte[] array = new byte[shape.size()];
-            Arrays.fill(array, value);
-            return stride(shape, Order.autoFC(order), array);
-        }
-
-        @Override
-        public BaseByteTensorStride seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> (byte) i);
-        }
-
-        @Override
-        public BaseByteTensorStride random(Shape shape, Random random, Order order) {
+        public final Tensor<Byte> random(Shape shape, Random random, Order order) {
+            byte[] buff = new byte[1];
             return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> {
-                byte[] buff = new byte[1];
                 random.nextBytes(buff);
                 return buff[0];
             });
         }
 
         @Override
-        public BaseByteTensorStride stride(Shape shape, int offset, int[] strides, byte[] array) {
-            return new BaseByteTensorStride(parent, shape, offset, strides, array);
-        }
-
-        @Override
-        public BaseByteTensorStride stride(Shape shape, int offset, int[] strides, int[] array) {
-            byte[] darray = new byte[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = (byte) array[i];
-            }
-            return stride(shape, offset, strides, darray);
-        }
-
-        @Override
-        public BaseByteTensorStride stride(Shape shape, int offset, int[] strides, float[] array) {
-            byte[] darray = new byte[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = (byte) array[i];
-            }
-            return stride(shape, offset, strides, darray);
-        }
-
-        @Override
-        public BaseByteTensorStride stride(Shape shape, int offset, int[] strides, double[] array) {
-            byte[] darray = new byte[array.length];
-            for (int i = 0; i < array.length; i++) {
-                darray[i] = (byte) array[i];
-            }
-            return stride(shape, offset, strides, darray);
+        public Tensor<Byte> stride(Shape shape, int offset, int[] strides, Storage<Byte> storage) {
+            return new BaseByteTensorStride(parent, shape, offset, strides, storage);
         }
     }
-
-
 }

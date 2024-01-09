@@ -53,6 +53,7 @@ module rapaio.core {
     exports rapaio.math.tensor.iterators;
     exports rapaio.math.tensor.layout;
     exports rapaio.math.tensor.operator;
+    exports rapaio.math.tensor.storage;
 
     exports rapaio.ml.common;
     exports rapaio.ml.common.distance;
@@ -100,4 +101,5 @@ module rapaio.core {
     exports rapaio.util.hash;
     exports rapaio.util.parralel;
     exports rapaio.util.time;
+    exports rapaio.math.tensor.storage.array;
 }

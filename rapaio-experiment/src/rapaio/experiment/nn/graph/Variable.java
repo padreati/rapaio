@@ -35,14 +35,14 @@ import rapaio.math.tensor.Tensor;
 
 public class Variable extends Node {
 
-    private Tensor<?,?> value;
+    private Tensor<?> value;
 
-    public Variable(Graph graph, String name, Tensor<?,?> initialValue) {
+    public Variable(Graph graph, String name, Tensor<?> initialValue) {
         super(graph, name);
         this.value = initialValue;
     }
 
-    public Tensor<?, ?> value() {
+    public Tensor<?> value() {
         return value;
     }
 }

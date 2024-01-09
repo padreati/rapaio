@@ -31,56 +31,36 @@
 
 package rapaio.math.tensor.engine.varray;
 
-import static java.lang.Math.ceil;
-import static java.lang.Math.floor;
-import static java.lang.Math.sqrt;
-
-import static rapaio.util.Hardware.CORES;
-import static rapaio.util.Hardware.L2_CACHE_SIZE;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Stack;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorMask;
-import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
-import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Statistics;
-import rapaio.math.tensor.iterators.StrideLoopDescriptor;
-import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.math.tensor.Storage;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.engine.barray.BaseIntTensorStride;
-import rapaio.math.tensor.operator.TensorAssociativeOp;
-import rapaio.math.tensor.operator.TensorBinaryOp;
-import rapaio.math.tensor.operator.TensorUnaryOp;
-import rapaio.util.collection.IntArrays;
-import rapaio.util.function.IntIntBiFunction;
+import rapaio.math.tensor.layout.StrideLayout;
 
-public final class VectorizedIntTensorStride extends BaseIntTensorStride implements IntTensor {
+public final class VectorizedIntTensorStride extends BaseIntTensorStride implements Tensor<Integer> {
 
     private static final VectorSpecies<Integer> SPEC = IntVector.SPECIES_PREFERRED;
     private static final int SPEC_LEN = SPEC.length();
 
     private final int[] loopIndexes;
 
-    public VectorizedIntTensorStride(VectorizedArrayTensorEngine engine, Shape shape, int offset, int[] strides, int[] array) {
-        this(engine, StrideLayout.of(shape, offset, strides), array);
+    public VectorizedIntTensorStride(TensorEngine engine, Shape shape, int offset, int[] strides, Storage<Integer> storage) {
+        this(engine, StrideLayout.of(shape, offset, strides), storage);
     }
 
-    public VectorizedIntTensorStride(VectorizedArrayTensorEngine engine, Shape shape, int offset, Order order, int[] array) {
-        this(engine, StrideLayout.ofDense(shape, offset, order), array);
+    public VectorizedIntTensorStride(TensorEngine engine, Shape shape, int offset, Order order, Storage<Integer> storage) {
+        this(engine, StrideLayout.ofDense(shape, offset, order), storage);
     }
 
-    public VectorizedIntTensorStride(VectorizedArrayTensorEngine engine, StrideLayout layout, int[] array) {
-        super(engine, layout, array);
+    public VectorizedIntTensorStride(TensorEngine engine, StrideLayout layout, Storage<Integer> storage) {
+        super(engine, layout, storage);
         this.loopIndexes = loop.step == 1 ? null : loopIndexes(loop.step);
     }
 
@@ -93,19 +73,19 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
     }
 
     @Override
-    public List<IntTensor> splitAll(boolean keepdim, int[][] indexes) {
+    public List<Tensor<Integer>> splitAll(boolean keepdim, int[][] indexes) {
         if (indexes.length != rank()) {
             throw new IllegalArgumentException(
                     "Indexes length of %d is not the same as shape rank %d.".formatted(indexes.length, rank()));
         }
-        List<IntTensor> results = new ArrayList<>();
+        List<Tensor<Integer>> results = new ArrayList<>();
         int[] starts = new int[indexes.length];
         int[] ends = new int[indexes.length];
         splitAllRec(results, indexes, keepdim, starts, ends, 0);
         return results;
     }
 
-    private void splitAllRec(List<IntTensor> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
+    private void splitAllRec(List<Tensor<Integer>> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
         if (level == indexes.length) {
             return;
         }
@@ -120,13 +100,15 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
         }
     }
 
+    /*
+
     @Override
     public VectorizedIntTensorStride apply_(Order askOrder, IntIntBiFunction<Integer> apply) {
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
             int p = it.nextInt();
-            array[p] = apply.applyAsInt(i++, p);
+            storage.set(p, apply.applyAsInt(i++, p));
         }
         return this;
     }
@@ -378,7 +360,7 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
             var innerIt = tensor.ptrIterator(Order.C);
             int sum = 0;
             for (int j = 0; j < shape().dim(1); j++) {
-                sum += (int)(ptrGetInteger(it.nextInt()) * tensor.ptrGetInteger(innerIt.nextInt()));
+                sum += (int)(ptrGetInt(it.nextInt()) * tensor.ptrGetInt(innerIt.nextInt()));
             }
             result[i] = sum;
         }
@@ -1011,4 +993,6 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
         }
         return copy;
     }
+
+     */
 }

@@ -29,30 +29,40 @@
  *
  */
 
-package rapaio.experiment.nn.graph;
+package rapaio.math.tensor.storage.array;
 
-import java.util.List;
+import java.util.Arrays;
 
-import rapaio.math.tensor.Tensor;
-import rapaio.util.NotImplementedException;
+import rapaio.math.tensor.storage.DoubleStorage;
 
-public class MatVecOperation extends Operation{
+public final class DoubleArrayStorage extends DoubleStorage {
 
-    public MatVecOperation(Graph graph, String name, Node a, Node b) {
-        super(graph, name, List.of(a, b));
+    private final double[] array;
+
+    public DoubleArrayStorage(double[] array) {
+        this.array = array;
     }
 
     @Override
-    public Tensor<?> compute(List<? extends Tensor<?>> operands) {
-        if (checkAllDouble(operands)) {
-            return ((Tensor<Double>) operands.get(0)).mv((Tensor<Double>) operands.get(1));
-        }
-        if (checkAllFloat(operands)) {
-            return ((Tensor<Float>) operands.get(0)).mv((Tensor<Float>) operands.get(1));
-        }
-        if (checkAllInt(operands)) {
-            return ((Tensor<Integer>) operands.get(0)).mv((Tensor<Integer>) operands.get(1));
-        }
-        throw new NotImplementedException();
+    public int size() {
+        return array.length;
+    }
+
+    public double getDouble(int ptr) {
+        return array[ptr];
+    }
+
+    public void setDouble(int ptr, double v) {
+        array[ptr] = v;
+    }
+
+    @Override
+    public void incDouble(int ptr, double value) {
+        array[ptr] += value;
+    }
+
+    @Override
+    public void fillDouble(double value) {
+        Arrays.fill(array, value);
     }
 }

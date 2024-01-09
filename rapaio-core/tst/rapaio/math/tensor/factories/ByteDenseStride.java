@@ -33,9 +33,9 @@ package rapaio.math.tensor.factories;
 
 import java.util.Random;
 
-import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.util.collection.IntArrays;
 
@@ -46,7 +46,7 @@ public final class ByteDenseStride extends ByteDense {
     }
 
     @Override
-    public ByteTensor seq(Shape shape) {
+    public Tensor<Byte> seq(Shape shape) {
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
         IntArrays.shuffle(ordering, new Random(42));
@@ -69,7 +69,7 @@ public final class ByteDenseStride extends ByteDense {
         }
 
         int offset = 10;
-        var t = ofType.stride(shape, offset, strides, new byte[offset + shape.size()]);
+        var t = ofType.stride(shape, offset, strides, engine.ofByte().storage().zeros(offset + shape.size()));
 
         t.apply_(Order.C, (i, p) -> (byte) i);
 
@@ -77,7 +77,7 @@ public final class ByteDenseStride extends ByteDense {
     }
 
     @Override
-    public ByteTensor zeros(Shape shape) {
+    public Tensor<Byte> zeros(Shape shape) {
         int offset = 10;
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
@@ -101,11 +101,11 @@ public final class ByteDenseStride extends ByteDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        return ofType.stride(shape, offset, strides, new byte[offset + shape.size()]);
+        return ofType.stride(shape, offset, strides, ofType.storage().zeros(offset + shape.size()));
     }
 
     @Override
-    public ByteTensor random(Shape shape) {
+    public Tensor<Byte> random(Shape shape) {
         int offset = 10;
         int[] strides = IntArrays.newFill(shape.rank(), 1);
         int[] ordering = IntArrays.newSeq(0, shape.rank());
@@ -129,11 +129,11 @@ public final class ByteDenseStride extends ByteDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        byte[] array = new byte[offset + shape.size()];
+        var array = engine.ofByte().storage().zeros(offset + shape.size());
         byte[] buff = new byte[1];
-        for (int i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.size(); i++) {
             random.nextBytes(buff);
-            array[i] = buff[0];
+            array.set(i, buff[0]);
         }
         return ofType.stride(shape, offset, strides, array);
     }

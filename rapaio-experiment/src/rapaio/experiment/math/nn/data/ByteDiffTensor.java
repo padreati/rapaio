@@ -32,37 +32,36 @@
 package rapaio.experiment.math.nn.data;
 
 import rapaio.experiment.math.nn.gradient.GradientTape;
-import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.DType;
-import rapaio.math.tensor.DTypes;
+import rapaio.math.tensor.Tensor;
 
 public final class ByteDiffTensor extends AbstractDiffTensor {
 
-    public static ByteDiffTensor of(String name, ByteTensor tensor, GradientTape tape) {
+    public static ByteDiffTensor of(String name, Tensor<Byte> tensor, GradientTape tape) {
         return new ByteDiffTensor(name, tensor, tape);
     }
 
     public static ByteDiffTensor ofAny(String name, Object object, GradientTape tape) {
-        if(object instanceof ByteTensor tensor) {
-            return new ByteDiffTensor(name, tensor, tape);
+        if (object instanceof Tensor<?> tensor && tensor.dtype() == DType.BYTE) {
+            return new ByteDiffTensor(name, (Tensor<Byte>) tensor, tape);
         }
         throw new IllegalArgumentException();
     }
 
-    private final ByteTensor tensor;
+    private final Tensor<Byte> tensor;
 
-    private ByteDiffTensor(String name, ByteTensor tensor, GradientTape tape) {
+    private ByteDiffTensor(String name, Tensor<Byte> tensor, GradientTape tape) {
         super(name, tape);
         this.tensor = tensor;
     }
 
     @Override
-    public DType<?, ?> dtype() {
-        return DTypes.BYTE;
+    public DType<?> dtype() {
+        return DType.BYTE;
     }
 
     @Override
-    public ByteTensor asByte() {
+    public Tensor<Byte> asByte() {
         return tensor;
     }
 }

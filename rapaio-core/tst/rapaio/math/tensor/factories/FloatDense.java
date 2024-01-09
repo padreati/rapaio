@@ -31,14 +31,13 @@
 
 package rapaio.math.tensor.factories;
 
-import rapaio.math.tensor.DTypes;
-import rapaio.math.tensor.FloatTensor;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.TensorEngine;
 
-public abstract class FloatDense extends DataFactory<Float, FloatTensor> {
+public abstract class FloatDense extends DataFactory<Float> {
 
     public FloatDense(TensorEngine tensorEngine) {
-        super(tensorEngine, tensorEngine.ofFloat(), DTypes.FLOAT);
+        super(tensorEngine, tensorEngine.ofFloat(), DType.FLOAT);
     }
 
     @Override

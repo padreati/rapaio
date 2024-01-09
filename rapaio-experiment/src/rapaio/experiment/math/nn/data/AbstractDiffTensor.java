@@ -33,10 +33,7 @@ package rapaio.experiment.math.nn.data;
 
 import rapaio.experiment.math.nn.DiffTensor;
 import rapaio.experiment.math.nn.gradient.GradientTape;
-import rapaio.math.tensor.ByteTensor;
-import rapaio.math.tensor.DoubleTensor;
-import rapaio.math.tensor.FloatTensor;
-import rapaio.math.tensor.IntTensor;
+import rapaio.math.tensor.Tensor;
 import rapaio.util.NotImplementedException;
 
 public abstract class AbstractDiffTensor implements DiffTensor {
@@ -53,22 +50,22 @@ public abstract class AbstractDiffTensor implements DiffTensor {
     }
 
     @Override
-    public DoubleTensor asDouble() {
+    public Tensor<Double> asDouble() {
         return null;
     }
 
     @Override
-    public FloatTensor asFloat() {
+    public Tensor<Float> asFloat() {
         return null;
     }
 
     @Override
-    public IntTensor asInt() {
+    public Tensor<Integer> asInt() {
         return null;
     }
 
     @Override
-    public ByteTensor asByte() {
+    public Tensor<Byte> asByte() {
         return null;
     }
 

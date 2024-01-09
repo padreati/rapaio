@@ -31,9 +31,9 @@
 
 package rapaio.math.tensor.factories;
 
-import rapaio.math.tensor.ByteTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 
 public final class ByteDenseCol extends ByteDense {
@@ -43,17 +43,17 @@ public final class ByteDenseCol extends ByteDense {
     }
 
     @Override
-    public ByteTensor seq(Shape shape) {
+    public Tensor<Byte> seq(Shape shape) {
         return ofType.seq(shape, Order.F);
     }
 
     @Override
-    public ByteTensor zeros(Shape shape) {
+    public Tensor<Byte> zeros(Shape shape) {
         return ofType.zeros(shape, Order.F);
     }
 
     @Override
-    public ByteTensor random(Shape shape) {
+    public Tensor<Byte> random(Shape shape) {
         return ofType.random(shape, random, Order.F);
     }
 }

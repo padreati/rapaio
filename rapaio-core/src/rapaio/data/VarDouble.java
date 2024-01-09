@@ -54,9 +54,9 @@ import java.util.stream.Collector;
 import rapaio.core.distributions.Distribution;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.tensor.DoubleTensor;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -608,8 +608,8 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    public DoubleTensor dt() {
-        return TensorEngine.base().ofDouble().stride(Shape.of(rows), Order.C, data);
+    public Tensor<Double> dt() {
+        return TensorEngine.base().ofDouble().stride(Shape.of(rows), Order.C, TensorEngine.base().ofDouble().storage().cast(data));
     }
 
     @Serial

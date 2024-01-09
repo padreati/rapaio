@@ -33,8 +33,6 @@ package rapaio.experiment.nn.graph;
 
 import java.util.List;
 
-import rapaio.math.tensor.DoubleTensor;
-import rapaio.math.tensor.FloatTensor;
 import rapaio.math.tensor.Tensor;
 
 public class SoftmaxOperation extends Operation {
@@ -44,13 +42,13 @@ public class SoftmaxOperation extends Operation {
     }
 
     @Override
-    public Tensor<?, ?> compute(List<? extends Tensor<?, ?>> operands) {
-        if(checkAllDouble(operands)) {
-            DoubleTensor exp = (DoubleTensor) operands.getFirst().exp();
+    public Tensor<?> compute(List<? extends Tensor<?>> operands) {
+        if (checkAllDouble(operands)) {
+            var exp = (Tensor<Double>) operands.getFirst().exp();
             return exp.div_(exp.sum());
         }
-        if(checkAllFloat(operands)) {
-            FloatTensor exp = (FloatTensor) operands.getFirst().exp();
+        if (checkAllFloat(operands)) {
+            var exp = (Tensor<Float>) operands.getFirst().exp();
             return exp.div_(exp.sum());
         }
         throw new IllegalArgumentException();

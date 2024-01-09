@@ -33,9 +33,6 @@ package rapaio.experiment.nn.graph;
 
 import java.util.List;
 
-import rapaio.math.tensor.DoubleTensor;
-import rapaio.math.tensor.FloatTensor;
-import rapaio.math.tensor.IntTensor;
 import rapaio.math.tensor.Tensor;
 import rapaio.util.NotImplementedException;
 
@@ -46,15 +43,15 @@ public class AddOperation extends Operation {
     }
 
     @Override
-    public Tensor<?, ?> compute(List<? extends Tensor<?, ?>> operands) {
+    public Tensor<?> compute(List<? extends Tensor<?>> operands) {
         if (checkAllDouble(operands)) {
-            return ((DoubleTensor) operands.get(0)).add_((DoubleTensor) operands.get(1));
+            return ((Tensor<Double>) operands.get(0)).add_((Tensor<Double>) operands.get(1));
         }
         if (checkAllFloat(operands)) {
-            return ((FloatTensor) operands.get(0)).add_((FloatTensor) operands.get(1));
+            return ((Tensor<Float>) operands.get(0)).add_((Tensor<Float>) operands.get(1));
         }
         if (checkAllInt(operands)) {
-            return ((IntTensor) operands.get(0)).add_((IntTensor) operands.get(1));
+            return ((Tensor<Integer>) operands.get(0)).add_((Tensor<Integer>) operands.get(1));
         }
         throw new NotImplementedException();
     }

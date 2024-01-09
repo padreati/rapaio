@@ -47,9 +47,8 @@ import rapaio.util.function.IntIntBiFunction;
  * Generic tensor interface. A tensor is a multidimensional array.
  *
  * @param <N> Generic data type
- * @param <T> Generic tensor type
  */
-public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printable, Iterable<N> {
+public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     /**
      * @return tensor engine
@@ -59,7 +58,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
     /**
      * @return tensor data type
      */
-    DType<N, T> dtype();
+    DType<N> dtype();
 
     /**
      * @return tensor layout
@@ -100,7 +99,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param shape destination shape
      * @return new tensor instance, wrapping, if possible, the data from the old tensor.
      */
-    default T reshape(Shape shape) {
+    default Tensor<N> reshape(Shape shape) {
         return reshape(shape, Order.defaultOrder());
     }
 
@@ -113,13 +112,13 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param askOrder destination order, if the data will be copied, otherwise the parameter is ignored.
      * @return new tensor instance, wrapping, if possible, the data from the old tensor.
      */
-    T reshape(Shape shape, Order askOrder);
+    Tensor<N> reshape(Shape shape, Order askOrder);
 
-    default T transposeNew() {
+    default Tensor<N> transposeNew() {
         return transposeNew(Order.defaultOrder());
     }
 
-    default T transposeNew(Order askOrder) {
+    default Tensor<N> transposeNew(Order askOrder) {
         return copy(askOrder).transpose();
     }
 
@@ -130,7 +129,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      *
      * @return a transposed view of the tensor
      */
-    T transpose();
+    Tensor<N> transpose();
 
     /**
      * Collapses the tensor into one dimension in the order given as parameter. It creates a new tensor copy
@@ -139,7 +138,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param askOrder order of the elements
      * @return a tensor with elements in given order (new copy if needed)
      */
-    T ravel(Order askOrder);
+    Tensor<N> ravel(Order askOrder);
 
     /**
      * Creates a copy of the array, flattened into one dimension. The order of the elements is given as parameter.
@@ -147,7 +146,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param askOrder order of the elements
      * @return a copy of the tensor with elements in asked order.
      */
-    T flatten(Order askOrder);
+    Tensor<N> flatten(Order askOrder);
 
     /**
      * Collapses all dimensions equal with one. This operation does not create a new copy of the data.
@@ -155,7 +154,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      *
      * @return view of the same tensor with all dimensions equal with one collapsed
      */
-    T squeeze();
+    Tensor<N> squeeze();
 
     /**
      * Collapses the given axis if equals with one. This operation does not create a new copy of the data.
@@ -163,7 +162,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      *
      * @return view of the same tensor with the given dimension equal with one collapsed
      */
-    T squeeze(int axis);
+    Tensor<N> squeeze(int axis);
 
     /**
      * Creates a new tensor view with an additional dimension at the position specified by {@param axis}.
@@ -172,7 +171,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param axis index of the axis to be added
      * @return new view tensor with added axis
      */
-    T unsqueeze(int axis);
+    Tensor<N> unsqueeze(int axis);
 
     /**
      * Creates a tensor view with dimensions permuted in the order specified in parameter. The
@@ -182,7 +181,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param dims dimension permutation
      * @return new tensor view with permuted dimensions
      */
-    T permute(int[] dims);
+    Tensor<N> permute(int[] dims);
 
     /**
      * Creates a new tensor view with source axis moved into the given destination position.
@@ -191,7 +190,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param dst destination axis position
      * @return new view tensor with moved axis
      */
-    T moveAxis(int src, int dst);
+    Tensor<N> moveAxis(int src, int dst);
 
     /**
      * Swap two axis. This does not affect the storage.
@@ -200,7 +199,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param dst destination axis
      * @return new view tensor with swapped axis
      */
-    T swapAxis(int src, int dst);
+    Tensor<N> swapAxis(int src, int dst);
 
     /**
      * Creates a new tensor view with truncated axis, all other axes remain the same.
@@ -211,9 +210,9 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param end     end index exclusive
      * @return new view tensor with truncated axis
      */
-    T narrow(int axis, boolean keepDim, int start, int end);
+    Tensor<N> narrow(int axis, boolean keepDim, int start, int end);
 
-    T narrowAll(boolean keepDim, int[] starts, int[] ends);
+    Tensor<N> narrowAll(boolean keepDim, int[] starts, int[] ends);
 
     /**
      * Splits the tensor into multiple view tensors along a given axis.
@@ -225,9 +224,9 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param indexes indexes to split along, being start indexes for truncation
      * @return list of new tensors with truncated data.
      */
-    List<T> split(int axis, boolean keepDim, int... indexes);
+    List<Tensor<N>> split(int axis, boolean keepDim, int... indexes);
 
-    List<T> splitAll(boolean keepDim, int[][] indexes);
+    List<Tensor<N>> splitAll(boolean keepDim, int[][] indexes);
 
     /**
      * Slices the tensor along a given axis.
@@ -238,7 +237,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param step step size
      * @return list of new tensors with truncated data.
      */
-    default List<T> chunk(int axis, boolean keepDim, int step) {
+    default List<Tensor<N>> chunk(int axis, boolean keepDim, int step) {
         int dim = layout().shape().dim(axis);
         int[] indexes = new int[Math.ceilDiv(dim, step)];
         indexes[0] = 0;
@@ -248,7 +247,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
         return split(axis, keepDim, indexes);
     }
 
-    default List<T> chunkAll(boolean keepDim, int[] steps) {
+    default List<Tensor<N>> chunkAll(boolean keepDim, int[] steps) {
         if (layout().rank() != steps.length) {
             throw new IllegalArgumentException("Array of steps must have the length equals with rank.");
         }
@@ -270,33 +269,31 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param axis axis to be removed
      * @return list of tensor views
      */
-    default List<T> unbind(int axis) {
+    default List<Tensor<N>> unbind(int axis) {
         return chunk(axis, false, 1);
     }
 
-    @SuppressWarnings("unchecked")
-    default T stack(int axis, Collection<? extends T> tensors) {
-        List<T> list = new ArrayList<>();
-        list.add((T) this);
+    default Tensor<N> stack(int axis, Collection<? extends Tensor<N>> tensors) {
+        List<Tensor<N>> list = new ArrayList<>();
+        list.add(this);
         list.addAll(tensors);
         return engine().stack(axis, list);
     }
 
-    @SuppressWarnings("unchecked")
-    default T concat(int axis, Collection<? extends T> tensors) {
-        List<T> list = new ArrayList<>();
-        list.add((T) this);
+    default Tensor<N> concat(int axis, Collection<? extends Tensor<N>> tensors) {
+        List<Tensor<N>> list = new ArrayList<>();
+        list.add(this);
         list.addAll(tensors);
         return engine().concat(axis, list);
     }
 
-    T repeat(int axis, int repeat, boolean stack);
+    Tensor<N> repeat(int axis, int repeat, boolean stack);
 
-    T tile(int[] repeats);
+    Tensor<N> tile(int[] repeats);
 
-    T expand(int axis, int dim);
+    Tensor<N> expand(int axis, int dim);
 
-    T take(Order order, int... indexes);
+    Tensor<N> take(Order order, int... indexes);
 
     /**
      * Get value at indexed position. An indexed position is a tuple of rank
@@ -307,6 +304,14 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      */
     N get(int... indexes);
 
+    byte getByte(int... indexes);
+
+    int getInt(int... indexes);
+
+    float getFloat(int... indexes);
+
+    double getDouble(int... indexes);
+
     /**
      * Sets value at indexed position.
      *
@@ -314,6 +319,14 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param indexes indexed position
      */
     void set(N value, int... indexes);
+
+    void setByte(byte value, int... indexes);
+
+    void setInt(int value, int... indexes);
+
+    void setFloat(float value, int... indexes);
+
+    void setDouble(double value, int... indexes);
 
     /**
      * Get value at pointer. A pointer is an index value at the memory layout.
@@ -323,6 +336,14 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      */
     N ptrGet(int ptr);
 
+    byte ptrGetByte(int ptr);
+
+    int ptrGetInt(int ptr);
+
+    float ptrGetFloat(int ptr);
+
+    double ptrGetDouble(int ptr);
+
     /**
      * Sets value at given pointer.
      *
@@ -330,6 +351,14 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param value element value to be set at data pointer
      */
     void ptrSet(int ptr, N value);
+
+    void ptrSetByte(int ptr, byte value);
+
+    void ptrSetInt(int ptr, int value);
+
+    void ptrSetFloat(int ptr, float value);
+
+    void ptrSetDouble(int ptr, double value);
 
     /**
      * Produces an iterator over the values from this tensor in the
@@ -398,11 +427,11 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      */
     LoopIterator loopIterator(Order askOrder);
 
-    default T apply(IntIntBiFunction<N> fun) {
+    default Tensor<N> apply(IntIntBiFunction<N> fun) {
         return apply(Order.defaultOrder(), fun);
     }
 
-    default T apply(Order askOrder, IntIntBiFunction<N> fun) {
+    default Tensor<N> apply(Order askOrder, IntIntBiFunction<N> fun) {
         return copy(askOrder).apply_(askOrder, fun);
     }
 
@@ -416,289 +445,289 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param fun      function which produces values
      * @return new tensor with applied values
      */
-    T apply_(Order askOrder, IntIntBiFunction<N> fun);
+    Tensor<N> apply_(Order askOrder, IntIntBiFunction<N> fun);
 
-    default T apply(Function<N, N> fun) {
+    default Tensor<N> apply(Function<N, N> fun) {
         return apply(Order.defaultOrder(), fun);
     }
 
-    default T apply(Order askOrder, Function<N, N> fun) {
+    default Tensor<N> apply(Order askOrder, Function<N, N> fun) {
         return copy(askOrder).apply_(fun);
     }
 
-    T apply_(Function<N, N> fun);
+    Tensor<N> apply_(Function<N, N> fun);
 
-    T fill_(N value);
+    Tensor<N> fill_(N value);
 
-    T fillNan_(N value);
+    Tensor<N> fillNan_(N value);
 
-    T clamp_(N min, N max);
+    Tensor<N> clamp_(N min, N max);
 
-    default T abs() {
+    default Tensor<N> abs() {
         return abs(Order.defaultOrder());
     }
 
-    default T abs(Order order) {
+    default Tensor<N> abs(Order order) {
         return copy(order).abs_();
     }
 
-    T abs_();
+    Tensor<N> abs_();
 
-    default T negate() {
+    default Tensor<N> negate() {
         return negate(Order.defaultOrder());
     }
 
-    default T negate(Order order) {
+    default Tensor<N> negate(Order order) {
         return copy(order).negate_();
     }
 
-    T negate_();
+    Tensor<N> negate_();
 
-    default T log() {
+    default Tensor<N> log() {
         return log(Order.defaultOrder());
     }
 
-    default T log(Order order) {
+    default Tensor<N> log(Order order) {
         return copy(order).log_();
     }
 
-    T log_();
+    Tensor<N> log_();
 
-    default T log1p() {
+    default Tensor<N> log1p() {
         return log1p(Order.defaultOrder());
     }
 
-    default T log1p(Order order) {
+    default Tensor<N> log1p(Order order) {
         return copy(order).log1p_();
     }
 
-    T log1p_();
+    Tensor<N> log1p_();
 
-    default T exp() {
+    default Tensor<N> exp() {
         return exp(Order.defaultOrder());
     }
 
-    default T exp(Order order) {
+    default Tensor<N> exp(Order order) {
         return copy(order).exp_();
     }
 
-    T exp_();
+    Tensor<N> exp_();
 
-    default T expm1() {
+    default Tensor<N> expm1() {
         return expm1(Order.defaultOrder());
     }
 
-    default T expm1(Order order) {
+    default Tensor<N> expm1(Order order) {
         return copy(order).expm1_();
     }
 
-    T expm1_();
+    Tensor<N> expm1_();
 
-    default T sin() {
+    default Tensor<N> sin() {
         return sin(Order.defaultOrder());
     }
 
-    default T sin(Order order) {
+    default Tensor<N> sin(Order order) {
         return copy(order).sin_();
     }
 
-    T sin_();
+    Tensor<N> sin_();
 
-    default T asin() {
+    default Tensor<N> asin() {
         return asin(Order.defaultOrder());
     }
 
-    default T asin(Order order) {
+    default Tensor<N> asin(Order order) {
         return copy(order).asin_();
     }
 
-    T asin_();
+    Tensor<N> asin_();
 
-    default T sinh() {
+    default Tensor<N> sinh() {
         return sinh(Order.defaultOrder());
     }
 
-    default T sinh(Order order) {
+    default Tensor<N> sinh(Order order) {
         return copy(order).sinh_();
     }
 
-    T sinh_();
+    Tensor<N> sinh_();
 
-    default T cos() {
+    default Tensor<N> cos() {
         return cos(Order.defaultOrder());
     }
 
-    default T cos(Order order) {
+    default Tensor<N> cos(Order order) {
         return copy(order).cos_();
     }
 
-    T cos_();
+    Tensor<N> cos_();
 
-    default T acos() {
+    default Tensor<N> acos() {
         return acos(Order.defaultOrder());
     }
 
-    default T acos(Order order) {
+    default Tensor<N> acos(Order order) {
         return copy(order).acos_();
     }
 
-    T acos_();
+    Tensor<N> acos_();
 
-    default T cosh() {
+    default Tensor<N> cosh() {
         return cosh(Order.defaultOrder());
     }
 
-    default T cosh(Order order) {
+    default Tensor<N> cosh(Order order) {
         return copy(order).cosh_();
     }
 
-    T cosh_();
+    Tensor<N> cosh_();
 
-    default T tan() {
+    default Tensor<N> tan() {
         return tan(Order.defaultOrder());
     }
 
-    default T tan(Order order) {
+    default Tensor<N> tan(Order order) {
         return copy(order).tan_();
     }
 
-    T tan_();
+    Tensor<N> tan_();
 
-    default T atan() {
+    default Tensor<N> atan() {
         return atan(Order.defaultOrder());
     }
 
-    default T atan(Order order) {
+    default Tensor<N> atan(Order order) {
         return copy(order).atan_();
     }
 
-    T atan_();
+    Tensor<N> atan_();
 
-    default T tanh() {
+    default Tensor<N> tanh() {
         return tanh(Order.defaultOrder());
     }
 
-    default T tanh(Order order) {
+    default Tensor<N> tanh(Order order) {
         return copy(order).tanh_();
     }
 
-    T tanh_();
+    Tensor<N> tanh_();
 
-    default T add(T tensor) {
+    default Tensor<N> add(Tensor<N> tensor) {
         return add(tensor, Order.defaultOrder());
     }
 
-    default T add(T tensor, Order order) {
-        if(isScalar()) {
+    default Tensor<N> add(Tensor<N> tensor, Order order) {
+        if (isScalar()) {
             return tensor.copy(order).add_(get());
         }
         return copy(order).add_(tensor);
     }
 
-    T add_(T tensor);
+    Tensor<N> add_(Tensor<N> tensor);
 
-    default T sub(T tensor) {
+    default Tensor<N> sub(Tensor<N> tensor) {
         return sub(tensor, Order.defaultOrder());
     }
 
-    default T sub(T tensor, Order order) {
-        if(isScalar()) {
+    default Tensor<N> sub(Tensor<N> tensor, Order order) {
+        if (isScalar()) {
             return tensor.copy(order).sub_(get());
         }
         return copy(order).sub_(tensor);
     }
 
-    T sub_(T tensor);
+    Tensor<N> sub_(Tensor<N> tensor);
 
-    default T mul(T tensor) {
+    default Tensor<N> mul(Tensor<N> tensor) {
         return mul(tensor, Order.defaultOrder());
     }
 
-    default T mul(T tensor, Order order) {
-        if(isScalar()) {
+    default Tensor<N> mul(Tensor<N> tensor, Order order) {
+        if (isScalar()) {
             return tensor.copy(order).mul_(get());
         }
         return copy(order).mul_(tensor);
     }
 
-    T mul_(T tensor);
+    Tensor<N> mul_(Tensor<N> tensor);
 
-    default T div(T tensor) {
+    default Tensor<N> div(Tensor<N> tensor) {
         return div(tensor, Order.defaultOrder());
     }
 
-    default T div(T tensor, Order order) {
-        if(isScalar()) {
+    default Tensor<N> div(Tensor<N> tensor, Order order) {
+        if (isScalar()) {
             return tensor.copy(order).div_(get());
         }
         return copy(order).div_(tensor);
     }
 
-    T div_(T tensor);
+    Tensor<N> div_(Tensor<N> tensor);
 
-    default T add(N value) {
+    default Tensor<N> add(N value) {
         return add(value, Order.defaultOrder());
     }
 
-    default T add(N value, Order order) {
+    default Tensor<N> add(N value, Order order) {
         return copy(order).add_(value);
     }
 
-    T add_(N value);
+    Tensor<N> add_(N value);
 
-    default T sub(N value) {
+    default Tensor<N> sub(N value) {
         return sub(value, Order.defaultOrder());
     }
 
-    default T sub(N value, Order order) {
+    default Tensor<N> sub(N value, Order order) {
         return copy(order).sub_(value);
     }
 
-    T sub_(N value);
+    Tensor<N> sub_(N value);
 
-    default T mul(N value) {
+    default Tensor<N> mul(N value) {
         return mul(value, Order.defaultOrder());
     }
 
-    default T mul(N value, Order order) {
+    default Tensor<N> mul(N value, Order order) {
         return copy(order).mul_(value);
     }
 
-    T mul_(N value);
+    Tensor<N> mul_(N value);
 
-    default T div(N value) {
+    default Tensor<N> div(N value) {
         return div(value, Order.defaultOrder());
     }
 
-    default T div(N value, Order order) {
+    default Tensor<N> div(N value, Order order) {
         return copy(order).div_(value);
     }
 
-    T div_(N value);
+    Tensor<N> div_(N value);
 
-    default T fma(N a, T t) {
+    default Tensor<N> fma(N a, Tensor<N> t) {
         return fma(a, t, Order.defaultOrder());
     }
 
-    default T fma(N a, T t, Order order) {
+    default Tensor<N> fma(N a, Tensor<N> t, Order order) {
         return copy(order).fma_(a, t);
     }
 
-    T fma_(N value, T t);
+    Tensor<N> fma_(N value, Tensor<N> t);
 
-    N vdot(T tensor);
+    N vdot(Tensor<N> tensor);
 
-    N vdot(T tensor, int start, int end);
+    N vdot(Tensor<N> tensor, int start, int end);
 
-    T mv(T tensor);
+    Tensor<N> mv(Tensor<N> tensor);
 
-    default T mm(T tensor) {
+    default Tensor<N> mm(Tensor<N> tensor) {
         return mm(tensor, Order.defaultOrder());
     }
 
-    T mm(T tensor, Order askOrder);
+    Tensor<N> mm(Tensor<N> tensor, Order askOrder);
 
-    Statistics<N, T> stats();
+    Statistics<N> stats();
 
     N sum();
 
@@ -727,7 +756,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      *
      * @return new copy of the tensor
      */
-    default T copy() {
+    default Tensor<N> copy() {
         return copy(Order.defaultOrder());
     }
 
@@ -739,13 +768,13 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
      * @param askOrder desired order of the copy tensor.
      * @return new copy of the tensor
      */
-    T copy(Order askOrder);
+    Tensor<N> copy(Order askOrder);
 
-    default T copyTo(T dst) {
+    default Tensor<N> copyTo(Tensor<N> dst) {
         return copyTo(dst, Order.S);
     }
 
-    T copyTo(T dst, Order askOrder);
+    Tensor<N> copyTo(Tensor<N> dst, Order askOrder);
 
     VarDouble dv();
 
@@ -754,7 +783,7 @@ public interface Tensor<N extends Number, T extends Tensor<N, T>> extends Printa
     }
 
     default boolean deepEquals(Object t, double tol) {
-        if (t instanceof Tensor<?, ?> dt) {
+        if (t instanceof Tensor<?> dt) {
             if (!layout().shape().equals(dt.layout().shape())) {
                 return false;
             }

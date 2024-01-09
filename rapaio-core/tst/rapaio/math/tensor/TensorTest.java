@@ -71,10 +71,10 @@ public class TensorTest {
 
         int m = 3000;
         int n = 3000;
-        double[] array = new double[m * n];
+        var array = engine.ofDouble().storage().zeros(m * n);
         Random random = new Random(42);
-        for (int i = 0; i < array.length; i++) {
-            array[i] = random.nextGaussian();
+        for (int i = 0; i < array.size(); i++) {
+            array.setDouble(i, random.nextGaussian());
         }
 
         var t1 = engine.ofDouble().stride(Shape.of(m, n), Order.C, array);
@@ -110,12 +110,12 @@ public class TensorTest {
         new TestSuite<>(this, new ByteDenseStrideView(eng)).run();
     }
 
-    static class TestSuite<N extends Number, T extends Tensor<N, T>> {
+    static class TestSuite<N extends Number> {
 
-        private final DataFactory<N, T> g;
+        private final DataFactory<N> g;
         private final TensorTest self;
 
-        private TestSuite(TensorTest self, DataFactory<N, T> g) {
+        private TestSuite(TensorTest self, DataFactory<N> g) {
             this.g = g;
             this.self = self;
         }
@@ -149,13 +149,13 @@ public class TensorTest {
             var t = g.seq(Shape.of(1));
             N value = g.value(1);
             if (value instanceof Double) {
-                assertEquals(t.dtype(), DTypes.DOUBLE);
+                assertEquals(t.dtype(), DType.DOUBLE);
             }
             if (value instanceof Float) {
-                assertEquals(t.dtype(), DTypes.FLOAT);
+                assertEquals(t.dtype(), DType.FLOAT);
             }
             if (value instanceof Integer) {
-                assertEquals(t.dtype(), DTypes.INTEGER);
+                assertEquals(t.dtype(), DType.INTEGER);
             }
             assertEquals(g.engine(), t.engine());
         }
@@ -212,7 +212,7 @@ public class TensorTest {
             var tensor = g.seq(Shape.of(20, 2, 2, 25));
             assertEquals(tensor.toString(), tensor.toSummary());
 
-            if (g.dType() != DTypes.BYTE) {
+            if (g.dType() != DType.BYTE) {
                 assertEquals("""
                         [[[[   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 ... ]  \s
                            [  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44 ... ]] \s
@@ -1033,7 +1033,7 @@ public class TensorTest {
             var t2 = t1.repeat(0, 10, true);
             assertEquals(Shape.of(10, 10), t2.shape());
 
-            var list1 = new ArrayList<T>();
+            var list1 = new ArrayList<Tensor<N>>();
             for (int i = 0; i < 10; i++) {
                 list1.add(t1.unsqueeze(0));
             }
@@ -1041,7 +1041,7 @@ public class TensorTest {
 
             var t3 = t1.repeat(0, 10, false);
             assertEquals(Shape.of(10 * 10), t3.shape());
-            var list2 = new ArrayList<T>();
+            var list2 = new ArrayList<Tensor<N>>();
             for (int i = 0; i < 10; i++) {
                 list2.add(t1);
             }
@@ -1052,7 +1052,7 @@ public class TensorTest {
 
             var t1 = g.seq(Shape.of(1, 200, 10));
             assertEquals(sequenceSum(t1.size()), t1.sum());
-            if (g.dType() == DTypes.BYTE) {
+            if (g.dType() == DType.BYTE) {
                 assertEquals(g.value(127), t1.max());
                 assertEquals(g.value(127), t1.nanMax());
                 assertEquals(g.value(-128), t1.min());

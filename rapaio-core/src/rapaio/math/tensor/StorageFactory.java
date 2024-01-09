@@ -31,10 +31,40 @@
 
 package rapaio.math.tensor;
 
-public final class DTypes {
+public interface StorageFactory {
 
-    public static final DType.DTypeByte BYTE = new DType.DTypeByte();
-    public static final DType.DTypeInteger INTEGER = new DType.DTypeInteger();
-    public static final DType.DTypeFloat FLOAT = new DType.DTypeFloat();
-    public static final DType.DTypeDouble DOUBLE = new DType.DTypeDouble();
+    interface OfType<N extends Number> {
+
+        <M extends Number> Storage<N> scalar(M value);
+
+        Storage<N> zeros(int len);
+
+        Storage<N> cast(byte... array);
+
+        Storage<N> cast(int... array);
+
+        Storage<N> cast(float... array);
+
+        Storage<N> cast(double... array);
+
+        <M extends Number> Storage<N> cast(Storage<M> source);
+    }
+
+    <N extends Number> StorageFactory.OfType<N> ofType(DType<N> dType);
+
+    default StorageFactory.OfType<Byte> ofByte() {
+        return ofType(DType.BYTE);
+    }
+
+    default StorageFactory.OfType<Integer> ofInt() {
+        return ofType(DType.INTEGER);
+    }
+
+    default StorageFactory.OfType<Float> ofFloat() {
+        return ofType(DType.FLOAT);
+    }
+
+    default StorageFactory.OfType<Double> ofDouble() {
+        return ofType(DType.DOUBLE);
+    }
 }

@@ -56,8 +56,8 @@ public class Graph {
         }
     }
 
-    public Tensor<?, ?> run(Operation op, Map<String, Tensor<?, ?>> valueMap) {
-        HashMap<String, Tensor<?,?>> outputs = new HashMap<>();
+    public Tensor<?> run(Operation op, Map<String, Tensor<?>> valueMap) {
+        HashMap<String, Tensor<?>> outputs = new HashMap<>();
         List<Node> postorderNodes = postorder(op);
         for (var node : postorderNodes) {
             switch (node) {
