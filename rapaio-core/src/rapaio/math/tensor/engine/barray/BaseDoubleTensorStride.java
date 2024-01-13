@@ -83,14 +83,6 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double>
     protected final TensorEngine engine;
     protected final StrideLoopDescriptor loop;
 
-    public BaseDoubleTensorStride(TensorEngine engine, Shape shape, int offset, int[] strides, Storage<Double> storage) {
-        this(engine, StrideLayout.of(shape, offset, strides), storage);
-    }
-
-    public BaseDoubleTensorStride(TensorEngine engine, Shape shape, int offset, Order order, Storage<Double> storage) {
-        this(engine, StrideLayout.ofDense(shape, offset, order), storage);
-    }
-
     public BaseDoubleTensorStride(TensorEngine engine, StrideLayout layout, Storage<Double> storage) {
         super(storage);
         this.layout = layout;
@@ -174,7 +166,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double>
                 out.setDouble(p++, storage.getDouble(i));
             }
         }
-        return engine.ofDouble().stride(Shape.of(layout.size()), 0, new int[] {1}, out);
+        return engine.ofDouble().stride(StrideLayout.of(Shape.of(layout.size()), 0, new int[] {1}), out);
     }
 
     @Override

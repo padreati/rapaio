@@ -41,6 +41,7 @@ import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.engine.AbstractEngineOfType;
 import rapaio.math.tensor.engine.AbstractTensorEngine;
+import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 import rapaio.util.Hardware;
 
@@ -67,8 +68,8 @@ public class VectorizedArrayTensorEngine extends AbstractTensorEngine {
         }
 
         @Override
-        public Tensor<Double> stride(Shape shape, int offset, int[] strides, Storage<Double> storage) {
-            return new VectorizedDoubleTensorStride(parent, shape, offset, strides, storage);
+        public Tensor<Double> stride(StrideLayout layout, Storage<Double> storage) {
+            return new VectorizedDoubleTensorStride(parent, layout, storage);
         }
     }
 
@@ -85,8 +86,8 @@ public class VectorizedArrayTensorEngine extends AbstractTensorEngine {
         }
 
         @Override
-        public Tensor<Float> stride(Shape shape, int offset, int[] strides, Storage<Float> storage) {
-            return new VectorizedFloatTensorStride(parent, shape, offset, strides, storage);
+        public Tensor<Float> stride(StrideLayout layout, Storage<Float> storage) {
+            return new VectorizedFloatTensorStride(parent, layout, storage);
         }
     }
 
@@ -102,8 +103,8 @@ public class VectorizedArrayTensorEngine extends AbstractTensorEngine {
         }
 
         @Override
-        public Tensor<Integer> stride(Shape shape, int offset, int[] strides, Storage<Integer> storage) {
-            return new VectorizedIntTensorStride(parent, shape, offset, strides, storage);
+        public Tensor<Integer> stride(StrideLayout layout, Storage<Integer> storage) {
+            return new VectorizedIntTensorStride(parent, layout, storage);
         }
     }
 
@@ -123,8 +124,8 @@ public class VectorizedArrayTensorEngine extends AbstractTensorEngine {
         }
 
         @Override
-        public Tensor<Byte> stride(Shape shape, int offset, int[] strides, Storage<Byte> storage) {
-            return new VectorizedByteTensorStride(parent, shape, offset, strides, storage);
+        public Tensor<Byte> stride(StrideLayout layout, Storage<Byte> storage) {
+            return new VectorizedByteTensorStride(parent, layout, storage);
         }
     }
 }

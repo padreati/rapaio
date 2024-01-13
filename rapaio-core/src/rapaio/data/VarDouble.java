@@ -57,10 +57,10 @@ import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
+import rapaio.sys.WS;
 
 /**
  * Builds a numeric double variable. Double variables stores data as double values
@@ -609,7 +609,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public Tensor<Double> dt() {
-        return TensorEngine.base().ofDouble().stride(Shape.of(rows), Order.C, TensorEngine.base().ofDouble().storage().cast(data));
+        return WS.tensorEngine().ofDouble().stride(Shape.of(rows), Order.C, data);
     }
 
     @Serial

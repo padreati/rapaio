@@ -76,20 +76,11 @@ import rapaio.util.NotImplementedException;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
-public sealed class BaseByteTensorStride extends AbstractTensor<Byte>
-        permits VectorizedByteTensorStride {
+public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits VectorizedByteTensorStride {
 
     protected final StrideLayout layout;
     protected final TensorEngine engine;
     protected final StrideLoopDescriptor loop;
-
-    public BaseByteTensorStride(TensorEngine engine, Shape shape, int offset, int[] strides, Storage<Byte> storage) {
-        this(engine, StrideLayout.of(shape, offset, strides), storage);
-    }
-
-    public BaseByteTensorStride(TensorEngine engine, Shape shape, int offset, Order order, Storage<Byte> storage) {
-        this(engine, StrideLayout.ofDense(shape, offset, order), storage);
-    }
 
     public BaseByteTensorStride(TensorEngine engine, StrideLayout layout, Storage<Byte> storage) {
         super(storage);
@@ -174,7 +165,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte>
                 out.setByte(p++, storage.getByte(i));
             }
         }
-        return engine.ofByte().stride(Shape.of(layout.size()), 0, new int[] {1}, out);
+        return engine.ofByte().stride(StrideLayout.of(Shape.of(layout.size()), 0, new int[] {1}), out);
     }
 
     @Override

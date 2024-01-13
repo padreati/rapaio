@@ -83,14 +83,6 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float>
     protected final TensorEngine engine;
     protected final StrideLoopDescriptor loop;
 
-    public BaseFloatTensorStride(TensorEngine engine, Shape shape, int offset, int[] strides, Storage<Float> storage) {
-        this(engine, StrideLayout.of(shape, offset, strides), storage);
-    }
-
-    public BaseFloatTensorStride(TensorEngine engine, Shape shape, int offset, Order order, Storage<Float> storage) {
-        this(engine, StrideLayout.ofDense(shape, offset, order), storage);
-    }
-
     public BaseFloatTensorStride(TensorEngine engine, StrideLayout layout, Storage<Float> storage) {
         super(storage);
         this.layout = layout;
@@ -174,7 +166,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float>
                 out.setFloat(p++, storage.getFloat(i));
             }
         }
-        return engine.ofFloat().stride(Shape.of(layout.size()), 0, new int[] {1}, out);
+        return engine.ofFloat().stride(StrideLayout.of(Shape.of(layout.size()), 0, new int[] {1}), out);
     }
 
     @Override

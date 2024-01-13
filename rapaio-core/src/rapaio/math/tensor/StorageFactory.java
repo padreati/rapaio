@@ -39,15 +39,15 @@ public interface StorageFactory {
 
         Storage<N> zeros(int len);
 
-        Storage<N> cast(byte... array);
+        Storage<N> from(byte... array);
 
-        Storage<N> cast(int... array);
+        Storage<N> from(int... array);
 
-        Storage<N> cast(float... array);
+        Storage<N> from(float... array);
 
-        Storage<N> cast(double... array);
+        Storage<N> from(double... array);
 
-        <M extends Number> Storage<N> cast(Storage<M> source);
+        <M extends Number> Storage<N> from(Storage<M> source);
     }
 
     <N extends Number> StorageFactory.OfType<N> ofType(DType<N> dType);

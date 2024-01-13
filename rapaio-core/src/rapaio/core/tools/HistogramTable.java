@@ -38,11 +38,11 @@ import rapaio.data.Var;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
+import rapaio.sys.WS;
 import rapaio.util.collection.DoubleArrays;
 
 public final class HistogramTable implements Printable {
@@ -94,7 +94,7 @@ public final class HistogramTable implements Printable {
     }
 
     public Tensor<Double> freq() {
-        return TensorEngine.base().ofDouble().stride(Shape.of(bins), Order.C, TensorEngine.base().ofDouble().storage().cast(freq));
+        return WS.tensorEngine().ofDouble().stride(Shape.of(bins), Order.C, freq);
     }
 
     @Override

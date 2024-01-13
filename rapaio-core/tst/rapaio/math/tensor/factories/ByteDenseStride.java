@@ -37,6 +37,7 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.util.collection.IntArrays;
 
 public final class ByteDenseStride extends ByteDense {
@@ -69,7 +70,7 @@ public final class ByteDenseStride extends ByteDense {
         }
 
         int offset = 10;
-        var t = ofType.stride(shape, offset, strides, engine.ofByte().storage().zeros(offset + shape.size()));
+        var t = ofType.stride(StrideLayout.of(shape, offset, strides), engine.ofByte().storage().zeros(offset + shape.size()));
 
         t.apply_(Order.C, (i, p) -> (byte) i);
 
@@ -101,7 +102,7 @@ public final class ByteDenseStride extends ByteDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        return ofType.stride(shape, offset, strides, ofType.storage().zeros(offset + shape.size()));
+        return ofType.stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(offset + shape.size()));
     }
 
     @Override
@@ -135,6 +136,6 @@ public final class ByteDenseStride extends ByteDense {
             random.nextBytes(buff);
             array.set(i, buff[0]);
         }
-        return ofType.stride(shape, offset, strides, array);
+        return ofType.stride(StrideLayout.of(shape, offset, strides), array);
     }
 }

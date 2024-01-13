@@ -37,6 +37,7 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.util.collection.IntArrays;
 
 public final class IntegerDenseStride extends IntegerDense {
@@ -69,7 +70,7 @@ public final class IntegerDenseStride extends IntegerDense {
         }
 
         int offset = 10;
-        var t = ofType.stride(shape, offset, strides, ofType.storage().zeros(offset + shape.size()));
+        var t = ofType.stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(offset + shape.size()));
 
         t.apply_(Order.C, (i, p) -> i);
 
@@ -101,7 +102,7 @@ public final class IntegerDenseStride extends IntegerDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        return ofType.stride(shape, offset, strides, ofType.storage().zeros(offset + shape.size()));
+        return ofType.stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(offset + shape.size()));
     }
 
     @Override
@@ -133,6 +134,6 @@ public final class IntegerDenseStride extends IntegerDense {
         for (int i = 0; i < array.size(); i++) {
             array.setInt(i, random.nextInt());
         }
-        return ofType.stride(shape, offset, strides, array);
+        return ofType.stride(StrideLayout.of(shape, offset, strides), array);
     }
 }

@@ -47,8 +47,13 @@ import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.tensor.DType;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.storage.wrapper.VarDoubleStorage;
 import rapaio.printer.Printable;
+import rapaio.sys.WS;
 import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
 
@@ -399,9 +404,17 @@ public interface Var extends Serializable, Printable {
      */
     DVector dvNew();
 
-    Tensor<Double> dt();
+    default Tensor<Double> dt() {
+        return WS.tensorEngine().ofDouble().stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
+    }
 
-    Tensor<Double> dtNew();
+    default Tensor<Double> dtNew() {
+        double[] copy = new double[size()];
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = getDouble(i);
+        }
+        return WS.tensorEngine().stride(DType.DOUBLE, Shape.of(size()), Order.C, WS.tensorEngine().ofDouble().storage().from(copy));
+    }
 
     /**
      * Builds a new empty instance of given size

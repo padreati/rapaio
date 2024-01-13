@@ -60,7 +60,6 @@ public interface TensorEngine {
         return new VectorizedArrayTensorEngine(cpuThreads);
     }
 
-
     OfType<Double> ofDouble();
 
     OfType<Float> ofFloat();
@@ -80,15 +79,15 @@ public interface TensorEngine {
         if (dType.equals(DType.INTEGER)) {
             return (OfType<N>) ofInt();
         }
-        if(dType.equals(DType.BYTE)) {
+        if (dType.equals(DType.BYTE)) {
             return (OfType<N>) ofByte();
         }
         return null;
     }
 
-    int cpuThreads();
+    StorageFactory storage();
 
-    // Tensor methods
+    int cpuThreads();
 
     default <N extends Number> Tensor<N> scalar(DType<N> dType, N value) {
         return ofType(dType).scalar(value);
@@ -140,11 +139,7 @@ public interface TensorEngine {
     }
 
     default <N extends Number, M extends Number> Tensor<N> strideCast(DType<N> dType, StrideLayout layout, Storage<M> storage) {
-        return ofType(dType).strideCast(layout.shape(), layout.offset(), layout.strides(), storage);
-    }
-
-    default <N extends Number, M extends Number> Tensor<N> strideCast(DType<N> dType, Shape shape, int offset, int[] strides, Storage<M> storage) {
-        return ofType(dType).strideCast(shape, offset, strides, storage);
+        return ofType(dType).strideCast(layout, storage);
     }
 
 
@@ -152,12 +147,24 @@ public interface TensorEngine {
         return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage);
     }
 
-    default <N extends Number> Tensor<N> stride(DType<N> dType, StrideLayout layout, Storage<N> storage) {
-        return ofType(dType).stride(layout.shape(), layout.offset(), layout.strides(), storage);
+    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, byte[] array) {
+        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
     }
 
-    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, int offset, int[] strides, Storage<N> storage) {
-        return ofType(dType).stride(shape, offset, strides, storage);
+    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, int[] array) {
+        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
+    }
+
+    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, float[] array) {
+        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
+    }
+
+    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, double[] array) {
+        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
+    }
+
+    default <N extends Number> Tensor<N> stride(DType<N> dType, StrideLayout layout, Storage<N> storage) {
+        return ofType(dType).stride(layout, storage);
     }
 
     /**
@@ -180,8 +187,6 @@ public interface TensorEngine {
      * @return new tensor with concatenated data
      */
     <N extends Number> Tensor<N> stack(int axis, Collection<? extends Tensor<N>> tensors);
-
-    StorageFactory storage();
 
     interface OfType<N extends Number> {
 
@@ -218,13 +223,40 @@ public interface TensorEngine {
 
         <M extends Number> Tensor<N> strideCast(StrideLayout layout, Storage<M> storage);
 
-        <M extends Number> Tensor<N> strideCast(Shape shape, int offset, int[] strides, Storage<M> storage);
-
-
         Tensor<N> stride(Shape shape, Order order, Storage<N> storage);
+
+        default Tensor<N> stride(Shape shape, Order order, byte... array) {
+            return stride(shape, order, storage().from(array));
+        }
+
+        default Tensor<N> stride(Shape shape, Order order, int... array) {
+            return stride(shape, order, storage().from(array));
+        }
+
+        default Tensor<N> stride(Shape shape, Order order, float... array) {
+            return stride(shape, order, storage().from(array));
+        }
+
+        default Tensor<N> stride(Shape shape, Order order, double... array) {
+            return stride(shape, order, storage().from(array));
+        }
 
         Tensor<N> stride(StrideLayout layout, Storage<N> storage);
 
-        Tensor<N> stride(Shape shape, int offset, int[] strides, Storage<N> storage);
+        default Tensor<N> stride(StrideLayout layout, byte... array) {
+            return stride(layout, storage().from(array));
+        }
+
+        default Tensor<N> stride(StrideLayout layout, int... array) {
+            return stride(layout, storage().from(array));
+        }
+
+        default Tensor<N> stride(StrideLayout layout, float... array) {
+            return stride(layout, storage().from(array));
+        }
+
+        default Tensor<N> stride(StrideLayout layout, double... array) {
+            return stride(layout, storage().from(array));
+        }
     }
 }

@@ -106,7 +106,7 @@ public class CopyBenchmark {
                 }
             }
 
-            tc = TensorEngine.varray().stride(DType.DOUBLE, Shape.of(n, n), Order.C, TensorEngine.varray().ofDouble().storageCast(array));
+            tc = TensorEngine.varray().stride(DType.DOUBLE, Shape.of(n, n), Order.C, array);
             tf = tc.copy(Order.F);
         }
     }

@@ -105,7 +105,7 @@ public class DMatrixDMatrixDotBenchmark {
                 }
             }
 
-            t = TensorEngine.varray().ofDouble().stride(Shape.of(n, n), Order.C, TensorEngine.varray().ofDouble().storageCast(array));
+            t = TensorEngine.varray().ofDouble().stride(Shape.of(n, n), Order.C, array);
             tc = t.transpose().copy(Order.F);
         }
     }

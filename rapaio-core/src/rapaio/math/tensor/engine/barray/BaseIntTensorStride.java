@@ -83,14 +83,6 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer>
     protected final TensorEngine engine;
     protected final StrideLoopDescriptor loop;
 
-    public BaseIntTensorStride(TensorEngine engine, Shape shape, int offset, int[] strides, Storage<Integer> storage) {
-        this(engine, StrideLayout.of(shape, offset, strides), storage);
-    }
-
-    public BaseIntTensorStride(TensorEngine engine, Shape shape, int offset, Order order, Storage<Integer> storage) {
-        this(engine, StrideLayout.ofDense(shape, offset, order), storage);
-    }
-
     public BaseIntTensorStride(TensorEngine engine, StrideLayout layout, Storage<Integer> storage) {
         super(storage);
         this.layout = layout;
@@ -174,7 +166,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer>
                 out.setInt(p++, storage.getInt(i));
             }
         }
-        return engine.ofInt().stride(Shape.of(layout.size()), 0, new int[] {1}, out);
+        return engine.ofInt().stride(StrideLayout.of(Shape.of(layout.size()), 0, new int[] {1}), out);
     }
 
     @Override

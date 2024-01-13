@@ -38,6 +38,7 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.util.collection.IntArrays;
 
 public final class DoubleDenseStride extends DoubleDense {
@@ -70,7 +71,7 @@ public final class DoubleDenseStride extends DoubleDense {
         }
 
         int offset = 10;
-        var t = ofType.stride(shape, offset, strides, ofType.storage().zeros(offset + shape.size()));
+        var t = ofType.stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(offset + shape.size()));
 
         t.apply_(Order.C, (i, p) -> (double) i);
 
@@ -102,7 +103,7 @@ public final class DoubleDenseStride extends DoubleDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        return ofType.stride(shape, offset, strides, ofType.storage().zeros(offset + shape.size()));
+        return ofType.stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(offset + shape.size()));
     }
 
     @Override
@@ -135,6 +136,6 @@ public final class DoubleDenseStride extends DoubleDense {
         for (int i = 0; i < array.size(); i++) {
             array.setDouble(i, normal.sampleNext(random));
         }
-        return ofType.stride(shape, offset, strides, array);
+        return ofType.stride(StrideLayout.of(shape, offset, strides), array);
     }
 }

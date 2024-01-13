@@ -46,6 +46,7 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.engine.varray.VectorizedArrayTensorEngine;
+import rapaio.math.tensor.layout.StrideLayout;
 
 public class TensorEngineTest {
 
@@ -142,7 +143,7 @@ public class TensorEngineTest {
         for (int i = 0; i < seq.length; i++) {
             seq[i] = i;
         }
-        var t = ofType.stride(Shape.of(4, 3), 0, new int[] {1, 4}, ofType.storage().cast(seq));
+        var t = ofType.stride(StrideLayout.of(Shape.of(4, 3), 0, new int[] {1, 4}), seq);
         int i = 0;
         var it = t.ptrIterator(Order.F);
         while (it.hasNext()) {
@@ -151,7 +152,7 @@ public class TensorEngineTest {
     }
 
     <N extends Number> void testWrap(TensorEngine engine, TensorEngine.OfType<N> ofType) {
-        var t = ofType.stride(Shape.of(2, 3), Order.C, ofType.storage().cast(1., 2, 3, 4, 5, 6));
+        var t = ofType.stride(Shape.of(2, 3), Order.C, 1., 2, 3, 4, 5, 6);
         int i = 1;
         var it = t.ptrIterator(Order.C);
         while (it.hasNext()) {
@@ -160,10 +161,10 @@ public class TensorEngineTest {
     }
 
     <N extends Number> void testConcatenate(TensorEngine engine, TensorEngine.OfType<N> ofType) {
-        var t1 = ofType.stride(Shape.of(2, 3), Order.C, ofType.storage().cast(1., 2, 3, 4, 5, 6));
-        var t2 = ofType.stride(Shape.of(1, 3), Order.C, ofType.storage().cast(7.f, 8, 9));
-        var t3 = ofType.stride(Shape.of(3, 3), Order.C, ofType.storage().cast(10., 11, 12, 13, 14, 15, 16, 17, 18));
-        var t4 = ofType.stride(Shape.of(1, 2), Order.C, ofType.storage().cast(1., 2, 3, 4));
+        var t1 = ofType.stride(Shape.of(2, 3), Order.C, ofType.storage().from(1., 2, 3, 4, 5, 6));
+        var t2 = ofType.stride(Shape.of(1, 3), Order.C, ofType.storage().from(7.f, 8, 9));
+        var t3 = ofType.stride(Shape.of(3, 3), Order.C, ofType.storage().from(10., 11, 12, 13, 14, 15, 16, 17, 18));
+        var t4 = ofType.stride(Shape.of(1, 2), Order.C, ofType.storage().from(1., 2, 3, 4));
 
 
         var t = engine.concat(0, List.of(t1, t2, t3));
@@ -178,9 +179,9 @@ public class TensorEngineTest {
     }
 
     <N extends Number> void testStack(TensorEngine engine, TensorEngine.OfType<N> ofType) {
-        var t1 = ofType.stride(Shape.of(2, 3), Order.C, ofType.storage().cast(1., 2, 3, 4, 5, 6));
-        var t2 = ofType.stride(Shape.of(2, 3), Order.C, ofType.storage().cast(7.f, 8, 9, 10, 11, 12));
-        var t3 = ofType.stride(Shape.of(2, 3), Order.C, ofType.storage().cast(13., 14, 15, 16, 17, 18));
+        var t1 = ofType.stride(Shape.of(2, 3), Order.C, ofType.storage().from(1., 2, 3, 4, 5, 6));
+        var t2 = ofType.stride(Shape.of(2, 3), Order.C, ofType.storage().from(7.f, 8, 9, 10, 11, 12));
+        var t3 = ofType.stride(Shape.of(2, 3), Order.C, ofType.storage().from(13., 14, 15, 16, 17, 18));
 
         double[][] expected = new double[][] {
                 {1., 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18},

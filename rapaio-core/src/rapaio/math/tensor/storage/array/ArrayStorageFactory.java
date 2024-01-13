@@ -68,12 +68,12 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Byte> cast(byte... array) {
+        public Storage<Byte> from(byte... array) {
             return new ByteArrayStorage(array);
         }
 
         @Override
-        public Storage<Byte> cast(int... array) {
+        public Storage<Byte> from(int... array) {
             byte[] copy = new byte[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = (byte) array[i];
@@ -82,7 +82,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Byte> cast(float... array) {
+        public Storage<Byte> from(float... array) {
             byte[] copy = new byte[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = (byte) array[i];
@@ -91,7 +91,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Byte> cast(double... array) {
+        public Storage<Byte> from(double... array) {
             byte[] copy = new byte[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = (byte) array[i];
@@ -100,7 +100,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public <M extends Number> Storage<Byte> cast(Storage<M> source) {
+        public <M extends Number> Storage<Byte> from(Storage<M> source) {
             byte[] copy = new byte[source.size()];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = source.getByte(i);
@@ -122,7 +122,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Integer> cast(byte... array) {
+        public Storage<Integer> from(byte... array) {
             int[] copy = new int[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = array[i];
@@ -131,12 +131,12 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Integer> cast(int... array) {
+        public Storage<Integer> from(int... array) {
             return new IntArrayStorage(array);
         }
 
         @Override
-        public Storage<Integer> cast(float... array) {
+        public Storage<Integer> from(float... array) {
             int[] copy = new int[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = (int) array[i];
@@ -145,7 +145,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Integer> cast(double... array) {
+        public Storage<Integer> from(double... array) {
             int[] copy = new int[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = (int) array[i];
@@ -154,7 +154,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public <M extends Number> Storage<Integer> cast(Storage<M> source) {
+        public <M extends Number> Storage<Integer> from(Storage<M> source) {
             int[] copy = new int[source.size()];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = source.getInt(i);
@@ -175,7 +175,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Float> cast(byte... array) {
+        public Storage<Float> from(byte... array) {
             float[] copy = new float[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = array[i];
@@ -184,7 +184,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Float> cast(int... array) {
+        public Storage<Float> from(int... array) {
             float[] copy = new float[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = array[i];
@@ -193,12 +193,12 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Float> cast(float... array) {
+        public Storage<Float> from(float... array) {
             return new FloatArrayStorage(array);
         }
 
         @Override
-        public Storage<Float> cast(double... array) {
+        public Storage<Float> from(double... array) {
             float[] copy = new float[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = (float) array[i];
@@ -207,7 +207,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public <M extends Number> Storage<Float> cast(Storage<M> source) {
+        public <M extends Number> Storage<Float> from(Storage<M> source) {
             float[] copy = new float[source.size()];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = source.getFloat(i);
@@ -229,7 +229,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Double> cast(byte... array) {
+        public Storage<Double> from(byte... array) {
             double[] copy = new double[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = array[i];
@@ -238,7 +238,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Double> cast(int... array) {
+        public Storage<Double> from(int... array) {
             double[] copy = new double[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = array[i];
@@ -247,7 +247,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Double> cast(float... array) {
+        public Storage<Double> from(float... array) {
             double[] copy = new double[array.length];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = array[i];
@@ -256,12 +256,12 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public Storage<Double> cast(double... array) {
+        public Storage<Double> from(double... array) {
             return new DoubleArrayStorage(array);
         }
 
         @Override
-        public <M extends Number> Storage<Double> cast(Storage<M> source) {
+        public <M extends Number> Storage<Double> from(Storage<M> source) {
             double[] copy = new double[source.size()];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = source.getDouble(i);

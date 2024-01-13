@@ -48,14 +48,14 @@ public class Main {
         var mill = TensorEngine.base();
 
         var x = new Placeholder(g, "x");
-        var w = new Variable(g, "w", mill.stride(dtype, Shape.of(2, 2), Order.C, mill.ofType(dtype).storage().cast(new float[] {1, 1, 1, -1})));
+        var w = new Variable(g, "w", mill.stride(dtype, Shape.of(2, 2), Order.C, mill.ofType(dtype).storage().from(new float[] {1, 1, 1, -1})));
 
-        var b = new Variable(g, "b", mill.stride(dtype, Shape.of(2), Order.C, mill.ofType(dtype).storage().cast(new float[] {0, 0})));
+        var b = new Variable(g, "b", mill.stride(dtype, Shape.of(2), Order.C, mill.ofType(dtype).storage().from(new float[] {0, 0})));
 
         var sm = new SoftmaxOperation(g, "softmax", new AddOperation(g, "add", b, new MatVecOperation(g, "matmul", w, x)));
 
         var value = g.run(sm, Map.of(
-                "x", mill.stride(dtype, Shape.of(2), Order.C, mill.ofType(dtype).storage().cast(new float[] {0, 1}))
+                "x", mill.stride(dtype, Shape.of(2), Order.C, mill.ofType(dtype).storage().from(new float[] {0, 1}))
         ));
         value.printSummary();
         value.printContent();

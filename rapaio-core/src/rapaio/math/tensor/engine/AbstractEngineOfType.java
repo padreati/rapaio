@@ -72,7 +72,7 @@ public abstract class AbstractEngineOfType<N extends Number> implements TensorEn
 
     @Override
     public final Tensor<N> scalar(N value) {
-        return stride(Shape.of(), 0, new int[0], storage().scalar(value));
+        return stride(StrideLayout.of(Shape.of(), 0, new int[0]), storage().scalar(value));
     }
 
     @Override
@@ -138,12 +138,7 @@ public abstract class AbstractEngineOfType<N extends Number> implements TensorEn
 
     @Override
     public final <M extends Number> Tensor<N> strideCast(StrideLayout layout, Storage<M> storage) {
-        return strideCast(layout.shape(), layout.offset(), layout.strides(), storage);
-    }
-
-    @Override
-    public final <M extends Number> Tensor<N> strideCast(Shape shape, int offset, int[] strides, Storage<M> storage) {
-        return stride(shape, offset, strides, storage().cast(storage));
+        return stride(layout, storage().from(storage));
     }
 
     @Override
@@ -152,10 +147,5 @@ public abstract class AbstractEngineOfType<N extends Number> implements TensorEn
     }
 
     @Override
-    public final Tensor<N> stride(StrideLayout layout, Storage<N> storage) {
-        return stride(layout.shape(), layout.offset(), layout.strides(), storage);
-    }
-
-    @Override
-    public abstract Tensor<N> stride(Shape shape, int offset, int[] strides, Storage<N> storage);
+    public abstract Tensor<N> stride(StrideLayout layout, Storage<N> storage);
 }
