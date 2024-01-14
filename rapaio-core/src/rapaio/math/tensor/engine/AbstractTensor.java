@@ -31,6 +31,9 @@
 
 package rapaio.math.tensor.engine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import rapaio.data.VarDouble;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -48,6 +51,15 @@ public abstract class AbstractTensor<N extends Number> implements Tensor<N> {
 
     public AbstractTensor(Storage<N> storage) {
         this.storage = storage;
+    }
+
+    @Override
+    public Tensor<N> take(Order order, int axis, int... indexes) {
+        List<Tensor<N>> slices = new ArrayList<>();
+        for (int index : indexes) {
+            slices.add(narrow(axis, true, index, index + 1));
+        }
+        return engine().concat(order, axis, slices);
     }
 
     @Override
@@ -131,10 +143,9 @@ public abstract class AbstractTensor<N extends Number> implements Tensor<N> {
     }
 
 
-
     @Override
     public VarDouble dv() {
-        if(layout().rank()!=1) {
+        if (layout().rank() != 1) {
             throw new IllegalArgumentException("Only one dimensional tensors can be converted to VarDouble.");
         }
         if (this instanceof BaseDoubleTensorStride bs) {

@@ -35,6 +35,7 @@ import java.io.Serializable;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 /**
  * Kernel function interface
@@ -54,6 +55,8 @@ public interface Kernel extends Serializable {
     double compute(Frame df1, int row1, Frame df2, int row2);
 
     double compute(DVector v, DVector u);
+
+    double compute(Tensor<Double> v, Tensor<Double> u);
 
     default void clean() {
     }

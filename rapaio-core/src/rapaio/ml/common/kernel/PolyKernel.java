@@ -38,6 +38,7 @@ import java.io.Serial;
 import rapaio.data.Frame;
 import rapaio.math.MathTools;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 /**
  * The Polynomial kernel is a non-stationary kernel. Polynomial kernels
@@ -117,5 +118,13 @@ public class PolyKernel extends AbstractKernel {
             return slope * v.dot(u) + bias;
         }
         return Math.pow(slope * v.dot(u) + bias, exponent);
+    }
+
+    @Override
+    public double compute(Tensor<Double> v, Tensor<Double> u) {
+        if (isLinear()) {
+            return slope * v.vdot(u) + bias;
+        }
+        return Math.pow(slope * v.vdot(u) + bias, exponent);
     }
 }

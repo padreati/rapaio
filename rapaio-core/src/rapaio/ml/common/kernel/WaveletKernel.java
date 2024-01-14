@@ -36,6 +36,7 @@ import java.util.function.Function;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
 /**
@@ -102,6 +103,21 @@ public class WaveletKernel extends AbstractKernel {
 
     @Override
     public double compute(DVector v, DVector u) {
+        double result = 1;
+        for (int i = 0; i < v.size(); i++) {
+            if (invariant) {
+                double diff = v.get(i) - u.get(i);
+                result *= wavelet.apply(diff / dilation);
+            } else {
+                result *= wavelet.apply((v.get(i) - translation) / dilation);
+                result *= wavelet.apply((u.get(i) - translation) / dilation);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public double compute(Tensor<Double> v, Tensor<Double> u) {
         double result = 1;
         for (int i = 0; i < v.size(); i++) {
             if (invariant) {

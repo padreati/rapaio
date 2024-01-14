@@ -35,6 +35,7 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 /**
  * The Histogram Intersection Kernel is also known as the Min Kernel
@@ -60,6 +61,15 @@ public class MinKernel extends AbstractKernel {
 
     @Override
     public double compute(DVector v, DVector u) {
+        double sum = 0;
+        for (int i = 0; i < v.size(); i++) {
+            sum += Math.min(v.get(i), u.get(i));
+        }
+        return sum;
+    }
+
+    @Override
+    public double compute(Tensor<Double> v, Tensor<Double> u) {
         double sum = 0;
         for (int i = 0; i < v.size(); i++) {
             sum += Math.min(v.get(i), u.get(i));

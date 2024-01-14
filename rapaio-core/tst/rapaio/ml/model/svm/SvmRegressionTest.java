@@ -31,6 +31,7 @@ import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 
@@ -40,7 +41,7 @@ public class SvmRegressionTest {
 
     private Frame df;
     private DMatrix xs;
-    private DVector ys;
+    private Tensor<Double> ys;
 
     @BeforeEach
     void beforeEach() {
@@ -48,7 +49,7 @@ public class SvmRegressionTest {
         df = Datasets.loadISLAdvertising();
 
         xs = DMatrix.copy(df.mapVars("TV,Radio"));
-        ys = df.rvar("Sales").dv();
+        ys = df.rvar("Sales").dt();
     }
 
     @Test
@@ -58,10 +59,11 @@ public class SvmRegressionTest {
                 .type.set(SvmRegression.Penalty.C)
                 .c.set(10.0)
                 .probability.set(false)
-                .kernel.set(new RBFKernel(0.001))
+                .kernel.set(new RBFKernel(0.1))
                 .seed.set(42L);
 
-        var pred = m.fit(df.mapVars("TV,Radio,Sales"), "Sales").predict(df);
+        m.fit(df.mapVars("TV,Radio,Sales"), "Sales");
+        var pred = m.predict(df.mapVars("TV,Radio,Sales"));
         DVector pr = pred.firstPrediction().dv();
         pred.printSummary();
 

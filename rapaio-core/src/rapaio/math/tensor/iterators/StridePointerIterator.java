@@ -45,7 +45,11 @@ public final class StridePointerIterator implements PointerIterator {
     private int newPointer;
 
     public StridePointerIterator(StrideLayout layout, Order askOrder) {
-        c = layout.computeFortranLayout(askOrder, true);
+        this(layout, askOrder, true);
+    }
+
+    public StridePointerIterator(StrideLayout layout, Order askOrder, boolean compact) {
+        c = layout.computeFortranLayout(askOrder, compact);
 
         this.index = new int[c.rank()];
         this.pointer = c.offset();

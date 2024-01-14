@@ -79,6 +79,14 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return layout().rank();
     }
 
+    default int[] dims() {
+        return layout().shape().dims();
+    }
+
+    default int dim(int axis) {
+        return layout().shape().dim(axis);
+    }
+
     /**
      * @return number of elements
      */
@@ -114,12 +122,12 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      */
     Tensor<N> reshape(Shape shape, Order askOrder);
 
-    default Tensor<N> transposeNew() {
-        return transposeNew(Order.defaultOrder());
+    default Tensor<N> t() {
+        return t(Order.defaultOrder());
     }
 
-    default Tensor<N> transposeNew(Order askOrder) {
-        return copy(askOrder).transpose();
+    default Tensor<N> t(Order askOrder) {
+        return copy(askOrder).t_();
     }
 
     /**
@@ -129,7 +137,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      *
      * @return a transposed view of the tensor
      */
-    Tensor<N> transpose();
+    Tensor<N> t_();
 
     /**
      * Collapses the tensor into one dimension in the order given as parameter. It creates a new tensor copy
@@ -293,7 +301,28 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> expand(int axis, int dim);
 
-    Tensor<N> take(Order order, int... indexes);
+    default Tensor<N> take(int axis, int... indices) {
+        return take(Order.defaultOrder(), axis, indices);
+    }
+
+    Tensor<N> take(Order order, int axis, int... indices);
+
+    default Tensor<N> sort(int dim, boolean asc) {
+        return sort(Order.defaultOrder(), dim, asc);
+    }
+
+    Tensor<N> sort(Order order, int axis, boolean asc);
+
+    Tensor<N> sort_(int axis, boolean asc);
+
+    /**
+     * Sorts indices given as an array of parameters according to the values from flatten tensor.
+     * Tensor must have a single dimension with size greater than the biggest index value.
+     *
+     * @param indices indices which will be sorted
+     * @param asc     if true, than sort ascending, descending otherwise
+     */
+    void indirectSort(int[] indices, boolean asc);
 
     /**
      * Get value at indexed position. An indexed position is a tuple of rank
@@ -731,19 +760,67 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     N sum();
 
+    default Tensor<N> sum(int axis) {
+        return sum(Order.defaultOrder(), axis);
+    }
+
+    Tensor<N> sum(Order order, int axis);
+
     N nanSum();
+
+    default Tensor<N> nanSum(int axis) {
+        return nanSum(Order.defaultOrder(), axis);
+    }
+
+    Tensor<N> nanSum(Order order, int axis);
 
     N prod();
 
+    default Tensor<N> prod(int axis) {
+        return prod(Order.defaultOrder(), axis);
+    }
+
+    Tensor<N> prod(Order order, int axis);
+
     N nanProd();
+
+    default Tensor<N> nanProd(int axis) {
+        return nanProd(Order.defaultOrder(), axis);
+    }
+
+    Tensor<N> nanProd(Order order, int axis);
 
     N max();
 
+    default Tensor<N> max(int axis) {
+        return max(Order.defaultOrder(), axis);
+    }
+
+    Tensor<N> max(Order order, int axis);
+
     N nanMax();
+
+    default Tensor<N> nanMax(int axis) {
+        return nanMax(Order.defaultOrder(), axis);
+    }
+
+    Tensor<N> nanMax(Order order, int axis);
 
     N min();
 
+    default Tensor<N> min(int axis) {
+        return min(Order.defaultOrder(), axis);
+    }
+
+    Tensor<N> min(Order order, int axis);
+
     N nanMin();
+
+    default Tensor<N> nanMin(int axis) {
+        return nanMin(Order.defaultOrder(), axis);
+    }
+
+    Tensor<N> nanMin(Order order, int axis);
 
     int nanCount();
 

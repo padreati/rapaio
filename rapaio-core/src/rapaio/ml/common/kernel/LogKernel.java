@@ -35,6 +35,7 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
 /**
@@ -65,6 +66,11 @@ public class LogKernel extends AbstractKernel {
 
     @Override
     public double compute(DVector v, DVector u) {
+        return -Math.log1p(Math.pow(deltaSumSquares(v, u), degree));
+    }
+
+    @Override
+    public double compute(Tensor<Double> v, Tensor<Double> u) {
         return -Math.log1p(Math.pow(deltaSumSquares(v, u), degree));
     }
 

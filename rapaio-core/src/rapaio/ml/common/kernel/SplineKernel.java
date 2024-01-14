@@ -35,6 +35,7 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 /**
  * The Spline kernel is given as a piece-wise cubic polynomial, as derived in the works by Gunn (1998).
@@ -60,6 +61,18 @@ public class SplineKernel extends AbstractKernel {
 
     @Override
     public double compute(DVector v, DVector u) {
+        double value = 1;
+        for (int i = 0; i < u.size(); i++) {
+            double xi = v.get(i);
+            double yi = u.get(i);
+            double min = Math.min(xi, yi);
+            value *= 1 + xi * yi + xi * yi * min - (xi + yi) * min * min / 2.0 + min * min * min / 3;
+        }
+        return value;
+    }
+
+    @Override
+    public double compute(Tensor<Double> v, Tensor<Double> u) {
         double value = 1;
         for (int i = 0; i < u.size(); i++) {
             double xi = v.get(i);

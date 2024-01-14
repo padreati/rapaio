@@ -118,13 +118,13 @@ public class CopyBenchmark {
 
     @Benchmark
     public void tensorTransposeOrderC(BenchmarkState bs, Blackhole bh) {
-        var transpose = bs.tc.transposeNew();
+        var transpose = bs.tc.t();
         bh.consume(transpose);
     }
 
     @Benchmark
     public void tensorTransposeOrderF(BenchmarkState bs, Blackhole bh) {
-        var transpose = bs.tf.transposeNew();
+        var transpose = bs.tf.t();
         bh.consume(transpose);
     }
 

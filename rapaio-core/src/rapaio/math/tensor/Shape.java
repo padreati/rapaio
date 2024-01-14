@@ -104,10 +104,22 @@ public final class Shape {
      * @return size of the given dimension
      */
     public int dim(int pos) {
-        if(dims.length==0) {
+        if (dims.length == 0) {
             return 1;
         }
         return pos >= 0 ? dims[pos] : dims[dims.length + pos];
+    }
+
+    public int[] narrowDims(int axis) {
+        int[] td = new int[dims.length - 1];
+        if (axis < 0) {
+            axis += dims.length;
+        }
+        System.arraycopy(dims, 0, td, 0, axis);
+        if (td.length - axis > 0) {
+            System.arraycopy(dims, axis + 1, td, axis, td.length - axis);
+        }
+        return td;
     }
 
     /**

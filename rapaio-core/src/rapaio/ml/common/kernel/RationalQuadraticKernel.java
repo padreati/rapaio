@@ -35,6 +35,7 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
 /**
@@ -65,6 +66,13 @@ public class RationalQuadraticKernel extends AbstractKernel {
 
     @Override
     public double compute(DVector v, DVector u) {
+        double dot = deltaSumSquares(u, v);
+        double square = dot * dot;
+        return 1.0 - square / (square + c);
+    }
+
+    @Override
+    public double compute(Tensor<Double> v, Tensor<Double> u) {
         double dot = deltaSumSquares(u, v);
         double square = dot * dot;
         return 1.0 - square / (square + c);

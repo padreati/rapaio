@@ -69,6 +69,7 @@ import rapaio.math.tensor.iterators.StrideLoopDescriptor;
 import rapaio.math.tensor.iterators.StrideLoopIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.math.tensor.layout.StrideWrapper;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
@@ -76,8 +77,7 @@ import rapaio.util.NotImplementedException;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
-public sealed class BaseIntTensorStride extends AbstractTensor<Integer>
-        permits VectorizedIntTensorStride {
+public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits VectorizedIntTensorStride {
 
     protected final StrideLayout layout;
     protected final TensorEngine engine;
@@ -141,7 +141,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer>
     }
 
     @Override
-    public Tensor<Integer> transpose() {
+    public Tensor<Integer> t_() {
         return engine.ofInt().stride(layout.revert(), storage);
     }
 
@@ -281,6 +281,38 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer>
     }
 
     @Override
+    public Tensor<Integer> sort_(int axis, boolean asc) {
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        var it = new StridePointerIterator(StrideLayout.of(Shape.of(newDims), layout().offset(), newStrides), Order.C, false);
+        while (it.hasNext()) {
+            StrideWrapper.of(it.nextInt(), selStride, selDim, this).sort(asc);
+        }
+        return this;
+    }
+
+    @Override
+    public Tensor<Integer> sort(Order order, int axis, boolean asc) {
+        return copy(order).sort_(axis, asc);
+    }
+
+    @Override
+    public void indirectSort(int[] indices, boolean asc) {
+        if (layout.rank() != 1) {
+            throw new IllegalArgumentException("Tensor must be flat (have a single dimension).");
+        }
+        for (int index : indices) {
+            if (index < 0 || index >= layout.size()) {
+                throw new IllegalArgumentException("Indices must be semi-positive and less than the size of the tensor.");
+            }
+        }
+        StrideWrapper.of(layout.offset(), layout.stride(0), layout.dim(0), this).sortIndirect(indices, asc);
+    }
+
+    @Override
     public Integer get(int... indexes) {
         return storage.getInt(layout.pointer(indexes));
     }
@@ -382,11 +414,6 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer>
             }
         }
         return this;
-    }
-
-    @Override
-    public Tensor<Integer> take(Order order, int... indexes) {
-        throw new NotImplementedException();
     }
 
     private void unaryOpStep(TensorUnaryOp op) {
@@ -786,8 +813,18 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer>
     }
 
     @Override
+    public Tensor<Integer> sum(Order order, int axis) {
+        return associativeOpNarrow(TensorAssociativeOp.ADD, order, axis);
+    }
+
+    @Override
     public Integer nanSum() {
         return nanAssociativeOp(TensorAssociativeOp.ADD);
+    }
+
+    @Override
+    public Tensor<Integer> nanSum(Order order, int axis) {
+        return nanAssociativeOpNarrow(TensorAssociativeOp.ADD, order, axis);
     }
 
     @Override
@@ -796,8 +833,18 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer>
     }
 
     @Override
+    public Tensor<Integer> prod(Order order, int axis) {
+        return associativeOpNarrow(TensorAssociativeOp.MUL, order, axis);
+    }
+
+    @Override
     public Integer nanProd() {
         return nanAssociativeOp(TensorAssociativeOp.MUL);
+    }
+
+    @Override
+    public Tensor<Integer> nanProd(Order order, int axis) {
+        return nanAssociativeOpNarrow(TensorAssociativeOp.MUL, order, axis);
     }
 
     @Override
@@ -806,8 +853,18 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer>
     }
 
     @Override
+    public Tensor<Integer> max(Order order, int axis) {
+        return associativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
+    }
+
+    @Override
     public Integer nanMax() {
         return nanAssociativeOp(TensorAssociativeOp.MAX);
+    }
+
+    @Override
+    public Tensor<Integer> nanMax(Order order, int axis) {
+        return nanAssociativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
     }
 
     @Override
@@ -816,8 +873,18 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer>
     }
 
     @Override
+    public Tensor<Integer> min(Order order, int axis) {
+        return associativeOpNarrow(TensorAssociativeOp.MIN, order, axis);
+    }
+
+    @Override
     public Integer nanMin() {
         return nanAssociativeOp(TensorAssociativeOp.MIN);
+    }
+
+    @Override
+    public Tensor<Integer> nanMin(Order order, int axis) {
+        return nanAssociativeOpNarrow(TensorAssociativeOp.MIN, order, axis);
     }
 
     @Override
@@ -867,6 +934,40 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer>
             }
         }
         return aggregate;
+    }
+
+    protected Tensor<Integer> associativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        Tensor<Integer> res = engine.ofInt().zeros(Shape.of(newDims), Order.autoFC(order));
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+        var resIt = res.ptrIterator(Order.C);
+        while (it.hasNext()) {
+            int ptr = it.nextInt();
+            int value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialInt(), op::applyInt);
+            res.ptrSet(resIt.next(), value);
+        }
+        return res;
+    }
+
+    protected Tensor<Integer> nanAssociativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        Tensor<Integer> res = engine.ofInt().zeros(Shape.of(newDims), Order.autoFC(order));
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+        var resIt = res.ptrIterator(Order.C);
+        while (it.hasNext()) {
+            int ptr = it.nextInt();
+            int value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.INTEGER, op.initialInt(), op::applyInt);
+            res.ptrSet(resIt.next(), value);
+        }
+        return res;
     }
 
     @Override

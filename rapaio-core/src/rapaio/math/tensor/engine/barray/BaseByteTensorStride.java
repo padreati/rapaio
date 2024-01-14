@@ -69,6 +69,7 @@ import rapaio.math.tensor.iterators.StrideLoopDescriptor;
 import rapaio.math.tensor.iterators.StrideLoopIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.math.tensor.layout.StrideWrapper;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
@@ -140,7 +141,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     @Override
-    public Tensor<Byte> transpose() {
+    public Tensor<Byte> t_() {
         return engine.ofByte().stride(layout.revert(), storage);
     }
 
@@ -280,6 +281,38 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     @Override
+    public Tensor<Byte> sort_(int axis, boolean asc) {
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        var it = new StridePointerIterator(StrideLayout.of(Shape.of(newDims), layout().offset(), newStrides), Order.C, false);
+        while (it.hasNext()) {
+            StrideWrapper.of(it.nextInt(), selStride, selDim, this).sort(asc);
+        }
+        return this;
+    }
+
+    @Override
+    public Tensor<Byte> sort(Order order, int axis, boolean asc) {
+        return copy(order).sort_(axis, asc);
+    }
+
+    @Override
+    public void indirectSort(int[] indices, boolean asc) {
+        if (layout.rank() != 1) {
+            throw new IllegalArgumentException("Tensor must be flat (have a single dimension).");
+        }
+        for (int index : indices) {
+            if (index < 0 || index >= layout.size()) {
+                throw new IllegalArgumentException("Indices must be semi-positive and less than the size of the tensor.");
+            }
+        }
+        StrideWrapper.of(layout.offset(), layout.stride(0), layout.dim(0), this).sortIndirect(indices, asc);
+    }
+
+    @Override
     public Byte get(int... indexes) {
         return storage.getByte(layout.pointer(indexes));
     }
@@ -381,11 +414,6 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
             }
         }
         return this;
-    }
-
-    @Override
-    public Tensor<Byte> take(Order order, int... indexes) {
-        throw new NotImplementedException();
     }
 
     private void unaryOpStep(TensorUnaryOp op) {
@@ -785,8 +813,18 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     @Override
+    public Tensor<Byte> sum(Order order, int axis) {
+        return associativeOpNarrow(TensorAssociativeOp.ADD, order, axis);
+    }
+
+    @Override
     public Byte nanSum() {
         return nanAssociativeOp(TensorAssociativeOp.ADD);
+    }
+
+    @Override
+    public Tensor<Byte> nanSum(Order order, int axis) {
+        return nanAssociativeOpNarrow(TensorAssociativeOp.ADD, order, axis);
     }
 
     @Override
@@ -795,8 +833,18 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     @Override
+    public Tensor<Byte> prod(Order order, int axis) {
+        return associativeOpNarrow(TensorAssociativeOp.MUL, order, axis);
+    }
+
+    @Override
     public Byte nanProd() {
         return nanAssociativeOp(TensorAssociativeOp.MUL);
+    }
+
+    @Override
+    public Tensor<Byte> nanProd(Order order, int axis) {
+        return nanAssociativeOpNarrow(TensorAssociativeOp.MUL, order, axis);
     }
 
     @Override
@@ -805,8 +853,18 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     @Override
+    public Tensor<Byte> max(Order order, int axis) {
+        return associativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
+    }
+
+    @Override
     public Byte nanMax() {
         return nanAssociativeOp(TensorAssociativeOp.MAX);
+    }
+
+    @Override
+    public Tensor<Byte> nanMax(Order order, int axis) {
+        return nanAssociativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
     }
 
     @Override
@@ -815,8 +873,18 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     @Override
+    public Tensor<Byte> min(Order order, int axis) {
+        return associativeOpNarrow(TensorAssociativeOp.MIN, order, axis);
+    }
+
+    @Override
     public Byte nanMin() {
         return nanAssociativeOp(TensorAssociativeOp.MIN);
+    }
+
+    @Override
+    public Tensor<Byte> nanMin(Order order, int axis) {
+        return nanAssociativeOpNarrow(TensorAssociativeOp.MIN, order, axis);
     }
 
     @Override
@@ -866,6 +934,40 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
             }
         }
         return aggregate;
+    }
+
+    protected Tensor<Byte> associativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        Tensor<Byte> res = engine.ofByte().zeros(Shape.of(newDims), Order.autoFC(order));
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+        var resIt = res.ptrIterator(Order.C);
+        while (it.hasNext()) {
+            int ptr = it.nextInt();
+            byte value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialByte(), op::applyByte);
+            res.ptrSet(resIt.next(), value);
+        }
+        return res;
+    }
+
+    protected Tensor<Byte> nanAssociativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        Tensor<Byte> res = engine.ofByte().zeros(Shape.of(newDims), Order.autoFC(order));
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+        var resIt = res.ptrIterator(Order.C);
+        while (it.hasNext()) {
+            int ptr = it.nextInt();
+            byte value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.BYTE, op.initialByte(), op::applyByte);
+            res.ptrSet(resIt.next(), value);
+        }
+        return res;
     }
 
     @Override

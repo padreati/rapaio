@@ -98,14 +98,15 @@ public abstract class AbstractTensorEngine implements TensorEngine {
     }
 
     @Override
-    public final <N extends Number> Tensor<N> concat(int axis, Collection<? extends Tensor<N>> tensors) {
+    public final <N extends Number> Tensor<N> concat(Order order, int axis, Collection<? extends Tensor<N>> tensors) {
         var tensorList = tensors.stream().toList();
         validateForConcatenation(axis, tensorList.stream().map(t -> t.shape().dims()).collect(Collectors.toList()));
 
         int newDim = tensorList.stream().mapToInt(tensor -> tensor.layout().shape().dim(axis)).sum();
-        int[] newDims = Arrays.copyOf(tensorList.get(0).shape().dims(), tensorList.get(0).rank());
+        Tensor<N> first = tensorList.getFirst();
+        int[] newDims = Arrays.copyOf(first.shape().dims(), first.rank());
         newDims[axis] = newDim;
-        var result = ofType(tensorList.get(0).dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
+        var result = ofType(first.dtype()).zeros(Shape.of(newDims), order);
 
         int start = 0;
         for (Tensor<N> tensor : tensors) {
@@ -124,7 +125,7 @@ public abstract class AbstractTensorEngine implements TensorEngine {
     }
 
     @Override
-    public final <N extends Number> Tensor<N> stack(int axis, Collection<? extends Tensor<N>> tensors) {
+    public final <N extends Number> Tensor<N> stack(Order order, int axis, Collection<? extends Tensor<N>> tensors) {
         var tensorList = tensors.stream().toList();
         for (int i = 1; i < tensorList.size(); i++) {
             if (!tensorList.get(i - 1).shape().equals(tensorList.get(i).shape())) {
@@ -140,7 +141,7 @@ public abstract class AbstractTensorEngine implements TensorEngine {
             newDims[i + 1] = tensorList.getFirst().shape().dim(i);
         }
         newDims[axis] = tensorList.size();
-        var result = ofType(tensorList.getFirst().dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
+        var result = ofType(tensorList.getFirst().dtype()).zeros(Shape.of(newDims), order);
         var slices = result.chunk(axis, true, 1);
         i = 0;
         for (; i < tensorList.size(); i++) {

@@ -113,7 +113,7 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
                 for (int i = 0; i <= degree; i++) {
                     int ii = i;
                     var copy = testVar.copy();
-                    copy.dv().apply(v -> Math.pow(v, ii) * sx(v, sigma, ref));
+                    copy.dt().apply_(v -> Math.pow(v, ii) * sx(v, sigma, ref));
                     features.add(copy.name(testVarName + "_alpha_" + (i + 1)));
                 }
 
@@ -121,7 +121,7 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
                 for (int i = 0; i <= degree; i++) {
                     int ii = i;
                     var copy = testVar.copy();
-                    copy.dv().apply(v -> Math.pow(v, ii) * (1.0 - sx(v, sigma, ref)));
+                    copy.dt().apply_(v -> Math.pow(v, ii) * (1.0 - sx(v, sigma, ref)));
                     features.add(copy.name(testVarName + "_alpha_" + (degree + 2 + i)));
                 }
 

@@ -35,6 +35,7 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
 /**
@@ -81,6 +82,11 @@ public class SigmoidKernel extends AbstractKernel {
     @Override
     public double compute(DVector v, DVector u) {
         return Math.atan(alpha * u.dot(v) + c);
+    }
+
+    @Override
+    public double compute(Tensor<Double> v, Tensor<Double> u) {
+        return Math.atan(alpha * u.vdot(v) + c);
     }
 
     @Override

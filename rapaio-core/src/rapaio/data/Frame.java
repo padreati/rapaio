@@ -31,12 +31,7 @@
 
 package rapaio.data;
 
-import rapaio.data.preprocessing.RefSort;
-import rapaio.data.preprocessing.Transform;
-import rapaio.data.stream.FSpot;
-import rapaio.data.stream.FSpots;
-import rapaio.printer.Printable;
-import rapaio.util.IntComparator;
+import static java.util.stream.Collectors.toList;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -47,7 +42,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
+import rapaio.data.preprocessing.RefSort;
+import rapaio.data.preprocessing.Transform;
+import rapaio.data.stream.FSpot;
+import rapaio.data.stream.FSpots;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.printer.Printable;
+import rapaio.sys.WS;
+import rapaio.util.IntComparator;
 
 /**
  * Random access list of observed values for multiple variables.
@@ -563,6 +566,16 @@ public interface Frame extends Serializable, Printable {
             comparators[i] = this.rvar(names[i]).refComparator(asc);
         }
         return this.fapply(RefSort.by(comparators));
+    }
+
+    default Tensor<Double> dtNew() {
+        Tensor<Double> tensor = WS.tensorEngine().ofDouble().zeros(Shape.of(rowCount(), varCount()));
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < varCount(); j++) {
+                tensor.set(getDouble(i, j), i, j);
+            }
+        }
+        return tensor;
     }
 
     String head();

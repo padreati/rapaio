@@ -35,6 +35,7 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 /**
  * The Chi-Square kernel comes from the Chi-Square distribution.
@@ -43,6 +44,8 @@ import rapaio.math.linear.DVector;
  * <p>
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
+@Deprecated
+// TODO: check if the implementation is correct
 public class ChiSquareKernel extends AbstractKernel {
 
     @Serial
@@ -61,6 +64,17 @@ public class ChiSquareKernel extends AbstractKernel {
 
     @Override
     public double compute(DVector v, DVector u) {
+        double result = 0;
+        for (int i = 0; i < u.size(); i++) {
+            double sum = u.get(i) + v.get(i);
+            double diff = u.get(i) - v.get(i);
+            result = 2 * diff * diff / sum;
+        }
+        return 1 - result;
+    }
+
+    @Override
+    public double compute(Tensor<Double> v, Tensor<Double> u) {
         double result = 0;
         for (int i = 0; i < u.size(); i++) {
             double sum = u.get(i) + v.get(i);

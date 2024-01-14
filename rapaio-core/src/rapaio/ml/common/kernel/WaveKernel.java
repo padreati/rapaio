@@ -35,6 +35,7 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
 /**
@@ -83,6 +84,15 @@ public class WaveKernel extends AbstractKernel {
 
     @Override
     public double compute(DVector v, DVector u) {
+        double dot = deltaSumSquares(v, u);
+        if (dot <= 0) {
+            return 0;
+        }
+        return theta * Math.sin(dot / theta) / dot;
+    }
+
+    @Override
+    public double compute(Tensor<Double> v, Tensor<Double> u) {
         double dot = deltaSumSquares(v, u);
         if (dot <= 0) {
             return 0;

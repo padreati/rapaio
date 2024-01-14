@@ -47,6 +47,10 @@ import rapaio.util.collection.IntArrays;
 
 public final class StrideLayout implements Layout {
 
+    public static StrideLayout of(int[] dims, int offset, int[] strides) {
+        return new StrideLayout(Shape.of(dims), offset, strides);
+    }
+
     public static StrideLayout of(Shape shape, int offset, int[] strides) {
         return new StrideLayout(shape, offset, strides);
     }
@@ -127,10 +131,22 @@ public final class StrideLayout implements Layout {
     }
 
     public int stride(int i) {
-        if(strides.length==0) {
+        if (strides.length == 0) {
             return 1;
         }
         return i >= 0 ? strides[i] : strides[i + strides.length];
+    }
+
+    public int[] narrowStrides(int axis) {
+        int[] newStrides = new int[strides.length - 1];
+        if (axis < 0) {
+            axis += strides.length;
+        }
+        System.arraycopy(strides, 0, newStrides, 0, axis);
+        if (newStrides.length - axis > 0) {
+            System.arraycopy(strides, axis + 1, newStrides, axis, newStrides.length - axis);
+        }
+        return newStrides;
     }
 
     @Override

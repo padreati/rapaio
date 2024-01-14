@@ -35,6 +35,7 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
 /**
@@ -74,6 +75,12 @@ public class CauchyKernel extends AbstractKernel {
 
     @Override
     public double compute(DVector v, DVector u) {
+        double value = deltaSumSquares(u, v) / sigma;
+        return 1.0 / (1.0 + value * value);
+    }
+
+    @Override
+    public double compute(Tensor<Double> v, Tensor<Double> u) {
         double value = deltaSumSquares(u, v) / sigma;
         return 1.0 / (1.0 + value * value);
     }

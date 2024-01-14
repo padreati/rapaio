@@ -34,6 +34,7 @@ package rapaio.math.tensor.engine;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Random;
@@ -44,6 +45,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorEngine;
 import rapaio.math.tensor.engine.varray.VectorizedArrayTensorEngine;
 import rapaio.math.tensor.layout.StrideLayout;
@@ -81,6 +83,7 @@ public class TensorEngineTest {
         testWrap(engine, ofType);
         testConcatenate(engine, ofType);
         testStack(engine, ofType);
+        testTake(engine, ofType);
     }
 
     <N extends Number> void testZeros(TensorEngine engine, TensorEngine.OfType<N> ofType) {
@@ -197,7 +200,23 @@ public class TensorEngineTest {
             }
         }
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> engine.stack(0, List.of(t1, t2.transpose())));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> engine.stack(0, List.of(t1, t2.t_())));
         assertEquals("Tensors are not valid for stack, they have to have the same dimensions.", ex.getMessage());
+    }
+
+    <N extends Number> void testTake(TensorEngine engine, TensorEngine.OfType<N> ofType) {
+        // test a vector
+
+        Tensor<N> t = ofType.seq(Shape.of(100));
+        assertTrue(ofType.seq(Shape.of(3)).deepEquals(t.take(0, 0, 1, 2)));
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> t.take(-1, 43));
+        assertEquals("Axis is out of bounds.", e.getMessage());
+
+        Tensor<N> m = ofType.seq(Shape.of(4, 4));
+        assertTrue(ofType.stride(Shape.of(12), Order.C, 4, 5, 6, 7, 12, 13, 14, 15, 4, 5, 6, 7)
+                .deepEquals(m.take(0, 1, 3, 1).flatten(Order.C)));
+        assertTrue(ofType.stride(Shape.of(12), Order.C, 1, 3, 1, 5, 7, 5, 9, 11, 9, 13, 15, 13)
+                .deepEquals(m.take(1, 1, 3, 1).flatten(Order.C)));
     }
 }

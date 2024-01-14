@@ -95,7 +95,7 @@ public class SvmClassifierTest {
     }
 
     private static VectorDataGrid computMesh(SvmClassifier svm1, Var x1, Var x2) {
-        VectorDataGrid mg = new VectorDataGrid(3, x1.dv().min(), x1.dv().max(), x2.dv().min(), x2.dv().max(), 0.005);
+        VectorDataGrid mg = new VectorDataGrid(3, x1.dt().min(), x1.dt().max(), x2.dt().min(), x2.dt().max(), 0.005);
         var x = mg.getXRange();
         var y = mg.getYRange();
 

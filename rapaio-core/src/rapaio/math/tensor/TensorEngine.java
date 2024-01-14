@@ -167,26 +167,36 @@ public interface TensorEngine {
         return ofType(dType).stride(layout, storage);
     }
 
+    default <N extends Number> Tensor<N> concat(int axis, Collection<? extends Tensor<N>> tensors) {
+        return concat(Order.defaultOrder(), axis, tensors);
+    }
+
     /**
      * Concatenates multiple tensors along a given axis.
      * Tensors must have compatible size, all other dimensions must be equal.
      *
+     * @param order   storage order or the result
      * @param axis    axis to concatenate along
      * @param tensors tensors to concatenate
      * @return new tensor with concatenated data
      */
-    <N extends Number> Tensor<N> concat(int axis, Collection<? extends Tensor<N>> tensors);
+    <N extends Number> Tensor<N> concat(Order order, int axis, Collection<? extends Tensor<N>> tensors);
+
+    default <N extends Number> Tensor<N> stack(int axis, Collection<? extends Tensor<N>> tensors) {
+        return stack(Order.defaultOrder(), axis, tensors);
+    }
 
     /**
      * Concatenates multiple tensors along a new axis.
      * All tensors must have the same shape. The position of the new axis is between 0 (inclusive)
      * and the number of dimensions (inclusive).
      *
+     * @param order   storage order of the result
      * @param axis    index of the new dimension
      * @param tensors tensors to concatenate
      * @return new tensor with concatenated data
      */
-    <N extends Number> Tensor<N> stack(int axis, Collection<? extends Tensor<N>> tensors);
+    <N extends Number> Tensor<N> stack(Order order, int axis, Collection<? extends Tensor<N>> tensors);
 
     interface OfType<N extends Number> {
 

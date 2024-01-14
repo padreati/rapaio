@@ -35,6 +35,7 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
 /**
@@ -70,6 +71,15 @@ public class SphericalKernel extends AbstractKernel {
 
     @Override
     public double compute(DVector v, DVector u) {
+        double dot = deltaSumSquares(u, v);
+        if (dot < sigma)
+            return 0;
+        double f = dot / sigma;
+        return 1 - 3 * f / 2 + f * f * f / 2;
+    }
+
+    @Override
+    public double compute(Tensor<Double> v, Tensor<Double> u) {
         double dot = deltaSumSquares(u, v);
         if (dot < sigma)
             return 0;

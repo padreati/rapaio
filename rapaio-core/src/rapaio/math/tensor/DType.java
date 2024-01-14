@@ -31,6 +31,7 @@
 
 package rapaio.math.tensor;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -80,6 +81,10 @@ public abstract class DType<N extends Number> {
     public abstract <M extends Number> Function<N, M> castFunction(DType<M> dType);
 
     public abstract boolean isNaN(N value);
+
+    public abstract Comparator<N> naturalComparator();
+
+    public abstract Comparator<N> reverseComparator();
 
     @Override
     public boolean equals(Object o) {
@@ -139,6 +144,16 @@ public abstract class DType<N extends Number> {
         public boolean isNaN(Byte value) {
             return false;
         }
+
+        @Override
+        public Comparator<Byte> naturalComparator() {
+            return Comparator.naturalOrder();
+        }
+
+        @Override
+        public Comparator<Byte> reverseComparator() {
+            return Comparator.reverseOrder();
+        }
     }
 
     private static final class DTypeInteger extends DType<Integer> {
@@ -182,6 +197,16 @@ public abstract class DType<N extends Number> {
         @Override
         public boolean isNaN(Integer value) {
             return false;
+        }
+
+        @Override
+        public Comparator<Integer> naturalComparator() {
+            return Comparator.naturalOrder();
+        }
+
+        @Override
+        public Comparator<Integer> reverseComparator() {
+            return Comparator.reverseOrder();
         }
     }
 
@@ -228,6 +253,16 @@ public abstract class DType<N extends Number> {
         public boolean isNaN(Float value) {
             return Float.isNaN(value);
         }
+
+        @Override
+        public Comparator<Float> naturalComparator() {
+            return Comparator.naturalOrder();
+        }
+
+        @Override
+        public Comparator<Float> reverseComparator() {
+            return Comparator.reverseOrder();
+        }
     }
 
     private static final class DTypeDouble extends DType<Double> {
@@ -271,6 +306,16 @@ public abstract class DType<N extends Number> {
         @Override
         public boolean isNaN(Double value) {
             return Double.isNaN(value);
+        }
+
+        @Override
+        public Comparator<Double> naturalComparator() {
+            return Comparator.naturalOrder();
+        }
+
+        @Override
+        public Comparator<Double> reverseComparator() {
+            return Comparator.reverseOrder();
         }
     }
 }
