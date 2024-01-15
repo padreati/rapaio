@@ -262,7 +262,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     @Override
     public Tensor<Float> expand(int axis, int dim) {
         if (layout.dim(axis) != 1) {
-            throw new IllegalArgumentException(STR."Dimension \{axis} does not have dimension 1.");
+            throw new IllegalArgumentException(STR."Dimension \{axis} does not have size 1.");
         }
         if (dim < 1) {
             throw new IllegalArgumentException(STR."Dimension of the new axis \{dim} must be positive.");
@@ -382,8 +382,9 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     @Override
     public Tensor<Float> fill_(Float value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                storage.set(i, value);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                storage.set(p, value);
             }
         }
         return this;
@@ -392,9 +393,10 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     @Override
     public Tensor<Float> fillNan_(Float value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (dtype().isNaN(storage.getFloat(i))) {
-                    storage.setFloat(i, value);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (dtype().isNaN(storage.getFloat(p))) {
+                    storage.setFloat(p, value);
                 }
             }
         }
@@ -404,12 +406,13 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     @Override
     public Tensor<Float> clamp_(Float min, Float max) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (!dtype().isNaN(min) && storage.getFloat(i) < min) {
-                    storage.setFloat(i, min);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (!dtype().isNaN(min) && storage.getFloat(p) < min) {
+                    storage.setFloat(p, min);
                 }
-                if (!dtype().isNaN(max) && storage.getFloat(i) > max) {
-                    storage.setFloat(i, max);
+                if (!dtype().isNaN(max) && storage.getFloat(p) > max) {
+                    storage.setFloat(p, max);
                 }
             }
         }
@@ -418,8 +421,9 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
 
     private void unaryOpStep(TensorUnaryOp op) {
         for (int off : loop.offsets) {
-            for (int i = off; i < loop.bound + off; i += loop.step) {
-                storage.setFloat(i, op.applyFloat(storage.getFloat(i)));
+            for (int i = 0; i < loop.size; i++) {
+                int p = off + i * loop.step;
+                storage.setFloat(p, op.applyFloat(storage.getFloat(p)));
             }
         }
     }
@@ -566,8 +570,9 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
 
     void binaryScalarOpStep(TensorBinaryOp op, float value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                storage.setFloat(i, op.applyFloat(storage.getFloat(i), value));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                storage.setFloat(p, op.applyFloat(storage.getFloat(p), value));
             }
         }
     }
@@ -757,11 +762,11 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         float sum = 0;
         float nanSum = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum += storage.getFloat(i);
-                if (!dtype().isNaN(storage.getFloat(i))) {
-                    nanSum += storage.getFloat(i);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum += storage.getFloat(p);
+                if (!dtype().isNaN(storage.getFloat(p))) {
+                    nanSum += storage.getFloat(p);
                     nanSize++;
                 }
             }
@@ -773,11 +778,11 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         sum = 0;
         nanSum = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum += (float) (storage.getFloat(i) - mean);
-                if (!dtype().isNaN(storage.getFloat(i))) {
-                    nanSum += (float) (storage.getFloat(i) - nanMean);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum += (float) (storage.getFloat(p) - mean);
+                if (!dtype().isNaN(storage.getFloat(p))) {
+                    nanSum += (float) (storage.getFloat(p) - nanMean);
                 }
             }
         }
@@ -791,13 +796,13 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         float nanSum3 = 0;
 
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum2 += (float) ((storage.getFloat(i) - mean) * (storage.getFloat(i) - mean));
-                sum3 += (float) (storage.getFloat(i) - mean);
-                if (!dtype().isNaN(storage.getFloat(i))) {
-                    nanSum2 += (float) ((storage.getFloat(i) - nanMean) * (storage.getFloat(i) - nanMean));
-                    nanSum3 += (float) (storage.getFloat(i) - nanMean);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum2 += (float) ((storage.getFloat(p) - mean) * (storage.getFloat(p) - mean));
+                sum3 += (float) (storage.getFloat(p) - mean);
+                if (!dtype().isNaN(storage.getFloat(p))) {
+                    nanSum2 += (float) ((storage.getFloat(p) - nanMean) * (storage.getFloat(p) - nanMean));
+                    nanSum3 += (float) (storage.getFloat(p) - nanMean);
                 }
             }
         }
@@ -891,9 +896,9 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     public int nanCount() {
         int count = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                if (dtype().isNaN(storage.getFloat(i))) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (dtype().isNaN(storage.getFloat(p))) {
                     count++;
                 }
             }
@@ -905,8 +910,9 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     public int zeroCount() {
         int count = 0;
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (storage.getFloat(i) == 0) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (storage.getFloat(p) == 0) {
                     count++;
                 }
             }
@@ -917,8 +923,9 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     protected float associativeOp(TensorAssociativeOp op) {
         float agg = op.initialFloat();
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                agg = op.applyFloat(agg, storage.getFloat(i));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                agg = op.applyFloat(agg, storage.getFloat(p));
             }
         }
         return agg;
@@ -927,9 +934,10 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     protected float nanAssociativeOp(TensorAssociativeOp op) {
         float aggregate = op.initialFloat();
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (!dtype().isNaN(storage.getFloat(i))) {
-                    aggregate = op.applyFloat(aggregate, storage.getFloat(i));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (!dtype().isNaN(storage.getFloat(p))) {
+                    aggregate = op.applyFloat(aggregate, storage.getFloat(p));
                 }
             }
         }
@@ -986,11 +994,12 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     private void sameLayoutCopy(Storage<Float> copy, Order askOrder) {
-        var chd = StrideLoopDescriptor.of(layout, askOrder);
+        var loop = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
-        for (int ptr : chd.offsets) {
-            for (int i = ptr; i < ptr + chd.bound; i += chd.step) {
-                copy.setFloat(last++, storage.getFloat(i));
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                copy.setFloat(last++, storage.getFloat(p));
             }
         }
     }
@@ -1071,11 +1080,12 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     private void directCopyTo(BaseFloatTensorStride src, BaseFloatTensorStride dst, Order askOrder) {
-        var chd = StrideLoopDescriptor.of(src.layout, askOrder);
+        var loop = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
-        for (int ptr : chd.offsets) {
-            for (int i = ptr; i < ptr + chd.bound; i += chd.step) {
-                dst.storage.setFloat(it2.nextInt(), src.storage.getFloat(i));
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                dst.storage.setFloat(it2.nextInt(), src.storage.getFloat(p));
             }
         }
     }
@@ -1087,8 +1097,9 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         float[] copy = new float[size()];
         int pos = 0;
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i++) {
-                copy[pos++] = storage.getFloat(i);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                copy[pos++] = storage.getFloat(p);
             }
         }
         return copy;

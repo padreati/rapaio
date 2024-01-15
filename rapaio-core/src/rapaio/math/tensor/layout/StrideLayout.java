@@ -255,7 +255,22 @@ public final class StrideLayout implements Layout {
             case S -> {
                 int[] storageOrder = IntArrays.newSeq(shape.rank());
                 IntArrays.quickSort(storageOrder,
-                        IntComparators.asIntComparator(Comparator.comparingInt(this::stride).thenComparing(this::dim)));
+                        (i, j) -> {
+                            if (strides[i] == 0 && strides[j] == 0) {
+                                return Integer.compare(dim(i), dim(j));
+                            }
+                            if (strides[i] == 0) {
+                                return 1;
+                            }
+                            if (strides[j] == 0) {
+                                return -1;
+                            }
+                            int cmp = Integer.compare(strides[i], strides[j]);
+                            if (cmp != 0) {
+                                return cmp;
+                            }
+                            return Integer.compare(dim(i), dim(j));
+                        });
                 newDims = IntArrays.newPermutation(shape.dims(), storageOrder);
                 newStrides = IntArrays.newPermutation(strides, storageOrder);
             }
@@ -276,54 +291,6 @@ public final class StrideLayout implements Layout {
         for (int i = 1; i < dims.length; i++) {
             if (dims[len - 1] * strides[len - 1] == strides[i]) {
                 dims[len - 1] *= dims[i];
-                continue;
-            }
-            dims[len] = dims[i];
-            strides[len] = strides[i];
-            len++;
-        }
-        return len;
-    }
-
-    public StrideLayout computeCLayout(Order askOrder, boolean compact) {
-        int[] newDims;
-        int[] newStrides;
-        switch (askOrder) {
-            case F -> {
-                newDims = Arrays.copyOf(shape.dims(), shape.rank());
-                newStrides = Arrays.copyOf(strides, shape.rank());
-                IntArrays.reverse(newDims);
-                IntArrays.reverse(newStrides);
-            }
-            case C -> {
-                newDims = Arrays.copyOf(shape.dims(), shape.rank());
-                newStrides = Arrays.copyOf(strides, shape.rank());
-            }
-            case S -> {
-                int[] storageOrder = IntArrays.newSeq(shape.rank());
-                IntArrays.quickSort(storageOrder,
-                        IntComparators.asIntComparator(Comparator.comparingInt(this::stride).thenComparing(this::dim).reversed()));
-                newDims = IntArrays.newPermutation(shape.dims(), storageOrder);
-                newStrides = IntArrays.newPermutation(strides, storageOrder);
-            }
-            default -> throw new IllegalStateException();
-        }
-        if (!compact) {
-            return new StrideLayout(Shape.of(newDims), offset, newStrides);
-        }
-        int len = compactFortranLayout(newDims, newStrides);
-        return new StrideLayout(Shape.of(Arrays.copyOf(newDims, len)), offset, Arrays.copyOf(newStrides, len));
-    }
-
-    private int compactCLayout(int[] dims, int[] strides) {
-        if (rank() < 2) {
-            return rank();
-        }
-        int len = 1;
-        for (int i = 1; i < dims.length; i++) {
-            if (strides[len - 1] == dims[i] * strides[i]) {
-                dims[len - 1] *= dims[i];
-                strides[len - 1] = strides[i];
                 continue;
             }
             dims[len] = dims[i];

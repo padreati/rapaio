@@ -262,7 +262,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     @Override
     public Tensor<Double> expand(int axis, int dim) {
         if (layout.dim(axis) != 1) {
-            throw new IllegalArgumentException(STR."Dimension \{axis} does not have dimension 1.");
+            throw new IllegalArgumentException(STR."Dimension \{axis} does not have size 1.");
         }
         if (dim < 1) {
             throw new IllegalArgumentException(STR."Dimension of the new axis \{dim} must be positive.");
@@ -382,8 +382,9 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     @Override
     public Tensor<Double> fill_(Double value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                storage.set(i, value);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                storage.set(p, value);
             }
         }
         return this;
@@ -392,9 +393,10 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     @Override
     public Tensor<Double> fillNan_(Double value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (dtype().isNaN(storage.getDouble(i))) {
-                    storage.setDouble(i, value);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (dtype().isNaN(storage.getDouble(p))) {
+                    storage.setDouble(p, value);
                 }
             }
         }
@@ -404,12 +406,13 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     @Override
     public Tensor<Double> clamp_(Double min, Double max) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (!dtype().isNaN(min) && storage.getDouble(i) < min) {
-                    storage.setDouble(i, min);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (!dtype().isNaN(min) && storage.getDouble(p) < min) {
+                    storage.setDouble(p, min);
                 }
-                if (!dtype().isNaN(max) && storage.getDouble(i) > max) {
-                    storage.setDouble(i, max);
+                if (!dtype().isNaN(max) && storage.getDouble(p) > max) {
+                    storage.setDouble(p, max);
                 }
             }
         }
@@ -418,8 +421,9 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
 
     private void unaryOpStep(TensorUnaryOp op) {
         for (int off : loop.offsets) {
-            for (int i = off; i < loop.bound + off; i += loop.step) {
-                storage.setDouble(i, op.applyDouble(storage.getDouble(i)));
+            for (int i = 0; i < loop.size; i++) {
+                int p = off + i * loop.step;
+                storage.setDouble(p, op.applyDouble(storage.getDouble(p)));
             }
         }
     }
@@ -566,8 +570,9 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
 
     void binaryScalarOpStep(TensorBinaryOp op, double value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                storage.setDouble(i, op.applyDouble(storage.getDouble(i), value));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                storage.setDouble(p, op.applyDouble(storage.getDouble(p), value));
             }
         }
     }
@@ -757,11 +762,11 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         double sum = 0;
         double nanSum = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum += storage.getDouble(i);
-                if (!dtype().isNaN(storage.getDouble(i))) {
-                    nanSum += storage.getDouble(i);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum += storage.getDouble(p);
+                if (!dtype().isNaN(storage.getDouble(p))) {
+                    nanSum += storage.getDouble(p);
                     nanSize++;
                 }
             }
@@ -773,11 +778,11 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         sum = 0;
         nanSum = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum += (double) (storage.getDouble(i) - mean);
-                if (!dtype().isNaN(storage.getDouble(i))) {
-                    nanSum += (double) (storage.getDouble(i) - nanMean);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum += (double) (storage.getDouble(p) - mean);
+                if (!dtype().isNaN(storage.getDouble(p))) {
+                    nanSum += (double) (storage.getDouble(p) - nanMean);
                 }
             }
         }
@@ -791,13 +796,13 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         double nanSum3 = 0;
 
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum2 += (double) ((storage.getDouble(i) - mean) * (storage.getDouble(i) - mean));
-                sum3 += (double) (storage.getDouble(i) - mean);
-                if (!dtype().isNaN(storage.getDouble(i))) {
-                    nanSum2 += (double) ((storage.getDouble(i) - nanMean) * (storage.getDouble(i) - nanMean));
-                    nanSum3 += (double) (storage.getDouble(i) - nanMean);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum2 += (double) ((storage.getDouble(p) - mean) * (storage.getDouble(p) - mean));
+                sum3 += (double) (storage.getDouble(p) - mean);
+                if (!dtype().isNaN(storage.getDouble(p))) {
+                    nanSum2 += (double) ((storage.getDouble(p) - nanMean) * (storage.getDouble(p) - nanMean));
+                    nanSum3 += (double) (storage.getDouble(p) - nanMean);
                 }
             }
         }
@@ -891,9 +896,9 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     public int nanCount() {
         int count = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                if (dtype().isNaN(storage.getDouble(i))) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (dtype().isNaN(storage.getDouble(p))) {
                     count++;
                 }
             }
@@ -905,8 +910,9 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     public int zeroCount() {
         int count = 0;
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (storage.getDouble(i) == 0) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (storage.getDouble(p) == 0) {
                     count++;
                 }
             }
@@ -917,8 +923,9 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     protected double associativeOp(TensorAssociativeOp op) {
         double agg = op.initialDouble();
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                agg = op.applyDouble(agg, storage.getDouble(i));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                agg = op.applyDouble(agg, storage.getDouble(p));
             }
         }
         return agg;
@@ -927,9 +934,10 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     protected double nanAssociativeOp(TensorAssociativeOp op) {
         double aggregate = op.initialDouble();
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (!dtype().isNaN(storage.getDouble(i))) {
-                    aggregate = op.applyDouble(aggregate, storage.getDouble(i));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (!dtype().isNaN(storage.getDouble(p))) {
+                    aggregate = op.applyDouble(aggregate, storage.getDouble(p));
                 }
             }
         }
@@ -986,11 +994,12 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     private void sameLayoutCopy(Storage<Double> copy, Order askOrder) {
-        var chd = StrideLoopDescriptor.of(layout, askOrder);
+        var loop = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
-        for (int ptr : chd.offsets) {
-            for (int i = ptr; i < ptr + chd.bound; i += chd.step) {
-                copy.setDouble(last++, storage.getDouble(i));
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                copy.setDouble(last++, storage.getDouble(p));
             }
         }
     }
@@ -1071,11 +1080,12 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     private void directCopyTo(BaseDoubleTensorStride src, BaseDoubleTensorStride dst, Order askOrder) {
-        var chd = StrideLoopDescriptor.of(src.layout, askOrder);
+        var loop = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
-        for (int ptr : chd.offsets) {
-            for (int i = ptr; i < ptr + chd.bound; i += chd.step) {
-                dst.storage.setDouble(it2.nextInt(), src.storage.getDouble(i));
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                dst.storage.setDouble(it2.nextInt(), src.storage.getDouble(p));
             }
         }
     }
@@ -1087,8 +1097,9 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         double[] copy = new double[size()];
         int pos = 0;
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i++) {
-                copy[pos++] = storage.getDouble(i);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                copy[pos++] = storage.getDouble(p);
             }
         }
         return copy;

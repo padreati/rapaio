@@ -172,7 +172,6 @@ public class LoopIteratorTest {
         assertEquals(it.step(), descriptor.step);
         assertEquals(it.size(), descriptor.size);
         assertEquals(it.count(), descriptor.count);
-        assertEquals(it.bound(), descriptor.bound);
         assertArrayEquals(it.computeOffsets(), descriptor.offsets);
     }
 }

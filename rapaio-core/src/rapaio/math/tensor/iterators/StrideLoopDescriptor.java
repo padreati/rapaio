@@ -54,7 +54,6 @@ public final class StrideLoopDescriptor {
 
     public final int size;
     public final int step;
-    public final int bound;
     public final int count;
     public final int[] offsets;
 
@@ -67,7 +66,6 @@ public final class StrideLoopDescriptor {
         if (layout.shape().rank() == 0) {
             size = 1;
             step = 1;
-            bound = 1;
             count = 1;
             offsets = new int[] {layout.offset()};
             return;
@@ -76,7 +74,6 @@ public final class StrideLoopDescriptor {
         var compact = layout.computeFortranLayout(askOrder, true);
         size = compact.dim(0);
         step = compact.stride(0);
-        bound = size * step;
 
         if (compact.rank() == 1) {
             count = 1;

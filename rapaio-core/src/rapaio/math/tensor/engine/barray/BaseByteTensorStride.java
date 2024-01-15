@@ -262,7 +262,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     @Override
     public Tensor<Byte> expand(int axis, int dim) {
         if (layout.dim(axis) != 1) {
-            throw new IllegalArgumentException(STR."Dimension \{axis} does not have dimension 1.");
+            throw new IllegalArgumentException(STR."Dimension \{axis} does not have size 1.");
         }
         if (dim < 1) {
             throw new IllegalArgumentException(STR."Dimension of the new axis \{dim} must be positive.");
@@ -382,8 +382,9 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     @Override
     public Tensor<Byte> fill_(Byte value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                storage.set(i, value);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                storage.set(p, value);
             }
         }
         return this;
@@ -392,9 +393,10 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     @Override
     public Tensor<Byte> fillNan_(Byte value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (dtype().isNaN(storage.getByte(i))) {
-                    storage.setByte(i, value);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (dtype().isNaN(storage.getByte(p))) {
+                    storage.setByte(p, value);
                 }
             }
         }
@@ -404,12 +406,13 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     @Override
     public Tensor<Byte> clamp_(Byte min, Byte max) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (!dtype().isNaN(min) && storage.getByte(i) < min) {
-                    storage.setByte(i, min);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (!dtype().isNaN(min) && storage.getByte(p) < min) {
+                    storage.setByte(p, min);
                 }
-                if (!dtype().isNaN(max) && storage.getByte(i) > max) {
-                    storage.setByte(i, max);
+                if (!dtype().isNaN(max) && storage.getByte(p) > max) {
+                    storage.setByte(p, max);
                 }
             }
         }
@@ -418,8 +421,9 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
 
     private void unaryOpStep(TensorUnaryOp op) {
         for (int off : loop.offsets) {
-            for (int i = off; i < loop.bound + off; i += loop.step) {
-                storage.setByte(i, op.applyByte(storage.getByte(i)));
+            for (int i = 0; i < loop.size; i++) {
+                int p = off + i * loop.step;
+                storage.setByte(p, op.applyByte(storage.getByte(p)));
             }
         }
     }
@@ -566,8 +570,9 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
 
     void binaryScalarOpStep(TensorBinaryOp op, byte value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                storage.setByte(i, op.applyByte(storage.getByte(i), value));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                storage.setByte(p, op.applyByte(storage.getByte(p), value));
             }
         }
     }
@@ -757,11 +762,11 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         byte sum = 0;
         byte nanSum = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum += storage.getByte(i);
-                if (!dtype().isNaN(storage.getByte(i))) {
-                    nanSum += storage.getByte(i);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum += storage.getByte(p);
+                if (!dtype().isNaN(storage.getByte(p))) {
+                    nanSum += storage.getByte(p);
                     nanSize++;
                 }
             }
@@ -773,11 +778,11 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         sum = 0;
         nanSum = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum += (byte) (storage.getByte(i) - mean);
-                if (!dtype().isNaN(storage.getByte(i))) {
-                    nanSum += (byte) (storage.getByte(i) - nanMean);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum += (byte) (storage.getByte(p) - mean);
+                if (!dtype().isNaN(storage.getByte(p))) {
+                    nanSum += (byte) (storage.getByte(p) - nanMean);
                 }
             }
         }
@@ -791,13 +796,13 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         byte nanSum3 = 0;
 
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum2 += (byte) ((storage.getByte(i) - mean) * (storage.getByte(i) - mean));
-                sum3 += (byte) (storage.getByte(i) - mean);
-                if (!dtype().isNaN(storage.getByte(i))) {
-                    nanSum2 += (byte) ((storage.getByte(i) - nanMean) * (storage.getByte(i) - nanMean));
-                    nanSum3 += (byte) (storage.getByte(i) - nanMean);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum2 += (byte) ((storage.getByte(p) - mean) * (storage.getByte(p) - mean));
+                sum3 += (byte) (storage.getByte(p) - mean);
+                if (!dtype().isNaN(storage.getByte(p))) {
+                    nanSum2 += (byte) ((storage.getByte(p) - nanMean) * (storage.getByte(p) - nanMean));
+                    nanSum3 += (byte) (storage.getByte(p) - nanMean);
                 }
             }
         }
@@ -891,9 +896,9 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     public int nanCount() {
         int count = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                if (dtype().isNaN(storage.getByte(i))) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (dtype().isNaN(storage.getByte(p))) {
                     count++;
                 }
             }
@@ -905,8 +910,9 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     public int zeroCount() {
         int count = 0;
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (storage.getByte(i) == 0) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (storage.getByte(p) == 0) {
                     count++;
                 }
             }
@@ -917,8 +923,9 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     protected byte associativeOp(TensorAssociativeOp op) {
         byte agg = op.initialByte();
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                agg = op.applyByte(agg, storage.getByte(i));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                agg = op.applyByte(agg, storage.getByte(p));
             }
         }
         return agg;
@@ -927,9 +934,10 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     protected byte nanAssociativeOp(TensorAssociativeOp op) {
         byte aggregate = op.initialByte();
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (!dtype().isNaN(storage.getByte(i))) {
-                    aggregate = op.applyByte(aggregate, storage.getByte(i));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (!dtype().isNaN(storage.getByte(p))) {
+                    aggregate = op.applyByte(aggregate, storage.getByte(p));
                 }
             }
         }
@@ -986,11 +994,12 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     private void sameLayoutCopy(Storage<Byte> copy, Order askOrder) {
-        var chd = StrideLoopDescriptor.of(layout, askOrder);
+        var loop = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
-        for (int ptr : chd.offsets) {
-            for (int i = ptr; i < ptr + chd.bound; i += chd.step) {
-                copy.setByte(last++, storage.getByte(i));
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                copy.setByte(last++, storage.getByte(p));
             }
         }
     }
@@ -1071,11 +1080,12 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     private void directCopyTo(BaseByteTensorStride src, BaseByteTensorStride dst, Order askOrder) {
-        var chd = StrideLoopDescriptor.of(src.layout, askOrder);
+        var loop = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
-        for (int ptr : chd.offsets) {
-            for (int i = ptr; i < ptr + chd.bound; i += chd.step) {
-                dst.storage.setByte(it2.nextInt(), src.storage.getByte(i));
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                dst.storage.setByte(it2.nextInt(), src.storage.getByte(p));
             }
         }
     }
@@ -1087,8 +1097,9 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         byte[] copy = new byte[size()];
         int pos = 0;
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i++) {
-                copy[pos++] = storage.getByte(i);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                copy[pos++] = storage.getByte(p);
             }
         }
         return copy;

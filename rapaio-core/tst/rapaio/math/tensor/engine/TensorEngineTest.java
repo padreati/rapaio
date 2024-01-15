@@ -84,6 +84,7 @@ public class TensorEngineTest {
         testConcatenate(engine, ofType);
         testStack(engine, ofType);
         testTake(engine, ofType);
+        testExpand(engine, ofType);
     }
 
     <N extends Number> void testZeros(TensorEngine engine, TensorEngine.OfType<N> ofType) {
@@ -205,8 +206,6 @@ public class TensorEngineTest {
     }
 
     <N extends Number> void testTake(TensorEngine engine, TensorEngine.OfType<N> ofType) {
-        // test a vector
-
         Tensor<N> t = ofType.seq(Shape.of(100));
         assertTrue(ofType.seq(Shape.of(3)).deepEquals(t.take(0, 0, 1, 2)));
 
@@ -219,4 +218,37 @@ public class TensorEngineTest {
         assertTrue(ofType.stride(Shape.of(12), Order.C, 1, 3, 1, 5, 7, 5, 9, 11, 9, 13, 15, 13)
                 .deepEquals(m.take(1, 1, 3, 1).flatten(Order.C)));
     }
+
+    <N extends Number> void testExpand(TensorEngine engine, TensorEngine.OfType<N> ofType) {
+        Tensor<N> t1 = ofType.seq(Shape.of(4, 1, 2));
+        Tensor<N> exp1 = t1.expand(1, 2);
+        assertTrue(t1.deepEquals(exp1.narrow(1, true, 0, 1)));
+        assertTrue(t1.deepEquals(exp1.narrow(1, true, 1, 2)));
+        assertEquals(Shape.of(4,2,2), exp1.shape());
+        // add 1, which should be added twice
+        exp1.add_(ofType.dtype().castValue(1));
+        assertTrue(ofType.seq(Shape.of(4,1,2)).add_(ofType.dtype().castValue(2)).deepEquals(t1));
+
+        Tensor<N> t2 = ofType.seq(Shape.of(4, 2, 1));
+        Tensor<N> exp2 = t2.expand(2, 2);
+        assertTrue(t2.deepEquals(exp2.narrow(2, true, 0, 1)));
+        assertTrue(t2.deepEquals(exp2.narrow(2, true, 1, 2)));
+        assertEquals(Shape.of(4,2,2), exp2.shape());
+        // add 1, which should be added twice
+        exp2.add_(ofType.dtype().castValue(1));
+        assertTrue(ofType.seq(Shape.of(4,2,1)).add_(ofType.dtype().castValue(2)).deepEquals(t2));
+
+        Tensor<N> t3 = ofType.seq(Shape.of(1, 2, 4));
+        Tensor<N> exp3 = t3.expand(0, 2);
+        assertTrue(t3.deepEquals(exp3.narrow(0, true, 0, 1)));
+        assertTrue(t3.deepEquals(exp3.narrow(0, true, 1, 2)));
+        assertEquals(Shape.of(2,2,4), exp3.shape());
+        // add 1, which should be added twice
+        exp3.add_(ofType.dtype().castValue(1));
+        assertTrue(ofType.seq(Shape.of(1,2,4)).add_(ofType.dtype().castValue(2)).deepEquals(t3));
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> ofType.seq(Shape.of(2,3,4)).expand(0, 10));
+        assertEquals("Dimension 0 does not have size 1.", e.getMessage());
+    }
+
 }

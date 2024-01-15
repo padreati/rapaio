@@ -262,7 +262,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     @Override
     public Tensor<Integer> expand(int axis, int dim) {
         if (layout.dim(axis) != 1) {
-            throw new IllegalArgumentException(STR."Dimension \{axis} does not have dimension 1.");
+            throw new IllegalArgumentException(STR."Dimension \{axis} does not have size 1.");
         }
         if (dim < 1) {
             throw new IllegalArgumentException(STR."Dimension of the new axis \{dim} must be positive.");
@@ -382,8 +382,9 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     @Override
     public Tensor<Integer> fill_(Integer value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                storage.set(i, value);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                storage.set(p, value);
             }
         }
         return this;
@@ -392,9 +393,10 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     @Override
     public Tensor<Integer> fillNan_(Integer value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (dtype().isNaN(storage.getInt(i))) {
-                    storage.setInt(i, value);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (dtype().isNaN(storage.getInt(p))) {
+                    storage.setInt(p, value);
                 }
             }
         }
@@ -404,12 +406,13 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     @Override
     public Tensor<Integer> clamp_(Integer min, Integer max) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (!dtype().isNaN(min) && storage.getInt(i) < min) {
-                    storage.setInt(i, min);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (!dtype().isNaN(min) && storage.getInt(p) < min) {
+                    storage.setInt(p, min);
                 }
-                if (!dtype().isNaN(max) && storage.getInt(i) > max) {
-                    storage.setInt(i, max);
+                if (!dtype().isNaN(max) && storage.getInt(p) > max) {
+                    storage.setInt(p, max);
                 }
             }
         }
@@ -418,8 +421,9 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
 
     private void unaryOpStep(TensorUnaryOp op) {
         for (int off : loop.offsets) {
-            for (int i = off; i < loop.bound + off; i += loop.step) {
-                storage.setInt(i, op.applyInt(storage.getInt(i)));
+            for (int i = 0; i < loop.size; i++) {
+                int p = off + i * loop.step;
+                storage.setInt(p, op.applyInt(storage.getInt(p)));
             }
         }
     }
@@ -566,8 +570,9 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
 
     void binaryScalarOpStep(TensorBinaryOp op, int value) {
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                storage.setInt(i, op.applyInt(storage.getInt(i), value));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                storage.setInt(p, op.applyInt(storage.getInt(p), value));
             }
         }
     }
@@ -757,11 +762,11 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         int sum = 0;
         int nanSum = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum += storage.getInt(i);
-                if (!dtype().isNaN(storage.getInt(i))) {
-                    nanSum += storage.getInt(i);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum += storage.getInt(p);
+                if (!dtype().isNaN(storage.getInt(p))) {
+                    nanSum += storage.getInt(p);
                     nanSize++;
                 }
             }
@@ -773,11 +778,11 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         sum = 0;
         nanSum = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum += (int) (storage.getInt(i) - mean);
-                if (!dtype().isNaN(storage.getInt(i))) {
-                    nanSum += (int) (storage.getInt(i) - nanMean);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum += (int) (storage.getInt(p) - mean);
+                if (!dtype().isNaN(storage.getInt(p))) {
+                    nanSum += (int) (storage.getInt(p) - nanMean);
                 }
             }
         }
@@ -791,13 +796,13 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         int nanSum3 = 0;
 
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                sum2 += (int) ((storage.getInt(i) - mean) * (storage.getInt(i) - mean));
-                sum3 += (int) (storage.getInt(i) - mean);
-                if (!dtype().isNaN(storage.getInt(i))) {
-                    nanSum2 += (int) ((storage.getInt(i) - nanMean) * (storage.getInt(i) - nanMean));
-                    nanSum3 += (int) (storage.getInt(i) - nanMean);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum2 += (int) ((storage.getInt(p) - mean) * (storage.getInt(p) - mean));
+                sum3 += (int) (storage.getInt(p) - mean);
+                if (!dtype().isNaN(storage.getInt(p))) {
+                    nanSum2 += (int) ((storage.getInt(p) - nanMean) * (storage.getInt(p) - nanMean));
+                    nanSum3 += (int) (storage.getInt(p) - nanMean);
                 }
             }
         }
@@ -891,9 +896,9 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     public int nanCount() {
         int count = 0;
         for (int offset : loop.offsets) {
-            int i = offset;
-            for (; i < loop.bound + offset; i += loop.step) {
-                if (dtype().isNaN(storage.getInt(i))) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (dtype().isNaN(storage.getInt(p))) {
                     count++;
                 }
             }
@@ -905,8 +910,9 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     public int zeroCount() {
         int count = 0;
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (storage.getInt(i) == 0) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (storage.getInt(p) == 0) {
                     count++;
                 }
             }
@@ -917,8 +923,9 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     protected int associativeOp(TensorAssociativeOp op) {
         int agg = op.initialInt();
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                agg = op.applyInt(agg, storage.getInt(i));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                agg = op.applyInt(agg, storage.getInt(p));
             }
         }
         return agg;
@@ -927,9 +934,10 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     protected int nanAssociativeOp(TensorAssociativeOp op) {
         int aggregate = op.initialInt();
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i += loop.step) {
-                if (!dtype().isNaN(storage.getInt(i))) {
-                    aggregate = op.applyInt(aggregate, storage.getInt(i));
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (!dtype().isNaN(storage.getInt(p))) {
+                    aggregate = op.applyInt(aggregate, storage.getInt(p));
                 }
             }
         }
@@ -986,11 +994,12 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     private void sameLayoutCopy(Storage<Integer> copy, Order askOrder) {
-        var chd = StrideLoopDescriptor.of(layout, askOrder);
+        var loop = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
-        for (int ptr : chd.offsets) {
-            for (int i = ptr; i < ptr + chd.bound; i += chd.step) {
-                copy.setInt(last++, storage.getInt(i));
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                copy.setInt(last++, storage.getInt(p));
             }
         }
     }
@@ -1071,11 +1080,12 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     private void directCopyTo(BaseIntTensorStride src, BaseIntTensorStride dst, Order askOrder) {
-        var chd = StrideLoopDescriptor.of(src.layout, askOrder);
+        var loop = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
-        for (int ptr : chd.offsets) {
-            for (int i = ptr; i < ptr + chd.bound; i += chd.step) {
-                dst.storage.setInt(it2.nextInt(), src.storage.getInt(i));
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                dst.storage.setInt(it2.nextInt(), src.storage.getInt(p));
             }
         }
     }
@@ -1087,8 +1097,9 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         int[] copy = new int[size()];
         int pos = 0;
         for (int offset : loop.offsets) {
-            for (int i = offset; i < loop.bound + offset; i++) {
-                copy[pos++] = storage.getInt(i);
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                copy[pos++] = storage.getInt(p);
             }
         }
         return copy;
