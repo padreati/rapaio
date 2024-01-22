@@ -47,7 +47,6 @@ import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
@@ -413,7 +412,7 @@ public interface Var extends Serializable, Printable {
         for (int i = 0; i < copy.length; i++) {
             copy[i] = getDouble(i);
         }
-        return WS.tensorEngine().stride(DType.DOUBLE, Shape.of(size()), Order.C, WS.tensorEngine().ofDouble().storage().from(copy));
+        return WS.tensorEngine().ofDouble().stride(Shape.of(size()), Order.C, WS.tensorEngine().ofDouble().storage().from(copy));
     }
 
     /**

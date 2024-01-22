@@ -54,6 +54,7 @@ module rapaio.core {
     exports rapaio.math.tensor.layout;
     exports rapaio.math.tensor.operator;
     exports rapaio.math.tensor.storage;
+    exports rapaio.math.tensor.matrix;
 
     exports rapaio.ml.common;
     exports rapaio.ml.common.distance;

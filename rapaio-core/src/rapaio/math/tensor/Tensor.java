@@ -40,6 +40,7 @@ import java.util.function.Function;
 import rapaio.data.VarDouble;
 import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
+import rapaio.math.tensor.matrix.CholeskyDecomposition;
 import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
 
@@ -94,8 +95,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return layout().size();
     }
 
+    Storage<N> storage();
+
     default boolean isScalar() {
-        return shape().dims().length == 0;
+        return rank() == 0;
+    }
+
+    default boolean isVector() {
+        return rank() == 1;
+    }
+
+    default boolean isMatrix() {
+        return rank() == 2;
     }
 
     /**
@@ -297,8 +308,6 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> repeat(int axis, int repeat, boolean stack);
 
-    Tensor<N> tile(int[] repeats);
-
     Tensor<N> expand(int axis, int dim);
 
     default Tensor<N> take(int axis, int... indices) {
@@ -356,6 +365,22 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     void setFloat(float value, int... indexes);
 
     void setDouble(double value, int... indexes);
+
+    /**
+     * Sets value at indexed position.
+     *
+     * @param value   value to be set
+     * @param indexes indexed position
+     */
+    void inc(N value, int... indexes);
+
+    void incByte(byte value, int... indexes);
+
+    void incInt(int value, int... indexes);
+
+    void incFloat(float value, int... indexes);
+
+    void incDouble(double value, int... indexes);
 
     /**
      * Get value at pointer. A pointer is an index value at the memory layout.
@@ -755,6 +780,14 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     Tensor<N> mm(Tensor<N> tensor, Order askOrder);
+
+    default CholeskyDecomposition<N> chol() {
+        return chol(true);
+    }
+
+    default CholeskyDecomposition<N> chol(boolean flag) {
+        return new CholeskyDecomposition<>(this, flag);
+    }
 
     Statistics<N> stats();
 

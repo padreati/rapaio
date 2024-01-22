@@ -73,7 +73,6 @@ import rapaio.math.tensor.layout.StrideWrapper;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
-import rapaio.util.NotImplementedException;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
@@ -255,11 +254,6 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     @Override
-    public Tensor<Integer> tile(int[] repeats) {
-        throw new NotImplementedException();
-    }
-
-    @Override
     public Tensor<Integer> expand(int axis, int dim) {
         if (layout.dim(axis) != 1) {
             throw new IllegalArgumentException(STR."Dimension \{axis} does not have size 1.");
@@ -322,6 +316,10 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         storage.setInt(layout.pointer(indexes), value);
     }
 
+    @Override
+    public void inc(Integer value, int... indexes) {
+        storage.incInt(layout.pointer(indexes), value);
+    }
 
     @Override
     public Integer ptrGet(int ptr) {
@@ -698,7 +696,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         List<Tensor<Integer>> rows = chunk(0, false, 1);
         List<Tensor<Integer>> cols = t.chunk(1, false, 1);
 
-        int chunk = (int) floor(sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().bytes()));
+        int chunk = (int) floor(sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
 
         int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
@@ -1009,7 +1007,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
 
         if (to instanceof BaseIntTensorStride dst) {
 
-            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * engine.cpuThreads() * 8);
+            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().byteCount() * 2 * engine.cpuThreads() * 8);
 
             if (layout.size() > limit) {
 

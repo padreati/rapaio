@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.dense.DMatrixDenseR;
 
-public class DTypeDoubleLUDecompositionTest {
+public class DoubleLUDecompositionTest {
 
     private static final double TOL = 1e-12;
 

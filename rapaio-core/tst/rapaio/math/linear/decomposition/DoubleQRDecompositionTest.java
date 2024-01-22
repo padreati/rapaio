@@ -45,7 +45,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
 
-public class DTypeDoubleQRDecompositionTest {
+public class DoubleQRDecompositionTest {
 
     private static final double TOL = 1e-14;
 

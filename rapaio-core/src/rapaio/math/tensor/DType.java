@@ -43,12 +43,12 @@ public abstract class DType<N extends Number> {
     public static final DType<Double> DOUBLE = new DTypeDouble();
 
     private final String id;
-    private final byte bytes;
+    private final byte byteCount;
     private final boolean isInteger;
 
-    protected DType(String id, byte bytes, boolean isInteger) {
+    protected DType(String id, byte byteCount, boolean isInteger) {
         this.id = id;
-        this.bytes = bytes;
+        this.byteCount = byteCount;
         this.isInteger = isInteger;
     }
 
@@ -64,8 +64,8 @@ public abstract class DType<N extends Number> {
         return !isInteger;
     }
 
-    public int bytes() {
-        return bytes;
+    public int byteCount() {
+        return byteCount;
     }
 
     public abstract <M extends Number> N castValue(M value);

@@ -54,6 +54,11 @@ public abstract class AbstractTensor<N extends Number> implements Tensor<N> {
     }
 
     @Override
+    public Storage<N> storage() {
+        return storage;
+    }
+
+    @Override
     public Tensor<N> take(Order order, int axis, int... indexes) {
         List<Tensor<N>> slices = new ArrayList<>();
         for (int index : indexes) {
@@ -100,6 +105,26 @@ public abstract class AbstractTensor<N extends Number> implements Tensor<N> {
     @Override
     public void setDouble(double value, int... indexes) {
         storage.setDouble(layout().pointer(indexes), value);
+    }
+
+    @Override
+    public void incByte(byte value, int... indexes) {
+        storage.incByte(layout().pointer(indexes), value);
+    }
+
+    @Override
+    public void incInt(int value, int... indexes) {
+        storage.incInt(layout().pointer(indexes), value);
+    }
+
+    @Override
+    public void incFloat(float value, int... indexes) {
+        storage.incFloat(layout().pointer(indexes), value);
+    }
+
+    @Override
+    public void incDouble(double value, int... indexes) {
+        storage.incDouble(layout().pointer(indexes), value);
     }
 
     @Override

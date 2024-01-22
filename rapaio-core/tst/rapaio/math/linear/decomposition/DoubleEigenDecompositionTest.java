@@ -43,7 +43,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DMatrixDenseR;
 
-public class DTypeDoubleEigenDecompositionTest {
+public class DoubleEigenDecompositionTest {
 
     private static final double TOL = 1e-12;
     private static final int TIMES = 100;

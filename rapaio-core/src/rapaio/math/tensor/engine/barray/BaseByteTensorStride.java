@@ -73,7 +73,6 @@ import rapaio.math.tensor.layout.StrideWrapper;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
-import rapaio.util.NotImplementedException;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
@@ -255,11 +254,6 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     @Override
-    public Tensor<Byte> tile(int[] repeats) {
-        throw new NotImplementedException();
-    }
-
-    @Override
     public Tensor<Byte> expand(int axis, int dim) {
         if (layout.dim(axis) != 1) {
             throw new IllegalArgumentException(STR."Dimension \{axis} does not have size 1.");
@@ -322,6 +316,10 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         storage.setByte(layout.pointer(indexes), value);
     }
 
+    @Override
+    public void inc(Byte value, int... indexes) {
+        storage.incByte(layout.pointer(indexes), value);
+    }
 
     @Override
     public Byte ptrGet(int ptr) {
@@ -698,7 +696,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         List<Tensor<Byte>> rows = chunk(0, false, 1);
         List<Tensor<Byte>> cols = t.chunk(1, false, 1);
 
-        int chunk = (int) floor(sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().bytes()));
+        int chunk = (int) floor(sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
 
         int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
@@ -1009,7 +1007,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
 
         if (to instanceof BaseByteTensorStride dst) {
 
-            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().bytes() * 2 * engine.cpuThreads() * 8);
+            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().byteCount() * 2 * engine.cpuThreads() * 8);
 
             if (layout.size() > limit) {
 
