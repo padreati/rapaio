@@ -51,7 +51,7 @@ public final class StrideLoopIterator implements LoopIterator {
     private final PointerIterator it;
 
     public StrideLoopIterator(Shape shape, int offset, int[] strides, Order askOrder) {
-        this(new StrideLayout(shape, offset, strides), askOrder);
+        this(StrideLayout.of(shape, offset, strides), askOrder);
     }
 
     public StrideLoopIterator(StrideLayout layout, Order askOrder) {
@@ -85,7 +85,7 @@ public final class StrideLoopIterator implements LoopIterator {
         outerStrides = Arrays.copyOfRange(compact.strides(), 1, compact.shape().rank());
 
         this.count = outerShape.size();
-        this.it = new StridePointerIterator(new StrideLayout(outerShape, outerOffset, outerStrides), Order.F);
+        this.it = new StridePointerIterator(StrideLayout.of(outerShape, outerOffset, outerStrides), Order.F);
     }
 
     @Override

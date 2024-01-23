@@ -58,7 +58,7 @@ public final class StrideLoopDescriptor {
     public final int[] offsets;
 
     private StrideLoopDescriptor(Shape shape, int offset, int[] strides, Order askOrder) {
-        this(new StrideLayout(shape, offset, strides), askOrder);
+        this(StrideLayout.of(shape, offset, strides), askOrder);
     }
 
     private StrideLoopDescriptor(StrideLayout layout, Order askOrder) {

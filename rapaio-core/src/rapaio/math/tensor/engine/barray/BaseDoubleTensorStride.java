@@ -180,7 +180,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
 
     @Override
     public Tensor<Double> unsqueeze(int axis) {
-        return engine.ofDouble().stride(layout().unsqueeze(axis), storage);
+        return engine.ofDouble().stride(layout.unsqueeze(axis), storage);
     }
 
     @Override

@@ -180,7 +180,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
 
     @Override
     public Tensor<Integer> unsqueeze(int axis) {
-        return engine.ofInt().stride(layout().unsqueeze(axis), storage);
+        return engine.ofInt().stride(layout.unsqueeze(axis), storage);
     }
 
     @Override

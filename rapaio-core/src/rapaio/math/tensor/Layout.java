@@ -45,6 +45,14 @@ public interface Layout {
      */
     Shape shape();
 
+    default int[] dims() {
+        return shape().dims();
+    }
+
+    default int dim(int i) {
+        return shape().dim(i);
+    }
+
     /**
      * Shortcut method for tensor rank obtained from shape. It provides the
      * number of dimensions of the tensor.
@@ -59,7 +67,9 @@ public interface Layout {
      *
      * @return tensor shape
      */
-    int size();
+    default int size() {
+        return shape().size();
+    }
 
     /**
      * Tells if the tensor values are stored in C order, row major.

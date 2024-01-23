@@ -782,7 +782,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     Tensor<N> mm(Tensor<N> tensor, Order askOrder);
 
     default CholeskyDecomposition<N> chol() {
-        return chol(true);
+        return chol(false);
     }
 
     default CholeskyDecomposition<N> chol(boolean flag) {

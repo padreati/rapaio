@@ -180,7 +180,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
 
     @Override
     public Tensor<Byte> unsqueeze(int axis) {
-        return engine.ofByte().stride(layout().unsqueeze(axis), storage);
+        return engine.ofByte().stride(layout.unsqueeze(axis), storage);
     }
 
     @Override

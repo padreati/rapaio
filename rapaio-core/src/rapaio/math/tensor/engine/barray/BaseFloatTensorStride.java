@@ -180,7 +180,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
 
     @Override
     public Tensor<Float> unsqueeze(int axis) {
-        return engine.ofFloat().stride(layout().unsqueeze(axis), storage);
+        return engine.ofFloat().stride(layout.unsqueeze(axis), storage);
     }
 
     @Override
