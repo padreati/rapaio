@@ -31,8 +31,6 @@
 
 package rapaio.math.tensor;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
@@ -41,6 +39,7 @@ import rapaio.data.VarDouble;
 import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
 import rapaio.math.tensor.matrix.CholeskyDecomposition;
+import rapaio.math.tensor.matrix.LUDecomposition;
 import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
 
@@ -89,22 +88,39 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     /**
-     * @return number of elements
+     * Size of a tensor is the number of elements contained in tensor and is equal with
+     * the product of dimension's sizes
+     *
+     * @return number of elements from tensor
      */
     default int size() {
         return layout().size();
     }
 
+    /**
+     * Storage implementation which physically contains data.
+     *
+     * @return storage instance
+     */
     Storage<N> storage();
 
+    /**
+     * @return true if the rank of tensor is 0
+     */
     default boolean isScalar() {
         return rank() == 0;
     }
 
+    /**
+     * @return true if the rank of the tensor is 1
+     */
     default boolean isVector() {
         return rank() == 1;
     }
 
+    /**
+     * @return true if the rank of the tensor is 2
+     */
     default boolean isMatrix() {
         return rank() == 2;
     }
@@ -133,12 +149,23 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      */
     Tensor<N> reshape(Shape shape, Order askOrder);
 
+    /**
+     * Creates a new transposed tensor stored with default order.
+     *
+     * @return copy of the transposed vector
+     */
     default Tensor<N> t() {
         return t(Order.defaultOrder());
     }
 
+    /**
+     * Creates a new transposed tensor stored in the specified order.
+     *
+     * @param askOrder storage order
+     * @return copy of the transposed vector
+     */
     default Tensor<N> t(Order askOrder) {
-        return copy(askOrder).t_();
+        return t_().copy(askOrder);
     }
 
     /**
@@ -151,13 +178,32 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     Tensor<N> t_();
 
     /**
-     * Collapses the tensor into one dimension in the order given as parameter. It creates a new tensor copy
-     * only if needed (no stride could be created).
+     * Collapses the tensor into one dimension using the default order. The order is used for reading. In the case when a view
+     * can't be created, a new tensor will be created with the storage order same as reading order.
+     *
+     * @return a tensor with elements in given order (new copy if needed)
+     */
+    default Tensor<N> ravel() {
+        return ravel(Order.defaultOrder());
+    }
+
+    /**
+     * Collapses the tensor into one dimension using the given order. The order is used for reading. In the case when a view
+     * can't be created, a new tensor will be created with the storage order same as reading order.
      *
      * @param askOrder order of the elements
      * @return a tensor with elements in given order (new copy if needed)
      */
     Tensor<N> ravel(Order askOrder);
+
+    /**
+     * Creates a copy of the array, flattened into one dimension. The order of the elements is the default order.
+     *
+     * @return a copy of the tensor with elements in asked order.
+     */
+    default Tensor<N> flatten() {
+        return flatten(Order.defaultOrder());
+    }
 
     /**
      * Creates a copy of the array, flattened into one dimension. The order of the elements is given as parameter.
@@ -221,7 +267,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     Tensor<N> swapAxis(int src, int dst);
 
     /**
-     * Creates a new tensor view with truncated axis, all other axes remain the same.
+     * Creates a new tensor view with one truncated axis, all other axes remain the same.
      *
      * @param axis    axis to be truncated
      * @param keepDim keep dimension or not
@@ -231,13 +277,19 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      */
     Tensor<N> narrow(int axis, boolean keepDim, int start, int end);
 
+    /**
+     * Creates a new tensor view with possibly all truncated axes.
+     *
+     * @param keepDim keep dimensions even if some of have length 1, false otherwise
+     * @param starts  vector of indexes where narrow interval starts
+     * @param ends    vector of indexes where narrow interval ends
+     * @return a view with truncated axes
+     */
     Tensor<N> narrowAll(boolean keepDim, int[] starts, int[] ends);
 
     /**
-     * Splits the tensor into multiple view tensors along a given axis.
-     * The resulting tensors are narrowed versions of the original tensor,
-     * with the start index being the current index, and the end
-     * being the next index or the end of the dimension.
+     * Splits the tensor into multiple view tensors along a given axis. The resulting tensors are narrowed versions of the original tensor,
+     * with the start index being the current index, and the end being the next index or the end of the dimension.
      *
      * @param axis    axis to split along
      * @param indexes indexes to split along, being start indexes for truncation
@@ -245,12 +297,23 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      */
     List<Tensor<N>> split(int axis, boolean keepDim, int... indexes);
 
+    /**
+     * Splits the tensor into multiple view tensors along all axes. The resulting tensors are narrowed versions of the original tensors,
+     * having for each dimension the start index being the current index in that dimension, and the end index being the next index in
+     * that dimension. The indices are given as an array of arrays with length equal with number of axes, and for each sub array the
+     * split indexes specified.
+     *
+     * @param keepDim keep original dimensions even if some dimensions have size 1, false otherwise
+     * @param indexes array of arrays of indices
+     * @return list of new tensors with truncated axes
+     */
     List<Tensor<N>> splitAll(boolean keepDim, int[][] indexes);
 
     /**
      * Slices the tensor along a given axis.
      * The resulting tensors are truncated versions of the original one with size given by step.
      * The last tensor in list might have lesser dimension size if step does not divide dimension size
+     * The resulting tensors are views over the original one.
      *
      * @param axis axis to slice along
      * @param step step size
@@ -266,6 +329,16 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return split(axis, keepDim, indexes);
     }
 
+    /**
+     * Slices the tensor along all dimensions.
+     * The resulting tensors are truncated versions of the original with sizes in each dimensions given by steps.
+     * The last tensor mugh have dimensions lesser than steps if the original dimension does not divide exactly at step.
+     * The resulting tensors are views over the original one.
+     *
+     * @param keepDim keep the original dimensions even if those have dimensions of size 1, remove them otherwise
+     * @param steps   array of steps, one step for each dimension
+     * @return list of tensors with truncated data
+     */
     default List<Tensor<N>> chunkAll(boolean keepDim, int[] steps) {
         if (layout().rank() != steps.length) {
             throw new IllegalArgumentException("Array of steps must have the length equals with rank.");
@@ -282,45 +355,84 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     /**
-     * Removes a tensor dimension. Returns a list of all chunks along a given dimension, already without it.
-     * All tensors from view will be tensor views.
+     * Creates a new tensor by stacking or concatenating this tensor multiple times along a given axis.
+     * <p>
+     * The resulting tensor will be stored in default order.
      *
-     * @param axis axis to be removed
-     * @return list of tensor views
+     * @param axis   the axis which will be repeated
+     * @param repeat the number of repetitions
+     * @param stack  stack tensors if true, concatenate if false
+     * @return tensor with repeated values along given axis
      */
-    default List<Tensor<N>> unbind(int axis) {
-        return chunk(axis, false, 1);
+    default Tensor<N> repeat(int axis, int repeat, boolean stack) {
+        return repeat(Order.defaultOrder(), axis, repeat, stack);
     }
 
-    default Tensor<N> stack(int axis, Collection<? extends Tensor<N>> tensors) {
-        List<Tensor<N>> list = new ArrayList<>();
-        list.add(this);
-        list.addAll(tensors);
-        return engine().stack(axis, list);
-    }
+    /**
+     * Creates a new tensor by stacking or concatenating this tensor multiple times along a given axis.
+     * <p>
+     * The resulting tensor will be stored in specified order.
+     *
+     * @param order  storage order of the new tensor
+     * @param axis   the axis which will be repeated
+     * @param repeat the number of repetitions
+     * @param stack  stack tensors if true, concatenate if false
+     * @return tensor with repeated values along given axis
+     */
+    Tensor<N> repeat(Order order, int axis, int repeat, boolean stack);
 
-    default Tensor<N> concat(int axis, Collection<? extends Tensor<N>> tensors) {
-        List<Tensor<N>> list = new ArrayList<>();
-        list.add(this);
-        list.addAll(tensors);
-        return engine().concat(axis, list);
-    }
-
-    Tensor<N> repeat(int axis, int repeat, boolean stack);
-
+    /**
+     * Creates a new tensor by repeating values along a given dimension of size 1. This operation is
+     * similar with repeating values, with the difference that the resulting tensor will be a view over the same data,
+     * thus avoiding copying data. This is possible if the corresponding stride is set to 0 and the corresponding original
+     * dimension has size 1.
+     *
+     * @param axis specified dimension
+     * @param dim  new size of the dimension, which is equivalent with how many times the values are repeated
+     * @return new view over the original tensor with repeated data along a given dimension
+     */
     Tensor<N> expand(int axis, int dim);
 
+    /**
+     * Take values along a given axis from specified indices. This operation will create a view when is possible, otherwise will create
+     * a new copy of data. The indices value can be repeated or specified in any order as long as there are integer values in range
+     * {@code 0} inclusive and {@code dim(axis)} exclusive.
+     * <p>
+     * The resulting tensor will have the dimension specified by axis of size equal with the length of indices.
+     * <p>
+     * If a new copy is required, the storage order is the default order.
+     *
+     * @param axis    specified axis
+     * @param indices indices of the taken values along the specified axis
+     * @return tensor with mapped values along the given dimension
+     */
     default Tensor<N> take(int axis, int... indices) {
         return take(Order.defaultOrder(), axis, indices);
     }
 
+    /**
+     * Take values along a given axis from specified indices. This operation will create a view when is possible, otherwise will create
+     * a new copy of data. The indices value can be repeated or specified in any order as long as there are integer values in range
+     * {@code 0} inclusive and {@code dim(axis)} exclusive.
+     * <p>
+     * The resulting tensor will have the dimension specified by axis of size equal with the length of indices.
+     * <p>
+     * If a new copy is required, the storage order is the specified order.
+     *
+     * @param order   storage order if new data copy is required, ignored otherwise
+     * @param axis    specified axis
+     * @param indices indices of the taken values along the specified axis
+     * @return tensor with mapped values along the given dimension
+     */
     Tensor<N> take(Order order, int axis, int... indices);
 
     default Tensor<N> sort(int dim, boolean asc) {
         return sort(Order.defaultOrder(), dim, asc);
     }
 
-    Tensor<N> sort(Order order, int axis, boolean asc);
+    default Tensor<N> sort(Order order, int axis, boolean asc) {
+        return copy(order).sort_(axis, asc);
+    }
 
     Tensor<N> sort_(int axis, boolean asc);
 
@@ -787,6 +899,14 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     default CholeskyDecomposition<N> chol(boolean flag) {
         return new CholeskyDecomposition<>(this, flag);
+    }
+
+    default LUDecomposition<N> lu() {
+        return lu(LUDecomposition.Method.CROUT);
+    }
+
+    default LUDecomposition<N> lu(LUDecomposition.Method method) {
+        return new LUDecomposition<>(this, method);
     }
 
     Statistics<N> stats();

@@ -157,12 +157,12 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     public Tensor<Integer> flatten(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
         var out = engine.ofInt().storage().zeros(layout.size());
-        int p = 0;
+        int ptr = 0;
         var it = loopIterator(askOrder);
         while (it.hasNext()) {
-            int pointer = it.nextInt();
-            for (int i = pointer; i < pointer + it.bound(); i += it.step()) {
-                out.setInt(p++, storage.getInt(i));
+            int off = it.nextInt();
+            for (int i = 0; i < it.size(); i++) {
+                out.setInt(ptr++, storage.getInt(off + i * it.step()));
             }
         }
         return engine.ofInt().stride(StrideLayout.of(Shape.of(layout.size()), 0, new int[] {1}), out);
@@ -181,6 +181,11 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     @Override
     public Tensor<Integer> unsqueeze(int axis) {
         return engine.ofInt().stride(layout.unsqueeze(axis), storage);
+    }
+
+    @Override
+    public Tensor<Integer> permute(int[] dims) {
+        return engine.ofInt().stride(layout().permute(dims), storage);
     }
 
     @Override
@@ -221,11 +226,11 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         List<Tensor<Integer>> results = new ArrayList<>();
         int[] starts = new int[indexes.length];
         int[] ends = new int[indexes.length];
-        splitAllRec(results, indexes, keepdim, starts, ends, 0);
+        splitAllRecursive(results, indexes, keepdim, starts, ends, 0);
         return results;
     }
 
-    private void splitAllRec(List<Tensor<Integer>> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
+    private void splitAllRecursive(List<Tensor<Integer>> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
         if (level == indexes.length) {
             return;
         }
@@ -235,28 +240,28 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
             if (level == indexes.length - 1) {
                 results.add(narrowAll(keepdim, starts, ends));
             } else {
-                splitAllRec(results, indexes, keepdim, starts, ends, level + 1);
+                splitAllRecursive(results, indexes, keepdim, starts, ends, level + 1);
             }
         }
     }
 
     @Override
-    public Tensor<Integer> repeat(int axis, int repeat, boolean stack) {
+    public Tensor<Integer> repeat(Order order, int axis, int repeat, boolean stack) {
         List<Tensor<Integer>> copies = new ArrayList<>(repeat);
         for (int i = 0; i < repeat; i++) {
             copies.add(this);
         }
         if (stack) {
-            return engine.stack(axis, copies);
+            return engine.stack(order, axis, copies);
         } else {
-            return engine.concat(axis, copies);
+            return engine.concat(order, axis, copies);
         }
     }
 
     @Override
     public Tensor<Integer> expand(int axis, int dim) {
         if (layout.dim(axis) != 1) {
-            throw new IllegalArgumentException(STR."Dimension \{axis} does not have size 1.");
+            throw new IllegalArgumentException(STR."Dimension \{axis} must have size 1, but have size \{layout.dim(axis)}.");
         }
         if (dim < 1) {
             throw new IllegalArgumentException(STR."Dimension of the new axis \{dim} must be positive.");
@@ -270,8 +275,58 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     @Override
-    public Tensor<Integer> permute(int[] dims) {
-        return engine.ofInt().stride(layout().permute(dims), storage);
+    public Tensor<Integer> take(Order order, int axis, int... indices) {
+
+        if(axis<0||axis>=layout.rank()) {
+            throw new IllegalArgumentException(STR."Axis value \{axis} is out of bounds.");
+        }
+        if (indices == null || indices.length == 0) {
+            throw new IllegalArgumentException("Indices cannot be empty.");
+        }
+        for (int index : indices) {
+            if (index < 0 || index >= layout.dim(axis)) {
+                throw new IllegalArgumentException(STR."Index values are invalid, must be in range [0,\{layout.dim(axis)-1}].");
+            }
+        }
+
+        // check if we can handle only through stride layout
+
+        // a single element
+        if (indices.length == 1) {
+            int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
+            int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
+            newDims[axis] = 1;
+            newStrides[axis] = 1;
+            int newOffset = layout().offset() + indices[0] * layout.stride(axis);
+            return engine.ofInt().stride(StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
+        }
+
+        // a geometric sequence of indices, even if the step is 0 (repeated elements)
+        if (indices[1] - indices[0] >= 0) {
+            int step = indices[1] - indices[0];
+            boolean validSequence = true;
+            for (int i = 2; i < indices.length; i++) {
+                if (indices[i] - indices[i - 1] != step) {
+                    validSequence = false;
+                    break;
+                }
+            }
+            if (validSequence) {
+                int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
+                int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
+                newDims[axis] = indices.length;
+                newStrides[axis] = layout.stride(axis) * step;
+                int newOffset = layout.offset() + indices[0] * layout.stride(axis);
+                return engine.ofInt().stride(StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
+            }
+        }
+
+        // if we failed, we copy data into a new tensor
+        List<Tensor<Integer>> slices = new ArrayList<>();
+        for (int index : indices) {
+            slices.add(narrow(axis, true, index, index + 1));
+        }
+        return engine.concat(order, axis, slices);
     }
 
     @Override
@@ -286,11 +341,6 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
             StrideWrapper.of(it.nextInt(), selStride, selDim, this).sort(asc);
         }
         return this;
-    }
-
-    @Override
-    public Tensor<Integer> sort(Order order, int axis, boolean asc) {
-        return copy(order).sort_(axis, asc);
     }
 
     @Override
@@ -427,7 +477,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     protected void unaryOp(TensorUnaryOp op) {
-        if (op.isFloatOnly() && !dtype().isFloat()) {
+        if (op.isFloatOnly() && !dtype().isFloatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
         unaryOpStep(op);
@@ -745,7 +795,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
 
     @Override
     public Statistics<Integer> stats() {
-        if (!dtype().isFloat()) {
+        if (!dtype().isFloatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
 

@@ -69,7 +69,6 @@ public class LoopIteratorTest {
                 assertEquals(10 + j * 4 + i * 10, chunkOffsets[pos - 1]);
                 assertEquals(4, it.size());
                 assertEquals(7, it.step());
-                assertEquals(4 * 7, it.bound());
                 assertEquals(6, it.count());
             }
         }
@@ -88,7 +87,6 @@ public class LoopIteratorTest {
                 assertEquals(10 + j * 4 + i * 7, chunkOffsets[pos - 1]);
                 assertEquals(2, it.size());
                 assertEquals(10, it.step());
-                assertEquals(2 * 10, it.bound());
                 assertEquals(12, it.count());
             }
         }
@@ -107,7 +105,6 @@ public class LoopIteratorTest {
                 assertEquals(10 + i * 10 + k * 7, chunkOffsets[pos - 1]);
                 assertEquals(3, it.size());
                 assertEquals(4, it.step());
-                assertEquals(3 * 4, it.bound());
                 assertEquals(8, it.count());
             }
         }

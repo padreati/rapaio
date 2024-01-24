@@ -59,15 +59,6 @@ public abstract class AbstractTensor<N extends Number> implements Tensor<N> {
     }
 
     @Override
-    public Tensor<N> take(Order order, int axis, int... indexes) {
-        List<Tensor<N>> slices = new ArrayList<>();
-        for (int index : indexes) {
-            slices.add(narrow(axis, true, index, index + 1));
-        }
-        return engine().concat(order, axis, slices);
-    }
-
-    @Override
     public byte getByte(int... indexes) {
         return storage.getByte(layout().pointer(indexes));
     }

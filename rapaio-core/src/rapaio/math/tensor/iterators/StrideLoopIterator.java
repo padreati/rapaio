@@ -42,7 +42,6 @@ public final class StrideLoopIterator implements LoopIterator {
 
     public final int size;
     public final int step;
-    public final int bound;
     public final int count;
 
     private final int outerOffset;
@@ -60,7 +59,6 @@ public final class StrideLoopIterator implements LoopIterator {
         if (layout.shape().rank() == 0) {
             size = 1;
             step = 1;
-            bound = 1;
             count = 1;
             outerShape = null;
             outerStrides = null;
@@ -71,7 +69,6 @@ public final class StrideLoopIterator implements LoopIterator {
         var compact = layout.computeFortranLayout(askOrder, true);
         size = compact.dim(0);
         step = compact.stride(0);
-        bound = size * step;
 
         if (compact.shape().rank() == 1) {
             count = 1;
@@ -96,11 +93,6 @@ public final class StrideLoopIterator implements LoopIterator {
     @Override
     public int size() {
         return size;
-    }
-
-    @Override
-    public int bound() {
-        return bound;
     }
 
     @Override

@@ -56,13 +56,6 @@ public interface LoopIterator extends PrimitiveIterator.OfInt {
     int step();
 
     /**
-     * @return loop bound which is the product between loop size and loop step
-     */
-    default int bound() {
-        return size() * step();
-    }
-
-    /**
      * @return offset pointers where loops starts
      */
     int[] computeOffsets();

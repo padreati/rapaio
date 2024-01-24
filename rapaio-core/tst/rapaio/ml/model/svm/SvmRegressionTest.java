@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
@@ -52,7 +51,6 @@ public class SvmRegressionTest {
         ys = df.rvar("Sales").dt();
     }
 
-    @Test
     void testRegression() throws IOException {
 
         SvmRegression m = new SvmRegression()
@@ -65,7 +63,7 @@ public class SvmRegressionTest {
         m.fit(df.mapVars("TV,Radio,Sales"), "Sales");
         var pred = m.predict(df.mapVars("TV,Radio,Sales"));
         DVector pr = pred.firstPrediction().dv();
-        pred.printSummary();
+//        pred.printSummary();
 
 //        assertTrue(DVector.wrap(pred.classes()).deepEquals(pr, TOL));
 

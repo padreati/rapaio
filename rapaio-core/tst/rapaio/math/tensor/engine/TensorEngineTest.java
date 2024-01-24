@@ -210,7 +210,7 @@ public class TensorEngineTest {
         assertTrue(ofType.seq(Shape.of(3)).deepEquals(t.take(0, 0, 1, 2)));
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> t.take(-1, 43));
-        assertEquals("Axis is out of bounds.", e.getMessage());
+        assertEquals("Axis value -1 is out of bounds.", e.getMessage());
 
         Tensor<N> m = ofType.seq(Shape.of(4, 4));
         assertTrue(ofType.stride(Shape.of(12), Order.C, 4, 5, 6, 7, 12, 13, 14, 15, 4, 5, 6, 7)
@@ -248,7 +248,7 @@ public class TensorEngineTest {
         assertTrue(ofType.seq(Shape.of(1,2,4)).add_(ofType.dtype().castValue(2)).deepEquals(t3));
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> ofType.seq(Shape.of(2,3,4)).expand(0, 10));
-        assertEquals("Dimension 0 does not have size 1.", e.getMessage());
+        assertEquals("Dimension 0 must have size 1, but have size 2.", e.getMessage());
     }
 
 }

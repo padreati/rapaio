@@ -34,6 +34,8 @@ package rapaio.math.tensor;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -41,7 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import rapaio.math.tensor.factories.ByteDenseCol;
@@ -65,25 +66,7 @@ import rapaio.math.tensor.factories.IntegerDenseStrideView;
 public class TensorTest {
 
     @Test
-    @Disabled
-    void profileTest() {
-        var engine = TensorEngine.varray();
-
-        int m = 3000;
-        int n = 3000;
-        var array = engine.ofDouble().storage().zeros(m * n);
-        Random random = new Random(42);
-        for (int i = 0; i < array.size(); i++) {
-            array.setDouble(i, random.nextGaussian());
-        }
-
-        var t1 = engine.ofDouble().stride(Shape.of(m, n), Order.C, array);
-        var res1 = t1.copy(Order.C).mm(t1.copy(Order.C).t_());
-        java.lang.System.out.println(res1.shape());
-    }
-
-    @Test
-    void managerTestRunner() {
+    void allTests() {
         managerTestSuite(TensorEngine.barray());
         managerTestSuite(TensorEngine.varray());
     }
@@ -126,6 +109,7 @@ public class TensorTest {
             testGet();
             testSet();
             testPrinting();
+            testFlags();
             testReshape();
             testIterators();
             testTranspose();
@@ -140,7 +124,9 @@ public class TensorTest {
             mmTest();
             splitTest();
             chunkTest();
-            repeatStackConcatTest();
+            testRepeatStackConcat();
+            testExpand();
+            testTake();
             aggregateOpsTest();
             statisticsTest();
         }
@@ -477,6 +463,17 @@ public class TensorTest {
                     """, tensor.toFullContent());
         }
 
+        void testFlags() {
+            assertTrue(g.seq(Shape.of()).isScalar());
+            assertFalse(g.seq(Shape.of(1)).isScalar());
+
+            assertTrue(g.seq(Shape.of(1)).isVector());
+            assertFalse(g.seq(Shape.of(2, 3)).isVector());
+
+            assertTrue(g.seq(Shape.of(3, 4)).isMatrix());
+            assertFalse(g.seq(Shape.of(2, 3, 4)).isMatrix());
+        }
+
         void testReshape() {
             var t = g.seq(Shape.of(2, 3, 4));
             assertEquals(Shape.of(6, 4), t.reshape(Shape.of(6, 4)).shape());
@@ -532,19 +529,20 @@ public class TensorTest {
             Shape shape = Shape.of(2, 3, 4);
             var t = g.seq(shape);
 
-            var tt = t.t_().copy();
-            assertArrayEquals(new int[] {4, 3, 2}, tt.shape().dims());
+            var t1 = t.t();
+            assertArrayEquals(new int[] {4, 3, 2}, t1.shape().dims());
 
-            var ttt = tt.t_();
+            var t2 = t1.t_();
 
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 3; j++) {
                     for (int k = 0; k < 4; k++) {
-                        assertEquals(t.get(i, j, k), tt.get(k, j, i));
-                        assertEquals(t.get(i, j, k), ttt.get(i, j, k));
+                        assertEquals(t.get(i, j, k), t1.get(k, j, i));
+                        assertEquals(t.get(i, j, k), t2.get(i, j, k));
                     }
                 }
             }
+            assertTensorEqualValues(t1, t.t_());
         }
 
         void testFlatten() {
@@ -553,18 +551,14 @@ public class TensorTest {
 
             var f = t.flatten(Order.C);
             assertArrayEquals(new int[] {4 * 3 * 2}, f.shape().dims());
-
-            var itT = t.ptrIterator(Order.C);
-            var itF = f.ptrIterator(Order.C);
-            while (itF.hasNext()) {
-                assertEquals(t.ptrGet(itT.nextInt()), f.ptrGet(itF.nextInt()),
-                        "Error at tensor: " + t + ", flatten: " + f);
-            }
+            assertTensorEqualValues(t, f);
 
             var r = t.ravel(Order.C);
-            for (int i = 0; i < t.shape().size(); i++) {
-                assertEquals(f.get(i), r.get(i));
-            }
+            assertTensorEqualValues(t, r);
+            assertTensorEqualValues(f, r);
+
+            assertTensorEqualValues(t.ravel(Order.defaultOrder()), t.ravel());
+            assertTensorEqualValues(t.flatten(Order.defaultOrder()), t.flatten());
         }
 
         void testSqueezeMoveSwapAxis() {
@@ -575,13 +569,7 @@ public class TensorTest {
 
             assertTrue(t.squeeze(5).squeeze(3).squeeze(1).deepEquals(s));
 
-            var it1 = t.ptrIterator(Order.C);
-            var it2 = s.ptrIterator(Order.C);
-            while (it1.hasNext()) {
-                int next1 = it1.nextInt();
-                int next2 = it2.nextInt();
-                assertEquals(t.ptrGet(next1), s.ptrGet(next2), "t: " + t + ", f: " + s);
-            }
+            assertTensorEqualValues(t, s);
 
             assertTrue(t.moveAxis(2, 3).deepEquals(t.swapAxis(2, 3)));
             assertFalse(t.moveAxis(2, 3).deepEquals(t.swapAxis(0, 2)));
@@ -617,7 +605,7 @@ public class TensorTest {
             assertTrue(t1.copy(Order.C).negate_().deepEquals(t1.negate(Order.F)));
             assertTrue(t1.copy(Order.F).negate_().deepEquals(t1.negate(Order.C)));
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.copy().log_().deepEquals(t1.log()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -628,7 +616,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.log1p().deepEquals(t1.log1p_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -639,7 +627,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.exp().deepEquals(t1.exp_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -650,7 +638,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.expm1().deepEquals(t1.copy().expm1_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -661,7 +649,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.sin().deepEquals(t1.sin_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -672,7 +660,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.asin().deepEquals(t1.asin_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -683,7 +671,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.sinh().deepEquals(t1.sinh_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -694,7 +682,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.cos().deepEquals(t1.cos_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -705,7 +693,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.acos().deepEquals(t1.acos_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -716,7 +704,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.cosh().deepEquals(t1.cosh_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -727,7 +715,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.tan().deepEquals(t1.tan_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -738,7 +726,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.atan().deepEquals(t1.atan_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -749,7 +737,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.tanh().deepEquals(t1.tanh_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -1026,7 +1014,7 @@ public class TensorTest {
             assertTrue(t1.deepEquals(c15));
         }
 
-        void repeatStackConcatTest() {
+        void testRepeatStackConcat() {
 
             var t1 = g.seq(Shape.of(10));
 
@@ -1048,9 +1036,84 @@ public class TensorTest {
             assertTrue(t3.deepEquals(g.engine().concat(0, list2)));
         }
 
+        void testExpand() {
+
+            var vx = g.seq(Shape.of(10, 1));
+            var mx = vx.expand(1, 10);
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    assertEquals(vx.get(i, 0), mx.get(i, j));
+                }
+            }
+
+            var vy = g.seq(Shape.of(1, 10));
+            var my = vy.expand(0, 10);
+            assertEquals(Shape.of(10, 10), my.shape());
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    assertEquals(vy.get(0, j), my.get(i, j));
+                }
+            }
+
+            var e = assertThrows(IllegalArgumentException.class, () -> vx.expand(0, 10));
+            assertEquals("Dimension 0 must have size 1, but have size 10.", e.getMessage());
+
+            e = assertThrows(IllegalArgumentException.class, () -> vx.expand(1, -10));
+            assertEquals("Dimension of the new axis -10 must be positive.", e.getMessage());
+        }
+
+        void testTake() {
+
+            var va = g.seq(Shape.of(10));
+            int[] indices = new int[] {0, 1, 0, 2, 0, 9};
+            var vt1 = va.take(0, indices);
+
+            assertNotSame(va.storage(), vt1.storage());
+            for (int i = 0; i < indices.length; i++) {
+                assertEquals(va.get(indices[i]), vt1.get(i));
+            }
+
+            var vt2 = va.take(0, 3, 3, 3, 3, 3);
+            assertSame(va.storage(), vt2.storage());
+            assertEquals(Shape.of(5), vt2.shape());
+            for (int i = 0; i < 5; i++) {
+                assertEquals(va.get(3), vt2.get(i));
+            }
+
+            var ma = g.seq(Shape.of(10, 10));
+            var vt3 = ma.take(0, 2);
+            assertSame(ma.storage(), vt3.storage());
+            assertEquals(Shape.of(1, 10), vt3.shape());
+            for (int i = 0; i < 10; i++) {
+                assertEquals(vt3.get(0, i), ma.get(2, i));
+            }
+
+            indices = new int[] {3,5,7,9};
+            var vt4 = ma.take(0, indices);
+            assertSame(ma.storage(), vt4.storage());
+            for (int i = 0; i < indices.length; i++) {
+                for (int j = 0; j < 10; j++) {
+                    assertEquals(ma.get(indices[i], j), vt4.get(i, j));
+                }
+            }
+            var vt5 = ma.take(1, indices);
+            assertSame(ma.storage(), vt5.storage());
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < indices.length; j++) {
+                    assertEquals(ma.get(i, indices[j]), vt5.get(i, j));
+                }
+            }
+
+            var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 10)).take(0));
+            assertEquals("Indices cannot be empty.", e.getMessage());
+
+            e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 10)).take(0, 0, -1));
+            assertEquals("Index values are invalid, must be in range [0,9].", e.getMessage());
+        }
+
         void aggregateOpsTest() {
 
-            var t1 = g.seq(Shape.of(1, 200, 10));
+            var t1 = g.seq(Shape.of(1, 100, 10));
             assertEquals(sequenceSum(t1.size()), t1.sum());
             if (g.dType() == DType.BYTE) {
                 assertEquals(g.value(127), t1.max());
@@ -1060,8 +1123,8 @@ public class TensorTest {
             } else {
                 assertEquals(g.value(0), t1.min());
                 assertEquals(g.value(0), t1.nanMin());
-                assertEquals(g.value(1999), t1.max());
-                assertEquals(g.value(1999), t1.nanMax());
+                assertEquals(g.value(999), t1.max());
+                assertEquals(g.value(999), t1.nanMax());
             }
 
             var t2 = g.seq(Shape.of(79));
@@ -1082,7 +1145,7 @@ public class TensorTest {
             t4.set(g.value(Double.NaN), 1);
             t4.set(g.value(Double.NaN), 100);
             assertEquals(g.sum(sequenceSum(100), g.value(-1)), t4.nanSum());
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 assertEquals(2, t4.nanCount());
                 assertEquals(1, t4.zeroCount());
                 assertEquals(g.value(Double.NaN), t4.max());
@@ -1100,7 +1163,7 @@ public class TensorTest {
             var t5 = g.seq(Shape.of(7));
             t5.set(g.value(Double.NaN), 0);
             t5.set(g.value(Double.NaN), 6);
-            if (g.dType().isFloat()) {
+            if (g.dType().isFloatingPoint()) {
                 assertEquals(2, t5.nanCount());
                 assertEquals(0, t5.zeroCount());
                 assertEquals(g.value(120), t5.nanProd());
@@ -1129,7 +1192,7 @@ public class TensorTest {
 
         void statisticsTest() {
 
-            if (!g.dType().isFloat()) {
+            if (!g.dType().isFloatingPoint()) {
                 var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 20)).stats());
                 assertEquals("Operation available only for float tensors.", e.getMessage());
                 return;
@@ -1175,4 +1238,15 @@ public class TensorTest {
         }
     }
 
+    private static <N extends Number> void assertTensorEqualValues(Tensor<N> t, Tensor<N> f) {
+        assertTensorEqualValues(Order.C, t, f);
+    }
+
+    private static <N extends Number> void assertTensorEqualValues(Order order, Tensor<N> t, Tensor<N> f) {
+        var itT = t.ptrIterator(order);
+        var itF = f.ptrIterator(order);
+        while (itF.hasNext()) {
+            assertEquals(t.ptrGet(itT.nextInt()), f.ptrGet(itF.nextInt()), STR."Error at tensor: \{t}, flatten: \{f}");
+        }
+    }
 }

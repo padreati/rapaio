@@ -57,8 +57,11 @@ public final class ByteDenseStrideView extends ByteDense {
         int offset = 7;
         var l = StrideLayout.ofDense(shape, offset, Order.F);
         int[] strides = Arrays.copyOf(l.strides(), l.strides().length);
-        strides[0]++;
-        for (int i = 1; i < strides.length; i++) {
+        for (int i = 0; i < strides.length; i++) {
+            if (i == 0) {
+                strides[0]++;
+                continue;
+            }
             strides[i] = l.dim(i - 1) * strides[i - 1] + 1;
         }
         int len = offset;

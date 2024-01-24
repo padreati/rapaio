@@ -159,7 +159,7 @@ public class Grid2D implements Serializable {
      * @return array of corresponding quantile values
      */
     public double[] quantiles(double... qs) {
-        return Quantiles.of(values.flatten(Order.C).dv(), qs).values();
+        return Quantiles.of(values.ravel(Order.C).dv(), qs).values();
     }
 
     /**

@@ -60,7 +60,7 @@ public abstract class DType<N extends Number> {
         return isInteger;
     }
 
-    public boolean isFloat() {
+    public boolean isFloatingPoint() {
         return !isInteger;
     }
 
