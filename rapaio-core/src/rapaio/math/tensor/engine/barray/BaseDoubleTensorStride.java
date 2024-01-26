@@ -277,7 +277,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     @Override
     public Tensor<Double> take(Order order, int axis, int... indices) {
 
-        if(axis<0||axis>=layout.rank()) {
+        if (axis < 0 || axis >= layout.rank()) {
             throw new IllegalArgumentException(STR."Axis value \{axis} is out of bounds.");
         }
         if (indices == null || indices.length == 0) {
@@ -285,7 +285,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         }
         for (int index : indices) {
             if (index < 0 || index >= layout.dim(axis)) {
-                throw new IllegalArgumentException(STR."Index values are invalid, must be in range [0,\{layout.dim(axis)-1}].");
+                throw new IllegalArgumentException(STR."Index values are invalid, must be in range [0,\{layout.dim(axis) - 1}].");
             }
         }
 
@@ -791,6 +791,59 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         }
 
         return ret;
+    }
+
+    @Override
+    public Double norm(int p) {
+        if (p < 1) {
+            throw new IllegalArgumentException(STR."Norm power p=\{p} must have a value greater than 0.");
+        }
+        return switch (p) {
+            case 1 -> norm1();
+            case 2 -> norm2();
+            default -> normp(p);
+        };
+    }
+
+    private Double norm1() {
+        double sum = (double) 0;
+        var it = loopIterator();
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int i = 0; i < it.size(); i++) {
+                int p = offset + i * it.step();
+                sum += (double) Math.abs(storage.getDouble(p));
+            }
+        }
+        return sum;
+    }
+
+    private Double norm2() {
+        double sum = (double) 0;
+        var it = loopIterator();
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int i = 0; i < it.size(); i++) {
+                int p = offset + i * it.step();
+                double value = storage.getDouble(p);
+                sum += (double) (value * value);
+            }
+        }
+        return (double) Math.sqrt(sum);
+    }
+
+    private Double normp(int pow) {
+        double sum = (double) 0;
+        var it = loopIterator();
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int i = 0; i < it.size(); i++) {
+                int p = offset + i * it.step();
+                double value = (double) Math.abs(storage.getDouble(p));
+                sum += (double) Math.pow(value, pow);
+            }
+        }
+        return (double) Math.pow(sum, 1. / pow);
     }
 
     @Override

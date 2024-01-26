@@ -39,7 +39,10 @@ import rapaio.data.VarDouble;
 import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
 import rapaio.math.tensor.matrix.CholeskyDecomposition;
+import rapaio.math.tensor.matrix.EigenDecomposition;
 import rapaio.math.tensor.matrix.LUDecomposition;
+import rapaio.math.tensor.matrix.QRDecomposition;
+import rapaio.math.tensor.matrix.SVDecomposition;
 import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
 
@@ -893,6 +896,23 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> mm(Tensor<N> tensor, Order askOrder);
 
+    default boolean isSymmetric() {
+        if (!isMatrix()) {
+            throw new IllegalArgumentException("Available only for matrices.");
+        }
+        if (dim(0) != dim(1)) {
+            return false;
+        }
+        for (int i = 0; i < dim(0); i++) {
+            for (int j = i + 1; j < dim(1); j++) {
+                if (get(i, j).doubleValue() != get(j, i).doubleValue()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     default CholeskyDecomposition<N> chol() {
         return chol(false);
     }
@@ -908,6 +928,24 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     default LUDecomposition<N> lu(LUDecomposition.Method method) {
         return new LUDecomposition<>(this, method);
     }
+
+    default QRDecomposition<N> qr() {
+        return new QRDecomposition<>(this);
+    }
+
+    default EigenDecomposition<N> eigen() {
+        return new EigenDecomposition<>(this);
+    }
+
+    default SVDecomposition<N> svd(boolean wantu, boolean wantv) {
+        return new SVDecomposition<>(this, wantu, wantv);
+    }
+
+    default N norm() {
+        return norm(2);
+    }
+
+    N norm(int p);
 
     Statistics<N> stats();
 

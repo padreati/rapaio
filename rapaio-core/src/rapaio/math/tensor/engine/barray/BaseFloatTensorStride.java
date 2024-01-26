@@ -277,7 +277,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     @Override
     public Tensor<Float> take(Order order, int axis, int... indices) {
 
-        if(axis<0||axis>=layout.rank()) {
+        if (axis < 0 || axis >= layout.rank()) {
             throw new IllegalArgumentException(STR."Axis value \{axis} is out of bounds.");
         }
         if (indices == null || indices.length == 0) {
@@ -285,7 +285,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         }
         for (int index : indices) {
             if (index < 0 || index >= layout.dim(axis)) {
-                throw new IllegalArgumentException(STR."Index values are invalid, must be in range [0,\{layout.dim(axis)-1}].");
+                throw new IllegalArgumentException(STR."Index values are invalid, must be in range [0,\{layout.dim(axis) - 1}].");
             }
         }
 
@@ -791,6 +791,59 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         }
 
         return ret;
+    }
+
+    @Override
+    public Float norm(int p) {
+        if (p < 1) {
+            throw new IllegalArgumentException(STR."Norm power p=\{p} must have a value greater than 0.");
+        }
+        return switch (p) {
+            case 1 -> norm1();
+            case 2 -> norm2();
+            default -> normp(p);
+        };
+    }
+
+    private Float norm1() {
+        float sum = (float) 0;
+        var it = loopIterator();
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int i = 0; i < it.size(); i++) {
+                int p = offset + i * it.step();
+                sum += (float) Math.abs(storage.getFloat(p));
+            }
+        }
+        return sum;
+    }
+
+    private Float norm2() {
+        float sum = (float) 0;
+        var it = loopIterator();
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int i = 0; i < it.size(); i++) {
+                int p = offset + i * it.step();
+                float value = storage.getFloat(p);
+                sum += (float) (value * value);
+            }
+        }
+        return (float) Math.sqrt(sum);
+    }
+
+    private Float normp(int pow) {
+        float sum = (float) 0;
+        var it = loopIterator();
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int i = 0; i < it.size(); i++) {
+                int p = offset + i * it.step();
+                float value = (float) Math.abs(storage.getFloat(p));
+                sum += (float) Math.pow(value, pow);
+            }
+        }
+        return (float) Math.pow(sum, 1. / pow);
     }
 
     @Override

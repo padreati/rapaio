@@ -277,7 +277,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     @Override
     public Tensor<Byte> take(Order order, int axis, int... indices) {
 
-        if(axis<0||axis>=layout.rank()) {
+        if (axis < 0 || axis >= layout.rank()) {
             throw new IllegalArgumentException(STR."Axis value \{axis} is out of bounds.");
         }
         if (indices == null || indices.length == 0) {
@@ -285,7 +285,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         }
         for (int index : indices) {
             if (index < 0 || index >= layout.dim(axis)) {
-                throw new IllegalArgumentException(STR."Index values are invalid, must be in range [0,\{layout.dim(axis)-1}].");
+                throw new IllegalArgumentException(STR."Index values are invalid, must be in range [0,\{layout.dim(axis) - 1}].");
             }
         }
 
@@ -791,6 +791,59 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         }
 
         return ret;
+    }
+
+    @Override
+    public Byte norm(int p) {
+        if (p < 1) {
+            throw new IllegalArgumentException(STR."Norm power p=\{p} must have a value greater than 0.");
+        }
+        return switch (p) {
+            case 1 -> norm1();
+            case 2 -> norm2();
+            default -> normp(p);
+        };
+    }
+
+    private Byte norm1() {
+        byte sum = (byte) 0;
+        var it = loopIterator();
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int i = 0; i < it.size(); i++) {
+                int p = offset + i * it.step();
+                sum += (byte) Math.abs(storage.getByte(p));
+            }
+        }
+        return sum;
+    }
+
+    private Byte norm2() {
+        byte sum = (byte) 0;
+        var it = loopIterator();
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int i = 0; i < it.size(); i++) {
+                int p = offset + i * it.step();
+                byte value = storage.getByte(p);
+                sum += (byte) (value * value);
+            }
+        }
+        return (byte) Math.sqrt(sum);
+    }
+
+    private Byte normp(int pow) {
+        byte sum = (byte) 0;
+        var it = loopIterator();
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int i = 0; i < it.size(); i++) {
+                int p = offset + i * it.step();
+                byte value = (byte) Math.abs(storage.getByte(p));
+                sum += (byte) Math.pow(value, pow);
+            }
+        }
+        return (byte) Math.pow(sum, 1. / pow);
     }
 
     @Override
