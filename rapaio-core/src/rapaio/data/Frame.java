@@ -569,7 +569,7 @@ public interface Frame extends Serializable, Printable {
     }
 
     default Tensor<Double> dtNew() {
-        Tensor<Double> tensor = WS.tensorEngine().ofDouble().zeros(Shape.of(rowCount(), varCount()));
+        Tensor<Double> tensor = WS.tm().ofDouble().zeros(Shape.of(rowCount(), varCount()));
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < varCount(); j++) {
                 tensor.set(getDouble(i, j), i, j);

@@ -40,7 +40,7 @@ import static java.lang.Math.sqrt;
 import rapaio.math.MathTools;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 /**
  * Calculates the compact Singular Value Decomposition of a matrix.
@@ -94,25 +94,24 @@ public class SVDecomposition<N extends Number> implements java.io.Serializable {
      * V matrix from the resulted decomposition
      */
     private final Tensor<N> v;
-
-    private TensorEngine.OfType<N> ofType;
+    private final TensorManager.OfType<N> tmt;
 
     public SVDecomposition(Tensor<N> Arg, boolean wantu, boolean wantv) {
 
         // Derived from LINPACK code.
         // Initialize.
         Tensor<N> A = Arg.copy();
-        this.ofType = Arg.engine().ofType(Arg.dtype());
+        this.tmt = Arg.manager().ofType(Arg.dtype());
         m = Arg.dim(0);
         n = Arg.dim(1);
 
         if (m < n) {
-            throw new IllegalArgumentException("Jama SVD only works for m >= n");
+            throw new IllegalArgumentException("This SVD implementation only works for m >= n");
         }
 
-        s = ofType.zeros(Shape.of(n));
-        u = ofType.zeros(Shape.of(m, n));
-        v = ofType.zeros(Shape.of(n, n));
+        s = tmt.zeros(Shape.of(n));
+        u = tmt.zeros(Shape.of(m, n));
+        v = tmt.zeros(Shape.of(n, n));
         double[] e = new double[n];
         double[] work = new double[m];
 
@@ -524,7 +523,7 @@ public class SVDecomposition<N extends Number> implements java.io.Serializable {
      * @return S
      */
     public Tensor<N> s() {
-        Tensor<N> diagonal = ofType.zeros(Shape.of(s.dim(0), s.dim(0)));
+        Tensor<N> diagonal = tmt.zeros(Shape.of(s.dim(0), s.dim(0)));
         for (int i = 0; i < s.dim(0); i++) {
             diagonal.setDouble(s.getDouble(i), i, i);
         }

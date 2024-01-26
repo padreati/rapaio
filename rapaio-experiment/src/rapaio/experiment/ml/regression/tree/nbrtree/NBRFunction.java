@@ -40,7 +40,7 @@ import rapaio.data.Frame;
 import rapaio.data.Unique;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.model.RegressionResult;
@@ -216,7 +216,7 @@ class SplineFunction implements NBRFunction {
     private final double lambda;
 
     private String testVarName;
-    private DVector coeff;
+    private Tensor<Double> coeff;
     private double threshold;
 
     SplineFunction(int degree, double lambda, int minSize, double trialPercentage) {
@@ -251,7 +251,7 @@ class SplineFunction implements NBRFunction {
 //         but it does not rely also on linear model which is more expensive
         int index = df.varIndex(testVarName);
 
-        DVector bestBeta = null;
+        Tensor<Double> bestBeta = null;
         double bestRef = Double.NaN;
         double bestError = Double.NaN;
         VarDouble bestYHat = null;
@@ -321,7 +321,7 @@ class SplineFunction implements NBRFunction {
 
             if (Double.isNaN(bestError) || bestError > error) {
                 bestError = error;
-                coeff = pred.getBetaHat().mapCol(0);
+                coeff = pred.getBetaHat().take(1, 0).squeeze(1);
                 threshold = ref;
                 bestYHat = y_hat;
             }

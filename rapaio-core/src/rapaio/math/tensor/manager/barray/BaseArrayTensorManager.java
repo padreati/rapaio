@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.engine.barray;
+package rapaio.math.tensor.manager.barray;
 
 import java.util.Random;
 
@@ -39,23 +39,23 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.engine.AbstractEngineOfType;
-import rapaio.math.tensor.engine.AbstractTensorEngine;
+import rapaio.math.tensor.manager.AbstractManagerOfType;
+import rapaio.math.tensor.manager.AbstractTensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 import rapaio.util.Hardware;
 
-public class BaseArrayTensorEngine extends AbstractTensorEngine {
+public class BaseArrayTensorManager extends AbstractTensorManager {
 
-    public BaseArrayTensorEngine() {
+    public BaseArrayTensorManager() {
         this(Hardware.CORES);
     }
 
-    public BaseArrayTensorEngine(int cpuThreads) {
+    public BaseArrayTensorManager(int cpuThreads) {
         super(cpuThreads, new BaseArrayOfDouble(), new BaseArrayOfFloat(), new BaseArrayOfInt(), new BaseArrayOfByte(), new ArrayStorageFactory());
     }
 
-    protected static class BaseArrayOfDouble extends AbstractEngineOfType<Double> {
+    protected static class BaseArrayOfDouble extends AbstractManagerOfType<Double> {
 
         public BaseArrayOfDouble() {
             super(DType.DOUBLE);
@@ -74,7 +74,7 @@ public class BaseArrayTensorEngine extends AbstractTensorEngine {
         }
     }
 
-    protected static class BaseArrayOfFloat extends AbstractEngineOfType<Float> {
+    protected static class BaseArrayOfFloat extends AbstractManagerOfType<Float> {
 
         public BaseArrayOfFloat() {
             super(DType.FLOAT);
@@ -92,7 +92,7 @@ public class BaseArrayTensorEngine extends AbstractTensorEngine {
         }
     }
 
-    protected static class BaseArrayOfInt extends AbstractEngineOfType<Integer> {
+    protected static class BaseArrayOfInt extends AbstractManagerOfType<Integer> {
 
         public BaseArrayOfInt() {
             super(DType.INTEGER);
@@ -109,7 +109,7 @@ public class BaseArrayTensorEngine extends AbstractTensorEngine {
         }
     }
 
-    protected static class BaseArrayOfByte extends AbstractEngineOfType<Byte> {
+    protected static class BaseArrayOfByte extends AbstractManagerOfType<Byte> {
 
         public BaseArrayOfByte() {
             super(DType.BYTE);

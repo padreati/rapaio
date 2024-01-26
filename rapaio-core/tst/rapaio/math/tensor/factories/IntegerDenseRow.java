@@ -34,11 +34,11 @@ package rapaio.math.tensor.factories;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 public final class IntegerDenseRow extends IntegerDense {
 
-    public IntegerDenseRow(TensorEngine manager) {
+    public IntegerDenseRow(TensorManager manager) {
         super(manager);
     }
 

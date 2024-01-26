@@ -35,7 +35,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 public class HistogramTableTest {
 
@@ -48,7 +48,7 @@ public class HistogramTableTest {
 
     @Test
     void testBuilders() {
-        Tensor<Double> vector = TensorEngine.base().ofDouble().random(Shape.of(10_000), random);
+        Tensor<Double> vector = TensorManager.base().ofDouble().random(Shape.of(10_000), random);
         VarDouble variable = vector.dv().name("x");
 
         HistogramTable ht2 = new HistogramTable(variable, 0.1, 0.9, 20);
@@ -135,7 +135,7 @@ public class HistogramTableTest {
 
     @Test
     void testFriedmanDiaconis() {
-        Tensor<Double> t = TensorEngine.base().ofDouble().random(Shape.of(1_000), random);
+        Tensor<Double> t = TensorManager.base().ofDouble().random(Shape.of(1_000), random);
         VarDouble v = t.dv();
         HistogramTable ht = new HistogramTable(v, Double.NaN, Double.NaN, 0);
         assertEquals(27, ht.bins());

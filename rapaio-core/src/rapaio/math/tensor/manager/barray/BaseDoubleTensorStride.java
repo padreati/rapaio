@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.engine.barray;
+package rapaio.math.tensor.manager.barray;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
@@ -58,9 +58,9 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Statistics;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
-import rapaio.math.tensor.engine.AbstractTensor;
-import rapaio.math.tensor.engine.varray.VectorizedFloatTensorStride;
+import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.manager.AbstractTensor;
+import rapaio.math.tensor.manager.varray.VectorizedDoubleTensorStride;
 import rapaio.math.tensor.iterators.DensePointerIterator;
 import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
@@ -76,13 +76,13 @@ import rapaio.math.tensor.operator.TensorUnaryOp;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
-public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits VectorizedFloatTensorStride {
+public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permits VectorizedDoubleTensorStride {
 
     protected final StrideLayout layout;
-    protected final TensorEngine engine;
+    protected final TensorManager engine;
     protected final StrideLoopDescriptor loop;
 
-    public BaseFloatTensorStride(TensorEngine engine, StrideLayout layout, Storage<Float> storage) {
+    public BaseDoubleTensorStride(TensorManager engine, StrideLayout layout, Storage<Double> storage) {
         super(storage);
         this.layout = layout;
         this.engine = engine;
@@ -90,12 +90,12 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public DType<Float> dtype() {
-        return DType.FLOAT;
+    public DType<Double> dtype() {
+        return DType.DOUBLE;
     }
 
     @Override
-    public TensorEngine engine() {
+    public TensorManager manager() {
         return engine;
     }
 
@@ -105,7 +105,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Tensor<Float> reshape(Shape askShape, Order askOrder) {
+    public Tensor<Double> reshape(Shape askShape, Order askOrder) {
         if (layout.shape().size() != askShape.size()) {
             throw new IllegalArgumentException("Incompatible shape size.");
         }
@@ -131,86 +131,81 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
             }
         }
         var it = new StridePointerIterator(layout, askOrder);
-        Tensor<Float> copy = engine.ofFloat().zeros(askShape, askOrder);
+        Tensor<Double> copy = engine.ofDouble().zeros(askShape, askOrder);
         var copyIt = copy.ptrIterator(Order.C);
         while (it.hasNext()) {
-            copy.ptrSetFloat(copyIt.nextInt(), storage.getFloat(it.nextInt()));
+            copy.ptrSetDouble(copyIt.nextInt(), storage.getDouble(it.nextInt()));
         }
         return copy;
     }
 
     @Override
-    public Tensor<Float> t_() {
-        return engine.ofFloat().stride(layout.revert(), storage);
+    public Tensor<Double> t_() {
+        return engine.ofDouble().stride(layout.revert(), storage);
     }
 
     @Override
-    public Tensor<Float> ravel(Order askOrder) {
+    public Tensor<Double> ravel(Order askOrder) {
         var compact = layout.computeFortranLayout(askOrder, true);
         if (compact.shape().rank() == 1) {
-            return engine.ofFloat().stride(compact, storage);
+            return engine.ofDouble().stride(compact, storage);
         }
         return flatten(askOrder);
     }
 
     @Override
-    public Tensor<Float> flatten(Order askOrder) {
+    public Tensor<Double> flatten(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
-        var out = engine.ofFloat().storage().zeros(layout.size());
+        var out = engine.ofDouble().storage().zeros(layout.size());
         int ptr = 0;
         var it = loopIterator(askOrder);
         while (it.hasNext()) {
             int off = it.nextInt();
             for (int i = 0; i < it.size(); i++) {
-                out.setFloat(ptr++, storage.getFloat(off + i * it.step()));
+                out.setDouble(ptr++, storage.getDouble(off + i * it.step()));
             }
         }
-        return engine.ofFloat().stride(StrideLayout.of(Shape.of(layout.size()), 0, new int[] {1}), out);
+        return engine.ofDouble().stride(StrideLayout.of(Shape.of(layout.size()), 0, new int[] {1}), out);
     }
 
     @Override
-    public Tensor<Float> squeeze() {
-        return layout.shape().unitDimCount() == 0 ? this : engine.ofFloat().stride(layout.squeeze(), storage);
+    public Tensor<Double> squeeze(int axis) {
+        return layout.shape().dim(axis) != 1 ? this : engine.ofDouble().stride(layout.squeeze(axis), storage);
     }
 
     @Override
-    public Tensor<Float> squeeze(int axis) {
-        return layout.shape().dim(axis) != 1 ? this : engine.ofFloat().stride(layout.squeeze(axis), storage);
+    public Tensor<Double> unsqueeze(int axis) {
+        return engine.ofDouble().stride(layout.unsqueeze(axis), storage);
     }
 
     @Override
-    public Tensor<Float> unsqueeze(int axis) {
-        return engine.ofFloat().stride(layout.unsqueeze(axis), storage);
+    public Tensor<Double> permute(int[] dims) {
+        return engine.ofDouble().stride(layout().permute(dims), storage);
     }
 
     @Override
-    public Tensor<Float> permute(int[] dims) {
-        return engine.ofFloat().stride(layout().permute(dims), storage);
+    public Tensor<Double> moveAxis(int src, int dst) {
+        return engine.ofDouble().stride(layout.moveAxis(src, dst), storage);
     }
 
     @Override
-    public Tensor<Float> moveAxis(int src, int dst) {
-        return engine.ofFloat().stride(layout.moveAxis(src, dst), storage);
+    public Tensor<Double> swapAxis(int src, int dst) {
+        return engine.ofDouble().stride(layout.swapAxis(src, dst), storage);
     }
 
     @Override
-    public Tensor<Float> swapAxis(int src, int dst) {
-        return engine.ofFloat().stride(layout.swapAxis(src, dst), storage);
+    public Tensor<Double> narrow(int axis, boolean keepdim, int start, int end) {
+        return engine.ofDouble().stride(layout.narrow(axis, keepdim, start, end), storage);
     }
 
     @Override
-    public Tensor<Float> narrow(int axis, boolean keepdim, int start, int end) {
-        return engine.ofFloat().stride(layout.narrow(axis, keepdim, start, end), storage);
+    public Tensor<Double> narrowAll(boolean keepdim, int[] starts, int[] ends) {
+        return engine.ofDouble().stride(layout.narrowAll(keepdim, starts, ends), storage);
     }
 
     @Override
-    public Tensor<Float> narrowAll(boolean keepdim, int[] starts, int[] ends) {
-        return engine.ofFloat().stride(layout.narrowAll(keepdim, starts, ends), storage);
-    }
-
-    @Override
-    public List<Tensor<Float>> split(int axis, boolean keepdim, int... indexes) {
-        List<Tensor<Float>> result = new ArrayList<>(indexes.length);
+    public List<Tensor<Double>> split(int axis, boolean keepdim, int... indexes) {
+        List<Tensor<Double>> result = new ArrayList<>(indexes.length);
         for (int i = 0; i < indexes.length; i++) {
             result.add(narrow(axis, keepdim, indexes[i], i < indexes.length - 1 ? indexes[i + 1] : shape().dim(axis)));
         }
@@ -218,19 +213,19 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public List<Tensor<Float>> splitAll(boolean keepdim, int[][] indexes) {
+    public List<Tensor<Double>> splitAll(boolean keepdim, int[][] indexes) {
         if (indexes.length != rank()) {
             throw new IllegalArgumentException(
                     "Indexes length of %d is not the same as shape rank %d.".formatted(indexes.length, rank()));
         }
-        List<Tensor<Float>> results = new ArrayList<>();
+        List<Tensor<Double>> results = new ArrayList<>();
         int[] starts = new int[indexes.length];
         int[] ends = new int[indexes.length];
         splitAllRecursive(results, indexes, keepdim, starts, ends, 0);
         return results;
     }
 
-    private void splitAllRecursive(List<Tensor<Float>> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
+    private void splitAllRecursive(List<Tensor<Double>> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
         if (level == indexes.length) {
             return;
         }
@@ -246,8 +241,8 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Tensor<Float> repeat(Order order, int axis, int repeat, boolean stack) {
-        List<Tensor<Float>> copies = new ArrayList<>(repeat);
+    public Tensor<Double> repeat(Order order, int axis, int repeat, boolean stack) {
+        List<Tensor<Double>> copies = new ArrayList<>(repeat);
         for (int i = 0; i < repeat; i++) {
             copies.add(this);
         }
@@ -259,7 +254,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Tensor<Float> expand(int axis, int dim) {
+    public Tensor<Double> expand(int axis, int dim) {
         if (layout.dim(axis) != 1) {
             throw new IllegalArgumentException(STR."Dimension \{axis} must have size 1, but have size \{layout.dim(axis)}.");
         }
@@ -271,11 +266,11 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
 
         newDims[axis] = dim;
         newStrides[axis] = 0;
-        return engine.ofFloat().stride(StrideLayout.of(Shape.of(newDims), layout.offset(), newStrides), storage);
+        return engine.ofDouble().stride(StrideLayout.of(Shape.of(newDims), layout.offset(), newStrides), storage);
     }
 
     @Override
-    public Tensor<Float> take(Order order, int axis, int... indices) {
+    public Tensor<Double> take(Order order, int axis, int... indices) {
 
         if (axis < 0 || axis >= layout.rank()) {
             throw new IllegalArgumentException(STR."Axis value \{axis} is out of bounds.");
@@ -298,7 +293,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
             newDims[axis] = 1;
             newStrides[axis] = 1;
             int newOffset = layout().offset() + indices[0] * layout.stride(axis);
-            return engine.ofFloat().stride(StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
+            return engine.ofDouble().stride(StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
         }
 
         // a geometric sequence of indices, even if the step is 0 (repeated elements)
@@ -317,12 +312,12 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
                 newDims[axis] = indices.length;
                 newStrides[axis] = layout.stride(axis) * step;
                 int newOffset = layout.offset() + indices[0] * layout.stride(axis);
-                return engine.ofFloat().stride(StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
+                return engine.ofDouble().stride(StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
             }
         }
 
         // if we failed, we copy data into a new tensor
-        List<Tensor<Float>> slices = new ArrayList<>();
+        List<Tensor<Double>> slices = new ArrayList<>();
         for (int index : indices) {
             slices.add(narrow(axis, true, index, index + 1));
         }
@@ -330,7 +325,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Tensor<Float> sort_(int axis, boolean asc) {
+    public Tensor<Double> sort_(int axis, boolean asc) {
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
         int selDim = layout.dim(axis);
@@ -357,34 +352,34 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Float get(int... indexes) {
-        return storage.getFloat(layout.pointer(indexes));
+    public Double get(int... indexes) {
+        return storage.getDouble(layout.pointer(indexes));
     }
 
     @Override
-    public void set(Float value, int... indexes) {
-        storage.setFloat(layout.pointer(indexes), value);
+    public void set(Double value, int... indexes) {
+        storage.setDouble(layout.pointer(indexes), value);
     }
 
     @Override
-    public void inc(Float value, int... indexes) {
-        storage.incFloat(layout.pointer(indexes), value);
+    public void inc(Double value, int... indexes) {
+        storage.incDouble(layout.pointer(indexes), value);
     }
 
     @Override
-    public Float ptrGet(int ptr) {
-        return storage.getFloat(ptr);
+    public Double ptrGet(int ptr) {
+        return storage.getDouble(ptr);
     }
 
     @Override
-    public void ptrSet(int ptr, Float value) {
-        storage.setFloat(ptr, value);
+    public void ptrSet(int ptr, Double value) {
+        storage.setDouble(ptr, value);
     }
 
     @Override
-    public Iterator<Float> iterator(Order askOrder) {
+    public Iterator<Double> iterator(Order askOrder) {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
-                .map(storage::getFloat).iterator();
+                .map(storage::getDouble).iterator();
     }
 
     @Override
@@ -407,7 +402,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public BaseFloatTensorStride apply_(Order askOrder, IntIntBiFunction<Float> apply) {
+    public BaseDoubleTensorStride apply_(Order askOrder, IntIntBiFunction<Double> apply) {
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
@@ -418,7 +413,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Tensor<Float> apply_(Function<Float, Float> fun) {
+    public Tensor<Double> apply_(Function<Double, Double> fun) {
         var ptrIter = ptrIterator(Order.S);
         while (ptrIter.hasNext()) {
             int ptr = ptrIter.nextInt();
@@ -428,7 +423,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Tensor<Float> fill_(Float value) {
+    public Tensor<Double> fill_(Double value) {
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
@@ -439,12 +434,12 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Tensor<Float> fillNan_(Float value) {
+    public Tensor<Double> fillNan_(Double value) {
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                if (dtype().isNaN(storage.getFloat(p))) {
-                    storage.setFloat(p, value);
+                if (dtype().isNaN(storage.getDouble(p))) {
+                    storage.setDouble(p, value);
                 }
             }
         }
@@ -452,15 +447,15 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Tensor<Float> clamp_(Float min, Float max) {
+    public Tensor<Double> clamp_(Double min, Double max) {
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                if (!dtype().isNaN(min) && storage.getFloat(p) < min) {
-                    storage.setFloat(p, min);
+                if (!dtype().isNaN(min) && storage.getDouble(p) < min) {
+                    storage.setDouble(p, min);
                 }
-                if (!dtype().isNaN(max) && storage.getFloat(p) > max) {
-                    storage.setFloat(p, max);
+                if (!dtype().isNaN(max) && storage.getDouble(p) > max) {
+                    storage.setDouble(p, max);
                 }
             }
         }
@@ -471,7 +466,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         for (int off : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = off + i * loop.step;
-                storage.setFloat(p, op.applyFloat(storage.getFloat(p)));
+                storage.setDouble(p, op.applyDouble(storage.getDouble(p)));
             }
         }
     }
@@ -484,98 +479,98 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Tensor<Float> abs_() {
+    public Tensor<Double> abs_() {
         unaryOp(TensorUnaryOp.ABS);
         return this;
     }
 
     @Override
-    public Tensor<Float> negate_() {
+    public Tensor<Double> negate_() {
         unaryOp(TensorUnaryOp.NEG);
         return this;
     }
 
     @Override
-    public Tensor<Float> log_() {
+    public Tensor<Double> log_() {
         unaryOp(TensorUnaryOp.LOG);
         return this;
     }
 
     @Override
-    public Tensor<Float> log1p_() {
+    public Tensor<Double> log1p_() {
         unaryOp(TensorUnaryOp.LOG1P);
         return this;
     }
 
     @Override
-    public Tensor<Float> exp_() {
+    public Tensor<Double> exp_() {
         unaryOp(TensorUnaryOp.EXP);
         return this;
     }
 
     @Override
-    public Tensor<Float> expm1_() {
+    public Tensor<Double> expm1_() {
         unaryOp(TensorUnaryOp.EXPM1);
         return this;
     }
 
     @Override
-    public Tensor<Float> sin_() {
+    public Tensor<Double> sin_() {
         unaryOp(TensorUnaryOp.SIN);
         return this;
     }
 
     @Override
-    public Tensor<Float> asin_() {
+    public Tensor<Double> asin_() {
         unaryOp(TensorUnaryOp.ASIN);
         return this;
     }
 
     @Override
-    public Tensor<Float> sinh_() {
+    public Tensor<Double> sinh_() {
         unaryOp(TensorUnaryOp.SINH);
         return this;
     }
 
     @Override
-    public Tensor<Float> cos_() {
+    public Tensor<Double> cos_() {
         unaryOp(TensorUnaryOp.COS);
         return this;
     }
 
     @Override
-    public Tensor<Float> acos_() {
+    public Tensor<Double> acos_() {
         unaryOp(TensorUnaryOp.ACOS);
         return this;
     }
 
     @Override
-    public Tensor<Float> cosh_() {
+    public Tensor<Double> cosh_() {
         unaryOp(TensorUnaryOp.COSH);
         return this;
     }
 
     @Override
-    public Tensor<Float> tan_() {
+    public Tensor<Double> tan_() {
         unaryOp(TensorUnaryOp.TAN);
         return this;
     }
 
     @Override
-    public Tensor<Float> atan_() {
+    public Tensor<Double> atan_() {
         unaryOp(TensorUnaryOp.ATAN);
         return this;
     }
 
     @Override
-    public Tensor<Float> tanh_() {
+    public Tensor<Double> tanh_() {
         unaryOp(TensorUnaryOp.TANH);
         return this;
     }
 
-    protected void binaryVectorOp(TensorBinaryOp op, Tensor<Float> b) {
+    protected void binaryVectorOp(TensorBinaryOp op, Tensor<Double> b) {
         if (b.isScalar()) {
-            binaryScalarOp(op, b.getFloat());
+            binaryScalarOp(op, b.getDouble());
             return;
         }
         if (!shape().equals(b.shape())) {
@@ -588,81 +583,81 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         var refIt = b.ptrIterator(order);
         while (it.hasNext()) {
             int next = it.nextInt();
-            storage.setFloat(next, op.applyFloat(storage.getFloat(next), b.ptrGet(refIt.nextInt())));
+            storage.setDouble(next, op.applyDouble(storage.getDouble(next), b.ptrGet(refIt.nextInt())));
         }
     }
 
     @Override
-    public Tensor<Float> add_(Tensor<Float> tensor) {
+    public Tensor<Double> add_(Tensor<Double> tensor) {
         binaryVectorOp(TensorBinaryOp.ADD, tensor);
         return this;
     }
 
     @Override
-    public Tensor<Float> sub_(Tensor<Float> tensor) {
+    public Tensor<Double> sub_(Tensor<Double> tensor) {
         binaryVectorOp(TensorBinaryOp.SUB, tensor);
         return this;
     }
 
     @Override
-    public Tensor<Float> mul_(Tensor<Float> tensor) {
+    public Tensor<Double> mul_(Tensor<Double> tensor) {
         binaryVectorOp(TensorBinaryOp.MUL, tensor);
         return this;
     }
 
     @Override
-    public Tensor<Float> div_(Tensor<Float> tensor) {
+    public Tensor<Double> div_(Tensor<Double> tensor) {
         binaryVectorOp(TensorBinaryOp.DIV, tensor);
         return this;
     }
 
-    void binaryScalarOpStep(TensorBinaryOp op, float value) {
+    void binaryScalarOpStep(TensorBinaryOp op, double value) {
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                storage.setFloat(p, op.applyFloat(storage.getFloat(p), value));
+                storage.setDouble(p, op.applyDouble(storage.getDouble(p), value));
             }
         }
     }
 
-    protected void binaryScalarOp(TensorBinaryOp op, float value) {
+    protected void binaryScalarOp(TensorBinaryOp op, double value) {
         binaryScalarOpStep(op, value);
     }
 
     @Override
-    public BaseFloatTensorStride add_(Float value) {
+    public BaseDoubleTensorStride add_(Double value) {
         binaryScalarOp(TensorBinaryOp.ADD, value);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride sub_(Float value) {
+    public BaseDoubleTensorStride sub_(Double value) {
         binaryScalarOp(TensorBinaryOp.SUB, value);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride mul_(Float value) {
+    public BaseDoubleTensorStride mul_(Double value) {
         binaryScalarOp(TensorBinaryOp.MUL, value);
         return this;
     }
 
     @Override
-    public BaseFloatTensorStride div_(Float value) {
+    public BaseDoubleTensorStride div_(Double value) {
         binaryScalarOp(TensorBinaryOp.DIV, value);
         return this;
     }
 
     @Override
-    public Tensor<Float> fma_(Float a, Tensor<Float> t) {
+    public Tensor<Double> fma_(Double a, Tensor<Double> t) {
         if (t.isScalar()) {
-            float tVal = t.getFloat(0);
-            return add_((float) (a * tVal));
+            double tVal = t.getDouble(0);
+            return add_((double) (a * tVal));
         }
         if (!shape().equals(t.shape())) {
             throw new IllegalArgumentException("Tensors does not have the same shape.");
         }
-        float aVal = a;
+        double aVal = a;
         var order = layout.storageFastOrder();
         order = order == Order.S ? Order.defaultOrder() : order;
 
@@ -670,18 +665,18 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         var refIt = t.ptrIterator(order);
         while (it.hasNext()) {
             int next = it.nextInt();
-            storage.setFloat(next, (float) Math.fma(t.ptrGet(refIt.nextInt()), aVal, storage.getFloat(next)));
+            storage.setDouble(next, (double) Math.fma(t.ptrGet(refIt.nextInt()), aVal, storage.getDouble(next)));
         }
         return this;
     }
 
     @Override
-    public Float vdot(Tensor<Float> tensor) {
+    public Double vdot(Tensor<Double> tensor) {
         return vdot(tensor, 0, shape().dim(0));
     }
 
     @Override
-    public Float vdot(Tensor<Float> tensor, int start, int end) {
+    public Double vdot(Tensor<Double> tensor, int start, int end) {
         if (shape().rank() != 1 || tensor.shape().rank() != 1 || shape().dim(0) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(
                     "Operands are not valid for vector dot product (v = %s, v = %s)."
@@ -690,7 +685,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         if (start >= end || start < 0 || end > tensor.shape().dim(0)) {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
-        BaseFloatTensorStride dts = (BaseFloatTensorStride) tensor;
+        BaseDoubleTensorStride dts = (BaseDoubleTensorStride) tensor;
         int step1 = layout.stride(0);
         int step2 = dts.layout.stride(0);
 
@@ -698,37 +693,37 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         int end1 = layout.offset() + end * step1;
         int start2 = dts.layout.offset() + start * step2;
 
-        float sum = 0;
+        double sum = 0;
         for (int i = start1; i < end1; i += step1) {
-            sum += (float) (storage.getFloat(i) * dts.storage.getFloat(start2));
+            sum += (double) (storage.getDouble(i) * dts.storage.getDouble(start2));
             start2 += step2;
         }
         return sum;
     }
 
     @Override
-    public Tensor<Float> mv(Tensor<Float> tensor) {
+    public Tensor<Double> mv(Tensor<Double> tensor) {
         if (shape().rank() != 2 || tensor.shape().rank() != 1 || shape().dim(1) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(
                     STR."Operands are not valid for matrix-vector multiplication \{"(m = %s, v = %s).".formatted(shape(),
                             tensor.shape())}");
         }
-        var result = engine.ofFloat().storage().zeros(shape().dim(0));
+        var result = engine.ofDouble().storage().zeros(shape().dim(0));
         var it = ptrIterator(Order.C);
         for (int i = 0; i < shape().dim(0); i++) {
             var innerIt = tensor.ptrIterator(Order.C);
-            float sum = 0;
+            double sum = 0;
             for (int j = 0; j < shape().dim(1); j++) {
-                sum += (float) (ptrGetFloat(it.nextInt()) * tensor.ptrGetFloat(innerIt.nextInt()));
+                sum += (double) (ptrGetDouble(it.nextInt()) * tensor.ptrGetDouble(innerIt.nextInt()));
             }
-            result.setFloat(i, sum);
+            result.setDouble(i, sum);
         }
         StrideLayout layout = StrideLayout.ofDense(Shape.of(shape().dim(0)), 0, Order.C);
-        return engine.ofFloat().stride(layout, result);
+        return engine.ofDouble().stride(layout, result);
     }
 
     @Override
-    public Tensor<Float> mm(Tensor<Float> t, Order askOrder) {
+    public Tensor<Double> mm(Tensor<Double> t, Order askOrder) {
         if (shape().rank() != 2 || t.shape().rank() != 2 || shape().dim(1) != t.shape().dim(0)) {
             throw new IllegalArgumentException(
                     STR."Operands are not valid for matrix-matrix multiplication \{"(m = %s, v = %s).".formatted(shape(), t.shape())}");
@@ -740,11 +735,11 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         int n = shape().dim(1);
         int p = t.shape().dim(1);
 
-        var result = engine.ofFloat().storage().zeros(m * p);
-        var ret = engine.ofFloat().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
+        var result = engine.ofDouble().storage().zeros(m * p);
+        var ret = engine.ofDouble().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
 
-        List<Tensor<Float>> rows = chunk(0, false, 1);
-        List<Tensor<Float>> cols = t.chunk(1, false, 1);
+        List<Tensor<Double>> rows = chunk(0, false, 1);
+        List<Tensor<Double>> cols = t.chunk(1, false, 1);
 
         int chunk = (int) floor(sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
@@ -768,9 +763,9 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
                         for (int k = 0; k < n; k += vectorChunk) {
                             int end = Math.min(n, k + vectorChunk);
                             for (int i = rs; i < re; i++) {
-                                var krow = (BaseFloatTensorStride) rows.get(i);
+                                var krow = (BaseDoubleTensorStride) rows.get(i);
                                 for (int j = c; j < ce; j++) {
-                                    result.incFloat(i * iStride + j * jStride, krow.vdot(cols.get(j), k, end));
+                                    result.incDouble(i * iStride + j * jStride, krow.vdot(cols.get(j), k, end));
                                 }
                             }
                         }
@@ -794,7 +789,28 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Float norm(int p) {
+    public Tensor<Double> scatter() {
+        if (!isMatrix()) {
+            throw new IllegalArgumentException("Scatter matrix can be computed only for matrices.");
+        }
+        Tensor<Double> scatter = engine.ofDouble().zeros(Shape.of(dim(1), dim(1)));
+        Tensor<Double> mean = engine.ofDouble().zeros(Shape.of(dim(1)));
+        for (int i = 0; i < dim(1); i++) {
+            mean.setDouble((double) take(1, i).stats().mean(), i);
+        }
+        for (int k = 0; k < dim(0); k++) {
+            Tensor<Double> row = take(0, k).squeeze(0).sub(mean);
+            for (int i = 0; i < row.size(); i++) {
+                for (int j = 0; j < row.size(); j++) {
+                    scatter.incDouble((double)(row.getDouble(i) * row.getDouble(j)), i, j);
+                }
+            }
+        }
+        return scatter;
+    }
+
+    @Override
+    public Double norm(int p) {
         if (p < 1) {
             throw new IllegalArgumentException(STR."Norm power p=\{p} must have a value greater than 0.");
         }
@@ -805,75 +821,75 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         };
     }
 
-    private Float norm1() {
-        float sum = (float) 0;
+    private Double norm1() {
+        double sum = (double) 0;
         var it = loopIterator();
         while (it.hasNext()) {
             int offset = it.next();
             for (int i = 0; i < it.size(); i++) {
                 int p = offset + i * it.step();
-                sum += (float) Math.abs(storage.getFloat(p));
+                sum += (double) Math.abs(storage.getDouble(p));
             }
         }
         return sum;
     }
 
-    private Float norm2() {
-        float sum = (float) 0;
+    private Double norm2() {
+        double sum = (double) 0;
         var it = loopIterator();
         while (it.hasNext()) {
             int offset = it.next();
             for (int i = 0; i < it.size(); i++) {
                 int p = offset + i * it.step();
-                float value = storage.getFloat(p);
-                sum += (float) (value * value);
+                double value = storage.getDouble(p);
+                sum += (double) (value * value);
             }
         }
-        return (float) Math.sqrt(sum);
+        return (double) Math.sqrt(sum);
     }
 
-    private Float normp(int pow) {
-        float sum = (float) 0;
+    private Double normp(int pow) {
+        double sum = (double) 0;
         var it = loopIterator();
         while (it.hasNext()) {
             int offset = it.next();
             for (int i = 0; i < it.size(); i++) {
                 int p = offset + i * it.step();
-                float value = (float) Math.abs(storage.getFloat(p));
-                sum += (float) Math.pow(value, pow);
+                double value = (double) Math.abs(storage.getDouble(p));
+                sum += (double) Math.pow(value, pow);
             }
         }
-        return (float) Math.pow(sum, 1. / pow);
+        return (double) Math.pow(sum, 1. / pow);
     }
 
     @Override
-    public Statistics<Float> stats() {
+    public Statistics<Double> stats() {
         if (!dtype().isFloatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
 
         int size = size();
         int nanSize = 0;
-        float mean;
-        float nanMean;
-        float variance;
-        float nanVariance;
+        double mean;
+        double nanMean;
+        double variance;
+        double nanVariance;
 
         // first pass compute raw mean
-        float sum = 0;
-        float nanSum = 0;
+        double sum = 0;
+        double nanSum = 0;
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                sum += storage.getFloat(p);
-                if (!dtype().isNaN(storage.getFloat(p))) {
-                    nanSum += storage.getFloat(p);
+                sum += storage.getDouble(p);
+                if (!dtype().isNaN(storage.getDouble(p))) {
+                    nanSum += storage.getDouble(p);
                     nanSize++;
                 }
             }
         }
-        mean = (float) (sum / size);
-        nanMean = (float) (nanSum / nanSize);
+        mean = (double) (sum / size);
+        nanMean = (double) (nanSum / nanSize);
 
         // second pass adjustments for mean
         sum = 0;
@@ -881,115 +897,115 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                sum += (float) (storage.getFloat(p) - mean);
-                if (!dtype().isNaN(storage.getFloat(p))) {
-                    nanSum += (float) (storage.getFloat(p) - nanMean);
+                sum += (double) (storage.getDouble(p) - mean);
+                if (!dtype().isNaN(storage.getDouble(p))) {
+                    nanSum += (double) (storage.getDouble(p) - nanMean);
                 }
             }
         }
-        mean += (float) (sum / size);
-        nanMean += (float) (nanSum / nanSize);
+        mean += (double) (sum / size);
+        nanMean += (double) (nanSum / nanSize);
 
         // third pass compute variance
-        float sum2 = 0;
-        float sum3 = 0;
-        float nanSum2 = 0;
-        float nanSum3 = 0;
+        double sum2 = 0;
+        double sum3 = 0;
+        double nanSum2 = 0;
+        double nanSum3 = 0;
 
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                sum2 += (float) ((storage.getFloat(p) - mean) * (storage.getFloat(p) - mean));
-                sum3 += (float) (storage.getFloat(p) - mean);
-                if (!dtype().isNaN(storage.getFloat(p))) {
-                    nanSum2 += (float) ((storage.getFloat(p) - nanMean) * (storage.getFloat(p) - nanMean));
-                    nanSum3 += (float) (storage.getFloat(p) - nanMean);
+                sum2 += (double) ((storage.getDouble(p) - mean) * (storage.getDouble(p) - mean));
+                sum3 += (double) (storage.getDouble(p) - mean);
+                if (!dtype().isNaN(storage.getDouble(p))) {
+                    nanSum2 += (double) ((storage.getDouble(p) - nanMean) * (storage.getDouble(p) - nanMean));
+                    nanSum3 += (double) (storage.getDouble(p) - nanMean);
                 }
             }
         }
-        variance = (float) ((sum2 - (sum3 * sum3) / size) / size);
-        nanVariance = (float) ((nanSum2 - (nanSum3 * nanSum3) / nanSize) / nanSize);
+        variance = (double) ((sum2 - (sum3 * sum3) / size) / size);
+        nanVariance = (double) ((nanSum2 - (nanSum3 * nanSum3) / nanSize) / nanSize);
 
         return new Statistics<>(dtype(), size, nanSize, mean, nanMean, variance, nanVariance);
     }
 
     @Override
-    public Float sum() {
+    public Double sum() {
         return associativeOp(TensorAssociativeOp.ADD);
     }
 
     @Override
-    public Tensor<Float> sum(Order order, int axis) {
+    public Tensor<Double> sum(Order order, int axis) {
         return associativeOpNarrow(TensorAssociativeOp.ADD, order, axis);
     }
 
     @Override
-    public Float nanSum() {
+    public Double nanSum() {
         return nanAssociativeOp(TensorAssociativeOp.ADD);
     }
 
     @Override
-    public Tensor<Float> nanSum(Order order, int axis) {
+    public Tensor<Double> nanSum(Order order, int axis) {
         return nanAssociativeOpNarrow(TensorAssociativeOp.ADD, order, axis);
     }
 
     @Override
-    public Float prod() {
+    public Double prod() {
         return associativeOp(TensorAssociativeOp.MUL);
     }
 
     @Override
-    public Tensor<Float> prod(Order order, int axis) {
+    public Tensor<Double> prod(Order order, int axis) {
         return associativeOpNarrow(TensorAssociativeOp.MUL, order, axis);
     }
 
     @Override
-    public Float nanProd() {
+    public Double nanProd() {
         return nanAssociativeOp(TensorAssociativeOp.MUL);
     }
 
     @Override
-    public Tensor<Float> nanProd(Order order, int axis) {
+    public Tensor<Double> nanProd(Order order, int axis) {
         return nanAssociativeOpNarrow(TensorAssociativeOp.MUL, order, axis);
     }
 
     @Override
-    public Float max() {
+    public Double max() {
         return associativeOp(TensorAssociativeOp.MAX);
     }
 
     @Override
-    public Tensor<Float> max(Order order, int axis) {
+    public Tensor<Double> max(Order order, int axis) {
         return associativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
     }
 
     @Override
-    public Float nanMax() {
+    public Double nanMax() {
         return nanAssociativeOp(TensorAssociativeOp.MAX);
     }
 
     @Override
-    public Tensor<Float> nanMax(Order order, int axis) {
+    public Tensor<Double> nanMax(Order order, int axis) {
         return nanAssociativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
     }
 
     @Override
-    public Float min() {
+    public Double min() {
         return associativeOp(TensorAssociativeOp.MIN);
     }
 
     @Override
-    public Tensor<Float> min(Order order, int axis) {
+    public Tensor<Double> min(Order order, int axis) {
         return associativeOpNarrow(TensorAssociativeOp.MIN, order, axis);
     }
 
     @Override
-    public Float nanMin() {
+    public Double nanMin() {
         return nanAssociativeOp(TensorAssociativeOp.MIN);
     }
 
     @Override
-    public Tensor<Float> nanMin(Order order, int axis) {
+    public Tensor<Double> nanMin(Order order, int axis) {
         return nanAssociativeOpNarrow(TensorAssociativeOp.MIN, order, axis);
     }
 
@@ -999,7 +1015,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                if (dtype().isNaN(storage.getFloat(p))) {
+                if (dtype().isNaN(storage.getDouble(p))) {
                     count++;
                 }
             }
@@ -1013,7 +1029,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                if (storage.getFloat(p) == 0) {
+                if (storage.getDouble(p) == 0) {
                     count++;
                 }
             }
@@ -1021,70 +1037,70 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         return count;
     }
 
-    protected float associativeOp(TensorAssociativeOp op) {
-        float agg = op.initialFloat();
+    protected double associativeOp(TensorAssociativeOp op) {
+        double agg = op.initialDouble();
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                agg = op.applyFloat(agg, storage.getFloat(p));
+                agg = op.applyDouble(agg, storage.getDouble(p));
             }
         }
         return agg;
     }
 
-    protected float nanAssociativeOp(TensorAssociativeOp op) {
-        float aggregate = op.initialFloat();
+    protected double nanAssociativeOp(TensorAssociativeOp op) {
+        double aggregate = op.initialDouble();
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                if (!dtype().isNaN(storage.getFloat(p))) {
-                    aggregate = op.applyFloat(aggregate, storage.getFloat(p));
+                if (!dtype().isNaN(storage.getDouble(p))) {
+                    aggregate = op.applyDouble(aggregate, storage.getDouble(p));
                 }
             }
         }
         return aggregate;
     }
 
-    protected Tensor<Float> associativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
+    protected Tensor<Double> associativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        Tensor<Float> res = engine.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
+        Tensor<Double> res = engine.ofDouble().zeros(Shape.of(newDims), Order.autoFC(order));
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            float value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialFloat(), op::applyFloat);
+            double value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialDouble(), op::applyDouble);
             res.ptrSet(resIt.next(), value);
         }
         return res;
     }
 
-    protected Tensor<Float> nanAssociativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
+    protected Tensor<Double> nanAssociativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        Tensor<Float> res = engine.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
+        Tensor<Double> res = engine.ofDouble().zeros(Shape.of(newDims), Order.autoFC(order));
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            float value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.FLOAT, op.initialFloat(), op::applyFloat);
+            double value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.DOUBLE, op.initialDouble(), op::applyDouble);
             res.ptrSet(resIt.next(), value);
         }
         return res;
     }
 
     @Override
-    public Tensor<Float> copy(Order askOrder) {
+    public Tensor<Double> copy(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
 
-        var copy = engine.ofFloat().storage().zeros(size());
-        var dst = engine.ofFloat().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
+        var copy = engine.ofDouble().storage().zeros(size());
+        var dst = engine.ofDouble().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
 
         if (layout.storageFastOrder() == askOrder) {
             sameLayoutCopy(copy, askOrder);
@@ -1094,21 +1110,21 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         return dst;
     }
 
-    private void sameLayoutCopy(Storage<Float> copy, Order askOrder) {
+    private void sameLayoutCopy(Storage<Double> copy, Order askOrder) {
         var loop = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                copy.setFloat(last++, storage.getFloat(p));
+                copy.setDouble(last++, storage.getDouble(p));
             }
         }
     }
 
     @Override
-    public Tensor<Float> copyTo(Tensor<Float> to, Order askOrder) {
+    public Tensor<Double> copyTo(Tensor<Double> to, Order askOrder) {
 
-        if (to instanceof BaseFloatTensorStride dst) {
+        if (to instanceof BaseDoubleTensorStride dst) {
 
             int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().byteCount() * 2 * engine.cpuThreads() * 8);
 
@@ -1141,8 +1157,8 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
                                 int[] ss = IntArrays.copy(starts);
                                 int[] es = IntArrays.copy(ends);
                                 futures.add(executor.submit(() -> {
-                                    BaseFloatTensorStride s = (BaseFloatTensorStride) this.narrowAll(false, ss, es);
-                                    BaseFloatTensorStride d = (BaseFloatTensorStride) dst.narrowAll(false, ss, es);
+                                    BaseDoubleTensorStride s = (BaseDoubleTensorStride) this.narrowAll(false, ss, es);
+                                    BaseDoubleTensorStride d = (BaseDoubleTensorStride) dst.narrowAll(false, ss, es);
                                     directCopyTo(s, d, askOrder);
                                     return null;
                                 }));
@@ -1180,33 +1196,33 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         throw new IllegalArgumentException("Not implemented for this tensor type.");
     }
 
-    private void directCopyTo(BaseFloatTensorStride src, BaseFloatTensorStride dst, Order askOrder) {
+    private void directCopyTo(BaseDoubleTensorStride src, BaseDoubleTensorStride dst, Order askOrder) {
         var loop = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                dst.storage.setFloat(it2.nextInt(), src.storage.getFloat(p));
+                dst.storage.setDouble(it2.nextInt(), src.storage.getDouble(p));
             }
         }
     }
 
-    public float[] toArray() {
+    public double[] toArray() {
         if (shape().rank() != 1) {
             throw new IllegalArgumentException("Only one dimensional tensors can be transformed into array.");
         }
-        float[] copy = new float[size()];
+        double[] copy = new double[size()];
         int pos = 0;
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                copy[pos++] = storage.getFloat(p);
+                copy[pos++] = storage.getDouble(p);
             }
         }
         return copy;
     }
 
-    public float[] asArray() {
+    public double[] asArray() {
         if (shape().rank() != 1) {
             throw new IllegalArgumentException("Only one dimensional tensors can be transformed into array.");
         }

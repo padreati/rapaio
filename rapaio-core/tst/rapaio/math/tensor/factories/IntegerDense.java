@@ -32,12 +32,12 @@
 package rapaio.math.tensor.factories;
 
 import rapaio.math.tensor.DType;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 public abstract class IntegerDense extends DataFactory<Integer> {
 
-    public IntegerDense(TensorEngine tensorEngine) {
-        super(tensorEngine, tensorEngine.ofInt(), DType.INTEGER);
+    public IntegerDense(TensorManager tensorManager) {
+        super(tensorManager, tensorManager.ofInt(), DType.INTEGER);
     }
 
     @Override

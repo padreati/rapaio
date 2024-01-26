@@ -34,18 +34,17 @@ package rapaio.ml.model.linear.impl;
 import java.io.Serial;
 import java.util.Objects;
 
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
 import rapaio.data.preprocessing.AddIntercept;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.Capabilities;
-import rapaio.printer.TextTable;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.linear.LinearRegressionResult;
 import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 
 /**
@@ -63,17 +62,17 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
      */
     public final ValueParam<Boolean, M> intercept = new ValueParam<>((M) this, true, "intercept", Objects::nonNull);
 
-    protected DMatrix beta;
+    protected Tensor<Double> beta;
 
-    public DVector firstCoefficients() {
-        return beta.mapCol(0);
+    public Tensor<Double> firstCoefficients() {
+        return beta.take(1, 0).squeeze(1);
     }
 
-    public DVector getCoefficients(int targetIndex) {
-        return beta.mapCol(targetIndex);
+    public Tensor<Double> getCoefficients(int targetIndex) {
+        return beta.take(1, targetIndex).squeeze(1);
     }
 
-    public DMatrix getAllCoefficients() {
+    public Tensor<Double> getAllCoefficients() {
         return beta;
     }
 
@@ -147,7 +146,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
             String targetName = targetNames[i];
             sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
             sb.append("> Coefficients: \n");
-            DVector coeff = beta.mapCol(i);
+            Tensor<Double> coeff = beta.take(1, i).squeeze(1);
 
             TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
             tt.textCenter(0, 0, "Name");

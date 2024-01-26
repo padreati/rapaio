@@ -74,6 +74,5 @@ public class CStackingTest {
         var pred = s.fit(tts.trainDf(), target).predict(tts.testDf());
         double accuracy = Accuracy.newMetric(true).compute(tts.testDf().rvar(target), pred).getScore().value();
         assertTrue(accuracy>0.9);
-        System.out.println(accuracy);
     }
 }

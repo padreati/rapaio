@@ -61,7 +61,7 @@ import rapaio.math.linear.dense.DMatrixDenseR;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 import rapaio.sys.WS;
 
 
@@ -105,7 +105,7 @@ public class DMatrixDMatrixDotBenchmark {
                 }
             }
 
-            t = TensorEngine.varray().ofDouble().stride(Shape.of(n, n), Order.C, array);
+            t = TensorManager.varray().ofDouble().stride(Shape.of(n, n), Order.C, array);
             tc = t.t_().copy(Order.F);
         }
     }

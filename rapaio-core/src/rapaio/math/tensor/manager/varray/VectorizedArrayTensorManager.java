@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.engine.varray;
+package rapaio.math.tensor.manager.varray;
 
 import java.util.Random;
 
@@ -39,23 +39,23 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.engine.AbstractEngineOfType;
-import rapaio.math.tensor.engine.AbstractTensorEngine;
+import rapaio.math.tensor.manager.AbstractManagerOfType;
+import rapaio.math.tensor.manager.AbstractTensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 import rapaio.util.Hardware;
 
-public class VectorizedArrayTensorEngine extends AbstractTensorEngine {
+public class VectorizedArrayTensorManager extends AbstractTensorManager {
 
-    public VectorizedArrayTensorEngine() {
+    public VectorizedArrayTensorManager() {
         this(Hardware.CORES);
     }
 
-    public VectorizedArrayTensorEngine(int cpuThreads) {
+    public VectorizedArrayTensorManager(int cpuThreads) {
         super(cpuThreads, new VArrayOfDouble(), new VArrayOfFloat(), new VArrayOfInt(), new VArrayOfByte(), new ArrayStorageFactory());
     }
 
-    protected static class VArrayOfDouble extends AbstractEngineOfType<Double> {
+    protected static class VArrayOfDouble extends AbstractManagerOfType<Double> {
 
         public VArrayOfDouble() {
             super(DType.DOUBLE);
@@ -73,7 +73,7 @@ public class VectorizedArrayTensorEngine extends AbstractTensorEngine {
         }
     }
 
-    protected static class VArrayOfFloat extends AbstractEngineOfType<Float> {
+    protected static class VArrayOfFloat extends AbstractManagerOfType<Float> {
 
         public VArrayOfFloat() {
             super(DType.FLOAT);
@@ -91,7 +91,7 @@ public class VectorizedArrayTensorEngine extends AbstractTensorEngine {
         }
     }
 
-    protected static class VArrayOfInt extends AbstractEngineOfType<Integer> {
+    protected static class VArrayOfInt extends AbstractManagerOfType<Integer> {
 
         public VArrayOfInt() {
             super(DType.INTEGER);
@@ -108,7 +108,7 @@ public class VectorizedArrayTensorEngine extends AbstractTensorEngine {
         }
     }
 
-    protected static class VArrayOfByte extends AbstractEngineOfType<Byte> {
+    protected static class VArrayOfByte extends AbstractManagerOfType<Byte> {
 
         public VArrayOfByte() {
             super(DType.BYTE);

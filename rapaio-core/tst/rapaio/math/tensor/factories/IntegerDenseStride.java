@@ -36,13 +36,13 @@ import java.util.Random;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.util.collection.IntArrays;
 
 public final class IntegerDenseStride extends IntegerDense {
 
-    public IntegerDenseStride(TensorEngine manager) {
+    public IntegerDenseStride(TensorManager manager) {
         super(manager);
     }
 

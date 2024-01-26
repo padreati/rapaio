@@ -36,7 +36,8 @@ import java.io.Serial;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.preprocessing.AddIntercept;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -55,6 +56,8 @@ public class WeightedLinearRegression extends BaseLinearRegressionModel<Weighted
 
     @Serial
     private static final long serialVersionUID = 8595413796946622895L;
+
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     @Override
     public WeightedLinearRegression newInstance() {
@@ -77,10 +80,9 @@ public class WeightedLinearRegression extends BaseLinearRegressionModel<Weighted
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        var w = weights.dv();
-        w.apply(Math::sqrt);
-        DMatrix X = DMatrix.copy(df.mapVars(inputNames())).mul(w, 1);
-        DMatrix Y = DMatrix.copy(df.mapVars(targetNames())).mul(w, 1);
+        var w = weights.dtNew().apply_(Math::sqrt);
+        Tensor<Double> X = df.mapVars(inputNames()).dtNew().bmul(1, w);
+        Tensor<Double> Y = df.mapVars(targetNames()).dtNew().bmul(1, w);
         beta = X.qr().solve(Y);
         return true;
     }

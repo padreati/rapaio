@@ -67,11 +67,11 @@ public class TensorTest {
 
     @Test
     void allTests() {
-        managerTestSuite(TensorEngine.barray());
-        managerTestSuite(TensorEngine.varray());
+        managerTestSuite(TensorManager.barray());
+        managerTestSuite(TensorManager.varray());
     }
 
-    private void managerTestSuite(TensorEngine eng) {
+    private void managerTestSuite(TensorManager eng) {
         new TestSuite<>(this, new DoubleDenseRow(eng)).run();
         new TestSuite<>(this, new DoubleDenseCol(eng)).run();
         new TestSuite<>(this, new DoubleDenseStride(eng)).run();
@@ -143,7 +143,7 @@ public class TensorTest {
             if (value instanceof Integer) {
                 assertEquals(t.dtype(), DType.INTEGER);
             }
-            assertEquals(g.engine(), t.engine());
+            assertEquals(g.engine(), t.manager());
         }
 
         void scalarTest() {
@@ -564,12 +564,6 @@ public class TensorTest {
         void testSqueezeMoveSwapAxis() {
             Shape shape = Shape.of(2, 1, 3, 1, 4, 1);
             var t = g.seq(shape);
-            var s = t.squeeze();
-            assertArrayEquals(new int[] {2, 3, 4}, s.shape().dims());
-
-            assertTrue(t.squeeze(5).squeeze(3).squeeze(1).deepEquals(s));
-
-            assertTensorEqualValues(t, s);
 
             assertTrue(t.moveAxis(2, 3).deepEquals(t.swapAxis(2, 3)));
             assertFalse(t.moveAxis(2, 3).deepEquals(t.swapAxis(0, 2)));
@@ -806,8 +800,7 @@ public class TensorTest {
             var t1 = g.seq(shape);
 
             var vdots = new ArrayList<N>();
-            for (var t : t1.chunk(0, true, 1)) {
-                t = t.squeeze();
+            for (var t : t1.chunk(0, false, 1)) {
                 vdots.add(t.vdot(t));
             }
 
@@ -862,11 +855,11 @@ public class TensorTest {
 
             var r1 = t1.mm(t2, Order.C);
             var e1 = t1.mv(g.seq(Shape.of(42)));
-            assertTrue(e1.deepEquals(r1.squeeze()));
+            assertTrue(e1.deepEquals(r1.squeeze(1)));
 
             var r2 = t1.mm(t2, Order.F);
             var e2 = t1.mv(g.seq(Shape.of(42)));
-            assertTrue(e2.deepEquals(r2.squeeze()));
+            assertTrue(e2.deepEquals(r2.squeeze(1)));
 
             var t3 = g.random(Shape.of(31, 42));
             var t4 = g.random(Shape.of(42, 200));

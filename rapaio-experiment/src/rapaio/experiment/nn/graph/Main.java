@@ -36,7 +36,7 @@ import java.util.Map;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 public class Main {
 
@@ -45,7 +45,7 @@ public class Main {
         var dtype = DType.FLOAT;
 
         var g = new Graph();
-        var mill = TensorEngine.base();
+        var mill = TensorManager.base();
 
         var x = new Placeholder(g, "x");
         var w = new Variable(g, "w", mill.stride(dtype, Shape.of(2, 2), Order.C, mill.ofType(dtype).storage().from(new float[] {1, 1, 1, -1})));

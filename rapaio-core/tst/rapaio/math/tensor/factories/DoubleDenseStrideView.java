@@ -37,12 +37,12 @@ import rapaio.core.distributions.Normal;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 
 public final class DoubleDenseStrideView extends DoubleDense {
 
-    public DoubleDenseStrideView(TensorEngine manager) {
+    public DoubleDenseStrideView(TensorManager manager) {
         super(manager);
     }
 

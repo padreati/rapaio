@@ -32,12 +32,12 @@
 package rapaio.math.tensor.factories;
 
 import rapaio.math.tensor.DType;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 public abstract class FloatDense extends DataFactory<Float> {
 
-    public FloatDense(TensorEngine tensorEngine) {
-        super(tensorEngine, tensorEngine.ofFloat(), DType.FLOAT);
+    public FloatDense(TensorManager tensorManager) {
+        super(tensorManager, tensorManager.ofFloat(), DType.FLOAT);
     }
 
     @Override

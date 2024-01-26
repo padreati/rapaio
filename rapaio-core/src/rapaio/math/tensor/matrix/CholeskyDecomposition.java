@@ -33,11 +33,10 @@ package rapaio.math.tensor.matrix;
 
 import java.io.Serializable;
 
-import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 /**
  * Cholesky Decomposition.
@@ -49,8 +48,7 @@ import rapaio.math.tensor.TensorEngine;
  */
 public class CholeskyDecomposition<N extends Number> implements Serializable {
 
-    protected final TensorEngine.OfType<N> ofType;
-    protected final DType<N> dType;
+    protected final TensorManager.OfType<N> tmt;
     protected final Tensor<N> ref;
     protected final boolean rightFlag;
     protected boolean spd = false;
@@ -73,8 +71,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
         if(ref.dtype().isInteger()) {
             throw new IllegalArgumentException(STR."Cannot compute decomposition for integer types (dtype: \{ref.dtype().id()})");
         }
-        this.ofType = ref.engine().ofType(ref.dtype());
-        this.dType = ref.dtype();
+        this.tmt = ref.manager().ofType(ref.dtype());
         this.ref = ref;
         this.rightFlag = rightFlag;
 
@@ -112,7 +109,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
      */
     protected void leftCholesky() {
         int n = ref.dim(0);
-        l = ref.engine().ofType(ref.dtype()).zeros(Shape.of(n, n), Order.C);
+        l = ref.manager().ofType(ref.dtype()).zeros(Shape.of(n, n), Order.C);
         spd = (ref.dim(1) == n);
         for (int i = 0; i < n; i++) {
             double d = 0.0;
@@ -142,7 +139,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
      */
     protected void rightCholesky() {
         int n = ref.dim(1);
-        r = ofType.zeros(Shape.of(n, n));
+        r = tmt.zeros(Shape.of(n, n));
         spd = (ref.dim(0) == n);
         for (int j = 0; j < n; j++) {
             double d = 0.0;
@@ -186,7 +183,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
         forwardSubstitution(x, triangle);
         backwardSubstitution(x, triangle);
 
-        return x.squeeze();
+        return x.squeeze(1);
     }
 
     public Tensor<N> inv() {
@@ -195,7 +192,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
         }
 
         // Copy right-hand side.
-        Tensor<N> x = ofType.eye(ref.dim(0), Order.C);
+        Tensor<N> x = tmt.eye(ref.dim(0), Order.C);
         Tensor<N> triangle = rightFlag ? r.t() : l;
 
         forwardSubstitution(x, triangle);

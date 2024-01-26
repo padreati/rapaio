@@ -38,14 +38,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.MathTools;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DMatrixDenseC;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
@@ -57,7 +59,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 import rapaio.printer.opt.POpts;
-import rapaio.core.param.ValueParam;
+import rapaio.sys.WS;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
@@ -70,6 +72,8 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
     @Serial
     private static final long serialVersionUID = 1609956190070125059L;
+
+    private static final TensorManager.OfType<Double> tmd = WS.tm().ofDouble();
 
     /**
      * Defines the scaling value of the intercept, by default being 1. If the configured value
@@ -126,7 +130,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     private VarDouble w;
 
     // List of coefficients computed at each iteration.
-    private List<DVector> iterationWeights;
+    private List<Tensor<Double>> iterationWeights;
 
     // List of loss function values evaluated after each iteration.
     private List<Double> iterationLoss;
@@ -148,7 +152,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         return converged;
     }
 
-    public List<DVector> iterationWeights() {
+    public List<Tensor<Double>> iterationWeights() {
         return iterationWeights;
     }
 
@@ -166,9 +170,9 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
-        DMatrix x = computeInputMatrix(df, firstTargetName());
-        DVector y = computeTargetVector(df.rvar(firstTargetName()));
-        DVector w0 = DVector.fill(x.cols(), init.get().getFunction().apply(y));
+        var x = computeInputMatrix(df, firstTargetName());
+        var y = computeTargetVector(df.rvar(firstTargetName()));
+        var w0 = tmd.full(Shape.of(x.dim(1)), init.get().getFunction().apply(y));
 
         switch (solver.get()) {
             case IRLS -> {
@@ -203,15 +207,15 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         return true;
     }
 
-    private DVector computeTargetVector(Var target) {
+    private Tensor<Double> computeTargetVector(Var target) {
         switch (target.type()) {
             case BINARY -> {
                 positiveLabel = "1";
                 negativeLabel = "0";
-                return target.dv();
+                return target.dt();
             }
             case NOMINAL -> {
-                DVector result = DVector.zeros(target.size());
+                var result = tmd.zeros(Shape.of(target.size()));
                 positiveLabel = !Objects.equals(nominalLevel.get(), "") ? nominalLevel.get() : targetLevels.get(firstTargetName()).get(1);
                 negativeLabel = firstTargetLevels().stream()
                         .filter(label -> !label.equals(positiveLabel))
@@ -220,7 +224,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
                     if (target.isMissing(i)) {
                         throw new IllegalArgumentException("Target variable does not allow missing values.");
                     }
-                    result.set(i, positiveLabel.equals(target.getLabel(i)) ? 1 : 0);
+                    result.setDouble(positiveLabel.equals(target.getLabel(i)) ? 1 : 0, i);
                 }
                 return result;
             }
@@ -228,7 +232,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         return null;
     }
 
-    private DMatrix computeInputMatrix(Frame df, String targetName) {
+    private Tensor<Double> computeInputMatrix(Frame df, String targetName) {
         List<Var> variables = new ArrayList<>();
         if (intercept.get() != 0) {
             hasIntercept = true;
@@ -239,7 +243,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         df.varStream()
                 .filter(v -> !targetName.equals(v.name()))
                 .forEach(variables::add);
-        return DMatrixDenseC.copy(variables.toArray(Var[]::new));
+        return SolidFrame.byVars(variables).dtNew();
     }
 
     @Override
@@ -252,11 +256,11 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
         int offset = hasIntercept ? 1 : 0;
 
-        DVector p = DVector.fill(df.rowCount(), hasIntercept ? intercept.get() * w.getDouble(0) : 0);
+        var p = tmd.full(Shape.of(df.rowCount()), hasIntercept ? intercept.get() * w.getDouble(0) : 0);
         for (int i = 0; i < inputNames.length; i++) {
-            p.fma(w.getDouble(i + offset), df.rvar(inputName(i)).dv());
+            p.fma_(w.getDouble(i + offset), df.rvar(inputName(i)).dt());
         }
-        p.apply(MathTools::logistic);
+        p.apply_(MathTools::logistic);
 
         for (int r = 0; r < df.rowCount(); r++) {
             double pi = p.get(r);
@@ -279,16 +283,16 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     public enum Initialize implements Serializable {
         ZERO(v -> 0.0),
         ONE(v -> 1.0),
-        EXPECTED_LOG_VAR(v -> Math.log(Math.min(1e-12, v.mean() * (1 - v.mean()))));
+        EXPECTED_LOG_VAR(v -> Math.log(Math.min(1e-12, v.stats().mean() * (1 - v.stats().mean()))));
 
         private static final long serialVersionUID = 8945270404852488614L;
-        private final Function<DVector, Double> function;
+        private final Function<Tensor<Double>, Double> function;
 
-        Initialize(Function<DVector, Double> function) {
+        Initialize(Function<Tensor<Double>, Double> function) {
             this.function = function;
         }
 
-        public Function<DVector, Double> getFunction() {
+        public Function<Tensor<Double>, Double> getFunction() {
             return function;
         }
     }

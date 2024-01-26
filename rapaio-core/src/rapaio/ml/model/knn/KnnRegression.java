@@ -165,7 +165,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
     private Tensor<Double> computeWeights(int[] top, int ref, DVector x) {
 
         var d = distance.get();
-        Tensor<Double> w = WS.tensorEngine().ofDouble().zeros(Shape.of(top.length));
+        Tensor<Double> w = WS.tm().ofDouble().zeros(Shape.of(top.length));
         w.apply_(Order.C, (i, p) -> d.compute(x, instances[top[i]]));
 
         double wref = d.compute(x, instances[ref]);

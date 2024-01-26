@@ -36,7 +36,8 @@ import java.io.Serial;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.preprocessing.AddIntercept;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -55,6 +56,8 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
 
     @Serial
     private static final long serialVersionUID = 8595413796946622895L;
+
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     @Override
     public LinearRegressionModel newInstance() {
@@ -78,8 +81,8 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        DMatrix X = DMatrix.copy(df.mapVars(inputNames()));
-        DMatrix Y = DMatrix.copy(df.mapVars(targetNames()));
+        Tensor<Double> X = df.mapVars(inputNames()).dtNew();
+        Tensor<Double> Y = df.mapVars(targetNames()).dtNew();
         beta = X.qr().solve(Y);
         return true;
     }

@@ -39,6 +39,7 @@ import java.util.Arrays;
 
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -65,6 +66,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
         GAUSSIAN_ELIMINATION
     }
 
+    private final TensorManager.OfType<N> tmt;
     protected final Tensor<N> ref;
     protected final Method method;
 
@@ -79,6 +81,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
         if (ref.dim(0) < ref.dim(1)) {
             throw new IllegalArgumentException("For LU decomposition, number of rows must be greater or equal with number of columns.");
         }
+        this.tmt = ref.manager().ofType(ref.dtype());
         this.ref = ref;
         this.method = method;
         switch (method) {
@@ -201,7 +204,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
     }
 
     public Tensor<N> l() {
-        Tensor<N> x = ref.engine().ofType(ref.dtype()).zeros(Shape.of(ref.dim(0), ref.dim(1)));
+        Tensor<N> x = tmt.zeros(Shape.of(ref.dim(0), ref.dim(1)));
         int i = 0;
         for (; i < ref.dim(1); i++) {
             for (int j = 0; j < i; j++) {
@@ -218,7 +221,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
     }
 
     public Tensor<N> u() {
-        Tensor<N> U = ref.engine().ofType(ref.dtype()).zeros(Shape.of(ref.dim(1), ref.dim(1)));
+        Tensor<N> U = tmt.zeros(Shape.of(ref.dim(1), ref.dim(1)));
         for (int i = 0; i < ref.dim(1); i++) {
             for (int j = i; j < ref.dim(1); j++) {
                 U.setDouble(LU.getDouble(i, j), i, j);
@@ -281,7 +284,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
 
 
     public Tensor<N> inv() {
-        return solve(ref.engine().ofType(ref.dtype()).eye(ref.dim(0)));
+        return solve(tmt.eye(ref.dim(0)));
     }
 
     @Override

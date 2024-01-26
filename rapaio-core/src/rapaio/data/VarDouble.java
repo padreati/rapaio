@@ -609,7 +609,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public Tensor<Double> dt() {
-        return WS.tensorEngine().ofDouble().stride(Shape.of(rows), Order.C, data);
+        return WS.tm().ofDouble().stride(Shape.of(rows), Order.C, data);
     }
 
     @Serial

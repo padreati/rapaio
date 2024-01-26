@@ -45,7 +45,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 public class LUDecompositionTest {
 
@@ -60,90 +60,90 @@ public class LUDecompositionTest {
 
     @Test
     void testSuite() {
-        testPlan(TensorEngine.base().ofDouble());
+        testPlan(TensorManager.base().ofDouble());
     }
 
-    <N extends Number> void testPlan(TensorEngine.OfType<N> ofType) {
-        testBasicGaussian(ofType);
-        testBasicCrout(ofType);
-        testIsSingular(ofType);
-        testDeterminant(ofType);
-        testInv(ofType);
-        testSolve(ofType);
-        testInvalidMatrixForDeterminant(ofType);
-        testInvalidSolver(ofType);
-        testPrintable(ofType);
+    <N extends Number> void testPlan(TensorManager.OfType<N> tmt) {
+        testBasicGaussian(tmt);
+        testBasicCrout(tmt);
+        testIsSingular(tmt);
+        testDeterminant(tmt);
+        testInv(tmt);
+        testSolve(tmt);
+        testInvalidMatrixForDeterminant(tmt);
+        testInvalidSolver(tmt);
+        testPrintable(tmt);
     }
 
-    <N extends Number> void testBasicGaussian(TensorEngine.OfType<N> ofType) {
-        Tensor<N> a = ofType.random(Shape.of(100, 100), random);
+    <N extends Number> void testBasicGaussian(TensorManager.OfType<N> tmt) {
+        Tensor<N> a = tmt.random(Shape.of(100, 100), random);
         LUDecomposition<N> lu = a.lu(LUDecomposition.Method.GAUSSIAN_ELIMINATION);
         Tensor<N> a1 = a.take(0, lu.pivots());
         Tensor<N> a2 = lu.l().mm(lu.u());
         assertTrue(a1.deepEquals(a2, TOL));
     }
 
-    <N extends Number> void testBasicCrout(TensorEngine.OfType<N> ofType) {
-        Tensor<N> a = ofType.random(Shape.of(100, 100), random);
+    <N extends Number> void testBasicCrout(TensorManager.OfType<N> tmt) {
+        Tensor<N> a = tmt.random(Shape.of(100, 100), random);
         LUDecomposition<N> lu = a.lu(LUDecomposition.Method.CROUT);
         Tensor<N> a1 = a.take(0, lu.pivots());
         Tensor<N> a2 = lu.l().mm(lu.u());
         assertTrue(a1.deepEquals(a2, TOL));
     }
 
-    <N extends Number> void testIsSingular(TensorEngine.OfType<N> ofType) {
-        assertFalse(DMatrix.empty(10, 10).lu().isNonSingular());
-        assertTrue(DMatrix.random(random, 10, 10).lu().isNonSingular());
+    <N extends Number> void testIsSingular(TensorManager.OfType<N> tmt) {
+        assertFalse(tmt.zeros(Shape.of(10, 10)).lu().isNonSingular());
+        assertTrue(tmt.random(Shape.of(10, 10), random).lu().isNonSingular());
     }
 
-    <N extends Number> void testDeterminant(TensorEngine.OfType<N> ofType) {
-        Tensor<N> a = ofType.stride(Shape.of(2, 2), Order.C, 1, 2, 3, 4);
+    <N extends Number> void testDeterminant(TensorManager.OfType<N> tmt) {
+        Tensor<N> a = tmt.stride(Shape.of(2, 2), Order.C, 1, 2, 3, 4);
         assertEquals(-2, a.lu().det(), TOL);
     }
 
-    <N extends Number> void testInv(TensorEngine.OfType<N> ofType) {
-        Tensor<N> m = ofType.random(Shape.of(4, 4), random);
+    <N extends Number> void testInv(TensorManager.OfType<N> tmt) {
+        Tensor<N> m = tmt.random(Shape.of(4, 4), random);
         Tensor<N> inv = m.lu().inv();
 
-        assertTrue(m.lu().solve(ofType.eye(4)).deepEquals(inv));
+        assertTrue(m.lu().solve(tmt.eye(4)).deepEquals(inv));
         assertTrue(m.mm(inv).deepEquals(DMatrix.eye(4), 1e-14));
     }
 
-    <N extends Number> void testSolve(TensorEngine.OfType<N> ofType) {
-        Tensor<N> a1 = ofType.stride(Shape.of(3, 3), Order.C, 3, 2, -1, 2, -2, 4, -1, 0.5, -1);
-        Tensor<N> b1 = ofType.stride(Shape.of(3, 1), Order.C, 1, -2, 0);
-        Tensor<N> x1 = ofType.stride(Shape.of(3, 1), Order.C, 1, -2, -2);
+    <N extends Number> void testSolve(TensorManager.OfType<N> tmt) {
+        Tensor<N> a1 = tmt.stride(Shape.of(3, 3), Order.C, 3, 2, -1, 2, -2, 4, -1, 0.5, -1);
+        Tensor<N> b1 = tmt.stride(Shape.of(3, 1), Order.C, 1, -2, 0);
+        Tensor<N> x1 = tmt.stride(Shape.of(3, 1), Order.C, 1, -2, -2);
         assertTrue(x1.deepEquals(a1.lu().solve(b1), TOL));
 
-        Tensor<N> a2 = ofType.stride(Shape.of(2, 2), Order.C, 2, 3, 4, 9);
-        Tensor<N> b2 = ofType.stride(Shape.of(2, 1), Order.C, 6, 15);
-        Tensor<N> x2 = ofType.stride(Shape.of(2, 1), Order.C, 1.5, 1);
+        Tensor<N> a2 = tmt.stride(Shape.of(2, 2), Order.C, 2, 3, 4, 9);
+        Tensor<N> b2 = tmt.stride(Shape.of(2, 1), Order.C, 6, 15);
+        Tensor<N> x2 = tmt.stride(Shape.of(2, 1), Order.C, 1.5, 1);
         assertTrue(x2.deepEquals(a2.lu().solve(b2), TOL));
     }
 
-    <N extends Number> void testInvalidMatrixForDeterminant(TensorEngine.OfType<N> ofType) {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> ofType.random(Shape.of(4, 3), random).lu().det());
+    <N extends Number> void testInvalidMatrixForDeterminant(TensorManager.OfType<N> tmt) {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> tmt.random(Shape.of(4, 3), random).lu().det());
         assertEquals("The determinant can be computed only for squared matrices.", ex.getMessage());
 
-        ex = assertThrows(IllegalArgumentException.class, () -> ofType.random(Shape.of(2, 3), random).lu().det());
+        ex = assertThrows(IllegalArgumentException.class, () -> tmt.random(Shape.of(2, 3), random).lu().det());
         assertEquals("For LU decomposition, number of rows must be greater or equal with number of columns.", ex.getMessage());
 
         ex = assertThrows(IllegalArgumentException.class,
-                () -> ofType.random(Shape.of(2, 3), random).lu(LUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
+                () -> tmt.random(Shape.of(2, 3), random).lu(LUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
         assertEquals("For LU decomposition, number of rows must be greater or equal with number of columns.", ex.getMessage());
     }
 
-    <N extends Number> void testInvalidSolver(TensorEngine.OfType<N> ofType) {
+    <N extends Number> void testInvalidSolver(TensorManager.OfType<N> tmt) {
         var ex = assertThrows(IllegalArgumentException.class,
-                () -> ofType.random(Shape.of(4, 3), random).lu().solve(ofType.random(Shape.of(6, 6), random)));
+                () -> tmt.random(Shape.of(4, 3), random).lu().solve(tmt.random(Shape.of(6, 6), random)));
         assertEquals("Matrix row dimensions must agree.", ex.getMessage());
 
-        ex = assertThrows(IllegalArgumentException.class, () -> ofType.zeros(Shape.of(3, 3)).lu().solve(ofType.eye(3)));
+        ex = assertThrows(IllegalArgumentException.class, () -> tmt.zeros(Shape.of(3, 3)).lu().solve(tmt.eye(3)));
         assertEquals("Matrix is singular.", ex.getMessage());
     }
 
-    <N extends Number> void testPrintable(TensorEngine.OfType<N> ofType) {
-        var m = ofType.random(Shape.of(4, 3), random);
+    <N extends Number> void testPrintable(TensorManager.OfType<N> tmt) {
+        var m = tmt.random(Shape.of(4, 3), random);
         assertEquals("""
                 LU decomposition summary
                 ========================
@@ -161,7 +161,7 @@ public class LUDecompositionTest {
                                 
                 pivots: [2,1,3,0,]""", m.lu().toSummary());
 
-        m = ofType.random(Shape.of(20, 4), random);
+        m = tmt.random(Shape.of(20, 4), random);
         assertEquals("""
                 LU decomposition summary
                 ========================

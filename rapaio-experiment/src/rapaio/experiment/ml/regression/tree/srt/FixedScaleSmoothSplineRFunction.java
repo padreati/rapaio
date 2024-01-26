@@ -41,6 +41,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.model.linear.LinearRegressionModel;
@@ -61,11 +62,9 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
     private final double trialPercentage;
 
     private String testVarName;
-    private DVector coeff;
+    private Tensor<Double> coeff;
     private double ref;
     private double sigma;
-    private double leftMargin;
-    private double rightMargin;
 
     private FixedScaleSmoothSplineRFunction(int degree, int minSize, double trialPercentage, double[] sigmas) {
         this.degree = degree;
@@ -150,7 +149,7 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
 
                 if (Double.isNaN(bestError) || bestError > error) {
                     bestError = error;
-                    this.coeff = pred.getBetaHat().mapCol(0);
+                    this.coeff = pred.getBetaHat().take(1, 0).squeeze(1);
                     this.sigma = sigma;
                     this.ref = ref;
                     bestYHat = y_hat;

@@ -49,7 +49,7 @@ module rapaio.core {
 
     exports rapaio.math;
     exports rapaio.math.tensor;
-    exports rapaio.math.tensor.engine;
+    exports rapaio.math.tensor.manager;
     exports rapaio.math.tensor.iterators;
     exports rapaio.math.tensor.layout;
     exports rapaio.math.tensor.operator;

@@ -21,7 +21,8 @@
 
 package rapaio.ml.model.linear;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Random;
@@ -34,8 +35,6 @@ import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
 
 /**
  * Test for linear regression.
@@ -122,17 +121,17 @@ public class LinearRegressionResultResultModelTest {
                         """, lmfit.toSummary());
 
 
-        assertEquals(2, lmfit.getBetaHat().rows());
-        assertEquals(1, lmfit.getBetaHat().cols());
+        assertEquals(2, lmfit.getBetaHat().dim(0));
+        assertEquals(1, lmfit.getBetaHat().dim(1));
 
-        assertEquals(2, lmfit.getBetaStdError().rows());
-        assertEquals(1, lmfit.getBetaStdError().cols());
+        assertEquals(2, lmfit.getBetaStdError().dim(0));
+        assertEquals(1, lmfit.getBetaStdError().dim(1));
 
-        assertEquals(2, lmfit.getBetaTValue().rows());
-        assertEquals(1, lmfit.getBetaTValue().cols());
+        assertEquals(2, lmfit.getBetaTValue().dim(0));
+        assertEquals(1, lmfit.getBetaTValue().dim(1));
 
-        assertEquals(2, lmfit.getBetaPValue().rows());
-        assertEquals(1, lmfit.getBetaPValue().cols());
+        assertEquals(2, lmfit.getBetaPValue().dim(0));
+        assertEquals(1, lmfit.getBetaPValue().dim(1));
 
         assertEquals(2, lmfit.getBetaSignificance().length);
 
@@ -266,9 +265,9 @@ public class LinearRegressionResultResultModelTest {
 
         LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true).fit(df, "y1,y2");
 
-        DMatrix betas = lm.getAllCoefficients();
-        DVector firstBetas = lm.firstCoefficients();
-        DVector secondBetas = lm.getCoefficients(1);
+        var betas = lm.getAllCoefficients();
+        var firstBetas = lm.firstCoefficients();
+        var secondBetas = lm.getCoefficients(1);
 
         for (int i = 0; i < 2; i++) {
             assertEquals(betas.get(i, 0), firstBetas.get(i), TOL);

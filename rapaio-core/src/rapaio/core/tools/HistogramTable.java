@@ -94,7 +94,7 @@ public final class HistogramTable implements Printable {
     }
 
     public Tensor<Double> freq() {
-        return WS.tensorEngine().ofDouble().stride(Shape.of(bins), Order.C, freq);
+        return WS.tm().ofDouble().stride(Shape.of(bins), Order.C, freq);
     }
 
     @Override

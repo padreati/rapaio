@@ -34,30 +34,30 @@ package rapaio.math.tensor;
 import java.util.Collection;
 import java.util.Random;
 
-import rapaio.math.tensor.engine.barray.BaseArrayTensorEngine;
-import rapaio.math.tensor.engine.varray.VectorizedArrayTensorEngine;
+import rapaio.math.tensor.manager.barray.BaseArrayTensorManager;
+import rapaio.math.tensor.manager.varray.VectorizedArrayTensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 
-public interface TensorEngine {
+public interface TensorManager {
 
-    static TensorEngine base() {
+    static TensorManager base() {
         return barray();
     }
 
-    static TensorEngine barray() {
-        return new BaseArrayTensorEngine();
+    static TensorManager barray() {
+        return new BaseArrayTensorManager();
     }
 
-    static TensorEngine barray(int cpuThreads) {
-        return new BaseArrayTensorEngine(cpuThreads);
+    static TensorManager barray(int cpuThreads) {
+        return new BaseArrayTensorManager(cpuThreads);
     }
 
-    static TensorEngine varray() {
-        return new VectorizedArrayTensorEngine();
+    static TensorManager varray() {
+        return new VectorizedArrayTensorManager();
     }
 
-    static TensorEngine varray(int cpuThreads) {
-        return new VectorizedArrayTensorEngine(cpuThreads);
+    static TensorManager varray(int cpuThreads) {
+        return new VectorizedArrayTensorManager(cpuThreads);
     }
 
     OfType<Double> ofDouble();
@@ -218,7 +218,7 @@ public interface TensorEngine {
 
     interface OfType<N extends Number> {
 
-        void registerParent(TensorEngine parent, StorageFactory.OfType<N> storageOfType);
+        void registerParent(TensorManager parent, StorageFactory.OfType<N> storageOfType);
 
         DType<N> dtype();
 
@@ -252,6 +252,38 @@ public interface TensorEngine {
         <M extends Number> Tensor<N> strideCast(StrideLayout layout, Storage<M> storage);
 
         Tensor<N> stride(Shape shape, Order order, Storage<N> storage);
+
+        default Tensor<N> stride(byte... array) {
+            return stride(Shape.of(array.length), Order.defaultOrder(), storage().from(array));
+        }
+
+        default Tensor<N> stride(int... array) {
+            return stride(Shape.of(array.length), Order.defaultOrder(), storage().from(array));
+        }
+
+        default Tensor<N> stride(float... array) {
+            return stride(Shape.of(array.length), Order.defaultOrder(), storage().from(array));
+        }
+
+        default Tensor<N> stride(double... array) {
+            return stride(Shape.of(array.length), Order.defaultOrder(), storage().from(array));
+        }
+
+        default Tensor<N> stride(Shape shape, byte... array) {
+            return stride(shape, Order.defaultOrder(), storage().from(array));
+        }
+
+        default Tensor<N> stride(Shape shape, int... array) {
+            return stride(shape, Order.defaultOrder(), storage().from(array));
+        }
+
+        default Tensor<N> stride(Shape shape, float... array) {
+            return stride(shape, Order.defaultOrder(), storage().from(array));
+        }
+
+        default Tensor<N> stride(Shape shape, double... array) {
+            return stride(shape, Order.defaultOrder(), storage().from(array));
+        }
 
         default Tensor<N> stride(Shape shape, Order order, byte... array) {
             return stride(shape, order, storage().from(array));

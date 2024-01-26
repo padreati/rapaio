@@ -42,8 +42,9 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.preprocessing.AddIntercept;
 import rapaio.math.MathTools;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 import rapaio.printer.Format;
@@ -56,11 +57,12 @@ import rapaio.printer.opt.POpt;
  */
 public class LinearRegressionResult extends RegressionResult {
 
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     protected final BaseLinearRegressionModel<?> lm;
-    protected DMatrix beta_hat;
-    protected DMatrix beta_std_error;
-    protected DMatrix beta_t_value;
-    protected DMatrix beta_p_value;
+    protected Tensor<Double> beta_hat;
+    protected Tensor<Double> beta_std_error;
+    protected Tensor<Double> beta_t_value;
+    protected Tensor<Double> beta_p_value;
     protected String[][] beta_significance;
 
     public LinearRegressionResult(BaseLinearRegressionModel<?> model, Frame df, boolean withResiduals, double[] quantiles) {
@@ -68,19 +70,19 @@ public class LinearRegressionResult extends RegressionResult {
         this.lm = model;
     }
 
-    public DMatrix getBetaHat() {
+    public Tensor<Double> getBetaHat() {
         return beta_hat;
     }
 
-    public DMatrix getBetaStdError() {
+    public Tensor<Double> getBetaStdError() {
         return beta_std_error;
     }
 
-    public DMatrix getBetaTValue() {
+    public Tensor<Double> getBetaTValue() {
         return beta_t_value;
     }
 
-    public DMatrix getBetaPValue() {
+    public Tensor<Double> getBetaPValue() {
         return beta_p_value;
     }
 
@@ -98,9 +100,9 @@ public class LinearRegressionResult extends RegressionResult {
         String[] targets = lm.targetNames();
 
         beta_hat = lm.getAllCoefficients().copy();
-        beta_std_error = DMatrix.empty(inputs.length, targets.length);
-        beta_t_value = DMatrix.empty(inputs.length, targets.length);
-        beta_p_value = DMatrix.empty(inputs.length, targets.length);
+        beta_std_error = tmd.zeros(Shape.of(inputs.length, targets.length));
+        beta_t_value = tmd.zeros(Shape.of(inputs.length, targets.length));
+        beta_p_value = tmd.zeros(Shape.of(inputs.length, targets.length));
         beta_significance = new String[inputs.length][targets.length];
 
         if (withResiduals) {
@@ -112,7 +114,7 @@ public class LinearRegressionResult extends RegressionResult {
 
                 int degrees = res.size() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
-                DVector coeff = beta_hat.mapCol(i);
+                var coeff = beta_hat.take(1, i).squeeze(1);
 
                 Frame features = df;
                 Set<String> availableFeatures = new HashSet<>(Arrays.asList(df.varNames()));
@@ -121,14 +123,14 @@ public class LinearRegressionResult extends RegressionResult {
                         features = df.bindVars(VarDouble.fill(df.rowCount(), 1).name(AddIntercept.INTERCEPT)).copy();
                     }
                 }
-                DMatrix X = DMatrix.copy(features.mapVars(model.inputNames()));
-                DMatrix m_beta_hat = X.t().dot(X).qr().inv();
+                Tensor<Double> X = features.mapVars(model.inputNames()).dtNew();
+                Tensor<Double> m_beta_hat = X.t().mm(X).qr().inv();
 
                 for (int j = 0; j < model.inputNames().length; j++) {
-                    beta_std_error.set(j, i, Math.sqrt(m_beta_hat.get(j, j) * var));
-                    beta_t_value.set(j, i, coeff.get(j) / beta_std_error.get(j, i));
+                    beta_std_error.setDouble(Math.sqrt(m_beta_hat.get(j, j) * var), j, i);
+                    beta_t_value.setDouble(coeff.get(j) / beta_std_error.get(j, i), j, i);
                     double pValue = degrees < 1 ? Double.NaN : StudentT.of(degrees).cdf(-Math.abs(beta_t_value.get(j, i))) * 2;
-                    beta_p_value.set(j, i, pValue);
+                    beta_p_value.setDouble(pValue, j, i);
                     String signif = " ";
                     if (pValue <= 0.1)
                         signif = ".";
@@ -156,7 +158,7 @@ public class LinearRegressionResult extends RegressionResult {
 
             if (!withResiduals) {
                 sb.append("> Coefficients: \n");
-                DVector coeff = lm.getCoefficients(i);
+                var coeff = lm.getCoefficients(i);
 
                 TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
                 tt.textCenter(0, 0, "Name");
@@ -172,7 +174,7 @@ public class LinearRegressionResult extends RegressionResult {
                 int degrees = res.size() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
                 double rs = rsquare.get(targetName);
-                DVector coeff = lm.getCoefficients(i);
+                var coeff = lm.getCoefficients(i);
                 double rsa = (rs * (res.size() - 1) - coeff.size() + 1) / degrees;
 
                 int fdegree1 = model.inputNames().length - 1;

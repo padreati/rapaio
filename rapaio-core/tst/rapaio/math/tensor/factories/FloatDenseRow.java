@@ -34,11 +34,11 @@ package rapaio.math.tensor.factories;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 public final class FloatDenseRow extends FloatDense {
 
-    public FloatDenseRow(TensorEngine manager) {
+    public FloatDenseRow(TensorManager manager) {
         super(manager);
     }
 

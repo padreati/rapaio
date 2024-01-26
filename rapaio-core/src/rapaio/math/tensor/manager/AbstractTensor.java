@@ -29,18 +29,15 @@
  *
  */
 
-package rapaio.math.tensor.engine;
-
-import java.util.ArrayList;
-import java.util.List;
+package rapaio.math.tensor.manager;
 
 import rapaio.data.VarDouble;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.engine.barray.BaseDoubleTensorStride;
-import rapaio.math.tensor.engine.varray.VectorizedDoubleTensorStride;
+import rapaio.math.tensor.manager.barray.BaseDoubleTensorStride;
+import rapaio.math.tensor.manager.varray.VectorizedDoubleTensorStride;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;

@@ -36,23 +36,23 @@ import java.util.Random;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 public abstract class DataFactory<N extends Number> {
 
-    final TensorEngine engine;
-    final TensorEngine.OfType<N> ofType;
+    final TensorManager engine;
+    final TensorManager.OfType<N> ofType;
     final DType<N> dType;
     final Random random = new Random(42);
 
 
-    public DataFactory(TensorEngine tensorEngine, TensorEngine.OfType<N> ofType, DType<N> dType) {
-        this.engine = tensorEngine;
+    public DataFactory(TensorManager tensorManager, TensorManager.OfType<N> ofType, DType<N> dType) {
+        this.engine = tensorManager;
         this.ofType = ofType;
         this.dType = dType;
     }
 
-    public TensorEngine engine() {
+    public TensorManager engine() {
         return engine;
     }
 

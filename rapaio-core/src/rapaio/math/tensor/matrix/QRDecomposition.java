@@ -36,7 +36,7 @@ import java.io.Serializable;
 
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 public class QRDecomposition<N extends Number> implements Serializable {
 
@@ -47,15 +47,15 @@ public class QRDecomposition<N extends Number> implements Serializable {
     protected final Tensor<N> QR;
     protected final Tensor<N> diag;
 
-    protected final TensorEngine.OfType<N> ofType;
+    protected final TensorManager.OfType<N> tmt;
 
     public QRDecomposition(Tensor<N> ref) {
         // Initialize.
         this.ref = ref;
-        this.ofType = ref.engine().ofType(ref.dtype());
+        this.tmt = ref.manager().ofType(ref.dtype());
 
         QR = ref.copy();
-        diag = ofType.zeros(Shape.of(QR.dim(1)));
+        diag = tmt.zeros(Shape.of(QR.dim(1)));
 
         // Main loop.
         for (int k = 0; k < QR.dim(1); k++) {
@@ -111,7 +111,7 @@ public class QRDecomposition<N extends Number> implements Serializable {
      * @return Lower trapezoidal matrix whose columns define the reflections
      */
     public Tensor<N> h() {
-        var h = ofType.zeros(Shape.of(QR.dim(0), QR.dim(1)));
+        var h = tmt.zeros(Shape.of(QR.dim(0), QR.dim(1)));
         for (int i = 0; i < QR.dim(0); i++) {
             for (int j = 0; j < QR.dim(1); j++) {
                 if (i >= j) {
@@ -130,7 +130,7 @@ public class QRDecomposition<N extends Number> implements Serializable {
      * @return R
      */
     public Tensor<N> r() {
-        var r = ofType.zeros(Shape.of(QR.dim(1), QR.dim(1)));
+        var r = tmt.zeros(Shape.of(QR.dim(1), QR.dim(1)));
         for (int i = 0; i < QR.dim(1); i++) {
             for (int j = 0; j < QR.dim(1); j++) {
                 if (i < j) {
@@ -152,7 +152,7 @@ public class QRDecomposition<N extends Number> implements Serializable {
      */
 
     public Tensor<N> q() {
-        var q = ofType.zeros(Shape.of(QR.dim(0), QR.dim(1)));
+        var q = tmt.zeros(Shape.of(QR.dim(0), QR.dim(1)));
         for (int k = QR.dim(1) - 1; k >= 0; k--) {
             for (int i = 0; i < QR.dim(0); i++) {
                 q.setDouble(0.0, i, k);
@@ -186,7 +186,7 @@ public class QRDecomposition<N extends Number> implements Serializable {
         boolean isVector = B.isVector();
 
         if (isVector) {
-            B = B.reshape(Shape.of(B.dim(0), 1));
+            B = B.unsqueeze(1);
         }
 
         if (B.dim(0) != QR.dim(0)) {
@@ -225,10 +225,10 @@ public class QRDecomposition<N extends Number> implements Serializable {
             }
         }
         var sol = X.narrow(0, true, 0, QR.dim(1)).narrow(1, true, 0, B.dim(1)).copy();
-        return isVector ? sol.squeeze() : sol;
+        return isVector ? sol.squeeze(1) : sol;
     }
 
     public Tensor<N> inv() {
-        return solve(ofType.eye(ref.dim(0)));
+        return solve(tmt.eye(ref.dim(0)));
     }
 }

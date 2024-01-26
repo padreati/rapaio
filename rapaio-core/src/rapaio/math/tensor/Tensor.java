@@ -54,9 +54,9 @@ import rapaio.util.function.IntIntBiFunction;
 public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     /**
-     * @return tensor engine
+     * @return tensor manager
      */
-    TensorEngine engine();
+    TensorManager manager();
 
     /**
      * @return tensor data type
@@ -215,14 +215,6 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * @return a copy of the tensor with elements in asked order.
      */
     Tensor<N> flatten(Order askOrder);
-
-    /**
-     * Collapses all dimensions equal with one. This operation does not create a new copy of the data.
-     * If no dimensions have size one, the same tensor is returned.
-     *
-     * @return view of the same tensor with all dimensions equal with one collapsed
-     */
-    Tensor<N> squeeze();
 
     /**
      * Collapses the given axis if equals with one. This operation does not create a new copy of the data.
@@ -630,6 +622,14 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> fillNan_(N value);
 
+    default Tensor<N> clamp(N min, N max) {
+        return clamp(Order.defaultOrder(), min, max);
+    }
+
+    default Tensor<N> clamp(Order order, N min, N max) {
+        return copy(order).clamp_(min, max);
+    }
+
     Tensor<N> clamp_(N min, N max);
 
     default Tensor<N> abs() {
@@ -821,6 +821,21 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> mul_(Tensor<N> tensor);
 
+    default Tensor<N> bmul(int axis, Tensor<N> tensor) {
+        return bmul(axis, tensor, Order.defaultOrder());
+    }
+
+    default Tensor<N> bmul(int axis, Tensor<N> tensor, Order order) {
+        if (isScalar()) {
+            return tensor.copy(order).mul_(get());
+        }
+        return copy(order).bmul_(axis, tensor);
+    }
+
+    default Tensor<N> bmul_(int axis, Tensor<N> tensor) {
+        return mul_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+    }
+
     default Tensor<N> div(Tensor<N> tensor) {
         return div(tensor, Order.defaultOrder());
     }
@@ -884,6 +899,13 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> fma_(N value, Tensor<N> t);
 
+    default Tensor<N> outer(Tensor<N> t) {
+        if (!isVector() || !t.isVector()) {
+            throw new IllegalArgumentException("Outer product is available only for vectors.");
+        }
+        return unsqueeze(1).mm(t.unsqueeze(0));
+    }
+
     N vdot(Tensor<N> tensor);
 
     N vdot(Tensor<N> tensor, int start, int end);
@@ -933,13 +955,19 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return new QRDecomposition<>(this);
     }
 
-    default EigenDecomposition<N> eigen() {
+    default EigenDecomposition<N> eig() {
         return new EigenDecomposition<>(this);
+    }
+
+    default SVDecomposition<N> svd() {
+        return svd(true, true);
     }
 
     default SVDecomposition<N> svd(boolean wantu, boolean wantv) {
         return new SVDecomposition<>(this, wantu, wantv);
     }
+
+    Tensor<N> scatter();
 
     default N norm() {
         return norm(2);

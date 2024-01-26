@@ -404,7 +404,7 @@ public interface Var extends Serializable, Printable {
     DVector dvNew();
 
     default Tensor<Double> dt() {
-        return WS.tensorEngine().ofDouble().stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
+        return WS.tm().ofDouble().stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
     }
 
     default Tensor<Double> dtNew() {
@@ -412,7 +412,7 @@ public interface Var extends Serializable, Printable {
         for (int i = 0; i < copy.length; i++) {
             copy[i] = getDouble(i);
         }
-        return WS.tensorEngine().ofDouble().stride(Shape.of(size()), Order.C, WS.tensorEngine().ofDouble().storage().from(copy));
+        return WS.tm().ofDouble().stride(Shape.of(size()), Order.C, WS.tm().ofDouble().storage().from(copy));
     }
 
     /**

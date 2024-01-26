@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.engine;
+package rapaio.math.tensor.manager;
 
 import java.util.Random;
 
@@ -39,21 +39,21 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.StorageFactory;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 
-public abstract class AbstractEngineOfType<N extends Number> implements TensorEngine.OfType<N> {
+public abstract class AbstractManagerOfType<N extends Number> implements TensorManager.OfType<N> {
 
     protected final DType<N> dType;
-    protected TensorEngine parent;
+    protected TensorManager parent;
     protected StorageFactory.OfType<N> storageOfType;
 
-    protected AbstractEngineOfType(DType<N> dType) {
+    protected AbstractManagerOfType(DType<N> dType) {
         this.dType = dType;
     }
 
     @Override
-    public void registerParent(TensorEngine parent, StorageFactory.OfType<N> storageOfType) {
+    public void registerParent(TensorManager parent, StorageFactory.OfType<N> storageOfType) {
         if (this.parent != null) {
             throw new IllegalArgumentException("AbstractEngineOfType has already a registered parent.");
         }

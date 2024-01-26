@@ -70,7 +70,7 @@ import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 import rapaio.sys.WS;
 import rapaio.util.collection.DoubleArrays;
 
@@ -106,7 +106,7 @@ public class CopyBenchmark {
                 }
             }
 
-            tc = TensorEngine.varray().stride(DType.DOUBLE, Shape.of(n, n), Order.C, array);
+            tc = TensorManager.varray().stride(DType.DOUBLE, Shape.of(n, n), Order.C, array);
             tf = tc.copy(Order.F);
         }
     }

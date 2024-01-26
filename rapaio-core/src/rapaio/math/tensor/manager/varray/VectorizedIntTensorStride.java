@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.engine.varray;
+package rapaio.math.tensor.manager.varray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +40,8 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
-import rapaio.math.tensor.engine.barray.BaseIntTensorStride;
+import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.manager.barray.BaseIntTensorStride;
 import rapaio.math.tensor.layout.StrideLayout;
 
 public final class VectorizedIntTensorStride extends BaseIntTensorStride implements Tensor<Integer> {
@@ -51,15 +51,15 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
 
     private final int[] loopIndexes;
 
-    public VectorizedIntTensorStride(TensorEngine engine, Shape shape, int offset, int[] strides, Storage<Integer> storage) {
+    public VectorizedIntTensorStride(TensorManager engine, Shape shape, int offset, int[] strides, Storage<Integer> storage) {
         this(engine, StrideLayout.of(shape, offset, strides), storage);
     }
 
-    public VectorizedIntTensorStride(TensorEngine engine, Shape shape, int offset, Order order, Storage<Integer> storage) {
+    public VectorizedIntTensorStride(TensorManager engine, Shape shape, int offset, Order order, Storage<Integer> storage) {
         this(engine, StrideLayout.ofDense(shape, offset, order), storage);
     }
 
-    public VectorizedIntTensorStride(TensorEngine engine, StrideLayout layout, Storage<Integer> storage) {
+    public VectorizedIntTensorStride(TensorManager engine, StrideLayout layout, Storage<Integer> storage) {
         super(engine, layout, storage);
         this.loopIndexes = loop.step == 1 ? null : loopIndexes(loop.step);
     }

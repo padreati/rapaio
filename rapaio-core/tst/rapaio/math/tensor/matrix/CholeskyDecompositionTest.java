@@ -43,21 +43,20 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 public class CholeskyDecompositionTest {
 
     private static final int TIMES = 100;
 
     private Random random;
-    private static final TensorEngine.OfType<Byte> ofByte = TensorEngine.base().ofByte();
-    private static final TensorEngine.OfType<Integer> ofInt = TensorEngine.base().ofInt();
-    private static final TensorEngine.OfType<Float> ofFloat = TensorEngine.base().ofFloat();
-    private static final TensorEngine.OfType<Double> ofDouble = TensorEngine.base().ofDouble();
+    private static final TensorManager.OfType<Byte> tmb = TensorManager.base().ofByte();
+    private static final TensorManager.OfType<Integer> tmi = TensorManager.base().ofInt();
+    private static final TensorManager.OfType<Float> tmf = TensorManager.base().ofFloat();
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     @BeforeEach
     void beforeEach() {
@@ -66,20 +65,20 @@ public class CholeskyDecompositionTest {
 
     @Test
     void symmetricPositiveDefiniteTest() {
-        testType(DType.DOUBLE, ofDouble, true, 1e-8);
-        testType(DType.FLOAT, ofFloat, true, 1e-0);
-        testType(DType.DOUBLE, ofDouble, false, 1e-8);
-        testType(DType.FLOAT, ofFloat, false, 1e-0);
+        testType(tmd, true, 1e-8);
+        testType(tmf, true, 1e-0);
+        testType(tmd, false, 1e-8);
+        testType(tmf, false, 1e-0);
     }
 
-    private <N extends Number> void testType(DType<N> dType, TensorEngine.OfType<N> ofType, boolean rightFlag, double TOL) {
+    private <N extends Number> void testType(TensorManager.OfType<N> tmt, boolean rightFlag, double TOL) {
         for (int i = 0; i < TIMES; i++) {
-            var m = ofType.random(Shape.of(10, 10), random, Order.C);
+            var m = tmt.random(Shape.of(10, 10), random, Order.C);
 
-            testSolve(m.t().mm(m), ofType.full(Shape.of(10, 1), dType.castValue(1d)), rightFlag, TOL);
-            testSolve(ofType.eye(100, Order.C), ofType.full(Shape.of(100), dType.castValue(1d)), rightFlag, TOL);
+            testSolve(m.t().mm(m), tmt.full(Shape.of(10, 1), tmt.dtype().castValue(1d)), rightFlag, TOL);
+            testSolve(tmt.eye(100, Order.C), tmt.full(Shape.of(100), tmt.dtype().castValue(1d)), rightFlag, TOL);
 
-            testNonSPD(ofType.random(Shape.of(10, 10), random), ofType.random(Shape.of(10, 3), random));
+            testNonSPD(tmt.random(Shape.of(10, 10), random), tmt.random(Shape.of(10, 3), random));
         }
     }
 
@@ -97,17 +96,17 @@ public class CholeskyDecompositionTest {
         }
 
         Tensor<N> solution = chol.solve(b);
-        assertTrue(A.mv(solution).deepEquals(b.squeeze(), TOL));
+        assertTrue(A.mv(solution).deepEquals(b.isMatrix() ? b.squeeze(1) : b, TOL));
         assertTrue(A.deepEquals(A.chol(false).l().mm(A.chol(true).r()), TOL));
     }
 
     @Test
     void testIntegerTypes() {
-        var ti = ofInt.eye(10);
+        var ti = tmi.eye(10);
         var ei = assertThrows(IllegalArgumentException.class, ti::chol);
         assertEquals("Cannot compute decomposition for integer types (dtype: INTEGER)", ei.getMessage());
 
-        var tb = ofByte.eye(10);
+        var tb = tmb.eye(10);
         var eb = assertThrows(IllegalArgumentException.class, tb::chol);
         assertEquals("Cannot compute decomposition for integer types (dtype: BYTE)", eb.getMessage());
     }

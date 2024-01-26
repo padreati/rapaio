@@ -37,7 +37,7 @@ import java.io.Serializable;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
 /**
  * Eigenvalues and eigenvectors of a squared real matrix.
@@ -67,7 +67,7 @@ public class EigenDecomposition<N extends Number> implements Serializable {
     // Array for internal storage of eigenvectors.
     private final Tensor<N> vectors;
 
-    private final TensorEngine.OfType<N> ofType;
+    private final TensorManager.OfType<N> tmt;
 
     /**
      * Check for symmetry, then construct the eigenvalue decomposition
@@ -79,7 +79,7 @@ public class EigenDecomposition<N extends Number> implements Serializable {
         if (a.dim(0) != a.dim(1)) {
             throw new IllegalArgumentException("Only square matrices can have eigen decomposition.");
         }
-        ofType = a.engine().ofType(a.dtype());
+        tmt = a.manager().ofType(a.dtype());
         n = a.dim(1);
         real = new double[n];
         imag = new double[n];
@@ -89,7 +89,7 @@ public class EigenDecomposition<N extends Number> implements Serializable {
             tridiagonalize();
             diagonalize();
         } else {
-            vectors = ofType.zeros(Shape.of(n, n));
+            vectors = tmt.zeros(Shape.of(n, n));
             //Array for internal storage of non-symmetric Hessenberg form.
             double[][] nonSymHess = new double[n][n];
 
@@ -181,7 +181,7 @@ public class EigenDecomposition<N extends Number> implements Serializable {
                     f = real[j];
                     g = imag[j];
                     for (int k = j; k <= i - 1; k++) {
-                        vectors.incDouble(-f * imag[k] + g * real[k], k, j);
+                        vectors.incDouble(-(f * imag[k] + g * real[k]), k, j);
                     }
                     real[j] = vectors.getDouble(i - 1, j);
                     vectors.setDouble(0.0, i, j);
@@ -940,7 +940,7 @@ public class EigenDecomposition<N extends Number> implements Serializable {
      * @return real(diag ( D))
      */
     public Tensor<N> real() {
-        return ofType.stride(Shape.of(real.length), Order.C, real);
+        return tmt.stride(Shape.of(real.length), Order.C, real);
     }
 
     /**
@@ -949,7 +949,7 @@ public class EigenDecomposition<N extends Number> implements Serializable {
      * @return {@code imag(diag(D))}
      */
     public Tensor<N> imag() {
-        return ofType.stride(Shape.of(imag.length), Order.C, imag);
+        return tmt.stride(Shape.of(imag.length), Order.C, imag);
     }
 
     public Tensor<N> power(double power) {
@@ -966,7 +966,7 @@ public class EigenDecomposition<N extends Number> implements Serializable {
      * @return D the block diagonal eigenvalue matrix
      */
     public Tensor<N> d() {
-        Tensor<N> d = ofType.zeros(Shape.of(n, n));
+        Tensor<N> d = tmt.zeros(Shape.of(n, n));
         for (int i = 0; i < n; i++) {
             d.setDouble(real[i], i, i);
         }

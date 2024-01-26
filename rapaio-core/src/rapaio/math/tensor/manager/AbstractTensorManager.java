@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.engine;
+package rapaio.math.tensor.manager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,9 +41,9 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.StorageFactory;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 
-public abstract class AbstractTensorEngine implements TensorEngine {
+public abstract class AbstractTensorManager implements TensorManager {
 
     private final int cpuThreads;
     private final OfType<Double> ofDouble;
@@ -52,7 +52,7 @@ public abstract class AbstractTensorEngine implements TensorEngine {
     private final OfType<Byte> ofByte;
     private final StorageFactory storageFactory;
 
-    public AbstractTensorEngine(int cpuThreads,
+    public AbstractTensorManager(int cpuThreads,
             OfType<Double> ofDouble,
             OfType<Float> ofFloat,
             OfType<Integer> ofInt,
@@ -145,7 +145,7 @@ public abstract class AbstractTensorEngine implements TensorEngine {
         var slices = result.chunk(axis, true, 1);
         i = 0;
         for (; i < tensorList.size(); i++) {
-            var it1 = slices.get(i).squeeze().ptrIterator(Order.defaultOrder());
+            var it1 = slices.get(i).squeeze(axis).ptrIterator(Order.defaultOrder());
             var it2 = tensorList.get(i).ptrIterator(Order.defaultOrder());
             while (it1.hasNext() && it2.hasNext()) {
                 slices.get(i).ptrSet(it1.nextInt(), tensorList.get(i).ptrGet(it2.nextInt()));

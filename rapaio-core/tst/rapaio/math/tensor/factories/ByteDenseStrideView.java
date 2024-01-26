@@ -36,12 +36,12 @@ import java.util.Arrays;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
+import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 
 public final class ByteDenseStrideView extends ByteDense {
 
-    public ByteDenseStrideView(TensorEngine manager) {
+    public ByteDenseStrideView(TensorManager manager) {
         super(manager);
     }
 

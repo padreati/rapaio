@@ -37,12 +37,14 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
-import rapaio.math.MathTools;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.DoubleCholeskyDecomposition;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.math.MathTools;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.matrix.CholeskyDecomposition;
+import rapaio.sys.WS;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
@@ -70,29 +72,31 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
     /**
      * Input matrix
      */
-    public final ValueParam<DMatrix, BinaryLogisticNewton> xp = new ValueParam<>(this, null, "x");
+    public final ValueParam<Tensor<Double>, BinaryLogisticNewton> xp = new ValueParam<>(this, null, "x");
 
     /**
      * Target vector
      */
-    public final ValueParam<DVector, BinaryLogisticNewton> yp = new ValueParam<>(this, null, "y");
+    public final ValueParam<Tensor<Double>, BinaryLogisticNewton> yp = new ValueParam<>(this, null, "y");
 
     /**
      * Initial values for weights
      */
-    public final ValueParam<DVector, BinaryLogisticNewton> w0 = new ValueParam<>(this, null, "w0");
+    public final ValueParam<Tensor<Double>, BinaryLogisticNewton> w0 = new ValueParam<>(this, null, "w0");
 
-    public record Result(List<Double> nlls, List<DVector> ws, boolean converged) {
-        public DVector w() {
+    private static final TensorManager.OfType<Double> tmd = WS.tm().ofDouble();
+
+    public record Result(List<Double> nlls, List<Tensor<Double>> ws, boolean converged) {
+        public Tensor<Double> w() {
             if (!ws.isEmpty()) {
-                return ws.get(ws.size() - 1);
+                return ws.getLast();
             }
-            return DVector.zeros(0);
+            return tmd.scalar(Double.NaN);
         }
 
         public double nll() {
             if (nlls.size() > 1) {
-                return nlls.get(nlls.size() - 1);
+                return nlls.getLast();
             }
             return Double.NaN;
         }
@@ -100,86 +104,90 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
 
     public BinaryLogisticNewton.Result fit() {
 
-        DMatrix x = xp.get();
-        DVector y = yp.get();
-        DVector ny = DVector.ones(y.size()).sub(y);
-        DVector w = w0.get();
+        var mx = xp.get();
+        var vy = yp.get();
+        var vny = tmd.full(Shape.of(vy.size()), 1.).sub_(vy);
+        var vw = w0.get();
         double lambda = lambdap.get();
-        DVector p = x.dot(w).apply(MathTools::logistic);
-        DVector np = p.applyNew(v -> 1 - v);
+        var vp = mx.mv(vw).apply_(MathTools::logistic);
+        var vnp = vp.apply(v -> 1 - v);
 
         int it = 0;
         // current solution
-        ArrayList<DVector> ws = new ArrayList<>();
-        ws.add(w);
+        List<Tensor<Double>> ws = new ArrayList<>();
+        ws.add(vw);
         List<Double> nlls = new ArrayList<>();
-        nlls.add(negativeLogLikelihood(y, ny, w, lambda, p, np));
+        nlls.add(negativeLogLikelihood(vy, vny, vw, lambda, vp, vnp));
 
         while (it++ < maxIter.get()) {
 
-            DVector wnew = iterate(w, x, y, ny, lambda, p, np);
+            Tensor<Double> wnew = iterate(vw, mx, vy, vny, lambda, vp, vnp);
 
-            p = x.dot(wnew).apply(MathTools::logistic);
-            np = p.applyNew(v -> 1 - v);
-            double nll = negativeLogLikelihood(y, ny, wnew, lambda, p, np);
+            vp = mx.mv(wnew).apply_(MathTools::logistic);
+            vnp = vp.apply(v -> 1 - v);
+            double nll = negativeLogLikelihood(vy, vny, wnew, lambda, vp, vnp);
 
-            double nll_delta = nll - nlls.get(nlls.size() - 1);
+            double nll_delta = nll - nlls.getLast();
             if (it > 1 && (abs(nll_delta / nll) <= eps.get() /*|| nll_delta > 0*/)) {
                 return new BinaryLogisticNewton.Result(nlls, ws, true);
             }
             ws.add(wnew);
             nlls.add(nll);
-            w = wnew;
+            vw = wnew;
         }
         return new BinaryLogisticNewton.Result(nlls, ws, false);
     }
 
-    private double negativeLogLikelihood(DVector y, DVector ny, DVector w, double lambda, DVector p, DVector np) {
-        DVector logp = p.cutNew(1e-6, Double.NaN).apply(StrictMath::log);
-        DVector lognp = np.cutNew(1e-6, Double.NaN).apply(StrictMath::log);
+    private double negativeLogLikelihood(Tensor<Double> y, Tensor<Double> ny, Tensor<Double> w, double lambda, Tensor<Double> p,
+            Tensor<Double> np) {
+        Tensor<Double> logp = p.clamp(1e-6, Double.NaN).apply_(StrictMath::log);
+        Tensor<Double> lognp = np.clamp(1e-6, Double.NaN).apply(StrictMath::log);
 
-        return -logp.dot(y) - lognp.dot(ny) + lambda * w.norm(2) / 2;
+        return -logp.vdot(y) - lognp.vdot(ny) + lambda * w.norm(2) / 2;
     }
 
-    private DVector iterate(DVector w, DMatrix x, DVector y, DVector ny, double lambda, DVector p, DVector np) {
+    private Tensor<Double> iterate(Tensor<Double> vw, Tensor<Double> mx, Tensor<Double> vy, Tensor<Double> vny, double lambda,
+            Tensor<Double> vp, Tensor<Double> vnp) {
 
         // p(1-p) diag from p diag
-        DVector pvar = p.mulNew(np).cut(1e-6, Double.NaN);
+        Tensor<Double> pvar = vp.mul(vnp).clamp_(1e-6, Double.NaN);
 
         // H = X^t * I{p(1-p)} * X + I_lambda
-        DMatrix xta = x.t().mulNew(pvar, 0);
-        DMatrix h = xta.dot(x);
+        Tensor<Double> xta = mx.t().mul(pvar.unsqueeze(0).expand(0, mx.t().dim(0)));
+        Tensor<Double> h = xta.mm(mx);
         if (lambda > 0) {
-            h.add(DMatrix.diagonal(DVector.fill(h.rows(), lambda)));
+            for (int i = 0; i < h.dim(0); i++) {
+                h.incDouble(lambda, i, i);
+            }
         }
 
         // ng = -g = X^t (y - p)
-        DVector ng = x.t().dot(y.subNew(p));
+        Tensor<Double> ng = mx.t().mv(vy.sub(vp));
 
         // solve IRLS
-        DoubleCholeskyDecomposition chol = h.cholesky();
-        DVector d;
+        CholeskyDecomposition<Double> chol = h.chol();
+        Tensor<Double> d;
         if (chol.isSPD()) {
             d = chol.solve(ng);
         } else {
             d = h.qr().solve(ng);
         }
 
-        // linbe search which could be improved or at least standardized
+        // line search which could be improved or at least standardized
 
         double factor = 1.0;
         double decrease = 0.9;
-        DVector wc = w.fmaNew(factor, d);
-        DVector pp = x.dot(wc).apply(MathTools::logistic);
-        DVector nnp = pp.applyNew(v -> 1 - v);
+        Tensor<Double> wc = vw.fma(factor, d);
+        Tensor<Double> pp = mx.mv(wc).apply_(MathTools::logistic);
+        Tensor<Double> nnp = pp.apply(v -> 1 - v);
 
-        double nll = negativeLogLikelihood(y, ny, wc, lambda, pp, nnp);
+        double nll = negativeLogLikelihood(vy, vny, wc, lambda, pp, nnp);
 
         while (true) {
-            var wcnew = w.fmaNew(factor * decrease, d);
-            pp = x.dot(wcnew).apply(MathTools::logistic);
-            nnp = pp.applyNew(v -> 1 - v);
-            double nllNew = negativeLogLikelihood(y, ny, wc, lambda, pp, nnp);
+            var wcnew = vw.fma(factor * decrease, d);
+            pp = mx.mv(wcnew).apply_(MathTools::logistic);
+            nnp = pp.apply(v -> 1 - v);
+            double nllNew = negativeLogLikelihood(vy, vny, wc, lambda, pp, nnp);
             if (nllNew < nll) {
                 factor *= decrease;
                 nll = nllNew;

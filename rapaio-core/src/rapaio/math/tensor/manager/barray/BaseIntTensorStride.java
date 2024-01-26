@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.engine.barray;
+package rapaio.math.tensor.manager.barray;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
@@ -58,9 +58,9 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Statistics;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorEngine;
-import rapaio.math.tensor.engine.AbstractTensor;
-import rapaio.math.tensor.engine.varray.VectorizedIntTensorStride;
+import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.manager.AbstractTensor;
+import rapaio.math.tensor.manager.varray.VectorizedIntTensorStride;
 import rapaio.math.tensor.iterators.DensePointerIterator;
 import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
@@ -79,10 +79,10 @@ import rapaio.util.function.IntIntBiFunction;
 public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits VectorizedIntTensorStride {
 
     protected final StrideLayout layout;
-    protected final TensorEngine engine;
+    protected final TensorManager engine;
     protected final StrideLoopDescriptor loop;
 
-    public BaseIntTensorStride(TensorEngine engine, StrideLayout layout, Storage<Integer> storage) {
+    public BaseIntTensorStride(TensorManager engine, StrideLayout layout, Storage<Integer> storage) {
         super(storage);
         this.layout = layout;
         this.engine = engine;
@@ -95,7 +95,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     @Override
-    public TensorEngine engine() {
+    public TensorManager manager() {
         return engine;
     }
 
@@ -166,11 +166,6 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
             }
         }
         return engine.ofInt().stride(StrideLayout.of(Shape.of(layout.size()), 0, new int[] {1}), out);
-    }
-
-    @Override
-    public Tensor<Integer> squeeze() {
-        return layout.shape().unitDimCount() == 0 ? this : engine.ofInt().stride(layout.squeeze(), storage);
     }
 
     @Override
@@ -791,6 +786,27 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         }
 
         return ret;
+    }
+
+    @Override
+    public Tensor<Integer> scatter() {
+        if (!isMatrix()) {
+            throw new IllegalArgumentException("Scatter matrix can be computed only for matrices.");
+        }
+        Tensor<Integer> scatter = engine.ofInt().zeros(Shape.of(dim(1), dim(1)));
+        Tensor<Integer> mean = engine.ofInt().zeros(Shape.of(dim(1)));
+        for (int i = 0; i < dim(1); i++) {
+            mean.setInt((int) take(1, i).stats().mean(), i);
+        }
+        for (int k = 0; k < dim(0); k++) {
+            Tensor<Integer> row = take(0, k).squeeze(0).sub(mean);
+            for (int i = 0; i < row.size(); i++) {
+                for (int j = 0; j < row.size(); j++) {
+                    scatter.incInt((int)(row.getInt(i) * row.getInt(j)), i, j);
+                }
+            }
+        }
+        return scatter;
     }
 
     @Override

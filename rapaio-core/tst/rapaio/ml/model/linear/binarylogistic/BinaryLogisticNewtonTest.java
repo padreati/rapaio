@@ -21,7 +21,10 @@
 
 package rapaio.ml.model.linear.binarylogistic;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Random;
@@ -30,16 +33,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
+import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Order;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 
 public class BinaryLogisticNewtonTest {
 
     private static final double TOL = 1e-12;
 
     private Random random;
+    private static final TensorManager.OfType<Double> tmd = TensorManager.barray().ofDouble();
 
     @BeforeEach
     void beforeEach() {
@@ -49,30 +56,30 @@ public class BinaryLogisticNewtonTest {
     @Test
     void testDefaults() {
         var optimizer = new BinaryLogisticIRLS()
-                .xp.set(DMatrix.eye(1))
-                .yp.set(DVector.zeros(1))
-                .w0.set(DVector.ones(1));
+                .xp.set(tmd.eye(1))
+                .yp.set(tmd.zeros(Shape.of(1)))
+                .w0.set(tmd.full(Shape.of(1), 1.));
         assertEquals(1e-20, optimizer.eps.get());
         assertEquals(10, optimizer.maxIter.get());
         assertEquals(0, optimizer.lambdap.get());
-        assertTrue(DMatrix.eye(1).deepEquals(optimizer.xp.get()));
-        assertTrue(DVector.zeros(1).deepEquals(optimizer.yp.get()));
-        assertTrue(DVector.ones(1).deepEquals(optimizer.w0.get()));
+        assertTrue(tmd.eye(1).deepEquals(optimizer.xp.get()));
+        assertTrue(tmd.zeros(Shape.of(1)).deepEquals(optimizer.yp.get()));
+        assertTrue(tmd.full(Shape.of(1), 1.).deepEquals(optimizer.w0.get()));
     }
 
     @Test
     void testResult() {
         var result = new BinaryLogisticNewton.Result(Collections.emptyList(), Collections.emptyList(), false);
-        assertEquals(0, result.w().size());
+        assertTrue(tmd.scalar(Double.NaN).deepEquals(result.w()));
         assertEquals(Double.NaN, result.nll());
     }
 
     @Test
     void testSymmetricAroundZeroSeparable() {
 
-        var x = DMatrix.copy(10, 1, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
-        var y = DVector.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-        var w0 = DVector.zeros(1);
+        var x = tmd.stride(Shape.of(10, 1), -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
+        var y = tmd.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+        var w0 = tmd.zeros(Shape.of(1));
 
         var result = new BinaryLogisticNewton()
                 .xp.set(x)
@@ -83,15 +90,15 @@ public class BinaryLogisticNewtonTest {
                 .lambdap.set(10.0)
                 .fit();
         assertFalse(result.converged());
-        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.mapCol(0).mean())), 1e-12);
+        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).stats().mean())), 1e-12);
     }
 
     @Test
     void testSymmetricAroundZeroNotSeparable() {
 
-        var x = DMatrix.copy(10, 1, -5, -4, -3, 2, -1, 1, -2, 3, 4, 5);
-        var y = DVector.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-        var w0 = DVector.zeros(1);
+        var x = tmd.stride(Shape.of(10, 1), Order.C, -5, -4, -3, 2, -1, 1, -2, 3, 4, 5);
+        var y = tmd.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+        var w0 = tmd.zeros(Shape.of(1));
 
         var result = new BinaryLogisticNewton()
                 .xp.set(x)
@@ -101,21 +108,21 @@ public class BinaryLogisticNewtonTest {
                 .eps.set(0.0001)
                 .fit();
         assertTrue(result.converged());
-        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.mapCol(0).mean())), 1e-12);
+        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).stats().mean())), 1e-12);
 
         // aligned with python
         assertEquals(-0.5584820971090904, result.w().get(0), TOL);
 
         assertEquals(result.ws().size(), result.nlls().size());
         assertTrue(result.w().deepEquals(result.ws().get(result.nlls().size() - 1)));
-        assertEquals(result.nll(), result.nlls().get(result.nlls().size() - 1));
+        assertEquals(result.nll(), result.nlls().getLast());
     }
 
     @Test
     void testUnconverged() {
-        var x = DMatrix.copy(2, 1, -5, 5);
-        var y = DVector.wrap(1, 0);
-        var w0 = DVector.zeros(1);
+        var x = tmd.stride(Shape.of(2, 1), -5, 5);
+        var y = tmd.stride(1, 0);
+        var w0 = tmd.zeros(Shape.of(1));
 
         var result = new BinaryLogisticNewton()
                 .xp.set(x)
@@ -125,7 +132,7 @@ public class BinaryLogisticNewtonTest {
                 .eps.set(0.000000001)
                 .fit();
         assertFalse(result.converged());
-        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.mapCol(0).mean())), 1e-12);
+        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).stats().mean())), 1e-12);
     }
 
     @Test
@@ -134,9 +141,9 @@ public class BinaryLogisticNewtonTest {
         VarDouble lambdas = VarDouble.seq(10, 1000, 100);
         VarDouble loss = VarDouble.empty().name("loss");
         for (double lambda : lambdas) {
-            var x = DMatrix.copy(10, 1, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
-            var y = DVector.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-            var w0 = DVector.zeros(1);
+            var x = tmd.stride(Shape.of(10, 1), -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
+            var y = tmd.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+            var w0 = tmd.zeros(Shape.of(1));
             var result = new BinaryLogisticNewton()
                     .xp.set(x)
                     .yp.set(y)
@@ -146,7 +153,7 @@ public class BinaryLogisticNewtonTest {
                     .lambdap.set(lambda)
                     .fit();
             assertFalse(result.converged(), "Model not converge for lambda: " + lambda);
-            assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.mapCol(0).mean())), 1e-12);
+            assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).stats().mean())), 1e-12);
             loss.addDouble(result.nll());
         }
 
@@ -164,9 +171,9 @@ public class BinaryLogisticNewtonTest {
 
         VarDouble y1 = VarDouble.from(100, row -> row > 50 ? 1. : 0);
 
-        DMatrix x = DMatrix.copy(x1, x2);
-        DVector y = y1.dv();
-        DVector w0 = DVector.wrap(0, 0);
+        Tensor<Double> x = SolidFrame.byVars(x1, x2).dtNew();
+        Tensor<Double> y = y1.dt();
+        Tensor<Double> w0 = tmd.stride(0, 0);
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> new BinaryLogisticNewton()
                 .xp.set(x)
@@ -181,26 +188,26 @@ public class BinaryLogisticNewtonTest {
     void singleInputTest() {
         int n = 1_000;
 
-        DMatrix x = DMatrix.empty(2 * n, 2);
-        x.mapCol(0).fill(1);
-        VarDouble.sample(Normal.of(0, 0.5), n).dv().addTo(x.mapCol(1).range(0, n), 0);
-        VarDouble.sample(Normal.of(1.5, 0.5), n).dv().addTo(x.mapCol(1).range(n, 2 * n), 0);
+        Tensor<Double> x = tmd.zeros(Shape.of(2 * n, 2));
+        x.take(1, 0).fill_(1.);
+        x.take(1, 1).squeeze(1).narrow(0, true, 0, n).add_(VarDouble.sample(Normal.of(0, 0.5), n).dt());
+        x.take(1, 1).squeeze(1).narrow(0, true, n, 2*n).add_(VarDouble.sample(Normal.of(1.5, 0.5), n).dt());
 
-        DVector y = DVector.fill(2 * n, 1);
-        y.range(n, 2 * n).fill(0);
+        Tensor<Double> y = tmd.full(Shape.of(2 * n), 1.);
+        y.narrow(0, true, n, 2 * n).fill_(0.);
 
         BinaryLogisticIRLS.Result irls = new BinaryLogisticIRLS()
-                .w0.set(DVector.fill(2, 0))
+                .w0.set(tmd.full(Shape.of(2), 0.))
                 .xp.set(x)
                 .yp.set(y)
                 .lambdap.set(0.0)
                 .maxIter.set(1000)
                 .fit();
 
-        DVector pred = x.dot(irls.w()).applyNew(MathTools::logistic);
-        DVector ypred = pred.applyNew(v -> v > 0.5 ? 1 : 0);
+        var pred = x.mv(irls.w()).apply_(MathTools::logistic);
+        var ypred = pred.apply(v -> v > 0.5 ? 1. : 0);
 
-        double accuracy = pred.subNew(ypred).apply(StrictMath::abs).sum() / pred.size();
+        double accuracy = pred.sub(ypred).abs_().sum() / pred.size();
         assertTrue(accuracy < 0.2);
     }
 }

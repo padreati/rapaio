@@ -73,13 +73,13 @@ public class CodeGenApp {
                 .replaces.set(floatReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/varray/VectorizedDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/varray/VectorizedFloatTensorStride.java")
+                .src.set("rapaio/math/tensor/manager/varray/VectorizedDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/manager/varray/VectorizedFloatTensorStride.java")
                 .replaces.set(floatReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/barray/BaseDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/barray/BaseFloatTensorStride.java")
+                .src.set("rapaio/math/tensor/manager/barray/BaseDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/manager/barray/BaseFloatTensorStride.java")
                 .replaces.set(floatReplaces)
         );
 
@@ -89,13 +89,13 @@ public class CodeGenApp {
                 .replaces.set(intReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/varray/VectorizedDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/varray/VectorizedIntTensorStride.java")
+                .src.set("rapaio/math/tensor/manager/varray/VectorizedDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/manager/varray/VectorizedIntTensorStride.java")
                 .replaces.set(intReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/barray/BaseDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/barray/BaseIntTensorStride.java")
+                .src.set("rapaio/math/tensor/manager/barray/BaseDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/manager/barray/BaseIntTensorStride.java")
                 .replaces.set(intReplaces)
         );
 
@@ -105,13 +105,13 @@ public class CodeGenApp {
                 .replaces.set(byteReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/varray/VectorizedDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/varray/VectorizedByteTensorStride.java")
+                .src.set("rapaio/math/tensor/manager/varray/VectorizedDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/manager/varray/VectorizedByteTensorStride.java")
                 .replaces.set(byteReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/engine/barray/BaseDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/engine/barray/BaseByteTensorStride.java")
+                .src.set("rapaio/math/tensor/manager/barray/BaseDoubleTensorStride.java")
+                .dst.set("rapaio/math/tensor/manager/barray/BaseByteTensorStride.java")
                 .replaces.set(byteReplaces)
         );
 

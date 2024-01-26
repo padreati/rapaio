@@ -37,12 +37,14 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
-import rapaio.math.MathTools;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.DoubleCholeskyDecomposition;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.math.MathTools;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.matrix.CholeskyDecomposition;
+import rapaio.sys.WS;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
@@ -67,27 +69,29 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
      */
     public final ValueParam<Double, BinaryLogisticIRLS> lambdap = new ValueParam<>(this, 0.0, "lambda");
 
-    public final ValueParam<DMatrix, BinaryLogisticIRLS> xp = new ValueParam<>(this, null, "x");
+    public final ValueParam<Tensor<Double>, BinaryLogisticIRLS> xp = new ValueParam<>(this, null, "x");
 
-    public final ValueParam<DVector, BinaryLogisticIRLS> yp = new ValueParam<>(this, null, "y");
+    public final ValueParam<Tensor<Double>, BinaryLogisticIRLS> yp = new ValueParam<>(this, null, "y");
 
     /**
      * Initial weights
      */
-    public final ValueParam<DVector, BinaryLogisticIRLS> w0 = new ValueParam<>(this, null, "w0");
+    public final ValueParam<Tensor<Double>, BinaryLogisticIRLS> w0 = new ValueParam<>(this, null, "w0");
 
-    public record Result(List<Double> nlls, List<DVector> ws, boolean converged) {
+    private static final TensorManager.OfType<Double> tmd = WS.tm().ofDouble();
 
-        public DVector w() {
+    public record Result(List<Double> nlls, List<Tensor<Double>> ws, boolean converged) {
+
+        public Tensor<Double> w() {
             if (!ws.isEmpty()) {
-                return ws.get(ws.size() - 1);
+                return ws.getLast();
             }
-            return DVector.zeros(0);
+            return tmd.scalar(Double.NaN);
         }
 
         public double nll() {
             if (nlls.size() > 1) {
-                return nlls.get(nlls.size() - 1);
+                return nlls.getLast();
             }
             return Double.NaN;
         }
@@ -95,30 +99,30 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
 
     public BinaryLogisticIRLS.Result fit() {
 
-        DMatrix x = xp.get();
-        DVector y = yp.get();
-        DVector ny = DVector.ones(y.size()).sub(y);
-        DVector w = w0.get();
+        Tensor<Double> x = xp.get();
+        Tensor<Double> y = yp.get();
+        Tensor<Double> ny = tmd.full(Shape.of(y.size()), 1.).sub_(y);
+        Tensor<Double> w = w0.get();
         double lambda = lambdap.get();
-        DVector p = x.dot(w).apply(MathTools::logistic);
-        DVector np = p.applyNew(v -> 1 - v);
+        Tensor<Double> p = x.mv(w).apply_(MathTools::logistic);
+        Tensor<Double> np = p.apply(v -> 1 - v);
 
         int it = 0;
         // current solution
-        ArrayList<DVector> ws = new ArrayList<>();
+        ArrayList<Tensor<Double>> ws = new ArrayList<>();
         ws.add(w);
         List<Double> nlls = new ArrayList<>();
         nlls.add(negativeLogLikelihood(y, ny, w, lambda, p, np));
 
         while (it++ < maxIter.get()) {
 
-            DVector wnew = iterate(w, x, y, lambda, p, np);
+            Tensor<Double> wnew = iterate(w, x, y, lambda, p, np);
 
-            p = x.dot(wnew).apply(MathTools::logistic);
-            np = p.applyNew(v -> 1 - v);
+            p = x.mv(wnew).apply(MathTools::logistic);
+            np = p.apply(v -> 1 - v);
             double nll = negativeLogLikelihood(y, ny, wnew, lambda, p, np);
 
-            double nll_delta = nll - nlls.get(nlls.size() - 1);
+            double nll_delta = nll - nlls.getLast();
             if (it > 1 && (abs(nll_delta / nll) <= eps.get() /*|| nll_delta > 0*/)) {
                 return new BinaryLogisticIRLS.Result(nlls, ws, true);
             }
@@ -129,31 +133,33 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
         return new BinaryLogisticIRLS.Result(nlls, ws, false);
     }
 
-    private double negativeLogLikelihood(DVector y, DVector ny, DVector w, double lambda, DVector p, DVector np) {
-        DVector logp = p.cutNew(1e-6, Double.NaN).log();
-        DVector lognp = np.cutNew(1e-6, Double.NaN).log();
+    private double negativeLogLikelihood(Tensor<Double> y, Tensor<Double> ny, Tensor<Double> w, double lambda, Tensor<Double> p, Tensor<Double> np) {
+        Tensor<Double> logp = p.clamp_(1e-6, Double.NaN).log();
+        Tensor<Double> lognp = np.clamp(1e-6, Double.NaN).log();
 
-        return -logp.dot(y) - lognp.dot(ny) + lambda * w.norm(2) / 2;
+        return -logp.vdot(y) - lognp.vdot(ny) + lambda * w.norm(2) / 2;
     }
 
-    private DVector iterate(DVector w, DMatrix x, DVector y, double lambda, DVector p, DVector np) {
+    private Tensor<Double> iterate(Tensor<Double> vw, Tensor<Double> mx, Tensor<Double> vy, double lambda, Tensor<Double> vp, Tensor<Double> vnp) {
 
         // p(1-p) diag from p diag
-        DVector pvar = p.mulNew(np).cut(1e-6, Double.NaN);
+        Tensor<Double> pvar = vp.mul(vnp).clamp(1e-6, Double.NaN);
 
         // H = X^t * I{p(1-p)} * X + I_lambda
-        DMatrix xta = x.t().mulNew(pvar, 0);
-        DMatrix h = xta.dot(x);
+        Tensor<Double> xta = mx.t().mul(pvar.unsqueeze(0).expand(0, mx.t().dim(0)));
+        Tensor<Double> h = xta.mm(mx);
         if (lambda > 0) {
-            h.add(DMatrix.diagonal(DVector.fill(h.rows(), lambda)));
+            for (int i = 0; i < h.dim(0); i++) {
+                h.incDouble(lambda, i, i);
+            }
         }
 
         // z = Xw + I{p(1-p)}^{-1} (y-p)
-        DVector z = x.dot(w).add(y.subNew(p).div(pvar));
-        DVector right = xta.dot(z);
+        Tensor<Double> z = mx.mv(vw).add(vy.sub(vp).div_(pvar));
+        Tensor<Double> right = xta.mv(z);
 
         // solve IRLS
-        DoubleCholeskyDecomposition chol = h.cholesky();
+        CholeskyDecomposition<Double> chol = h.chol();
         if (chol.isSPD()) {
             return chol.solve(right);
         } else {

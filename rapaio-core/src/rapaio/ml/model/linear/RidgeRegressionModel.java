@@ -36,11 +36,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.preprocessing.AddIntercept;
-import rapaio.math.linear.DMatrix;
-import rapaio.core.param.ValueParam;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -82,6 +83,8 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
     private Map<String, Double> inputScale;
     private Map<String, Double> targetMean;
     private Map<String, Double> targetScale;
+
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     @Override
     public RidgeRegressionModel newInstance() {
@@ -136,8 +139,8 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
             selNames[pos++] = inputNames[i];
         }
 
-        DMatrix X = DMatrix.empty(df.rowCount(), selNames.length);
-        DMatrix Y = DMatrix.empty(df.rowCount(), targetNames.length);
+        var X = tmd.zeros(Shape.of(df.rowCount(), selNames.length));
+        var Y = tmd.zeros(Shape.of(df.rowCount(), targetNames.length));
 
         if (intercept.get()) {
             // scale in values if we have intercept
@@ -146,7 +149,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
                 double mean = inputMean.get(selNames[j]);
                 double sd = inputScale.get(selNames[j]);
                 for (int i = 0; i < df.rowCount(); i++) {
-                    X.set(i, j, (df.getDouble(i, varIndex) - mean) / sd);
+                    X.setDouble((df.getDouble(i, varIndex) - mean) / sd, i, j);
                 }
             }
             for (int j = 0; j < targetNames.length; j++) {
@@ -154,7 +157,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
                 double mean = targetMean.get(targetNames[j]);
                 double sd = targetScale.get(targetNames[j]);
                 for (int i = 0; i < df.rowCount(); i++) {
-                    Y.set(i, j, (df.getDouble(i, varIndex) - mean) / sd);
+                    Y.setDouble((df.getDouble(i, varIndex) - mean) / sd, i, j);
                 }
             }
         } else {
@@ -162,25 +165,25 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
             for (int j = 0; j < selNames.length; j++) {
                 int varIndex = df.varIndex(selNames[j]);
                 for (int i = 0; i < df.rowCount(); i++) {
-                    X.set(i, j, df.getDouble(i, varIndex));
+                    X.setDouble(df.getDouble(i, varIndex), i, j);
                 }
             }
             for (int j = 0; j < targetNames.length; j++) {
                 int varIndex = df.varIndex(targetNames[j]);
                 for (int i = 0; i < df.rowCount(); i++) {
-                    Y.set(i, j, df.getDouble(i, varIndex));
+                    Y.setDouble(df.getDouble(i, varIndex), i, j);
                 }
             }
         }
 
         // solve the scaled system
-        DMatrix l = DMatrix.eye(X.cols()).mul(lambda.get());
-        DMatrix A = X.t().dot(X).add(l);
-        DMatrix B = X.t().dot(Y);
-        DMatrix scaledBeta = A.qr().solve(B);
+        var l = tmd.eye(X.dim(1)).mul_(lambda.get());
+        var A = X.t().mm(X).add_(l);
+        var B = X.t().mm(Y);
+        var scaledBeta = A.qr().solve(B);
 
         if (intercept.get()) {
-            beta = DMatrix.fill(scaledBeta.rows() + 1, scaledBeta.cols(), 0);
+            beta = tmd.zeros(Shape.of(scaledBeta.dim(0) + 1, scaledBeta.dim(1)));
 
             for (int i = 0; i < targetNames.length; i++) {
                 String targetName = targetName(i);
@@ -196,10 +199,10 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
                             interceptValue -= scaledBeta.get(k - offset, i) * targetScale * inputMean.get(inputNames[k]) / inputScale.get(
                                     inputNames[k]);
                         }
-                        beta.set(j, i, interceptValue);
+                        beta.setDouble(interceptValue, j, i);
                     } else {
                         int offset = j >= interceptIndex ? 1 : 0;
-                        beta.set(j, i, scaledBeta.get(j - offset, i) * targetScale / inputScale.get(inputNames[j]));
+                        beta.setDouble(scaledBeta.get(j - offset, i) * targetScale / inputScale.get(inputNames[j]), j, i);
                     }
                 }
             }
