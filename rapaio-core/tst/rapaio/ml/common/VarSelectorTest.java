@@ -21,7 +21,8 @@
 
 package rapaio.ml.common;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -34,7 +35,6 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.math.linear.DVector;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -80,14 +80,12 @@ public class VarSelectorTest {
                 counter.put(varName, counter.get(varName) + 1);
             }
         }
-        final DVector freq = DVector.fill(counter.size(), 0);
+        VarDouble counts = VarDouble.empty(counter.size());
         int pos = 0;
         for (int value : counter.values()) {
-            freq.set(pos++, value);
+            counts.setDouble(pos++, value);
         }
-
         VarDouble expectedProbability = VarDouble.fill(varNames.length, 1.0 / varNames.length);
-        VarDouble counts = freq.dv();
 
         assertTrue(ChiSqGoodnessOfFit.from(counts, expectedProbability).pValue() >= 0.2); // no evidence at all
     }
@@ -105,15 +103,13 @@ public class VarSelectorTest {
                 counter.put(varName, counter.get(varName) + 1);
             }
         }
-        final DVector freq = DVector.fill(counter.size(), 0);
+        VarDouble counts = VarDouble.fill(counter.size(), 0);
         int pos = 0;
         for (int value : counter.values()) {
-            freq.set(pos++, value);
+            counts.setDouble(pos++, value);
         }
 
         VarDouble expectedProbability = VarDouble.fill(varNames.length, 1.0 / varNames.length);
-        VarDouble counts = freq.dv();
-
         assertTrue(ChiSqGoodnessOfFit.from(counts, expectedProbability).pValue() >= 0.2); // no evidence at all
     }
 

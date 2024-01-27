@@ -21,10 +21,9 @@
 
 package rapaio.graphics.plot.artist;
 
-import static java.lang.StrictMath.*;
-
-import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOptions.*;
+import static rapaio.graphics.Plotter.corrGram;
+import static rapaio.graphics.Plotter.matrix;
+import static rapaio.graphics.opt.GOptions.color;
 
 import java.io.IOException;
 import java.util.Random;
@@ -35,12 +34,13 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.TensorManager;
 import rapaio.printer.ImageTools;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
 
 public class MatrixTest extends AbstractArtistTest {
 
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private Random random;
 
     @BeforeEach
@@ -55,20 +55,20 @@ public class MatrixTest extends AbstractArtistTest {
 
         int n = 6;
 
-        DMatrix randomm = DMatrix.random(random, n, n);
-        DVector mean = randomm.mean(0);
-        DVector sd = randomm.sd(0).mul(sqrt(n - 1));
+        var randomm = tmd.random(Shape.of(n, n), random);
+        var mean = randomm.mean(0);
+        var sd = randomm.stdc(0, 1);
 
-        randomm.sub(mean, 0).div(sd, 0);
+        randomm.bsub(0, mean).bdiv(0, sd);
 
-        DMatrix cov = randomm.t().dot(randomm).roundValues(15);
+        var cov = randomm.t().mm(randomm);//.round(15);
 
         DistanceMatrix dm = DistanceMatrix.empty(n).fill(cov::get);
         grid.add(matrix(cov));
         grid.add(corrGram(dm));
 
         grid.add(matrix(cov, color(NColor.black)));
-        grid.add(matrix(DMatrix.random(60, 80)));
+        grid.add(matrix(TensorManager.base().ofDouble().random(Shape.of(60, 80), random)));
 
         assertTest(grid, "matrix-test");
     }

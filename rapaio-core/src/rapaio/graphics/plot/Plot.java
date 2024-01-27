@@ -41,14 +41,13 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.tools.Grid2D;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.preprocessing.VarSort;
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.empirical.KFunc;
-import rapaio.printer.Figure;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.Palette;
@@ -72,9 +71,10 @@ import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment;
 import rapaio.graphics.plot.artist.Silhouette;
 import rapaio.graphics.plot.artist.Text;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
+import rapaio.printer.Figure;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
@@ -551,7 +551,7 @@ public class Plot implements Figure {
         return this;
     }
 
-    public Plot matrix(DMatrix m, GOption<?>... opts) {
+    public Plot matrix(Tensor<?> m, GOption<?>... opts) {
         add(new Matrix(m, opts));
         return this;
     }

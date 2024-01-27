@@ -46,7 +46,7 @@ import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/19.
@@ -55,12 +55,12 @@ public class Matrix extends Artist {
 
     @Serial
     private static final long serialVersionUID = -642370269224702175L;
-    private final DMatrix m;
+    private final Tensor<?> m;
 
-    public Matrix(DMatrix m, GOption<?>... opts) {
+    public Matrix(Tensor<?> m, GOption<?>... opts) {
         this.m = m;
         this.options = new GOptions()
-                .apply(color(-1), palette(Palette.hue(0, 240, m.min(0).min(), m.max(0).max())))
+                .apply(color(-1), palette(Palette.hue(0, 240, m.min().doubleValue(), m.max().doubleValue())))
                 .apply(opts);
     }
 
@@ -77,7 +77,7 @@ public class Matrix extends Artist {
     @Override
     public void updateDataRange(Graphics2D g2d) {
         union(0, 0);
-        union(m.cols(), m.rows());
+        union(m.dim(1), m.dim(0));
     }
 
     @Override
@@ -87,32 +87,32 @@ public class Matrix extends Artist {
 
         final double eps = 1 / (xScale(1) - xScale(0));
 
-        for (int i = 0; i < m.rows(); i++) {
-            for (int j = 0; j < m.cols(); j++) {
+        for (int i = 0; i < m.dim(0); i++) {
+            for (int j = 0; j < m.dim(1); j++) {
                 Path2D.Double path = new Path2D.Double();
 
-                path.moveTo(xScale(j), yScale(m.rows() - i));
-                path.lineTo(xScale(j + 1 + eps), yScale(m.rows() - i));
-                path.lineTo(xScale(j + 1 + eps), yScale(m.rows() -  i - 1 - eps));
-                path.lineTo(xScale(j), yScale(m.rows() - i - 1 - eps));
-                path.lineTo(xScale(j), yScale(m.rows() - i));
+                path.moveTo(xScale(j), yScale(m.dim(0) - i));
+                path.lineTo(xScale(j + 1 + eps), yScale(m.dim(0) - i));
+                path.lineTo(xScale(j + 1 + eps), yScale(m.dim(0) -  i - 1 - eps));
+                path.lineTo(xScale(j), yScale(m.dim(0) - i - 1 - eps));
+                path.lineTo(xScale(j), yScale(m.dim(0) - i));
 
-                g2d.setColor(options.getPalette().getColor(m.get(i, j)));
+                g2d.setColor(options.getPalette().getColor(m.get(i, j).doubleValue()));
                 g2d.setStroke(new BasicStroke());
                 g2d.fill(path);
             }
         }
 
         if (options.getColor(0) != null) {
-            for (int i = 0; i < m.rows(); i++) {
-                for (int j = 0; j < m.cols(); j++) {
+            for (int i = 0; i < m.dim(0); i++) {
+                for (int j = 0; j < m.dim(1); j++) {
                     Path2D.Double path = new Path2D.Double();
 
-                    path.moveTo(xScale(j), yScale(m.rows() - i));
-                    path.lineTo(xScale(j + 1 + eps), yScale(m.rows() - i));
-                    path.lineTo(xScale(j + 1 + eps), yScale(m.rows() -  i - 1 - eps));
-                    path.lineTo(xScale(j), yScale(m.rows() - i - 1 - eps));
-                    path.lineTo(xScale(j), yScale(m.rows() - i));
+                    path.moveTo(xScale(j), yScale(m.dim(0) - i));
+                    path.lineTo(xScale(j + 1 + eps), yScale(m.dim(0) - i));
+                    path.lineTo(xScale(j + 1 + eps), yScale(m.dim(0) -  i - 1 - eps));
+                    path.lineTo(xScale(j), yScale(m.dim(0) - i - 1 - eps));
+                    path.lineTo(xScale(j), yScale(m.dim(0) - i));
 
                     g2d.setColor(options.getColor(0));
                     g2d.setStroke(new BasicStroke(options.getLwd()));

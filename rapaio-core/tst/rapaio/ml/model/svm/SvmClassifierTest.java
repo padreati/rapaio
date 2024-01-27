@@ -30,11 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
-import rapaio.data.VarRange;
-import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.model.ClassifierResult;
@@ -43,19 +39,12 @@ import rapaio.sys.WS;
 public class SvmClassifierTest {
 
     private static final double TOL = 1e-16;
-
-
     private Frame iris;
-    private DMatrix xs;
-    private DVector ys;
 
     @BeforeEach
     void beforeEach() {
         WS.initLog(Level.SEVERE);
         iris = Datasets.loadIrisDataset();
-
-        xs = DMatrix.copy(iris.mapVars(VarRange.onlyTypes(VarType.DOUBLE)));
-        ys = DVector.from(xs.rows(), i -> iris.rvar(4).getInt(i) - 1);
     }
 
     @Test

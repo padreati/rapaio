@@ -40,7 +40,7 @@ import rapaio.sys.WS;
 
 public abstract class AbstractArtistTest {
 
-    public static final String ROOT = "/home/ati/work/rapaio-all/rapaio-core/tst";
+    public static final String ROOT = "/home/ati/work/rapaio/rapaio-core/tst";
 
     @BeforeEach
     void setUp() throws Exception {

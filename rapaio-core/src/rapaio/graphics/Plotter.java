@@ -35,6 +35,8 @@ import static rapaio.graphics.opt.GOptions.bins;
 
 import java.awt.image.BufferedImage;
 
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.core.tools.Grid2D;
 import rapaio.data.Frame;
@@ -61,9 +63,7 @@ import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.PolyPath;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Text;
-import rapaio.math.linear.DMatrix;
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.empirical.KFunc;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
@@ -202,7 +202,7 @@ public final class Plotter {
         return plot().add(new Text(x, y, text, opts));
     }
 
-    public static Plot matrix(DMatrix m, GOption<?>... opts) {
+    public static Plot matrix(Tensor<?> m, GOption<?>... opts) {
         return plot().add(new Matrix(m, opts));
     }
 
