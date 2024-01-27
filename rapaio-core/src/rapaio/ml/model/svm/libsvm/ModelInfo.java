@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 public class ModelInfo {
 
@@ -45,7 +45,7 @@ public class ModelInfo {
     /**
      * A map of support vectors, indexes by the position in the training data set.
      */
-    final Map<Integer, DVector> svs;
+    final Map<Integer, Tensor<Double>> svs;
     final SubModel[] submodels;
 
     private static final class SubModel {

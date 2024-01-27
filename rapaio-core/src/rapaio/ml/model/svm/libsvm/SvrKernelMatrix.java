@@ -31,8 +31,8 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
@@ -43,14 +43,14 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
     private final byte[] sign;
     private final int[] index;
     private int nextBuffer;
-    private final DVectorDense[] buffer;
+    private final Tensor<Double>[] buffer;
 
-    SvrKernelMatrix(int len, DVector[] xs, Kernel kernel, long cacheSize) {
+    SvrKernelMatrix(int len, Tensor<Double>[] xs, Kernel kernel, long cacheSize) {
         super(xs, kernel, new Cache(len, cacheSize * (1 << 20)), new double[2 * len]);
         this.l = len;
-        buffer = new DVectorDense[] {
-                new DVectorDense(2 * len),
-                new DVectorDense(2 * len)
+        buffer = new Tensor[] {
+                Svm.tmd.zeros(Shape.of(2 * len)),
+                Svm.tmd.zeros(Shape.of(2 * len))
         };
         sign = new byte[2 * len];
         index = new int[2 * len];
@@ -71,20 +71,20 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
         TArrays.swap(qd, i, j);
     }
 
-    DVectorDense getQ(int i, int len) {
-        Reference<DVectorDense> data = new Reference<>();
+    Tensor<Double> getQ(int i, int len) {
+        Reference<Tensor<Double>> data = new Reference<>();
         if (cache.getData(index[i], data, l) < l) {
             for (int j = 0; j < l; j++) {
-                data.get().set(j, kernel.compute(xs[index[i]], xs[j]));
+                data.get().set(kernel.compute(xs[index[i]], xs[j]), j);
             }
         }
 
         // reorder and copy
-        DVectorDense buf = buffer[nextBuffer];
+        Tensor<Double> buf = buffer[nextBuffer];
         nextBuffer = 1 - nextBuffer;
         byte si = sign[i];
         for (int j = 0; j < len; j++) {
-            buf.set(j, si * sign[j] * data.get().get(index[j]));
+            buf.set(si * sign[j] * data.get().get(index[j]), j);
         }
         return buf;
     }

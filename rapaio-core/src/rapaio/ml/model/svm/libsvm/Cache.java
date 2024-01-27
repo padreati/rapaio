@@ -31,7 +31,8 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
 import rapaio.util.Reference;
 
 /**
@@ -48,7 +49,7 @@ public class Cache {
     private static final class Entry {
         private Entry prev;
         private Entry next;
-        private DVectorDense data;
+        private Tensor<Double> data;
 
         public int len() {
             return data == null ? 0 : data.size();
@@ -93,7 +94,7 @@ public class Cache {
      * the position until it is computed, starting from 0. The other positions will be filled by
      * the caller and the values will remain in cache since data is passed as reference.
      */
-    public int getData(int index, Reference<DVectorDense> data, int len) {
+    public int getData(int index, Reference<Tensor<Double>> data, int len) {
         Entry h = entries[index];
 
         lruUnlink(h);
@@ -110,7 +111,7 @@ public class Cache {
                 old.data = null;
             }
             // allocate new space
-            h.data = (h.data == null) ? new DVectorDense(len) : h.data.denseCopy(len);
+            h.data = (h.data == null) ? Svm.tmd.zeros(Shape.of(len)) : h.data.vpadCopy(0, more);
             size -= more;
         }
 
@@ -131,7 +132,7 @@ public class Cache {
         lruUnlink(entries[i]);
         lruUnlink(entries[j]);
 
-        DVectorDense buf = entries[i].data;
+        var buf = entries[i].data;
         entries[i].data = entries[j].data;
         entries[j].data = buf;
 
@@ -141,7 +142,9 @@ public class Cache {
         for (Entry h = lruEntry.next; h != lruEntry; h = h.next) {
             if (h.len() > i) {
                 if (h.len() > j) {
-                    h.data.swap(i, j);
+                    var tmp = h.data.get(i);
+                    h.data.set(h.data.get(j), i);
+                    h.data.set(tmp, j);
                 } else {
                     // give up
                     lruUnlink(h);

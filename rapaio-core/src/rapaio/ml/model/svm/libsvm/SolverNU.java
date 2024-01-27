@@ -31,7 +31,7 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.tensor.Tensor;
 
 /**
  * Solver for nu-svm classification and regression.
@@ -87,8 +87,8 @@ public final class SolverNU extends SolverC {
 
         int ip = gmaxpIdx;
         int in = gmaxnIdx;
-        DVectorDense qip = null;
-        DVectorDense qin = null;
+        Tensor<Double> qip = null;
+        Tensor<Double> qin = null;
 
         // null Q_ip not accessed: Gmaxp=-INF if ip=-1
         if (ip != -1) {

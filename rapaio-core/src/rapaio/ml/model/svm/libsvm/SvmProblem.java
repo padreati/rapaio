@@ -33,11 +33,11 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.Random;
 
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 public class SvmProblem implements java.io.Serializable {
     public Random random;
     public int len;
-    public DVector[] xs;
+    public Tensor<Double>[] xs;
     public double[] y;
 }

@@ -33,14 +33,14 @@ package rapaio.ml.model.svm;
 
 import java.util.logging.Logger;
 
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
@@ -126,7 +126,7 @@ public class SvmRegression extends RegressionModel<SvmRegression, RegressionResu
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        DMatrix x = DMatrix.copy(df.mapVars(inputNames));
+        Tensor<Double> x = df.mapVars(inputNames).dtNew();
         Var target = df.rvar(firstTargetName());
 
         ProblemInfo pi = ProblemInfo.from(x, target, this);
@@ -144,14 +144,13 @@ public class SvmRegression extends RegressionModel<SvmRegression, RegressionResu
     @Override
     protected RegressionResult corePredict(Frame df, boolean withResiduals, double[] quantiles) {
         RegressionResult result = RegressionResult.build(this, df, withResiduals, quantiles);
-        DMatrix xs = DMatrix.copy(df.mapVars(inputNames));
-        for (int i = 0; i < xs.rows(); i++) {
-            double score = Svm.svm_predict(svm_model, xs.mapRow(i));
-
+        Tensor<Double> xs = df.mapVars(inputNames).dtNew();
+        for (int i = 0; i < xs.dim(0); i++) {
+            double score = Svm.svm_predict(svm_model, xs.takesq(0, i));
             LOGGER.finest("i:%d, score:%f".formatted(i, score));
-
             result.firstPrediction().setDouble(i, score);
         }
+        result.buildComplete();
         return result;
     }
 }

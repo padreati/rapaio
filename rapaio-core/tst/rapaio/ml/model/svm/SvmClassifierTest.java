@@ -21,6 +21,8 @@
 
 package rapaio.ml.model.svm;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -34,6 +36,7 @@ import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.kernel.RBFKernel;
+import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.sys.WS;
 
@@ -65,13 +68,7 @@ public class SvmClassifierTest {
                 .kernel.set(new RBFKernel(0.7))
                 .seed.set(42L);
         ClassifierResult cpred = c.fit(iris, "class").predict(iris);
-        DMatrix cdensity = DMatrix.copy(cpred.firstDensity()).removeCols(0);
-
-//        assertTrue(pred.density().deepEquals(cdensity, TOL));
-//        for (int i = 0; i < pred.classes().length; i++) {
-//            int cls = (int) pred.classes()[i];
-//            assertEquals(cls + 1, cpred.firstClasses().getInt(i));
-//        }
+        assertTrue(Accuracy.newMetric().compute(iris.rvar("class"), cpred).getScore().value()>0.95);
     }
 
     @Test
@@ -85,10 +82,7 @@ public class SvmClassifierTest {
                 .seed.set(42L);
 
         ClassifierResult cpred = c.fit(iris, "class").predict(iris, true, true);
-//        for (int i = 0; i < pred.classes().length; i++) {
-//            int cls = (int) pred.classes()[i];
-//            assertEquals(cls + 1, cpred.firstClasses().getInt(i));
-//        }
+        assertTrue(Accuracy.newMetric().compute(iris.rvar("class"), cpred).getScore().value()>0.95);
     }
 
     @Test
@@ -101,13 +95,7 @@ public class SvmClassifierTest {
                 .kernel.set(new RBFKernel(0.7))
                 .seed.set(42L);
         ClassifierResult cpred = c.fit(iris, "class").predict(iris);
-        DMatrix cdensity = DMatrix.copy(cpred.firstDensity()).removeCols(0);
-
-//        assertTrue(pred.density().deepEquals(cdensity, TOL));
-//        for (int i = 0; i < pred.classes().length; i++) {
-//            int cls = (int) pred.classes()[i];
-//            assertEquals(cls + 1, cpred.firstClasses().getInt(i));
-//        }
+        assertTrue(Accuracy.newMetric().compute(iris.rvar("class"), cpred).getScore().value()>0.95);
     }
 
     @Test
@@ -120,9 +108,6 @@ public class SvmClassifierTest {
                 .seed.set(42L);
 
         ClassifierResult cpred = c.fit(iris, "class").predict(iris, true, true);
-//        for (int i = 0; i < pred.classes().length; i++) {
-//            int cls = (int) pred.classes()[i];
-//            assertEquals(cls + 1, cpred.firstClasses().getInt(i));
-//        }
+        assertTrue(Accuracy.newMetric().compute(iris.rvar("class"), cpred).getScore().value()>0.95);
     }
 }

@@ -76,9 +76,5 @@ public class OneClassSvmTest {
                 .nu.set(0.1)
                 .seed.set(42L);
         var result = ocs.fit(df, null).predict(df);
-
-
-//        assertArrayEquals(DVector.wrap(pred.classes()).apply(v -> v < 0 ? 0 : 1).denseCopy().array(),
-//                DoubleArrays.newFrom(0, pred.classes().length, i -> result.assignment().getDouble(i)));
     }
 }

@@ -972,6 +972,16 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     N vdot(Tensor<N> tensor, int start, int end);
 
+    /**
+     * Creates a padded copy of a vector. A padded copy will also be a vector of dimension {@code before + dim(0) + after},
+     * having first and last elements padded with 0.
+     * <p>
+     * This operation is available only for vectors.
+     *
+     * @return resized padded copy of the original vector
+     */
+    Tensor<N> vpadCopy(int before, int after);
+
     Tensor<N> mv(Tensor<N> tensor);
 
     default Tensor<N> mm(Tensor<N> tensor) {

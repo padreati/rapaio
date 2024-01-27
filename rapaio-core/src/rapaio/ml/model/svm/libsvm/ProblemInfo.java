@@ -40,25 +40,24 @@ import java.util.Random;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.mapping.ArrayMapping;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.model.svm.OneClassSvm;
 import rapaio.ml.model.svm.SvmClassifier;
 import rapaio.ml.model.svm.SvmRegression;
 
-public record ProblemInfo(Random random, DVector[] xs, double[] y,
+public record ProblemInfo(Random random, Tensor<Double>[] xs, double[] y,
                           List<String> levels, Map<String, Integer> index, Map<String, Mapping> map,
                           SvmClassifier.Penalty cType, SvmRegression.Penalty rType, Kernel kernel, long cacheSize, double eps,
                           double c, Map<String, Double> weighting, double nu, double p, boolean shrinking, boolean probability) {
 
-    public static ProblemInfo from(DMatrix x, Var target, SvmClassifier parent) {
-        DVector[] xs = new DVector[x.rows()];
+    public static ProblemInfo from(Tensor<Double> x, Var target, SvmClassifier parent) {
+        Tensor<Double>[] xs = new Tensor[x.dim(0)];
         for (int i = 0; i < xs.length; i++) {
-            xs[i] = x.mapRow(i);
+            xs[i] = x.takesq(0, i);
         }
-        double[] y = new double[x.rows()];
-        for (int i = 0; i < x.rows(); i++) {
+        double[] y = new double[x.dim(0)];
+        for (int i = 0; i < x.dim(0); i++) {
             switch (target.type()) {
                 case BINARY, INT -> y[i] = target.getInt(i);
                 case NOMINAL -> y[i] = target.getInt(i) - 1;
@@ -100,13 +99,13 @@ public record ProblemInfo(Random random, DVector[] xs, double[] y,
                 parent.nu.get(), 0.0, parent.shrinking.get(), parent.probability.get());
     }
 
-    public static ProblemInfo from(DMatrix x, Var target, SvmRegression parent) {
-        DVector[] xs = new DVector[x.rows()];
+    public static ProblemInfo from(Tensor<Double> x, Var target, SvmRegression parent) {
+        Tensor<Double>[] xs = new Tensor[x.dim(0)];
         for (int i = 0; i < xs.length; i++) {
-            xs[i] = x.mapRow(i);
+            xs[i] = x.takesq(0, i);
         }
-        double[] y = new double[x.rows()];
-        for (int i = 0; i < x.rows(); i++) {
+        double[] y = new double[x.dim(0)];
+        for (int i = 0; i < x.dim(0); i++) {
             switch (target.type()) {
                 case BINARY, INT -> y[i] = target.getInt(i);
                 case DOUBLE -> y[i] = target.getDouble(i);
@@ -122,13 +121,13 @@ public record ProblemInfo(Random random, DVector[] xs, double[] y,
                 parent.nu.get(), parent.epsilon.get(), parent.shrinking.get(), parent.probability.get());
     }
 
-    public static ProblemInfo from(DMatrix x, Var target, OneClassSvm parent) {
-        DVector[] xs = new DVector[x.rows()];
+    public static ProblemInfo from(Tensor<Double> x, Var target, OneClassSvm parent) {
+        Tensor<Double>[] xs = new Tensor[x.dim(0)];
         for (int i = 0; i < xs.length; i++) {
-            xs[i] = x.mapRow(i);
+            xs[i] = x.takesq(0, i);
         }
-        double[] y = new double[x.rows()];
-        for (int i = 0; i < x.rows(); i++) {
+        double[] y = new double[x.dim(0)];
+        for (int i = 0; i < x.dim(0); i++) {
             switch (target.type()) {
                 case BINARY, INT -> y[i] = target.getInt(i);
                 case DOUBLE -> y[i] = target.getDouble(i);

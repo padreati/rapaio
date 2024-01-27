@@ -33,13 +33,15 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.logging.Logger;
 
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.TArrays;
 
 public class Svm {
 
     private static final Logger LOGGER = Logger.getLogger(Svm.class.getName());
+    public static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     private static SolutionInfo solve_c_svc(SvmProblem prob, SvmParameter param, double[] alpha, double cp, double cn) {
         int l = prob.len;
@@ -57,7 +59,7 @@ public class Svm {
         s.solve(l, new SvcKernelMatrix(prob.len, prob.xs, param.kernel, param.cacheSize, y), minus_ones, y,
                 alpha, cp, cn, param.eps, si, param.shrinking);
 
-        double sumAlpha = DVector.wrap(alpha).sum();
+        double sumAlpha = Svm.tmd.stride(alpha).sum();
 
         if (cp == cn) {
             LOGGER.fine("nu = " + sumAlpha / (cp * prob.len) + "\n");
@@ -459,7 +461,7 @@ public class Svm {
             SvmProblem subprob = new SvmProblem();
 
             subprob.len = prob.len - (end - begin);
-            subprob.xs = new DVector[subprob.len];
+            subprob.xs = new Tensor[subprob.len];
             subprob.y = new double[subprob.len];
 
             k = 0;
@@ -650,7 +652,7 @@ public class Svm {
                 }
             }
             model.l = nSV;
-            model.SV = new DVector[nSV];
+            model.SV = new Tensor[nSV];
             model.svCoef[0] = new double[nSV];
             model.sv_indices = new int[nSV];
             int j = 0;
@@ -682,7 +684,7 @@ public class Svm {
                 LOGGER.warning("training data in only one class. See README for details.\n");
             }
 
-            DVector[] x = new DVector[l];
+            Tensor<Double>[] x = new Tensor[l];
             for (int i = 0; i < l; i++) {
                 x[i] = prob.xs[perm[i]];
             }
@@ -726,7 +728,7 @@ public class Svm {
                     int ci = count[i], cj = count[j];
                     sub_prob.random = prob.random;
                     sub_prob.len = ci + cj;
-                    sub_prob.xs = new DVector[sub_prob.len];
+                    sub_prob.xs = new Tensor[sub_prob.len];
                     sub_prob.y = new double[sub_prob.len];
                     int k;
                     for (k = 0; k < ci; k++) {
@@ -801,7 +803,7 @@ public class Svm {
             LOGGER.fine("Total nSV = " + total_sv + "\n");
 
             model.l = total_sv;
-            model.SV = new DVector[total_sv];
+            model.SV = new Tensor[total_sv];
             model.sv_indices = new int[total_sv];
             p = 0;
             for (int i = 0; i < l; i++) {
@@ -931,7 +933,7 @@ public class Svm {
             SvmProblem subprob = new SvmProblem();
 
             subprob.len = l - (end - begin);
-            subprob.xs = new DVector[subprob.len];
+            subprob.xs = new Tensor[subprob.len];
             subprob.y = new double[subprob.len];
 
             k = 0;
@@ -961,7 +963,7 @@ public class Svm {
         }
     }
 
-    public static double svm_predict(SvmModel model, DVector x) {
+    public static double svm_predict(SvmModel model, Tensor<Double> x) {
         double[] decisionvalues;
         if (model.param.svmType == SvmParameter.ONE_CLASS ||
                 model.param.svmType == SvmParameter.EPSILON_SVR ||
@@ -973,7 +975,7 @@ public class Svm {
         return svm_predict_values(model, x, decisionvalues);
     }
 
-    public static double svm_predict_values(SvmModel model, DVector x, double[] decisionValues) {
+    public static double svm_predict_values(SvmModel model, Tensor<Double> x, double[] decisionValues) {
         if (model.param.svmType == SvmParameter.ONE_CLASS ||
                 model.param.svmType == SvmParameter.EPSILON_SVR ||
                 model.param.svmType == SvmParameter.NU_SVR) {
@@ -1048,7 +1050,7 @@ public class Svm {
         }
     }
 
-    public static double svm_predict_probability(SvmModel model, DVector x, double[] probEstimates) {
+    public static double svm_predict_probability(SvmModel model, Tensor<Double> x, double[] probEstimates) {
         if ((model.param.svmType == SvmParameter.C_SVC || model.param.svmType == SvmParameter.NU_SVC) &&
                 model.probA != null && model.probB != null) {
             int i;

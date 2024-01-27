@@ -708,6 +708,22 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     @Override
+    public Tensor<Integer> vpadCopy(int before, int after) {
+        if (!isVector()) {
+            throw new IllegalArgumentException("This operation is available only for vectors.");
+        }
+        Storage<Integer> newStorage = engine.storage().ofInt().zeros(before + dim(0) + after);
+        var loop = loopIterator();
+        while (loop.hasNext()) {
+            int offset = loop.next();
+            for (int i = 0; i < loop.size(); i++) {
+                newStorage.setInt(before + i, ptrGetInt(offset + i * loop.step()));
+            }
+        }
+        return engine.ofInt().stride(Shape.of(before + dim(0) + after), Order.C, storage);
+    }
+
+    @Override
     public Tensor<Integer> mv(Tensor<Integer> tensor) {
         if (shape().rank() != 2 || tensor.shape().rank() != 1 || shape().dim(1) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(

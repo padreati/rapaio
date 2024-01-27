@@ -708,6 +708,22 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     @Override
+    public Tensor<Double> vpadCopy(int before, int after) {
+        if (!isVector()) {
+            throw new IllegalArgumentException("This operation is available only for vectors.");
+        }
+        Storage<Double> newStorage = engine.storage().ofDouble().zeros(before + dim(0) + after);
+        var loop = loopIterator();
+        while (loop.hasNext()) {
+            int offset = loop.next();
+            for (int i = 0; i < loop.size(); i++) {
+                newStorage.setDouble(before + i, ptrGetDouble(offset + i * loop.step()));
+            }
+        }
+        return engine.ofDouble().stride(Shape.of(before + dim(0) + after), Order.C, storage);
+    }
+
+    @Override
     public Tensor<Double> mv(Tensor<Double> tensor) {
         if (shape().rank() != 2 || tensor.shape().rank() != 1 || shape().dim(1) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(

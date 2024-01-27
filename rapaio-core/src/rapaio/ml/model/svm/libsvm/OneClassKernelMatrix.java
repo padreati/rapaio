@@ -31,7 +31,7 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.tensor.Tensor;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
 
@@ -44,12 +44,12 @@ class OneClassKernelMatrix extends AbstractKernelMatrix {
         }
     }
 
-    DVectorDense getQ(int i, int len) {
-        Reference<DVectorDense> data = new Reference<>();
+    Tensor<Double> getQ(int i, int len) {
+        Reference<Tensor<Double>> data = new Reference<>();
         int start = cache.getData(i, data, len);
         if (start < len) {
             for (int j = start; j < len; j++) {
-                data.get().set(j, kernel.compute(xs[i], xs[j]));
+                data.get().set(kernel.compute(xs[i], xs[j]), j);
             }
         }
         return data.get();

@@ -33,14 +33,14 @@ package rapaio.ml.model.svm;
 
 import java.util.logging.Logger;
 
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.model.ClusteringResult;
 import rapaio.ml.model.RunInfo;
@@ -102,7 +102,7 @@ public class OneClassSvm extends ClusteringModel<OneClassSvm, ClusteringResult<O
 
     @Override
     protected OneClassSvm coreFit(Frame df, Var weights) {
-        DMatrix x = DMatrix.copy(df.mapVars(inputNames));
+        Tensor<Double> x = df.mapVars(inputNames).dtNew();
         ProblemInfo pi = ProblemInfo.from(x, VarDouble.empty(df.rowCount()), this);
         pi.checkValidProblem();
         model = Svm.svm_train(pi.computeProblem(), pi.computeParameters());
@@ -114,7 +114,7 @@ public class OneClassSvm extends ClusteringModel<OneClassSvm, ClusteringResult<O
 
     @Override
     protected ClusteringResult<OneClassSvm> corePredict(Frame df, boolean withScores) {
-        DMatrix xs = DMatrix.copy(df.mapVars(inputNames));
+        Tensor<Double> xs = df.mapVars(inputNames).dtNew();
 
         VarInt assign = VarInt.empty(df.rowCount()).name("clusters");
         VarDouble scores = VarDouble.empty(df.rowCount()).name("scores");
@@ -124,7 +124,7 @@ public class OneClassSvm extends ClusteringModel<OneClassSvm, ClusteringResult<O
         for (int i = 0; i < assign.size(); i++) {
             double score = -model.rho[0];
             for (int j = 0; j < model.l; j++) {
-                score += svCoef[j] * k.compute(xs.mapRow(i), model.SV[j]);
+                score += svCoef[j] * k.compute(xs.takesq(0, i), model.SV[j]);
             }
             assign.setInt(i, score > 0 ? 1 : 0);
             scores.setDouble(i, score);

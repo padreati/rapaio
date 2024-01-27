@@ -21,15 +21,17 @@
 
 package rapaio.ml.model.svm;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.logging.Level;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
 import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
@@ -51,6 +53,7 @@ public class SvmRegressionTest {
         ys = df.rvar("Sales").dt();
     }
 
+    @Test
     void testRegression() throws IOException {
 
         SvmRegression m = new SvmRegression()
@@ -61,11 +64,9 @@ public class SvmRegressionTest {
                 .seed.set(42L);
 
         m.fit(df.mapVars("TV,Radio,Sales"), "Sales");
-        var pred = m.predict(df.mapVars("TV,Radio,Sales"));
-        DVector pr = pred.firstPrediction().dv();
+        var pred = m.predict(df.mapVars("TV,Radio,Sales"), true);
 //        pred.printSummary();
-
-//        assertTrue(DVector.wrap(pred.classes()).deepEquals(pr, TOL));
+        assertTrue(pred.firstRSquare() > 0.95);
 
 
         // epsilon regression with probabilities
@@ -77,35 +78,35 @@ public class SvmRegressionTest {
                 .kernel.set(new RBFKernel(0.001))
                 .seed.set(42L);
 
-        pr = m.fit(df.mapVars("TV,Radio,Sales"), "Sales").predict(df).firstPrediction().dv();
-
-//        assertTrue(DVector.wrap(pred.classes()).deepEquals(pr, TOL));
+        pred = m.fit(df.mapVars("TV,Radio,Sales"), "Sales").predict(df, true);
+//        pred.printSummary();
+        assertTrue(pred.firstRSquare() > 0.95);
 
         // nu regression without probabilities
 
         m = new SvmRegression()
                 .type.set(SvmRegression.Penalty.NU)
-                .nu.set(0.1)
+                .nu.set(0.5)
                 .probability.set(false)
                 .kernel.set(new RBFKernel(0.001))
                 .seed.set(42L);
 
-        pr = m.fit(df.mapVars("TV,Radio,Sales"), "Sales").predict(df).firstPrediction().dv();
-
-//        assertTrue(DVector.wrap(pred.classes()).deepEquals(pr, TOL));
+        pred = m.fit(df.mapVars("TV,Radio,Sales"), "Sales").predict(df, true);
+//        pred.printSummary();
+        assertTrue(pred.firstRSquare() > 0.95);
 
 
         // nu regression with probabilities
 
         m = new SvmRegression()
                 .type.set(SvmRegression.Penalty.NU)
-                .nu.set(0.1)
+                .nu.set(0.5)
                 .probability.set(true)
                 .kernel.set(new RBFKernel(0.001))
                 .seed.set(42L);
 
-        pr = m.fit(df.mapVars("TV,Radio,Sales"), "Sales").predict(df).firstPrediction().dv();
-
-//        assertTrue(DVector.wrap(pred.classes()).deepEquals(pr, TOL));
+        pred = m.fit(df.mapVars("TV,Radio,Sales"), "Sales").predict(df, true);
+//        pred.printSummary();
+        assertTrue(pred.firstRSquare() > 0.95);
     }
 }

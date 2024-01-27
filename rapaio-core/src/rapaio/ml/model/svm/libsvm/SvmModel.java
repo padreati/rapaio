@@ -34,13 +34,14 @@ package rapaio.ml.model.svm.libsvm;
 import java.io.Serializable;
 
 import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 public class SvmModel implements Serializable {
 
     public SvmParameter param;    // parameter
     public int nr_class;        // number of classes, = 2 in regression/one class svm
     public int l;            // total #SV
-    public DVector[] SV;    // SVs (SV[l])
+    public Tensor<Double>[] SV;    // SVs (SV[l])
     public double[][] svCoef;    // coefficients for SVs in decision functions (sv_coef[k-1][l])
     public double[] rho;        // constants in decision functions (rho[k*(k-1)/2])
     public double[] probA;         // pariwise probability information
