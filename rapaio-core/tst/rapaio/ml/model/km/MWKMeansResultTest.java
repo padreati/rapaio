@@ -40,7 +40,7 @@ public class MWKMeansResultTest {
         Frame iris = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
         iris = iris.fapply(Jitter.on(new Random(42), 1, VarRange.all()));
 
-        double p = 3;
+        int p = 3;
         MWKMeans model = MWKMeans.newMWKMeans()
                 .subspace.set(true)
                 .k.set(3)

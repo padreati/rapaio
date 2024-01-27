@@ -421,6 +421,14 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      */
     Tensor<N> take(Order order, int axis, int... indices);
 
+    default Tensor<N> takesq(int axis, int... indices) {
+        return takesq(Order.defaultOrder(), axis, indices);
+    }
+
+    default Tensor<N> takesq(Order order, int axis, int... indices) {
+        return take(order, axis, indices).squeeze(axis);
+    }
+
     default Tensor<N> sort(int dim, boolean asc) {
         return sort(Order.defaultOrder(), dim, asc);
     }
@@ -1009,6 +1017,12 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> nanProd(Order order, int axis);
 
+    default int argmax() {
+        return argmax(Order.defaultOrder());
+    }
+
+    int argmax(Order order);
+
     N max();
 
     default Tensor<N> max(int axis) {
@@ -1024,6 +1038,12 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     Tensor<N> nanMax(Order order, int axis);
+
+    default int argmin() {
+        return argmin(Order.defaultOrder());
+    }
+
+    int argmin(Order order);
 
     N min();
 

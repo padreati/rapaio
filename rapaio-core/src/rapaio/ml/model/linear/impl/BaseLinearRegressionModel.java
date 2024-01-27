@@ -65,11 +65,11 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
     protected Tensor<Double> beta;
 
     public Tensor<Double> firstCoefficients() {
-        return beta.take(1, 0).squeeze(1);
+        return beta.takesq(1, 0);
     }
 
     public Tensor<Double> getCoefficients(int targetIndex) {
-        return beta.take(1, targetIndex).squeeze(1);
+        return beta.takesq(1, targetIndex);
     }
 
     public Tensor<Double> getAllCoefficients() {
@@ -146,7 +146,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
             String targetName = targetNames[i];
             sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
             sb.append("> Coefficients: \n");
-            Tensor<Double> coeff = beta.take(1, i).squeeze(1);
+            Tensor<Double> coeff = beta.takesq(1, i);
 
             TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
             tt.textCenter(0, 0, "Name");

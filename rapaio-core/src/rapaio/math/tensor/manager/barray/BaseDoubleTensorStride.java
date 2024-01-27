@@ -802,7 +802,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
             Tensor<Double> row = take(0, k).squeeze(0).sub(mean);
             for (int i = 0; i < row.size(); i++) {
                 for (int j = 0; j < row.size(); j++) {
-                    scatter.incDouble((double)(row.getDouble(i) * row.getDouble(j)), i, j);
+                    scatter.incDouble((double) (row.getDouble(i) * row.getDouble(j)), i, j);
                 }
             }
         }
@@ -970,6 +970,26 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     @Override
+    public int argmax(Order order) {
+        int argmax = -1;
+        double argvalue = TensorAssociativeOp.MAX.initialDouble();
+        var i = 0;
+        var it = loopIterator(order);
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int j = 0; j < loop.size; j++) {
+                double value = ptrGet(offset + j * loop.step);
+                if (value > argvalue) {
+                    argvalue = value;
+                    argmax = i;
+                }
+                i++;
+            }
+        }
+        return argmax;
+    }
+
+    @Override
     public Double max() {
         return associativeOp(TensorAssociativeOp.MAX);
     }
@@ -987,6 +1007,26 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     @Override
     public Tensor<Double> nanMax(Order order, int axis) {
         return nanAssociativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
+    }
+
+    @Override
+    public int argmin(Order order) {
+        int argmin = -1;
+        double argvalue = TensorAssociativeOp.MIN.initialDouble();
+        var i = 0;
+        var it = loopIterator(order);
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int j = 0; j < loop.size; j++) {
+                double value = ptrGet(offset + j * loop.step);
+                if (value < argvalue) {
+                    argvalue = value;
+                    argmin = i;
+                }
+                i++;
+            }
+        }
+        return argmin;
     }
 
     @Override

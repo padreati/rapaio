@@ -38,7 +38,7 @@ import java.util.Random;
 import java.util.Set;
 
 import rapaio.core.SamplingTools;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.distance.Distance;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
@@ -46,37 +46,38 @@ import rapaio.util.collection.IntArrays;
 /**
  * Function which produces initial centroids for KMeans algorithm
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/23/15.
  */
 public enum KMClusterInit implements Serializable {
 
     Forgy {
-        public DMatrix init(Random random, Distance distance, DMatrix m, int k) {
-            return m.mapRowsNew(SamplingTools.sampleWOR(random, m.rows(), k));
+        public Tensor<Double> init(Random random, Distance distance, Tensor<Double> m, int k) {
+            return m.take(0, SamplingTools.sampleWOR(random, m.dim(0), k));
         }
     },
     PlusPlus {
         @Override
-        public DMatrix init(final Random random, Distance distance, DMatrix m, int k) {
+        public Tensor<Double> init(final Random random, Distance distance, Tensor<Double> m, int k) {
 
             int[] centroids = IntArrays.newFill(k, -1);
 
-            centroids[0] = random.nextInt(m.rows());
+            centroids[0] = random.nextInt(m.dim(0));
             Set<Integer> ids = new HashSet<>();
             ids.add(centroids[0]);
 
-            double[] p = new double[m.rows()];
+            double[] p = new double[m.dim(0)];
             for (int i = 1; i < k; i++) {
                 // fill weights with 0
                 Arrays.fill(p, 0);
                 // assign weights to the minimum distance to center
-                for (int j = 0; j < m.rows(); j++) {
+                for (int j = 0; j < m.dim(0); j++) {
                     if (ids.contains(j)) {
                         continue;
                     }
-                    p[j] = distance.compute(m.mapRow(centroids[0]), m.mapRow(j));
+                    p[j] = distance.compute(m.takesq(0, centroids[0]), m.takesq(0, j));
                     for (int l = 1; l < i; l++) {
-                        p[j] = Math.min(p[j], distance.compute(m.mapRow(centroids[l]), m.mapRow(j)));
+                        p[j] = Math.min(p[j], distance.compute(m.takesq(0, centroids[l]), m.takesq(0, j)));
                     }
                 }
                 // normalize the weights
@@ -88,9 +89,9 @@ public enum KMClusterInit implements Serializable {
                 ids.add(next);
             }
 
-            return m.mapRowsNew(centroids);
+            return m.take(0, centroids);
         }
     };
 
-    public abstract DMatrix init(Random random, Distance distance, DMatrix m, int k);
+    public abstract Tensor<Double> init(Random random, Distance distance, Tensor<Double> m, int k);
 }

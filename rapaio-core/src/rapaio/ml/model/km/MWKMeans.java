@@ -31,24 +31,26 @@
 
 package rapaio.ml.model.km;
 
-import static java.lang.StrictMath.*;
+import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.pow;
 
 import java.util.Random;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
+import rapaio.core.param.ValueParam;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarType;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.MinkowskiDistance;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Printer;
@@ -57,6 +59,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Minkowsky Weighted KMeans
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/17.
  */
 public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<MWKMeans>> {
@@ -75,7 +78,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     /**
      * Power of Minkowski metric. Value should be greater than 1
      */
-    public final ValueParam<Double, MWKMeans> p = new ValueParam<>(this, 2.0, "p", v -> Double.isFinite(v) && v >= 1);
+    public final ValueParam<Integer, MWKMeans> p = new ValueParam<>(this, 2, "p", v -> v >= 1);
 
     /**
      * Number of restarts when choosing the initial centroids.
@@ -100,8 +103,9 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
 
     // clustering artifacts
 
-    private DMatrix c;
-    private DMatrix weights;
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
+    private Tensor<Double> c;
+    private Tensor<Double> weights;
     private VarDouble errors;
 
     private MWKMeans() {
@@ -124,18 +128,18 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
                 .targets(0, 0, true);
     }
 
-    public double distance(DVector x, DVector y, DVector w, double p) {
-        return pow(error(x, y, w, p), 1 / p);
+    public double distance(Tensor<Double> x, Tensor<Double> y, Tensor<Double> w, int p) {
+        return pow(error(x, y, w, p), 1. / p);
     }
 
-    private double error(DVector x, DVector y, DVector w, double p) {
-        return x.subNew(y).mul(w).apply(v -> pow(abs(v), p)).sum();
+    private double error(Tensor<Double> x, Tensor<Double> y, Tensor<Double> w, int p) {
+        return x.sub(y).mul_(w).apply_(v -> pow(abs(v), p)).sum();
     }
 
-    private DMatrix initializeCentroids(Random random, DMatrix x) {
+    private Tensor<Double> initializeCentroids(Random random, Tensor<Double> x) {
 
         Distance d = new MinkowskiDistance(p.get());
-        DMatrix bestCentroids = init.get().init(random, d, x, k.get());
+        Tensor<Double> bestCentroids = init.get().init(random, d, x, k.get());
         double bestError = computeError(x, bestCentroids);
         LOGGER.fine("Initialization of centroids round 1 computed error: " + bestError);
 
@@ -144,7 +148,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
 
         if (nstart.get() > 1) {
             for (int i = 1; i < nstart.get(); i++) {
-                DMatrix nextCentroids = init.get().init(random, d, x, k.get());
+                Tensor<Double> nextCentroids = init.get().init(random, d, x, k.get());
                 double nextError = computeError(x, nextCentroids);
                 LOGGER.fine("Initialization of centroids, round %d, computed error: %f"
                         .formatted(i + 1, nextError));
@@ -162,13 +166,13 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     public MWKMeans coreFit(Frame df, Var w) {
 
         weights = subspace.get()
-                ? DMatrix.fill(k.get(), inputNames.length, 1.0 / inputNames.length)
-                : DMatrix.fill(1, inputNames.length, 1.0 / inputNames.length);
+                ? tmd.full(Shape.of(k.get(), inputNames.length), 1.0 / inputNames.length)
+                : tmd.full(Shape.of(1, inputNames.length), 1.0 / inputNames.length);
         LOGGER.finer("Initial weights: " + weights);
         errors = VarDouble.empty().name("errors");
 
         // initialize design matrix
-        DMatrix x = DMatrix.copy(df.mapVars(inputNames));
+        Tensor<Double> x = df.mapVars(inputNames).dtNew();
 
         Random random = getRandom();
 
@@ -207,18 +211,18 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     @Override
     public MWKMeansResult corePredict(Frame df, boolean withScores) {
 
-        DMatrix x = DMatrix.copy(df.mapVars(inputNames));
+        Tensor<Double> x = df.mapVars(inputNames).dtNew();
         int[] assign = computeAssignmentAndError(x, false);
 
         return MWKMeansResult.valueOf(this, df, VarInt.wrap(assign));
     }
 
-    private double computeError(DMatrix x, DMatrix centroids) {
-        return IntStream.range(0, x.rows()).parallel().mapToDouble(j -> {
+    private double computeError(Tensor<Double> x, Tensor<Double> centroids) {
+        return IntStream.range(0, x.dim(0)).parallel().mapToDouble(j -> {
             double d = Double.NaN;
-            for (int c = 0; c < centroids.rows(); c++) {
-                DVector w = subspace.get() ? weights.mapRow(c) : weights.mapRow(0);
-                double dd = error(x.mapRow(j), centroids.mapRow(c), w, p.get());
+            for (int c = 0; c < centroids.dim(0); c++) {
+                Tensor<Double> w = subspace.get() ? weights.takesq(0, c) : weights.takesq(0, 0);
+                double dd = error(x.takesq(0, j), centroids.takesq(0, c), w, p.get());
                 d = Double.isNaN(d) ? dd : Math.min(dd, d);
             }
             if (Double.isNaN(d)) {
@@ -228,15 +232,15 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         }).sum();
     }
 
-    private int[] computeAssignmentAndError(DMatrix x, boolean withErrors) {
-        int[] assignment = new int[x.rows()];
+    private int[] computeAssignmentAndError(Tensor<Double> x, boolean withErrors) {
+        int[] assignment = new int[x.dim(0)];
         double totalError = 0.0;
-        for (int i = 0; i < x.rows(); i++) {
+        for (int i = 0; i < x.dim(0); i++) {
             double error = Double.NaN;
             int cluster = -1;
-            for (int j = 0; j < c.rows(); j++) {
-                DVector w = subspace.get() ? weights.mapRow(j) : weights.mapRow(0);
-                double currentError = error(x.mapRow(i), c.mapRow(j), w, p.get());
+            for (int j = 0; j < c.dim(0); j++) {
+                Tensor<Double> w = subspace.get() ? weights.takesq(0, j) : weights.takesq(0, 0);
+                double currentError = error(x.takesq(0, i), c.takesq(0, j), w, p.get());
                 if (!Double.isFinite(currentError)) {
                     continue;
                 }
@@ -278,11 +282,11 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         return set;
     }
 
-    double error(DVector x, double beta, double c) {
-        return x.applyNew(v -> pow(abs(v - c), beta)).sum();
+    double error(Tensor<Double> x, double beta, double c) {
+        return x.apply(v -> pow(abs(v - c), beta)).sum();
     }
 
-    double derivative(DVector x, double beta, double c) {
+    double derivative(Tensor<Double> x, double beta, double c) {
         double value = 0;
         for (int i = 0; i < x.size(); i++) {
             double v = x.get(i);
@@ -295,7 +299,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         return beta * value;
     }
 
-    double findLeft(DVector y, double beta, double c) {
+    double findLeft(Tensor<Double> y, double beta, double c) {
         int left = 0;
         double min = error(y, beta, y.get(left));
         for (int i = 1; i < y.size(); i++) {
@@ -311,7 +315,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         return y.get(left);
     }
 
-    double findRight(DVector y, double beta, double c) {
+    double findRight(Tensor<Double> y, double beta, double c) {
         int right = y.size() - 1;
         double min = error(y, beta, y.get(right));
         for (int i = right - 1; i >= 0; i--) {
@@ -327,8 +331,8 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         return y.get(right);
     }
 
-    double findMinimum(DVector y, double beta) {
-        DVector errors = y.applyNew(v -> error(y, beta, v));
+    double findMinimum(Tensor<Double> y, double beta) {
+        Tensor<Double> errors = y.apply(v -> error(y, beta, v));
         double c0 = y.get(errors.argmin());
         double left = findLeft(y, beta, c0);
         double right = findRight(y, beta, c0);
@@ -356,22 +360,22 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         return c;
     }
 
-    private void recomputeCentroids(DMatrix x, int[] assign) {
+    private void recomputeCentroids(Tensor<Double> x, int[] assign) {
         for (int i = 0; i < k.get(); i++) {
             int[] indexes = computeCentroidIndexes(i, assign);
-            DMatrix xc = x.mapRows(indexes);
-            for (int j = 0; j < x.cols(); j++) {
-                DVector ykj = xc.mapColNew(j);
+            Tensor<Double> xc = x.take(0, indexes);
+            for (int j = 0; j < x.dim(1); j++) {
+                Tensor<Double> ykj = xc.takesq(1, j).copy();
                 if (p.get() > 1) {
-                    c.set(i, j, findMinimum(ykj, p.get()));
+                    c.setDouble(findMinimum(ykj, p.get()), i, j);
                 } else {
-                    c.set(i, j, Quantiles.of(ykj.dv(), 0.5).values()[0]);
+                    c.setDouble(Quantiles.of(ykj.dv(), 0.5).values()[0], i, j);
                 }
             }
         }
     }
 
-    private void weightsUpdate(DMatrix x, int[] assign) {
+    private void weightsUpdate(Tensor<Double> x, int[] assign) {
         if (subspace.get()) {
             subspaceWeightsUpdate(x, assign);
         } else {
@@ -379,51 +383,51 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         }
     }
 
-    private void subspaceWeightsUpdate(DMatrix x, int[] assign) {
-        DMatrix dm = c.mapRows(assign).subNew(x).apply(v -> pow(abs(v), p.get()));
+    private void subspaceWeightsUpdate(Tensor<Double> x, int[] assign) {
+        Tensor<Double> dm = c.take(0, assign).sub(x).apply_(v -> pow(abs(v), p.get()));
 
-        DMatrix dv = DMatrix.empty(k.get(), dm.cols());
-        for (int i = 0; i < dm.rows(); i++) {
-            for (int j = 0; j < dm.cols(); j++) {
-                dv.inc(assign[i], j, dm.get(i, j));
+        Tensor<Double> dv = tmd.zeros(Shape.of(k.get(), dm.dim(1)));
+        for (int i = 0; i < dm.dim(0); i++) {
+            for (int j = 0; j < dm.dim(1); j++) {
+                dv.incDouble(dm.get(i, j), assign[i], j);
             }
         }
         // avoid division by 0
-        dv.apply(v -> max(v, 1e-10));
+        dv.clamp_(1e-10, Double.NaN);
 
-        double invPow = p.get() > 1 ? 1 / (p.get() - 1) : 0;
+        double invPow = p.get() > 1 ? 1. / (p.get() - 1) : 0;
 
-        for (int i = 0; i < dv.rows(); i++) {
-            for (int j = 0; j < dv.cols(); j++) {
+        for (int i = 0; i < dv.dim(0); i++) {
+            for (int j = 0; j < dv.dim(1); j++) {
                 double v = 0;
-                for (int l = 0; l < dv.cols(); l++) {
+                for (int l = 0; l < dv.dim(1); l++) {
                     v += pow(dv.get(i, j) / dv.get(i, l), invPow);
                 }
-                weights.set(i, j, 1 / v);
+                weights.setDouble(1 / v, i, j);
             }
         }
     }
 
-    private void globalWeightsUpdate(DMatrix x, int[] assign) {
-        DVector dv = c.mapRows(assign).subNew(x).apply(v -> pow(abs(v), p.get())).sum(0);
+    private void globalWeightsUpdate(Tensor<Double> x, int[] assign) {
+        Tensor<Double> dv = c.take(0, assign).sub(x).apply_(v -> pow(abs(v), p.get())).sum(0);
         // avoid division by 0
-        dv.apply(v -> max(v, 1e-10));
+        dv.clamp_(1e-10, Double.NaN);
 
-        double invPow = p.get() > 1 ? 1 / (p.get() - 1) : 0;
+        double invPow = p.get() > 1 ? 1. / (p.get() - 1) : 0;
         for (int i = 0; i < dv.size(); i++) {
             double v = 0;
             for (int j = 0; j < dv.size(); j++) {
                 v += pow(dv.get(i) / dv.get(j), invPow);
             }
-            weights.set(0, i, 1 / v);
+            weights.setDouble(1 / v, 0, i);
         }
     }
 
-    public DMatrix getCentroidsMatrix() {
+    public Tensor<Double> getCentroidsMatrix() {
         return c;
     }
 
-    public DMatrix getWeightsMatrix() {
+    public Tensor<Double> getWeightsMatrix() {
         return weights;
     }
 
@@ -448,7 +452,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         if (learned) {
             sb.append("Inertia:").append(getError()).append("\n");
             sb.append("Iterations:").append(errors.size()).append("\n");
-            sb.append("Clusters:").append(c.rows()).append("\n");
+            sb.append("Clusters:").append(c.dim(0)).append("\n");
         }
         return sb.toString();
     }

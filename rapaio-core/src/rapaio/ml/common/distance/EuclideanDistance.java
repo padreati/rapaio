@@ -34,7 +34,7 @@ package rapaio.ml.common.distance;
 import static java.lang.StrictMath.sqrt;
 
 import rapaio.data.Frame;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 public class EuclideanDistance implements Distance {
 
@@ -44,7 +44,7 @@ public class EuclideanDistance implements Distance {
     }
 
     @Override
-    public double compute(DVector x, DVector y) {
+    public double compute(Tensor<Double> x, Tensor<Double> y) {
         return sqrt(reduced(x, y));
     }
 
@@ -54,8 +54,8 @@ public class EuclideanDistance implements Distance {
     }
 
     @Override
-    public double reduced(DVector x, DVector y) {
-        return x.subNew(y).apply(v -> v * v).sum();
+    public double reduced(Tensor<Double> x, Tensor<Double> y) {
+        return x.sub(y).apply_(v -> v * v).sum();
     }
 
     @Override

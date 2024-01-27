@@ -31,9 +31,9 @@
 
 package rapaio.ml.common.distance;
 
-import rapaio.data.Frame;
-import rapaio.math.linear.DVector;
 import rapaio.core.param.ParametricEquals;
+import rapaio.data.Frame;
+import rapaio.math.tensor.Tensor;
 
 /**
  * Interface which describes ways to compute metric distances. The API allows
@@ -53,13 +53,13 @@ public interface Distance extends ParametricEquals<Distance> {
     String name();
 
     /**
-     * Compute distance between two double vectors {@link DVector}.
+     * Compute distance between two double vectors {@link Tensor<Double>}.
      *
      * @param x first parameter
      * @param y second parameter
      * @return computed distance
      */
-    double compute(DVector x, DVector y);
+    double compute(Tensor<Double> x, Tensor<Double> y);
 
     /**
      * Compute distance between two rows from two different data frames.
@@ -73,7 +73,7 @@ public interface Distance extends ParametricEquals<Distance> {
     double compute(Frame df1, int row1, Frame df2, int row2);
 
     /**
-     * Compute reduced distance between two double vectors {@link DVector}.
+     * Compute reduced distance between two double vectors {@link Tensor<Double>}.
      * Reduced distance is a faster way to compute a similar distance which preserves ranks
      * and when the absolute value of the distance is not required, the reduced calculation can be used
      * instead.
@@ -85,7 +85,7 @@ public interface Distance extends ParametricEquals<Distance> {
      * @param y second parameter
      * @return computed reduced distance
      */
-    double reduced(DVector x, DVector y);
+    double reduced(Tensor<Double> x, Tensor<Double> y);
 
     /**
      * Compute reduced distance between two rows from different data frames.

@@ -39,11 +39,13 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.preprocessing.Jitter;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.eval.RandIndex;
+import rapaio.util.collection.DoubleArrays;
 
 public class MWKMeansTest {
 
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private Random random;
 
     @BeforeEach
@@ -56,7 +58,9 @@ public class MWKMeansTest {
         MWKMeans mwk = MWKMeans.newMWKMeans().seed.set(42L);
         for (int t = 0; t < 10; t++) {
 
-            DVector y = DVector.random(1_000, Gamma.of(1, 0.5)).mul(10).sortValues(true);
+            var dist = Gamma.of(1, 0.5);
+            var array = DoubleArrays.newFrom(0, 1_000, i -> dist.sampleNext(random));
+            var y = tmd.stride(array).mul_(10.).sort_(0, true);
             double beta = random.nextDouble() * 10 + 1;
 
             double c = mwk.findMinimum(y, beta);
@@ -79,7 +83,7 @@ public class MWKMeansTest {
         iris = iris.fapply(Jitter.on(new Random(42), 1, VarRange.all()));
         Var target = Datasets.loadIrisDataset().rvar(4);
 
-        double p = 3;
+        int p = 3;
         MWKMeans model = MWKMeans.newMWKMeans()
                 .subspace.set(false)
                 .k.set(3)
@@ -89,8 +93,8 @@ public class MWKMeansTest {
         model.fit(iris);
 
         assertTrue(model.hasLearned());
-        assertEquals(3, model.getCentroidsMatrix().rows());
-        assertEquals(4, model.getCentroidsMatrix().cols());
+        assertEquals(3, model.getCentroidsMatrix().dim(0));
+        assertEquals(4, model.getCentroidsMatrix().dim(1));
 
         MWKMeansResult result = model.predict(iris);
         var prediction = result.assignment();
@@ -104,7 +108,7 @@ public class MWKMeansTest {
         iris = iris.fapply(Jitter.on(random, 1, VarRange.all()));
         Var target = Datasets.loadIrisDataset().rvar(4);
 
-        double p = 3;
+        int p = 3;
         MWKMeans model = MWKMeans.newMWKMeans()
                 .subspace.set(true)
                 .k.set(3)
@@ -113,8 +117,8 @@ public class MWKMeansTest {
         model.fit(iris);
 
         assertTrue(model.hasLearned());
-        assertEquals(3, model.getCentroidsMatrix().rows());
-        assertEquals(4, model.getCentroidsMatrix().cols());
+        assertEquals(3, model.getCentroidsMatrix().dim(0));
+        assertEquals(4, model.getCentroidsMatrix().dim(1));
 
         MWKMeansResult result = model.predict(iris);
         var prediction = result.assignment();
@@ -127,7 +131,7 @@ public class MWKMeansTest {
         Frame iris = Datasets.loadIrisDataset().mapVars(VarRange.onlyTypes(VarType.DOUBLE));
         iris = iris.fapply(Jitter.on(random, 1, VarRange.all()));
 
-        double p = 3;
+        int p = 3;
         MWKMeans model = MWKMeans.newMWKMeans()
                 .subspace.set(true)
                 .k.set(3)
@@ -161,15 +165,13 @@ public class MWKMeansTest {
                 Iterations:10
                 Clusters:3
                 Centroids:
-                                  [0]                [1]                [2]                 [3]\s
-                [0] 5.705461136317303 3.6231194187349014 1.1785683307386638 0.25564309954691256\s
-                [1] 5.986777993511128 3.7180748362391958 5.235773581125203  1.6968020429242028 \s
-                [2] 5.459718618661379 2.5561069767231737 3.7862023884050187 1.0367951120759455 \s
+                [[ 5.705461136317303 3.6231194187349014 1.1785683307386638 0.25564309954691256 ] \s
+                 [ 5.986777993511128 3.7180748362391958 5.235773581125203  1.6968020429242028  ] \s
+                 [ 5.459718618661379 2.5561069767231737 3.7862023884050187 1.0367951120759455  ]]\s
                 Weights:
-                                   [0]                 [1]                 [2]                 [3]\s
-                [0] 0.1769577085353604 0.1859042556649356  0.3325918758872587  0.3045461599124453 \s
-                [1] 0.1773231628415696 0.2709335147002507  0.18741222233232233 0.36433110012585734\s
-                [2] 0.4256811053679402 0.25814780484782507 0.17781752968402195 0.13835356010021277\s
+                [[ 0.1769577085353604 0.1859042556649356  0.3325918758872587  0.3045461599124453  ] \s
+                 [ 0.1773231628415696 0.2709335147002507  0.18741222233232233 0.36433110012585734 ] \s
+                 [ 0.4256811053679402 0.25814780484782507 0.17781752968402195 0.13835356010021277 ]]\s
                 """, model.toFullContent());
     }
 }

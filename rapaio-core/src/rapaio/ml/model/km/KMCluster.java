@@ -38,6 +38,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import rapaio.core.param.ValueParam;
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -47,13 +48,12 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarType;
 import rapaio.data.preprocessing.VarSort;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.EuclideanDistance;
 import rapaio.ml.common.distance.Manhattan;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Printer;
@@ -81,7 +81,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
 
         Distance distance();
 
-        void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment);
+        void recomputeCentroids(int k, Tensor<Double> c, Tensor<Double> instances, int[] assignment);
     }
 
     public static final Method KMeans = new Method() {
@@ -91,17 +91,17 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
             return new EuclideanDistance();
         }
 
-        public void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment) {
+        public void recomputeCentroids(int k, Tensor<Double> c, Tensor<Double> instances, int[] assignment) {
 
             // we compute mean for each feature separately
-            for (int j = 0; j < instances.cols(); j++) {
+            for (int j = 0; j < instances.dim(1); j++) {
                 // collect values for each cluster in mean, for a given input feature
                 Var[] means = IntStream.range(0, k).mapToObj(i -> VarDouble.empty()).toArray(VarDouble[]::new);
-                for (int i = 0; i < instances.rows(); i++) {
+                for (int i = 0; i < instances.dim(0); i++) {
                     means[assignment[i]].addDouble(instances.get(i, j));
                 }
                 for (int i = 0; i < k; i++) {
-                    c.set(i, j, Mean.of(means[i]).value());
+                    c.setDouble(Mean.of(means[i]).value(), i, j);
                 }
             }
         }
@@ -119,18 +119,18 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
             return new Manhattan();
         }
 
-        public void recomputeCentroids(int k, DMatrix c, DMatrix instances, int[] assignment) {
+        public void recomputeCentroids(int k, Tensor<Double> c, Tensor<Double> instances, int[] assignment) {
 
             // we compute mean for each feature separately
-            for (int j = 0; j < instances.cols(); j++) {
+            for (int j = 0; j < instances.dim(1); j++) {
                 // collect values for each cluster in mean, for a given input feature
                 Var[] means = IntStream.range(0, k).mapToObj(i -> VarDouble.empty()).toArray(VarDouble[]::new);
-                for (int i = 0; i < instances.rows(); i++) {
+                for (int i = 0; i < instances.dim(0); i++) {
                     means[assignment[i]].addDouble(instances.get(i, j));
                 }
                 for (int i = 0; i < k; i++) {
                     Var sorted = means[i].fapply(VarSort.ascending());
-                    c.set(i, j, sorted.getDouble(sorted.size() / 2));
+                    c.setDouble(sorted.getDouble(sorted.size() / 2), i, j);
                 }
             }
         }
@@ -169,9 +169,11 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
      */
     public final ValueParam<Double, KMCluster> eps = new ValueParam<>(this, 1e-20, "eps");
 
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
+
     // clustering artifacts
 
-    private DMatrix c;
+    private Tensor<Double> c;
     private Frame centroids;
     private VarDouble errors;
 
@@ -197,7 +199,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         return errors.size() == 0 ? Double.NaN : errors.getDouble(errors.size() - 1);
     }
 
-    public DMatrix getCentroidsMatrix() {
+    public Tensor<Double> getCentroidsMatrix() {
         return c;
     }
 
@@ -212,10 +214,10 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
     public KMCluster coreFit(Frame initialDf, Var weights) {
 
         Random random = getRandom();
-        DMatrix m = DMatrix.copy(initialDf);
+        Tensor<Double> m = initialDf.dtNew();
         c = initializeClusters(random, m);
 
-        int[] assignment = IntArrays.newFill(m.rows(), -1);
+        int[] assignment = IntArrays.newFill(m.dim(0), -1);
         errors = VarDouble.empty().name("errors");
 
         assignToCentroids(m, assignment, true);
@@ -242,15 +244,15 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         return this;
     }
 
-    private DMatrix initializeClusters(Random random, DMatrix m) {
-        DMatrix bestCentroids = init.get().init(random, method.get().distance(), m, k.get());
+    private Tensor<Double> initializeClusters(Random random, Tensor<Double> m) {
+        Tensor<Double> bestCentroids = init.get().init(random, method.get().distance(), m, k.get());
         double bestError = computeInitError(m, bestCentroids);
 
         // compute initial restarts if nstart is greater than 1
         // the best restart is kept as initial centroids
 
         for (int i = 1; i < nstart.get(); i++) {
-            DMatrix nextCentroids = init.get().init(random, method.get().distance(), m, k.get());
+            Tensor<Double> nextCentroids = init.get().init(random, method.get().distance(), m, k.get());
             double nextError = computeInitError(m, nextCentroids);
             if (nextError < bestError) {
                 bestCentroids = nextCentroids;
@@ -260,23 +262,23 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         return bestCentroids;
     }
 
-    private double computeInitError(DMatrix m, DMatrix centroids) {
+    private double computeInitError(Tensor<Double> m, Tensor<Double> centroids) {
         double sum = 0;
-        for (int i = 0; i < m.rows(); i++) {
-            DVector mrow = m.mapRow(i);
+        for (int i = 0; i < m.dim(0); i++) {
+            Tensor<Double> mrow = m.takesq(0, i);
             int cluster = findClosestCentroid(mrow, centroids);
-            sum += method.get().distance().reduced(centroids.mapRow(cluster), mrow);
+            sum += method.get().distance().reduced(centroids.takesq(0, cluster), mrow);
         }
         return sum;
     }
 
-    private void assignToCentroids(DMatrix m, int[] assignment, boolean withErrors) {
+    private void assignToCentroids(Tensor<Double> m, int[] assignment, boolean withErrors) {
         double totalError = 0.0;
-        for (int i = 0; i < m.rows(); i++) {
-            DVector row = m.mapRow(i);
+        for (int i = 0; i < m.dim(0); i++) {
+            Tensor<Double> row = m.takesq(0, i);
             int cluster = findClosestCentroid(row, c);
             if (withErrors) {
-                totalError += method.get().distance().reduced(c.mapRow(cluster), row);
+                totalError += method.get().distance().reduced(c.takesq(0, cluster), row);
             }
             assignment[i] = cluster;
         }
@@ -285,11 +287,11 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         }
     }
 
-    private int findClosestCentroid(DVector mrow, DMatrix centroids) {
+    private int findClosestCentroid(Tensor<Double> mrow, Tensor<Double> centroids) {
         int cluster = 0;
-        double d = method.get().distance().compute(mrow, centroids.mapRow(0));
-        for (int j = 1; j < centroids.rows(); j++) {
-            double dd = method.get().distance().compute(mrow, centroids.mapRow(j));
+        double d = method.get().distance().compute(mrow, centroids.takesq(0, 0));
+        for (int j = 1; j < centroids.dim(0); j++) {
+            double dd = method.get().distance().compute(mrow, centroids.takesq(0, j));
             if (d > dd) {
                 d = dd;
                 cluster = j;
@@ -298,7 +300,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         return cluster;
     }
 
-    private void repairEmptyClusters(Random random, DMatrix df, int[] assignment) {
+    private void repairEmptyClusters(Random random, Tensor<Double> df, int[] assignment) {
         // check for empty clusters, if any is found then
         // select random points to be new clusters, different than
         // existing clusters
@@ -321,12 +323,12 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         while (it.hasNext()) {
             int next = it.next();
             while (true) {
-                int selection = random.nextInt(df.rows());
+                int selection = random.nextInt(df.dim(0));
                 boolean found = false;
 
                 // check if it does not collide with existent valid clusters
 
-                for (int i = 0; i < c.rows(); i++) {
+                for (int i = 0; i < c.dim(0); i++) {
                     if (emptyCentroids.contains(i)) {
                         continue;
                     }
@@ -341,8 +343,8 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
 
                 // we found a valid centroid, it will be assigned
 
-                for (int j = 0; j < c.cols(); j++) {
-                    c.set(next, j, df.get(selection, j));
+                for (int j = 0; j < c.dim(1); j++) {
+                    c.setDouble(df.get(selection, j), next, j);
                 }
                 break;
             }
@@ -360,10 +362,10 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         method.get().recomputeCentroids(k.get(), c, df, assignment);
     }
 
-    private boolean checkIfEqual(DMatrix centroids, int c, DMatrix df, int i) {
+    private boolean checkIfEqual(Tensor<Double> centroids, int c, Tensor<Double> df, int i) {
         int count = 0;
-        for (int j = 0; j < centroids.cols(); j++) {
-            if (centroids.get(c, j) == df.get(i, j)) {
+        for (int j = 0; j < centroids.dim(1); j++) {
+            if (centroids.getDouble(c, j) == df.getDouble(i, j)) {
                 count++;
             }
         }
@@ -373,7 +375,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
     @Override
     public KMClusterResult corePredict(Frame df, boolean withScores) {
         int[] assignment = IntArrays.newFill(df.rowCount(), -1);
-        DMatrix m = DMatrix.copy(df);
+        Tensor<Double> m = df.dtNew();
         assignToCentroids(m, assignment, false);
         return KMClusterResult.valueOf(this, df, VarInt.wrap(assignment));
     }

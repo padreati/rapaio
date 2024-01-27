@@ -34,7 +34,7 @@ package rapaio.ml.common.distance;
 import static rapaio.printer.Format.floatFlex;
 
 import rapaio.data.Frame;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 public class Constant implements Distance {
 
@@ -58,7 +58,7 @@ public class Constant implements Distance {
     }
 
     @Override
-    public double compute(DVector x, DVector y) {
+    public double compute(Tensor<Double> x, Tensor<Double> y) {
         return reduced(x, y);
     }
 
@@ -68,7 +68,7 @@ public class Constant implements Distance {
     }
 
     @Override
-    public double reduced(DVector x, DVector y) {
+    public double reduced(Tensor<Double> x, Tensor<Double> y) {
         return constant;
     }
 

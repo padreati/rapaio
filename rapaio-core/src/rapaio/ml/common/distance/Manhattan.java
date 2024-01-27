@@ -34,7 +34,7 @@ package rapaio.ml.common.distance;
 import static java.lang.StrictMath.abs;
 
 import rapaio.data.Frame;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 public class Manhattan implements Distance {
 
@@ -44,12 +44,8 @@ public class Manhattan implements Distance {
     }
 
     @Override
-    public double compute(DVector x, DVector y) {
-        double distance = 0;
-        for (int i = 0; i < x.size(); i++) {
-            distance += Math.abs(x.get(i) - y.get(i));
-        }
-        return distance;
+    public double compute(Tensor<Double> x, Tensor<Double> y) {
+        return x.sub(y).abs_().sum();
     }
 
     @Override
@@ -63,7 +59,7 @@ public class Manhattan implements Distance {
     }
 
     @Override
-    public double reduced(DVector x, DVector y) {
+    public double reduced(Tensor<Double> x, Tensor<Double> y) {
         return compute(x, y);
     }
 

@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
 
 /**
  * A frame which is not mapped, its values are contained in vectors.
@@ -123,6 +124,20 @@ public class SolidFrame extends AbstractFrame {
         for (int i = 0; i < m.rows(); i++) {
             for (int j = 0; j < m.cols(); j++) {
                 df.setDouble(i, j, m.get(i, j));
+            }
+        }
+        return df;
+    }
+
+    public static Frame matrix(Tensor<Double> m, String... varNames) {
+        return matrix(m, Arrays.asList(varNames));
+    }
+
+    public static Frame matrix(Tensor<Double> m, List<String> varNames) {
+        Frame df = matrix(m.dim(0), varNames);
+        for (int i = 0; i < m.dim(0); i++) {
+            for (int j = 0; j < m.dim(1); j++) {
+                df.setDouble(i, j, m.getDouble(i, j));
             }
         }
         return df;

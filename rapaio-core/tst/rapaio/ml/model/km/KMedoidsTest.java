@@ -23,7 +23,10 @@ package rapaio.ml.model.km;
 
 import static java.lang.Math.abs;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Random;
@@ -41,8 +44,8 @@ import rapaio.data.VarInt;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.common.distance.MinkowskiDistance;
 import rapaio.ml.eval.RandIndex;
@@ -52,6 +55,7 @@ import rapaio.util.collection.DoubleArrays;
 public class KMedoidsTest {
 
     private Random random;
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     @BeforeEach
     void beforeEach() {
@@ -115,27 +119,27 @@ public class KMedoidsTest {
 
     @Test
     void testErrorWithinCluster() {
-        DMatrix x = DMatrix.copy(VarDouble.seq(10));
+        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(10)).dtNew();
 
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
-        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
+        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
         assertEquals(10, km.errorWithinCluster(x, 0, List.of(0, 1, 2, 3, 4), cache));
         assertEquals(0, km.errorWithinCluster(x, 0, null, cache));
     }
 
     @Test
     void computeAssignmentTest() {
-        DMatrix x = DMatrix.copy(VarDouble.from(100, () -> Normal.std().sampleNext(random)));
-        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
+        Tensor<Double> x = SolidFrame.byVars(VarDouble.from(100, () -> Normal.std().sampleNext(random))).dtNew();
+        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
 
-        int imin = x.mapCol(0).argmin();
-        int imax = x.mapCol(0).argmax();
+        int imin = x.takesq(1, 0).argmin();
+        int imax = x.takesq(1, 0).argmax();
         int[] assign = km.computeAssignment(x, new int[] {imin, imax}, cache);
 
-        for (int i = 0; i < x.rows(); i++) {
-            double d1 = cache.get(i, imin, x.mapRow(i), x.mapRow(imin));
-            double d2 = cache.get(i, imax, x.mapRow(i), x.mapRow(imax));
+        for (int i = 0; i < x.dim(0); i++) {
+            double d1 = cache.get(i, imin, x.takesq(0, i), x.takesq(0, imin));
+            double d2 = cache.get(i, imax, x.takesq(0, i), x.takesq(0, imax));
             int iassign = d1 < d2 ? 0 : 1;
             assertEquals(iassign, assign[i]);
         }
@@ -143,9 +147,9 @@ public class KMedoidsTest {
 
     @Test
     void computeErrorTest() {
-        DMatrix x = DMatrix.copy(VarDouble.seq(10));
+        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(10)).dtNew();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
-        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
+        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
         double error = 0;
         for (int i = 0; i < 10; i++) {
@@ -156,25 +160,25 @@ public class KMedoidsTest {
 
     @Test
     void updateNewClosestTest() {
-        DMatrix x = DMatrix.copy(VarDouble.seq(21));
+        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(21)).dtNew();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
-        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
+        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
-        double[] dv = DoubleArrays.newFill(x.rows(), Double.NaN);
-        double[] ev = DoubleArrays.newFill(x.rows(), Double.NaN);
+        double[] dv = DoubleArrays.newFill(x.dim(0), Double.NaN);
+        double[] ev = DoubleArrays.newFill(x.dim(0), Double.NaN);
 
         km.updateNewClosest(x, 0, dv, ev, cache);
 
-        DVector exp1 = x.mapCol(0).copy().sub(x.get(0, 0)).apply(Math::abs);
-        for (int i = 0; i < x.rows(); i++) {
+        Tensor<Double> exp1 = x.takesq(1, 0).copy().sub_(x.get(0, 0)).abs_();
+        for (int i = 0; i < x.dim(0); i++) {
             assertEquals(exp1.get(i), dv[i]);
             assertTrue(Double.isNaN(ev[i]));
         }
 
         km.updateNewClosest(x, 10, dv, ev, cache);
-        for (int i = 0; i < x.rows(); i++) {
-            double d = cache.get(i, 0, x.mapRow(i), x.mapRow(0));
-            double e = cache.get(i, 10, x.mapRow(i), x.mapRow(10));
+        for (int i = 0; i < x.dim(0); i++) {
+            double d = cache.get(i, 0, x.takesq(0, i), x.takesq(0, 0));
+            double e = cache.get(i, 10, x.takesq(0, i), x.takesq(0, 10));
             if (d > e) {
                 double tmp = d;
                 d = e;
@@ -185,11 +189,11 @@ public class KMedoidsTest {
         }
 
         km.updateNewClosest(x, 20, dv, ev, cache);
-        for (int i = 0; i < x.rows(); i++) {
+        for (int i = 0; i < x.dim(0); i++) {
             double[] v = new double[3];
-            v[0] = cache.get(i, 0, x.mapRow(i), x.mapRow(0));
-            v[1] = cache.get(i, 10, x.mapRow(i), x.mapRow(10));
-            v[2] = cache.get(i, 20, x.mapRow(i), x.mapRow(20));
+            v[0] = cache.get(i, 0, x.takesq(0, i), x.takesq(0, 0));
+            v[1] = cache.get(i, 10, x.takesq(0, i), x.takesq(0, 10));
+            v[2] = cache.get(i, 20, x.takesq(0, i), x.takesq(0, 20));
             DoubleArrays.quickSort(v);
             assertEquals(v[0], dv[i]);
             assertEquals(v[1], ev[i]);
@@ -199,20 +203,20 @@ public class KMedoidsTest {
 
     @Test
     void updateAllClosestTest() {
-        DMatrix x = DMatrix.copy(VarDouble.seq(21));
+        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(21)).dtNew();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
-        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
+        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
-        double[] dv = DoubleArrays.newFill(x.rows(), Double.NaN);
-        double[] ev = DoubleArrays.newFill(x.rows(), Double.NaN);
+        double[] dv = DoubleArrays.newFill(x.dim(0), Double.NaN);
+        double[] ev = DoubleArrays.newFill(x.dim(0), Double.NaN);
 
         km.updateAllClosest(x, new int[] {0, 10, 20}, dv, ev, cache);
 
-        for (int i = 0; i < x.rows(); i++) {
+        for (int i = 0; i < x.dim(0); i++) {
             double[] v = new double[3];
-            v[0] = cache.get(i, 0, x.mapRow(i), x.mapRow(0));
-            v[1] = cache.get(i, 10, x.mapRow(i), x.mapRow(10));
-            v[2] = cache.get(i, 20, x.mapRow(i), x.mapRow(20));
+            v[0] = cache.get(i, 0, x.takesq(0, i), x.takesq(0, 0));
+            v[1] = cache.get(i, 10, x.takesq(0, i), x.takesq(0, 10));
+            v[2] = cache.get(i, 20, x.takesq(0, i), x.takesq(0, 20));
             DoubleArrays.quickSort(v);
             assertEquals(v[0], dv[i]);
             assertEquals(v[1], ev[i]);
@@ -222,12 +226,12 @@ public class KMedoidsTest {
     @Test
     void alternateSwapTest() {
 
-        DMatrix x = DVector.wrap(
+        Tensor<Double> x = tmd.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
-        ).asMatrix();
+        ).unsqueeze(1);
         KMedoids km = KMedoids.newAlternateModel(2);
-        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
+        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
         int[] assign = VarInt.from(18, row -> row < 9 ? 0 : 17).elements();
         assertArrayEquals(new int[] {4, 13, 12}, km.alternateSwap(x, new int[] {0, 17, 12}, assign, cache));
@@ -235,41 +239,41 @@ public class KMedoidsTest {
 
     @Test
     void initializePAMTest() {
-        DMatrix x = DVector.wrap(
+        Tensor<Double> x = tmd.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
-        ).asMatrix();
+        ).unsqueeze(1);
         KMedoids km = KMedoids.newAlternateModel(2);
-        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
+        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
-        double[] dv = DoubleArrays.newFill(x.rows(), Double.NaN);
-        double[] ev = DoubleArrays.newFill(x.rows(), Double.NaN);
+        double[] dv = DoubleArrays.newFill(x.dim(0), Double.NaN);
+        double[] ev = DoubleArrays.newFill(x.dim(0), Double.NaN);
         int[] centroids = km.initializePAM(x, dv, ev, cache);
         assertArrayEquals(new int[] {4, 1}, centroids);
     }
 
     @Test
     void peekFirstCentroidTest() {
-        DMatrix x = DVector.wrap(
+        Tensor<Double> x = tmd.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
-        ).asMatrix();
+        ).unsqueeze(1);
         KMedoids km = KMedoids.newAlternateModel(2);
-        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
+        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
         assertEquals(4, km.peekFirstCentroid(x, cache));
     }
 
     @Test
     void peekNextCentroidTest() {
-        DMatrix x = DVector.wrap(
+        Tensor<Double> x = tmd.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
-        ).asMatrix();
+        ).unsqueeze(1);
         KMedoids km = KMedoids.newAlternateModel(2);
-        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.rows(), new Manhattan());
+        KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
-        double[] dv = x.mapCol(0).copy().sub(x.get(4, 0)).apply(Math::abs).dv().elements();
+        double[] dv = x.takesq(1, 0).copy().sub(x.get(4, 0)).apply(Math::abs).dv().elements();
 
         assertEquals(1, km.peekNextCentroid(x, Set.of(4), dv, cache));
     }

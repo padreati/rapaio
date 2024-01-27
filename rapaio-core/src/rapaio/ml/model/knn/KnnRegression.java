@@ -48,10 +48,10 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.math.linear.DVector;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.EuclideanDistance;
@@ -101,7 +101,8 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
      */
     public final ValueParam<Double, KnnRegression> eps = new ValueParam<>(this, 1e-6, "eps");
 
-    private DVector[] instances;
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
+    private Tensor<Double>[] instances;
     private Tensor<Double> target;
 
     @Override
@@ -121,10 +122,10 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
                 .targets(1, 1, false, VarType.DOUBLE, VarType.INT, VarType.LONG, VarType.BINARY);
     }
 
-    private DVector buildInstance(Frame df, int row) {
-        DVector instance = DVector.zeros(inputNames.length);
+    private Tensor<Double> buildInstance(Frame df, int row) {
+        Tensor<Double> instance = tmd.zeros(Shape.of(inputNames.length));
         for (int j = 0; j < inputNames.length; j++) {
-            instance.set(j, df.getDouble(row, inputNames[j]));
+            instance.setDouble(df.getDouble(row, inputNames[j]), j);
         }
         return instance;
     }
@@ -134,7 +135,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         if (df.rowCount() < 2) {
             throw new IllegalArgumentException("Not enough data for regression.");
         }
-        this.instances = new DVector[df.rowCount()];
+        this.instances = new Tensor[df.rowCount()];
         for (int i = 0; i < df.rowCount(); i++) {
             instances[i] = buildInstance(df, i);
         }
@@ -142,7 +143,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         return true;
     }
 
-    private int[] computeTop(DVector[] instances, DVector x, int k) {
+    private int[] computeTop(Tensor<Double>[] instances, Tensor<Double> x, int k) {
         TreeSet<Integer> top = new TreeSet<>((o1, o2) -> {
             double d1 = distance.get().compute(instances[o1], x);
             double d2 = distance.get().compute(instances[o2], x);
@@ -162,7 +163,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         return indexes;
     }
 
-    private Tensor<Double> computeWeights(int[] top, int ref, DVector x) {
+    private Tensor<Double> computeWeights(int[] top, int ref, Tensor<Double> x) {
 
         var d = distance.get();
         Tensor<Double> w = WS.tm().ofDouble().zeros(Shape.of(top.length));
@@ -184,7 +185,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
 
         VarDouble prediction = result.firstPrediction();
         for (int i = 0; i < prediction.size(); i++) {
-            DVector x = buildInstance(df, i);
+            Tensor<Double> x = buildInstance(df, i);
 
             int[] topIndexesEx = computeTop(instances, x, k.get() + 1);
             int[] topIndexes = Arrays.copyOf(topIndexesEx, topIndexesEx.length - 1);
@@ -201,21 +202,11 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
     public enum Kernel {
         INV {
             @Override
-            public DVector transform(DVector d, int k) {
-                return d.applyNew(v -> 1 / v);
-            }
-
-            @Override
             public Tensor<Double> transform(Tensor<Double> d, int k) {
                 return d.apply(v -> 1 / v);
             }
         },
         RECTANGULAR {
-            @Override
-            public DVector transform(DVector d, int k) {
-                return d.applyNew(v -> abs(v) <= 1 ? 0.5 : 0);
-            }
-
             @Override
             public Tensor<Double> transform(Tensor<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? 0.5 : 0);
@@ -223,21 +214,11 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         },
         TRIANGLUAR {
             @Override
-            public DVector transform(DVector d, int k) {
-                return d.applyNew(v -> abs(v) <= 1 ? 1 - v : 0);
-            }
-
-            @Override
             public Tensor<Double> transform(Tensor<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? 1 - v : 0);
             }
         },
         COS {
-            @Override
-            public DVector transform(DVector d, int k) {
-                return d.applyNew(v -> abs(v) <= 1 ? PI * cos(v * HALF_PI) / 4 : 0);
-            }
-
             @Override
             public Tensor<Double> transform(Tensor<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? PI * cos(v * HALF_PI) / 4 : 0);
@@ -245,32 +226,17 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         },
         EPANECHNIKOV {
             @Override
-            public DVector transform(DVector d, int k) {
-                return d.applyNew(v -> abs(v) <= 1 ? 0.75 * (1 - v * v) : 0);
-            }
-
-            @Override
             public Tensor<Double> transform(Tensor<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? 0.75 * (1 - v * v) : 0);
             }
         },
         BIWEIGHT {
             @Override
-            public DVector transform(DVector d, int k) {
-                return d.applyNew(v -> abs(v) <= 1 ? 15 * pow(1 - v * v, 2) / 16 : 0);
-            }
-
-            @Override
             public Tensor<Double> transform(Tensor<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? 15 * pow(1 - v * v, 2) / 16 : 0);
             }
         },
         TRIWEIGHT {
-            @Override
-            public DVector transform(DVector d, int k) {
-                return d.applyNew(v -> abs(v) <= 1 ? 35 * pow(1 - v * v, 3) / 32 : 0);
-            }
-
             @Override
             public Tensor<Double> transform(Tensor<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? 35 * pow(1 - v * v, 3) / 32 : 0);
@@ -281,21 +247,12 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
             private static final Normal normal = Normal.std();
 
             @Override
-            public DVector transform(DVector d, int k) {
-                double alpha = 1.0 / (2 * (k + 1));
-                double qua = abs(normal.quantile(alpha));
-                return d.applyNew(v -> normal.pdf(v * qua));
-            }
-
-            @Override
             public Tensor<Double> transform(Tensor<Double> d, int k) {
                 double alpha = 1.0 / (2 * (k + 1));
                 double qua = abs(normal.quantile(alpha));
                 return d.apply(v -> normal.pdf(v * qua));
             }
         };
-
-        public abstract DVector transform(DVector d, int k);
 
         public abstract Tensor<Double> transform(Tensor<Double> d, int k);
     }

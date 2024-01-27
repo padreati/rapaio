@@ -21,7 +21,9 @@
 
 package rapaio.ml.model.km;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.function.BiFunction;
 
@@ -32,8 +34,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/1/20.
@@ -81,9 +82,9 @@ public class KMClusterTest {
 
         Frame c = clustering.getCentroids().refSort("x");
         assertTrue(c.deepEquals(SolidFrame.byVars(VarDouble.copy(0, 1).name("x"))));
-        DMatrix cc = clustering.getCentroidsMatrix();
-        assertEquals(0, cc.mapCol(0).prod());
-        assertEquals(1, cc.mapCol(0).sum());
+        Tensor<Double> cc = clustering.getCentroidsMatrix();
+        assertEquals(0, cc.takesq(1, 0).prod());
+        assertEquals(1, cc.takesq(1, 0).sum());
 
         assertEquals(2, clustering.getErrors().size());
         assertEquals(0, clustering.getError());
@@ -97,9 +98,9 @@ public class KMClusterTest {
 
         Frame c = clustering.getCentroids().refSort("x");
         assertTrue(c.deepEquals(SolidFrame.byVars(VarDouble.copy(0, 1).name("x"))));
-        DMatrix cc = clustering.getCentroidsMatrix();
-        assertEquals(0, cc.mapCol(0).prod());
-        assertEquals(1, cc.mapCol(0).sum());
+        Tensor<Double> cc = clustering.getCentroidsMatrix();
+        assertEquals(0, cc.takesq(1, 0).prod());
+        assertEquals(1, cc.takesq(1, 0).sum());
 
         assertEquals(2, clustering.getErrors().size());
         assertEquals(0, clustering.getError());
@@ -131,21 +132,21 @@ public class KMClusterTest {
         assertEquals("""
                 KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100,seed=42}
                 Model fitted=true
-                Inertia:8901.768720947213
-                Iterations:3
+                Inertia:8901.290870880382
+                Iterations:9
                 Learned clusters:2
                 """, model.toSummary());
         assertEquals(model.toContent(), model.toSummary());
         assertEquals("""
                 KMCluster{init=PlusPlus,k=2,method=KMeans,nstart=100,runs=100,seed=42}
                 Model fitted=true
-                Inertia:8901.768720947213
-                Iterations:3
+                Inertia:8901.290870880382
+                Iterations:9
                 Learned clusters:2
                 Centroids:
                     eruptions  waiting  \s
-                [0] 4.2979302 80.2848837\s
-                [1] 2.09433   54.75     \s
+                [0] 4.2948012 80.2865497\s
+                [1] 2.0964646 54.7474747\s
                 """, model.toFullContent());
 
     }
@@ -162,19 +163,19 @@ public class KMClusterTest {
         VarInt kmeansAssignment = kmeans.predict(df).assignment();
         VarInt kmediansAssignment = kmedians.predict(df).assignment();
 
-        DMatrix kmeansC = kmeans.getCentroidsMatrix();
-        DMatrix kmediansC = kmedians.getCentroidsMatrix();
+        var kmeansC = kmeans.getCentroidsMatrix();
+        var kmediansC = kmedians.getCentroidsMatrix();
 
-        DMatrix instances = DMatrix.copy(df);
+        Tensor<Double> instances = df.dtNew();
 
-        BiFunction<DVector, DVector, Double> dist = (u, v) -> u.copy().sub(v).apply(x -> x * x).sum();
+        BiFunction<Tensor<Double>, Tensor<Double>, Double> dist = (u, v) -> u.copy().sub_(v).apply_(x -> x * x).sum();
 
         double kmeansErr = 0.0;
         double kmediansErr = 0.0;
 
         for (int i = 0; i < df.rowCount(); i++) {
-            kmeansErr += dist.apply(instances.mapRow(i), kmeansC.mapRow(kmeansAssignment.getInt(i)));
-            kmediansErr += dist.apply(instances.mapRow(i), kmediansC.mapRow(kmediansAssignment.getInt(i)));
+            kmeansErr += dist.apply(instances.takesq(0, i), kmeansC.takesq(0, kmeansAssignment.getInt(i)));
+            kmediansErr += dist.apply(instances.takesq(0, i), kmediansC.takesq(0, kmediansAssignment.getInt(i)));
         }
         // the errors are a little bit different, under one percent
         assertTrue(Math.abs(kmeansErr - kmediansErr) / kmediansErr < 0.01);
@@ -194,9 +195,9 @@ public class KMClusterTest {
 
         // on the other hand the centroids are close, small normed distance
         for (int i = 0; i < 2; i++) {
-            double cdist = dist.apply(kmeansC.mapRow(i), kmediansC.mapRow(i));
-            cdist /= Math.sqrt(kmeansC.mapRow(i).norm(2));
-            cdist /= Math.sqrt(kmediansC.mapRow(i).norm(2));
+            double cdist = dist.apply(kmeansC.takesq(0, i), kmediansC.takesq(0, i));
+            cdist /= Math.sqrt(kmeansC.takesq(0, i).norm(2));
+            cdist /= Math.sqrt(kmediansC.takesq(0, i).norm(2));
             assertTrue(cdist < 0.02);
         }
     }
@@ -219,16 +220,16 @@ public class KMClusterTest {
         assertEquals("""
                 Overall errors:\s
                 > count: 272
-                > mean: 32.7270909
-                > var: 1,622.7494621
-                > sd: 40.2833646
-                > inertia/error:8,901.7687209
-                > iterations:4
+                > mean: 32.7273288
+                > var: 1,621.0637918
+                > sd: 40.2624365
+                > inertia/error:8,890.7628278
+                > iterations:10
                                 
                 Per cluster:\s
                     ID count    mean         var      var/total     sd    \s
-                [0]  2   172 31.6604119 1,763.2348144 1.0865724 41.9908897\s
-                [1]  1   100 34.5617787 1,391.1074822 0.8572534 37.2975533\s
+                [0]  2   172 31.6607834 1,760.3732065 1.085937  41.9568017\s
+                [1]  1   100 34.5617867 1,391.437297  0.8583483 37.3019744\s
                 """, result.toSummary());
 
         assertEquals(result.toSummary(), result.toContent());

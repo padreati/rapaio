@@ -34,7 +34,7 @@ package rapaio.ml.common.distance;
 import static java.lang.StrictMath.pow;
 
 import rapaio.data.Frame;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 public class MinkowskiDistance implements Distance {
 
@@ -50,7 +50,7 @@ public class MinkowskiDistance implements Distance {
     }
 
     @Override
-    public double compute(DVector x, DVector y) {
+    public double compute(Tensor<Double> x, Tensor<Double> y) {
         return pow(reduced(x, y), 1 / p);
     }
 
@@ -60,8 +60,8 @@ public class MinkowskiDistance implements Distance {
     }
 
     @Override
-    public double reduced(DVector x, DVector y) {
-        return x.subNew(y).apply(v -> pow(v, p)).sum();
+    public double reduced(Tensor<Double> x, Tensor<Double> y) {
+        return x.sub(y).apply_(v -> pow(v, p)).sum();
     }
 
     @Override

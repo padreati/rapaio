@@ -802,7 +802,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
             Tensor<Byte> row = take(0, k).squeeze(0).sub(mean);
             for (int i = 0; i < row.size(); i++) {
                 for (int j = 0; j < row.size(); j++) {
-                    scatter.incByte((byte)(row.getByte(i) * row.getByte(j)), i, j);
+                    scatter.incByte((byte) (row.getByte(i) * row.getByte(j)), i, j);
                 }
             }
         }
@@ -970,6 +970,26 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     @Override
+    public int argmax(Order order) {
+        int argmax = -1;
+        byte argvalue = TensorAssociativeOp.MAX.initialByte();
+        var i = 0;
+        var it = loopIterator(order);
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int j = 0; j < loop.size; j++) {
+                byte value = ptrGet(offset + j * loop.step);
+                if (value > argvalue) {
+                    argvalue = value;
+                    argmax = i;
+                }
+                i++;
+            }
+        }
+        return argmax;
+    }
+
+    @Override
     public Byte max() {
         return associativeOp(TensorAssociativeOp.MAX);
     }
@@ -987,6 +1007,26 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     @Override
     public Tensor<Byte> nanMax(Order order, int axis) {
         return nanAssociativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
+    }
+
+    @Override
+    public int argmin(Order order) {
+        int argmin = -1;
+        byte argvalue = TensorAssociativeOp.MIN.initialByte();
+        var i = 0;
+        var it = loopIterator(order);
+        while (it.hasNext()) {
+            int offset = it.next();
+            for (int j = 0; j < loop.size; j++) {
+                byte value = ptrGet(offset + j * loop.step);
+                if (value < argvalue) {
+                    argvalue = value;
+                    argmin = i;
+                }
+                i++;
+            }
+        }
+        return argmin;
     }
 
     @Override
