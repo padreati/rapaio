@@ -22,7 +22,9 @@
 package rapaio.ml.analysis;
 
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Random;
 
@@ -34,7 +36,8 @@ import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.model.ensemble.CForest;
 
@@ -46,6 +49,7 @@ import rapaio.ml.model.ensemble.CForest;
 public class PCATest {
 
     private static final double TOL = 1e-8;
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private static Frame df;
 
     private Random random;
@@ -68,8 +72,7 @@ public class PCATest {
         PCA pca = PCA.newModel().center.set(true);
         pca.fit(df);
 
-        assertArrayEquals(new double[] {1.67100943, 0.83832597, 0.68195393},
-                pca.getValues().valueStream().toArray(), TOL);
+        assertTrue(tmd.stride(1.67100943, 0.83832597, 0.68195393).deepEquals(pca.getValues(), TOL));
 
         double[][] eigenvectors = new double[][] {
                 {-0.49210223, -0.64670286, 0.58276136},
@@ -101,9 +104,9 @@ public class PCATest {
             assertNotEquals(out1.getDouble(0, i), out2.getDouble(0, i));
         }
 
-        DMatrix xx = DMatrix.copy(df);
+        Tensor<Double> xx = df.dtNew();
         assertTrue(xx.mean(0).deepEquals(pca1.getMean()));
-        assertTrue(xx.sd(0).deepEquals(pca1.getSd()));
+        assertTrue(xx.std(0).deepEquals(pca1.getStd()));
     }
 
     @Test
@@ -142,15 +145,14 @@ public class PCATest {
                 =================
                 input shape: rows=40, vars=3
                 eigen values:
-                [0] 1.6710094305325662\s
-                [1] 0.8383259734162226\s
-                [2] 0.6819539303101686\s
+                [[ 1.6710094305325662 ] \s
+                 [ 0.8383259734162228 ] \s
+                 [ 0.6819539303101686 ]]\s
                                 
                 eigen vectors:
-                                   [0]                 [1]                  [2]\s
-                [0] 0.4921022293062838 -0.6467028606590822 -0.582761362761075  \s
-                [1] 0.4792790249461415 -0.3575693744632702  0.8015209034657932 \s
-                [2] 0.726723477093221   0.6737355211515162 -0.13399043018153664\s
+                [[ 0.49210222930628367 -0.6467028606590824 -0.5827613627610749 ] \s
+                 [ 0.4792790249461414  -0.35756937446327    0.8015209034657933 ] \s
+                 [ 0.726723477093221    0.673735521151516  -0.1339904301815368 ]]\s
                                 
                 """, pca.toSummary());
         assertEquals(pca.toSummary(), pca.toContent());

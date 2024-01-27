@@ -34,6 +34,7 @@ package rapaio.math.tensor;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import rapaio.data.VarDouble;
 import rapaio.math.tensor.iterators.LoopIterator;
@@ -548,6 +549,12 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      */
     Iterator<N> iterator(Order askOrder);
 
+    default Stream<N> stream() {
+        return stream(Order.defaultOrder());
+    }
+
+    Stream<N> stream(Order order);
+
     /**
      * Produces an iterator of data pointer values in the storage order.
      *
@@ -790,6 +797,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> tanh_();
 
+
     default Tensor<N> add(Tensor<N> tensor) {
         return add(tensor, Order.defaultOrder());
     }
@@ -803,6 +811,22 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> add_(Tensor<N> tensor);
 
+    default Tensor<N> badd(int axis, Tensor<N> tensor) {
+        return badd(axis, tensor, Order.defaultOrder());
+    }
+
+    default Tensor<N> badd(int axis, Tensor<N> tensor, Order order) {
+        if (isScalar()) {
+            return tensor.copy(order).add_(get());
+        }
+        return copy(order).badd_(axis, tensor);
+    }
+
+    default Tensor<N> badd_(int axis, Tensor<N> tensor) {
+        return add_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+    }
+
+
     default Tensor<N> sub(Tensor<N> tensor) {
         return sub(tensor, Order.defaultOrder());
     }
@@ -815,6 +839,21 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     Tensor<N> sub_(Tensor<N> tensor);
+
+    default Tensor<N> bsub(int axis, Tensor<N> tensor) {
+        return bsub(axis, tensor, Order.defaultOrder());
+    }
+
+    default Tensor<N> bsub(int axis, Tensor<N> tensor, Order order) {
+        if (isScalar()) {
+            return tensor.copy(order).sub_(get());
+        }
+        return copy(order).bsub_(axis, tensor);
+    }
+
+    default Tensor<N> bsub_(int axis, Tensor<N> tensor) {
+        return sub_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+    }
 
     default Tensor<N> mul(Tensor<N> tensor) {
         return mul(tensor, Order.defaultOrder());
@@ -856,6 +895,21 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     Tensor<N> div_(Tensor<N> tensor);
+
+    default Tensor<N> bdiv(int axis, Tensor<N> tensor) {
+        return bdiv(axis, tensor, Order.defaultOrder());
+    }
+
+    default Tensor<N> bdiv(int axis, Tensor<N> tensor, Order order) {
+        if (isScalar()) {
+            return tensor.copy(order).div_(get());
+        }
+        return copy(order).bdiv_(axis, tensor);
+    }
+
+    default Tensor<N> bdiv_(int axis, Tensor<N> tensor) {
+        return div_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+    }
 
     default Tensor<N> add(N value) {
         return add(value, Order.defaultOrder());
@@ -983,7 +1037,57 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     N norm(int p);
 
+    default Tensor<N> normalize(int p) {
+        return copy(Order.defaultOrder()).normalize_(p);
+    }
+
+    default Tensor<N> normalize(Order order, int p) {
+        return copy(order).normalize_(p);
+    }
+
+    Tensor<N> normalize_(int p);
+
     Statistics<N> stats();
+
+    N mean();
+
+    default Tensor<N> mean(int axis) {
+        return mean(Order.defaultOrder(), axis);
+    }
+
+    Tensor<N> mean(Order order, int axis);
+
+    N std();
+
+    default Tensor<N> std(int axis) {
+        return std(Order.defaultOrder(), axis);
+    }
+
+    Tensor<N> std(Order order, int axis);
+
+    N stdc(int ddof);
+
+    default Tensor<N> stdc(int axis, int ddof) {
+        return stdc(Order.defaultOrder(), axis, ddof);
+    }
+
+    Tensor<N> stdc(Order order, int axis, int ddof);
+
+    N var();
+
+    default Tensor<N> var(int axis) {
+        return var(Order.defaultOrder(), axis);
+    }
+
+    Tensor<N> var(Order order, int axis);
+
+    N varc(int ddof);
+
+    default Tensor<N> varc(int axis, int ddof) {
+        return varc(Order.defaultOrder(), axis, ddof);
+    }
+
+    Tensor<N> varc(Order order, int axis, int ddof);
 
     N sum();
 

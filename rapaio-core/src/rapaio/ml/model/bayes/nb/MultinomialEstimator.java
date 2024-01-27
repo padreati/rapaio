@@ -34,7 +34,7 @@ package rapaio.ml.model.bayes.nb;
 import static java.lang.Math.exp;
 import static java.lang.Math.log;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MathTools.lnGamma;
 
 import java.io.Serial;
 import java.util.Arrays;
@@ -49,7 +49,9 @@ import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.printer.Format;
 
 /**
@@ -97,12 +99,13 @@ public class MultinomialEstimator extends AbstractEstimator {
 
     @Serial
     private static final long serialVersionUID = -3469344351162271991L;
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     public static final double eps = 1e-300; // minimum value to avoid NaN
     public static final double DEFAULT_LAPLACE = 1e-5; // small empirical value
 
     private final double laplaceSmoother;
     private List<String> targetLevels;
-    private Map<String, DVector> densityMap;
+    private Map<String, Tensor<Double>> densityMap;
 
     private MultinomialEstimator(double laplaceSmoother, List<String> testNames) {
         super(testNames);
@@ -131,13 +134,11 @@ public class MultinomialEstimator extends AbstractEstimator {
         if (targetLevels == null) {
             return name();
         }
-        return "Multinomial{laplaceSmoother=" + Format.floatFlexLong(laplaceSmoother) + ", "
-                + "tests=[" + String.join(",", getTestNames()) + "],"
-                + "distributions=[" + targetLevels.stream()
+        return STR."Multinomial{laplaceSmoother=\{Format.floatFlexLong(laplaceSmoother)}, tests=[\{String.join(",",
+                getTestNames())}],distributions=[\{targetLevels.stream()
                 .map(targetLevel -> targetLevel + ":[" + densityMap.get(targetLevel)
-                        .valueStream().mapToObj(Format::floatFlexLong).collect(Collectors.joining(",")) + "]")
-                .collect(Collectors.joining(","))
-                + "]}";
+                        .stream().map(Format::floatFlexLong).collect(Collectors.joining(",")) + "]")
+                .collect(Collectors.joining(","))}]}";
     }
 
     @Override
@@ -169,7 +170,7 @@ public class MultinomialEstimator extends AbstractEstimator {
         densityMap = new HashMap<>();
         countDensities.forEach((level, density) -> {
             // add normalized densities to prediction map
-            densityMap.put(level, DVector.wrapAt(0, density.index().size(), density.normalize().streamValues().toArray()));
+            densityMap.put(level, tmd.stride(density.normalize().streamValues().toArray()));
         });
 
         return false;
@@ -199,9 +200,9 @@ public class MultinomialEstimator extends AbstractEstimator {
 
         // build count vector
         List<String> testNames = getTestNames();
-        DVector x = DVector.zeros(testNames.size());
+        Tensor<Double> x = tmd.zeros(Shape.of(testNames.size()));
         for (int i = 0; i < testNames.size(); i++) {
-            x.set(i, df.getDouble(row, testNames.get(i)));
+            x.setDouble(df.getDouble(row, testNames.get(i)), i);
         }
 
         // compute multinomial log pmf using gamma

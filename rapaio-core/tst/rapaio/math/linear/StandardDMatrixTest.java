@@ -448,19 +448,6 @@ public abstract class StandardDMatrixTest {
     }
 
     @Test
-    void testRank() {
-
-        assertEquals(1, generateFill(10, 10, 1).rank());
-        assertEquals(2, generateSequential(7, 3).rank());
-        assertEquals(1, generateSequential(2, 1).rank());
-        assertEquals(3, generateCopy(new double[][] {
-                {1, 1, 1},
-                {1, 2, 4},
-                {3, 2, 1}
-        }).rank());
-    }
-
-    @Test
     void maxValues() {
         var m = generateCopy(new double[][] {
                 {1, 2, 3, 4},

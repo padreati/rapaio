@@ -490,16 +490,6 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     /**
-     * Computes the rank of the matrix.
-     *
-     * @return effective numerical rank, obtained from SVD.
-     */
-    @Override
-    public int rank() {
-        return svd().rank();
-    }
-
-    /**
      * Builds a vector containing elements from the main diagonal.
      */
     @Override

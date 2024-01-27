@@ -50,6 +50,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import rapaio.math.tensor.DType;
@@ -380,6 +381,11 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     public Iterator<Byte> iterator(Order askOrder) {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
                 .map(storage::getByte).iterator();
+    }
+
+    @Override
+    public Stream<Byte> stream(Order order) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(order), Spliterator.ORDERED), false);
     }
 
     @Override
@@ -860,6 +866,157 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
             }
         }
         return (byte) Math.pow(sum, 1. / pow);
+    }
+
+    @Override
+    public Tensor<Byte> normalize_(int p) {
+        return div_(norm(p));
+    }
+
+    private Tensor<Byte> alongAxisOperation(Order order, int axis, Function<Tensor<Byte>, Byte> op) {
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        Tensor<Byte> res = engine.ofByte().zeros(Shape.of(newDims), Order.autoFC(order));
+        var resIt = res.ptrIterator(Order.C);
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+        while (it.hasNext()) {
+            int ptr = it.nextInt();
+            var stride = engine.ofByte().stride(StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
+            res.ptrSet(resIt.next(), op.apply(stride));
+        }
+        return res;
+    }
+
+    @Override
+    public Byte mean() {
+        if (!dtype().isFloatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        int size = size();
+        // first pass compute raw mean
+        byte sum = 0;
+        for (int off : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += storage.getByte(off + i * loop.step);
+            }
+        }
+        byte mean = (byte) (sum / size);
+        // second pass adjustments for mean
+        sum = 0;
+        for (int off : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += (byte) (storage.getByte(off + i * loop.step) - mean);
+            }
+        }
+        return (byte) (mean + sum / size);
+    }
+
+    @Override
+    public Tensor<Byte> mean(Order order, int axis) {
+        return alongAxisOperation(order, axis, Tensor::mean);
+    }
+
+    @Override
+    public Byte std() {
+        return (byte) Math.sqrt(var());
+    }
+
+    @Override
+    public Tensor<Byte> std(Order order, int axis) {
+        return alongAxisOperation(order, axis, Tensor::std);
+    }
+
+    @Override
+    public Byte stdc(int ddof) {
+        return (byte) Math.sqrt(varc(ddof));
+    }
+
+    @Override
+    public Tensor<Byte> stdc(Order order, int axis, int ddof) {
+        return alongAxisOperation(order, axis, t -> stdc(ddof));
+    }
+
+    @Override
+    public Byte var() {
+        if (!dtype().isFloatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        int size = size();
+        // first pass compute raw mean
+        byte sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += storage.getByte(offset + i * loop.step);
+            }
+        }
+        byte mean = (byte) (sum / size);
+        // second pass adjustments for mean
+        sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += (byte) (storage.getByte(offset + i * loop.step) - mean);
+            }
+        }
+        mean += (byte) (sum / size);
+        // third pass compute variance
+        byte sum2 = 0;
+        byte sum3 = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum2 += (byte) ((storage.getByte(p) - mean) * (storage.getByte(p) - mean));
+                sum3 += (byte) (storage.getByte(p) - mean);
+            }
+        }
+        return (byte) ((sum2 - (sum3 * sum3) / size) / size);
+    }
+
+    @Override
+    public Tensor<Byte> var(Order order, int axis) {
+        return alongAxisOperation(order, axis, Tensor::var);
+    }
+
+    @Override
+    public Byte varc(int ddof) {
+        if (!dtype().isFloatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        int size = size();
+        // first pass compute raw mean
+        byte sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += storage.getByte(offset + i * loop.step);
+            }
+        }
+        byte mean = (byte) (sum / size);
+        // second pass adjustments for mean
+        sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += (byte) (storage.getByte(offset + i * loop.step) - mean);
+            }
+        }
+        mean += (byte) (sum / size);
+        // third pass compute variance
+        byte sum2 = 0;
+        byte sum3 = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum2 += (byte) ((storage.getByte(p) - mean) * (storage.getByte(p) - mean));
+                sum3 += (byte) (storage.getByte(p) - mean);
+            }
+        }
+        return (byte) ((sum2 - (sum3 * sum3) / (size - ddof)) / (size - ddof));
+    }
+
+    @Override
+    public Tensor<Byte> varc(Order order, int axis, int ddof) {
+        return alongAxisOperation(order, axis, t -> t.varc(ddof));
     }
 
     @Override

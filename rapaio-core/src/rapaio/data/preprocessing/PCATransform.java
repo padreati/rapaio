@@ -36,8 +36,7 @@ import java.util.function.BiFunction;
 
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.analysis.PCA;
 
 /**
@@ -75,9 +74,11 @@ public class PCATransform extends AbstractTransform {
 
     public static PCATransform coverVariance(String prefix, double minPercentage, VarRange varRange) {
         return new PCATransform(prefix, (values, vectors) -> {
-            var coverage = values.copy().cumsum().div(values.sum());
-            for (int i = 0; i < coverage.size(); i++) {
-                if (coverage.get(i) >= minPercentage) {
+            double sum = values.sum();
+            double cumperc = 0.0;
+            for (int i = 0; i < values.size(); i++) {
+                cumperc += values.get(i) / sum;
+                if (cumperc >= minPercentage) {
                     return i + 1;
                 }
             }
@@ -89,10 +90,10 @@ public class PCATransform extends AbstractTransform {
     private static final long serialVersionUID = 2797285371357486124L;
 
     final String prefix;
-    final BiFunction<DVector, DMatrix, Integer> kFun;
+    final BiFunction<Tensor<Double>, Tensor<Double>, Integer> kFun;
     private PCA pca;
 
-    private PCATransform(String prefix, BiFunction<DVector, DMatrix, Integer> kFun, VarRange varRange) {
+    private PCATransform(String prefix, BiFunction<Tensor<Double>, Tensor<Double>, Integer> kFun, VarRange varRange) {
         super(varRange);
         this.prefix = prefix;
         this.kFun = kFun;

@@ -38,14 +38,15 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.common.Capabilities;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.loss.KDevianceLoss;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.model.ClassifierModel;
@@ -84,10 +85,11 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
     public final ValueParam<RTree, GBTClassifierModel> model = new ValueParam<>(this,
             RTree.newCART().maxDepth.set(2).minCount.set(5).loss.set(new L2Loss()), "model");
 
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private int K;
-    private DMatrix f;
-    private DMatrix p;
-    private DMatrix residual;
+    private Tensor<Double> f;
+    private Tensor<Double> p;
+    private Tensor<Double> residual;
 
     private List<List<RTree>> trees;
 
@@ -123,17 +125,17 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         // algorithm described by ESTL pag. 387
 
         K = firstTargetLevels().size() - 1;
-        f = DMatrix.empty(K, df.rowCount());
-        p = DMatrix.empty(K, df.rowCount());
-        residual = DMatrix.empty(K, df.rowCount());
+        f = tmd.zeros(Shape.of(K, df.rowCount()));
+        p = tmd.zeros(Shape.of(K, df.rowCount()));
+        residual = tmd.zeros(Shape.of(K, df.rowCount()));
 
         trees = IntStream.range(0, K).mapToObj(i -> new ArrayList<RTree>()).collect(Collectors.toList());
 
         // build individual regression targets for each class
 
-        final DMatrix yk = DMatrix.fill(K, df.rowCount(), 0.0);
+        final Tensor<Double> yk = tmd.zeros(Shape.of(K, df.rowCount()));
         for (int i = 0; i < df.rowCount(); i++) {
-            yk.set(df.getInt(i, firstTargetName()) - 1, i, 1);
+            yk.setDouble(1, df.getInt(i, firstTargetName()) - 1, i);
         }
 
         for (int m = 0; m < runs.get(); m++) {
@@ -145,11 +147,11 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         return true;
     }
 
-    private void buildAdditionalTree(Random random, Frame df, Var w, DMatrix yk) {
+    private void buildAdditionalTree(Random random, Frame df, Var w, Tensor<Double> yk) {
 
         // a) Set p_k(x)
 
-        DVector max = f.t().max(1);
+        Tensor<Double> max = f.t().max(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
@@ -157,10 +159,10 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
                 sum += Math.exp(f.get(k, i) - max.get(i));
             }
             for (int k = 0; k < K; k++) {
-                p.set(k, i, Math.exp(f.get(k, i) - max.get(i)) / sum);
+                p.setDouble(Math.exp(f.get(k, i) - max.get(i)) / sum, k, i);
             }
         }
-        residual = yk.copy().sub(p);
+        residual = yk.sub(p);
 
         // b)
 
@@ -169,17 +171,17 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
         for (int k = 0; k < K; k++) {
 
-            Var residual_k = residual.mapRow(k).dv().mapRows(sample.mapping()).name("##tt##");
+            Var residual_k = residual.takesq(0, k).dv().mapRows(sample.mapping()).name("##tt##");
 
             var tree = model.get().newInstance();
             tree.fit(sample.df().bindVars(residual_k), sample.weights(), "##tt##");
-            tree.boostUpdate(df, yk.mapRow(k).dv(), p.mapRow(k).dv(), new KDevianceLoss(K));
+            tree.boostUpdate(df, yk.takesq(0, k).dv(), p.takesq(0, k).dv(), new KDevianceLoss(K));
 
             trees.get(k).add(tree);
 
             var prediction = tree.predict(df, false).firstPrediction();
             for (int i = 0; i < df.rowCount(); i++) {
-                f.inc(k, i, shrinkage.get() * prediction.getDouble(i));
+                f.incDouble(shrinkage.get() * prediction.getDouble(i), k, i);
             }
         }
     }
@@ -188,20 +190,20 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
     public ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
 
-        DMatrix p_f = DMatrix.empty(K, df.rowCount());
+        Tensor<Double> p_f = tmd.zeros(Shape.of(K, df.rowCount()));
 
         for (int k = 0; k < K; k++) {
             for (RegressionModel<?, ?, ?> tree : trees.get(k)) {
                 var rr = tree.predict(df, false).firstPrediction();
                 for (int i = 0; i < df.rowCount(); i++) {
-                    p_f.set(k, i, p_f.get(k, i) + shrinkage.get() * rr.getDouble(i));
+                    p_f.setDouble(p_f.get(k, i) + shrinkage.get() * rr.getDouble(i), k, i);
                 }
             }
         }
 
         // make probabilities
 
-        DVector max = p_f.t().max(1);
+        Tensor<Double> max = p_f.t().max(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double t = 0.0;

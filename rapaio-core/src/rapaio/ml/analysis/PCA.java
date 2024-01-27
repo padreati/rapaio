@@ -37,19 +37,18 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import rapaio.core.param.ParamSet;
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-import rapaio.core.param.ParamSet;
-import rapaio.core.param.ValueParam;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
-import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -85,6 +84,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
      */
     public final ValueParam<Boolean, PCA> standardize = new ValueParam<>(this, false, "standardize");
 
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private int inputRows;
     private int inputVars;
     private String[] inputNames;
@@ -92,24 +92,24 @@ public class PCA extends ParamSet<PCA> implements Printable {
     private PCA() {
     }
 
-    protected DVector eigenValues;
-    protected DMatrix eigenVectors;
-    protected DVector mean;
-    protected DVector sd;
+    protected Tensor<Double> eigenValues;
+    protected Tensor<Double> eigenVectors;
+    protected Tensor<Double> mean;
+    protected Tensor<Double> sd;
 
-    public DVector getValues() {
+    public Tensor<Double> getValues() {
         return eigenValues;
     }
 
-    public DMatrix getVectors() {
+    public Tensor<Double> getVectors() {
         return eigenVectors;
     }
 
-    public DVector getMean() {
+    public Tensor<Double> getMean() {
         return mean;
     }
 
-    public DVector getSd() {
+    public Tensor<Double> getStd() {
         return sd;
     }
 
@@ -117,33 +117,32 @@ public class PCA extends ParamSet<PCA> implements Printable {
         preFit(df);
 
         logger.fine("start pca predict");
-        DMatrix x = DMatrix.copy(df);
+        Tensor<Double> x = df.dtNew();
         logger.fine("compute mean, sd and do scaling");
         if (center.get()) {
             mean = x.mean(0);
-            x.sub(mean, 0);
+            x.bsub_(0, mean);
         }
         if (standardize.get()) {
-            sd = x.sd(0);
-            x.div(sd, 0);
+            sd = x.std(0);
+            x.bdiv_(0, sd);
         }
 
         logger.fine("build scatter");
-        DMatrix s = x.scatter();
+        Tensor<Double> s = x.scatter();
 
         logger.fine("compute eigenvalues");
-        var evd = s.evd();
-        eigenValues = evd.real().div(x.rows() - 1);
+        var evd = s.eig();
+        eigenValues = evd.real().div(x.dim(0) - 1.);
         eigenVectors = evd.v();
 
         logger.fine("sort eigen values and vectors");
 
         int[] mapping = IntArrays.newSeq(0, eigenValues.size());
-        DoubleArrays.quickSortIndirect(mapping, eigenValues.valueStream().toArray(), 0, eigenValues.size());
-        IntArrays.reverse(mapping);
+        eigenValues.indirectSort(mapping, false);
 
-        eigenValues = eigenValues.asMatrix().mapRows(mapping).mapCol(0).copy();
-        eigenVectors = eigenVectors.mapCols(mapping).copy();
+        eigenValues = eigenValues.take(0, mapping);
+        eigenVectors = eigenVectors.take(1, mapping);
         return this;
     }
 
@@ -180,13 +179,13 @@ public class PCA extends ParamSet<PCA> implements Printable {
      */
     public Frame transform(String prefix, Frame df, int k) {
 
-        DMatrix x = DMatrix.copy(df.mapVars(inputNames));
+        Tensor<Double> x = df.mapVars(inputNames).dtNew();
 
         if (center.get()) {
-            x.sub(mean, 0);
+            x.bsub_(0, mean);
         }
         if (standardize.get()) {
-            x.div(sd, 0);
+            x.bdiv_(0, sd);
         }
 
         String[] names = new String[k];
@@ -194,7 +193,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
             names[i] = prefix + (i + 1);
         }
 
-        DMatrix result = x.dot(eigenVectors.rangeCols(0, k));
+        Tensor<Double> result = x.mm(eigenVectors.narrow(1, true, 0, k));
 
         Frame rest = df.removeVars(VarRange.of(inputNames));
         Frame prediction = SolidFrame.matrix(result, names);
@@ -215,9 +214,9 @@ public class PCA extends ParamSet<PCA> implements Printable {
                 =================
                 input shape: rows=\{inputRows}, vars=\{inputVars}
                 eigen values:
-                \{eigenValues.toSummary(printer, options)}
+                \{eigenValues.unsqueeze(1).toContent(printer, options)}
                 eigen vectors:
-                \{eigenVectors.toSummary(printer, options)}
+                \{eigenVectors.toContent(printer, options)}
                 """;
     }
 

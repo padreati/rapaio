@@ -40,8 +40,9 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarRange;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 
 /**
  * Builds a random projection of some give numeric features.
@@ -65,10 +66,12 @@ public class RandomProjection extends AbstractTransform {
     @Serial
     private static final long serialVersionUID = -2790372378136065870L;
 
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
+
     private final int k;
     private final Method method;
     private final Random random;
-    private DMatrix rp;
+    private Tensor<Double> rp;
 
     private RandomProjection(Random random, int k, Method method, VarRange varRange) {
         super(varRange);
@@ -86,11 +89,11 @@ public class RandomProjection extends AbstractTransform {
     public void coreFit(Frame df) {
         // build k random projections
 
-        rp = DMatrix.empty(varNames.length, k);
+        rp = tmd.zeros(Shape.of(varNames.length, k));
         for (int i = 0; i < k; i++) {
-            DVector v = method.projection(random, varNames.length);
+            Tensor<Double> v = method.projection(random, varNames.length);
             for (int j = 0; j < varNames.length; j++) {
-                rp.set(j, i, v.get(j));
+                rp.set(v.get(j), j, i);
             }
         }
     }
@@ -98,8 +101,8 @@ public class RandomProjection extends AbstractTransform {
     @Override
     public Frame coreApply(Frame df) {
 
-        DMatrix X = DMatrix.copy(df.mapVars(varNames));
-        DMatrix p = X.dot(rp);
+        Tensor<Double> X = df.mapVars(varNames).dtNew();
+        Tensor<Double> p = X.mm(rp);
 
         Frame non = df.removeVars(VarRange.of(varNames));
         Frame trans = SolidFrame.matrix(p, IntStream.range(1, k + 1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
@@ -107,15 +110,15 @@ public class RandomProjection extends AbstractTransform {
     }
 
     public interface Method {
-        DVector projection(Random random, int rowCount);
+        Tensor<Double> projection(Random random, int rowCount);
     }
 
     private static Method gaussian(int k) {
         return (random, rowCount) -> {
             Normal norm = Normal.std();
-            DVector v = DVector.zeros(rowCount);
+            Tensor<Double> v = tmd.zeros(Shape.of(rowCount));
             for (int i = 0; i < v.size(); i++) {
-                v.set(i, norm.sampleNext(random) / Math.sqrt(k));
+                v.set(norm.sampleNext(random) / Math.sqrt(k), i);
             }
             v.normalize(2);
             return v;
@@ -132,17 +135,17 @@ public class RandomProjection extends AbstractTransform {
 
         return (random, rowCount) -> {
             int[] sample = SamplingTools.sampleWeightedWR(random, rowCount, p);
-            DVector v = DVector.zeros(rowCount);
+            Tensor<Double> v = tmd.zeros(Shape.of(rowCount));
             for (int i = 0; i < sample.length; i++) {
                 if (sample[i] == 0) {
-                    v.set(i, -sqrt);
+                    v.setDouble(-sqrt, i);
                     continue;
                 }
                 if (sample[i] == 1) {
-                    v.set(i, 0);
+                    v.setDouble(0, i);
                     continue;
                 }
-                v.set(i, sqrt);
+                v.setDouble(sqrt, i);
             }
             return v.normalize(2);
         };

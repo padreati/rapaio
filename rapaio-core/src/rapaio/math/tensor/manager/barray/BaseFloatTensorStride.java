@@ -50,6 +50,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import rapaio.math.tensor.DType;
@@ -380,6 +381,11 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     public Iterator<Float> iterator(Order askOrder) {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
                 .map(storage::getFloat).iterator();
+    }
+
+    @Override
+    public Stream<Float> stream(Order order) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(order), Spliterator.ORDERED), false);
     }
 
     @Override
@@ -860,6 +866,157 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
             }
         }
         return (float) Math.pow(sum, 1. / pow);
+    }
+
+    @Override
+    public Tensor<Float> normalize_(int p) {
+        return div_(norm(p));
+    }
+
+    private Tensor<Float> alongAxisOperation(Order order, int axis, Function<Tensor<Float>, Float> op) {
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        Tensor<Float> res = engine.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
+        var resIt = res.ptrIterator(Order.C);
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+        while (it.hasNext()) {
+            int ptr = it.nextInt();
+            var stride = engine.ofFloat().stride(StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
+            res.ptrSet(resIt.next(), op.apply(stride));
+        }
+        return res;
+    }
+
+    @Override
+    public Float mean() {
+        if (!dtype().isFloatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        int size = size();
+        // first pass compute raw mean
+        float sum = 0;
+        for (int off : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += storage.getFloat(off + i * loop.step);
+            }
+        }
+        float mean = (float) (sum / size);
+        // second pass adjustments for mean
+        sum = 0;
+        for (int off : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += (float) (storage.getFloat(off + i * loop.step) - mean);
+            }
+        }
+        return (float) (mean + sum / size);
+    }
+
+    @Override
+    public Tensor<Float> mean(Order order, int axis) {
+        return alongAxisOperation(order, axis, Tensor::mean);
+    }
+
+    @Override
+    public Float std() {
+        return (float) Math.sqrt(var());
+    }
+
+    @Override
+    public Tensor<Float> std(Order order, int axis) {
+        return alongAxisOperation(order, axis, Tensor::std);
+    }
+
+    @Override
+    public Float stdc(int ddof) {
+        return (float) Math.sqrt(varc(ddof));
+    }
+
+    @Override
+    public Tensor<Float> stdc(Order order, int axis, int ddof) {
+        return alongAxisOperation(order, axis, t -> stdc(ddof));
+    }
+
+    @Override
+    public Float var() {
+        if (!dtype().isFloatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        int size = size();
+        // first pass compute raw mean
+        float sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += storage.getFloat(offset + i * loop.step);
+            }
+        }
+        float mean = (float) (sum / size);
+        // second pass adjustments for mean
+        sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += (float) (storage.getFloat(offset + i * loop.step) - mean);
+            }
+        }
+        mean += (float) (sum / size);
+        // third pass compute variance
+        float sum2 = 0;
+        float sum3 = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum2 += (float) ((storage.getFloat(p) - mean) * (storage.getFloat(p) - mean));
+                sum3 += (float) (storage.getFloat(p) - mean);
+            }
+        }
+        return (float) ((sum2 - (sum3 * sum3) / size) / size);
+    }
+
+    @Override
+    public Tensor<Float> var(Order order, int axis) {
+        return alongAxisOperation(order, axis, Tensor::var);
+    }
+
+    @Override
+    public Float varc(int ddof) {
+        if (!dtype().isFloatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        int size = size();
+        // first pass compute raw mean
+        float sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += storage.getFloat(offset + i * loop.step);
+            }
+        }
+        float mean = (float) (sum / size);
+        // second pass adjustments for mean
+        sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += (float) (storage.getFloat(offset + i * loop.step) - mean);
+            }
+        }
+        mean += (float) (sum / size);
+        // third pass compute variance
+        float sum2 = 0;
+        float sum3 = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum2 += (float) ((storage.getFloat(p) - mean) * (storage.getFloat(p) - mean));
+                sum3 += (float) (storage.getFloat(p) - mean);
+            }
+        }
+        return (float) ((sum2 - (sum3 * sum3) / (size - ddof)) / (size - ddof));
+    }
+
+    @Override
+    public Tensor<Float> varc(Order order, int axis, int ddof) {
+        return alongAxisOperation(order, axis, t -> t.varc(ddof));
     }
 
     @Override

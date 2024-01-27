@@ -45,7 +45,6 @@ import rapaio.math.linear.decomposition.DoubleCholeskyDecomposition;
 import rapaio.math.linear.decomposition.DoubleEigenDecomposition;
 import rapaio.math.linear.decomposition.DoubleLUDecomposition;
 import rapaio.math.linear.decomposition.DoubleQRDecomposition;
-import rapaio.math.linear.decomposition.DoubleSVDecomposition;
 import rapaio.math.linear.dense.DMatrixDenseC;
 import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
@@ -1021,13 +1020,6 @@ public interface DMatrix extends Serializable, Printable {
     double trace();
 
     /**
-     * Matrix rank obtained using singular value decomposition.
-     *
-     * @return effective numerical rank, obtained from SVD.
-     */
-    int rank();
-
-    /**
      * Creates an instance of a transposed matrix which is a view over original data, if possible.
      *
      * @return new transposed matrix
@@ -1210,14 +1202,6 @@ public interface DMatrix extends Serializable, Printable {
 
     default DoubleQRDecomposition qr() {
         return new DoubleQRDecomposition(this);
-    }
-
-    default DoubleSVDecomposition svd() {
-        return svd(true, true);
-    }
-
-    default DoubleSVDecomposition svd(boolean wantu, boolean wantv) {
-        return new DoubleSVDecomposition(this, wantu, wantv);
     }
 
     default DoubleEigenDecomposition evd() {

@@ -50,6 +50,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import rapaio.math.tensor.DType;
@@ -380,6 +381,11 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     public Iterator<Double> iterator(Order askOrder) {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
                 .map(storage::getDouble).iterator();
+    }
+
+    @Override
+    public Stream<Double> stream(Order order) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(order), Spliterator.ORDERED), false);
     }
 
     @Override
@@ -860,6 +866,157 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
             }
         }
         return (double) Math.pow(sum, 1. / pow);
+    }
+
+    @Override
+    public Tensor<Double> normalize_(int p) {
+        return div_(norm(p));
+    }
+
+    private Tensor<Double> alongAxisOperation(Order order, int axis, Function<Tensor<Double>, Double> op) {
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        Tensor<Double> res = engine.ofDouble().zeros(Shape.of(newDims), Order.autoFC(order));
+        var resIt = res.ptrIterator(Order.C);
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+        while (it.hasNext()) {
+            int ptr = it.nextInt();
+            var stride = engine.ofDouble().stride(StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
+            res.ptrSet(resIt.next(), op.apply(stride));
+        }
+        return res;
+    }
+
+    @Override
+    public Double mean() {
+        if (!dtype().isFloatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        int size = size();
+        // first pass compute raw mean
+        double sum = 0;
+        for (int off : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += storage.getDouble(off + i * loop.step);
+            }
+        }
+        double mean = (double) (sum / size);
+        // second pass adjustments for mean
+        sum = 0;
+        for (int off : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += (double) (storage.getDouble(off + i * loop.step) - mean);
+            }
+        }
+        return (double) (mean + sum / size);
+    }
+
+    @Override
+    public Tensor<Double> mean(Order order, int axis) {
+        return alongAxisOperation(order, axis, Tensor::mean);
+    }
+
+    @Override
+    public Double std() {
+        return (double) Math.sqrt(var());
+    }
+
+    @Override
+    public Tensor<Double> std(Order order, int axis) {
+        return alongAxisOperation(order, axis, Tensor::std);
+    }
+
+    @Override
+    public Double stdc(int ddof) {
+        return (double) Math.sqrt(varc(ddof));
+    }
+
+    @Override
+    public Tensor<Double> stdc(Order order, int axis, int ddof) {
+        return alongAxisOperation(order, axis, t -> stdc(ddof));
+    }
+
+    @Override
+    public Double var() {
+        if (!dtype().isFloatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        int size = size();
+        // first pass compute raw mean
+        double sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += storage.getDouble(offset + i * loop.step);
+            }
+        }
+        double mean = (double) (sum / size);
+        // second pass adjustments for mean
+        sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += (double) (storage.getDouble(offset + i * loop.step) - mean);
+            }
+        }
+        mean += (double) (sum / size);
+        // third pass compute variance
+        double sum2 = 0;
+        double sum3 = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum2 += (double) ((storage.getDouble(p) - mean) * (storage.getDouble(p) - mean));
+                sum3 += (double) (storage.getDouble(p) - mean);
+            }
+        }
+        return (double) ((sum2 - (sum3 * sum3) / size) / size);
+    }
+
+    @Override
+    public Tensor<Double> var(Order order, int axis) {
+        return alongAxisOperation(order, axis, Tensor::var);
+    }
+
+    @Override
+    public Double varc(int ddof) {
+        if (!dtype().isFloatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        int size = size();
+        // first pass compute raw mean
+        double sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += storage.getDouble(offset + i * loop.step);
+            }
+        }
+        double mean = (double) (sum / size);
+        // second pass adjustments for mean
+        sum = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                sum += (double) (storage.getDouble(offset + i * loop.step) - mean);
+            }
+        }
+        mean += (double) (sum / size);
+        // third pass compute variance
+        double sum2 = 0;
+        double sum3 = 0;
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                sum2 += (double) ((storage.getDouble(p) - mean) * (storage.getDouble(p) - mean));
+                sum3 += (double) (storage.getDouble(p) - mean);
+            }
+        }
+        return (double) ((sum2 - (sum3 * sum3) / (size - ddof)) / (size - ddof));
+    }
+
+    @Override
+    public Tensor<Double> varc(Order order, int axis, int ddof) {
+        return alongAxisOperation(order, axis, t -> t.varc(ddof));
     }
 
     @Override
