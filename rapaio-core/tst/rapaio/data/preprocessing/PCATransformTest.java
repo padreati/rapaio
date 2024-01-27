@@ -44,8 +44,8 @@ public class PCATransformTest {
         assertEquals(1, df.fapply(PCATransform.coverVariance(0)).varCount());
         assertEquals(2, df.fapply(PCATransform.coverVariance(0.12)).varCount());
         assertEquals(9, df.fapply(PCATransform.coverVariance(0.9)).varCount());
-        assertEquals(10, df.fapply(PCATransform.coverVariance(1 - 1e-20)).varCount());
-        assertEquals(10, df.fapply(PCATransform.coverVariance(1)).varCount());
+        assertEquals(9, df.fapply(PCATransform.coverVariance(1 - 1e-20)).varCount());
+        assertEquals(9, df.fapply(PCATransform.coverVariance(1)).varCount());
     }
 
     @Test

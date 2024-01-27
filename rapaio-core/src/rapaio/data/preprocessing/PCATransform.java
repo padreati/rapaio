@@ -75,10 +75,10 @@ public class PCATransform extends AbstractTransform {
     public static PCATransform coverVariance(String prefix, double minPercentage, VarRange varRange) {
         return new PCATransform(prefix, (values, vectors) -> {
             double sum = values.sum();
-            double cumperc = 0.0;
+            double cumsum = 0.0;
             for (int i = 0; i < values.size(); i++) {
-                cumperc += values.get(i) / sum;
-                if (cumperc >= minPercentage) {
+                cumsum += values.getDouble(i);
+                if (cumsum / sum >= minPercentage) {
                     return i + 1;
                 }
             }
