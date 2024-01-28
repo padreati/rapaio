@@ -39,14 +39,13 @@ import rapaio.math.MathTools;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 
 public class BinaryLogisticNewtonTest {
 
     private static final double TOL = 1e-12;
 
     private Random random;
-    private static final TensorManager.OfType<Double> tmd = TensorManager.barray().ofDouble();
 
     @BeforeEach
     void beforeEach() {
@@ -56,30 +55,30 @@ public class BinaryLogisticNewtonTest {
     @Test
     void testDefaults() {
         var optimizer = new BinaryLogisticIRLS()
-                .xp.set(tmd.eye(1))
-                .yp.set(tmd.zeros(Shape.of(1)))
-                .w0.set(tmd.full(Shape.of(1), 1.));
+                .xp.set(Tensors.eye(1))
+                .yp.set(Tensors.zeros(Shape.of(1)))
+                .w0.set(Tensors.full(Shape.of(1), 1.));
         assertEquals(1e-20, optimizer.eps.get());
         assertEquals(10, optimizer.maxIter.get());
         assertEquals(0, optimizer.lambdap.get());
-        assertTrue(tmd.eye(1).deepEquals(optimizer.xp.get()));
-        assertTrue(tmd.zeros(Shape.of(1)).deepEquals(optimizer.yp.get()));
-        assertTrue(tmd.full(Shape.of(1), 1.).deepEquals(optimizer.w0.get()));
+        assertTrue(Tensors.eye(1).deepEquals(optimizer.xp.get()));
+        assertTrue(Tensors.zeros(Shape.of(1)).deepEquals(optimizer.yp.get()));
+        assertTrue(Tensors.full(Shape.of(1), 1.).deepEquals(optimizer.w0.get()));
     }
 
     @Test
     void testResult() {
         var result = new BinaryLogisticNewton.Result(Collections.emptyList(), Collections.emptyList(), false);
-        assertTrue(tmd.scalar(Double.NaN).deepEquals(result.w()));
+        assertTrue(Tensors.scalar(Double.NaN).deepEquals(result.w()));
         assertEquals(Double.NaN, result.nll());
     }
 
     @Test
     void testSymmetricAroundZeroSeparable() {
 
-        var x = tmd.stride(Shape.of(10, 1), -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
-        var y = tmd.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-        var w0 = tmd.zeros(Shape.of(1));
+        var x = Tensors.stride(Shape.of(10, 1), -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
+        var y = Tensors.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+        var w0 = Tensors.zeros(Shape.of(1));
 
         var result = new BinaryLogisticNewton()
                 .xp.set(x)
@@ -96,9 +95,9 @@ public class BinaryLogisticNewtonTest {
     @Test
     void testSymmetricAroundZeroNotSeparable() {
 
-        var x = tmd.stride(Shape.of(10, 1), Order.C, -5, -4, -3, 2, -1, 1, -2, 3, 4, 5);
-        var y = tmd.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-        var w0 = tmd.zeros(Shape.of(1));
+        var x = Tensors.stride(Shape.of(10, 1), Order.C, -5, -4, -3, 2, -1, 1, -2, 3, 4, 5);
+        var y = Tensors.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+        var w0 = Tensors.zeros(Shape.of(1));
 
         var result = new BinaryLogisticNewton()
                 .xp.set(x)
@@ -120,9 +119,9 @@ public class BinaryLogisticNewtonTest {
 
     @Test
     void testUnconverged() {
-        var x = tmd.stride(Shape.of(2, 1), -5, 5);
-        var y = tmd.stride(1, 0);
-        var w0 = tmd.zeros(Shape.of(1));
+        var x = Tensors.stride(Shape.of(2, 1), -5, 5);
+        var y = Tensors.stride(1, 0);
+        var w0 = Tensors.zeros(Shape.of(1));
 
         var result = new BinaryLogisticNewton()
                 .xp.set(x)
@@ -141,9 +140,9 @@ public class BinaryLogisticNewtonTest {
         VarDouble lambdas = VarDouble.seq(10, 1000, 100);
         VarDouble loss = VarDouble.empty().name("loss");
         for (double lambda : lambdas) {
-            var x = tmd.stride(Shape.of(10, 1), -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
-            var y = tmd.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-            var w0 = tmd.zeros(Shape.of(1));
+            var x = Tensors.stride(Shape.of(10, 1), -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
+            var y = Tensors.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+            var w0 = Tensors.zeros(Shape.of(1));
             var result = new BinaryLogisticNewton()
                     .xp.set(x)
                     .yp.set(y)
@@ -173,7 +172,7 @@ public class BinaryLogisticNewtonTest {
 
         Tensor<Double> x = SolidFrame.byVars(x1, x2).dtNew();
         Tensor<Double> y = y1.dt();
-        Tensor<Double> w0 = tmd.stride(0, 0);
+        Tensor<Double> w0 = Tensors.stride(0, 0);
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> new BinaryLogisticNewton()
                 .xp.set(x)
@@ -188,16 +187,16 @@ public class BinaryLogisticNewtonTest {
     void singleInputTest() {
         int n = 1_000;
 
-        Tensor<Double> x = tmd.zeros(Shape.of(2 * n, 2));
+        Tensor<Double> x = Tensors.zeros(Shape.of(2 * n, 2));
         x.take(1, 0).fill_(1.);
         x.take(1, 1).squeeze(1).narrow(0, true, 0, n).add_(VarDouble.sample(Normal.of(0, 0.5), n).dt());
         x.take(1, 1).squeeze(1).narrow(0, true, n, 2*n).add_(VarDouble.sample(Normal.of(1.5, 0.5), n).dt());
 
-        Tensor<Double> y = tmd.full(Shape.of(2 * n), 1.);
+        Tensor<Double> y = Tensors.full(Shape.of(2 * n), 1.);
         y.narrow(0, true, n, 2 * n).fill_(0.);
 
         BinaryLogisticIRLS.Result irls = new BinaryLogisticIRLS()
-                .w0.set(tmd.full(Shape.of(2), 0.))
+                .w0.set(Tensors.full(Shape.of(2), 0.))
                 .xp.set(x)
                 .yp.set(y)
                 .lambdap.set(0.0)

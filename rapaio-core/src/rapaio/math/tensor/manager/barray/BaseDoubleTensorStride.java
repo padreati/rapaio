@@ -720,7 +720,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
                 newStorage.setDouble(before + i, ptrGetDouble(offset + i * loop.step()));
             }
         }
-        return engine.ofDouble().stride(Shape.of(before + dim(0) + after), Order.C, storage);
+        return engine.ofDouble().stride(Shape.of(before + dim(0) + after), Order.C, newStorage);
     }
 
     @Override
@@ -832,15 +832,17 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     @Override
-    public Double norm(int p) {
-        if (p < 1) {
+    public Double norm(Double p) {
+        if (p < 0) {
             throw new IllegalArgumentException(STR."Norm power p=\{p} must have a value greater than 0.");
         }
-        return switch (p) {
-            case 1 -> norm1();
-            case 2 -> norm2();
-            default -> normp(p);
-        };
+        if (dtype().castValue(1).equals(p)) {
+            return norm1();
+        }
+        if (dtype().castValue(2).equals(p)) {
+            return norm2();
+        }
+        return normp(p);
     }
 
     private Double norm1() {
@@ -870,7 +872,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         return (double) Math.sqrt(sum);
     }
 
-    private Double normp(int pow) {
+    private Double normp(Double pow) {
         double sum = (double) 0;
         var it = loopIterator();
         while (it.hasNext()) {
@@ -885,7 +887,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     @Override
-    public Tensor<Double> normalize_(int p) {
+    public Tensor<Double> normalize_(Double p) {
         return div_(norm(p));
     }
 

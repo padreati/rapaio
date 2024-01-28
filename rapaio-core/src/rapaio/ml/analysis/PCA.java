@@ -45,7 +45,6 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -84,7 +83,6 @@ public class PCA extends ParamSet<PCA> implements Printable {
      */
     public final ValueParam<Boolean, PCA> standardize = new ValueParam<>(this, false, "standardize");
 
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private int inputRows;
     private int inputVars;
     private String[] inputNames;

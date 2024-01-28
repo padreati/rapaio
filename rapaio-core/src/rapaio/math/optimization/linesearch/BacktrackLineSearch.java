@@ -33,11 +33,11 @@ package rapaio.math.optimization.linesearch;
 
 import java.io.Serial;
 
-import rapaio.math.optimization.functions.RDerivative;
-import rapaio.math.optimization.functions.RFunction;
-import rapaio.math.linear.DVector;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.math.optimization.functions.RDerivative;
+import rapaio.math.optimization.functions.RFunction;
+import rapaio.math.tensor.Tensor;
 
 /**
  * Backtracking strategy for line search.
@@ -73,15 +73,15 @@ public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implement
     }
 
     @Override
-    public double search(RFunction f, RDerivative g, DVector x, DVector p, double t0) {
+    public double search(RFunction f, RDerivative g, Tensor<Double> x, Tensor<Double> p, double t0) {
         double fx = f.apply(x);
-        double gxp = g.apply(x).dot(p);
+        double gxp = g.apply(x).vdot(p);
 
         double xalpha = alpha.get();
         double xbeta = beta.get();
 
         double t = t0;
-        while (f.apply(x.fmaNew(t, p)) > fx + xalpha * t * gxp) {
+        while (f.apply(x.fma(t, p)) > fx + xalpha * t * gxp) {
             t *= xbeta;
         }
         return t;

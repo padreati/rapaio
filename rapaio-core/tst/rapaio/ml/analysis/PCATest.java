@@ -37,7 +37,7 @@ import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.model.ensemble.CForest;
 
@@ -49,7 +49,6 @@ import rapaio.ml.model.ensemble.CForest;
 public class PCATest {
 
     private static final double TOL = 1e-8;
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private static Frame df;
 
     private Random random;
@@ -72,7 +71,7 @@ public class PCATest {
         PCA pca = PCA.newModel().center.set(true);
         pca.fit(df);
 
-        assertTrue(tmd.stride(1.67100943, 0.83832597, 0.68195393).deepEquals(pca.getValues(), TOL));
+        assertTrue(Tensors.stride(1.67100943, 0.83832597, 0.68195393).deepEquals(pca.getValues(), TOL));
 
         double[][] eigenvectors = new double[][] {
                 {-0.49210223, -0.64670286, 0.58276136},

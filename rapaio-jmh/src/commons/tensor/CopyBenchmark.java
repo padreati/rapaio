@@ -106,7 +106,7 @@ public class CopyBenchmark {
                 }
             }
 
-            tc = TensorManager.varray().stride(DType.DOUBLE, Shape.of(n, n), Order.C, array);
+            tc = TensorManager.vectorizedArray().stride(DType.DOUBLE, Shape.of(n, n), Order.C, array);
             tf = tc.copy(Order.F);
         }
     }

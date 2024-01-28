@@ -37,7 +37,7 @@ import java.util.Random;
 import rapaio.experiment.math.nn.data.DoubleDiffTensor;
 import rapaio.experiment.math.nn.gradient.GradientTape;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 
 public class SandboxLayer {
 
@@ -61,13 +61,11 @@ public class SandboxLayer {
 //        System.out.println(id1);
 
 
-        var mill = TensorManager.base();
-
         var random = new Random(10);
         GradientTape tape = new GradientTape();
 
-        var x = DoubleDiffTensor.of(mill.ofDouble().seq(Shape.of(2, 2)), tape);
-        var y = DoubleDiffTensor.of(mill.ofDouble().random(Shape.of(2, 2), random), tape);
+        var x = DoubleDiffTensor.of(Tensors.seq(Shape.of(2, 2)), tape);
+        var y = DoubleDiffTensor.of(Tensors.random(Shape.of(2, 2), random), tape);
 
         var z = x.add(y, tape);
 

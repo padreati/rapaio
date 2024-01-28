@@ -720,7 +720,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
                 newStorage.setByte(before + i, ptrGetByte(offset + i * loop.step()));
             }
         }
-        return engine.ofByte().stride(Shape.of(before + dim(0) + after), Order.C, storage);
+        return engine.ofByte().stride(Shape.of(before + dim(0) + after), Order.C, newStorage);
     }
 
     @Override
@@ -832,15 +832,17 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     @Override
-    public Byte norm(int p) {
-        if (p < 1) {
+    public Byte norm(Byte p) {
+        if (p < 0) {
             throw new IllegalArgumentException(STR."Norm power p=\{p} must have a value greater than 0.");
         }
-        return switch (p) {
-            case 1 -> norm1();
-            case 2 -> norm2();
-            default -> normp(p);
-        };
+        if (dtype().castValue(1).equals(p)) {
+            return norm1();
+        }
+        if (dtype().castValue(2).equals(p)) {
+            return norm2();
+        }
+        return normp(p);
     }
 
     private Byte norm1() {
@@ -870,7 +872,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         return (byte) Math.sqrt(sum);
     }
 
-    private Byte normp(int pow) {
+    private Byte normp(Byte pow) {
         byte sum = (byte) 0;
         var it = loopIterator();
         while (it.hasNext()) {
@@ -885,7 +887,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     @Override
-    public Tensor<Byte> normalize_(int p) {
+    public Tensor<Byte> normalize_(Byte p) {
         return div_(norm(p));
     }
 

@@ -44,6 +44,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 
 public class SVDecompositionTest {
 
@@ -59,7 +60,7 @@ public class SVDecompositionTest {
 
     @Test
     void testAll() {
-        testSuite(TensorManager.base().ofDouble());
+        testSuite(Tensors.ofDouble());
     }
 
     <N extends Number> void testSuite(TensorManager.OfType<N> tmt) {

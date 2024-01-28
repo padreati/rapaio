@@ -45,7 +45,7 @@ import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.loss.KDevianceLoss;
 import rapaio.ml.loss.L2Loss;
@@ -85,7 +85,6 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
     public final ValueParam<RTree, GBTClassifierModel> model = new ValueParam<>(this,
             RTree.newCART().maxDepth.set(2).minCount.set(5).loss.set(new L2Loss()), "model");
 
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private int K;
     private Tensor<Double> f;
     private Tensor<Double> p;
@@ -125,15 +124,15 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         // algorithm described by ESTL pag. 387
 
         K = firstTargetLevels().size() - 1;
-        f = tmd.zeros(Shape.of(K, df.rowCount()));
-        p = tmd.zeros(Shape.of(K, df.rowCount()));
-        residual = tmd.zeros(Shape.of(K, df.rowCount()));
+        f = Tensors.zeros(Shape.of(K, df.rowCount()));
+        p = Tensors.zeros(Shape.of(K, df.rowCount()));
+        residual = Tensors.zeros(Shape.of(K, df.rowCount()));
 
         trees = IntStream.range(0, K).mapToObj(i -> new ArrayList<RTree>()).collect(Collectors.toList());
 
         // build individual regression targets for each class
 
-        final Tensor<Double> yk = tmd.zeros(Shape.of(K, df.rowCount()));
+        final Tensor<Double> yk = Tensors.zeros(Shape.of(K, df.rowCount()));
         for (int i = 0; i < df.rowCount(); i++) {
             yk.setDouble(1, df.getInt(i, firstTargetName()) - 1, i);
         }
@@ -190,7 +189,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
     public ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
 
-        Tensor<Double> p_f = tmd.zeros(Shape.of(K, df.rowCount()));
+        Tensor<Double> p_f = Tensors.zeros(Shape.of(K, df.rowCount()));
 
         for (int k = 0; k < K; k++) {
             for (RegressionModel<?, ?, ?> tree : trees.get(k)) {

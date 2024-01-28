@@ -45,7 +45,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.common.distance.MinkowskiDistance;
 import rapaio.ml.eval.RandIndex;
@@ -55,7 +55,6 @@ import rapaio.util.collection.DoubleArrays;
 public class KMedoidsTest {
 
     private Random random;
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     @BeforeEach
     void beforeEach() {
@@ -226,7 +225,7 @@ public class KMedoidsTest {
     @Test
     void alternateSwapTest() {
 
-        Tensor<Double> x = tmd.stride(
+        Tensor<Double> x = Tensors.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
         ).unsqueeze(1);
@@ -239,7 +238,7 @@ public class KMedoidsTest {
 
     @Test
     void initializePAMTest() {
-        Tensor<Double> x = tmd.stride(
+        Tensor<Double> x = Tensors.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
         ).unsqueeze(1);
@@ -254,7 +253,7 @@ public class KMedoidsTest {
 
     @Test
     void peekFirstCentroidTest() {
-        Tensor<Double> x = tmd.stride(
+        Tensor<Double> x = Tensors.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
         ).unsqueeze(1);
@@ -266,7 +265,7 @@ public class KMedoidsTest {
 
     @Test
     void peekNextCentroidTest() {
-        Tensor<Double> x = tmd.stride(
+        Tensor<Double> x = Tensors.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
         ).unsqueeze(1);

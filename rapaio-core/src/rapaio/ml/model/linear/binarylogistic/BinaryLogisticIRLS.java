@@ -42,9 +42,8 @@ import rapaio.core.param.ValueParam;
 import rapaio.math.MathTools;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.math.tensor.matrix.CholeskyDecomposition;
-import rapaio.sys.WS;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
@@ -78,15 +77,13 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
      */
     public final ValueParam<Tensor<Double>, BinaryLogisticIRLS> w0 = new ValueParam<>(this, null, "w0");
 
-    private static final TensorManager.OfType<Double> tmd = WS.tm().ofDouble();
-
     public record Result(List<Double> nlls, List<Tensor<Double>> ws, boolean converged) {
 
         public Tensor<Double> w() {
             if (!ws.isEmpty()) {
                 return ws.getLast();
             }
-            return tmd.scalar(Double.NaN);
+            return Tensors.scalar(Double.NaN);
         }
 
         public double nll() {
@@ -101,7 +98,7 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
 
         Tensor<Double> x = xp.get();
         Tensor<Double> y = yp.get();
-        Tensor<Double> ny = tmd.full(Shape.of(y.size()), 1.).sub_(y);
+        Tensor<Double> ny = Tensors.full(Shape.of(y.size()), 1.).sub_(y);
         Tensor<Double> w = w0.get();
         double lambda = lambdap.get();
         Tensor<Double> p = x.mv(w).apply_(MathTools::logistic);
@@ -137,7 +134,7 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
         Tensor<Double> logp = p.clamp_(1e-6, Double.NaN).log();
         Tensor<Double> lognp = np.clamp(1e-6, Double.NaN).log();
 
-        return -logp.vdot(y) - lognp.vdot(ny) + lambda * w.norm(2) / 2;
+        return -logp.vdot(y) - lognp.vdot(ny) + lambda * w.norm(2.) / 2;
     }
 
     private Tensor<Double> iterate(Tensor<Double> vw, Tensor<Double> mx, Tensor<Double> vy, double lambda, Tensor<Double> vp, Tensor<Double> vnp) {
@@ -159,7 +156,7 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
         Tensor<Double> right = xta.mv(z);
 
         // solve IRLS
-        CholeskyDecomposition<Double> chol = h.chol();
+        CholeskyDecomposition<Double> chol = h.cholesky();
         if (chol.isSPD()) {
             return chol.solve(right);
         } else {

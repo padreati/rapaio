@@ -84,45 +84,39 @@ public class ChiSqTest {
         ChiSqIndependence test1 = ChiSqIndependence.from(DMatrix.copy(2, 2, 38, 11, 14, 51), true);
         assertEquals("""
                 > ChiSqIndependence
-
                 Pearson's Chi-squared test with Yates' continuity correction
-
+                                
                 X-squared = 33.1119728, df = 1, p-value =   8.70e-09
-
                 Observed data:
                       C1 C2 total\s
                    R1 38 11   49 \s
                    R2 14 51   65 \s
                 total 52 62  114 \s
-
+                                
                 Expected data:
                               C1         C2 total\s
                    R1 22.3508772 26.6491228   49 \s
                    R2 29.6491228 35.3508772   65 \s
                 total 52         62          114 \s
-
                 """, test1.toSummary());
 
         ChiSqIndependence test2 = ChiSqIndependence.from(DMatrix.copy(2, 2, 38, 11, 14, 51), false);
         assertEquals("""
                 > ChiSqIndependence
-
                 Pearson's Chi-squared test
-
+                                
                 X-squared = 35.3337785, df = 1, p-value =   2.78e-09
-
                 Observed data:
                       C1 C2 total\s
                    R1 38 11   49 \s
                    R2 14 51   65 \s
                 total 52 62  114 \s
-
+                                
                 Expected data:
                               C1         C2 total\s
                    R1 22.3508772 26.6491228   49 \s
                    R2 29.6491228 35.3508772   65 \s
                 total 52         62          114 \s
-
                 """, test2.toSummary());
     }
 

@@ -720,7 +720,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
                 newStorage.setFloat(before + i, ptrGetFloat(offset + i * loop.step()));
             }
         }
-        return engine.ofFloat().stride(Shape.of(before + dim(0) + after), Order.C, storage);
+        return engine.ofFloat().stride(Shape.of(before + dim(0) + after), Order.C, newStorage);
     }
 
     @Override
@@ -832,15 +832,17 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Float norm(int p) {
-        if (p < 1) {
+    public Float norm(Float p) {
+        if (p < 0) {
             throw new IllegalArgumentException(STR."Norm power p=\{p} must have a value greater than 0.");
         }
-        return switch (p) {
-            case 1 -> norm1();
-            case 2 -> norm2();
-            default -> normp(p);
-        };
+        if (dtype().castValue(1).equals(p)) {
+            return norm1();
+        }
+        if (dtype().castValue(2).equals(p)) {
+            return norm2();
+        }
+        return normp(p);
     }
 
     private Float norm1() {
@@ -870,7 +872,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         return (float) Math.sqrt(sum);
     }
 
-    private Float normp(int pow) {
+    private Float normp(Float pow) {
         float sum = (float) 0;
         var it = loopIterator();
         while (it.hasNext()) {
@@ -885,7 +887,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
     }
 
     @Override
-    public Tensor<Float> normalize_(int p) {
+    public Tensor<Float> normalize_(Float p) {
         return div_(norm(p));
     }
 

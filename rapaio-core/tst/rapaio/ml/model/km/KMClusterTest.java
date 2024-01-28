@@ -196,8 +196,8 @@ public class KMClusterTest {
         // on the other hand the centroids are close, small normed distance
         for (int i = 0; i < 2; i++) {
             double cdist = dist.apply(kmeansC.takesq(0, i), kmediansC.takesq(0, i));
-            cdist /= Math.sqrt(kmeansC.takesq(0, i).norm(2));
-            cdist /= Math.sqrt(kmediansC.takesq(0, i).norm(2));
+            cdist /= Math.sqrt(kmeansC.takesq(0, i).norm(2.));
+            cdist /= Math.sqrt(kmediansC.takesq(0, i).norm(2.));
             assertTrue(cdist < 0.02);
         }
     }

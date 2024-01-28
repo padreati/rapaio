@@ -50,9 +50,9 @@ import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 import rapaio.math.tensor.storage.wrapper.VarDoubleStorage;
 import rapaio.printer.Printable;
-import rapaio.sys.WS;
 import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
 
@@ -404,7 +404,7 @@ public interface Var extends Serializable, Printable {
     DVector dvNew();
 
     default Tensor<Double> dt() {
-        return WS.tm().ofDouble().stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
+        return Tensors.stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
     }
 
     default Tensor<Double> dtNew() {
@@ -412,7 +412,7 @@ public interface Var extends Serializable, Printable {
         for (int i = 0; i < copy.length; i++) {
             copy[i] = getDouble(i);
         }
-        return WS.tm().ofDouble().stride(Shape.of(size()), Order.C, WS.tm().ofDouble().storage().from(copy));
+        return Tensors.stride(Shape.of(size()), Order.C, copy);
     }
 
     /**

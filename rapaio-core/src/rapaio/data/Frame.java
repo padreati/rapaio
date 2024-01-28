@@ -48,8 +48,8 @@ import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 import rapaio.printer.Printable;
-import rapaio.sys.WS;
 import rapaio.util.IntComparator;
 
 /**
@@ -569,7 +569,7 @@ public interface Frame extends Serializable, Printable {
     }
 
     default Tensor<Double> dtNew() {
-        Tensor<Double> tensor = WS.tm().ofDouble().zeros(Shape.of(rowCount(), varCount()));
+        Tensor<Double> tensor = Tensors.zeros(Shape.of(rowCount(), varCount()));
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < varCount(); j++) {
                 tensor.set(getDouble(i, j), i, j);

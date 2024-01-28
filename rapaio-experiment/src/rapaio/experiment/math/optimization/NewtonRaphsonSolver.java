@@ -41,15 +41,14 @@ import java.util.List;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.decomposition.DoubleCholeskyDecomposition;
 import rapaio.math.optimization.Solver;
 import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.optimization.functions.RHessian;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.matrix.CholeskyDecomposition;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
@@ -66,11 +65,11 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
     public final ValueParam<RFunction, NewtonRaphsonSolver> f = new ValueParam<>(this, null, "f");
     public final ValueParam<RDerivative, NewtonRaphsonSolver> d1f = new ValueParam<>(this, null, "d1f");
     public final ValueParam<RHessian, NewtonRaphsonSolver> d2f = new ValueParam<>(this, null, "d2f");
-    public final ValueParam<DVector, NewtonRaphsonSolver> x0 = new ValueParam<>(this, null, "x0");
+    public final ValueParam<Tensor<Double>, NewtonRaphsonSolver> x0 = new ValueParam<>(this, null, "x0");
 
-    private DVector sol;
+    private Tensor<Double> sol;
 
-    private final List<DVector> solutions = new ArrayList<>();
+    private final List<Tensor<Double>> solutions = new ArrayList<>();
     private VarDouble errors;
     private boolean converged = false;
 
@@ -85,11 +84,11 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         sol = x0.get().copy();
         for (int i = 0; i < maxIt.get(); i++) {
             solutions.add(sol.copy());
-            DVector d1f_x = d1f.get().apply(sol);
-            DMatrix d2f_x = d2f.get().apply(sol);
-            DVector d1f_x_n = d1f_x.copy().mul(-1);
+            Tensor<Double> d1f_x = d1f.get().apply(sol);
+            Tensor<Double> d2f_x = d2f.get().apply(sol);
+            Tensor<Double> d1f_x_n = d1f_x.copy().mul(-1.);
 
-            DVector delta_x;
+            Tensor<Double> delta_x;
 
             // try LU decomposition, otherwise work with QR
 //            LUDecomposition lu = LUDecomposition.from(d2f_x);
@@ -101,10 +100,10 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
 //            }
 
             // apply Cholesky modified
-            DoubleCholeskyDecomposition chol = modifiedCholesky(d2f_x);
-            delta_x = chol.solve(d1f_x_n.asMatrix()).mapCol(0);
+            CholeskyDecomposition<Double> chol = modifiedCholesky(d2f_x);
+            delta_x = chol.solve(d1f_x_n);
 
-            double error = d1f_x.copy().dot(delta_x);
+            double error = d1f_x.copy().vdot(delta_x);
             if (pow(error, 2) / 2 < tol.get()) {
                 converged = true;
                 break;
@@ -116,13 +115,13 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         return this;
     }
 
-    private DoubleCholeskyDecomposition modifiedCholesky(DMatrix A) {
+    private CholeskyDecomposition<Double> modifiedCholesky(Tensor<Double> A) {
         double beta = 0.001;
 
         // find minimum diagonal element
 
         double minac = A.get(0, 0);
-        for (int i = 1; i < A.rows(); i++) {
+        for (int i = 1; i < A.dim(0); i++) {
             minac = Math.min(minac, A.get(i, i));
         }
 
@@ -130,13 +129,13 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         double sigma = (minac > 0) ? 0 : -minac + beta;
 
         // update matrix
-        DMatrix Ac = A.copy();
-        for (int i = 0; i < Ac.rows(); i++) {
-            Ac.set(i, i, A.get(i, i) + sigma);
+        Tensor<Double> Ac = A.copy();
+        for (int i = 0; i < Ac.dim(0); i++) {
+            Ac.set(A.get(i, i) + sigma, i, i);
         }
 
         // compute Cholesky
-        DoubleCholeskyDecomposition chol = Ac.cholesky();
+        CholeskyDecomposition<Double> chol = Ac.cholesky();
         if (chol.isSPD()) {
             return chol;
         }
@@ -145,13 +144,13 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
             // update sigma
             sigma = max(100 * sigma, beta);
             // update matrix
-            DMatrix Acc = Ac.copy();
-            for (int i = 0; i < Acc.rows(); i++) {
-                Acc.set(i, i, Ac.get(i, i) + sigma);
+            Tensor<Double> Acc = Ac.copy();
+            for (int i = 0; i < Acc.dim(0); i++) {
+                Acc.set(Ac.get(i, i) + sigma, i, i);
             }
 
             // compute Cholesky
-            DoubleCholeskyDecomposition chol2 = Acc.cholesky();
+            CholeskyDecomposition<Double> chol2 = Acc.cholesky();
             if (chol2.isSPD()) {
                 return chol2;
             }
@@ -163,11 +162,11 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         return "solution: " + sol.toString() + "\n";
     }
 
-    public List<DVector> solutions() {
+    public List<Tensor<Double>> solutions() {
         return solutions;
     }
 
-    public DVector solution() {
+    public Tensor<Double> solution() {
         return sol;
     }
 

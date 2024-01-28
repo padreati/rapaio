@@ -38,12 +38,14 @@ import java.util.List;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DVector;
 import rapaio.math.optimization.Solver;
 import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 
 /**
  * Steepest descent for L1 norm
@@ -61,11 +63,11 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
             new ValueParam<>(this, BacktrackLineSearch.newSearch(), "lineSearch");
     public final ValueParam<RFunction, CoordinateDescentSolver> f = new ValueParam<>(this, null, "f");
     public final ValueParam<RDerivative, CoordinateDescentSolver> d1f = new ValueParam<>(this, null, "d1f");
-    public final ValueParam<DVector, CoordinateDescentSolver> x0 = new ValueParam<>(this, null, "x0");
+    public final ValueParam<Tensor<Double>, CoordinateDescentSolver> x0 = new ValueParam<>(this, null, "x0");
 
-    private DVector sol;
+    private Tensor<Double> sol;
 
-    private final List<DVector> solutions = new ArrayList<>();
+    private final List<Tensor<Double>> solutions = new ArrayList<>();
     private VarDouble errors;
     private boolean converged = false;
 
@@ -81,7 +83,7 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
         sol = x0.get().copy();
         for (int i = 0; i < maxIt.get(); i++) {
             solutions.add(sol.copy());
-            DVector d1fx = d1f.get().apply(sol);
+            Tensor<Double> d1fx = d1f.get().apply(sol);
             double max = Math.abs(d1fx.get(0));
             int index = 0;
             for (int j = 1; j < d1fx.size(); j++) {
@@ -90,10 +92,10 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
                     index = j;
                 }
             }
-            DVector deltaX = DVector.fill(d1fx.size(), 0);
-            deltaX.set(index, -Math.signum(d1fx.get(index)));
+            Tensor<Double> deltaX = Tensors.zeros(Shape.of(d1fx.size()));
+            deltaX.set(-Math.signum(d1fx.get(index)), index);
 
-            if (Math.abs(deltaX.norm(2)) < tol.get()) {
+            if (Math.abs(deltaX.norm(2.)) < tol.get()) {
                 converged = true;
                 break;
             }
@@ -108,11 +110,11 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
         return "solution: " + sol.toString() + "\n";
     }
 
-    public List<DVector> solutions() {
+    public List<Tensor<Double>> solutions() {
         return solutions;
     }
 
-    public DVector solution() {
+    public Tensor<Double> solution() {
         return sol;
     }
 

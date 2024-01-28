@@ -47,7 +47,7 @@ import rapaio.data.VarDouble;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 
@@ -133,7 +133,7 @@ public class Grid2D implements Serializable {
     public Grid2D(Var x, Var y) {
         this.x = x;
         this.y = y;
-        this.values = TensorManager.varray().ofDouble().zeros(Shape.of(x.size(), y.size()));
+        this.values = Tensors.zeros(Shape.of(x.size(), y.size()));
     }
 
     public Var x() {

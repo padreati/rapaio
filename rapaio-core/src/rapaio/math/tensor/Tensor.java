@@ -51,9 +51,9 @@ import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
 
 /**
- * Generic tensor interface. A tensor is a multidimensional array.
+ * Parametrized interface for tensors. A tensor is a multidimensional array.
  *
- * @param <N> Generic data type
+ * @param <N> Generic data type which can be Byte, Integer, Float or Double.
  */
 public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
@@ -1040,11 +1040,11 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return true;
     }
 
-    default CholeskyDecomposition<N> chol() {
-        return chol(false);
+    default CholeskyDecomposition<N> cholesky() {
+        return cholesky(false);
     }
 
-    default CholeskyDecomposition<N> chol(boolean flag) {
+    default CholeskyDecomposition<N> cholesky(boolean flag) {
         return new CholeskyDecomposition<>(this, flag);
     }
 
@@ -1075,22 +1075,20 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     Tensor<N> scatter();
 
     default N norm() {
-        return norm(2);
+        return norm(dtype().castValue(2));
     }
 
-    N norm(int p);
+    N norm(N p);
 
-    default Tensor<N> normalize(int p) {
+    default Tensor<N> normalize(N p) {
         return copy(Order.defaultOrder()).normalize_(p);
     }
 
-    default Tensor<N> normalize(Order order, int p) {
+    default Tensor<N> normalize(Order order, N p) {
         return copy(order).normalize_(p);
     }
 
-    Tensor<N> normalize_(int p);
-
-    Statistics<N> stats();
+    Tensor<N> normalize_(N p);
 
     N mean();
 
@@ -1131,6 +1129,8 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     Tensor<N> varc(Order order, int axis, int ddof);
+
+    Statistics<N> stats();
 
     N sum();
 

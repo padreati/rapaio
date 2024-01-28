@@ -40,23 +40,19 @@ import rapaio.math.tensor.layout.StrideLayout;
 
 public interface TensorManager {
 
-    static TensorManager base() {
-        return barray();
-    }
-
-    static TensorManager barray() {
+    static TensorManager baseArray() {
         return new BaseArrayTensorManager();
     }
 
-    static TensorManager barray(int cpuThreads) {
+    static TensorManager baseArray(int cpuThreads) {
         return new BaseArrayTensorManager(cpuThreads);
     }
 
-    static TensorManager varray() {
+    static TensorManager vectorizedArray() {
         return new VectorizedArrayTensorManager();
     }
 
-    static TensorManager varray(int cpuThreads) {
+    static TensorManager vectorizedArray(int cpuThreads) {
         return new VectorizedArrayTensorManager(cpuThreads);
     }
 

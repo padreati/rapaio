@@ -37,14 +37,14 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
+import rapaio.core.param.ParamSet;
+import rapaio.core.param.ValueParam;
 import rapaio.data.VarDouble;
 import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.math.linear.DVector;
-import rapaio.core.param.ParamSet;
-import rapaio.core.param.ValueParam;
+import rapaio.math.tensor.Tensor;
 
 /**
  * Implements the gradient descend optimization algorithm. Gradient descent is an optimization
@@ -92,11 +92,11 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
     /**
      * Initial value
      */
-    public final ValueParam<DVector, SteepestDescentSolver> x0 = new ValueParam<>(this,null, "x0");
+    public final ValueParam<Tensor<Double>, SteepestDescentSolver> x0 = new ValueParam<>(this,null, "x0");
 
-    private DVector sol;
+    private Tensor<Double> sol;
 
-    private List<DVector> solutions;
+    private List<Tensor<Double>> solutions;
     private VarDouble errors;
     private boolean converged = false;
 
@@ -108,8 +108,8 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
         sol = x0.get().copy();
         solutions.add(sol.copy());
         for (int i = 0; i < maxIt.get(); i++) {
-            DVector p = d1f.get().apply(sol).mul(-1);
-            double error = p.norm(2);
+            Tensor<Double> p = d1f.get().apply(sol).mul(-1.);
+            double error = p.norm(2.);
             errors.addDouble(error);
             if (abs(error) < tol.get()) {
                 converged = true;
@@ -124,18 +124,16 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
 
     @Override
     public String toString() {
-        return "solution: " + sol.toString() + ","
-                + "converged: " + converged + ","
-                + "iterations: " + solutions.size();
+        return STR."solution: \{sol.toString()},converged: \{converged},iterations: \{solutions.size()}";
     }
 
     @Override
-    public List<DVector> solutions() {
+    public List<Tensor<Double>> solutions() {
         return solutions;
     }
 
     @Override
-    public DVector solution() {
+    public Tensor<Double> solution() {
         return sol;
     }
 

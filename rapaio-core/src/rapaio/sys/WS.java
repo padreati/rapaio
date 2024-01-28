@@ -37,8 +37,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
-import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.manager.barray.BaseArrayTensorManager;
 import rapaio.printer.Figure;
 import rapaio.printer.ImageTools;
 import rapaio.printer.Printer;
@@ -54,7 +52,6 @@ public final class WS {
 
     private static final LogManager logManager = LogManager.getLogManager();
     private static Printer printer = new StandardPrinter();
-    private static final TensorManager tensorManager = new BaseArrayTensorManager();
 
     public static void initLog(Level level) {
         try {
@@ -134,9 +131,5 @@ public final class WS {
 
     public static BufferedImage image(Figure figure, int w, int h) {
         return ImageTools.makeImage(figure, w, h);
-    }
-
-    public static TensorManager tm() {
-        return tensorManager;
     }
 }

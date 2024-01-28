@@ -33,7 +33,8 @@ package rapaio.math.optimization.functions;
 
 import java.io.Serializable;
 
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
@@ -41,9 +42,9 @@ import rapaio.math.linear.DVector;
 @FunctionalInterface
 public interface RDerivative extends Serializable {
 
-    default DVector apply(double... x) {
-        return apply(DVector.wrap(x));
+    default Tensor<Double> apply(double... x) {
+        return apply(Tensors.stride(x));
     }
 
-    DVector apply(DVector x);
+    Tensor<Double> apply(Tensor<Double> x);
 }

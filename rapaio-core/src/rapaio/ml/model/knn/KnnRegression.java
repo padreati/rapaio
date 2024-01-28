@@ -51,14 +51,13 @@ import rapaio.data.VarType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.EuclideanDistance;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
-import rapaio.sys.WS;
 
 /**
  * Implements K Nearest Neighbour regression and Weighted K Nearest neighbours.
@@ -101,7 +100,6 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
      */
     public final ValueParam<Double, KnnRegression> eps = new ValueParam<>(this, 1e-6, "eps");
 
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private Tensor<Double>[] instances;
     private Tensor<Double> target;
 
@@ -123,7 +121,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
     }
 
     private Tensor<Double> buildInstance(Frame df, int row) {
-        Tensor<Double> instance = tmd.zeros(Shape.of(inputNames.length));
+        Tensor<Double> instance = Tensors.zeros(Shape.of(inputNames.length));
         for (int j = 0; j < inputNames.length; j++) {
             instance.setDouble(df.getDouble(row, inputNames[j]), j);
         }
@@ -166,7 +164,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
     private Tensor<Double> computeWeights(int[] top, int ref, Tensor<Double> x) {
 
         var d = distance.get();
-        Tensor<Double> w = WS.tm().ofDouble().zeros(Shape.of(top.length));
+        Tensor<Double> w = Tensors.zeros(Shape.of(top.length));
         w.apply_(Order.C, (i, p) -> d.compute(x, instances[top[i]]));
 
         double wref = d.compute(x, instances[ref]);

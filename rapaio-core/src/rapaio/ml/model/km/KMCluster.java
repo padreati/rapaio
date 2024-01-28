@@ -49,7 +49,6 @@ import rapaio.data.VarInt;
 import rapaio.data.VarType;
 import rapaio.data.preprocessing.VarSort;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.EuclideanDistance;
@@ -68,13 +67,11 @@ import rapaio.util.collection.IntArrays;
 public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunInfo<KMCluster>> {
 
     public static KMCluster newKMeans() {
-        return new KMCluster()
-                .method.set(KMeans);
+        return new KMCluster().method.set(KMeans);
     }
 
     public static KMCluster newKMedians() {
-        return new KMCluster()
-                .method.set(KMedians);
+        return new KMCluster().method.set(KMedians);
     }
 
     public interface Method {
@@ -168,8 +165,6 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
      * Tolerance for convergence criteria.
      */
     public final ValueParam<Double, KMCluster> eps = new ValueParam<>(this, 1e-20, "eps");
-
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     // clustering artifacts
 

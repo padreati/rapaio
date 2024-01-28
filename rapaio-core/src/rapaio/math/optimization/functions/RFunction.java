@@ -33,7 +33,8 @@ package rapaio.math.optimization.functions;
 
 import java.io.Serializable;
 
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 
 /**
  * Interface which describes an n-dimensional real valued function.
@@ -44,8 +45,8 @@ import rapaio.math.linear.DVector;
 public interface RFunction extends Serializable {
 
     default double apply(double... x) {
-        return apply(DVector.wrap(x));
+        return apply(Tensors.stride(x));
     }
 
-    double apply(DVector x);
+    double apply(Tensor<Double> x);
 }

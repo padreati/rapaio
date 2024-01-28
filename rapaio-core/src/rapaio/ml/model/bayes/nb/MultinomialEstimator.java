@@ -51,7 +51,7 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.printer.Format;
 
 /**
@@ -99,7 +99,6 @@ public class MultinomialEstimator extends AbstractEstimator {
 
     @Serial
     private static final long serialVersionUID = -3469344351162271991L;
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     public static final double eps = 1e-300; // minimum value to avoid NaN
     public static final double DEFAULT_LAPLACE = 1e-5; // small empirical value
 
@@ -170,7 +169,7 @@ public class MultinomialEstimator extends AbstractEstimator {
         densityMap = new HashMap<>();
         countDensities.forEach((level, density) -> {
             // add normalized densities to prediction map
-            densityMap.put(level, tmd.stride(density.normalize().streamValues().toArray()));
+            densityMap.put(level, Tensors.stride(density.normalize().streamValues().toArray()));
         });
 
         return false;
@@ -200,7 +199,7 @@ public class MultinomialEstimator extends AbstractEstimator {
 
         // build count vector
         List<String> testNames = getTestNames();
-        Tensor<Double> x = tmd.zeros(Shape.of(testNames.size()));
+        Tensor<Double> x = Tensors.zeros(Shape.of(testNames.size()));
         for (int i = 0; i < testNames.size(); i++) {
             x.setDouble(df.getDouble(row, testNames.get(i)), i);
         }

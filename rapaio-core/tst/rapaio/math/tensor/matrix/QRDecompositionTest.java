@@ -46,6 +46,7 @@ import rapaio.core.distributions.Uniform;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 
 public class QRDecompositionTest {
 
@@ -61,7 +62,7 @@ public class QRDecompositionTest {
 
     @Test
     void testAll() {
-        testSuite(TensorManager.base().ofDouble());
+        testSuite(Tensors.ofDouble());
     }
 
     <N extends Number> void testSuite(TensorManager.OfType<N> tmt) {

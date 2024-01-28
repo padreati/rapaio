@@ -34,14 +34,13 @@ package rapaio.ml.model.svm.libsvm;
 import java.util.logging.Logger;
 
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.TArrays;
 
 public class Svm {
 
     private static final Logger LOGGER = Logger.getLogger(Svm.class.getName());
-    public static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     private static SolutionInfo solve_c_svc(SvmProblem prob, SvmParameter param, double[] alpha, double cp, double cn) {
         int l = prob.len;
@@ -59,7 +58,7 @@ public class Svm {
         s.solve(l, new SvcKernelMatrix(prob.len, prob.xs, param.kernel, param.cacheSize, y), minus_ones, y,
                 alpha, cp, cn, param.eps, si, param.shrinking);
 
-        double sumAlpha = Svm.tmd.stride(alpha).sum();
+        double sumAlpha = Tensors.stride(alpha).sum();
 
         if (cp == cn) {
             LOGGER.fine("nu = " + sumAlpha / (cp * prob.len) + "\n");

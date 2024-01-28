@@ -42,7 +42,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarRange;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 
 /**
  * Builds a random projection of some give numeric features.
@@ -66,8 +66,6 @@ public class RandomProjection extends AbstractTransform {
     @Serial
     private static final long serialVersionUID = -2790372378136065870L;
 
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
-
     private final int k;
     private final Method method;
     private final Random random;
@@ -89,7 +87,7 @@ public class RandomProjection extends AbstractTransform {
     public void coreFit(Frame df) {
         // build k random projections
 
-        rp = tmd.zeros(Shape.of(varNames.length, k));
+        rp = Tensors.zeros(Shape.of(varNames.length, k));
         for (int i = 0; i < k; i++) {
             Tensor<Double> v = method.projection(random, varNames.length);
             for (int j = 0; j < varNames.length; j++) {
@@ -116,11 +114,11 @@ public class RandomProjection extends AbstractTransform {
     private static Method gaussian(int k) {
         return (random, rowCount) -> {
             Normal norm = Normal.std();
-            Tensor<Double> v = tmd.zeros(Shape.of(rowCount));
+            Tensor<Double> v = Tensors.zeros(Shape.of(rowCount));
             for (int i = 0; i < v.size(); i++) {
                 v.set(norm.sampleNext(random) / Math.sqrt(k), i);
             }
-            v.normalize(2);
+            v.normalize(2.);
             return v;
         };
     }
@@ -135,7 +133,7 @@ public class RandomProjection extends AbstractTransform {
 
         return (random, rowCount) -> {
             int[] sample = SamplingTools.sampleWeightedWR(random, rowCount, p);
-            Tensor<Double> v = tmd.zeros(Shape.of(rowCount));
+            Tensor<Double> v = Tensors.zeros(Shape.of(rowCount));
             for (int i = 0; i < sample.length; i++) {
                 if (sample[i] == 0) {
                     v.setDouble(-sqrt, i);
@@ -147,7 +145,7 @@ public class RandomProjection extends AbstractTransform {
                 }
                 v.setDouble(sqrt, i);
             }
-            return v.normalize(2);
+            return v.normalize(2.);
         };
     }
 }

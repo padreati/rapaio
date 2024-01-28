@@ -35,7 +35,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.common.kernel.LinearKernel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.linear.LinearRegressionModel;
@@ -45,7 +45,6 @@ import rapaio.ml.model.linear.LinearRegressionModel;
  */
 public class RVMRegressionTest {
 
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private Random random;
 
     @BeforeEach
@@ -139,7 +138,7 @@ public class RVMRegressionTest {
         assertTrue(provider.equalOnParams(new RVMRegression.InterceptProvider()));
         assertFalse(provider.equalOnParams(new RVMRegression.RBFProvider(VarDouble.wrap(1))));
 
-        var x = tmd.eye(10);
+        var x = Tensors.eye(10);
         RVMRegression.Feature[] features = provider.generateFeatures(random, x);
         assertEquals(1, features.length);
         assertEquals("intercept", features[0].name());
@@ -163,7 +162,7 @@ public class RVMRegressionTest {
         ex = assertThrows(IllegalArgumentException.class, () -> new RVMRegression.RBFProvider(VarDouble.wrap(1), -1));
         assertEquals("Percentage value p=-1 is not in interval [0,1].", ex.getMessage());
 
-        var x = tmd.eye(10);
+        var x = Tensors.eye(10);
         RVMRegression.Feature[] features = provider.generateFeatures(random, x);
         assertEquals(10, features.length);
 
@@ -181,7 +180,7 @@ public class RVMRegressionTest {
         assertFalse(provider.equalOnParams(new RVMRegression.KernelProvider(new LinearKernel(1))));
         assertTrue(provider.equalOnParams(new RVMRegression.KernelProvider(new LinearKernel(1), 0.5)));
 
-        RVMRegression.Feature[] features = provider.generateFeatures(random, tmd.eye(10));
+        RVMRegression.Feature[] features = provider.generateFeatures(random, Tensors.eye(10));
         assertEquals(5, features.length);
         for (RVMRegression.Feature feature : features) {
             assertTrue(feature.name().startsWith("LinearKernel"));
@@ -198,7 +197,7 @@ public class RVMRegressionTest {
         assertFalse(provider.equalOnParams(new RVMRegression.RandomRBFProvider(VarDouble.wrap(2), 1.5, Normal.std())));
         assertFalse(provider.equalOnParams(new RVMRegression.InterceptProvider()));
 
-        var x = tmd.eye(10);
+        var x = Tensors.eye(10);
         RVMRegression.Feature[] features = provider.generateFeatures(random, x);
         assertEquals(15, features.length);
         for (RVMRegression.Feature feature : features) {

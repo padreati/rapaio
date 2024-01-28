@@ -41,7 +41,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.preprocessing.AddIntercept;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -83,8 +83,6 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
     private Map<String, Double> inputScale;
     private Map<String, Double> targetMean;
     private Map<String, Double> targetScale;
-
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     @Override
     public RidgeRegressionModel newInstance() {
@@ -139,8 +137,8 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
             selNames[pos++] = inputNames[i];
         }
 
-        var X = tmd.zeros(Shape.of(df.rowCount(), selNames.length));
-        var Y = tmd.zeros(Shape.of(df.rowCount(), targetNames.length));
+        var X = Tensors.zeros(Shape.of(df.rowCount(), selNames.length));
+        var Y = Tensors.zeros(Shape.of(df.rowCount(), targetNames.length));
 
         if (intercept.get()) {
             // scale in values if we have intercept
@@ -177,13 +175,13 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
         }
 
         // solve the scaled system
-        var l = tmd.eye(X.dim(1)).mul_(lambda.get());
+        var l = Tensors.eye(X.dim(1)).mul_(lambda.get());
         var A = X.t().mm(X).add_(l);
         var B = X.t().mm(Y);
         var scaledBeta = A.qr().solve(B);
 
         if (intercept.get()) {
-            beta = tmd.zeros(Shape.of(scaledBeta.dim(0) + 1, scaledBeta.dim(1)));
+            beta = Tensors.zeros(Shape.of(scaledBeta.dim(0) + 1, scaledBeta.dim(1)));
 
             for (int i = 0; i < targetNames.length; i++) {
                 String targetName = targetName(i);

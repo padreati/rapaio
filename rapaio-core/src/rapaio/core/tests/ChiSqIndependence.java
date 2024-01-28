@@ -49,6 +49,7 @@ import rapaio.printer.opt.POpt;
  * Allows one to test whether unpaired observations on two variables,
  * expressed in a contingency table, are independent of each other.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/31/17.
  */
 public final class ChiSqIndependence implements HTest {
@@ -153,18 +154,14 @@ public final class ChiSqIndependence implements HTest {
     @Override
     public String toSummary(Printer printer, POpt<?>... options) {
 
-        return "> ChiSqIndependence\n"
-                + "\n"
-                + "Pearson's Chi-squared test" + (yates ? " with Yates' continuity correction" : "") + "\n"
-                + "\n"
-                + "X-squared = " + Format.floatFlex(chiValue)
-                + ", df = " + df
-                + ", p-value = " + Format.pValue(pValue)
-                + "\n"
-                + "\n"
-                + "Observed data:\n"
-                + observed.toSummary(printer, options) + "\n"
-                + "Expected data:\n"
-                + expected.toSummary(printer, options) + "\n";
+        return STR."""
+                > ChiSqIndependence
+                Pearson's Chi-squared test\{(yates ? " with Yates' continuity correction" : "")}
+
+                X-squared = \{Format.floatFlex(chiValue)}, df = \{df}, p-value = \{Format.pValue(pValue)}
+                Observed data:
+                \{observed.toSummary(printer, options)}
+                Expected data:
+                \{expected.toSummary(printer, options)}""";
     }
 }

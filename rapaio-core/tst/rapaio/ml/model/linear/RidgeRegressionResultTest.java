@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
@@ -40,7 +40,6 @@ import rapaio.math.tensor.TensorManager;
 public class RidgeRegressionResultTest {
 
     private static final double TOL = 1e-12;
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     private Frame df;
 
@@ -93,7 +92,7 @@ public class RidgeRegressionResultTest {
         for (int i = 0; i < lambdas.length; i++) {
             RidgeRegressionModel rr = RidgeRegressionModel.newModel(lambdas[i]);
             var beta_hat = rr.fit(df, "Sales").firstCoefficients();
-            assertTrue(tmd.stride(coeff[i]).deepEquals(beta_hat, 1e9));
+            assertTrue(Tensors.stride(coeff[i]).deepEquals(beta_hat, 1e9));
         }
     }
 

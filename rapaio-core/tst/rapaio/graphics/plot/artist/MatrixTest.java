@@ -35,12 +35,11 @@ import rapaio.core.tools.DistanceMatrix;
 import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.printer.ImageTools;
 
 public class MatrixTest extends AbstractArtistTest {
 
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private Random random;
 
     @BeforeEach
@@ -55,7 +54,7 @@ public class MatrixTest extends AbstractArtistTest {
 
         int n = 6;
 
-        var randomm = tmd.random(Shape.of(n, n), random);
+        var randomm = Tensors.random(Shape.of(n, n), random);
         var mean = randomm.mean(0);
         var sd = randomm.stdc(0, 1);
 
@@ -68,7 +67,7 @@ public class MatrixTest extends AbstractArtistTest {
         grid.add(corrGram(dm));
 
         grid.add(matrix(cov, color(NColor.black)));
-        grid.add(matrix(TensorManager.base().ofDouble().random(Shape.of(60, 80), random)));
+        grid.add(matrix(Tensors.random(Shape.of(60, 80), random)));
 
         assertTest(grid, "matrix-test");
     }

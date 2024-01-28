@@ -33,6 +33,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 import rapaio.util.Reference;
 
 /**
@@ -111,7 +112,7 @@ public class Cache {
                 old.data = null;
             }
             // allocate new space
-            h.data = (h.data == null) ? Svm.tmd.zeros(Shape.of(len)) : h.data.vpadCopy(0, more);
+            h.data = (h.data == null) ? Tensors.zeros(Shape.of(len)) : h.data.vpadCopy(0, more);
             size -= more;
         }
 

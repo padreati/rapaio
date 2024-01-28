@@ -51,7 +51,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.model.ClusteringModel;
@@ -92,14 +91,10 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
     }
 
     public final ValueParam<Method, KMedoids> method = new ValueParam<>(this, Method.PAM, "method");
-
     public final ValueParam<Integer, KMedoids> k = new ValueParam<>(this, 1, "k");
-
     public final ValueParam<Distance, KMedoids> distance = new ValueParam<>(this, new Manhattan(), "distance");
-
     public final ValueParam<Integer, KMedoids> maxIt = new ValueParam<>(this, 1000, "maxIt");
 
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private Tensor<Double> c;
     private VarDouble errors;
 
@@ -140,8 +135,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         LOGGER.fine("Starting core fit for alternate method.");
         LOGGER.finest("Initialize centroids as random instances.");
         int[] centroidIndexes = SamplingTools.sampleWOR(new Random(seed.get()), x.dim(0), k.get());
-        LOGGER.finest("medoid indexes: " + Arrays.stream(centroidIndexes)
-                .mapToObj(String::valueOf).collect(Collectors.joining(",")));
+        LOGGER.finest("medoid indexes: " + Arrays.stream(centroidIndexes).mapToObj(String::valueOf).collect(Collectors.joining(",")));
         c = x.take(0, centroidIndexes);
 
         LOGGER.finest("Initialize a cache for training purposes");

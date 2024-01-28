@@ -41,10 +41,8 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/21.
@@ -53,16 +51,16 @@ public class IRLSSolverTest {
 
     private static final double eps = 1e-10;
 
-    private DMatrix A;
-    private DVector b;
+    private Tensor<Double> A;
+    private Tensor<Double> b;
 
     @BeforeEach
     public void beforeEach() {
         Frame df = Datasets.loasSAheart().removeVars(0).removeVars("typea,adiposity");
         VarDouble intercept = VarDouble.fill(df.rowCount(), 1).name("(Intercept)");
         Frame dfa = SolidFrame.byVars(intercept).bindVars(df.removeVars("chd"));
-        A = DMatrix.copy(dfa);
-        b = DMatrix.copy(df.mapVars(VarRange.of("chd"))).mapCol(0);
+        A = dfa.dtNew();
+        b = df.rvar("chd").dtNew();
     }
 
     @Test
@@ -78,7 +76,6 @@ public class IRLSSolverTest {
                     .maxIt.set(500).eps.set(1e-10).compute();
             IRLSSolver m1 = IRLSSolver.newMinimizer().method.set(IRLSSolver.Method.IRLS1M).m.set(A).b.set(b).p.set(p).k.set(k)
                     .maxIt.set(500).eps.set(1e-10).compute();
-//            WS.draw(lines(m0.errors(), color('r')).lines(m1.errors(), color('g')));
             assertTrue(m0.errors().getDouble(m0.errors().size() - 1) >= m1.errors().getDouble(m1.errors().size() - 1),
                     MessageFormat.format("error at p={0}, k={1}, sol.m0={2}", p, k, m0.solution().toString()));
         }
@@ -87,11 +84,11 @@ public class IRLSSolverTest {
     @Test
     void testLeastSquares() {
         Solver irls = IRLSSolver.newMinimizer().m.set(A).b.set(b).p.set(2.0).maxIt.set(10_000).eps.set(1e-20);
-        DVector irlsSolution = irls.compute().solution();
+        Tensor<Double> irlsSolution = irls.compute().solution();
 
-        DMatrix ata = A.t().dot(A);
-        DVector ab = A.t().dot(b);
-        DVector sol = ata.qr().solve(ab);
+        Tensor<Double> ata = A.t().mm(A);
+        Tensor<Double> ab = A.t().mv(b);
+        Tensor<Double> sol = ata.qr().solve(ab);
         assertTrue(irlsSolution.deepEquals(sol, eps));
     }
 

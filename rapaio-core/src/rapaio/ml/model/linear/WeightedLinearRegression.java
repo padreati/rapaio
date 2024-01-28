@@ -57,8 +57,6 @@ public class WeightedLinearRegression extends BaseLinearRegressionModel<Weighted
     @Serial
     private static final long serialVersionUID = 8595413796946622895L;
 
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
-
     @Override
     public WeightedLinearRegression newInstance() {
         return new WeightedLinearRegression().copyParameterValues(this);

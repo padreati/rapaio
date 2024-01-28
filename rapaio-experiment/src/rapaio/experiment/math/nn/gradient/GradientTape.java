@@ -42,7 +42,7 @@ import java.util.function.Function;
 import rapaio.experiment.math.nn.DiffTensor;
 import rapaio.experiment.math.nn.data.DoubleDiffTensor;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 
 public class GradientTape {
 
@@ -75,7 +75,7 @@ public class GradientTape {
 
     public List<DiffTensor> grad(DiffTensor loss, List<DiffTensor> desiredDerivatives) {
 
-        Tensor<Double> one = TensorManager.base().ofDouble().scalar(1d);
+        Tensor<Double> one = Tensors.scalar(1d);
 
         // this map holds dL / dX for all values X
         HashMap<String, DiffTensor> dlMap = new HashMap<>();

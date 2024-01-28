@@ -32,13 +32,12 @@
 package rapaio.experiment.math;
 
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 
 public class TensorSandbox {
     public static void main(String[] args) {
-        var tmd = TensorManager.base().ofDouble();
 
-        var m = tmd.seq(Shape.of(10, 10));
+        var m = Tensors.seq(Shape.of(10, 10));
         m.printContent();
 
         var list = m.chunk(0, false, 1);
@@ -46,7 +45,7 @@ public class TensorSandbox {
             l.printContent();
         }
 
-        TensorManager.base().stack(1, list).printContent();
+        Tensors.stack(1, list).printContent();
 
 
     }

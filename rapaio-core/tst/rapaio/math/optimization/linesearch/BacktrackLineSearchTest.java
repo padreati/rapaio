@@ -40,9 +40,10 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.linear.DVector;
 import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/31/21.
@@ -66,16 +67,16 @@ public class BacktrackLineSearchTest {
 
         // here we test f(x) = x^2
         // after calculations for steepest descent alpha have a constant value
-        RFunction f = (DVector x) -> x.get(0) * x.get(0);
-        RDerivative df = (DVector x) -> x.copy().mul(2.0);
+        RFunction f = (Tensor<Double> x) -> x.get(0) * x.get(0);
+        RDerivative df = (Tensor<Double> x) -> x.copy().mul(2.0);
 
         for (int i = 0; i < 1_000; i++) {
             double next = (random.nextDouble() - 0.5) * 100;
-            DVector x0 = DVector.wrap(next);
-            DVector p = df.apply(x0).mul(-1);
+            Tensor<Double> x0 = Tensors.stride(next);
+            Tensor<Double> p = df.apply(x0).mul(-1.);
             double t = BacktrackLineSearch.newSearch().search(f, df, x0, p);
             double fx0 = f.apply(x0);
-            double fx1 = f.apply(x0.fmaNew(t, p));
+            double fx1 = f.apply(x0.fma(t, p));
             assertTrue(fx0 >= fx1);
             assertEquals(0.7, t);
         }
@@ -85,16 +86,16 @@ public class BacktrackLineSearchTest {
     void smokeTest() {
 
         // here we test f(x) = -Math.exp(x^2)
-        RFunction f = (DVector x) -> -Math.exp(-x.get(0) * x.get(0));
-        RDerivative df = (DVector x) -> DVector.wrap(Math.exp(-x.get(0) * x.get(0)) * 2 * x.get(0));
+        RFunction f = (Tensor<Double> x) -> -Math.exp(-x.get(0) * x.get(0));
+        RDerivative df = (Tensor<Double> x) -> Tensors.stride(Math.exp(-x.get(0) * x.get(0)) * 2 * x.get(0));
 
         for (int i = 0; i < 1_000; i++) {
             double next = (random.nextDouble() - 0.5);
-            DVector x0 = DVector.wrap(next);
-            DVector p = df.apply(x0).mul(-1);
+            Tensor<Double> x0 = Tensors.stride(next);
+            Tensor<Double> p = df.apply(x0).mul(-1.);
             double alpha = BacktrackLineSearch.newSearch().search(f, df, x0, p, 100_000.0);
             double fx0 = f.apply(x0);
-            double fx1 = f.apply(x0.fmaNew(alpha, p));
+            double fx1 = f.apply(x0.fma(alpha, p));
             assertTrue(fx0 >= fx1);
         }
     }
@@ -106,13 +107,13 @@ public class BacktrackLineSearchTest {
                 new T(
                         // this test is taken from Algorithms for Optimization, p.58
                         v -> v.get(0) * v.get(0) + v.get(0) * v.get(1) + v.get(1) * v.get(1),
-                        v -> DVector.wrap(2 * v.get(0), 2 * v.get(1)),
-                        DVector.wrap(-1, -1),
-                        DVector.wrap(1, 2),
+                        v -> Tensors.stride(2 * v.get(0), 2 * v.get(1)),
+                        Tensors.stride(-1, -1),
+                        Tensors.stride(1, 2),
                         1e-4,
                         0.5,
                         10,
-                        DVector.wrap(-1.5, -0.5)
+                        Tensors.stride(-1.5, -0.5)
                 )
         };
 
@@ -121,12 +122,12 @@ public class BacktrackLineSearchTest {
                     .alpha.set(test.alpha)
                     .beta.set(test.beta)
                     .search(test.f, test.d1f, test.x0, test.d, test.t);
-            DVector x1 = test.x0.copy().add(test.d.mul(alpha));
+            Tensor<Double> x1 = test.x0.copy().add(test.d.mul(alpha));
             assertTrue(x1.deepEquals(test.x1));
         }
 
     }
 
-    record T(RFunction f, RDerivative d1f, DVector d, DVector x0, double alpha, double beta, double t, DVector x1) {
+    record T(RFunction f, RDerivative d1f, Tensor<Double> d, Tensor<Double> x0, double alpha, double beta, double t, Tensor<Double> x1) {
     }
 }

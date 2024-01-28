@@ -720,7 +720,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
                 newStorage.setInt(before + i, ptrGetInt(offset + i * loop.step()));
             }
         }
-        return engine.ofInt().stride(Shape.of(before + dim(0) + after), Order.C, storage);
+        return engine.ofInt().stride(Shape.of(before + dim(0) + after), Order.C, newStorage);
     }
 
     @Override
@@ -832,15 +832,17 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     @Override
-    public Integer norm(int p) {
-        if (p < 1) {
+    public Integer norm(Integer p) {
+        if (p < 0) {
             throw new IllegalArgumentException(STR."Norm power p=\{p} must have a value greater than 0.");
         }
-        return switch (p) {
-            case 1 -> norm1();
-            case 2 -> norm2();
-            default -> normp(p);
-        };
+        if (dtype().castValue(1).equals(p)) {
+            return norm1();
+        }
+        if (dtype().castValue(2).equals(p)) {
+            return norm2();
+        }
+        return normp(p);
     }
 
     private Integer norm1() {
@@ -870,7 +872,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         return (int) Math.sqrt(sum);
     }
 
-    private Integer normp(int pow) {
+    private Integer normp(Integer pow) {
         int sum = (int) 0;
         var it = loopIterator();
         while (it.hasNext()) {
@@ -885,7 +887,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     @Override
-    public Tensor<Integer> normalize_(int p) {
+    public Tensor<Integer> normalize_(Integer p) {
         return div_(norm(p));
     }
 

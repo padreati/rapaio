@@ -105,7 +105,7 @@ public class DMatrixDMatrixDotBenchmark {
                 }
             }
 
-            t = TensorManager.varray().ofDouble().stride(Shape.of(n, n), Order.C, array);
+            t = TensorManager.vectorizedArray().ofDouble().stride(Shape.of(n, n), Order.C, array);
             tc = t.t_().copy(Order.F);
         }
     }

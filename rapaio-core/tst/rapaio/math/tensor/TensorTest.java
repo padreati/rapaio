@@ -67,8 +67,8 @@ public class TensorTest {
 
     @Test
     void allTests() {
-        managerTestSuite(TensorManager.barray());
-        managerTestSuite(TensorManager.varray());
+        managerTestSuite(TensorManager.baseArray());
+        managerTestSuite(TensorManager.vectorizedArray());
     }
 
     private void managerTestSuite(TensorManager eng) {

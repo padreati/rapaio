@@ -44,7 +44,7 @@ import rapaio.data.preprocessing.AddIntercept;
 import rapaio.math.MathTools;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 import rapaio.printer.Format;
@@ -57,7 +57,6 @@ import rapaio.printer.opt.POpt;
  */
 public class LinearRegressionResult extends RegressionResult {
 
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     protected final BaseLinearRegressionModel<?> lm;
     protected Tensor<Double> beta_hat;
     protected Tensor<Double> beta_std_error;
@@ -100,9 +99,9 @@ public class LinearRegressionResult extends RegressionResult {
         String[] targets = lm.targetNames();
 
         beta_hat = lm.getAllCoefficients().copy();
-        beta_std_error = tmd.zeros(Shape.of(inputs.length, targets.length));
-        beta_t_value = tmd.zeros(Shape.of(inputs.length, targets.length));
-        beta_p_value = tmd.zeros(Shape.of(inputs.length, targets.length));
+        beta_std_error = Tensors.zeros(Shape.of(inputs.length, targets.length));
+        beta_t_value = Tensors.zeros(Shape.of(inputs.length, targets.length));
+        beta_p_value = Tensors.zeros(Shape.of(inputs.length, targets.length));
         beta_significance = new String[inputs.length][targets.length];
 
         if (withResiduals) {

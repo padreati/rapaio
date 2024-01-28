@@ -47,7 +47,7 @@ import rapaio.data.VarType;
 import rapaio.math.MathTools;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
@@ -59,7 +59,6 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 import rapaio.printer.opt.POpts;
-import rapaio.sys.WS;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
@@ -72,8 +71,6 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
     @Serial
     private static final long serialVersionUID = 1609956190070125059L;
-
-    private static final TensorManager.OfType<Double> tmd = WS.tm().ofDouble();
 
     /**
      * Defines the scaling value of the intercept, by default being 1. If the configured value
@@ -172,7 +169,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
         var x = computeInputMatrix(df, firstTargetName());
         var y = computeTargetVector(df.rvar(firstTargetName()));
-        var w0 = tmd.full(Shape.of(x.dim(1)), init.get().getFunction().apply(y));
+        var w0 = Tensors.full(Shape.of(x.dim(1)), init.get().getFunction().apply(y));
 
         switch (solver.get()) {
             case IRLS -> {
@@ -215,7 +212,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
                 return target.dt();
             }
             case NOMINAL -> {
-                var result = tmd.zeros(Shape.of(target.size()));
+                var result = Tensors.zeros(Shape.of(target.size()));
                 positiveLabel = !Objects.equals(nominalLevel.get(), "") ? nominalLevel.get() : targetLevels.get(firstTargetName()).get(1);
                 negativeLabel = firstTargetLevels().stream()
                         .filter(label -> !label.equals(positiveLabel))
@@ -256,7 +253,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
         int offset = hasIntercept ? 1 : 0;
 
-        var p = tmd.full(Shape.of(df.rowCount()), hasIntercept ? intercept.get() * w.getDouble(0) : 0);
+        var p = Tensors.full(Shape.of(df.rowCount()), hasIntercept ? intercept.get() * w.getDouble(0) : 0);
         for (int i = 0; i < inputNames.length; i++) {
             p.fma_(w.getDouble(i + offset), df.rvar(inputName(i)).dt());
         }

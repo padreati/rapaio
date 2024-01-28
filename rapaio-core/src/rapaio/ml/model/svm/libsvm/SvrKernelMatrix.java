@@ -33,6 +33,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
@@ -49,8 +50,8 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
         super(xs, kernel, new Cache(len, cacheSize * (1 << 20)), new double[2 * len]);
         this.l = len;
         buffer = new Tensor[] {
-                Svm.tmd.zeros(Shape.of(2 * len)),
-                Svm.tmd.zeros(Shape.of(2 * len))
+                Tensors.zeros(Shape.of(2 * len)),
+                Tensors.zeros(Shape.of(2 * len))
         };
         sign = new byte[2 * len];
         index = new int[2 * len];

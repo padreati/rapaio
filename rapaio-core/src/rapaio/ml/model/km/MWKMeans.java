@@ -47,7 +47,7 @@ import rapaio.data.VarInt;
 import rapaio.data.VarType;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.MinkowskiDistance;
@@ -103,7 +103,6 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
 
     // clustering artifacts
 
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private Tensor<Double> c;
     private Tensor<Double> weights;
     private VarDouble errors;
@@ -166,8 +165,8 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     public MWKMeans coreFit(Frame df, Var w) {
 
         weights = subspace.get()
-                ? tmd.full(Shape.of(k.get(), inputNames.length), 1.0 / inputNames.length)
-                : tmd.full(Shape.of(1, inputNames.length), 1.0 / inputNames.length);
+                ? Tensors.full(Shape.of(k.get(), inputNames.length), 1.0 / inputNames.length)
+                : Tensors.full(Shape.of(1, inputNames.length), 1.0 / inputNames.length);
         LOGGER.finer("Initial weights: " + weights);
         errors = VarDouble.empty().name("errors");
 
@@ -386,7 +385,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     private void subspaceWeightsUpdate(Tensor<Double> x, int[] assign) {
         Tensor<Double> dm = c.take(0, assign).sub(x).apply_(v -> pow(abs(v), p.get()));
 
-        Tensor<Double> dv = tmd.zeros(Shape.of(k.get(), dm.dim(1)));
+        Tensor<Double> dv = Tensors.zeros(Shape.of(k.get(), dm.dim(1)));
         for (int i = 0; i < dm.dim(0); i++) {
             for (int j = 0; j < dm.dim(1); j++) {
                 dv.incDouble(dm.get(i, j), assign[i], j);

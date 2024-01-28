@@ -47,16 +47,13 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 
 public class CholeskyDecompositionTest {
 
     private static final int TIMES = 100;
 
     private Random random;
-    private static final TensorManager.OfType<Byte> tmb = TensorManager.base().ofByte();
-    private static final TensorManager.OfType<Integer> tmi = TensorManager.base().ofInt();
-    private static final TensorManager.OfType<Float> tmf = TensorManager.base().ofFloat();
-    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
 
     @BeforeEach
     void beforeEach() {
@@ -65,10 +62,8 @@ public class CholeskyDecompositionTest {
 
     @Test
     void symmetricPositiveDefiniteTest() {
-        testType(tmd, true, 1e-8);
-        testType(tmf, true, 1e-0);
-        testType(tmd, false, 1e-8);
-        testType(tmf, false, 1e-0);
+        testType(Tensors.ofDouble(), true, 1e-8);
+        testType(Tensors.ofFloat(), true, 1e-0);
     }
 
     private <N extends Number> void testType(TensorManager.OfType<N> tmt, boolean rightFlag, double TOL) {
@@ -83,7 +78,7 @@ public class CholeskyDecompositionTest {
     }
 
     private <N extends Number> void testSolve(Tensor<N> A, Tensor<N> b, boolean rightFlag, double TOL) {
-        var chol = A.chol(rightFlag);
+        var chol = A.cholesky(rightFlag);
         assertTrue(chol.isSPD());
         assertEquals(rightFlag, chol.hasRightFlag());
 
@@ -97,28 +92,28 @@ public class CholeskyDecompositionTest {
 
         Tensor<N> solution = chol.solve(b);
         assertTrue(A.mv(solution.isMatrix() ? solution.squeeze(1) : solution).deepEquals(b.isMatrix() ? b.squeeze(1) : b, TOL));
-        assertTrue(A.deepEquals(A.chol(false).l().mm(A.chol(true).r()), TOL));
+        assertTrue(A.deepEquals(A.cholesky(false).l().mm(A.cholesky(true).r()), TOL));
     }
 
     @Test
     void testIntegerTypes() {
-        var ti = tmi.eye(10);
-        var ei = assertThrows(IllegalArgumentException.class, ti::chol);
+        var ti = Tensors.ofInt().eye(10);
+        var ei = assertThrows(IllegalArgumentException.class, ti::cholesky);
         assertEquals("Cannot compute decomposition for integer types (dtype: INTEGER)", ei.getMessage());
 
-        var tb = tmb.eye(10);
-        var eb = assertThrows(IllegalArgumentException.class, tb::chol);
+        var tb = Tensors.ofByte().eye(10);
+        var eb = assertThrows(IllegalArgumentException.class, tb::cholesky);
         assertEquals("Cannot compute decomposition for integer types (dtype: BYTE)", eb.getMessage());
     }
 
     <N extends Number> void testNonSPD(Tensor<N> a, Tensor<N> b) {
-        var chol = a.chol();
+        var chol = a.cholesky();
         assertFalse(chol.isSPD());
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, chol::inv);
         assertEquals("Matrix is not symmetric positive definite.", ex.getMessage());
 
-        ex = assertThrows(IllegalArgumentException.class, b::chol);
+        ex = assertThrows(IllegalArgumentException.class, b::cholesky);
         assertEquals("Only square matrices can have Cholesky decomposition.", ex.getMessage());
     }
 }
