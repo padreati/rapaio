@@ -38,11 +38,17 @@ public class TensorSandbox {
     public static void main(String[] args) {
         var tmd = TensorManager.base().ofDouble();
 
-        var t = tmd.seq(Shape.of(10, 10));
-        t.printContent();
+        var m = tmd.seq(Shape.of(10, 10));
+        m.printContent();
 
-        t.mean(0).printContent();
-        t.bsub(1, t.mean(1)).bdiv(1, t.stdc(1, 1)).printContent();
+        var list = m.chunk(0, false, 1);
+        for(var l : list) {
+            l.printContent();
+        }
+
+        TensorManager.base().stack(1, list).printContent();
+
+
     }
 
     static void print(double value) {

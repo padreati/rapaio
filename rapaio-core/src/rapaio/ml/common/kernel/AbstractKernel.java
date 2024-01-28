@@ -35,7 +35,6 @@ import java.io.Serial;
 import java.util.Arrays;
 
 import rapaio.data.Frame;
-import rapaio.math.linear.DVector;
 import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.kernel.cache.KernelCache;
 import rapaio.ml.common.kernel.cache.MapKernelCache;
@@ -84,15 +83,6 @@ public abstract class AbstractKernel implements Kernel {
         return result;
     }
 
-    protected double deltaSumSquares(DVector u, DVector v) {
-        double result = 0;
-        for (int i = 0; i < u.size(); i++) {
-            double delta = u.get(i) - v.get(i);
-            result += delta * delta;
-        }
-        return result;
-    }
-
     protected double deltaSumSquares(Tensor<Double> u, Tensor<Double> v) {
         var delta = u.sub(v);
         return delta.mul(delta).sum();
@@ -107,7 +97,6 @@ public abstract class AbstractKernel implements Kernel {
         }
         return value;
     }
-
 
     public abstract double eval(Frame df1, int row1, Frame df2, int row2);
 

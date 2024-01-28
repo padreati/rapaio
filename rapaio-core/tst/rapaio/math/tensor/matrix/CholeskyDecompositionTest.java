@@ -96,7 +96,7 @@ public class CholeskyDecompositionTest {
         }
 
         Tensor<N> solution = chol.solve(b);
-        assertTrue(A.mv(solution).deepEquals(b.isMatrix() ? b.squeeze(1) : b, TOL));
+        assertTrue(A.mv(solution.isMatrix() ? solution.squeeze(1) : solution).deepEquals(b.isMatrix() ? b.squeeze(1) : b, TOL));
         assertTrue(A.deepEquals(A.chol(false).l().mm(A.chol(true).r()), TOL));
     }
 

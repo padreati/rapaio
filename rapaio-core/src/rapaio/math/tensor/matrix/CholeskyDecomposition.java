@@ -183,7 +183,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
         forwardSubstitution(x, triangle);
         backwardSubstitution(x, triangle);
 
-        return x.squeeze(1);
+        return vectorShape ? x.squeeze(1) : x;
     }
 
     public Tensor<N> inv() {

@@ -70,12 +70,6 @@ public class ExponentialKernel extends AbstractKernel {
     }
 
     @Override
-    public double compute(DVector v, DVector u) {
-        double value = deltaSumSquares(v, u);
-        return Math.exp(factor * value);
-    }
-
-    @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         double value = deltaSumSquares(v, u);
         return Math.exp(factor * value);

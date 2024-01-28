@@ -34,7 +34,6 @@ package rapaio.ml.common.kernel;
 import java.io.Serial;
 
 import rapaio.data.Frame;
-import rapaio.math.linear.DVector;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
@@ -63,12 +62,6 @@ public class MultiQuadricKernel extends AbstractKernel {
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double dot = deltaSumSquares(df1, row1, df2, row2);
-        return Math.sqrt(dot * dot + c_square);
-    }
-
-    @Override
-    public double compute(DVector v, DVector u) {
-        double dot = deltaSumSquares(u, v);
         return Math.sqrt(dot * dot + c_square);
     }
 

@@ -21,7 +21,10 @@
 
 package rapaio.ml.model.rvm;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Random;
 
@@ -32,7 +35,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.common.kernel.LinearKernel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.linear.LinearRegressionModel;
@@ -42,6 +45,7 @@ import rapaio.ml.model.linear.LinearRegressionModel;
  */
 public class RVMRegressionTest {
 
+    private static final TensorManager.OfType<Double> tmd = TensorManager.base().ofDouble();
     private Random random;
 
     @BeforeEach
@@ -56,6 +60,7 @@ public class RVMRegressionTest {
 
         LinearRegressionModel lm = LinearRegressionModel.newModel();
         RegressionResult lmResult = lm.fit(df, target).predict(df, true);
+//        lmResult.printSummary();
 
         RVMRegression rvm = RVMRegression.newModel()
                 .method.set(RVMRegression.Method.EVIDENCE_APPROXIMATION)
@@ -63,6 +68,7 @@ public class RVMRegressionTest {
                 .providers.add(new RVMRegression.InterceptProvider())
                 .providers.add(new RVMRegression.KernelProvider(new LinearKernel(1), 1));
         RegressionResult rvmResult = rvm.fit(df, target).predict(df, true);
+//        rvmResult.printSummary();
 
         // linear model should give similar results with RVM with linear kernel
         assertTrue(Math.abs(lmResult.firstRSquare() - rvmResult.firstRSquare()) < 0.05);
@@ -73,6 +79,7 @@ public class RVMRegressionTest {
                 .providers.add(new RVMRegression.InterceptProvider())
                 .providers.add(new RVMRegression.KernelProvider(new LinearKernel(1)));
         rvmResult = rvm.fit(df, target).predict(df, true);
+//        rvmResult.printSummary();
 
         // linear model should give similar results with RVM with linear kernel
         assertTrue(Math.abs(lmResult.firstRSquare() - rvmResult.firstRSquare()) < 0.05);
@@ -83,6 +90,7 @@ public class RVMRegressionTest {
                 .providers.add(new RVMRegression.InterceptProvider())
                 .providers.add(new RVMRegression.KernelProvider(new LinearKernel(1), 1));
         rvmResult = rvm.fit(df, target).predict(df, true);
+//        rvmResult.printSummary();
 
         // linear model should give similar results with RVM with linear kernel
         assertTrue(Math.abs(lmResult.firstRSquare() - rvmResult.firstRSquare()) < 0.05);
@@ -131,7 +139,7 @@ public class RVMRegressionTest {
         assertTrue(provider.equalOnParams(new RVMRegression.InterceptProvider()));
         assertFalse(provider.equalOnParams(new RVMRegression.RBFProvider(VarDouble.wrap(1))));
 
-        DMatrix x = DMatrix.eye(10);
+        var x = tmd.eye(10);
         RVMRegression.Feature[] features = provider.generateFeatures(random, x);
         assertEquals(1, features.length);
         assertEquals("intercept", features[0].name());
@@ -155,7 +163,7 @@ public class RVMRegressionTest {
         ex = assertThrows(IllegalArgumentException.class, () -> new RVMRegression.RBFProvider(VarDouble.wrap(1), -1));
         assertEquals("Percentage value p=-1 is not in interval [0,1].", ex.getMessage());
 
-        DMatrix x = DMatrix.eye(10);
+        var x = tmd.eye(10);
         RVMRegression.Feature[] features = provider.generateFeatures(random, x);
         assertEquals(10, features.length);
 
@@ -173,7 +181,7 @@ public class RVMRegressionTest {
         assertFalse(provider.equalOnParams(new RVMRegression.KernelProvider(new LinearKernel(1))));
         assertTrue(provider.equalOnParams(new RVMRegression.KernelProvider(new LinearKernel(1), 0.5)));
 
-        RVMRegression.Feature[] features = provider.generateFeatures(random, DMatrix.eye(10));
+        RVMRegression.Feature[] features = provider.generateFeatures(random, tmd.eye(10));
         assertEquals(5, features.length);
         for (RVMRegression.Feature feature : features) {
             assertTrue(feature.name().startsWith("LinearKernel"));
@@ -190,7 +198,7 @@ public class RVMRegressionTest {
         assertFalse(provider.equalOnParams(new RVMRegression.RandomRBFProvider(VarDouble.wrap(2), 1.5, Normal.std())));
         assertFalse(provider.equalOnParams(new RVMRegression.InterceptProvider()));
 
-        DMatrix x = DMatrix.eye(10);
+        var x = tmd.eye(10);
         RVMRegression.Feature[] features = provider.generateFeatures(random, x);
         assertEquals(15, features.length);
         for (RVMRegression.Feature feature : features) {

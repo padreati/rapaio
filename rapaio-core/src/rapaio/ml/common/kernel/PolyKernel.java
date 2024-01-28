@@ -37,7 +37,6 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.math.MathTools;
-import rapaio.math.linear.DVector;
 import rapaio.math.tensor.Tensor;
 
 /**
@@ -110,14 +109,6 @@ public class PolyKernel extends AbstractKernel {
             return slope * dotProd(df1, row1, df2, row2) + bias;
         }
         return Math.pow(slope * dotProd(df1, row1, df2, row2) + bias, exponent);
-    }
-
-    @Override
-    public double compute(DVector v, DVector u) {
-        if (isLinear()) {
-            return slope * v.dot(u) + bias;
-        }
-        return Math.pow(slope * v.dot(u) + bias, exponent);
     }
 
     @Override

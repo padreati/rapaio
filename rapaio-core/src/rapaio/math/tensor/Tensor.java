@@ -31,8 +31,11 @@
 
 package rapaio.math.tensor;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -430,6 +433,32 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return take(order, axis, indices).squeeze(axis);
     }
 
+    default Tensor<N> remove(int axis, int... indices) {
+        return remove(Order.defaultOrder(), axis, indices);
+    }
+
+    default Tensor<N> remove(Order order, int axis, int... indices) {
+        Set<Integer> toRemove = new HashSet<>();
+        for (int i : indices) {
+            toRemove.add(i);
+        }
+        List<Integer> toKeep = new ArrayList<>();
+        for (int i = 0; i < dim(axis); i++) {
+            if (!toRemove.contains(i)) {
+                toKeep.add(i);
+            }
+        }
+        return take(order, axis, toKeep.stream().mapToInt(i -> i).toArray());
+    }
+
+    default Tensor<N> removesq(int axis, int... indices) {
+        return removesq(Order.defaultOrder(), axis, indices);
+    }
+
+    default Tensor<N> removesq(Order order, int axis, int... indices) {
+        return remove(order, axis, indices).squeeze(axis);
+    }
+
     default Tensor<N> sort(int dim, boolean asc) {
         return sort(Order.defaultOrder(), dim, asc);
     }
@@ -609,6 +638,10 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     default Tensor<N> apply(Order askOrder, IntIntBiFunction<N> fun) {
         return copy(askOrder).apply_(askOrder, fun);
+    }
+
+    default Tensor<N> apply_(IntIntBiFunction<N> fun) {
+        return apply_(Order.defaultOrder(), fun);
     }
 
     /**

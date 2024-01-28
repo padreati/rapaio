@@ -46,18 +46,19 @@ import java.util.stream.IntStream;
 import rapaio.core.SamplingTools;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
+import rapaio.core.param.ListParam;
+import rapaio.core.param.ParametricEquals;
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
-import rapaio.core.param.ListParam;
-import rapaio.core.param.ParametricEquals;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
@@ -118,20 +119,24 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
      */
     public final ValueParam<Integer, RVMRegression> maxFailures = new ValueParam<>(this, 10_000, "maxFailures");
 
+    private static final TensorManager tm = TensorManager.base();
+    private static final TensorManager.OfType<Double> tmd = tm.ofDouble();
+
     /**
-     * RVM regression feature. Features are produuced by {@link FeatureProvider} implementations.
+     * RVM regression feature. Features are produced by {@link FeatureProvider} implementations.
      *
-     * @param name       feature name for printing puurposes
+     * @param name       feature name for printing purposes
      * @param trainIndex observation's index used to build feature, -1 if the feature is not based on any observation
      * @param xi         original training observation
      * @param phii       kernelized feature supplier {@code [k(x,xi)]^T}
      * @param kernel     kernel function with second argument provided by internal training observation
      */
-    public record Feature(String name, int trainIndex, DVector xi, Supplier<DVector> phii, Function<DVector, Double> kernel) {
+    public record Feature(String name, int trainIndex, Tensor<Double> xi, Supplier<Tensor<Double>> phii,
+                          Function<Tensor<Double>, Double> kernel) {
     }
 
     public interface FeatureProvider extends ParametricEquals<FeatureProvider> {
-        Feature[] generateFeatures(Random random, DMatrix x);
+        Feature[] generateFeatures(Random random, Tensor<Double> mx);
     }
 
     /**
@@ -145,9 +150,8 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         @Override
-        public Feature[] generateFeatures(Random random, DMatrix x) {
-            DVector mean = DVector.from(x.cols(), col -> x.mapCol(col).mean());
-            return new Feature[] {new Feature("intercept", -1, mean, () -> DVector.fill(x.rows(), 1.0), v -> 1.0)};
+        public Feature[] generateFeatures(Random random, Tensor<Double> x) {
+            return new Feature[] {new Feature("intercept", -1, x.mean(0), () -> tmd.full(Shape.of(x.dim(0)), 1.0), v -> 1.0)};
         }
     }
 
@@ -181,23 +185,23 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         @Override
-        public Feature[] generateFeatures(Random random, DMatrix x) {
-            int len = (int) (x.rows() * gammas.size() * p);
-            int[] selection = SamplingTools.sampleWOR(x.rows() * gammas.size(), len);
+        public Feature[] generateFeatures(Random random, Tensor<Double> x) {
+            int len = (int) (x.dim(0) * gammas.size() * p);
+            int[] selection = SamplingTools.sampleWOR(x.dim(0) * gammas.size(), len);
             Feature[] factories = new Feature[selection.length];
             IntArrays.quickSort(selection);
             int pp = 0;
             for (int pos : selection) {
-                int sigmaIndex = pos / x.rows();
-                int rowIndex = pos % x.rows();
-                DVector xrow = x.mapRowNew(rowIndex);
+                int sigmaIndex = pos / x.dim(0);
+                int rowIndex = pos % x.dim(0);
+                var xrow = x.takesq(0, rowIndex).copy();
                 double gamma = gammas.getDouble(sigmaIndex);
                 RBFKernel kernel = new RBFKernel(gamma);
                 factories[pp++] = new Feature(
                         String.format("%s, vector: %s, train trainIndex: %d", kernel.name(), xrow.toString(), rowIndex),
                         rowIndex,
                         xrow,
-                        () -> DVector.from(x.rows(), r -> kernel.compute(xrow, x.mapRow(r))),
+                        () -> tmd.zeros(Shape.of(x.dim(0))).apply_((r, _) -> kernel.compute(xrow, x.takesq(0, r))),
                         vector -> kernel.compute(vector, xrow)
                 );
             }
@@ -233,19 +237,19 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         @Override
-        public Feature[] generateFeatures(Random random, DMatrix x) {
-            int len = Math.max(1, (int) (x.rows() * p));
-            int[] selection = SamplingTools.sampleWOR(x.rows(), len);
+        public Feature[] generateFeatures(Random random, Tensor<Double> x) {
+            int len = Math.max(1, (int) (x.dim(0) * p));
+            int[] selection = SamplingTools.sampleWOR(x.dim(0), len);
             Feature[] factories = new Feature[selection.length];
             IntArrays.quickSort(selection);
             int pp = 0;
             for (int rowIndex : selection) {
-                DVector xrow = x.mapRowNew(rowIndex);
+                var xrow = x.takesq(0, rowIndex).copy();
                 factories[pp++] = new Feature(
                         String.format("%s, vector: %s, train trainIndex: %d", kernel.name(), xrow.toString(), rowIndex),
                         rowIndex,
                         xrow,
-                        () -> DVector.from(x.rows(), r -> kernel.compute(xrow, x.mapRow(r))),
+                        () -> tmd.zeros(Shape.of(x.dim(0))).apply_((r, _) -> kernel.compute(xrow, x.takesq(0, r))),
                         vector -> kernel.compute(vector, xrow)
                 );
             }
@@ -265,8 +269,8 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         @Override
-        public Feature[] generateFeatures(Random random, DMatrix x) {
-            int len = Math.max(1, (int) (gammas.size() * x.rows() * p));
+        public Feature[] generateFeatures(Random random, Tensor<Double> x) {
+            int len = Math.max(1, (int) (gammas.size() * x.dim(0) * p));
             Feature[] factories = new Feature[len];
             for (int i = 0; i < len; i++) {
                 factories[i] = nextFactory(random, x);
@@ -274,18 +278,18 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             return factories;
         }
 
-        public Feature nextFactory(Random random, DMatrix x) {
+        public Feature nextFactory(Random random, Tensor<Double> x) {
             double sigma = gammas.getDouble(random.nextInt(gammas.size()));
             RBFKernel kernel = new RBFKernel(sigma);
-            DVector out = DVector.fill(x.cols(), 0);
+            var out = tmd.zeros(Shape.of(x.dim(1)));
             for (int j = 0; j < out.size(); j++) {
-                out.set(j, x.get(random.nextInt(x.rows()), j) + noise.sampleNext());
+                out.set(x.get(random.nextInt(x.dim(0)), j) + noise.sampleNext(), j);
             }
             return new Feature(
                     String.format("%s, trainIndex: %s", kernel.name(), out),
                     -1,
                     out,
-                    () -> DVector.from(x.rows(), r -> kernel.compute(out, x.mapRow(r))),
+                    () -> tmd.zeros(Shape.of(x.dim(0))).apply_((r, _) -> kernel.compute(out, x.takesq(0, r))),
                     vector -> kernel.compute(vector, out)
             );
         }
@@ -293,11 +297,12 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
     public static final class RvmRunInfo extends RunInfo<RVMRegression> {
         final boolean[] activeFlag;
-        final DVector activeIndexes;
-        final DVector alpha;
-        final DVector theta;
+        final Tensor<Double> activeIndexes;
+        final Tensor<Double> alpha;
+        final Tensor<Double> theta;
 
-        private RvmRunInfo(RVMRegression model, int run, boolean[] activeFlag, DVector activeIndexes, DVector alpha, DVector theta) {
+        private RvmRunInfo(RVMRegression model, int run, boolean[] activeFlag, Tensor<Double> activeIndexes, Tensor<Double> alpha,
+                Tensor<Double> theta) {
             super(model, run);
             this.activeFlag = activeFlag;
             this.activeIndexes = activeIndexes;
@@ -308,15 +313,15 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
     private int[] featureIndexes;
     private int[] trainingIndexes;
-    private DMatrix relevanceVectors;
+    private Tensor<Double> mrelevanceVectors;
 
-    private DVector m;
+    private Tensor<Double> vm;
 
     /**
      * Fitted covariance matrix.
      */
-    private DMatrix sigma;
-    private DVector alpha;
+    private Tensor<Double> msigma;
+    private Tensor<Double> valpha;
     private double beta;
     private boolean converged;
     private int iterations;
@@ -362,24 +367,24 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         return trainingIndexes;
     }
 
-    public DMatrix relevanceVectors() {
-        return relevanceVectors;
+    public Tensor<Double> relevanceVectors() {
+        return mrelevanceVectors;
     }
 
-    public DVector m() {
-        return m;
+    public Tensor<Double> m() {
+        return vm;
     }
 
-    public DMatrix sigma() {
-        return sigma;
+    public Tensor<Double> sigma() {
+        return msigma;
     }
 
     public double beta() {
         return beta;
     }
 
-    public DVector alpha() {
-        return alpha;
+    public Tensor<Double> alpha() {
+        return valpha;
     }
 
     public int iterations() {
@@ -402,23 +407,23 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
      * @return Numbers of fitted relevant vectors count, -1 if model is not fitted.
      */
     public int rvCount() {
-        return hasLearned ? relevanceVectors.rows() : -1;
+        return hasLearned ? mrelevanceVectors.dim(0) : -1;
     }
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         Random random = getRandom();
-        DMatrix x = buildInput(df);
-        DVector y = buildTarget(df);
+        Tensor<Double> mx = buildInput(df);
+        Tensor<Double> vy = buildTarget(df);
 
         features = new ArrayList<>();
         for (FeatureProvider fp : providers.get()) {
-            features.addAll(Arrays.asList(fp.generateFeatures(random, x)));
+            features.addAll(Arrays.asList(fp.generateFeatures(random, mx)));
         }
         methodImpl = switch (method.get()) {
-            case EVIDENCE_APPROXIMATION -> new EvidenceApproximation(this, x, y);
-            case FAST_TIPPING -> new FastTipping(this, x, y);
-            case ONLINE_PRUNING -> new FastOnline(this, x, y);
+            case EVIDENCE_APPROXIMATION -> new EvidenceApproximation(this, mx, vy);
+            case FAST_TIPPING -> new FastTipping(this, mx, vy);
+            case ONLINE_PRUNING -> new FastOnline(this, mx, vy);
         };
 
         return methodImpl.fit();
@@ -431,30 +436,30 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
      * @param df source data frame
      * @return matrix of features
      */
-    private DMatrix buildInput(Frame df) {
-        return DMatrix.copy(df.mapVars(inputNames));
+    private Tensor<Double> buildInput(Frame df) {
+        return df.mapVars(inputNames).dtNew();
     }
 
-    protected DVector buildTarget(Frame df) {
-        return df.rvar(targetNames[0]).dv().denseCopy();
+    protected Tensor<Double> buildTarget(Frame df) {
+        return df.rvar(targetNames[0]).dtNew();
     }
 
     @Override
     protected RegressionResult corePredict(Frame df, boolean withResiduals, final double[] quantiles) {
-        DMatrix feat = buildInput(df);
+        Tensor<Double> feat = buildInput(df);
         RegressionResult prediction = RegressionResult.build(this, df, withResiduals, quantiles);
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = 0;
-            for (int j = 0; j < m.size(); j++) {
-                pred += features.get(featureIndexes[j]).kernel.apply(feat.mapRow(i)) * m.get(j);
+            for (int j = 0; j < vm.size(); j++) {
+                pred += features.get(featureIndexes[j]).kernel.apply(feat.takesq(0, i)) * vm.get(j);
             }
             prediction.prediction(firstTargetName()).setDouble(i, pred);
             if (quantiles != null && quantiles.length > 0) {
-                DVector phi_m = DVector.zeros(m.size());
-                for (int j = 0; j < m.size(); j++) {
-                    phi_m.set(j, features.get(featureIndexes[j]).kernel.apply(feat.mapRow(i)));
+                var phi_m = tmd.zeros(Shape.of(vm.size()));
+                for (int j = 0; j < vm.size(); j++) {
+                    phi_m.set(features.get(featureIndexes[j]).kernel.apply(feat.takesq(0, i)), j);
                 }
-                double variance = 1.0 / beta + sigma.dot(phi_m).dot(phi_m);
+                double variance = 1.0 / beta + phi_m.unsqueeze(0).mm(msigma).mv(phi_m).get();
                 Normal normal = Normal.of(pred, Math.sqrt(variance));
                 for (int j = 0; j < quantiles.length; j++) {
                     double q = normal.quantile(quantiles[j]);
@@ -487,7 +492,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             return sb.toString();
         }
 
-        sb.append("> relevant vectors count: ").append(relevanceVectors.rows()).append("\n");
+        sb.append("> relevant vectors count: ").append(mrelevanceVectors.dim(0)).append("\n");
         sb.append("> relevant vector training indexes: [")
                 .append(IntArrays.stream(trainingIndexes, 0, trainingIndexes.length).mapToObj(String::valueOf)
                         .collect(Collectors.joining(",")))
@@ -495,9 +500,9 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         sb.append("> convergence: ").append(converged).append("\n> iterations: ").append(iterations).append("\n");
 
         sb.append("> mean: \n");
-        sb.append(m.toFullContent(options));
+        sb.append(vm.toFullContent(options));
         sb.append(">alphas: \n");
-        sb.append(alpha.toFullContent(options));
+        sb.append(valpha.toFullContent(options));
         sb.append("> beta: ").append(Format.floatFlex(beta)).append("\n");
 
         return sb.toString();
@@ -512,16 +517,16 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
     public String toFullContent(Printer printer, POpt<?>... options) {
         return toSummary(printer, options)
                 + "> sigma: \n"
-                + sigma.toContent(options);
+                + msigma.toContent(options);
     }
 
     private static abstract class MethodImpl {
 
         protected final RVMRegression parent;
-        public final DMatrix x;
-        public final DVector y;
+        public final Tensor<Double> x;
+        public final Tensor<Double> y;
 
-        protected MethodImpl(RVMRegression parent, DMatrix x, DVector y) {
+        protected MethodImpl(RVMRegression parent, Tensor<Double> x, Tensor<Double> y) {
             this.parent = parent;
             this.x = x;
             this.y = y;
@@ -533,26 +538,26 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
     private static abstract class BaseAlgorithm extends MethodImpl {
 
         public int[] indexes;
-        public DMatrix phi;
-        public DVector m;
-        public DMatrix sigma;
+        public Tensor<Double> phi;
+        public Tensor<Double> m;
+        public Tensor<Double> sigma;
 
-        public DVector alpha;
+        public Tensor<Double> alpha;
         public double beta;
 
-        protected BaseAlgorithm(RVMRegression parent, DMatrix x, DVector y) {
+        protected BaseAlgorithm(RVMRegression parent, Tensor<Double> x, Tensor<Double> y) {
             super(parent, x, y);
         }
 
-        protected DMatrix buildPhi() {
-            DVector[] vectors = new DVector[parent.features.size()];
+        protected Tensor<Double> buildPhi() {
+            Tensor<Double>[] vectors = new Tensor[parent.features.size()];
             for (int i = 0; i < parent.features.size(); i++) {
                 vectors[i] = parent.features.get(i).phii.get();
             }
-            return DMatrix.copy(false, vectors);
+            return tm.stack(1, List.of(vectors));
         }
 
-        protected boolean testConvergence(DVector oldAlpha, DVector alpha) {
+        protected boolean testConvergence(Tensor<Double> oldAlpha, Tensor<Double> alpha) {
             double delta = 0;
             for (int i = 0; i < alpha.size(); i++) {
                 double new_value = alpha.get(i);
@@ -571,31 +576,31 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
     private static final class EvidenceApproximation extends BaseAlgorithm {
 
-        public EvidenceApproximation(RVMRegression parent, DMatrix x, DVector y) {
+        public EvidenceApproximation(RVMRegression parent, Tensor<Double> x, Tensor<Double> y) {
             super(parent, x, y);
         }
 
-        private DMatrix phi_t_phi;
-        private DVector phi_t_y;
+        private Tensor<Double> phi_t_phi;
+        private Tensor<Double> phi_t_y;
 
         private int n;
         private int fcount;
 
         public boolean fit() {
-            n = x.rows();
+            n = x.dim(0);
             fcount = parent.features.size();
             phi = buildPhi();
             indexes = IntArrays.newSeq(0, parent.features.size());
-            phi_t_phi = phi.t().dot(phi);
-            phi_t_y = phi.t().dot(y);
+            phi_t_phi = phi.t().mm(phi);
+            phi_t_y = phi.t().mv(y);
 
             initializeAlphaBeta();
             for (int it = 1; it <= parent.maxIter.get(); it++) {
 
                 // compute m and sigma
-                DMatrix t = phi_t_phi.copy().mul(beta);
-                for (int i = 0; i < t.rows(); i++) {
-                    t.inc(i, i, alpha.get(i));
+                var t = phi_t_phi.copy().mul_(beta);
+                for (int i = 0; i < t.dim(0); i++) {
+                    t.inc(alpha.get(i), i, i);
                 }
 
                 try {
@@ -603,21 +608,20 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 } catch (IllegalArgumentException ignored) {
                     sigma = t.qr().inv();
                 }
-                m = sigma.dot(phi_t_y).mul(beta);
+                m = sigma.mv(phi_t_y).mul_(beta);
 
                 // compute alpha and beta
 
-                DVector gamma = DVector.from(m.size(), i -> 1 - alpha.get(i) * sigma.get(i, i));
-
-                DVector oldAlpha = alpha.copy();
+                var gamma = tmd.zeros(Shape.of(m.size())).apply_((i, _) -> 1 - alpha.get(i) * sigma.get(i, i));
+                var oldAlpha = alpha.copy();
 
                 // update alpha
                 for (int i = 0; i < alpha.size(); i++) {
-                    alpha.set(i, gamma.get(i) / (m.get(i) * m.get(i)));
+                    alpha.set(gamma.get(i) / (m.get(i) * m.get(i)), i);
                 }
                 // update sigma
-                DVector deltaDiff = phi.dot(m).sub(y);
-                beta = (n - gamma.sum()) / (deltaDiff.dot(deltaDiff));
+                var deltaDiff = phi.mv(m).sub_(y);
+                beta = (n - gamma.sum()) / (deltaDiff.vdot(deltaDiff));
 
                 pruneAlphas();
 
@@ -666,15 +670,15 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 }
             }
             indexes = newIndex;
-            alpha = alpha.mapNew(keep);
+            alpha = alpha.take(0, keep).copy();
 
-            phi = phi.mapCols(keep).copy();
-            phi_t_phi = phi_t_phi.mapCols(keep).mapRows(keep).copy();
-            phi_t_y = phi_t_y.mapNew(keep);
+            phi = phi.take(1, keep).copy();
+            phi_t_phi = phi_t_phi.take(1, keep).take(0, keep).copy();
+            phi_t_y = phi_t_y.take(0, keep).copy();
 
-            DMatrix t = phi_t_phi.copy().mul(beta);
-            for (int i = 0; i < t.rows(); i++) {
-                t.inc(i, i, alpha.get(i));
+            var t = phi_t_phi.mul(beta);
+            for (int i = 0; i < t.dim(0); i++) {
+                t.inc(alpha.get(i), i, i);
             }
 
             try {
@@ -683,23 +687,24 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 sigma = t.qr().inv();
             }
 
-            m = sigma.dot(phi_t_y).mul(beta);
+            m = sigma.mv(phi_t_y).mul_(beta);
         }
 
         private void initializeAlphaBeta() {
-            beta = 1.0 / (y.variance() * 0.1);
-            alpha = DVector.from(phi.cols(), row -> Math.abs(parent.getRandom().nextDouble() / 10));
+            beta = 1.0 / (y.var() * 0.1);
+            alpha = tmd.zeros(Shape.of(phi.dim(1))).apply_((row, _) -> Math.abs(parent.getRandom().nextDouble() / 10));
         }
 
         private void updateResults(RVMRegression parent, boolean convergent, int iterations) {
             parent.featureIndexes = indexes;
             parent.trainingIndexes =
                     IntStream.of(indexes).map(i -> parent.features.get(i).trainIndex).filter(i -> i >= 0).distinct().toArray();
-            parent.relevanceVectors =
-                    DMatrix.copy(true, IntStream.of(indexes).mapToObj(i -> parent.features.get(i).xi).toArray(DVector[]::new));
-            parent.m = m.copy();
-            parent.sigma = sigma.copy();
-            parent.alpha = alpha.copy();
+            parent.mrelevanceVectors = tm.stack(1, IntStream.of(indexes)
+                    .mapToObj(i -> parent.features.get(i).xi)
+                    .toList());
+            parent.vm = m.copy();
+            parent.msigma = sigma.copy();
+            parent.valpha = alpha.copy();
             parent.beta = beta;
             parent.converged = convergent;
             parent.iterations = iterations;
@@ -715,19 +720,19 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         private double[] s;
         private double[] q;
 
-        private DMatrix phi_hat;
-        private DVector phi_dot_y;
+        private Tensor<Double> phi_hat;
+        private Tensor<Double> phi_dot_y;
 
-        public FastTipping(RVMRegression parent, DMatrix x, DVector y) {
+        public FastTipping(RVMRegression parent, Tensor<Double> x, Tensor<Double> y) {
             super(parent, x, y);
         }
 
         public boolean fit() {
             phi = buildPhi();
-            phi_hat = phi.t().dot(phi);
-            phi_dot_y = phi.t().dot(y);
+            phi_hat = phi.t().mm(phi);
+            phi_dot_y = phi.t().mv(y);
 
-            n = phi.rows();
+            n = phi.dim(0);
             fcount = parent.features.size();
             ss = new double[fcount];
             qq = new double[fcount];
@@ -739,7 +744,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             computeSQ();
             computeBeta();
 
-            DVector old_alpha = alpha.copy();
+            var old_alpha = alpha.copy();
             for (int it = 1; it <= parent.maxIter.get(); it++) {
 
                 updateBestVector();
@@ -791,15 +796,15 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             if (theta[i] > 0) {
                 if (Double.isInfinite(alpha_i)) {
                     // add alpha_i to model
-                    alpha.set(i, s[i] * s[i] / theta[i]);
+                    alpha.set(s[i] * s[i] / theta[i], i);
                     indexes = addIndex(i);
                 } else {
                     // alpha is in set, re-estimate alpha
-                    alpha.set(i, s[i] * s[i] / theta[i]);
+                    alpha.set(s[i] * s[i] / theta[i], i);
                 }
             } else {
                 if (Double.isFinite(alpha_i) && indexes.length > 1) {
-                    alpha.set(i, Double.POSITIVE_INFINITY);
+                    alpha.set(Double.POSITIVE_INFINITY, i);
                     indexes = removeIndex(indexes, i);
                 }
             }
@@ -825,8 +830,8 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         private void initialize() {
-            beta = 1.0 / (y.variance() * 0.1);
-            alpha = DVector.fill(parent.features.size(), Double.POSITIVE_INFINITY);
+            beta = 1.0 / (y.varc(1) * 0.1);
+            alpha = tmd.full(Shape.of(parent.features.size()), Double.POSITIVE_INFINITY);
 
             // select one alpha
 
@@ -842,25 +847,25 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             }
             indexes = new int[] {best_index};
 
-            alpha.set(best_index, phi_hat.get(best_index, best_index) / (best_projection - 1.0 / beta));
+            alpha.set(phi_hat.get(best_index, best_index) / (best_projection - 1.0 / beta), best_index);
         }
 
         private void computeSigmaAndMu() {
 
-            DMatrix m_sigma_inv = phi_hat.mapRows(indexes).mapCols(indexes).copy().mul(beta);
+            Tensor<Double> m_sigma_inv = phi_hat.take(0, indexes).take(1, indexes).copy().mul_(beta);
             for (int i = 0; i < indexes.length; i++) {
-                m_sigma_inv.inc(i, i, alpha.get(indexes[i]));
+                m_sigma_inv.inc(alpha.get(indexes[i]), i, i);
             }
             sigma = m_sigma_inv.qr().inv();
-            m = sigma.dot(phi_dot_y.mapNew(indexes)).mul(beta);
+            m = sigma.mv(phi_dot_y.take(0, indexes)).mul_(beta);
         }
 
         void computeSQ() {
             for (int i = 0; i < fcount; i++) {
-                DVector left = phi_hat.mapCol(i).mapNew(indexes);
-                DVector right = phi_dot_y.mapNew(indexes);
-                ss[i] = beta * phi_hat.get(i, i) - beta * beta * left.dotBilinear(sigma);
-                qq[i] = beta * phi_dot_y.get(i) - beta * beta * left.dotBilinear(sigma, right);
+                Tensor<Double> left = phi_hat.takesq(1, i).take(0, indexes);
+                Tensor<Double> right = phi_dot_y.take(0, indexes);
+                ss[i] = beta * phi_hat.get(i, i) - beta * beta * left.unsqueeze(0).mm(sigma).mv(left).get(0);
+                qq[i] = beta * phi_dot_y.get(i) - beta * beta * left.unsqueeze(0).mm(sigma).mv(right).get(0);
             }
 
             for (int i = 0; i < fcount; i++) {
@@ -876,21 +881,22 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         private void computeBeta() {
-            DVector gamma = DVector.from(m.size(), i -> 1 - alpha.get(indexes[i]) * sigma.get(i, i));
-            DMatrix pruned_phi = phi.mapCols(indexes);
-            DVector delta = pruned_phi.dot(m).sub(y);
-            beta = (n - gamma.sum()) / delta.dot(delta);
+            Tensor<Double> gamma = tmd.zeros(Shape.of(m.size())).apply_((i, _) -> 1 - alpha.get(indexes[i]) * sigma.get(i, i));
+            Tensor<Double> pruned_phi = phi.take(1, indexes);
+            Tensor<Double> delta = pruned_phi.mv(m).sub_(y);
+            beta = (n - gamma.sum()) / delta.vdot(delta);
         }
 
         private void updateResults(RVMRegression parent, boolean convergent, int iterations) {
             parent.featureIndexes = indexes;
             parent.trainingIndexes =
                     IntStream.of(indexes).map(i -> parent.features.get(i).trainIndex).filter(i -> i >= 0).distinct().toArray();
-            parent.relevanceVectors =
-                    DMatrix.copy(true, IntStream.of(indexes).mapToObj(i -> parent.features.get(i).xi).toArray(DVector[]::new));
-            parent.m = m.copy();
-            parent.sigma = sigma.copy();
-            parent.alpha = alpha.mapNew(indexes);
+            parent.mrelevanceVectors = tm.stack(1, IntStream.of(indexes)
+                    .mapToObj(i -> parent.features.get(i).xi)
+                    .toList());
+            parent.vm = m.copy();
+            parent.msigma = sigma.copy();
+            parent.valpha = alpha.take(0, indexes).copy();
             parent.beta = beta;
             parent.converged = convergent;
             parent.iterations = iterations;
@@ -902,19 +908,19 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         private int n;
         private int fcount;
         private double beta;
-        private DMatrix sigma;
-        private DVector m;
+        private Tensor<Double> sigma;
+        private Tensor<Double> m;
 
-        private DMatrix phiHat;
+        private Tensor<Double> phiHat;
 
-        private DVector phiiDotPhii;
-        private DVector phiiDotY;
+        private Tensor<Double> phiiDotPhii;
+        private Tensor<Double> phiiDotY;
         private double yTy;
-        private DVector ss;
-        private DVector qq;
-        private DVector s;
-        private DVector q;
-        private DVector alpha;
+        private Tensor<Double> ss;
+        private Tensor<Double> qq;
+        private Tensor<Double> s;
+        private Tensor<Double> q;
+        private Tensor<Double> alpha;
 
         private final List<Integer> candidates = new LinkedList<>();
         private int[] fails;
@@ -926,14 +932,14 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         private final PhiCache cache = new PhiCache();
 
-        public FastOnline(RVMRegression parent, DMatrix x, DVector y) {
+        public FastOnline(RVMRegression parent, Tensor<Double> x, Tensor<Double> y) {
             super(parent, x, y);
         }
 
         public boolean fit() {
             initialize();
 
-            n = x.rows();
+            n = x.dim(0);
 
             computeSigmaAndMu();
             computeSQ();
@@ -944,12 +950,12 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 for (ActiveFeature ac : active) {
                     a[ac.index] = true;
                 }
-                DVector activeIndexes = DVector.from(active.size(), i -> active.get(i).index);
+                Tensor<Double> activeIndexes = tmd.zeros(Shape.of(active.size())).apply_((i, _) -> (double) active.get(i).index);
                 parent.runningHook.get().accept(new RvmRunInfo(parent, 0, a,
                         activeIndexes, alpha.copy(), q.copy().apply(x -> x * x).sub(s)));
             }
 
-            DVector old_alpha = alpha.copy();
+            Tensor<Double> old_alpha = alpha.copy();
             for (int it = 1; it <= parent.maxIter.get(); it++) {
 
                 updateBestVector();
@@ -962,7 +968,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                     for (ActiveFeature ac : active) {
                         a[ac.index] = true;
                     }
-                    DVector activeIndexes = DVector.from(active.size(), i -> active.get(i).index);
+                    Tensor<Double> activeIndexes = tmd.zeros(Shape.of(active.size())).apply_((i, _) -> (double) active.get(i).index);
                     parent.runningHook.get().accept(new RvmRunInfo(parent, it, a,
                             activeIndexes, alpha.copy(), q.copy().apply(x -> x * x).sub(s).apply(Math::log1p)));
                 }
@@ -988,30 +994,30 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             fails = IntArrays.newFill(fcount, 0);
 
             // initialize raw features
-            phiiDotPhii = DVector.fill(fcount, Double.NaN);
-            phiiDotY = DVector.fill(fcount, Double.NaN);
-            yTy = y.dot(y);
+            phiiDotPhii = tmd.full(Shape.of(fcount), Double.NaN);
+            phiiDotY = tmd.full(Shape.of(fcount), Double.NaN);
+            yTy = y.vdot(y);
 
-            ss = DVector.fill(fcount, 0);
-            qq = DVector.fill(fcount, 0);
-            s = DVector.fill(fcount, 0);
-            q = DVector.fill(fcount, 0);
-            alpha = DVector.fill(fcount, Double.POSITIVE_INFINITY);
+            ss = tmd.zeros(Shape.of(fcount));
+            qq = tmd.zeros(Shape.of(fcount));
+            s = tmd.zeros(Shape.of(fcount));
+            q = tmd.zeros(Shape.of(fcount));
+            alpha = tmd.full(Shape.of(fcount), Double.POSITIVE_INFINITY);
 
-            beta = 1.0 / (y.variance() * 0.1);
+            beta = 1.0 / (y.varc(1) * 0.1);
 
             // select one alpha
 
             int bestIndex = 0;
-            DVector bestVector = parent.features.get(0).phii.get();
-            phiiDotPhii.set(0, bestVector.dot(bestVector));
-            phiiDotY.set(0, bestVector.dot(y));
+            Tensor<Double> bestVector = parent.features.get(0).phii.get();
+            phiiDotPhii.set(bestVector.vdot(bestVector), 0);
+            phiiDotY.set(bestVector.vdot(y), 0);
             double bestProjection = phiiDotY.get(0) / phiiDotPhii.get(0);
 
             for (int i = 1; i < fcount; i++) {
-                DVector phii = parent.features.get(i).phii.get();
-                phiiDotPhii.set(i, phii.dot(phii));
-                phiiDotY.set(i, phii.dot(y));
+                Tensor<Double> phii = parent.features.get(i).phii.get();
+                phiiDotPhii.set(phii.vdot(phii), i);
+                phiiDotY.set(phii.vdot(y), i);
                 double projection = phiiDotY.get(i) / phiiDotPhii.get(i);
                 if (projection >= bestProjection) {
                     bestIndex = i;
@@ -1020,36 +1026,36 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 }
             }
             active.add(new ActiveFeature(bestIndex, bestVector));
-            alpha.set(bestIndex, phiiDotPhii.get(bestIndex) / (bestProjection - 1.0 / beta));
+            alpha.set(phiiDotPhii.get(bestIndex) / (bestProjection - 1.0 / beta), bestIndex);
 
             // initial phi_hat, dimension 1x1 with value computed already in artifacts
-            phiHat = DMatrix.fill(1, 1, phiiDotPhii.get(bestIndex));
+            phiHat = tmd.full(Shape.of(1, 1), phiiDotPhii.get(bestIndex));
         }
 
         private void computeSigmaAndMu() {
 
-            DMatrix m_sigma_inv = phiHat.copy().mul(beta);
+            Tensor<Double> m_sigma_inv = phiHat.mul(beta);
             for (int i = 0; i < active.size(); i++) {
-                m_sigma_inv.inc(i, i, alpha.get(active.get(i).index));
+                m_sigma_inv.inc(alpha.get(active.get(i).index), i, i);
             }
-            sigma = m_sigma_inv.cholesky().solve(DMatrix.eye(active.size()));
-            m = sigma.dot(computePhiDotY().mul(beta));
+            sigma = m_sigma_inv.chol().solve(tmd.eye(active.size()));
+            m = sigma.mv(computePhiDotY().mul(beta));
         }
 
-        private DVector computePhiiDotPhi(int i) {
+        private Tensor<Double> computePhiiDotPhi(int i) {
 
             // first check if it is activeFlag, since if it is activeFlag the values are already in phi_hat
             if (Double.isFinite(alpha.get(i))) {
                 for (int j = 0; j < active.size(); j++) {
                     if (i == active.get(j).index) {
-                        return phiHat.mapCol(j);
+                        return phiHat.takesq(1, j);
                     }
                 }
             }
 
             // if not activeFlag then try to complete the vector from cache
 
-            DVector v = DVector.fill(active.size(), Double.NaN);
+            Tensor<Double> v = tmd.full(Shape.of(active.size()), Double.NaN);
             boolean full = true;
             for (int j = 0; j < active.size(); j++) {
                 ActiveFeature a = active.get(j);
@@ -1057,17 +1063,17 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 if (Double.isNaN(value)) {
                     full = false;
                 } else {
-                    v.set(j, value);
+                    v.set(value, j);
                 }
             }
 
             // if not full from cache, then regenerate the vector and fill missing values, do that also in cache
             if (!full) {
-                DVector phii = parent.features.get(i).phii.get();
+                Tensor<Double> phii = parent.features.get(i).phii.get();
                 for (int j = 0; j < v.size(); j++) {
                     if (Double.isNaN(v.get(j))) {
-                        double value = active.get(j).vector.dot(phii);
-                        v.set(j, value);
+                        double value = active.get(j).vector.vdot(phii);
+                        v.set(value, j);
                         cache.store(i, active.get(j).index, value);
                     }
                 }
@@ -1076,30 +1082,30 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             return v;
         }
 
-        private DVector computePhiDotY() {
+        private Tensor<Double> computePhiDotY() {
             double[] v = new double[active.size()];
             int pos = 0;
             for (var a : active) {
                 v[pos++] = phiiDotY.get(a.index);
             }
-            return DVector.wrap(v);
+            return tmd.stride(v);
         }
 
         void computeSQ() {
-            DVector right = computePhiDotY();
+            Tensor<Double> right = computePhiDotY();
             for (int i : candidates) {
-                DVector left = computePhiiDotPhi(i);
-                DVector sigmaDotLeft = sigma.dot(left);
-                ss.set(i, beta * phiiDotPhii.get(i) - beta * beta * sigmaDotLeft.dot(left));
-                qq.set(i, beta * phiiDotY.get(i) - beta * beta * sigmaDotLeft.dot(right));
+                Tensor<Double> left = computePhiiDotPhi(i);
+                Tensor<Double> sigmaDotLeft = sigma.mv(left);
+                ss.set(beta * phiiDotPhii.get(i) - beta * beta * sigmaDotLeft.vdot(left), i);
+                qq.set(beta * phiiDotY.get(i) - beta * beta * sigmaDotLeft.vdot(right), i);
 
                 double alpha_i = alpha.get(i);
                 if (Double.isInfinite(alpha_i)) {
-                    s.set(i, ss.get(i));
-                    q.set(i, qq.get(i));
+                    s.set(ss.get(i), i);
+                    q.set(qq.get(i), i);
                 } else {
-                    s.set(i, alpha_i * ss.get(i) / (alpha_i - ss.get(i)));
-                    q.set(i, alpha_i * qq.get(i) / (alpha_i - ss.get(i)));
+                    s.set(alpha_i * ss.get(i) / (alpha_i - ss.get(i)), i);
+                    q.set(alpha_i * qq.get(i) / (alpha_i - ss.get(i)), i);
                 }
             }
         }
@@ -1109,7 +1115,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             for (int i = 0; i < active.size(); i++) {
                 gammaSum += alpha.get(active.get(i).index) * sigma.get(i, i);
             }
-            double low = yTy - 2 * m.dot(computePhiDotY()) + phiHat.dot(m).dot(m);
+            double low = yTy - 2 * m.vdot(computePhiDotY()) + m.unsqueeze(0).mm(phiHat).mv(m).get();
             beta = (n - active.size() + gammaSum) / low;
         }
 
@@ -1170,37 +1176,39 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         private void addActiveFeature(int index, double _alpha) {
-            alpha.set(index, _alpha);
+            alpha.set(_alpha, index);
 
             // add activeFlag feature to the trainIndex
 
-            DVector phii = parent.features.get(index).phii.get();
+            Tensor<Double> phii = parent.features.get(index).phii.get();
             active.add(new ActiveFeature(index, phii));
 
             // adjust phiHat by adding a new row and column
 
-            phiHat = phiHat.resizeCopy(phiHat.rows() + 1, phiHat.cols() + 1, Double.NaN);
+            Tensor<Double> fill = tmd.full(Shape.of(phiHat.dim(0) + 1, phiHat.dim(1) + 1), Double.NaN);
+            phiHat.copyTo(fill.narrow(0, true, 0, phiHat.dim(0)).narrow(1, true, 0, phiHat.dim(1)));
+            phiHat = fill;
 
             // fill the remaining entries from cache
             boolean full = true;
-            for (int i = 0; i < phiHat.rows(); i++) {
+            for (int i = 0; i < phiHat.dim(0); i++) {
                 double value = cache.get(index, active.get(i).index);
                 if (Double.isNaN(value)) {
                     full = false;
                 } else {
-                    phiHat.set(phiHat.rows() - 1, i, value);
-                    phiHat.set(i, phiHat.cols() - 1, value);
+                    phiHat.set(value, phiHat.dim(0) - 1, i);
+                    phiHat.set(value, i, phiHat.dim(1) - 1);
                 }
             }
 
             // if not completed from cache
             if (!full) {
-                for (int i = 0; i < phiHat.rows(); i++) {
-                    double value = phiHat.get(phiHat.rows() - 1, i);
+                for (int i = 0; i < phiHat.dim(0); i++) {
+                    double value = phiHat.get(phiHat.dim(0) - 1, i);
                     if (Double.isNaN(value)) {
-                        value = active.get(i).vector.dot(phii);
-                        phiHat.set(phiHat.rows() - 1, i, value);
-                        phiHat.set(i, phiHat.cols() - 1, value);
+                        value = active.get(i).vector.vdot(phii);
+                        phiHat.set(value, phiHat.dim(0) - 1, i);
+                        phiHat.set(value, i, phiHat.dim(1) - 1);
                         cache.store(index, active.get(i).index, value);
                     }
                 }
@@ -1208,11 +1216,11 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         private void updateActiveFeature(int index, double _alpha) {
-            alpha.set(index, _alpha);
+            alpha.set(_alpha, index);
         }
 
         private void removeActiveFeature(int index) {
-            alpha.set(index, Double.POSITIVE_INFINITY);
+            alpha.set(Double.POSITIVE_INFINITY, index);
 
             // find position of activeFlag feature to be removed
             int pos = -1;
@@ -1233,15 +1241,14 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
             // adjust phiHat
 
-            phiHat = phiHat.removeRows(pos).removeColsNew(pos);
+            // this copy is required?
+            phiHat = phiHat.remove(0, pos).remove(1, pos).copy();
         }
 
-        private boolean testConvergence(DVector old_alpha) {
-            /*
-                In step 11, we must judge if we have attained a local maximum of the marginal likelihood. We
-                terminate when the changes in log α in Step 6 for all basis functions in the model are smaller than
-                10 −6 and all other θ i ≤ 0.
-             */
+        private boolean testConvergence(Tensor<Double> old_alpha) {
+//                In step 11, we must judge if we have attained a local maximum of the marginal likelihood. We
+//                terminate when the changes in log α in Step 6 for all basis functions in the model are smaller than
+//                10 −6 and all other θ i ≤ 0.
             double delta = 0.0;
             for (int i = 0; i < alpha.size(); i++) {
                 double new_value = alpha.get(i);
@@ -1266,13 +1273,11 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                             .filter(i -> i >= 0)
                             .distinct()
                             .toArray();
-            parent.relevanceVectors = DMatrix.copy(true, active
-                    .stream().mapToInt(a -> a.index)
-                    .mapToObj(i -> parent.features.get(i).xi)
-                    .toArray(DVector[]::new));
-            parent.m = m.copy();
-            parent.sigma = sigma.copy();
-            parent.alpha = alpha.mapNew(parent.featureIndexes);
+            parent.mrelevanceVectors =
+                    tm.stack(1, active.stream().mapToInt(a -> a.index).mapToObj(i -> parent.features.get(i).xi).toList());
+            parent.vm = m.copy();
+            parent.msigma = sigma.copy();
+            parent.valpha = alpha.take(0, parent.featureIndexes).copy();
             parent.beta = beta;
             parent.converged = convergent;
             parent.iterations = iterations;
@@ -1293,7 +1298,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             }
         }
 
-        private record ActiveFeature(int index, DVector vector) {
+        private record ActiveFeature(int index, Tensor<Double> vector) {
         }
     }
 }
