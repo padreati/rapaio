@@ -279,11 +279,6 @@ public abstract class AbstractTensor<N extends Number> implements Tensor<N> {
     }
 
     @Override
-    public String toString() {
-        return STR."\{this.getClass().getSimpleName()} {\{layout().toString()}}";
-    }
-
-    @Override
     public String toSummary(Printer printer, POpt<?>... options) {
         return toString();
     }

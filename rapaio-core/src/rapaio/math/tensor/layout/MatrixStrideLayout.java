@@ -31,9 +31,7 @@
 
 package rapaio.math.tensor.layout;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -405,18 +403,6 @@ public class MatrixStrideLayout implements StrideLayout {
 
     @Override
     public String toString() {
-        List<String> flagString = new ArrayList<>();
-        if (isCOrdered()) {
-            flagString.add("C_DENSE");
-        }
-        if (isFOrdered()) {
-            flagString.add("F_DENSE");
-        }
-        return "StrideLayout{"
-                + "shape=[" + IntStream.of(shape.dims()).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "],"
-                + "offset=" + offset + ","
-                + "strides=[" + IntStream.of(strides).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "],"
-                + "flags=[" + String.join(",", flagString) + "]"
-                + "}";
+        return STR."MatrixStride([\{dim(0)},\{dim(1)}],\{offset},[\{stride(0)},\{stride(1)}])";
     }
 }

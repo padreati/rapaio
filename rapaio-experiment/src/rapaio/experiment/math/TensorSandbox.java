@@ -44,10 +44,8 @@ public class TensorSandbox {
         for(var l : list) {
             l.printContent();
         }
-
-        Tensors.stack(1, list).printContent();
-
-
+        var s = Tensors.stack(1, list);
+        s.printContent();
     }
 
     static void print(double value) {

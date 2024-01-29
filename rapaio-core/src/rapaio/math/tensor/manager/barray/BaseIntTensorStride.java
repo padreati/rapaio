@@ -1447,4 +1447,11 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
 //        }
         return toArray();
     }
+
+    @Override
+    public String toString() {
+        String strDIms = Arrays.toString(layout.dims());
+        String strStrides = Arrays.toString(layout.strides());
+        return STR."BaseStride{\{dtype().id()},\{strDIms},\{layout.offset()},\{strStrides}}\n\{toContent()}";
+    }
 }

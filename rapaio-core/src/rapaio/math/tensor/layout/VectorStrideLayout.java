@@ -210,4 +210,9 @@ public final class VectorStrideLayout implements StrideLayout {
     public int[] narrowStrides(int axis) {
         return new int[0];
     }
+
+    @Override
+    public String toString() {
+        return STR."VectorStride([\{dim(0)}],\{offset},[\{stride(0)}])";
+    }
 }

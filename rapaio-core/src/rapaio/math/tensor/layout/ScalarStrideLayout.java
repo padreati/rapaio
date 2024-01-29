@@ -151,4 +151,9 @@ public record ScalarStrideLayout(int offset) implements StrideLayout {
     public int[] narrowStrides(int axis) {
         throw new IndexOutOfBoundsException();
     }
+
+    @Override
+    public String toString() {
+        return STR."ScalarStride([],\{offset},[])";
+    }
 }
