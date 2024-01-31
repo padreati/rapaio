@@ -1257,7 +1257,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                agg = op.applyFloat(agg, storage.getFloat(p));
+                agg = op.aggFloat(agg, storage.getFloat(p));
             }
         }
         return agg;
@@ -1269,7 +1269,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
                 if (!dtype().isNaN(storage.getFloat(p))) {
-                    aggregate = op.applyFloat(aggregate, storage.getFloat(p));
+                    aggregate = op.aggFloat(aggregate, storage.getFloat(p));
                 }
             }
         }
@@ -1287,7 +1287,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            float value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialFloat(), op::applyFloat);
+            float value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialFloat(), op::aggFloat);
             res.ptrSet(resIt.next(), value);
         }
         return res;
@@ -1304,7 +1304,7 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            float value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.FLOAT, op.initialFloat(), op::applyFloat);
+            float value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.FLOAT, op.initialFloat(), op::aggFloat);
             res.ptrSet(resIt.next(), value);
         }
         return res;

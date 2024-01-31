@@ -31,12 +31,19 @@
 
 package rapaio.math.tensor;
 
+import jdk.incubator.vector.ByteVector;
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
+import rapaio.data.OperationNotAvailableException;
+
 public interface Storage<N extends Number> {
 
     DType<N> dType();
 
     int size();
-
 
     N get(int ptr);
 
@@ -81,4 +88,136 @@ public interface Storage<N extends Number> {
     void incDouble(int ptr, double value);
 
     void fillDouble(double value);
+
+    default ByteVector loadByte(VectorSpecies<Byte> species, int offset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default ByteVector loadByte(VectorSpecies<Byte> species, int offset, VectorMask<Byte> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default ByteVector loadByte(VectorSpecies<Byte> species, int offset, int[] index, int indexOffset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default ByteVector loadByte(VectorSpecies<Byte> species, int offset, int[] index, int indexOffset, VectorMask<Byte> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveByte(ByteVector a, int offset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveByte(ByteVector a, int offset, VectorMask<Byte> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveByte(ByteVector a, int offset, int[] index, int indexOffset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveByte(ByteVector a, int offset, int[] index, int indexOffset, VectorMask<Byte> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+
+
+    default IntVector loadInt(VectorSpecies<Integer> species, int offset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default IntVector loadInt(VectorSpecies<Integer> species, int offset, VectorMask<Integer> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default IntVector loadInt(VectorSpecies<Integer> species, int offset, int[] index, int indexOffset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default IntVector loadInt(VectorSpecies<Integer> species, int offset, int[] index, int indexOffset, VectorMask<Integer> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveInt(IntVector a, int offset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveInt(IntVector a, int offset, VectorMask<Integer> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveInt(IntVector a, int offset, int[] index, int indexOffset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveInt(IntVector a, int offset, int[] index, int indexOffset, VectorMask<Integer> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+
+    default FloatVector loadFloat(VectorSpecies<Float> species, int offset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default FloatVector loadFloat(VectorSpecies<Float> species, int offset, VectorMask<Float> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default FloatVector loadFloat(VectorSpecies<Float> species, int offset, int[] index, int indexOffset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default FloatVector loadFloat(VectorSpecies<Float> species, int offset, int[] index, int indexOffset, VectorMask<Float> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveFloat(FloatVector a, int offset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveFloat(FloatVector a, int offset, VectorMask<Float> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveFloat(FloatVector a, int offset, int[] index, int indexOffset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveFloat(FloatVector a, int offset, int[] index, int indexOffset, VectorMask<Float> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+
+    default DoubleVector loadDouble(VectorSpecies<Double> species, int offset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default DoubleVector loadDouble(VectorSpecies<Double> species, int offset, VectorMask<Double> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default DoubleVector loadDouble(VectorSpecies<Double> species, int offset, int[] index, int indexOffset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default DoubleVector loadDouble(VectorSpecies<Double> species, int offset, int[] index, int indexOffset, VectorMask<Double> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveDouble(DoubleVector a, int offset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveDouble(DoubleVector a, int offset, VectorMask<Double> mask) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveDouble(DoubleVector a, int offset, int[] index, int indexOffset) {
+        throw new OperationNotAvailableException();
+    }
+
+    default void saveDouble(DoubleVector a, int offset, int[] index, int indexOffset, VectorMask<Double> mask) {
+        throw new OperationNotAvailableException();
+    }
 }

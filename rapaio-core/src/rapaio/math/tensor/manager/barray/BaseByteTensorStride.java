@@ -1257,7 +1257,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                agg = op.applyByte(agg, storage.getByte(p));
+                agg = op.aggByte(agg, storage.getByte(p));
             }
         }
         return agg;
@@ -1269,7 +1269,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
                 if (!dtype().isNaN(storage.getByte(p))) {
-                    aggregate = op.applyByte(aggregate, storage.getByte(p));
+                    aggregate = op.aggByte(aggregate, storage.getByte(p));
                 }
             }
         }
@@ -1287,7 +1287,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            byte value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialByte(), op::applyByte);
+            byte value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialByte(), op::aggByte);
             res.ptrSet(resIt.next(), value);
         }
         return res;
@@ -1304,7 +1304,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            byte value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.BYTE, op.initialByte(), op::applyByte);
+            byte value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.BYTE, op.initialByte(), op::aggByte);
             res.ptrSet(resIt.next(), value);
         }
         return res;

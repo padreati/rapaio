@@ -33,6 +33,9 @@ package rapaio.math.tensor.storage.array;
 
 import java.util.Arrays;
 
+import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.storage.IntStorage;
 
 public final class IntArrayStorage extends IntStorage {
@@ -64,5 +67,45 @@ public final class IntArrayStorage extends IntStorage {
     @Override
     public void fillInt(int value) {
         Arrays.fill(array, value);
+    }
+
+    @Override
+    public IntVector loadInt(VectorSpecies<Integer> species, int offset) {
+        return IntVector.fromArray(species, array, offset);
+    }
+
+    @Override
+    public IntVector loadInt(VectorSpecies<Integer> species, int offset, VectorMask<Integer> mask) {
+        return IntVector.fromArray(species, array, offset, mask);
+    }
+
+    @Override
+    public IntVector loadInt(VectorSpecies<Integer> species, int offset, int[] index, int indexOffset) {
+        return IntVector.fromArray(species, array, offset, index, indexOffset);
+    }
+
+    @Override
+    public IntVector loadInt(VectorSpecies<Integer> species, int offset, int[] index, int indexOffset, VectorMask<Integer> mask) {
+        return IntVector.fromArray(species, array, offset, index, indexOffset, mask);
+    }
+
+    @Override
+    public void saveInt(IntVector a, int offset) {
+        a.intoArray(array, offset);
+    }
+
+    @Override
+    public void saveInt(IntVector a, int offset, VectorMask<Integer> mask) {
+        a.intoArray(array, offset, mask);
+    }
+
+    @Override
+    public void saveInt(IntVector a, int offset, int[] index, int indexOffset) {
+        a.intoArray(array, offset, index, indexOffset);
+    }
+
+    @Override
+    public void saveInt(IntVector a, int offset, int[] index, int indexOffset, VectorMask<Integer> mask) {
+        a.intoArray(array, offset, index, indexOffset, mask);
     }
 }

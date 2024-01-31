@@ -33,6 +33,9 @@ package rapaio.math.tensor.storage.array;
 
 import java.util.Arrays;
 
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.storage.DoubleStorage;
 
 public final class DoubleArrayStorage extends DoubleStorage {
@@ -64,5 +67,45 @@ public final class DoubleArrayStorage extends DoubleStorage {
     @Override
     public void fillDouble(double value) {
         Arrays.fill(array, value);
+    }
+
+    @Override
+    public DoubleVector loadDouble(VectorSpecies<Double> species, int offset) {
+        return DoubleVector.fromArray(species, array, offset);
+    }
+
+    @Override
+    public DoubleVector loadDouble(VectorSpecies<Double> species, int offset, VectorMask<Double> mask) {
+        return DoubleVector.fromArray(species, array, offset, mask);
+    }
+
+    @Override
+    public DoubleVector loadDouble(VectorSpecies<Double> species, int offset, int[] index, int indexOffset) {
+        return DoubleVector.fromArray(species, array, offset, index, indexOffset);
+    }
+
+    @Override
+    public DoubleVector loadDouble(VectorSpecies<Double> species, int offset, int[] index, int indexOffset, VectorMask<Double> mask) {
+        return DoubleVector.fromArray(species, array, offset, index, indexOffset, mask);
+    }
+
+    @Override
+    public void saveDouble(DoubleVector a, int offset) {
+        a.intoArray(array, offset);
+    }
+
+    @Override
+    public void saveDouble(DoubleVector a, int offset, VectorMask<Double> mask) {
+        a.intoArray(array, offset, mask);
+    }
+
+    @Override
+    public void saveDouble(DoubleVector a, int offset, int[] index, int indexOffset) {
+        a.intoArray(array, offset, index, indexOffset);
+    }
+
+    @Override
+    public void saveDouble(DoubleVector a, int offset, int[] index, int indexOffset, VectorMask<Double> mask) {
+        a.intoArray(array, offset, index, indexOffset, mask);
     }
 }

@@ -33,6 +33,9 @@ package rapaio.math.tensor.storage.array;
 
 import java.util.Arrays;
 
+import jdk.incubator.vector.ByteVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.storage.ByteStorage;
 
 public final class ByteArrayStorage extends ByteStorage {
@@ -64,5 +67,45 @@ public final class ByteArrayStorage extends ByteStorage {
     @Override
     public void fillByte(byte value) {
         Arrays.fill(array, value);
+    }
+
+    @Override
+    public ByteVector loadByte(VectorSpecies<Byte> species, int offset) {
+        return ByteVector.fromArray(species, array, offset);
+    }
+
+    @Override
+    public ByteVector loadByte(VectorSpecies<Byte> species, int offset, VectorMask<Byte> mask) {
+        return ByteVector.fromArray(species, array, offset, mask);
+    }
+
+    @Override
+    public ByteVector loadByte(VectorSpecies<Byte> species, int offset, int[] index, int indexOffset) {
+        return ByteVector.fromArray(species, array, offset, index, indexOffset);
+    }
+
+    @Override
+    public ByteVector loadByte(VectorSpecies<Byte> species, int offset, int[] index, int indexOffset, VectorMask<Byte> mask) {
+        return ByteVector.fromArray(species, array, offset, index, indexOffset, mask);
+    }
+
+    @Override
+    public void saveByte(ByteVector a, int offset) {
+        a.intoArray(array, offset);
+    }
+
+    @Override
+    public void saveByte(ByteVector a, int offset, VectorMask<Byte> mask) {
+        a.intoArray(array, offset, mask);
+    }
+
+    @Override
+    public void saveByte(ByteVector a, int offset, int[] index, int indexOffset) {
+        a.intoArray(array, offset, index, indexOffset);
+    }
+
+    @Override
+    public void saveByte(ByteVector a, int offset, int[] index, int indexOffset, VectorMask<Byte> mask) {
+        a.intoArray(array, offset, index, indexOffset, mask);
     }
 }

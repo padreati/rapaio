@@ -55,6 +55,9 @@ public class CodeGenApp {
                 Replace.of("ptrGetDouble", "ptrGetInt"),
                 Replace.of("ptrSetDouble", "ptrSetInt"),
                 Replace.of("fillDouble", "fillInt"),
+                Replace.of("aggDouble","aggInt"),
+                Replace.of("loadDouble","loadInt"),
+                Replace.of("saveDouble","saveInt"),
                 Replace.of("double", "int"),
                 Replace.of("Double", "Integer"),
                 Replace.of("DOUBLE", "INTEGER")

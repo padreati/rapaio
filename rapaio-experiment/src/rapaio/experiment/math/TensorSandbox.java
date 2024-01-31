@@ -31,24 +31,15 @@
 
 package rapaio.experiment.math;
 
+import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensors;
 
 public class TensorSandbox {
     public static void main(String[] args) {
 
-        var m = Tensors.seq(Shape.of(10, 10));
-        m.printContent();
-
-        var list = m.chunk(0, false, 1);
-        for(var l : list) {
-            l.printContent();
-        }
-        var s = Tensors.stack(1, list);
-        s.printContent();
-    }
-
-    static void print(double value) {
-        System.out.println(value);
+        var t = Tensors.seq(Shape.of(10,3));
+        var t2 = t.t_().copy(Order.F);;
+        t2.iterator(Order.F).forEachRemaining(value -> System.out.print(value + ","));
     }
 }

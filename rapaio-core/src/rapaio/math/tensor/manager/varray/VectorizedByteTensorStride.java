@@ -31,9 +31,6 @@
 
 package rapaio.math.tensor.manager.varray;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.Order;
@@ -41,8 +38,8 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.manager.barray.BaseByteTensorStride;
 import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.math.tensor.manager.barray.BaseByteTensorStride;
 
 public final class VectorizedByteTensorStride extends BaseByteTensorStride implements Tensor<Byte> {
 
@@ -72,49 +69,11 @@ public final class VectorizedByteTensorStride extends BaseByteTensorStride imple
         return indexes;
     }
 
-    @Override
-    public List<Tensor<Byte>> splitAll(boolean keepdim, int[][] indexes) {
-        if (indexes.length != rank()) {
-            throw new IllegalArgumentException(
-                    "Indexes length of %d is not the same as shape rank %d.".formatted(indexes.length, rank()));
-        }
-        List<Tensor<Byte>> results = new ArrayList<>();
-        int[] starts = new int[indexes.length];
-        int[] ends = new int[indexes.length];
-        splitAllRec(results, indexes, keepdim, starts, ends, 0);
-        return results;
-    }
-
-    private void splitAllRec(List<Tensor<Byte>> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
-        if (level == indexes.length) {
-            return;
-        }
-        for (int i = 0; i < indexes[level].length; i++) {
-            starts[level] = indexes[level][i];
-            ends[level] = i < indexes[level].length - 1 ? indexes[level][i + 1] : shape().dim(level);
-            if (level == indexes.length - 1) {
-                results.add(narrowAll(keepdim, starts, ends));
-            } else {
-                splitAllRec(results, indexes, keepdim, starts, ends, level + 1);
-            }
-        }
-    }
 
     /*
 
     @Override
-    public VectorizedByteTensorStride apply_(Order askOrder, IntIntBiFunction<Byte> apply) {
-        var it = ptrIterator(askOrder);
-        int i = 0;
-        while (it.hasNext()) {
-            int p = it.nextInt();
-            storage.set(p, apply.applyAsInt(i++, p));
-        }
-        return this;
-    }
-
-    @Override
-    public ByteTensor fill_(Byte value) {
+    public Tensor<Byte> fill_(Byte value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;

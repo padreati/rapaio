@@ -1257,7 +1257,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                agg = op.applyInt(agg, storage.getInt(p));
+                agg = op.aggInt(agg, storage.getInt(p));
             }
         }
         return agg;
@@ -1269,7 +1269,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
                 if (!dtype().isNaN(storage.getInt(p))) {
-                    aggregate = op.applyInt(aggregate, storage.getInt(p));
+                    aggregate = op.aggInt(aggregate, storage.getInt(p));
                 }
             }
         }
@@ -1287,7 +1287,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            int value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialInt(), op::applyInt);
+            int value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialInt(), op::aggInt);
             res.ptrSet(resIt.next(), value);
         }
         return res;
@@ -1304,7 +1304,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            int value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.INTEGER, op.initialInt(), op::applyInt);
+            int value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.INTEGER, op.initialInt(), op::aggInt);
             res.ptrSet(resIt.next(), value);
         }
         return res;

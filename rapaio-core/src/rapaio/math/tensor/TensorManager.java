@@ -33,6 +33,7 @@ package rapaio.math.tensor;
 
 import java.util.Collection;
 import java.util.Random;
+import java.util.Vector;
 
 import rapaio.math.tensor.manager.barray.BaseArrayTensorManager;
 import rapaio.math.tensor.manager.varray.VectorizedArrayTensorManager;
@@ -139,7 +140,7 @@ public interface TensorManager {
     }
 
 
-    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, Storage<N> storage) {
+    default <N extends Number, V extends Vector<N>> Tensor<N> stride(DType<N> dType, Shape shape, Order order, Storage<N> storage) {
         return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage);
     }
 

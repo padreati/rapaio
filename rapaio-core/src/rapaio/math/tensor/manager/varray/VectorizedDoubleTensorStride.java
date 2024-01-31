@@ -31,9 +31,6 @@
 
 package rapaio.math.tensor.manager.varray;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.Order;
@@ -41,8 +38,8 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.manager.barray.BaseDoubleTensorStride;
 import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.math.tensor.manager.barray.BaseDoubleTensorStride;
 
 public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride implements Tensor<Double> {
 
@@ -72,49 +69,11 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
         return indexes;
     }
 
-    @Override
-    public List<Tensor<Double>> splitAll(boolean keepdim, int[][] indexes) {
-        if (indexes.length != rank()) {
-            throw new IllegalArgumentException(
-                    "Indexes length of %d is not the same as shape rank %d.".formatted(indexes.length, rank()));
-        }
-        List<Tensor<Double>> results = new ArrayList<>();
-        int[] starts = new int[indexes.length];
-        int[] ends = new int[indexes.length];
-        splitAllRec(results, indexes, keepdim, starts, ends, 0);
-        return results;
-    }
-
-    private void splitAllRec(List<Tensor<Double>> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
-        if (level == indexes.length) {
-            return;
-        }
-        for (int i = 0; i < indexes[level].length; i++) {
-            starts[level] = indexes[level][i];
-            ends[level] = i < indexes[level].length - 1 ? indexes[level][i + 1] : shape().dim(level);
-            if (level == indexes.length - 1) {
-                results.add(narrowAll(keepdim, starts, ends));
-            } else {
-                splitAllRec(results, indexes, keepdim, starts, ends, level + 1);
-            }
-        }
-    }
 
     /*
 
     @Override
-    public VectorizedDoubleTensorStride apply_(Order askOrder, IntIntBiFunction<Double> apply) {
-        var it = ptrIterator(askOrder);
-        int i = 0;
-        while (it.hasNext()) {
-            int p = it.nextInt();
-            storage.set(p, apply.applyAsInt(i++, p));
-        }
-        return this;
-    }
-
-    @Override
-    public DoubleTensor fill_(Double value) {
+    public Tensor<Double> fill_(Double value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
             int i = offset;

@@ -1257,7 +1257,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
-                agg = op.applyDouble(agg, storage.getDouble(p));
+                agg = op.aggDouble(agg, storage.getDouble(p));
             }
         }
         return agg;
@@ -1269,7 +1269,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
                 if (!dtype().isNaN(storage.getDouble(p))) {
-                    aggregate = op.applyDouble(aggregate, storage.getDouble(p));
+                    aggregate = op.aggDouble(aggregate, storage.getDouble(p));
                 }
             }
         }
@@ -1287,7 +1287,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            double value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialDouble(), op::applyDouble);
+            double value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialDouble(), op::aggDouble);
             res.ptrSet(resIt.next(), value);
         }
         return res;
@@ -1304,7 +1304,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            double value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.DOUBLE, op.initialDouble(), op::applyDouble);
+            double value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.DOUBLE, op.initialDouble(), op::aggDouble);
             res.ptrSet(resIt.next(), value);
         }
         return res;
