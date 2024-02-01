@@ -32,6 +32,8 @@
 package rapaio.math.tensor.manager.varray;
 
 import jdk.incubator.vector.ByteVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -69,59 +71,59 @@ public final class VectorizedByteTensorStride extends BaseByteTensorStride imple
         return indexes;
     }
 
-
-    /*
-
     @Override
     public Tensor<Byte> fill_(Byte value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
+            int i = 0;
             if (bound > offset) {
                 ByteVector fill = ByteVector.broadcast(SPEC, value);
                 for (; i < bound; i += SPEC_LEN * loop.step) {
                     if (loop.step == 1) {
-                        fill.intoArray(array, i);
+                        storage.saveByte(fill, offset + i * loop.step);
                     } else {
-                        fill.intoArray(array, i, loopIndexes, 0);
+                        storage.saveByte(fill, offset + i * loop.step, loopIndexes, 0);
                     }
                 }
             }
-            for (; i < loop.bound + offset; i += loop.step) {
-                array[i] = value;
+            for (; i < loop.size + offset; i += loop.step) {
+                storage.setByte(offset + i * loop.step, value);
             }
         }
         return this;
     }
 
     @Override
-    public ByteTensor fillNan_(Byte value) {
+    public Tensor<Byte> fillNan_(Byte value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
+            int bound = SPEC.loopBound(loop.size);
+            int i = 0;
             if (bound > offset) {
                 ByteVector fill = ByteVector.broadcast(SPEC, value);
-                for (; i < bound; i += SPEC_LEN * loop.step) {
+                for (; i < bound; i += SPEC_LEN) {
+                    int p = offset + i * loop.step;
                     if (loop.step == 1) {
-                        ByteVector a = ByteVector.fromArray(SPEC, array, i);
+                        ByteVector a = storage.loadByte(SPEC, p);
                         VectorMask<Byte> m = a.test(VectorOperators.IS_NAN);
-                        fill.intoArray(array, i, m);
+                        storage.saveByte(fill, p, m);
                     } else {
-                        ByteVector a = ByteVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                        ByteVector a = storage.loadByte(SPEC, p, loopIndexes, 0);
                         VectorMask<Byte> m = a.test(VectorOperators.IS_NAN);
-                        fill.intoArray(array, i, loopIndexes, 0, m);
+                        storage.saveByte(fill, p, loopIndexes, 0, m);
                     }
                 }
             }
-            for (; i < loop.bound + offset; i += loop.step) {
-                if (dtype().isNaN(array[i])) {
-                    array[i] = value;
+            for (; i < loop.size + offset; i += loop.step) {
+                int p = offset + i * loop.step;
+                if (dtype().isNaN(storage.getByte(p))) {
+                    storage.setByte(p, value);
                 }
             }
         }
         return this;
     }
 
+    /*
     @Override
     public ByteTensor clamp_(Byte min, Byte max) {
         for (int offset : loop.offsets) {

@@ -32,6 +32,8 @@
 package rapaio.math.tensor.manager.varray;
 
 import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -69,59 +71,59 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
         return indexes;
     }
 
-
-    /*
-
     @Override
     public Tensor<Integer> fill_(Integer value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
+            int i = 0;
             if (bound > offset) {
                 IntVector fill = IntVector.broadcast(SPEC, value);
                 for (; i < bound; i += SPEC_LEN * loop.step) {
                     if (loop.step == 1) {
-                        fill.intoArray(array, i);
+                        storage.saveInt(fill, offset + i * loop.step);
                     } else {
-                        fill.intoArray(array, i, loopIndexes, 0);
+                        storage.saveInt(fill, offset + i * loop.step, loopIndexes, 0);
                     }
                 }
             }
-            for (; i < loop.bound + offset; i += loop.step) {
-                array[i] = value;
+            for (; i < loop.size + offset; i += loop.step) {
+                storage.setInt(offset + i * loop.step, value);
             }
         }
         return this;
     }
 
     @Override
-    public IntTensor fillNan_(Integer value) {
+    public Tensor<Integer> fillNan_(Integer value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
+            int bound = SPEC.loopBound(loop.size);
+            int i = 0;
             if (bound > offset) {
                 IntVector fill = IntVector.broadcast(SPEC, value);
-                for (; i < bound; i += SPEC_LEN * loop.step) {
+                for (; i < bound; i += SPEC_LEN) {
+                    int p = offset + i * loop.step;
                     if (loop.step == 1) {
-                        IntVector a = IntVector.fromArray(SPEC, array, i);
+                        IntVector a = storage.loadInt(SPEC, p);
                         VectorMask<Integer> m = a.test(VectorOperators.IS_NAN);
-                        fill.intoArray(array, i, m);
+                        storage.saveInt(fill, p, m);
                     } else {
-                        IntVector a = IntVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                        IntVector a = storage.loadInt(SPEC, p, loopIndexes, 0);
                         VectorMask<Integer> m = a.test(VectorOperators.IS_NAN);
-                        fill.intoArray(array, i, loopIndexes, 0, m);
+                        storage.saveInt(fill, p, loopIndexes, 0, m);
                     }
                 }
             }
-            for (; i < loop.bound + offset; i += loop.step) {
-                if (dtype().isNaN(array[i])) {
-                    array[i] = value;
+            for (; i < loop.size + offset; i += loop.step) {
+                int p = offset + i * loop.step;
+                if (dtype().isNaN(storage.getInt(p))) {
+                    storage.setInt(p, value);
                 }
             }
         }
         return this;
     }
 
+    /*
     @Override
     public IntTensor clamp_(Integer min, Integer max) {
         for (int offset : loop.offsets) {

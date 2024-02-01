@@ -69,10 +69,8 @@ public class VarDoubleStorage implements Storage<Double> {
     }
 
     @Override
-    public void fill(Double value) {
-        for (int i = 0; i < vd.size(); i++) {
-            vd.setDouble(i, value);
-        }
+    public void fill(Double value, int start, int len) {
+        fillDouble(value, start, len);
     }
 
     @Override
@@ -91,8 +89,8 @@ public class VarDoubleStorage implements Storage<Double> {
     }
 
     @Override
-    public void fillByte(byte value) {
-        fillDouble(value);
+    public void fillByte(byte value, int start, int len) {
+        fillDouble(value, start, len);
     }
 
     @Override
@@ -111,8 +109,8 @@ public class VarDoubleStorage implements Storage<Double> {
     }
 
     @Override
-    public void fillInt(int value) {
-        fillDouble(value);
+    public void fillInt(int value, int start, int len) {
+        fillDouble(value, start, len);
     }
 
     @Override
@@ -131,8 +129,8 @@ public class VarDoubleStorage implements Storage<Double> {
     }
 
     @Override
-    public void fillFloat(float value) {
-        fillDouble(value);
+    public void fillFloat(float value, int start, int len) {
+        fillDouble(value, start, len);
     }
 
     @Override
@@ -151,8 +149,8 @@ public class VarDoubleStorage implements Storage<Double> {
     }
 
     @Override
-    public void fillDouble(double value) {
-        for (int i = 0; i < vd.size(); i++) {
+    public void fillDouble(double value, int start, int len) {
+        for (int i = start; i < start+len; i++) {
             vd.setDouble(i, value);
         }
     }

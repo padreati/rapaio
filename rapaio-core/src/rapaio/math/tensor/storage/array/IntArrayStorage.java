@@ -65,8 +65,8 @@ public final class IntArrayStorage extends IntStorage {
     }
 
     @Override
-    public void fillInt(int value) {
-        Arrays.fill(array, value);
+    public void fillInt(int value, int start, int len) {
+        Arrays.fill(array, start, start + len, value);
     }
 
     @Override

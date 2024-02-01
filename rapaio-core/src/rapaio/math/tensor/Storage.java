@@ -51,7 +51,7 @@ public interface Storage<N extends Number> {
 
     void inc(int ptr, N value);
 
-    void fill(N value);
+    void fill(N value, int start, int len);
 
 
     byte getByte(int ptr);
@@ -60,7 +60,7 @@ public interface Storage<N extends Number> {
 
     void incByte(int ptr, byte value);
 
-    void fillByte(byte value);
+    void fillByte(byte value, int start, int len);
 
 
     int getInt(int ptr);
@@ -69,7 +69,7 @@ public interface Storage<N extends Number> {
 
     void incInt(int ptr, int value);
 
-    void fillInt(int value);
+    void fillInt(int value, int start, int len);
 
 
     float getFloat(int ptr);
@@ -78,7 +78,7 @@ public interface Storage<N extends Number> {
 
     void incFloat(int ptr, float value);
 
-    void fillFloat(float value);
+    void fillFloat(float value, int start, int len);
 
 
     double getDouble(int ptr);
@@ -87,7 +87,7 @@ public interface Storage<N extends Number> {
 
     void incDouble(int ptr, double value);
 
-    void fillDouble(double value);
+    void fillDouble(double value, int start, int len);
 
     default ByteVector loadByte(VectorSpecies<Byte> species, int offset) {
         throw new OperationNotAvailableException();
@@ -120,7 +120,6 @@ public interface Storage<N extends Number> {
     default void saveByte(ByteVector a, int offset, int[] index, int indexOffset, VectorMask<Byte> mask) {
         throw new OperationNotAvailableException();
     }
-
 
 
     default IntVector loadInt(VectorSpecies<Integer> species, int offset) {

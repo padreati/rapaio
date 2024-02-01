@@ -52,7 +52,7 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
-import algebra.Utils;
+import commons.Utils;
 import rapaio.util.collection.IntArrays;
 
 @BenchmarkMode( {Mode.Throughput})

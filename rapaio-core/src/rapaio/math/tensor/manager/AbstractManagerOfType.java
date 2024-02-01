@@ -108,7 +108,7 @@ public abstract class AbstractManagerOfType<N extends Number> implements TensorM
     @Override
     public final Tensor<N> full(Shape shape, N value, Order order) {
         var storage = storage().zeros(shape.size());
-        storage.fill(value);
+        storage.fill(value, 0, shape.size());
         return stride(shape, Order.autoFC(order), storage);
     }
 

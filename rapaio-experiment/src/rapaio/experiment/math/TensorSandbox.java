@@ -38,8 +38,13 @@ import rapaio.math.tensor.Tensors;
 public class TensorSandbox {
     public static void main(String[] args) {
 
-        var t = Tensors.seq(Shape.of(10,3));
-        var t2 = t.t_().copy(Order.F);;
-        t2.iterator(Order.F).forEachRemaining(value -> System.out.print(value + ","));
+        var tc = Tensors.seq(Shape.of(10, 10), Order.C);
+        var tf = Tensors.seq(Shape.of(10, 10), Order.F);
+
+        tc.fill_(10.);
+        tf.fill_(10.);
+
+        tc.printContent();
+        tf.printContent();
     }
 }

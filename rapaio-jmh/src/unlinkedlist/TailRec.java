@@ -51,7 +51,7 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
-import algebra.Utils;
+import commons.Utils;
 import rapaio.experiment.asm.CustomClassLoader;
 import rapaio.experiment.asm.Factorial;
 import rapaio.experiment.asm.FactorialDelegated;

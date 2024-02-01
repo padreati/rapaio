@@ -29,7 +29,7 @@
  *
  */
 
-package commons.tensor;
+package tensor;
 
 import static rapaio.graphics.opt.GOptions.color;
 import static rapaio.graphics.opt.GOptions.labels;
@@ -55,7 +55,7 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
-import algebra.Utils;
+import commons.Utils;
 import jsat.linear.DenseMatrix;
 import rapaio.data.Frame;
 import rapaio.data.preprocessing.RefSort;
@@ -64,9 +64,6 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
-import rapaio.math.linear.dense.DMatrixDenseC;
-import rapaio.math.linear.dense.DMatrixDenseR;
-import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
@@ -76,27 +73,28 @@ import rapaio.util.collection.DoubleArrays;
 
 @BenchmarkMode( {Mode.AverageTime})
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-public class CopyBenchmark {
+public class FillBenchmark {
+
+    private static final TensorManager.OfType<Double> base = TensorManager.baseArray().ofDouble();
+    private static final TensorManager.OfType<Double> vectorized = TensorManager.vectorizedArray().ofDouble();
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
         @Param( {"100","500", "1000", "2500", "5000", "10000"})
         private int n;
 
-        private DMatrixDenseC mc;
-        private DMatrixDenseR mr;
-
         private DenseMatrix jsatA;
 
-        private Tensor<Double> tc;
-        private Tensor<Double> tf;
+        private Tensor<Double> bTc;
+        private Tensor<Double> bTf;
+
+        private Tensor<Double> vTc;
+        private Tensor<Double> vTf;
 
         @Setup(Level.Invocation)
         public void setup() {
             Random random = new Random(42);
             double[] array = DoubleArrays.newFrom(0, n * n, _ -> random.nextDouble());
-            mc = new DMatrixDenseC(0, n, n, array);
-            mr = new DMatrixDenseR(0, n, n, array);
 
             jsatA = new DenseMatrix(n, n);
             int p = 0;
@@ -106,46 +104,58 @@ public class CopyBenchmark {
                 }
             }
 
-            tc = TensorManager.vectorizedArray().stride(DType.DOUBLE, Shape.of(n, n), Order.C, array);
-            tf = tc.copy(Order.F);
+            bTc = base.stride(Shape.of(n, n), Order.C, array);
+            bTf = base.stride(Shape.of(n, n), Order.F, array);
+            vTc = vectorized.stride(Shape.of(n, n), Order.C, array);
+            vTf = vectorized.stride(Shape.of(n, n), Order.F, array);
         }
     }
 
     @Benchmark
-    public void testJSAT(BenchmarkState bs, Blackhole bh) {
-        bh.consume(bs.jsatA.transpose());
+    public void fillJSAT(BenchmarkState bs, Blackhole bh) {
+        bs.jsatA.zeroOut();
+        bh.consume(bs.jsatA);
     }
 
     @Benchmark
-    public void tensorTransposeOrderC(BenchmarkState bs, Blackhole bh) {
-        var transpose = bs.tc.t();
-        bh.consume(transpose);
+    public void fillBaseOrderC(BenchmarkState bs, Blackhole bh) {
+        bh.consume(bs.bTc.fill_(0.));
     }
 
     @Benchmark
-    public void tensorTransposeOrderF(BenchmarkState bs, Blackhole bh) {
-        var transpose = bs.tf.t();
-        bh.consume(transpose);
+    public void fillBaseOrderF(BenchmarkState bs, Blackhole bh) {
+        bh.consume(bs.bTf.fill_(0.));
+    }
+
+
+    @Benchmark
+    public void fillVecOrderC(BenchmarkState bs, Blackhole bh) {
+        bh.consume(bs.vTc.fill_(0.));
+    }
+
+    @Benchmark
+    public void fillVecOrderF(BenchmarkState bs, Blackhole bh) {
+        bh.consume(bs.vTf.fill_(0.));
     }
 
     public static void main(String[] args) throws RunnerException, IOException {
         Options opt = new OptionsBuilder()
-                .include(CopyBenchmark.class.getSimpleName())
+                .include(FillBenchmark.class.getSimpleName())
                 .warmupTime(TimeValue.seconds(2))
                 .warmupIterations(2)
                 .measurementTime(TimeValue.seconds(2))
                 .measurementIterations(3)
                 .forks(1)
                 .resultFormat(ResultFormatType.CSV)
-                .result(Utils.resultPath(CopyBenchmark.class))
+                .result(Utils.resultPath(FillBenchmark.class))
                 .build();
         new Runner(opt).run();
-        Utils.resultPromote(CopyBenchmark.class);
+        Utils.resultPromote(FillBenchmark.class);
         printResults();
     }
 
     public static void printResults() {
-        Frame df = Csv.instance().quotes.set(true).read(Utils.resultPath(CopyBenchmark.class));
+        Frame df = Csv.instance().quotes.set(true).read(Utils.resultPath(FillBenchmark.class));
         Plot plot = Plotter.plot();
         int i = 1;
         for (String benchmark : df.rvar("Benchmark").levels().stream().skip(1).toList()) {

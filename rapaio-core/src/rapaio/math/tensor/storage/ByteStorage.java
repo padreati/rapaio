@@ -57,8 +57,8 @@ public abstract class ByteStorage implements Storage<Byte> {
     }
 
     @Override
-    public void fill(Byte value) {
-        fillByte(value);
+    public void fill(Byte value, int start, int len) {
+        fillByte(value, start, len);
     }
 
     public abstract byte getByte(int ptr);
@@ -67,7 +67,7 @@ public abstract class ByteStorage implements Storage<Byte> {
 
     public abstract void incByte(int ptr, byte value);
 
-    public abstract void fillByte(byte value);
+    public abstract void fillByte(byte value, int start, int len);
 
 
     @Override
@@ -86,8 +86,8 @@ public abstract class ByteStorage implements Storage<Byte> {
     }
 
     @Override
-    public final void fillInt(int value) {
-        fillByte((byte) value);
+    public final void fillInt(int value, int start, int len) {
+        fillByte((byte) value, start, len);
     }
 
     @Override
@@ -106,8 +106,8 @@ public abstract class ByteStorage implements Storage<Byte> {
     }
 
     @Override
-    public final void fillFloat(float value) {
-        fillByte((byte) value);
+    public final void fillFloat(float value, int start, int len) {
+        fillByte((byte) value, start, len);
     }
 
 
@@ -127,7 +127,7 @@ public abstract class ByteStorage implements Storage<Byte> {
     }
 
     @Override
-    public final void fillDouble(double value) {
-        fillByte((byte) value);
+    public final void fillDouble(double value, int start, int len) {
+        fillByte((byte) value, start, len);
     }
 }

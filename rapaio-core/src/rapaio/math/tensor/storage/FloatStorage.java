@@ -58,8 +58,8 @@ public abstract class FloatStorage implements Storage<Float> {
     }
 
     @Override
-    public final void fill(Float value) {
-        fillFloat(value);
+    public final void fill(Float value, int start, int len) {
+        fillFloat(value, start, len);
     }
 
 
@@ -79,8 +79,8 @@ public abstract class FloatStorage implements Storage<Float> {
     }
 
     @Override
-    public final void fillByte(byte value) {
-        fillFloat(value);
+    public final void fillByte(byte value, int start, int len) {
+        fillFloat(value, start, len);
     }
 
 
@@ -100,8 +100,8 @@ public abstract class FloatStorage implements Storage<Float> {
     }
 
     @Override
-    public final void fillInt(int value) {
-        fillFloat(value);
+    public final void fillInt(int value, int start, int len) {
+        fillFloat(value, start, len);
     }
 
 
@@ -111,7 +111,7 @@ public abstract class FloatStorage implements Storage<Float> {
 
     public abstract void incFloat(int ptr, float value);
 
-    public abstract void fillFloat(float value);
+    public abstract void fillFloat(float value, int start, int len);
 
 
     @Override
@@ -130,7 +130,7 @@ public abstract class FloatStorage implements Storage<Float> {
     }
 
     @Override
-    public final void fillDouble(double value) {
-        fillFloat((float) value);
+    public final void fillDouble(double value, int start, int len) {
+        fillFloat((float) value, start, len);
     }
 }

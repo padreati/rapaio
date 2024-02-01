@@ -32,6 +32,8 @@
 package rapaio.math.tensor.manager.varray;
 
 import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -69,59 +71,59 @@ public final class VectorizedFloatTensorStride extends BaseFloatTensorStride imp
         return indexes;
     }
 
-
-    /*
-
     @Override
     public Tensor<Float> fill_(Float value) {
         for (int offset : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
+            int i = 0;
             if (bound > offset) {
                 FloatVector fill = FloatVector.broadcast(SPEC, value);
                 for (; i < bound; i += SPEC_LEN * loop.step) {
                     if (loop.step == 1) {
-                        fill.intoArray(array, i);
+                        storage.saveFloat(fill, offset + i * loop.step);
                     } else {
-                        fill.intoArray(array, i, loopIndexes, 0);
+                        storage.saveFloat(fill, offset + i * loop.step, loopIndexes, 0);
                     }
                 }
             }
-            for (; i < loop.bound + offset; i += loop.step) {
-                array[i] = value;
+            for (; i < loop.size + offset; i += loop.step) {
+                storage.setFloat(offset + i * loop.step, value);
             }
         }
         return this;
     }
 
     @Override
-    public FloatTensor fillNan_(Float value) {
+    public Tensor<Float> fillNan_(Float value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
+            int bound = SPEC.loopBound(loop.size);
+            int i = 0;
             if (bound > offset) {
                 FloatVector fill = FloatVector.broadcast(SPEC, value);
-                for (; i < bound; i += SPEC_LEN * loop.step) {
+                for (; i < bound; i += SPEC_LEN) {
+                    int p = offset + i * loop.step;
                     if (loop.step == 1) {
-                        FloatVector a = FloatVector.fromArray(SPEC, array, i);
+                        FloatVector a = storage.loadFloat(SPEC, p);
                         VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
-                        fill.intoArray(array, i, m);
+                        storage.saveFloat(fill, p, m);
                     } else {
-                        FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
+                        FloatVector a = storage.loadFloat(SPEC, p, loopIndexes, 0);
                         VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
-                        fill.intoArray(array, i, loopIndexes, 0, m);
+                        storage.saveFloat(fill, p, loopIndexes, 0, m);
                     }
                 }
             }
-            for (; i < loop.bound + offset; i += loop.step) {
-                if (dtype().isNaN(array[i])) {
-                    array[i] = value;
+            for (; i < loop.size + offset; i += loop.step) {
+                int p = offset + i * loop.step;
+                if (dtype().isNaN(storage.getFloat(p))) {
+                    storage.setFloat(p, value);
                 }
             }
         }
         return this;
     }
 
+    /*
     @Override
     public FloatTensor clamp_(Float min, Float max) {
         for (int offset : loop.offsets) {

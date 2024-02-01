@@ -57,8 +57,8 @@ public abstract class DoubleStorage implements Storage<Double> {
     }
 
     @Override
-    public final void fill(Double value) {
-        fillDouble(value);
+    public final void fill(Double value, int start, int len) {
+        fillDouble(value, start, len);
     }
 
 
@@ -77,8 +77,8 @@ public abstract class DoubleStorage implements Storage<Double> {
     }
 
     @Override
-    public final void fillByte(byte value) {
-        fillDouble(value);
+    public final void fillByte(byte value, int start, int len) {
+        fillDouble(value, start, len);
     }
 
 
@@ -98,8 +98,8 @@ public abstract class DoubleStorage implements Storage<Double> {
     }
 
     @Override
-    public final void fillInt(int value) {
-        fillDouble(value);
+    public final void fillInt(int value, int start, int len) {
+        fillDouble(value, start, len);
     }
 
 
@@ -119,8 +119,8 @@ public abstract class DoubleStorage implements Storage<Double> {
     }
 
     @Override
-    public final void fillFloat(float value) {
-        fillDouble(value);
+    public final void fillFloat(float value, int start, int len) {
+        fillDouble(value, start, len);
     }
 
 
@@ -130,6 +130,6 @@ public abstract class DoubleStorage implements Storage<Double> {
 
     public abstract void incDouble(int ptr, double value);
 
-    public abstract void fillDouble(double value);
+    public abstract void fillDouble(double value, int start, int len);
 
 }

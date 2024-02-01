@@ -431,9 +431,13 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     @Override
     public Tensor<Integer> fill_(Integer value) {
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
-                storage.set(p, value);
+            if (loop.step == 1) {
+                storage.fill(value, offset, loop.size);
+            } else {
+                for (int i = 0; i < loop.size; i++) {
+                    int p = offset + i * loop.step;
+                    storage.set(p, value);
+                }
             }
         }
         return this;
