@@ -31,6 +31,13 @@
 
 package rapaio.math.tensor.operator;
 
+import jdk.incubator.vector.ByteVector;
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorOperators;
+import rapaio.data.OperationNotAvailableException;
+
 public interface TensorUnaryOp {
 
     TensorUnaryOp RINT = new OpRint();
@@ -52,24 +59,44 @@ public interface TensorUnaryOp {
     TensorUnaryOp ATAN = new OpAtan();
     TensorUnaryOp TANH = new OpTanh();
 
+    /**
+     * @return true if vector operations are implemented, false otherwise
+     */
+    boolean vectorSupport();
+
+    boolean isFloatOnly();
+
     default byte applyByte(byte v) {
-        // default implementation for float only
-        return 0;
+        throw new OperationNotAvailableException();
     }
 
     default int applyInt(int v) {
-        // default implementation for float only
-        return 0;
+        throw new OperationNotAvailableException();
     }
 
     double applyDouble(double v);
 
     float applyFloat(float v);
 
-    boolean isFloatOnly();
+    default ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    default IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    FloatVector applyFloat(FloatVector v);
+
+    DoubleVector applyDouble(DoubleVector v);
 }
 
 final class OpRint implements TensorUnaryOp {
+
+    @Override
+    public boolean vectorSupport() {
+        return false;
+    }
 
     @Override
     public boolean isFloatOnly() {
@@ -95,9 +122,24 @@ final class OpRint implements TensorUnaryOp {
     public byte applyByte(byte v) {
         return v;
     }
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        throw new OperationNotAvailableException();
+    }
 }
 
 final class OpCeil implements TensorUnaryOp {
+
+    @Override
+    public boolean vectorSupport() {
+        return false;
+    }
 
     @Override
     public boolean isFloatOnly() {
@@ -123,9 +165,24 @@ final class OpCeil implements TensorUnaryOp {
     public byte applyByte(byte v) {
         return v;
     }
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        throw new OperationNotAvailableException();
+    }
 }
 
 final class OpFloor implements TensorUnaryOp {
+
+    @Override
+    public boolean vectorSupport() {
+        return false;
+    }
 
     @Override
     public boolean isFloatOnly() {
@@ -151,9 +208,24 @@ final class OpFloor implements TensorUnaryOp {
     public byte applyByte(byte v) {
         return v;
     }
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        throw new OperationNotAvailableException();
+    }
 }
 
 final class OpAbs implements TensorUnaryOp {
+
+    @Override
+    public boolean vectorSupport() {
+        return true;
+    }
 
     @Override
     public boolean isFloatOnly() {
@@ -180,9 +252,33 @@ final class OpAbs implements TensorUnaryOp {
         return (byte) Math.abs(v);
     }
 
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        return v.abs();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        return v.abs();
+    }
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        return v.abs();
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.abs();
+    }
 }
 
 final class OpNeg implements TensorUnaryOp {
+
+    @Override
+    public boolean vectorSupport() {
+        return true;
+    }
 
     @Override
     public boolean isFloatOnly() {
@@ -208,9 +304,34 @@ final class OpNeg implements TensorUnaryOp {
     public byte applyByte(byte v) {
         return (byte) -v;
     }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        return v.neg();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        return v.neg();
+    }
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        return v.neg();
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.neg();
+    }
 }
 
 final class OpLog implements TensorUnaryOp {
+
+    @Override
+    public boolean vectorSupport() {
+        return true;
+    }
 
     @Override
     public boolean isFloatOnly() {
@@ -226,9 +347,24 @@ final class OpLog implements TensorUnaryOp {
     public float applyFloat(float v) {
         return (float) Math.log(v);
     }
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.LOG);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.LOG);
+    }
 }
 
 final class OpLog1p implements TensorUnaryOp {
+
+    @Override
+    public boolean vectorSupport() {
+        return true;
+    }
 
     @Override
     public boolean isFloatOnly() {
@@ -244,13 +380,33 @@ final class OpLog1p implements TensorUnaryOp {
     public float applyFloat(float v) {
         return (float) Math.log1p(v);
     }
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.LOG1P);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.LOG1P);
+    }
 }
 
 final class OpExp implements TensorUnaryOp {
 
     @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
     public boolean isFloatOnly() {
         return true;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.exp(v);
     }
 
     @Override
@@ -259,16 +415,31 @@ final class OpExp implements TensorUnaryOp {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.exp(v);
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.EXP);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.EXP);
     }
 }
 
 final class OpExpm1 implements TensorUnaryOp {
 
     @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
     public boolean isFloatOnly() {
         return true;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.expm1(v);
     }
 
     @Override
@@ -277,16 +448,31 @@ final class OpExpm1 implements TensorUnaryOp {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.expm1(v);
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.EXPM1);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.EXPM1);
     }
 }
 
 final class OpSin implements TensorUnaryOp {
 
     @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
     public boolean isFloatOnly() {
         return true;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.sin(v);
     }
 
     @Override
@@ -295,16 +481,31 @@ final class OpSin implements TensorUnaryOp {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.sin(v);
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.SIN);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.SIN);
     }
 }
 
 final class OpAsin implements TensorUnaryOp {
 
     @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
     public boolean isFloatOnly() {
         return true;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.asin(v);
     }
 
     @Override
@@ -313,16 +514,31 @@ final class OpAsin implements TensorUnaryOp {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.asin(v);
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.ASIN);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.ASIN);
     }
 }
 
 final class OpSinh implements TensorUnaryOp {
 
     @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
     public boolean isFloatOnly() {
         return true;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.sinh(v);
     }
 
     @Override
@@ -331,12 +547,22 @@ final class OpSinh implements TensorUnaryOp {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.sinh(v);
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.SINH);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.SINH);
     }
 }
 
 final class OpCos implements TensorUnaryOp {
+
+    @Override
+    public boolean vectorSupport() {
+        return true;
+    }
 
     @Override
     public boolean isFloatOnly() {
@@ -352,13 +578,33 @@ final class OpCos implements TensorUnaryOp {
     public float applyFloat(float v) {
         return (float) Math.cos(v);
     }
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.COS);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.COS);
+    }
 }
 
 final class OpAcos implements TensorUnaryOp {
 
     @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
     public boolean isFloatOnly() {
         return true;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.acos(v);
     }
 
     @Override
@@ -367,16 +613,31 @@ final class OpAcos implements TensorUnaryOp {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.acos(v);
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.ACOS);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.ACOS);
     }
 }
 
 final class OpCosh implements TensorUnaryOp {
 
     @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
     public boolean isFloatOnly() {
         return true;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.cosh(v);
     }
 
     @Override
@@ -385,16 +646,31 @@ final class OpCosh implements TensorUnaryOp {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.cosh(v);
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.COSH);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.COSH);
     }
 }
 
 final class OpTan implements TensorUnaryOp {
 
     @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
     public boolean isFloatOnly() {
         return true;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.tan(v);
     }
 
     @Override
@@ -403,16 +679,31 @@ final class OpTan implements TensorUnaryOp {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.tan(v);
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.TAN);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.TAN);
     }
 }
 
 final class OpAtan implements TensorUnaryOp {
 
     @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
     public boolean isFloatOnly() {
         return true;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.atan(v);
     }
 
     @Override
@@ -421,16 +712,31 @@ final class OpAtan implements TensorUnaryOp {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.atan(v);
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.ATAN);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.ATAN);
     }
 }
 
 final class OpTanh implements TensorUnaryOp {
 
     @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
     public boolean isFloatOnly() {
         return true;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.tanh(v);
     }
 
     @Override
@@ -439,7 +745,12 @@ final class OpTanh implements TensorUnaryOp {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.tanh(v);
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.TANH);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.TANH);
     }
 }
