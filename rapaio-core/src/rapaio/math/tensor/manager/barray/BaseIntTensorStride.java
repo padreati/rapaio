@@ -31,8 +31,6 @@
 
 package rapaio.math.tensor.manager.barray;
 
-import static java.lang.Math.ceil;
-import static java.lang.Math.floor;
 import static java.lang.Math.sqrt;
 
 import static rapaio.util.Hardware.CORES;
@@ -60,8 +58,6 @@ import rapaio.math.tensor.Statistics;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.manager.AbstractTensor;
-import rapaio.math.tensor.manager.varray.VectorizedIntTensorStride;
 import rapaio.math.tensor.iterators.DensePointerIterator;
 import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
@@ -71,6 +67,8 @@ import rapaio.math.tensor.iterators.StrideLoopIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.layout.StrideWrapper;
+import rapaio.math.tensor.manager.AbstractTensor;
+import rapaio.math.tensor.manager.varray.VectorizedIntTensorStride;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
@@ -180,7 +178,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     @Override
-    public Tensor<Integer> permute(int[] dims) {
+    public Tensor<Integer> permute(int... dims) {
         return engine.ofInt().stride(layout().permute(dims), storage);
     }
 
@@ -489,6 +487,24 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     @Override
+    public Tensor<Integer> rint_() {
+        unaryOp(TensorUnaryOp.RINT);
+        return this;
+    }
+
+    @Override
+    public Tensor<Integer> ceil_() {
+        unaryOp(TensorUnaryOp.CEIL);
+        return this;
+    }
+
+    @Override
+    public Tensor<Integer> floor_() {
+        unaryOp(TensorUnaryOp.FLOOR);
+        return this;
+    }
+
+    @Override
     public Tensor<Integer> abs_() {
         unaryOp(TensorUnaryOp.ABS);
         return this;
@@ -767,11 +783,11 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         List<Tensor<Integer>> rows = chunk(0, false, 1);
         List<Tensor<Integer>> cols = t.chunk(1, false, 1);
 
-        int chunk = (int) floor(sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
+        int chunk = (int) Math.floor(sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
 
         int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
-        int innerChunk = chunk > 64 ? (int) ceil(sqrt(chunk / 4.)) : (int) ceil(sqrt(chunk));
+        int innerChunk = chunk > 64 ? (int) Math.ceil(sqrt(chunk / 4.)) : (int) Math.ceil(sqrt(chunk));
 
         int iStride = ((StrideLayout) ret.layout()).stride(0);
         int jStride = ((StrideLayout) ret.layout()).stride(1);

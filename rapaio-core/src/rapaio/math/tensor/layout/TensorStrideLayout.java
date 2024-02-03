@@ -415,7 +415,7 @@ public class TensorStrideLayout implements StrideLayout {
         boolean[] flags = new boolean[rank()];
         int flagCount = 0;
         for (int dim : dims) {
-            if (dim < 0 || dim >= rank() - 1) {
+            if (dim < 0 || dim >= rank()) {
                 throw new IllegalArgumentException("Dimension value is invalid: [" +
                         IntStream.of(dims).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "]");
             }

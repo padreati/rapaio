@@ -139,4 +139,13 @@ public final class Tensors {
     public static <N extends Number> Tensor<N> stack(Order order, int axis, Collection<? extends Tensor<N>> tensors) {
         return tm.stack(order, axis, tensors);
     }
+
+    public static <N extends Number> Tensor<N> concat(int axis, Collection<? extends Tensor<N>> tensors) {
+        return tm.concat(Order.defaultOrder(), axis, tensors);
+    }
+
+    public static <N extends Number> Tensor<N> concat(Order order, int axis, Collection<? extends Tensor<N>> tensors) {
+        return tm.concat(order, axis, tensors);
+    }
+
 }

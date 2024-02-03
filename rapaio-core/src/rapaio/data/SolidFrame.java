@@ -58,7 +58,9 @@ public class SolidFrame extends AbstractFrame {
         for (Var var : vars) {
             rows = Math.min(rows, var.size());
         }
-        if (rows == Integer.MAX_VALUE) rows = 0;
+        if (rows == Integer.MAX_VALUE) {
+            rows = 0;
+        }
         return new SolidFrame(rows, Arrays.asList(vars));
     }
 
@@ -134,6 +136,13 @@ public class SolidFrame extends AbstractFrame {
     }
 
     public static Frame matrix(Tensor<Double> m, List<String> varNames) {
+        int cols = m.dim(1);
+        if (varNames.size() < cols) {
+            varNames = new ArrayList<>(varNames);
+            while (varNames.size() < cols) {
+                varNames.add("v" + varNames.size());
+            }
+        }
         Frame df = matrix(m.dim(0), varNames);
         for (int i = 0; i < m.dim(0); i++) {
             for (int j = 0; j < m.dim(1); j++) {

@@ -245,7 +245,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * @param dims dimension permutation
      * @return new tensor view with permuted dimensions
      */
-    Tensor<N> permute(int[] dims);
+    Tensor<N> permute(int... dims);
 
     /**
      * Creates a new tensor view with source axis moved into the given destination position.
@@ -679,6 +679,39 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     Tensor<N> clamp_(N min, N max);
+
+    default Tensor<N> rint() {
+        return rint(Order.defaultOrder());
+    }
+
+    default Tensor<N> rint(Order order) {
+        return copy(order).rint_();
+    }
+
+    Tensor<N> rint_();
+
+    default Tensor<N> ceil() {
+        return ceil(Order.defaultOrder());
+    }
+
+    default Tensor<N> ceil(Order order) {
+        return copy(order).ceil_();
+    }
+
+    Tensor<N> ceil_();
+
+    default Tensor<N> floor() {
+        return floor(Order.defaultOrder());
+    }
+
+    default Tensor<N> floor(Order order) {
+        return copy(order).floor_();
+    }
+
+    Tensor<N> floor_();
+
+
+
 
     default Tensor<N> abs() {
         return abs(Order.defaultOrder());

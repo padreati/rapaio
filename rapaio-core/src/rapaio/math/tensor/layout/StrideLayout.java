@@ -107,7 +107,7 @@ public interface StrideLayout extends Layout {
 
     StrideLayout narrowAll(boolean keepDim, int[] starts, int[] ends);
 
-    StrideLayout permute(int[] dims);
+    StrideLayout permute(int... dims);
 
     StrideLayout computeFortranLayout(Order askOrder, boolean compact);
 

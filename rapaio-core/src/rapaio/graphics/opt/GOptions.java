@@ -109,6 +109,22 @@ public class GOptions extends NamedParamSet<GOptions, GOption<?>> {
         static GOption<Palette> hue(double start, double end, Grid2D gridData) {
             return new GOption<>(_palette, s -> Palette.hue(start, end, gridData.minValue(), gridData.maxValue()));
         }
+
+        static GOption<Palette> redRGB() {
+            return new GOption<>(_palette, s -> Palette.RedRGB());
+        }
+
+        static GOption<Palette> greenRGB() {
+            return new GOption<>(_palette, s -> Palette.GreenRGB());
+        }
+
+        static GOption<Palette> blueRGB() {
+            return new GOption<>(_palette, s -> Palette.BlueRGB());
+        }
+
+        static GOption<Palette> bw(double start, double end) {
+            return new GOption<>(_palette, s -> Palette.gray(start, end));
+        }
     }
 
     public static GOption<Palette> palette(Palette colorPalette) {
@@ -184,7 +200,7 @@ public class GOptions extends NamedParamSet<GOptions, GOption<?>> {
             if (i >= 0 && i < mapping.length) {
                 return mapping[i];
             }
-            return mapping != null && mapping.length>0 ? mapping[0] : i;
+            return mapping != null && mapping.length > 0 ? mapping[0] : i;
         }));
     }
 

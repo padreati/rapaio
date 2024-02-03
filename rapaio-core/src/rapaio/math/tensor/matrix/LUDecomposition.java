@@ -253,6 +253,12 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
             throw new IllegalArgumentException("Matrix is singular.");
         }
 
+        boolean isVector = B.isVector();
+
+        if(isVector) {
+            B = B.unsqueeze(1);
+        }
+
         // Copy right hand side with pivoting
         int nx = B.dim(1);
         Tensor<N> X = B.take(0, piv).copy();
@@ -279,7 +285,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
                 }
             }
         }
-        return X;
+        return isVector ? X.squeeze(1) : X;
     }
 
 

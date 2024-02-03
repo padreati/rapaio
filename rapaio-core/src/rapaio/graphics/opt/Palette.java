@@ -112,6 +112,18 @@ public abstract class Palette implements Serializable {
         return new MonoHueGradient(hue, minSat, maxSat, brightness, new Range(rangeStart, rangeEnd));
     }
 
+    public static Palette RedRGB() {
+        return new RedRGB();
+    }
+
+    public static Palette GreenRGB() {
+        return new GreenRGB();
+    }
+
+    public static Palette BlueRGB() {
+        return new BlueRGB();
+    }
+
 
     protected static final Range emptyRange = new Range(Double.NaN, Double.NaN);
 
@@ -132,6 +144,9 @@ public abstract class Palette implements Serializable {
         }
 
         public double proportion(double value) {
+            if (Double.isNaN(start) || Double.isNaN(end)) {
+                return value;
+            }
             value = cut(value);
             return (value - start) / (end - start);
         }
@@ -415,5 +430,41 @@ class MonoHueGradient extends Palette {
         double p = inputRange.proportion(value);
         float sat = (float) (internalRange.fromProportion(p));
         return new Color(Color.HSBtoRGB(hue, sat, brightness));
+    }
+}
+
+class RedRGB extends Palette {
+
+    protected RedRGB() {
+        super(new Range(0, 255), new Range(0, 255));
+    }
+
+    @Override
+    public Color getColor(double index) {
+        return new Color((int) inputRange.cut(index), 0, 0);
+    }
+}
+
+class GreenRGB extends Palette {
+
+    protected GreenRGB() {
+        super(new Range(0, 255), new Range(0, 255));
+    }
+
+    @Override
+    public Color getColor(double index) {
+        return new Color(0, (int) inputRange.cut(index), 0);
+    }
+}
+
+class BlueRGB extends Palette {
+
+    protected BlueRGB() {
+        super(new Range(0, 255), new Range(0, 255));
+    }
+
+    @Override
+    public Color getColor(double index) {
+        return new Color(0, 0, (int) inputRange.cut(index));
     }
 }
