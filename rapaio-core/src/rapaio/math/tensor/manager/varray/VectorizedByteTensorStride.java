@@ -35,8 +35,6 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
-import rapaio.math.tensor.Order;
-import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
@@ -49,14 +47,6 @@ public final class VectorizedByteTensorStride extends BaseByteTensorStride imple
     private static final int SPEC_LEN = SPEC.length();
 
     private final int[] loopIndexes;
-
-    public VectorizedByteTensorStride(TensorManager engine, Shape shape, int offset, int[] strides, Storage<Byte> storage) {
-        this(engine, StrideLayout.of(shape, offset, strides), storage);
-    }
-
-    public VectorizedByteTensorStride(TensorManager engine, Shape shape, int offset, Order order, Storage<Byte> storage) {
-        this(engine, StrideLayout.ofDense(shape, offset, order), storage);
-    }
 
     public VectorizedByteTensorStride(TensorManager engine, StrideLayout layout, Storage<Byte> storage) {
         super(engine, layout, storage);
@@ -123,53 +113,51 @@ public final class VectorizedByteTensorStride extends BaseByteTensorStride imple
         return this;
     }
 
-    /*
     @Override
-    public ByteTensor clamp_(Byte min, Byte max) {
+    public Tensor<Byte> clamp_(Byte min, Byte max) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
-            if (bound > offset) {
-                for (; i < bound; i += SPEC_LEN * loop.step) {
-                    ByteVector a = loop.step == 1 ?
-                            ByteVector.fromArray(SPEC, array, i) :
-                            ByteVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                    boolean any = false;
-                    if (!dtype().isNaN(min)) {
-                        VectorMask<Byte> m = a.compare(VectorOperators.LT, min);
-                        if (m.anyTrue()) {
-                            a = a.blend(min, m);
-                            any = true;
-                        }
+            int bound = SPEC.loopBound(loop.size);
+            int i = 0;
+            for (; i < bound; i += SPEC_LEN) {
+                int p = offset + i * loop.step;
+                ByteVector a = loop.step == 1 ? storage.loadByte(SPEC, p) : storage.loadByte(SPEC, p, loopIndexes, 0);
+                boolean any = false;
+                if (!dtype().isNaN(min)) {
+                    VectorMask<Byte> m = a.compare(VectorOperators.LT, min);
+                    if (m.anyTrue()) {
+                        a = a.blend(min, m);
+                        any = true;
                     }
-                    if (!dtype().isNaN(max)) {
-                        VectorMask<Byte> m = a.compare(VectorOperators.GT, max);
-                        if (m.anyTrue()) {
-                            a = a.blend(max, m);
-                            any = true;
-                        }
+                }
+                if (!dtype().isNaN(max)) {
+                    VectorMask<Byte> m = a.compare(VectorOperators.GT, max);
+                    if (m.anyTrue()) {
+                        a = a.blend(max, m);
+                        any = true;
                     }
-                    if (any) {
-                        if (loop.step == 1) {
-                            a.intoArray(array, i);
-                        } else {
-                            a.intoArray(array, i, loopIndexes, 0);
-                        }
+                }
+                if (any) {
+                    if (loop.step == 1) {
+                        storage.saveByte(a, p);
+                    } else {
+                        storage.saveByte(a, p, loopIndexes, 0);
                     }
                 }
             }
-            for (; i < loop.bound + offset; i += loop.step) {
-                if (!dtype().isNaN(min) && array[i] < min) {
-                    array[i] = min;
+            for (; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (!dtype().isNaN(min) && storage.getByte(p) < min) {
+                    storage.setByte(p, min);
                 }
-                if (!dtype().isNaN(max) && array[i] > max) {
-                    array[i] = max;
+                if (!dtype().isNaN(max) && storage.getByte(p) > max) {
+                    storage.setByte(p, max);
                 }
             }
         }
         return this;
     }
 
+    /*
     private void unaryOpUnit(TensorUnaryOp op) {
         for (int off : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) + off;

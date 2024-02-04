@@ -35,8 +35,6 @@ import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
-import rapaio.math.tensor.Order;
-import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
@@ -49,14 +47,6 @@ public final class VectorizedFloatTensorStride extends BaseFloatTensorStride imp
     private static final int SPEC_LEN = SPEC.length();
 
     private final int[] loopIndexes;
-
-    public VectorizedFloatTensorStride(TensorManager engine, Shape shape, int offset, int[] strides, Storage<Float> storage) {
-        this(engine, StrideLayout.of(shape, offset, strides), storage);
-    }
-
-    public VectorizedFloatTensorStride(TensorManager engine, Shape shape, int offset, Order order, Storage<Float> storage) {
-        this(engine, StrideLayout.ofDense(shape, offset, order), storage);
-    }
 
     public VectorizedFloatTensorStride(TensorManager engine, StrideLayout layout, Storage<Float> storage) {
         super(engine, layout, storage);
@@ -123,53 +113,51 @@ public final class VectorizedFloatTensorStride extends BaseFloatTensorStride imp
         return this;
     }
 
-    /*
     @Override
-    public FloatTensor clamp_(Float min, Float max) {
+    public Tensor<Float> clamp_(Float min, Float max) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
-            if (bound > offset) {
-                for (; i < bound; i += SPEC_LEN * loop.step) {
-                    FloatVector a = loop.step == 1 ?
-                            FloatVector.fromArray(SPEC, array, i) :
-                            FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                    boolean any = false;
-                    if (!dtype().isNaN(min)) {
-                        VectorMask<Float> m = a.compare(VectorOperators.LT, min);
-                        if (m.anyTrue()) {
-                            a = a.blend(min, m);
-                            any = true;
-                        }
+            int bound = SPEC.loopBound(loop.size);
+            int i = 0;
+            for (; i < bound; i += SPEC_LEN) {
+                int p = offset + i * loop.step;
+                FloatVector a = loop.step == 1 ? storage.loadFloat(SPEC, p) : storage.loadFloat(SPEC, p, loopIndexes, 0);
+                boolean any = false;
+                if (!dtype().isNaN(min)) {
+                    VectorMask<Float> m = a.compare(VectorOperators.LT, min);
+                    if (m.anyTrue()) {
+                        a = a.blend(min, m);
+                        any = true;
                     }
-                    if (!dtype().isNaN(max)) {
-                        VectorMask<Float> m = a.compare(VectorOperators.GT, max);
-                        if (m.anyTrue()) {
-                            a = a.blend(max, m);
-                            any = true;
-                        }
+                }
+                if (!dtype().isNaN(max)) {
+                    VectorMask<Float> m = a.compare(VectorOperators.GT, max);
+                    if (m.anyTrue()) {
+                        a = a.blend(max, m);
+                        any = true;
                     }
-                    if (any) {
-                        if (loop.step == 1) {
-                            a.intoArray(array, i);
-                        } else {
-                            a.intoArray(array, i, loopIndexes, 0);
-                        }
+                }
+                if (any) {
+                    if (loop.step == 1) {
+                        storage.saveFloat(a, p);
+                    } else {
+                        storage.saveFloat(a, p, loopIndexes, 0);
                     }
                 }
             }
-            for (; i < loop.bound + offset; i += loop.step) {
-                if (!dtype().isNaN(min) && array[i] < min) {
-                    array[i] = min;
+            for (; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                if (!dtype().isNaN(min) && storage.getFloat(p) < min) {
+                    storage.setFloat(p, min);
                 }
-                if (!dtype().isNaN(max) && array[i] > max) {
-                    array[i] = max;
+                if (!dtype().isNaN(max) && storage.getFloat(p) > max) {
+                    storage.setFloat(p, max);
                 }
             }
         }
         return this;
     }
 
+    /*
     private void unaryOpUnit(TensorUnaryOp op) {
         for (int off : loop.offsets) {
             int bound = SPEC.loopBound(loop.size) + off;
