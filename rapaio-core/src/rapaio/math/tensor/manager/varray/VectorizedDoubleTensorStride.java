@@ -31,6 +31,8 @@
 
 package rapaio.math.tensor.manager.varray;
 
+import java.util.Arrays;
+
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
@@ -199,7 +201,7 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
                 a = op.applyDouble(a);
                 storage.saveDouble(a, p, loopIndexes, 0);
             }
-            for (; i < loop.size; i += loop.step) {
+            for (; i < loop.size; i++) {
                 int p = off + i * loop.step;
                 storage.setDouble(p, op.applyDouble(storage.getDouble(p)));
             }
@@ -952,4 +954,11 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
     }
 
      */
+
+    @Override
+    public String toString() {
+        String strDIms = Arrays.toString(layout.dims());
+        String strStrides = Arrays.toString(layout.strides());
+        return STR."VectorStride{\{dtype().id()},\{strDIms},\{layout.offset()},\{strStrides}}\n\{toContent()}";
+    }
 }

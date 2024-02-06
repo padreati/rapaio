@@ -31,6 +31,8 @@
 
 package rapaio.math.tensor.manager.varray;
 
+import java.util.Arrays;
+
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
@@ -199,7 +201,7 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
                 a = op.applyInt(a);
                 storage.saveInt(a, p, loopIndexes, 0);
             }
-            for (; i < loop.size; i += loop.step) {
+            for (; i < loop.size; i++) {
                 int p = off + i * loop.step;
                 storage.setInt(p, op.applyInt(storage.getInt(p)));
             }
@@ -952,4 +954,11 @@ public final class VectorizedIntTensorStride extends BaseIntTensorStride impleme
     }
 
      */
+
+    @Override
+    public String toString() {
+        String strDIms = Arrays.toString(layout.dims());
+        String strStrides = Arrays.toString(layout.strides());
+        return STR."VectorStride{\{dtype().id()},\{strDIms},\{layout.offset()},\{strStrides}}\n\{toContent()}";
+    }
 }
