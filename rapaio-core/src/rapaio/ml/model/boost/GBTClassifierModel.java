@@ -155,10 +155,10 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
             for (int k = 0; k < K; k++) {
-                sum += Math.exp(f.get(k, i) - max.get(i));
+                sum += Math.exp(f.getDouble(k, i) - max.getDouble(i));
             }
             for (int k = 0; k < K; k++) {
-                p.setDouble(Math.exp(f.get(k, i) - max.get(i)) / sum, k, i);
+                p.setDouble(Math.exp(f.getDouble(k, i) - max.getDouble(i)) / sum, k, i);
             }
         }
         residual = yk.sub(p);
@@ -195,7 +195,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
             for (RegressionModel<?, ?, ?> tree : trees.get(k)) {
                 var rr = tree.predict(df, false).firstPrediction();
                 for (int i = 0; i < df.rowCount(); i++) {
-                    p_f.setDouble(p_f.get(k, i) + shrinkage.get() * rr.getDouble(i), k, i);
+                    p_f.setDouble(p_f.getDouble(k, i) + shrinkage.get() * rr.getDouble(i), k, i);
                 }
             }
         }
@@ -207,11 +207,11 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         for (int i = 0; i < df.rowCount(); i++) {
             double t = 0.0;
             for (int k = 0; k < K; k++) {
-                t += Math.exp(p_f.get(k, i) - max.get(i));
+                t += Math.exp(p_f.getDouble(k, i) - max.getDouble(i));
             }
             if (t != 0) {
                 for (int k = 0; k < K; k++) {
-                    cr.firstDensity().setDouble(i, k + 1, Math.exp(p_f.get(k, i) - max.get(i)) / t);
+                    cr.firstDensity().setDouble(i, k + 1, Math.exp(p_f.getDouble(k, i) - max.getDouble(i)) / t);
                 }
             }
         }

@@ -58,6 +58,8 @@ public class CodeGenApp {
                 Replace.of("aggDouble","aggInt"),
                 Replace.of("loadDouble","loadInt"),
                 Replace.of("saveDouble","saveInt"),
+                Replace.of("initDouble", "initInt"),
+                Replace.of("Double2DoubleFunction", "Int2IntFunction"),
                 Replace.of("double", "int"),
                 Replace.of("Double", "Integer"),
                 Replace.of("DOUBLE", "INTEGER")

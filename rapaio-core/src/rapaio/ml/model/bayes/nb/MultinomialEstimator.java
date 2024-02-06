@@ -208,8 +208,8 @@ public class MultinomialEstimator extends AbstractEstimator {
         double n = x.sum();
         double result = lnGamma(n + 1);
         for (int i = 0; i < x.size(); i++) {
-            result += x.get(i) * log(densityMap.get(targetLevel).get(i));
-            result -= lnGamma(x.get(i) + 1);
+            result += x.getDouble(i) * log(densityMap.get(targetLevel).getDouble(i));
+            result -= lnGamma(x.getDouble(i) + 1);
         }
 
         // and exponentiate it before return

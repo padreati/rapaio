@@ -106,11 +106,11 @@ public class WaveletKernel extends AbstractKernel {
         double result = 1;
         for (int i = 0; i < v.size(); i++) {
             if (invariant) {
-                double diff = v.get(i) - u.get(i);
+                double diff = v.getDouble(i) - u.getDouble(i);
                 result *= wavelet.apply(diff / dilation);
             } else {
-                result *= wavelet.apply((v.get(i) - translation) / dilation);
-                result *= wavelet.apply((u.get(i) - translation) / dilation);
+                result *= wavelet.apply((v.getDouble(i) - translation) / dilation);
+                result *= wavelet.apply((u.getDouble(i) - translation) / dilation);
             }
         }
         return result;

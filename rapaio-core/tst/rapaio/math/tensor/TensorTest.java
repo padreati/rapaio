@@ -599,7 +599,7 @@ public class TensorTest {
             assertTrue(t1.copy(Order.C).negate_().deepEquals(t1.negate(Order.F)));
             assertTrue(t1.copy(Order.F).negate_().deepEquals(t1.negate(Order.C)));
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.copy().log_().deepEquals(t1.log()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -610,7 +610,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.log1p().deepEquals(t1.log1p_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -621,7 +621,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.exp().deepEquals(t1.exp_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -632,7 +632,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.expm1().deepEquals(t1.copy().expm1_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -643,7 +643,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.sin().deepEquals(t1.sin_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -654,7 +654,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.asin().deepEquals(t1.asin_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -665,7 +665,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.sinh().deepEquals(t1.sinh_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -676,7 +676,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.cos().deepEquals(t1.cos_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -687,7 +687,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.acos().deepEquals(t1.acos_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -698,7 +698,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.cosh().deepEquals(t1.cosh_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -709,7 +709,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.tan().deepEquals(t1.tan_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -720,7 +720,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.atan().deepEquals(t1.atan_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -731,7 +731,7 @@ public class TensorTest {
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
             }
 
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.tanh().deepEquals(t1.tanh_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -1138,7 +1138,7 @@ public class TensorTest {
             t4.set(g.value(Double.NaN), 1);
             t4.set(g.value(Double.NaN), 100);
             assertEquals(g.sum(sequenceSum(100), g.value(-1)), t4.nanSum());
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 assertEquals(2, t4.nanCount());
                 assertEquals(1, t4.zeroCount());
                 assertEquals(g.value(Double.NaN), t4.max());
@@ -1156,7 +1156,7 @@ public class TensorTest {
             var t5 = g.seq(Shape.of(7));
             t5.set(g.value(Double.NaN), 0);
             t5.set(g.value(Double.NaN), 6);
-            if (g.dType().isFloatingPoint()) {
+            if (g.dType().floatingPoint()) {
                 assertEquals(2, t5.nanCount());
                 assertEquals(0, t5.zeroCount());
                 assertEquals(g.value(120), t5.nanProd());
@@ -1185,7 +1185,7 @@ public class TensorTest {
 
         void statisticsTest() {
 
-            if (!g.dType().isFloatingPoint()) {
+            if (!g.dType().floatingPoint()) {
                 var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 20)).stats());
                 assertEquals("Operation available only for float tensors.", e.getMessage());
                 return;

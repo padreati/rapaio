@@ -99,9 +99,9 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
                 for (int k = 0; k < inputNames().length; k++) {
                     String inputName = inputNames[k];
                     if (AddIntercept.INTERCEPT.equals(inputName)) {
-                        fit += beta.get(k, i);
+                        fit += beta.getDouble(k, i);
                     } else {
-                        fit += beta.get(k, i) * df.getDouble(j, inputName);
+                        fit += beta.getDouble(k, i) * df.getDouble(j, inputName);
                     }
                 }
                 result.prediction(target).setDouble(j, fit);
@@ -153,7 +153,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
             tt.textCenter(0, 1, "Estimate");
             for (int j = 0; j < coeff.size(); j++) {
                 tt.textLeft(j + 1, 0, inputNames[j]);
-                tt.floatMedium(j + 1, 1, coeff.get(j));
+                tt.floatMedium(j + 1, 1, coeff.getDouble(j));
             }
             sb.append(tt.getDynamicText(printer, options));
             sb.append("\n");

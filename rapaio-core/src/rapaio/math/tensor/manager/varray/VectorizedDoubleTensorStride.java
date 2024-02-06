@@ -40,11 +40,12 @@ import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.manager.barray.BaseDoubleTensorStride;
+import rapaio.math.tensor.operator.TensorUnaryOp;
 
 public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride implements Tensor<Double> {
 
-    private static final VectorSpecies<Double> SPEC = DoubleVector.SPECIES_PREFERRED;
-    private static final int SPEC_LEN = SPEC.length();
+    private static final VectorSpecies<Double> VS = DoubleVector.SPECIES_PREFERRED;
+    private static final int VS_LEN = VS.length();
 
     private final int[] loopIndexes;
 
@@ -54,8 +55,8 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
     }
 
     private int[] loopIndexes(int step) {
-        int[] indexes = new int[SPEC_LEN];
-        for (int i = 1; i < SPEC_LEN; i++) {
+        int[] indexes = new int[VS_LEN];
+        for (int i = 1; i < VS_LEN; i++) {
             indexes[i] = indexes[i - 1] + step;
         }
         return indexes;
@@ -64,11 +65,11 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
     @Override
     public Tensor<Double> fill_(Double value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
+            int bound = VS.loopBound(loop.size) * loop.step + offset;
             int i = 0;
             if (bound > offset) {
-                DoubleVector fill = DoubleVector.broadcast(SPEC, value);
-                for (; i < bound; i += SPEC_LEN * loop.step) {
+                DoubleVector fill = DoubleVector.broadcast(VS, value);
+                for (; i < bound; i += VS_LEN * loop.step) {
                     if (loop.step == 1) {
                         storage.saveDouble(fill, offset + i * loop.step);
                     } else {
@@ -86,18 +87,18 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
     @Override
     public Tensor<Double> fillNan_(Double value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size);
+            int bound = VS.loopBound(loop.size);
             int i = 0;
             if (bound > offset) {
-                DoubleVector fill = DoubleVector.broadcast(SPEC, value);
-                for (; i < bound; i += SPEC_LEN) {
+                DoubleVector fill = DoubleVector.broadcast(VS, value);
+                for (; i < bound; i += VS_LEN) {
                     int p = offset + i * loop.step;
                     if (loop.step == 1) {
-                        DoubleVector a = storage.loadDouble(SPEC, p);
+                        DoubleVector a = storage.loadDouble(VS, p);
                         VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
                         storage.saveDouble(fill, p, m);
                     } else {
-                        DoubleVector a = storage.loadDouble(SPEC, p, loopIndexes, 0);
+                        DoubleVector a = storage.loadDouble(VS, p, loopIndexes, 0);
                         VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
                         storage.saveDouble(fill, p, loopIndexes, 0, m);
                     }
@@ -116,11 +117,11 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
     @Override
     public Tensor<Double> clamp_(Double min, Double max) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size);
+            int bound = VS.loopBound(loop.size);
             int i = 0;
-            for (; i < bound; i += SPEC_LEN) {
+            for (; i < bound; i += VS_LEN) {
                 int p = offset + i * loop.step;
-                DoubleVector a = loop.step == 1 ? storage.loadDouble(SPEC, p) : storage.loadDouble(SPEC, p, loopIndexes, 0);
+                DoubleVector a = loop.step == 1 ? storage.loadDouble(VS, p) : storage.loadDouble(VS, p, loopIndexes, 0);
                 boolean any = false;
                 if (!dtype().isNaN(min)) {
                     VectorMask<Double> m = a.compare(VectorOperators.LT, min);
@@ -157,40 +158,13 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
         return this;
     }
 
-    /*
-    private void unaryOpUnit(TensorUnaryOp op) {
-        for (int off : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + off;
-            int i = off;
-            for (; i < bound; i += SPEC_LEN) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i);
-                a = a.lanewise(op.vop());
-                a.intoArray(array, i);
-            }
-            for (; i < loop.bound + off; i++) {
-                array[i] = op.applyDouble(array[i]);
-            }
-        }
-    }
-
-    private void unaryOpStep(TensorUnaryOp op) {
-        for (int off : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + off;
-            int i = off;
-            for (; i < bound; i += SPEC_LEN * loop.step) {
-                DoubleVector a = DoubleVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                a = a.lanewise(op.vop());
-                a.intoArray(array, i, loopIndexes, 0);
-            }
-            for (; i < loop.bound + off; i += loop.step) {
-                array[i] = op.applyDouble(array[i]);
-            }
-        }
-    }
-
     @Override
     protected void unaryOp(TensorUnaryOp op) {
-        if (op.isFloatOnly() && !dtype().isFloat()) {
+        if (!op.vectorSupport()) {
+            super.unaryOp(op);
+            return;
+        }
+        if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
         if (loop.step == 1) {
@@ -199,6 +173,40 @@ public final class VectorizedDoubleTensorStride extends BaseDoubleTensorStride i
             unaryOpStep(op);
         }
     }
+
+    private void unaryOpUnit(TensorUnaryOp op) {
+        for (int off : loop.offsets) {
+            int bound = VS.loopBound(loop.size) + off;
+            int i = off;
+            for (; i < bound; i += VS_LEN) {
+                DoubleVector a = storage.loadDouble(VS, i);
+                a = op.applyDouble(a);
+                storage.saveDouble(a, i);
+            }
+            for (; i < loop.size + off; i++) {
+                storage.setDouble(i, op.applyDouble(storage.getDouble(i)));
+            }
+        }
+    }
+
+    private void unaryOpStep(TensorUnaryOp op) {
+        for (int off : loop.offsets) {
+            int bound = VS.loopBound(loop.size);
+            int i = 0;
+            for (; i < bound; i += VS_LEN) {
+                int p = off + i * loop.step;
+                DoubleVector a = storage.loadDouble(VS, p, loopIndexes, 0);
+                a = op.applyDouble(a);
+                storage.saveDouble(a, p, loopIndexes, 0);
+            }
+            for (; i < loop.size; i += loop.step) {
+                int p = off + i * loop.step;
+                storage.setDouble(p, op.applyDouble(storage.getDouble(p)));
+            }
+        }
+    }
+
+    /*
 
     protected void binaryVectorOp(TensorBinaryOp op, DoubleTensor b) {
         if(b.isScalar()) {

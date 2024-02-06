@@ -62,8 +62,8 @@ public class SplineKernel extends AbstractKernel {
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         double value = 1;
         for (int i = 0; i < u.size(); i++) {
-            double xi = v.get(i);
-            double yi = u.get(i);
+            double xi = v.getDouble(i);
+            double yi = u.getDouble(i);
             double min = Math.min(xi, yi);
             value *= 1 + xi * yi + xi * yi * min - (xi + yi) * min * min / 2.0 + min * min * min / 3;
         }

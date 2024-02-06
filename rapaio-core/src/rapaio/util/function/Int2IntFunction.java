@@ -31,13 +31,11 @@
 
 package rapaio.util.function;
 
-import java.util.function.IntUnaryOperator;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.
  */
 @FunctionalInterface
-public interface Int2IntFunction extends SFunction<Integer, Integer>, IntUnaryOperator {
+public interface Int2IntFunction extends SFunction<Integer, Integer> {
 
     int applyAsInt(int value);
 

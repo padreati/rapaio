@@ -40,11 +40,12 @@ import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.manager.barray.BaseByteTensorStride;
+import rapaio.math.tensor.operator.TensorUnaryOp;
 
 public final class VectorizedByteTensorStride extends BaseByteTensorStride implements Tensor<Byte> {
 
-    private static final VectorSpecies<Byte> SPEC = ByteVector.SPECIES_PREFERRED;
-    private static final int SPEC_LEN = SPEC.length();
+    private static final VectorSpecies<Byte> VS = ByteVector.SPECIES_PREFERRED;
+    private static final int VS_LEN = VS.length();
 
     private final int[] loopIndexes;
 
@@ -54,8 +55,8 @@ public final class VectorizedByteTensorStride extends BaseByteTensorStride imple
     }
 
     private int[] loopIndexes(int step) {
-        int[] indexes = new int[SPEC_LEN];
-        for (int i = 1; i < SPEC_LEN; i++) {
+        int[] indexes = new int[VS_LEN];
+        for (int i = 1; i < VS_LEN; i++) {
             indexes[i] = indexes[i - 1] + step;
         }
         return indexes;
@@ -64,11 +65,11 @@ public final class VectorizedByteTensorStride extends BaseByteTensorStride imple
     @Override
     public Tensor<Byte> fill_(Byte value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
+            int bound = VS.loopBound(loop.size) * loop.step + offset;
             int i = 0;
             if (bound > offset) {
-                ByteVector fill = ByteVector.broadcast(SPEC, value);
-                for (; i < bound; i += SPEC_LEN * loop.step) {
+                ByteVector fill = ByteVector.broadcast(VS, value);
+                for (; i < bound; i += VS_LEN * loop.step) {
                     if (loop.step == 1) {
                         storage.saveByte(fill, offset + i * loop.step);
                     } else {
@@ -86,18 +87,18 @@ public final class VectorizedByteTensorStride extends BaseByteTensorStride imple
     @Override
     public Tensor<Byte> fillNan_(Byte value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size);
+            int bound = VS.loopBound(loop.size);
             int i = 0;
             if (bound > offset) {
-                ByteVector fill = ByteVector.broadcast(SPEC, value);
-                for (; i < bound; i += SPEC_LEN) {
+                ByteVector fill = ByteVector.broadcast(VS, value);
+                for (; i < bound; i += VS_LEN) {
                     int p = offset + i * loop.step;
                     if (loop.step == 1) {
-                        ByteVector a = storage.loadByte(SPEC, p);
+                        ByteVector a = storage.loadByte(VS, p);
                         VectorMask<Byte> m = a.test(VectorOperators.IS_NAN);
                         storage.saveByte(fill, p, m);
                     } else {
-                        ByteVector a = storage.loadByte(SPEC, p, loopIndexes, 0);
+                        ByteVector a = storage.loadByte(VS, p, loopIndexes, 0);
                         VectorMask<Byte> m = a.test(VectorOperators.IS_NAN);
                         storage.saveByte(fill, p, loopIndexes, 0, m);
                     }
@@ -116,11 +117,11 @@ public final class VectorizedByteTensorStride extends BaseByteTensorStride imple
     @Override
     public Tensor<Byte> clamp_(Byte min, Byte max) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size);
+            int bound = VS.loopBound(loop.size);
             int i = 0;
-            for (; i < bound; i += SPEC_LEN) {
+            for (; i < bound; i += VS_LEN) {
                 int p = offset + i * loop.step;
-                ByteVector a = loop.step == 1 ? storage.loadByte(SPEC, p) : storage.loadByte(SPEC, p, loopIndexes, 0);
+                ByteVector a = loop.step == 1 ? storage.loadByte(VS, p) : storage.loadByte(VS, p, loopIndexes, 0);
                 boolean any = false;
                 if (!dtype().isNaN(min)) {
                     VectorMask<Byte> m = a.compare(VectorOperators.LT, min);
@@ -157,40 +158,13 @@ public final class VectorizedByteTensorStride extends BaseByteTensorStride imple
         return this;
     }
 
-    /*
-    private void unaryOpUnit(TensorUnaryOp op) {
-        for (int off : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + off;
-            int i = off;
-            for (; i < bound; i += SPEC_LEN) {
-                ByteVector a = ByteVector.fromArray(SPEC, array, i);
-                a = a.lanewise(op.vop());
-                a.intoArray(array, i);
-            }
-            for (; i < loop.bound + off; i++) {
-                array[i] = op.applyByte(array[i]);
-            }
-        }
-    }
-
-    private void unaryOpStep(TensorUnaryOp op) {
-        for (int off : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + off;
-            int i = off;
-            for (; i < bound; i += SPEC_LEN * loop.step) {
-                ByteVector a = ByteVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                a = a.lanewise(op.vop());
-                a.intoArray(array, i, loopIndexes, 0);
-            }
-            for (; i < loop.bound + off; i += loop.step) {
-                array[i] = op.applyByte(array[i]);
-            }
-        }
-    }
-
     @Override
     protected void unaryOp(TensorUnaryOp op) {
-        if (op.isFloatOnly() && !dtype().isFloat()) {
+        if (!op.vectorSupport()) {
+            super.unaryOp(op);
+            return;
+        }
+        if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
         if (loop.step == 1) {
@@ -199,6 +173,40 @@ public final class VectorizedByteTensorStride extends BaseByteTensorStride imple
             unaryOpStep(op);
         }
     }
+
+    private void unaryOpUnit(TensorUnaryOp op) {
+        for (int off : loop.offsets) {
+            int bound = VS.loopBound(loop.size) + off;
+            int i = off;
+            for (; i < bound; i += VS_LEN) {
+                ByteVector a = storage.loadByte(VS, i);
+                a = op.applyByte(a);
+                storage.saveByte(a, i);
+            }
+            for (; i < loop.size + off; i++) {
+                storage.setByte(i, op.applyByte(storage.getByte(i)));
+            }
+        }
+    }
+
+    private void unaryOpStep(TensorUnaryOp op) {
+        for (int off : loop.offsets) {
+            int bound = VS.loopBound(loop.size);
+            int i = 0;
+            for (; i < bound; i += VS_LEN) {
+                int p = off + i * loop.step;
+                ByteVector a = storage.loadByte(VS, p, loopIndexes, 0);
+                a = op.applyByte(a);
+                storage.saveByte(a, p, loopIndexes, 0);
+            }
+            for (; i < loop.size; i += loop.step) {
+                int p = off + i * loop.step;
+                storage.setByte(p, op.applyByte(storage.getByte(p)));
+            }
+        }
+    }
+
+    /*
 
     protected void binaryVectorOp(TensorBinaryOp op, ByteTensor b) {
         if(b.isScalar()) {

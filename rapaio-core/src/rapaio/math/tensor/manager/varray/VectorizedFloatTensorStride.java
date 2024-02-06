@@ -40,11 +40,12 @@ import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.manager.barray.BaseFloatTensorStride;
+import rapaio.math.tensor.operator.TensorUnaryOp;
 
 public final class VectorizedFloatTensorStride extends BaseFloatTensorStride implements Tensor<Float> {
 
-    private static final VectorSpecies<Float> SPEC = FloatVector.SPECIES_PREFERRED;
-    private static final int SPEC_LEN = SPEC.length();
+    private static final VectorSpecies<Float> VS = FloatVector.SPECIES_PREFERRED;
+    private static final int VS_LEN = VS.length();
 
     private final int[] loopIndexes;
 
@@ -54,8 +55,8 @@ public final class VectorizedFloatTensorStride extends BaseFloatTensorStride imp
     }
 
     private int[] loopIndexes(int step) {
-        int[] indexes = new int[SPEC_LEN];
-        for (int i = 1; i < SPEC_LEN; i++) {
+        int[] indexes = new int[VS_LEN];
+        for (int i = 1; i < VS_LEN; i++) {
             indexes[i] = indexes[i - 1] + step;
         }
         return indexes;
@@ -64,11 +65,11 @@ public final class VectorizedFloatTensorStride extends BaseFloatTensorStride imp
     @Override
     public Tensor<Float> fill_(Float value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
+            int bound = VS.loopBound(loop.size) * loop.step + offset;
             int i = 0;
             if (bound > offset) {
-                FloatVector fill = FloatVector.broadcast(SPEC, value);
-                for (; i < bound; i += SPEC_LEN * loop.step) {
+                FloatVector fill = FloatVector.broadcast(VS, value);
+                for (; i < bound; i += VS_LEN * loop.step) {
                     if (loop.step == 1) {
                         storage.saveFloat(fill, offset + i * loop.step);
                     } else {
@@ -86,18 +87,18 @@ public final class VectorizedFloatTensorStride extends BaseFloatTensorStride imp
     @Override
     public Tensor<Float> fillNan_(Float value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size);
+            int bound = VS.loopBound(loop.size);
             int i = 0;
             if (bound > offset) {
-                FloatVector fill = FloatVector.broadcast(SPEC, value);
-                for (; i < bound; i += SPEC_LEN) {
+                FloatVector fill = FloatVector.broadcast(VS, value);
+                for (; i < bound; i += VS_LEN) {
                     int p = offset + i * loop.step;
                     if (loop.step == 1) {
-                        FloatVector a = storage.loadFloat(SPEC, p);
+                        FloatVector a = storage.loadFloat(VS, p);
                         VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
                         storage.saveFloat(fill, p, m);
                     } else {
-                        FloatVector a = storage.loadFloat(SPEC, p, loopIndexes, 0);
+                        FloatVector a = storage.loadFloat(VS, p, loopIndexes, 0);
                         VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
                         storage.saveFloat(fill, p, loopIndexes, 0, m);
                     }
@@ -116,11 +117,11 @@ public final class VectorizedFloatTensorStride extends BaseFloatTensorStride imp
     @Override
     public Tensor<Float> clamp_(Float min, Float max) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size);
+            int bound = VS.loopBound(loop.size);
             int i = 0;
-            for (; i < bound; i += SPEC_LEN) {
+            for (; i < bound; i += VS_LEN) {
                 int p = offset + i * loop.step;
-                FloatVector a = loop.step == 1 ? storage.loadFloat(SPEC, p) : storage.loadFloat(SPEC, p, loopIndexes, 0);
+                FloatVector a = loop.step == 1 ? storage.loadFloat(VS, p) : storage.loadFloat(VS, p, loopIndexes, 0);
                 boolean any = false;
                 if (!dtype().isNaN(min)) {
                     VectorMask<Float> m = a.compare(VectorOperators.LT, min);
@@ -157,40 +158,13 @@ public final class VectorizedFloatTensorStride extends BaseFloatTensorStride imp
         return this;
     }
 
-    /*
-    private void unaryOpUnit(TensorUnaryOp op) {
-        for (int off : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + off;
-            int i = off;
-            for (; i < bound; i += SPEC_LEN) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                a = a.lanewise(op.vop());
-                a.intoArray(array, i);
-            }
-            for (; i < loop.bound + off; i++) {
-                array[i] = op.applyFloat(array[i]);
-            }
-        }
-    }
-
-    private void unaryOpStep(TensorUnaryOp op) {
-        for (int off : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + off;
-            int i = off;
-            for (; i < bound; i += SPEC_LEN * loop.step) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                a = a.lanewise(op.vop());
-                a.intoArray(array, i, loopIndexes, 0);
-            }
-            for (; i < loop.bound + off; i += loop.step) {
-                array[i] = op.applyFloat(array[i]);
-            }
-        }
-    }
-
     @Override
     protected void unaryOp(TensorUnaryOp op) {
-        if (op.isFloatOnly() && !dtype().isFloat()) {
+        if (!op.vectorSupport()) {
+            super.unaryOp(op);
+            return;
+        }
+        if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
         if (loop.step == 1) {
@@ -199,6 +173,40 @@ public final class VectorizedFloatTensorStride extends BaseFloatTensorStride imp
             unaryOpStep(op);
         }
     }
+
+    private void unaryOpUnit(TensorUnaryOp op) {
+        for (int off : loop.offsets) {
+            int bound = VS.loopBound(loop.size) + off;
+            int i = off;
+            for (; i < bound; i += VS_LEN) {
+                FloatVector a = storage.loadFloat(VS, i);
+                a = op.applyFloat(a);
+                storage.saveFloat(a, i);
+            }
+            for (; i < loop.size + off; i++) {
+                storage.setFloat(i, op.applyFloat(storage.getFloat(i)));
+            }
+        }
+    }
+
+    private void unaryOpStep(TensorUnaryOp op) {
+        for (int off : loop.offsets) {
+            int bound = VS.loopBound(loop.size);
+            int i = 0;
+            for (; i < bound; i += VS_LEN) {
+                int p = off + i * loop.step;
+                FloatVector a = storage.loadFloat(VS, p, loopIndexes, 0);
+                a = op.applyFloat(a);
+                storage.saveFloat(a, p, loopIndexes, 0);
+            }
+            for (; i < loop.size; i += loop.step) {
+                int p = off + i * loop.step;
+                storage.setFloat(p, op.applyFloat(storage.getFloat(p)));
+            }
+        }
+    }
+
+    /*
 
     protected void binaryVectorOp(TensorBinaryOp op, FloatTensor b) {
         if(b.isScalar()) {

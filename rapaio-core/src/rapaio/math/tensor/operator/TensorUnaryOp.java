@@ -35,6 +35,7 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
 import rapaio.data.OperationNotAvailableException;
 
@@ -64,27 +65,19 @@ public interface TensorUnaryOp {
      */
     boolean vectorSupport();
 
-    boolean isFloatOnly();
+    boolean floatingPointOnly();
 
-    default byte applyByte(byte v) {
-        throw new OperationNotAvailableException();
-    }
+    byte applyByte(byte v);
 
-    default int applyInt(int v) {
-        throw new OperationNotAvailableException();
-    }
+    int applyInt(int v);
 
     double applyDouble(double v);
 
     float applyFloat(float v);
 
-    default ByteVector applyByte(ByteVector v) {
-        throw new OperationNotAvailableException();
-    }
+    ByteVector applyByte(ByteVector v);
 
-    default IntVector applyInt(IntVector v) {
-        throw new OperationNotAvailableException();
-    }
+    IntVector applyInt(IntVector v);
 
     FloatVector applyFloat(FloatVector v);
 
@@ -99,7 +92,7 @@ final class OpRint implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return false;
     }
 
@@ -124,6 +117,16 @@ final class OpRint implements TensorUnaryOp {
     }
 
     @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
     public FloatVector applyFloat(FloatVector v) {
         throw new OperationNotAvailableException();
     }
@@ -142,7 +145,7 @@ final class OpCeil implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return false;
     }
 
@@ -167,6 +170,16 @@ final class OpCeil implements TensorUnaryOp {
     }
 
     @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
     public FloatVector applyFloat(FloatVector v) {
         throw new OperationNotAvailableException();
     }
@@ -181,27 +194,12 @@ final class OpFloor implements TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
+    public boolean floatingPointOnly() {
         return false;
-    }
-
-    @Override
-    public boolean isFloatOnly() {
-        return false;
-    }
-
-    @Override
-    public double applyDouble(double v) {
-        return Math.floor(v);
-    }
-
-    @Override
-    public float applyFloat(float v) {
-        return (float) Math.floor(v);
-    }
-
-    @Override
-    public int applyInt(int v) {
-        return v;
     }
 
     @Override
@@ -210,13 +208,46 @@ final class OpFloor implements TensorUnaryOp {
     }
 
     @Override
+    public int applyInt(int v) {
+        return v;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) StrictMath.floor(v);
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return StrictMath.floor(v);
+    }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        return v;
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        return v;
+    }
+
+    @Override
     public FloatVector applyFloat(FloatVector v) {
-        throw new OperationNotAvailableException();
+        VectorMask<Float> m = v.compare(VectorOperators.LT, 0);
+        if (m.anyTrue()) {
+            v = v.sub(1.f, m);
+        }
+        return v.convert(VectorOperators.F2I, 0).convert(VectorOperators.I2F, 0).reinterpretAsFloats();
     }
 
     @Override
     public DoubleVector applyDouble(DoubleVector v) {
-        throw new OperationNotAvailableException();
+        VectorMask<Double> m = v.compare(VectorOperators.LT, 0);
+        if (m.anyTrue()) {
+            v = v.sub(1., m);
+        }
+        return v.convert(VectorOperators.D2L, 0).convert(VectorOperators.L2D, 0).reinterpretAsDoubles();
     }
 }
 
@@ -228,7 +259,7 @@ final class OpAbs implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return false;
     }
 
@@ -281,7 +312,7 @@ final class OpNeg implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return false;
     }
 
@@ -334,8 +365,18 @@ final class OpLog implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -346,6 +387,16 @@ final class OpLog implements TensorUnaryOp {
     @Override
     public float applyFloat(float v) {
         return (float) Math.log(v);
+    }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -367,8 +418,18 @@ final class OpLog1p implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -379,6 +440,16 @@ final class OpLog1p implements TensorUnaryOp {
     @Override
     public float applyFloat(float v) {
         return (float) Math.log1p(v);
+    }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -400,8 +471,18 @@ final class OpExp implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -412,6 +493,16 @@ final class OpExp implements TensorUnaryOp {
     @Override
     public double applyDouble(double v) {
         return Math.exp(v);
+    }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -433,8 +524,18 @@ final class OpExpm1 implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -446,6 +547,17 @@ final class OpExpm1 implements TensorUnaryOp {
     public double applyDouble(double v) {
         return Math.expm1(v);
     }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
@@ -466,8 +578,18 @@ final class OpSin implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -479,6 +601,17 @@ final class OpSin implements TensorUnaryOp {
     public double applyDouble(double v) {
         return Math.sin(v);
     }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
@@ -499,8 +632,18 @@ final class OpAsin implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -512,6 +655,17 @@ final class OpAsin implements TensorUnaryOp {
     public double applyDouble(double v) {
         return Math.asin(v);
     }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
@@ -532,8 +686,18 @@ final class OpSinh implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -545,6 +709,17 @@ final class OpSinh implements TensorUnaryOp {
     public double applyDouble(double v) {
         return Math.sinh(v);
     }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
@@ -565,8 +740,18 @@ final class OpCos implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -578,6 +763,17 @@ final class OpCos implements TensorUnaryOp {
     public float applyFloat(float v) {
         return (float) Math.cos(v);
     }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
@@ -598,8 +794,18 @@ final class OpAcos implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -611,6 +817,17 @@ final class OpAcos implements TensorUnaryOp {
     public double applyDouble(double v) {
         return Math.acos(v);
     }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
@@ -631,9 +848,20 @@ final class OpCosh implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
     }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
+    }
+
 
     @Override
     public float applyFloat(float v) {
@@ -644,6 +872,17 @@ final class OpCosh implements TensorUnaryOp {
     public double applyDouble(double v) {
         return Math.cosh(v);
     }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
@@ -664,8 +903,18 @@ final class OpTan implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -677,6 +926,17 @@ final class OpTan implements TensorUnaryOp {
     public double applyDouble(double v) {
         return Math.tan(v);
     }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
@@ -697,8 +957,18 @@ final class OpAtan implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -710,6 +980,17 @@ final class OpAtan implements TensorUnaryOp {
     public double applyDouble(double v) {
         return Math.atan(v);
     }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
@@ -730,8 +1011,18 @@ final class OpTanh implements TensorUnaryOp {
     }
 
     @Override
-    public boolean isFloatOnly() {
+    public boolean floatingPointOnly() {
         return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -743,6 +1034,17 @@ final class OpTanh implements TensorUnaryOp {
     public double applyDouble(double v) {
         return Math.tanh(v);
     }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
 
     @Override
     public FloatVector applyFloat(FloatVector v) {

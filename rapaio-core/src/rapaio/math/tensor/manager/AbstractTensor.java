@@ -253,7 +253,7 @@ public abstract class AbstractTensor<N extends Number> implements Tensor<N> {
 
     private void appendValues(Printer printer, TextTable tt, int row, int cols, boolean maxColHit) {
         for (int i = 0; i < cols - 2; i++) {
-            double value = get(shape().index(Order.C, row * shape().dim(-1) + i)).doubleValue();
+            double value = getDouble(shape().index(Order.C, row * shape().dim(-1) + i));
             tt.floatString(row, i + 1, printer.getOptions().getFloatFormat().format(value));
         }
         if (maxColHit) {

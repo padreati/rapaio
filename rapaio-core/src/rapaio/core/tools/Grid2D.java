@@ -145,11 +145,11 @@ public class Grid2D implements Serializable {
     }
 
     public double value(int i, int j) {
-        return values.get(i, j);
+        return values.getDouble(i, j);
     }
 
     public void setValue(int i, int j, double value) {
-        values.set(value, i, j);
+        values.setDouble(value, i, j);
     }
 
     /**

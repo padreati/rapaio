@@ -62,7 +62,7 @@ public class MatrixTest extends AbstractArtistTest {
 
         var cov = randomm.t().mm(randomm);//.round(15);
 
-        DistanceMatrix dm = DistanceMatrix.empty(n).fill(cov::get);
+        DistanceMatrix dm = DistanceMatrix.empty(n).fill(cov::getDouble);
         grid.add(matrix(cov));
         grid.add(corrGram(dm));
 

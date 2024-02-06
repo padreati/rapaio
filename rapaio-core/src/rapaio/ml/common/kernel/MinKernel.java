@@ -62,7 +62,7 @@ public class MinKernel extends AbstractKernel {
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         double sum = 0;
         for (int i = 0; i < v.size(); i++) {
-            sum += Math.min(v.get(i), u.get(i));
+            sum += Math.min(v.getDouble(i), u.getDouble(i));
         }
         return sum;
     }

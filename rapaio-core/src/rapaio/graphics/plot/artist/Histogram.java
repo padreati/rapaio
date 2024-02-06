@@ -148,7 +148,7 @@ public class Histogram extends Artist {
     public void paint(Graphics2D g2d) {
         g2d.setStroke(new BasicStroke(options.getLwd()));
         for (int i = 0; i < freqTable.size(); i++) {
-            double d = freqTable.get(i);
+            double d = freqTable.getDouble(i);
             Composite old = g2d.getComposite();
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
 

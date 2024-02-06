@@ -632,27 +632,65 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      */
     LoopIterator loopIterator(Order askOrder);
 
+    /**
+     * Creates a new tensor in the default storage order, having as values the result of
+     * a function which receives as parameters two integers: order index and storage pointer value.
+     * <p>
+     * The order index is a zero integer increasing value determined by the order in which
+     * elements are parsed. The storage pointer describes where the value will be stored in
+     * storage layer.
+     *
+     * @param fun function which produces values
+     * @return value to be stored
+     */
     default Tensor<N> apply(IntIntBiFunction<N> fun) {
         return apply(Order.defaultOrder(), fun);
     }
 
+    /**
+     * Creates a new tensor in the order determined by parameter, having as values the result of
+     * a function which receives as parameters two integers: order index and storage pointer value.
+     * <p>
+     * The order index is a zero integer increasing value determined by the order in which
+     * elements are parsed. The storage pointer describes where the value will be stored in
+     * storage layer.
+     *
+     * @param fun function which produces values
+     * @return value to be stored
+     */
     default Tensor<N> apply(Order askOrder, IntIntBiFunction<N> fun) {
         return copy(askOrder).apply_(askOrder, fun);
     }
 
+    /**
+     * Changes values from tensor in the default order, having as values the result of
+     * a function which receives as parameters two integers: order index and storage pointer value.
+     * <p>
+     * The order index is a zero integer increasing value determined by the order in which
+     * elements are parsed. The storage pointer describes where the value will be stored in
+     * storage layer.
+     * <p>
+     * This function acts in place, does not create new storage.
+     *
+     * @param fun function which produces values
+     * @return value to be stored
+     */
     default Tensor<N> apply_(IntIntBiFunction<N> fun) {
         return apply_(Order.defaultOrder(), fun);
     }
 
     /**
-     * Applies the given function over the elements of the tensor. The function has
-     * two parameters: position and data pointer. The position describes
-     * the index element in the order specified by {@code askOrder}. The data pointer values do not
-     * depend on order.
+     * Changes values from tensor in the order specified by parameter, having as values the result of
+     * a function which receives as parameters two integers: order index and storage pointer value.
+     * <p>
+     * The order index is a zero integer increasing value determined by the order in which
+     * elements are parsed. The storage pointer describes where the value will be stored in
+     * storage layer.
+     * <p>
+     * This function acts in place, does not create new storage.
      *
-     * @param askOrder order used to iterate over positions
-     * @param fun      function which produces values
-     * @return new tensor with applied values
+     * @param fun function which produces values
+     * @return value to be stored
      */
     Tensor<N> apply_(Order askOrder, IntIntBiFunction<N> fun);
 
@@ -709,8 +747,6 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     Tensor<N> floor_();
-
-
 
 
     default Tensor<N> abs() {
@@ -1065,7 +1101,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         }
         for (int i = 0; i < dim(0); i++) {
             for (int j = i + 1; j < dim(1); j++) {
-                if (get(i, j).doubleValue() != get(j, i).doubleValue()) {
+                if (getDouble(i, j) != getDouble(j, i)) {
                     return false;
                 }
             }

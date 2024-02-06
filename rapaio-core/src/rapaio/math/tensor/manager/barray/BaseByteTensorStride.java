@@ -411,7 +411,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         int i = 0;
         while (it.hasNext()) {
             int p = it.nextInt();
-            storage.set(p, apply.applyAsInt(i++, p));
+            storage.setByte(p, apply.applyAsInt(i++, p));
         }
         return this;
     }
@@ -421,7 +421,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         var ptrIter = ptrIterator(Order.S);
         while (ptrIter.hasNext()) {
             int ptr = ptrIter.nextInt();
-            storage.set(ptr, fun.apply(storage.get(ptr)));
+            storage.setByte(ptr, fun.apply(storage.getByte(ptr)));
         }
         return this;
     }
@@ -430,11 +430,11 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     public Tensor<Byte> fill_(Byte value) {
         for (int offset : loop.offsets) {
             if (loop.step == 1) {
-                storage.fill(value, offset, loop.size);
+                storage.fillByte(value, offset, loop.size);
             } else {
                 for (int i = 0; i < loop.size; i++) {
                     int p = offset + i * loop.step;
-                    storage.set(p, value);
+                    storage.setByte(p, value);
                 }
             }
         }
@@ -470,20 +470,32 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         return this;
     }
 
+    private void unaryOpUnit(TensorUnaryOp op) {
+        for (int off : loop.offsets) {
+            for (int i = off; i < loop.size + off; i++) {
+                storage.setByte(i, op.applyByte(storage.getByte(i)));
+            }
+        }
+    }
+
     private void unaryOpStep(TensorUnaryOp op) {
         for (int off : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = off + i * loop.step;
+            for (int i = 0, p = off; i < loop.size; i++) {
                 storage.setByte(p, op.applyByte(storage.getByte(p)));
+                p += loop.step;
             }
         }
     }
 
     protected void unaryOp(TensorUnaryOp op) {
-        if (op.isFloatOnly() && !dtype().isFloatingPoint()) {
+        if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
-        unaryOpStep(op);
+        if (loop.step == 1) {
+            unaryOpUnit(op);
+        } else {
+            unaryOpStep(op);
+        }
     }
 
     @Override
@@ -930,7 +942,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
 
     @Override
     public Byte mean() {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
         int size = size();
@@ -979,7 +991,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
 
     @Override
     public Byte var() {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
         int size = size();
@@ -1019,7 +1031,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
 
     @Override
     public Byte varc(int ddof) {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
         int size = size();
@@ -1059,7 +1071,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
 
     @Override
     public Statistics<Byte> stats() {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
 
@@ -1167,7 +1179,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     @Override
     public int argmax(Order order) {
         int argmax = -1;
-        byte argvalue = TensorAssociativeOp.MAX.initialByte();
+        byte argvalue = TensorAssociativeOp.MAX.initByte();
         var i = 0;
         var it = loopIterator(order);
         while (it.hasNext()) {
@@ -1207,7 +1219,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     @Override
     public int argmin(Order order) {
         int argmin = -1;
-        byte argvalue = TensorAssociativeOp.MIN.initialByte();
+        byte argvalue = TensorAssociativeOp.MIN.initByte();
         var i = 0;
         var it = loopIterator(order);
         while (it.hasNext()) {
@@ -1273,7 +1285,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     protected byte associativeOp(TensorAssociativeOp op) {
-        byte agg = op.initialByte();
+        byte agg = op.initByte();
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
@@ -1284,7 +1296,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
     }
 
     protected byte nanAssociativeOp(TensorAssociativeOp op) {
-        byte aggregate = op.initialByte();
+        byte aggregate = op.initByte();
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
@@ -1307,7 +1319,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            byte value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialByte(), op::aggByte);
+            byte value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initByte(), op::aggByte);
             res.ptrSet(resIt.next(), value);
         }
         return res;
@@ -1324,7 +1336,7 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            byte value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.BYTE, op.initialByte(), op::aggByte);
+            byte value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.BYTE, op.initByte(), op::aggByte);
             res.ptrSet(resIt.next(), value);
         }
         return res;

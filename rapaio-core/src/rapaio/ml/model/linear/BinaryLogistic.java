@@ -260,7 +260,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         p.apply_(MathTools::logistic);
 
         for (int r = 0; r < df.rowCount(); r++) {
-            double pi = p.get(r);
+            double pi = p.getDouble(r);
             if (withClasses) {
                 cr.firstClasses().setLabel(r, pi > 0.5 ? positiveLabel : negativeLabel);
             }

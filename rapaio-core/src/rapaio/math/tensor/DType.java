@@ -33,7 +33,6 @@ package rapaio.math.tensor;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.Function;
 
 public abstract class DType<N extends Number> {
 
@@ -60,7 +59,7 @@ public abstract class DType<N extends Number> {
         return isInteger;
     }
 
-    public boolean isFloatingPoint() {
+    public boolean floatingPoint() {
         return !isInteger;
     }
 
@@ -77,8 +76,6 @@ public abstract class DType<N extends Number> {
     public abstract N castValue(float value);
 
     public abstract N castValue(double value);
-
-    public abstract <M extends Number> Function<N, M> castFunction(DType<M> dType);
 
     public abstract boolean isNaN(N value);
 
@@ -136,11 +133,6 @@ public abstract class DType<N extends Number> {
         }
 
         @Override
-        public <M extends Number> Function<Byte, M> castFunction(DType<M> dType) {
-            return dType::castValue;
-        }
-
-        @Override
         public boolean isNaN(Byte value) {
             return false;
         }
@@ -187,11 +179,6 @@ public abstract class DType<N extends Number> {
         @Override
         public Integer castValue(double value) {
             return (int) value;
-        }
-
-        @Override
-        public <M extends Number> Function<Integer, M> castFunction(DType<M> dType) {
-            return dType::castValue;
         }
 
         @Override
@@ -245,11 +232,6 @@ public abstract class DType<N extends Number> {
         }
 
         @Override
-        public <M extends Number> Function<Float, M> castFunction(DType<M> dType) {
-            return dType::castValue;
-        }
-
-        @Override
         public boolean isNaN(Float value) {
             return Float.isNaN(value);
         }
@@ -296,11 +278,6 @@ public abstract class DType<N extends Number> {
         @Override
         public Double castValue(double value) {
             return value;
-        }
-
-        @Override
-        public <M extends Number> Function<Double, M> castFunction(DType<M> dType) {
-            return dType::castValue;
         }
 
         @Override

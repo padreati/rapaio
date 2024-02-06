@@ -89,6 +89,7 @@ public interface Storage<N extends Number> {
 
     void fillDouble(double value, int start, int len);
 
+
     default ByteVector loadByte(VectorSpecies<Byte> species, int offset) {
         throw new OperationNotAvailableException();
     }

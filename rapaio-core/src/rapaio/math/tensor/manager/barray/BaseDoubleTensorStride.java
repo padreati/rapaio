@@ -411,7 +411,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         int i = 0;
         while (it.hasNext()) {
             int p = it.nextInt();
-            storage.set(p, apply.applyAsInt(i++, p));
+            storage.setDouble(p, apply.applyAsInt(i++, p));
         }
         return this;
     }
@@ -421,7 +421,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         var ptrIter = ptrIterator(Order.S);
         while (ptrIter.hasNext()) {
             int ptr = ptrIter.nextInt();
-            storage.set(ptr, fun.apply(storage.get(ptr)));
+            storage.setDouble(ptr, fun.apply(storage.getDouble(ptr)));
         }
         return this;
     }
@@ -430,11 +430,11 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     public Tensor<Double> fill_(Double value) {
         for (int offset : loop.offsets) {
             if (loop.step == 1) {
-                storage.fill(value, offset, loop.size);
+                storage.fillDouble(value, offset, loop.size);
             } else {
                 for (int i = 0; i < loop.size; i++) {
                     int p = offset + i * loop.step;
-                    storage.set(p, value);
+                    storage.setDouble(p, value);
                 }
             }
         }
@@ -470,20 +470,32 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         return this;
     }
 
+    private void unaryOpUnit(TensorUnaryOp op) {
+        for (int off : loop.offsets) {
+            for (int i = off; i < loop.size + off; i++) {
+                storage.setDouble(i, op.applyDouble(storage.getDouble(i)));
+            }
+        }
+    }
+
     private void unaryOpStep(TensorUnaryOp op) {
         for (int off : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = off + i * loop.step;
+            for (int i = 0, p = off; i < loop.size; i++) {
                 storage.setDouble(p, op.applyDouble(storage.getDouble(p)));
+                p += loop.step;
             }
         }
     }
 
     protected void unaryOp(TensorUnaryOp op) {
-        if (op.isFloatOnly() && !dtype().isFloatingPoint()) {
+        if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
-        unaryOpStep(op);
+        if (loop.step == 1) {
+            unaryOpUnit(op);
+        } else {
+            unaryOpStep(op);
+        }
     }
 
     @Override
@@ -930,7 +942,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
 
     @Override
     public Double mean() {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
         int size = size();
@@ -979,7 +991,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
 
     @Override
     public Double var() {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
         int size = size();
@@ -1019,7 +1031,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
 
     @Override
     public Double varc(int ddof) {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
         int size = size();
@@ -1059,7 +1071,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
 
     @Override
     public Statistics<Double> stats() {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
 
@@ -1167,7 +1179,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     @Override
     public int argmax(Order order) {
         int argmax = -1;
-        double argvalue = TensorAssociativeOp.MAX.initialDouble();
+        double argvalue = TensorAssociativeOp.MAX.initDouble();
         var i = 0;
         var it = loopIterator(order);
         while (it.hasNext()) {
@@ -1207,7 +1219,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     @Override
     public int argmin(Order order) {
         int argmin = -1;
-        double argvalue = TensorAssociativeOp.MIN.initialDouble();
+        double argvalue = TensorAssociativeOp.MIN.initDouble();
         var i = 0;
         var it = loopIterator(order);
         while (it.hasNext()) {
@@ -1273,7 +1285,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     protected double associativeOp(TensorAssociativeOp op) {
-        double agg = op.initialDouble();
+        double agg = op.initDouble();
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
@@ -1284,7 +1296,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     protected double nanAssociativeOp(TensorAssociativeOp op) {
-        double aggregate = op.initialDouble();
+        double aggregate = op.initDouble();
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
@@ -1307,7 +1319,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            double value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialDouble(), op::aggDouble);
+            double value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initDouble(), op::aggDouble);
             res.ptrSet(resIt.next(), value);
         }
         return res;
@@ -1324,7 +1336,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            double value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.DOUBLE, op.initialDouble(), op::aggDouble);
+            double value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.DOUBLE, op.initDouble(), op::aggDouble);
             res.ptrSet(resIt.next(), value);
         }
         return res;

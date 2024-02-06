@@ -1,0 +1,21 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"tensor.FloorBenchmark.fillBaseOrderC","avgt",1,3,0.017781,0.009134,"ms/op",100
+"tensor.FloorBenchmark.fillBaseOrderC","avgt",1,3,0.442392,0.112930,"ms/op",500
+"tensor.FloorBenchmark.fillBaseOrderC","avgt",1,3,1.834278,0.149473,"ms/op",1000
+"tensor.FloorBenchmark.fillBaseOrderC","avgt",1,3,11.195831,2.226301,"ms/op",2500
+"tensor.FloorBenchmark.fillBaseOrderF","avgt",1,3,0.017350,0.000981,"ms/op",100
+"tensor.FloorBenchmark.fillBaseOrderF","avgt",1,3,0.436714,0.028523,"ms/op",500
+"tensor.FloorBenchmark.fillBaseOrderF","avgt",1,3,1.819953,0.040417,"ms/op",1000
+"tensor.FloorBenchmark.fillBaseOrderF","avgt",1,3,11.127495,0.690143,"ms/op",2500
+"tensor.FloorBenchmark.fillJSAT","avgt",1,3,0.001337,0.000324,"ms/op",100
+"tensor.FloorBenchmark.fillJSAT","avgt",1,3,0.050304,0.006464,"ms/op",500
+"tensor.FloorBenchmark.fillJSAT","avgt",1,3,0.301563,0.033798,"ms/op",1000
+"tensor.FloorBenchmark.fillJSAT","avgt",1,3,3.153744,0.236285,"ms/op",2500
+"tensor.FloorBenchmark.fillVecOrderC","avgt",1,3,0.001680,0.005606,"ms/op",100
+"tensor.FloorBenchmark.fillVecOrderC","avgt",1,3,0.071182,0.075273,"ms/op",500
+"tensor.FloorBenchmark.fillVecOrderC","avgt",1,3,0.478868,0.058502,"ms/op",1000
+"tensor.FloorBenchmark.fillVecOrderC","avgt",1,3,3.512530,0.166931,"ms/op",2500
+"tensor.FloorBenchmark.fillVecOrderF","avgt",1,3,0.001519,0.000155,"ms/op",100
+"tensor.FloorBenchmark.fillVecOrderF","avgt",1,3,0.071067,0.140989,"ms/op",500
+"tensor.FloorBenchmark.fillVecOrderF","avgt",1,3,0.554527,0.126953,"ms/op",1000
+"tensor.FloorBenchmark.fillVecOrderF","avgt",1,3,3.737001,0.031305,"ms/op",2500

@@ -288,8 +288,8 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     double derivative(Tensor<Double> x, double beta, double c) {
         double value = 0;
         for (int i = 0; i < x.size(); i++) {
-            double v = x.get(i);
-            if (x.get(i) < c) {
+            double v = x.getDouble(i);
+            if (x.getDouble(i) < c) {
                 value += pow(c - v, beta - 1);
             } else {
                 value -= pow(v - c, beta - 1);
@@ -300,39 +300,39 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
 
     double findLeft(Tensor<Double> y, double beta, double c) {
         int left = 0;
-        double min = error(y, beta, y.get(left));
+        double min = error(y, beta, y.getDouble(left));
         for (int i = 1; i < y.size(); i++) {
-            if (y.get(i) >= c) {
+            if (y.getDouble(i) >= c) {
                 break;
             }
-            double e = error(y, beta, y.get(i));
+            double e = error(y, beta, y.getDouble(i));
             if (e < min) {
                 left = i;
                 min = e;
             }
         }
-        return y.get(left);
+        return y.getDouble(left);
     }
 
     double findRight(Tensor<Double> y, double beta, double c) {
         int right = y.size() - 1;
-        double min = error(y, beta, y.get(right));
+        double min = error(y, beta, y.getDouble(right));
         for (int i = right - 1; i >= 0; i--) {
-            if (y.get(i) <= c) {
+            if (y.getDouble(i) <= c) {
                 break;
             }
-            double e = error(y, beta, y.get(i));
+            double e = error(y, beta, y.getDouble(i));
             if (e < min) {
                 right = i;
                 min = e;
             }
         }
-        return y.get(right);
+        return y.getDouble(right);
     }
 
     double findMinimum(Tensor<Double> y, double beta) {
         Tensor<Double> errors = y.apply(v -> error(y, beta, v));
-        double c0 = y.get(errors.argmin());
+        double c0 = y.getDouble(errors.argmin());
         double left = findLeft(y, beta, c0);
         double right = findRight(y, beta, c0);
 
@@ -388,7 +388,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         Tensor<Double> dv = Tensors.zeros(Shape.of(k.get(), dm.dim(1)));
         for (int i = 0; i < dm.dim(0); i++) {
             for (int j = 0; j < dm.dim(1); j++) {
-                dv.incDouble(dm.get(i, j), assign[i], j);
+                dv.incDouble(dm.getDouble(i, j), assign[i], j);
             }
         }
         // avoid division by 0
@@ -400,7 +400,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
             for (int j = 0; j < dv.dim(1); j++) {
                 double v = 0;
                 for (int l = 0; l < dv.dim(1); l++) {
-                    v += pow(dv.get(i, j) / dv.get(i, l), invPow);
+                    v += pow(dv.getDouble(i, j) / dv.getDouble(i, l), invPow);
                 }
                 weights.setDouble(1 / v, i, j);
             }
@@ -416,7 +416,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         for (int i = 0; i < dv.size(); i++) {
             double v = 0;
             for (int j = 0; j < dv.size(); j++) {
-                v += pow(dv.get(i) / dv.get(j), invPow);
+                v += pow(dv.getDouble(i) / dv.getDouble(j), invPow);
             }
             weights.setDouble(1 / v, 0, i);
         }

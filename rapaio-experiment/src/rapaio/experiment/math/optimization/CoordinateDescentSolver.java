@@ -93,7 +93,7 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
                 }
             }
             Tensor<Double> deltaX = Tensors.zeros(Shape.of(d1fx.size()));
-            deltaX.set(-Math.signum(d1fx.get(index)), index);
+            deltaX.setDouble(-Math.signum(d1fx.get(index)), index);
 
             if (Math.abs(deltaX.norm(2.)) < tol.get()) {
                 converged = true;

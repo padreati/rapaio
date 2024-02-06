@@ -34,7 +34,6 @@ package rapaio.ml.common.kernel;
 import java.io.Serial;
 
 import rapaio.data.Frame;
-import rapaio.math.linear.DVector;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
@@ -78,8 +77,8 @@ public class GeneralizedMinKernel extends AbstractKernel {
         double sum = 0;
         for (int i = 0; i < u.size(); i++) {
             sum += Math.min(
-                    Math.pow(Math.abs(v.get(i)), alpha),
-                    Math.pow(Math.abs(u.get(i)), beta)
+                    Math.pow(Math.abs(v.getDouble(i)), alpha),
+                    Math.pow(Math.abs(u.getDouble(i)), beta)
             );
         }
         return sum;

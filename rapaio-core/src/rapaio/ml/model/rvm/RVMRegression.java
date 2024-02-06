@@ -280,7 +280,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             RBFKernel kernel = new RBFKernel(sigma);
             var out = Tensors.zeros(Shape.of(x.dim(1)));
             for (int j = 0; j < out.size(); j++) {
-                out.set(x.get(random.nextInt(x.dim(0)), j) + noise.sampleNext(), j);
+                out.setDouble(x.getDouble(random.nextInt(x.dim(0)), j) + noise.sampleNext(), j);
             }
             return new Feature(
                     String.format("%s, trainIndex: %s", kernel.name(), out),
@@ -448,15 +448,15 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = 0;
             for (int j = 0; j < vm.size(); j++) {
-                pred += features.get(featureIndexes[j]).kernel.apply(feat.takesq(0, i)) * vm.get(j);
+                pred += features.get(featureIndexes[j]).kernel.apply(feat.takesq(0, i)) * vm.getDouble(j);
             }
             prediction.prediction(firstTargetName()).setDouble(i, pred);
             if (quantiles != null && quantiles.length > 0) {
                 var phi_m = Tensors.zeros(Shape.of(vm.size()));
                 for (int j = 0; j < vm.size(); j++) {
-                    phi_m.set(features.get(featureIndexes[j]).kernel.apply(feat.takesq(0, i)), j);
+                    phi_m.setDouble(features.get(featureIndexes[j]).kernel.apply(feat.takesq(0, i)), j);
                 }
-                double variance = 1.0 / beta + phi_m.unsqueeze(0).mm(msigma).mv(phi_m).get();
+                double variance = 1.0 / beta + phi_m.unsqueeze(0).mm(msigma).mv(phi_m).getDouble();
                 Normal normal = Normal.of(pred, Math.sqrt(variance));
                 for (int j = 0; j < quantiles.length; j++) {
                     double q = normal.quantile(quantiles[j]);
@@ -555,8 +555,8 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         protected boolean testConvergence(Tensor<Double> oldAlpha, Tensor<Double> alpha) {
             double delta = 0;
             for (int i = 0; i < alpha.size(); i++) {
-                double new_value = alpha.get(i);
-                double old_value = oldAlpha.get(i);
+                double new_value = alpha.getDouble(i);
+                double old_value = oldAlpha.getDouble(i);
                 if (Double.isInfinite(new_value) && Double.isInfinite(old_value)) {
                     continue;
                 }
@@ -595,7 +595,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 // compute m and sigma
                 var t = phi_t_phi.copy().mul_(beta);
                 for (int i = 0; i < t.dim(0); i++) {
-                    t.inc(alpha.get(i), i, i);
+                    t.inc(alpha.getDouble(i), i, i);
                 }
 
                 try {
@@ -607,12 +607,12 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
                 // compute alpha and beta
 
-                var gamma = Tensors.zeros(Shape.of(m.size())).apply_((i, _) -> 1 - alpha.get(i) * sigma.get(i, i));
+                var gamma = Tensors.zeros(Shape.of(m.size())).apply_((i, _) -> 1 - alpha.getDouble(i) * sigma.getDouble(i, i));
                 var oldAlpha = alpha.copy();
 
                 // update alpha
                 for (int i = 0; i < alpha.size(); i++) {
-                    alpha.set(gamma.get(i) / (m.get(i) * m.get(i)), i);
+                    alpha.setDouble(gamma.getDouble(i) / (m.getDouble(i) * m.getDouble(i)), i);
                 }
                 // update sigma
                 var deltaDiff = phi.mv(m).sub_(y);
@@ -636,7 +636,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             boolean[] pruningFlag = new boolean[indexes.length];
             int pruningCount = 0;
             for (int i = 0; i < pruningFlag.length; i++) {
-                if (alpha.get(i) > parent.alphaThreshold.get()) {
+                if (alpha.getDouble(i) > parent.alphaThreshold.get()) {
                     // we assume it goes to infinity, thus we prune the entry
                     pruningFlag[i] = true;
                     pruningCount++;
@@ -673,7 +673,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
             var t = phi_t_phi.mul(beta);
             for (int i = 0; i < t.dim(0); i++) {
-                t.inc(alpha.get(i), i, i);
+                t.inc(alpha.getDouble(i), i, i);
             }
 
             try {
@@ -766,16 +766,16 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             for (int i = 0; i < fcount; i++) {
                 theta[i] = q[i] * q[i] - s[i];
                 if (theta[i] > 0) {
-                    if (Double.isInfinite(alpha.get(i))) {
+                    if (Double.isInfinite(alpha.getDouble(i))) {
                         llDelta[i] = (qq[i] * qq[i] - ss[i]) / ss[i] + Math.log(ss[i] / (qq[i] * qq[i]));
                     } else {
                         double alpha_new = s[i] * s[i] / theta[i];
-                        double delta_alpha = 1. / alpha_new - 1.0 / alpha.get(i);
+                        double delta_alpha = 1. / alpha_new - 1.0 / alpha.getDouble(i);
                         llDelta[i] = (qq[i] * qq[i]) / (ss[i] + 1. / delta_alpha) - Math.log1p(ss[i] * delta_alpha);
                     }
                 } else {
-                    if (Double.isFinite(alpha.get(i))) {
-                        llDelta[i] = qq[i] * qq[i] / (ss[i] - alpha.get(i)) - Math.log(1 - ss[i] / alpha.get(i));
+                    if (Double.isFinite(alpha.getDouble(i))) {
+                        llDelta[i] = qq[i] * qq[i] / (ss[i] - alpha.getDouble(i)) - Math.log(1 - ss[i] / alpha.getDouble(i));
                     }
                 }
             }
@@ -786,20 +786,20 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                     i = j;
                 }
             }
-            double alpha_i = alpha.get(i);
+            double alpha_i = alpha.getDouble(i);
 
             if (theta[i] > 0) {
                 if (Double.isInfinite(alpha_i)) {
                     // add alpha_i to model
-                    alpha.set(s[i] * s[i] / theta[i], i);
+                    alpha.setDouble(s[i] * s[i] / theta[i], i);
                     indexes = addIndex(i);
                 } else {
                     // alpha is in set, re-estimate alpha
-                    alpha.set(s[i] * s[i] / theta[i], i);
+                    alpha.setDouble(s[i] * s[i] / theta[i], i);
                 }
             } else {
                 if (Double.isFinite(alpha_i) && indexes.length > 1) {
-                    alpha.set(Double.POSITIVE_INFINITY, i);
+                    alpha.setDouble(Double.POSITIVE_INFINITY, i);
                     indexes = removeIndex(indexes, i);
                 }
             }
@@ -831,10 +831,10 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             // select one alpha
 
             int best_index = 0;
-            double best_projection = phi_dot_y.get(0) / phi_hat.get(0, 0);
+            double best_projection = phi_dot_y.getDouble(0) / phi_hat.getDouble(0, 0);
 
             for (int i = 1; i < parent.features.size(); i++) {
-                double projection = phi_dot_y.get(i) / phi_hat.get(i, i);
+                double projection = phi_dot_y.getDouble(i) / phi_hat.getDouble(i, i);
                 if (projection >= best_projection) {
                     best_projection = projection;
                     best_index = i;
@@ -842,14 +842,14 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             }
             indexes = new int[] {best_index};
 
-            alpha.set(phi_hat.get(best_index, best_index) / (best_projection - 1.0 / beta), best_index);
+            alpha.setDouble(phi_hat.getDouble(best_index, best_index) / (best_projection - 1.0 / beta), best_index);
         }
 
         private void computeSigmaAndMu() {
 
             Tensor<Double> m_sigma_inv = phi_hat.take(0, indexes).take(1, indexes).copy().mul_(beta);
             for (int i = 0; i < indexes.length; i++) {
-                m_sigma_inv.inc(alpha.get(indexes[i]), i, i);
+                m_sigma_inv.inc(alpha.getDouble(indexes[i]), i, i);
             }
             sigma = m_sigma_inv.qr().inv();
             m = sigma.mv(phi_dot_y.take(0, indexes)).mul_(beta);
@@ -859,12 +859,12 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             for (int i = 0; i < fcount; i++) {
                 Tensor<Double> left = phi_hat.takesq(1, i).take(0, indexes);
                 Tensor<Double> right = phi_dot_y.take(0, indexes);
-                ss[i] = beta * phi_hat.get(i, i) - beta * beta * left.unsqueeze(0).mm(sigma).mv(left).get(0);
-                qq[i] = beta * phi_dot_y.get(i) - beta * beta * left.unsqueeze(0).mm(sigma).mv(right).get(0);
+                ss[i] = beta * phi_hat.getDouble(i, i) - beta * beta * left.unsqueeze(0).mm(sigma).mv(left).getDouble(0);
+                qq[i] = beta * phi_dot_y.getDouble(i) - beta * beta * left.unsqueeze(0).mm(sigma).mv(right).getDouble(0);
             }
 
             for (int i = 0; i < fcount; i++) {
-                double alpha_i = alpha.get(i);
+                double alpha_i = alpha.getDouble(i);
                 if (Double.isInfinite(alpha_i)) {
                     s[i] = ss[i];
                     q[i] = qq[i];
@@ -876,7 +876,8 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         private void computeBeta() {
-            Tensor<Double> gamma = Tensors.zeros(Shape.of(m.size())).apply_((i, _) -> 1 - alpha.get(indexes[i]) * sigma.get(i, i));
+            Tensor<Double> gamma =
+                    Tensors.zeros(Shape.of(m.size())).apply_((i, _) -> 1 - alpha.getDouble(indexes[i]) * sigma.getDouble(i, i));
             Tensor<Double> pruned_phi = phi.take(1, indexes);
             Tensor<Double> delta = pruned_phi.mv(m).sub_(y);
             beta = (n - gamma.sum()) / delta.vdot(delta);
@@ -1005,15 +1006,15 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
             int bestIndex = 0;
             Tensor<Double> bestVector = parent.features.get(0).phii.get();
-            phiiDotPhii.set(bestVector.vdot(bestVector), 0);
-            phiiDotY.set(bestVector.vdot(y), 0);
-            double bestProjection = phiiDotY.get(0) / phiiDotPhii.get(0);
+            phiiDotPhii.setDouble(bestVector.vdot(bestVector), 0);
+            phiiDotY.setDouble(bestVector.vdot(y), 0);
+            double bestProjection = phiiDotY.getDouble(0) / phiiDotPhii.getDouble(0);
 
             for (int i = 1; i < fcount; i++) {
                 Tensor<Double> phii = parent.features.get(i).phii.get();
-                phiiDotPhii.set(phii.vdot(phii), i);
-                phiiDotY.set(phii.vdot(y), i);
-                double projection = phiiDotY.get(i) / phiiDotPhii.get(i);
+                phiiDotPhii.setDouble(phii.vdot(phii), i);
+                phiiDotY.setDouble(phii.vdot(y), i);
+                double projection = phiiDotY.getDouble(i) / phiiDotPhii.getDouble(i);
                 if (projection >= bestProjection) {
                     bestIndex = i;
                     bestVector = phii;
@@ -1021,17 +1022,17 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 }
             }
             active.add(new ActiveFeature(bestIndex, bestVector));
-            alpha.set(phiiDotPhii.get(bestIndex) / (bestProjection - 1.0 / beta), bestIndex);
+            alpha.setDouble(phiiDotPhii.getDouble(bestIndex) / (bestProjection - 1.0 / beta), bestIndex);
 
             // initial phi_hat, dimension 1x1 with value computed already in artifacts
-            phiHat = Tensors.full(Shape.of(1, 1), phiiDotPhii.get(bestIndex));
+            phiHat = Tensors.full(Shape.of(1, 1), phiiDotPhii.getDouble(bestIndex));
         }
 
         private void computeSigmaAndMu() {
 
             Tensor<Double> m_sigma_inv = phiHat.mul(beta);
             for (int i = 0; i < active.size(); i++) {
-                m_sigma_inv.inc(alpha.get(active.get(i).index), i, i);
+                m_sigma_inv.incDouble(alpha.getDouble(active.get(i).index), i, i);
             }
             sigma = m_sigma_inv.cholesky().solve(Tensors.eye(active.size()));
             m = sigma.mv(computePhiDotY().mul(beta));
@@ -1040,7 +1041,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         private Tensor<Double> computePhiiDotPhi(int i) {
 
             // first check if it is activeFlag, since if it is activeFlag the values are already in phi_hat
-            if (Double.isFinite(alpha.get(i))) {
+            if (Double.isFinite(alpha.getDouble(i))) {
                 for (int j = 0; j < active.size(); j++) {
                     if (i == active.get(j).index) {
                         return phiHat.takesq(1, j);
@@ -1058,7 +1059,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 if (Double.isNaN(value)) {
                     full = false;
                 } else {
-                    v.set(value, j);
+                    v.setDouble(value, j);
                 }
             }
 
@@ -1066,9 +1067,9 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             if (!full) {
                 Tensor<Double> phii = parent.features.get(i).phii.get();
                 for (int j = 0; j < v.size(); j++) {
-                    if (Double.isNaN(v.get(j))) {
+                    if (Double.isNaN(v.getDouble(j))) {
                         double value = active.get(j).vector.vdot(phii);
-                        v.set(value, j);
+                        v.setDouble(value, j);
                         cache.store(i, active.get(j).index, value);
                     }
                 }
@@ -1081,7 +1082,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             double[] v = new double[active.size()];
             int pos = 0;
             for (var a : active) {
-                v[pos++] = phiiDotY.get(a.index);
+                v[pos++] = phiiDotY.getDouble(a.index);
             }
             return Tensors.stride(v);
         }
@@ -1091,16 +1092,16 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             for (int i : candidates) {
                 Tensor<Double> left = computePhiiDotPhi(i);
                 Tensor<Double> sigmaDotLeft = sigma.mv(left);
-                ss.set(beta * phiiDotPhii.get(i) - beta * beta * sigmaDotLeft.vdot(left), i);
-                qq.set(beta * phiiDotY.get(i) - beta * beta * sigmaDotLeft.vdot(right), i);
+                ss.setDouble(beta * phiiDotPhii.getDouble(i) - beta * beta * sigmaDotLeft.vdot(left), i);
+                qq.setDouble(beta * phiiDotY.getDouble(i) - beta * beta * sigmaDotLeft.vdot(right), i);
 
-                double alpha_i = alpha.get(i);
+                double alpha_i = alpha.getDouble(i);
                 if (Double.isInfinite(alpha_i)) {
-                    s.set(ss.get(i), i);
-                    q.set(qq.get(i), i);
+                    s.setDouble(ss.getDouble(i), i);
+                    q.setDouble(qq.getDouble(i), i);
                 } else {
-                    s.set(alpha_i * ss.get(i) / (alpha_i - ss.get(i)), i);
-                    q.set(alpha_i * qq.get(i) / (alpha_i - ss.get(i)), i);
+                    s.setDouble(alpha_i * ss.getDouble(i) / (alpha_i - ss.getDouble(i)), i);
+                    q.setDouble(alpha_i * qq.getDouble(i) / (alpha_i - ss.getDouble(i)), i);
                 }
             }
         }
@@ -1108,9 +1109,9 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         private void computeBeta() {
             double gammaSum = 0;
             for (int i = 0; i < active.size(); i++) {
-                gammaSum += alpha.get(active.get(i).index) * sigma.get(i, i);
+                gammaSum += alpha.getDouble(active.get(i).index) * sigma.getDouble(i, i);
             }
-            double low = yTy - 2 * m.vdot(computePhiDotY()) + m.unsqueeze(0).mm(phiHat).mv(m).get();
+            double low = yTy - 2 * m.vdot(computePhiDotY()) + m.unsqueeze(0).mm(phiHat).mv(m).getDouble();
             beta = (n - active.size() + gammaSum) / low;
         }
 
@@ -1124,26 +1125,29 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
             List<Integer> toRemove = new LinkedList<>();
             for (int i : candidates) {
-                double theta = q.get(i) * q.get(i) - s.get(i);
+                double theta = q.getDouble(i) * q.getDouble(i) - s.getDouble(i);
                 double delta = Double.NEGATIVE_INFINITY;
                 if (theta > 0) {
-                    if (Double.isInfinite(alpha.get(i))) {
-                        delta = (qq.get(i) * qq.get(i) - ss.get(i)) / ss.get(i) + Math.log(ss.get(i) / (qq.get(i) * qq.get(i)));
+                    if (Double.isInfinite(alpha.getDouble(i))) {
+                        delta = (qq.getDouble(i) * qq.getDouble(i) - ss.getDouble(i)) / ss.getDouble(i) + Math.log(
+                                ss.getDouble(i) / (qq.getDouble(i) * qq.getDouble(i)));
                     } else {
-                        double alpha_new = s.get(i) * s.get(i) / theta;
-                        double delta_alpha = 1. / alpha_new - 1.0 / alpha.get(i);
-                        delta = (qq.get(i) * qq.get(i)) / (ss.get(i) + 1. / delta_alpha) - Math.log1p(ss.get(i) * delta_alpha);
+                        double alpha_new = s.getDouble(i) * s.getDouble(i) / theta;
+                        double delta_alpha = 1. / alpha_new - 1.0 / alpha.getDouble(i);
+                        delta = (qq.getDouble(i) * qq.getDouble(i)) / (ss.getDouble(i) + 1. / delta_alpha) - Math.log1p(
+                                ss.getDouble(i) * delta_alpha);
                     }
                 } else {
-                    if (Double.isFinite(alpha.get(i))) {
-                        delta = qq.get(i) * qq.get(i) / (ss.get(i) - alpha.get(i)) - Math.log(1 - ss.get(i) / alpha.get(i));
+                    if (Double.isFinite(alpha.getDouble(i))) {
+                        delta = qq.getDouble(i) * qq.getDouble(i) / (ss.getDouble(i) - alpha.getDouble(i)) - Math.log(
+                                1 - ss.getDouble(i) / alpha.getDouble(i));
                     }
                     fails[i]++;
                     if (fails[i] >= parent.maxFailures.get()) {
                         toRemove.add(i);
                     }
                 }
-                delta *= 1 + Math.pow(phiiDotY.get(i), 0.7);
+                delta *= 1 + Math.pow(phiiDotY.getDouble(i), 0.7);
                 if (Double.isNaN(bestDelta) || delta > bestDelta) {
                     bestDelta = delta;
                     bestTheta = theta;
@@ -1152,8 +1156,8 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             }
             candidates.removeAll(toRemove);
 
-            double alpha_i = alpha.get(bestIndex);
-            double _alpha = s.get(bestIndex) * s.get(bestIndex) / bestTheta;
+            double alpha_i = alpha.getDouble(bestIndex);
+            double _alpha = s.getDouble(bestIndex) * s.getDouble(bestIndex) / bestTheta;
 
             if (bestTheta > 0) {
                 if (Double.isInfinite(alpha_i)) {
@@ -1171,7 +1175,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         private void addActiveFeature(int index, double _alpha) {
-            alpha.set(_alpha, index);
+            alpha.setDouble(_alpha, index);
 
             // add activeFlag feature to the trainIndex
 
@@ -1191,19 +1195,19 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 if (Double.isNaN(value)) {
                     full = false;
                 } else {
-                    phiHat.set(value, phiHat.dim(0) - 1, i);
-                    phiHat.set(value, i, phiHat.dim(1) - 1);
+                    phiHat.setDouble(value, phiHat.dim(0) - 1, i);
+                    phiHat.setDouble(value, i, phiHat.dim(1) - 1);
                 }
             }
 
             // if not completed from cache
             if (!full) {
                 for (int i = 0; i < phiHat.dim(0); i++) {
-                    double value = phiHat.get(phiHat.dim(0) - 1, i);
+                    double value = phiHat.getDouble(phiHat.dim(0) - 1, i);
                     if (Double.isNaN(value)) {
                         value = active.get(i).vector.vdot(phii);
-                        phiHat.set(value, phiHat.dim(0) - 1, i);
-                        phiHat.set(value, i, phiHat.dim(1) - 1);
+                        phiHat.setDouble(value, phiHat.dim(0) - 1, i);
+                        phiHat.setDouble(value, i, phiHat.dim(1) - 1);
                         cache.store(index, active.get(i).index, value);
                     }
                 }
@@ -1211,11 +1215,11 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         private void updateActiveFeature(int index, double _alpha) {
-            alpha.set(_alpha, index);
+            alpha.setDouble(_alpha, index);
         }
 
         private void removeActiveFeature(int index) {
-            alpha.set(Double.POSITIVE_INFINITY, index);
+            alpha.setDouble(Double.POSITIVE_INFINITY, index);
 
             // find position of activeFlag feature to be removed
             int pos = -1;
@@ -1246,8 +1250,8 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 //                10 −6 and all other θ i ≤ 0.
             double delta = 0.0;
             for (int i = 0; i < alpha.size(); i++) {
-                double new_value = alpha.get(i);
-                double old_value = old_alpha.get(i);
+                double new_value = alpha.getDouble(i);
+                double old_value = old_alpha.getDouble(i);
                 if (Double.isInfinite(new_value) && Double.isInfinite(old_value)) {
                     continue;
                 }

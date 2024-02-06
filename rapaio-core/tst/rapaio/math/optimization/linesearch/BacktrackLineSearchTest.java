@@ -67,7 +67,7 @@ public class BacktrackLineSearchTest {
 
         // here we test f(x) = x^2
         // after calculations for steepest descent alpha have a constant value
-        RFunction f = (Tensor<Double> x) -> x.get(0) * x.get(0);
+        RFunction f = (Tensor<Double> x) -> x.getDouble(0) * x.getDouble(0);
         RDerivative df = (Tensor<Double> x) -> x.copy().mul(2.0);
 
         for (int i = 0; i < 1_000; i++) {
@@ -86,8 +86,8 @@ public class BacktrackLineSearchTest {
     void smokeTest() {
 
         // here we test f(x) = -Math.exp(x^2)
-        RFunction f = (Tensor<Double> x) -> -Math.exp(-x.get(0) * x.get(0));
-        RDerivative df = (Tensor<Double> x) -> Tensors.stride(Math.exp(-x.get(0) * x.get(0)) * 2 * x.get(0));
+        RFunction f = (Tensor<Double> x) -> -Math.exp(-x.getDouble(0) * x.getDouble(0));
+        RDerivative df = (Tensor<Double> x) -> Tensors.stride(Math.exp(-x.getDouble(0) * x.getDouble(0)) * 2 * x.getDouble(0));
 
         for (int i = 0; i < 1_000; i++) {
             double next = (random.nextDouble() - 0.5);
@@ -106,8 +106,8 @@ public class BacktrackLineSearchTest {
         T[] tests = new T[] {
                 new T(
                         // this test is taken from Algorithms for Optimization, p.58
-                        v -> v.get(0) * v.get(0) + v.get(0) * v.get(1) + v.get(1) * v.get(1),
-                        v -> Tensors.stride(2 * v.get(0), 2 * v.get(1)),
+                        v -> v.getDouble(0) * v.getDouble(0) + v.getDouble(0) * v.getDouble(1) + v.getDouble(1) * v.getDouble(1),
+                        v -> Tensors.stride(2 * v.getDouble(0), 2 * v.getDouble(1)),
                         Tensors.stride(-1, -1),
                         Tensors.stride(1, 2),
                         1e-4,

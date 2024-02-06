@@ -131,7 +131,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         // update matrix
         Tensor<Double> Ac = A.copy();
         for (int i = 0; i < Ac.dim(0); i++) {
-            Ac.set(A.get(i, i) + sigma, i, i);
+            Ac.setDouble(A.get(i, i) + sigma, i, i);
         }
 
         // compute Cholesky
@@ -146,7 +146,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
             // update matrix
             Tensor<Double> Acc = Ac.copy();
             for (int i = 0; i < Acc.dim(0); i++) {
-                Acc.set(Ac.get(i, i) + sigma, i, i);
+                Acc.setDouble(Ac.get(i, i) + sigma, i, i);
             }
 
             // compute Cholesky

@@ -572,7 +572,7 @@ public interface Frame extends Serializable, Printable {
         Tensor<Double> tensor = Tensors.zeros(Shape.of(rowCount(), varCount()));
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < varCount(); j++) {
-                tensor.set(getDouble(i, j), i, j);
+                tensor.setDouble(getDouble(i, j), i, j);
             }
         }
         return tensor;

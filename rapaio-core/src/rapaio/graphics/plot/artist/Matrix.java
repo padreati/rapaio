@@ -97,7 +97,7 @@ public class Matrix extends Artist {
                 path.lineTo(xScale(j), yScale(m.dim(0) - i - 1 - eps));
                 path.lineTo(xScale(j), yScale(m.dim(0) - i));
 
-                g2d.setColor(options.getPalette().getColor(m.get(i, j).doubleValue()));
+                g2d.setColor(options.getPalette().getColor(m.getDouble(i, j)));
                 g2d.setStroke(new BasicStroke());
                 g2d.fill(path);
             }

@@ -95,7 +95,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
                 // collect values for each cluster in mean, for a given input feature
                 Var[] means = IntStream.range(0, k).mapToObj(i -> VarDouble.empty()).toArray(VarDouble[]::new);
                 for (int i = 0; i < instances.dim(0); i++) {
-                    means[assignment[i]].addDouble(instances.get(i, j));
+                    means[assignment[i]].addDouble(instances.getDouble(i, j));
                 }
                 for (int i = 0; i < k; i++) {
                     c.setDouble(Mean.of(means[i]).value(), i, j);
@@ -123,7 +123,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
                 // collect values for each cluster in mean, for a given input feature
                 Var[] means = IntStream.range(0, k).mapToObj(i -> VarDouble.empty()).toArray(VarDouble[]::new);
                 for (int i = 0; i < instances.dim(0); i++) {
-                    means[assignment[i]].addDouble(instances.get(i, j));
+                    means[assignment[i]].addDouble(instances.getDouble(i, j));
                 }
                 for (int i = 0; i < k; i++) {
                     Var sorted = means[i].fapply(VarSort.ascending());
@@ -339,7 +339,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
                 // we found a valid centroid, it will be assigned
 
                 for (int j = 0; j < c.dim(1); j++) {
-                    c.setDouble(df.get(selection, j), next, j);
+                    c.setDouble(df.getDouble(selection, j), next, j);
                 }
                 break;
             }

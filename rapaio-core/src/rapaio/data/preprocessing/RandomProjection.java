@@ -91,7 +91,7 @@ public class RandomProjection extends AbstractTransform {
         for (int i = 0; i < k; i++) {
             Tensor<Double> v = method.projection(random, varNames.length);
             for (int j = 0; j < varNames.length; j++) {
-                rp.set(v.get(j), j, i);
+                rp.setDouble(v.getDouble(j), j, i);
             }
         }
     }
@@ -116,7 +116,7 @@ public class RandomProjection extends AbstractTransform {
             Normal norm = Normal.std();
             Tensor<Double> v = Tensors.zeros(Shape.of(rowCount));
             for (int i = 0; i < v.size(); i++) {
-                v.set(norm.sampleNext(random) / Math.sqrt(k), i);
+                v.setDouble(norm.sampleNext(random) / Math.sqrt(k), i);
             }
             v.normalize(2.);
             return v;

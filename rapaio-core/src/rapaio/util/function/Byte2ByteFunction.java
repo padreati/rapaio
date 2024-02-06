@@ -29,24 +29,14 @@
  *
  */
 
-package rapaio.experiment.math;
+package rapaio.util.function;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Random;
+@FunctionalInterface
+public interface Byte2ByteFunction extends SFunction<Byte, Byte> {
 
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorManager;
+    byte applyAsByte(byte value);
 
-public class TensorSandbox {
-    public static void main(String[] args) throws IOException, URISyntaxException {
-        var tmd1 = TensorManager.vectorizedArray().ofDouble();
-        var t1 = tmd1.random(Shape.of(1_000_000), new Random(42));
-
-        var tmd2 = TensorManager.baseArray().ofDouble();
-        var t2 = tmd2.random(Shape.of(1_000_000), new Random(42));
-
-        System.out.println(t1.deepEquals(t2));
-        t2.floor_();
+    default Byte apply(Byte value) {
+        return applyAsByte(value);
     }
 }

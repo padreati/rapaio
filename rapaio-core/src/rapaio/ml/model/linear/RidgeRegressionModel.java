@@ -194,13 +194,13 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
                                 continue;
                             }
                             int offset = k >= interceptIndex ? 1 : 0;
-                            interceptValue -= scaledBeta.get(k - offset, i) * targetScale * inputMean.get(inputNames[k]) / inputScale.get(
+                            interceptValue -= scaledBeta.getDouble(k - offset, i) * targetScale * inputMean.get(inputNames[k]) / inputScale.get(
                                     inputNames[k]);
                         }
                         beta.setDouble(interceptValue, j, i);
                     } else {
                         int offset = j >= interceptIndex ? 1 : 0;
-                        beta.setDouble(scaledBeta.get(j - offset, i) * targetScale / inputScale.get(inputNames[j]), j, i);
+                        beta.setDouble(scaledBeta.getDouble(j - offset, i) * targetScale / inputScale.get(inputNames[j]), j, i);
                     }
                 }
             }

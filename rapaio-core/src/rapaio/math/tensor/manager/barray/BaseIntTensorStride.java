@@ -411,7 +411,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         int i = 0;
         while (it.hasNext()) {
             int p = it.nextInt();
-            storage.set(p, apply.applyAsInt(i++, p));
+            storage.setInt(p, apply.applyAsInt(i++, p));
         }
         return this;
     }
@@ -421,7 +421,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         var ptrIter = ptrIterator(Order.S);
         while (ptrIter.hasNext()) {
             int ptr = ptrIter.nextInt();
-            storage.set(ptr, fun.apply(storage.get(ptr)));
+            storage.setInt(ptr, fun.apply(storage.getInt(ptr)));
         }
         return this;
     }
@@ -430,11 +430,11 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     public Tensor<Integer> fill_(Integer value) {
         for (int offset : loop.offsets) {
             if (loop.step == 1) {
-                storage.fill(value, offset, loop.size);
+                storage.fillInt(value, offset, loop.size);
             } else {
                 for (int i = 0; i < loop.size; i++) {
                     int p = offset + i * loop.step;
-                    storage.set(p, value);
+                    storage.setInt(p, value);
                 }
             }
         }
@@ -470,20 +470,32 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         return this;
     }
 
+    private void unaryOpUnit(TensorUnaryOp op) {
+        for (int off : loop.offsets) {
+            for (int i = off; i < loop.size + off; i++) {
+                storage.setInt(i, op.applyInt(storage.getInt(i)));
+            }
+        }
+    }
+
     private void unaryOpStep(TensorUnaryOp op) {
         for (int off : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = off + i * loop.step;
+            for (int i = 0, p = off; i < loop.size; i++) {
                 storage.setInt(p, op.applyInt(storage.getInt(p)));
+                p += loop.step;
             }
         }
     }
 
     protected void unaryOp(TensorUnaryOp op) {
-        if (op.isFloatOnly() && !dtype().isFloatingPoint()) {
+        if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
-        unaryOpStep(op);
+        if (loop.step == 1) {
+            unaryOpUnit(op);
+        } else {
+            unaryOpStep(op);
+        }
     }
 
     @Override
@@ -930,7 +942,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
 
     @Override
     public Integer mean() {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
         int size = size();
@@ -979,7 +991,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
 
     @Override
     public Integer var() {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
         int size = size();
@@ -1019,7 +1031,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
 
     @Override
     public Integer varc(int ddof) {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
         int size = size();
@@ -1059,7 +1071,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
 
     @Override
     public Statistics<Integer> stats() {
-        if (!dtype().isFloatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
 
@@ -1167,7 +1179,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     @Override
     public int argmax(Order order) {
         int argmax = -1;
-        int argvalue = TensorAssociativeOp.MAX.initialInt();
+        int argvalue = TensorAssociativeOp.MAX.initInt();
         var i = 0;
         var it = loopIterator(order);
         while (it.hasNext()) {
@@ -1207,7 +1219,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     @Override
     public int argmin(Order order) {
         int argmin = -1;
-        int argvalue = TensorAssociativeOp.MIN.initialInt();
+        int argvalue = TensorAssociativeOp.MIN.initInt();
         var i = 0;
         var it = loopIterator(order);
         while (it.hasNext()) {
@@ -1273,7 +1285,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     protected int associativeOp(TensorAssociativeOp op) {
-        int agg = op.initialInt();
+        int agg = op.initInt();
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
@@ -1284,7 +1296,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
     }
 
     protected int nanAssociativeOp(TensorAssociativeOp op) {
-        int aggregate = op.initialInt();
+        int aggregate = op.initInt();
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
@@ -1307,7 +1319,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            int value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initialInt(), op::aggInt);
+            int value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initInt(), op::aggInt);
             res.ptrSet(resIt.next(), value);
         }
         return res;
@@ -1324,7 +1336,7 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            int value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.INTEGER, op.initialInt(), op::aggInt);
+            int value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.INTEGER, op.initInt(), op::aggInt);
             res.ptrSet(resIt.next(), value);
         }
         return res;

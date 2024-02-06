@@ -126,9 +126,9 @@ public class LinearRegressionResult extends RegressionResult {
                 Tensor<Double> m_beta_hat = X.t().mm(X).qr().inv();
 
                 for (int j = 0; j < model.inputNames().length; j++) {
-                    beta_std_error.setDouble(Math.sqrt(m_beta_hat.get(j, j) * var), j, i);
-                    beta_t_value.setDouble(coeff.get(j) / beta_std_error.get(j, i), j, i);
-                    double pValue = degrees < 1 ? Double.NaN : StudentT.of(degrees).cdf(-Math.abs(beta_t_value.get(j, i))) * 2;
+                    beta_std_error.setDouble(Math.sqrt(m_beta_hat.getDouble(j, j) * var), j, i);
+                    beta_t_value.setDouble(coeff.getDouble(j) / beta_std_error.getDouble(j, i), j, i);
+                    double pValue = degrees < 1 ? Double.NaN : StudentT.of(degrees).cdf(-Math.abs(beta_t_value.getDouble(j, i))) * 2;
                     beta_p_value.setDouble(pValue, j, i);
                     String signif = " ";
                     if (pValue <= 0.1)
@@ -164,7 +164,7 @@ public class LinearRegressionResult extends RegressionResult {
                 tt.textCenter(0, 1, "Estimate");
                 for (int j = 0; j < coeff.size(); j++) {
                     tt.textLeft(j + 1, 0, lm.inputName(j));
-                    tt.floatFlex(j + 1, 1, coeff.get(j));
+                    tt.floatFlex(j + 1, 1, coeff.getDouble(j));
                 }
                 sb.append(tt.getRawText());
             } else {
@@ -196,10 +196,10 @@ public class LinearRegressionResult extends RegressionResult {
                 tt.textRight(0, 5, "");
                 for (int j = 0; j < coeff.size(); j++) {
                     tt.textLeft(j + 1, 0, model.inputName(j));
-                    tt.floatMedium(j + 1, 1, coeff.get(j));
-                    tt.floatMedium(j + 1, 2, beta_std_error.get(j, i));
-                    tt.floatMedium(j + 1, 3, beta_t_value.get(j, i));
-                    tt.pValue(j + 1, 4, beta_p_value.get(j, i));
+                    tt.floatMedium(j + 1, 1, coeff.getDouble(j));
+                    tt.floatMedium(j + 1, 2, beta_std_error.getDouble(j, i));
+                    tt.floatMedium(j + 1, 3, beta_t_value.getDouble(j, i));
+                    tt.pValue(j + 1, 4, beta_p_value.getDouble(j, i));
                     tt.textLeft(j + 1, 5, beta_significance[j][i]);
                 }
                 sb.append(tt.getRawText());
