@@ -33,7 +33,6 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 
 /**
@@ -45,18 +44,6 @@ public class SplineKernel extends AbstractKernel {
 
     @Serial
     private static final long serialVersionUID = -4985948375658836441L;
-
-    @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double value = 1;
-        for (String varName : varNames) {
-            double x_i = df1.getDouble(row1, varName);
-            double y_i = df2.getDouble(row2, varName);
-            double min = Math.min(x_i, y_i);
-            value *= 1 + x_i * y_i + x_i * y_i * min - (x_i + y_i) * Math.pow(min, 2) / 2.0 + Math.pow(min, 3) / 3;
-        }
-        return value;
-    }
 
     @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {

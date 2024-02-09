@@ -33,7 +33,6 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
@@ -73,15 +72,6 @@ public class WaveKernel extends AbstractKernel {
     }
 
     @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double dot = deltaSumSquares(df1, row1, df2, row2);
-        if (dot <= 0) {
-            return 0;
-        }
-        return theta * Math.sin(dot / theta) / dot;
-    }
-
-    @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         double dot = deltaSumSquares(v, u);
         if (dot <= 0) {
@@ -97,6 +87,6 @@ public class WaveKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "Wave(theta=" + Format.floatFlex(theta) + ")";
+        return STR."Wave(theta=\{Format.floatFlex(theta)})";
     }
 }

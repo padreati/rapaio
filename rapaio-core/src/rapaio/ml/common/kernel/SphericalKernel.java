@@ -33,7 +33,6 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
@@ -60,15 +59,6 @@ public class SphericalKernel extends AbstractKernel {
     }
 
     @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double dot = deltaSumSquares(df1, row1, df2, row2);
-        if (dot < sigma)
-            return 0;
-        double f = dot / sigma;
-        return 1 - 3 * f / 2 + f * f * f / 2;
-    }
-
-    @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         double dot = deltaSumSquares(u, v);
         if (dot < sigma)
@@ -84,6 +74,6 @@ public class SphericalKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "Spherical(sigma=" + Format.floatFlex(sigma) + ")";
+        return STR."Spherical(sigma=\{Format.floatFlex(sigma)})";
     }
 }

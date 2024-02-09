@@ -34,7 +34,6 @@ package rapaio.ml.common.kernel;
 import java.io.Serial;
 import java.util.function.Function;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
@@ -87,21 +86,6 @@ public class WaveletKernel extends AbstractKernel {
     }
 
     @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double result = 1;
-        for (String varName : varNames) {
-            if (invariant) {
-                double diff = df1.getDouble(row1, varName) - df2.getDouble(row2, varName);
-                result *= wavelet.apply(diff / dilation);
-            } else {
-                result *= wavelet.apply((df1.getDouble(row1, varName) - translation) / dilation);
-                result *= wavelet.apply((df2.getDouble(row2, varName) - translation) / dilation);
-            }
-        }
-        return result;
-    }
-
-    @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         double result = 1;
         for (int i = 0; i < v.size(); i++) {
@@ -123,9 +107,6 @@ public class WaveletKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "Wavelet(invariant=" + invariant +
-                ",dilation=" + Format.floatFlex(dilation) +
-                ",translation=" + Format.floatFlex(translation) +
-                ")";
+        return STR."Wavelet(invariant=\{invariant},dilation=\{Format.floatFlex(dilation)},translation=\{Format.floatFlex(translation)})";
     }
 }

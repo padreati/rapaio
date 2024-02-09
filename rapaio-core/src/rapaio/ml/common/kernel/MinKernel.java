@@ -50,15 +50,6 @@ public class MinKernel extends AbstractKernel {
     private static final long serialVersionUID = -2388704255494979581L;
 
     @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double sum = 0;
-        for (String varName : varNames) {
-            sum += Math.min(df1.getDouble(row1, varName), df2.getDouble(row2, varName));
-        }
-        return sum;
-    }
-
-    @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         double sum = 0;
         for (int i = 0; i < v.size(); i++) {

@@ -324,9 +324,9 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     }
 
     /**
-     * This method is prepares learning phase. It is a generic method which works
-     * for all learners. It's tass includes initialization of target names,
-     * input names, check the capabilities at learning phase, etc.
+     * This method is preparing the learning phase. It is a generic method which works
+     * for all learners. It's task includes initialization of input and target names,
+     * check the capabilities at learning phase, etc.
      *
      * @param df         data frame
      * @param weights    weights of instances
@@ -335,14 +335,14 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     protected FitSetup prepareFit(Frame df, final Var weights, final String... targetVars) {
         List<String> targets = VarRange.of(targetVars).parseVarNames(df);
         if (capabilities().minTargetCount() > targets.size()) {
-            throw new IllegalArgumentException("Minimum number of targets (" +
-                    capabilities().minTargetCount() + ") is not met. Targets specified: [" +
-                    String.join(",", targetVars) + "]");
+            String targetVarNames = String.join(",", targetVars);
+            throw new IllegalArgumentException(
+                    STR."Minimum number of targets (\{capabilities().minTargetCount()}) is not met. Targets specified: [\{targetVarNames}]");
         }
         if (capabilities().maxTargetCount() < targets.size()) {
-            throw new IllegalArgumentException("Maximum number of targets (" +
-                    capabilities().maxTargetCount() + ") is not met. Targets specified: [" +
-                    String.join(",", targetVars) + "]");
+            String targetVarNames = String.join(",", targetVars);
+            throw new IllegalArgumentException(
+                    STR."Maximum number of targets (\{capabilities().maxTargetCount()}) is not met. Targets specified: [\{targetVarNames}]");
         }
 
         this.targetNames = targets.toArray(new String[0]);
@@ -369,15 +369,18 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     protected abstract R corePredict(Frame df, boolean withClasses, boolean withDistributions);
 
     public String fullNameSummary() {
-        return name() + " model\n"
-                + "================\n\n"
-                + "Description:\n"
-                + fullName() + "\n\n";
+        return STR."""
+            \{name()} model
+            ================
+
+            Description:
+            \{fullName()}
+
+            """;
     }
 
     public String capabilitiesSummary() {
-        return "Capabilities:\n"
-                + capabilities().toString() + "\n";
+        return STR."Capabilities:\n\{capabilities().toString()}\n";
     }
 
     public String inputVarsSummary(Printer printer, POpt<?>... options) {

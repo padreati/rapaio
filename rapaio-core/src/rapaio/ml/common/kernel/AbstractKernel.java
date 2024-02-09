@@ -32,9 +32,7 @@
 package rapaio.ml.common.kernel;
 
 import java.io.Serial;
-import java.util.Arrays;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.kernel.cache.KernelCache;
 import rapaio.ml.common.kernel.cache.MapKernelCache;
@@ -48,13 +46,11 @@ public abstract class AbstractKernel implements Kernel {
     @Serial
     private static final long serialVersionUID = -2216556261751685749L;
 
-    protected String[] varNames;
     private KernelCache cache;
 
     @Override
-    public void buildKernelCache(String[] varNames, Frame df) {
-        this.varNames = Arrays.copyOf(varNames, varNames.length);
-        if (df.rowCount() <= 10_000) {
+    public void buildKernelCache(Tensor<Double> df) {
+        if (df.dim(0) <= 10_000) {
             cache = new SolidKernelCache(df);
         } else {
             cache = new MapKernelCache();
@@ -66,39 +62,19 @@ public abstract class AbstractKernel implements Kernel {
         return false;
     }
 
-    protected double dotProd(Frame df1, int row1, Frame df2, int row2) {
-        double result = 0;
-        for (String varName : varNames) {
-            result += df1.getDouble(row1, varName) * df2.getDouble(row2, varName);
-        }
-        return result;
-    }
-
-    protected double deltaSumSquares(Frame df1, int row1, Frame df2, int row2) {
-        double result = 0;
-        for (String varName : varNames) {
-            double delta = df1.getDouble(row1, varName) - df2.getDouble(row2, varName);
-            result += delta * delta;
-        }
-        return result;
-    }
-
     protected double deltaSumSquares(Tensor<Double> u, Tensor<Double> v) {
-        var delta = u.sub(v);
-        return delta.mul(delta).sum();
+        return u.sub(v).sqr().sum();
     }
 
     @Override
-    public double compute(Frame df1, int row1, Frame df2, int row2) {
-        Double value = cache.retrieve(df1, row1, df2, row2);
+    public double compute(int row1, int row2, Tensor<Double> r1, Tensor<Double> r2) {
+        Double value = cache.retrieve(row1, row2);
         if (value == null) {
-            value = eval(df1, row1, df2, row2);
-            cache.store(df1, row1, df2, row2, value);
+            value = compute(r1, r2);
+            cache.store(row1, row2, value);
         }
         return value;
     }
-
-    public abstract double eval(Frame df1, int row1, Frame df2, int row2);
 
     @Override
     public void clean() {

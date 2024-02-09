@@ -33,8 +33,6 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
-import rapaio.math.linear.DVector;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
@@ -67,12 +65,7 @@ public class LinearKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "LinearKernel(c=" + Format.floatFlex(c) + ")";
-    }
-
-    @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        return dotProd(df1, row1, df2, row2) + c;
+        return STR."LinearKernel(c=\{Format.floatFlex(c)})";
     }
 
     @Override

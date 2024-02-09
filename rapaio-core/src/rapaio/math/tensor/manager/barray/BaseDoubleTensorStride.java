@@ -606,6 +606,12 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         return this;
     }
 
+    @Override
+    public Tensor<Double> sqr_() {
+        unaryOp(TensorUnaryOp.SQR);
+        return this;
+    }
+
     protected void binaryVectorOp(TensorBinaryOp op, Tensor<Double> b) {
         if (b.isScalar()) {
             binaryScalarOp(op, b.getDouble());

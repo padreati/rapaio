@@ -59,6 +59,7 @@ public interface TensorUnaryOp {
     TensorUnaryOp TAN = new OpTan();
     TensorUnaryOp ATAN = new OpAtan();
     TensorUnaryOp TANH = new OpTanh();
+    TensorUnaryOp SQR = new OpSqr();
 
     /**
      * @return true if vector operations are implemented, false otherwise
@@ -1054,5 +1055,59 @@ final class OpTanh implements TensorUnaryOp {
     @Override
     public DoubleVector applyDouble(DoubleVector v) {
         return v.lanewise(VectorOperators.TANH);
+    }
+}
+
+final class OpSqr implements TensorUnaryOp {
+
+    @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
+    public boolean floatingPointOnly() {
+        return false;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        return (byte) (v * v);
+    }
+
+    @Override
+    public int applyInt(int v) {
+        return v * v;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return v * v;
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return v * v;
+    }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        return v.mul(v);
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        return v.mul(v);
+    }
+
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        return v.mul(v);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.mul(v);
     }
 }

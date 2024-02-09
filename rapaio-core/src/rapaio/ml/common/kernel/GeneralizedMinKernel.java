@@ -33,7 +33,6 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
@@ -61,18 +60,6 @@ public class GeneralizedMinKernel extends AbstractKernel {
     }
 
     @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double sum = 0;
-        for (String varName : varNames) {
-            sum += Math.min(
-                    Math.pow(Math.abs(df1.getDouble(row1, varName)), alpha),
-                    Math.pow(Math.abs(df2.getDouble(row2, varName)), beta)
-            );
-        }
-        return sum;
-    }
-
-    @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         double sum = 0;
         for (int i = 0; i < u.size(); i++) {
@@ -91,6 +78,6 @@ public class GeneralizedMinKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "GeneralizedMean(alpha=" + Format.floatFlex(alpha) + ",beta=" + Format.floatFlex(beta) + ")";
+        return STR."GeneralizedMean(alpha=\{Format.floatFlex(alpha)},beta=\{Format.floatFlex(beta)})";
     }
 }

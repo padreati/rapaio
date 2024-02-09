@@ -33,33 +33,20 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 
 /**
  * The Chi-Square kernel comes from the Chi-Square distribution.
+ * There are multiple version, this is the conditionally positive definite version of it
  * <p>
- * k(x,y) = 1 - \sum_{i=1}^n \frac{(x_i-y_i)^2}{\frac{1}{2}(x_i+y_i)}
+ * k(x,y) = 1 - \sum_{i=1}^n \frac{2(x_i-y_i)^2}{(x_i+y_i)}
  * <p>
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
-@Deprecated
-// TODO: check if the implementation is correct
 public class ChiSquareKernel extends AbstractKernel {
 
     @Serial
     private static final long serialVersionUID = -3301596992870913061L;
-
-    @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double result = 0;
-        for (String varName : varNames) {
-            double sum = df1.getDouble(row1, varName) + df2.getDouble(row2, varName);
-            double diff = df1.getDouble(row1, varName) - df2.getDouble(row2, varName);
-            result = 2 * diff * diff / sum;
-        }
-        return 1 - result;
-    }
 
     @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {

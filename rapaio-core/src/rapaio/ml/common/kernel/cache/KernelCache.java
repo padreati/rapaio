@@ -33,8 +33,6 @@ package rapaio.ml.common.kernel.cache;
 
 import java.io.Serializable;
 
-import rapaio.data.Frame;
-
 /**
  * Defines operations available on a kernel cache.
  * A kernel cache is a in memory data structure which is able to cache results of
@@ -44,9 +42,9 @@ import rapaio.data.Frame;
  */
 public interface KernelCache extends Serializable {
 
-    Double retrieve(Frame df1, int row1, Frame df2, int row2);
+    void store(int row1, int row2, double value);
 
-    void store(Frame df1, int row1, Frame df2, int row2, double value);
+    Double retrieve(int row1, int row2);
 
     void clear();
 }

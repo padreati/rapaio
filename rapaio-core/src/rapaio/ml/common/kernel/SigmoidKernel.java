@@ -33,7 +33,6 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
@@ -74,11 +73,6 @@ public class SigmoidKernel extends AbstractKernel {
     }
 
     @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        return Math.atan(alpha * dotProd(df1, row1, df2, row2) + c);
-    }
-
-    @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         return Math.atan(alpha * u.vdot(v) + c);
     }
@@ -90,6 +84,6 @@ public class SigmoidKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "Sigmoid(alpha=" + Format.floatFlex(alpha) + ",c=" + Format.floatFlex(c) + ")";
+        return STR."Sigmoid(alpha=\{Format.floatFlex(alpha)},c=\{Format.floatFlex(c)})";
     }
 }

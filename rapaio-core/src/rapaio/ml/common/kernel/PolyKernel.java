@@ -35,7 +35,6 @@ import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
 import rapaio.math.MathTools;
 import rapaio.math.tensor.Tensor;
 
@@ -86,29 +85,13 @@ public class PolyKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "PolyKernel(" +
-                "exp=" + floatFlex(exponent) + "," +
-                "bias=" + floatFlex(bias) + "," +
-                "slope=" + floatFlex(slope) +
-                ")";
+        return STR."PolyKernel(exp=\{floatFlex(exponent)},bias=\{floatFlex(bias)},slope=\{floatFlex(slope)})";
     }
 
     public PolyKernel(double exponent, double bias, double slope) {
         this.exponent = exponent;
         this.slope = slope;
         this.bias = bias;
-    }
-
-    @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-
-        if (varNames == null) {
-            throw new IllegalArgumentException("This kernel is not build with var names");
-        }
-        if (isLinear()) {
-            return slope * dotProd(df1, row1, df2, row2) + bias;
-        }
-        return Math.pow(slope * dotProd(df1, row1, df2, row2) + bias, exponent);
     }
 
     @Override

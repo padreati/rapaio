@@ -33,7 +33,6 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serializable;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 
 /**
@@ -49,9 +48,9 @@ public interface Kernel extends Serializable {
 
     boolean isLinear();
 
-    void buildKernelCache(String[] varNames, Frame df);
+    void buildKernelCache(Tensor<Double> df);
 
-    double compute(Frame df1, int row1, Frame df2, int row2);
+    double compute(int row1, int row2, Tensor<Double> t1, Tensor<Double> t2);
 
     double compute(Tensor<Double> v, Tensor<Double> u);
 

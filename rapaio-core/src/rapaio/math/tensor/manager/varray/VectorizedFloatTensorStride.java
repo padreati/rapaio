@@ -42,6 +42,7 @@ import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.manager.barray.BaseFloatTensorStride;
+import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
 public final class VectorizedFloatTensorStride extends BaseFloatTensorStride implements Tensor<Float> {
@@ -208,50 +209,38 @@ public final class VectorizedFloatTensorStride extends BaseFloatTensorStride imp
         }
     }
 
-    /*
-
-    protected void binaryVectorOp(TensorBinaryOp op, FloatTensor b) {
-        if(b.isScalar()) {
-            binaryScalarOp(op, b.getFloat());
-            return;
-        }
-        var order = layout.storageFastOrder();
-        order = order == Order.C || order == Order.F ? order : Order.defaultOrder();
-
-        var it = ptrIterator(order);
-        var refIt = b.ptrIterator(order);
-        while (it.hasNext()) {
-            int next = it.nextInt();
-            array[next] = op.applyFloat(array[next], b.ptrGet(refIt.nextInt()));
-        }
-    }
-
     private void binaryScalarOpUnit(TensorBinaryOp op, float value) {
         for (int off : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) + off;
-            int i = off;
-            for (; i < bound; i += SPEC_LEN) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i);
-                a = a.lanewise(op.vop(), value);
-                a.intoArray(array, i);
+            int bound = VS.loopBound(loop.size);
+            int i = 0;
+            FloatVector b = FloatVector.broadcast(VS, value);
+            for (; i < bound; i += VS_LEN) {
+                int p = off + i * loop.step;
+                FloatVector a = storage.loadFloat(VS, p);
+                a = op.applyFloat(a, b);
+                storage.saveFloat(a, p);
             }
-            for (; i < loop.bound + off; i++) {
-                array[i] = op.applyFloat(array[i], value);
+            for (; i < loop.size; i++) {
+                int p = off + i * loop.step;
+                storage.setFloat(p, op.applyFloat(storage.getFloat(p), value));
             }
         }
     }
 
     private void binaryScalarOpStep(TensorBinaryOp op, float value) {
         for (int offset : loop.offsets) {
-            int bound = SPEC.loopBound(loop.size) * loop.step + offset;
-            int i = offset;
-            for (; i < bound; i += SPEC_LEN * loop.step) {
-                FloatVector a = FloatVector.fromArray(SPEC, array, i, loopIndexes, 0);
-                a = a.lanewise(op.vop(), value);
-                a.intoArray(array, i, loopIndexes, 0);
+            int bound = VS.loopBound(loop.size);
+            int i = 0;
+            FloatVector b = FloatVector.broadcast(VS, value);
+            for (; i < bound; i += VS_LEN) {
+                int p = offset + i * loop.step;
+                FloatVector a = storage.loadFloat(VS, p, loopIndexes, 0);
+                a = op.applyFloat(a, b);
+                storage.saveFloat(a, p, loopIndexes, 0);
             }
-            for (; i < loop.bound + offset; i += loop.step) {
-                array[i] = op.applyFloat(array[i], value);
+            for (; i < loop.size; i++) {
+                int p = offset + i * loop.step;
+                storage.setFloat(p, op.applyFloat(storage.getFloat(p), value));
             }
         }
     }
@@ -263,6 +252,7 @@ public final class VectorizedFloatTensorStride extends BaseFloatTensorStride imp
             binaryScalarOpStep(op, value);
         }
     }
+    /*
 
     @Override
     public Float vdot(FloatTensor tensor) {

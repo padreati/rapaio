@@ -33,7 +33,6 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
@@ -58,11 +57,6 @@ public class PowerKernel extends AbstractKernel {
     }
 
     @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        return -Math.pow(deltaSumSquares(df1, row1, df2, row2), degree);
-    }
-
-    @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         return -Math.pow(deltaSumSquares(u, v), degree);
     }
@@ -74,6 +68,6 @@ public class PowerKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "Power(degree=" + Format.floatFlex(degree) + ")";
+        return STR."Power(degree=\{Format.floatFlex(degree)})";
     }
 }

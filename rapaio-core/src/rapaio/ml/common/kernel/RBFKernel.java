@@ -35,7 +35,6 @@ import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 
 /**
@@ -77,12 +76,6 @@ public class RBFKernel extends AbstractKernel {
     }
 
     @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double value = deltaSumSquares(df1, row1, df2, row2);
-        return Math.exp(-gamma * value);
-    }
-
-    @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         double value = deltaSumSquares(v, u);
         return Math.exp(-gamma * value);
@@ -95,6 +88,6 @@ public class RBFKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "RBF(gamma=" + floatFlex(gamma) + ")";
+        return STR."RBF(gamma=\{floatFlex(gamma)})";
     }
 }

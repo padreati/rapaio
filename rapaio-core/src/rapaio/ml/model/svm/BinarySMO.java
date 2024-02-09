@@ -44,6 +44,7 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.math.MathTools;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.PolyKernel;
@@ -129,8 +130,8 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
      */
     private BitSet supportVectors; // {i: 0 < alpha[i]}
 
-    private Frame train;
-    private Var weights;
+    private Tensor<Double> train;
+    private Tensor<Double> weights;
 
     private double[] y;
     private String label1;
@@ -214,11 +215,11 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
             if (examineAll) {
 
                 // add random as an additional step
-                int offset = random.nextInt(train.rowCount());
-                for (int i = offset; i < train.rowCount() + offset; i++) {
+                int offset = random.nextInt(train.dim(0));
+                for (int i = offset; i < train.dim(0) + offset; i++) {
                     int pos = i;
-                    if (pos >= train.rowCount()) {
-                        pos -= train.rowCount();
+                    if (pos >= train.dim(0)) {
+                        pos -= train.dim(0);
                     }
                     if (examineExample(s, pos)) {
                         numChanged++;
@@ -229,12 +230,12 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
 
                 if ("Keerthi1".equals(solver.get())) {
                     // This code implements Modification 1 from Keerthi et al.'s paper
-                    int offset = random.nextInt(train.rowCount());
-                    for (int i = offset; i < train.rowCount() + offset; i++) {
+                    int offset = random.nextInt(train.dim(0));
+                    for (int i = offset; i < train.dim(0) + offset; i++) {
 
                         int pos = i;
-                        if (pos >= train.rowCount()) {
-                            pos -= train.rowCount();
+                        if (pos >= train.dim(0)) {
+                            pos -= train.dim(0);
                         }
 
                         if (alpha[pos] > 0 && alpha[pos] < c.get() * weights.getDouble(pos)) {
@@ -300,6 +301,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
 
         List<String> targetLevels = firstTargetLevels().subList(1, firstTargetLevels().size());
         boolean valid = false;
+        Frame dfTrain = null;
         if (!("?".equals(firstLabel.get()) || "?".equals(secondLabel.get()))) {
             // pre specified one vs one
             label1 = firstLabel.get();
@@ -313,30 +315,33 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
             if (map.isEmpty()) {
                 throw new IllegalArgumentException("After filtering other classes, there were no other rows remained.");
             }
-            this.train = df.mapRows(map).copy();
-            this.weights = w.mapRows(map).copy();
+            dfTrain = df.mapRows(map);
+            this.weights = w.mapRows(map).dtNew();
             valid = true;
         } else if (!"?".equals(firstLabel.get())) {
             // one vs all type of classification
             label1 = firstLabel.get();
             label2 = "~" + firstLabel.get();
             oneVsAll = true;
-            this.train = df;
-            this.weights = w;
+            dfTrain = df;
+            this.weights = w.dtNew();
             valid = true;
         } else if (targetLevels.size() == 2) {
             label1 = targetLevels.get(0);
             label2 = targetLevels.get(1);
             oneVsAll = false;
-            this.train = df;
-            this.weights = w;
+            dfTrain = df;
+            this.weights = w.dtNew();
             valid = true;
         }
 
         if (valid) {
-            y = new double[train.rowCount()];
-            for (int i = 0; i < train.rowCount(); i++) {
-                y[i] = label1.equals(train.getLabel(i, firstTargetName())) ? -1 : 1;
+
+            this.train = dfTrain.mapVars(inputNames).dtNew();
+
+            y = new double[train.dim(0)];
+            for (int i = 0; i < train.dim(0); i++) {
+                y[i] = label1.equals(dfTrain.getLabel(i, firstTargetName())) ? -1 : 1;
             }
         } else {
             throw new IllegalArgumentException("Invalid target labels specification.");
@@ -345,7 +350,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
 
     private void initialize(State s) {
 
-        final int n = train.rowCount();
+        final int n = train.dim(0);
 
         s.bUp = -1;
         s.bLow = 1;
@@ -413,7 +418,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         sparseIndices = null;
 
         // init kernel
-        kernel.get().buildKernelCache(inputNames(), train);
+        kernel.get().buildKernelCache(train);
 
         // Initialize error cache
         s.fCache = new double[n];
@@ -434,7 +439,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
-            double pred = predict(df, i);
+            double pred = predict(df.mapVars(inputNames).dtNew(), i);
 
             cr.firstClasses().setLabel(i, pred < 0 ? label1 : label2);
             cr.firstDensity().setDouble(i, label1, -pred);
@@ -446,7 +451,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     /**
      * Computes SVM output for given instance.
      */
-    protected double predict(Frame df, int row) {
+    protected double predict(Tensor<Double> df, int row) {
 
         double result = -b;
 
@@ -463,7 +468,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
             }
         } else {
             for (int i = supportVectors.nextSetBit(0); i != -1; i = supportVectors.nextSetBit(i + 1)) {
-                result += y[i] * alpha[i] * kernel.get().compute(train, i, df, row);
+                result += y[i] * alpha[i] * kernel.get().compute(train.takesq(0, i), df.takesq(0, row));
             }
         }
         return result;
@@ -534,7 +539,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
      * @param i2 index of the second instance
      * @return true if multipliers could be found
      */
-    protected boolean takeStep(State s, int i1, int i2) {
+    protected boolean takeStep(State s, final int i1, final int i2) {
 
         // Don't do anything if the two instances are the same
         if (i1 == i2) {
@@ -562,9 +567,11 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         }
 
         // Compute second derivative of objective function
-        double k11 = kernel.get().compute(train, i1, train, i1);
-        double k12 = kernel.get().compute(train, i1, train, i2);
-        double k22 = kernel.get().compute(train, i2, train, i2);
+        Tensor<Double> row1 = train.takesq(0, i1);
+        Tensor<Double> row2 = train.takesq(0, i2);
+        double k11 = kernel.get().compute(i1, i1, row1, row1);
+        double k12 = kernel.get().compute(i1, i2, row1, row2);
+        double k22 = kernel.get().compute(i2, i2, row2, row2);
         double eta = 2 * k12 - k11 - k22;
 
         double a1, a2;
@@ -649,9 +656,10 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         // Update error cache using new Lagrange multipliers
         for (int j = s.I0.nextSetBit(0); j != -1; j = s.I0.nextSetBit(j + 1)) {
             if ((j != i1) && (j != i2)) {
+                Tensor<Double> rowj = train.takesq(0, j);
                 s.fCache[j] +=
-                        y1 * (a1 - alpha1) * kernel.get().compute(train, i1, train, j) +
-                                y2 * (a2 - alpha2) * kernel.get().compute(train, i2, train, j);
+                        y1 * (a1 - alpha1) * kernel.get().compute(i1, j, row1, rowj) +
+                                y2 * (a2 - alpha2) * kernel.get().compute(i2, j, row2, rowj);
             }
         }
 
@@ -784,7 +792,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                     }
                     sb.append(floatFlex(val)).append(" * <[");
                     for (int j = 0; j < inputNames().length; j++) {
-                        sb.append(floatFlex(train.getDouble(i, inputNames()[j])));
+                        sb.append(floatFlex(train.getDouble(i, j)));
                         if (j != inputNames().length - 1) {
                             sb.append(",");
                         }

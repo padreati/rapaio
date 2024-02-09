@@ -35,8 +35,6 @@ import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 
-import rapaio.data.Frame;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
  */
@@ -45,25 +43,17 @@ public class MapKernelCache implements KernelCache {
     @Serial
     private static final long serialVersionUID = -654236501370533888L;
 
-    final transient private Map<Frame, Map<Frame, Map<Long, Double>>> cache = new HashMap<>();
+    final transient private Map<Long, Double> cache = new HashMap<>();
 
     @Override
-    public void store(Frame df1, int row1, Frame df2, int row2, double value) {
-        if (!cache.containsKey(df1)) {
-            cache.put(df1, new HashMap<>());
-        }
-        if (!cache.get(df1).containsKey(df2)) {
-            cache.get(df1).put(df2, new HashMap<>());
-        }
-        cache.get(df1).get(df2).put((((long) row1) << 32) | (row2 & 0xffffffffL), value);
+    public void store(int row1, int row2, double value) {
+        long id = (((long) row1) << 32L) | ((long) row2 & 0xffffffffL);
+        cache.put(id, value);
     }
 
     @Override
-    public Double retrieve(Frame df1, int row1, Frame df2, int row2) {
-        if (cache.containsKey(df1) && cache.get(df1).containsKey(df2)) {
-            cache.get(df1).get(df2).get((((long) row1) << 32) | (row2 & 0xffffffffL));
-        }
-        return null;
+    public Double retrieve(int row1, int row2) {
+        return cache.get((((long) row1) << 32) | (row2 & 0xffffffffL));
     }
 
     @Override

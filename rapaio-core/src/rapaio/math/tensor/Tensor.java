@@ -899,6 +899,16 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> tanh_();
 
+    default Tensor<N> sqr() {
+        return sqr(Order.defaultOrder());
+    }
+
+    default Tensor<N> sqr(Order order) {
+        return copy(order).tanh_();
+    }
+
+    Tensor<N> sqr_();
+
 
     default Tensor<N> add(Tensor<N> tensor) {
         return add(tensor, Order.defaultOrder());

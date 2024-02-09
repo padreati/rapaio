@@ -606,6 +606,12 @@ public sealed class BaseIntTensorStride extends AbstractTensor<Integer> permits 
         return this;
     }
 
+    @Override
+    public Tensor<Integer> sqr_() {
+        unaryOp(TensorUnaryOp.SQR);
+        return this;
+    }
+
     protected void binaryVectorOp(TensorBinaryOp op, Tensor<Integer> b) {
         if (b.isScalar()) {
             binaryScalarOp(op, b.getInt());

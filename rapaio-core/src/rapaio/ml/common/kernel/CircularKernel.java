@@ -33,7 +33,6 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
@@ -60,16 +59,6 @@ public class CircularKernel extends AbstractKernel {
     }
 
     @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double dot = deltaSumSquares(df1, row1, df2, row2);
-        if (dot < sigma) {
-            return 0;
-        }
-        double f = dot / sigma;
-        return 2 * (Math.acos(-f) - f * Math.sqrt(1 - f * f)) / Math.PI;
-    }
-
-    @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         double dot = deltaSumSquares(u, v);
         if (dot < sigma) {
@@ -86,6 +75,6 @@ public class CircularKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "Circular(sigma=" + Format.floatFlex(sigma) + ")";
+        return STR."Circular(sigma=\{Format.floatFlex(sigma)})";
     }
 }

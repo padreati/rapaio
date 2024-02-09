@@ -606,6 +606,12 @@ public sealed class BaseFloatTensorStride extends AbstractTensor<Float> permits 
         return this;
     }
 
+    @Override
+    public Tensor<Float> sqr_() {
+        unaryOp(TensorUnaryOp.SQR);
+        return this;
+    }
+
     protected void binaryVectorOp(TensorBinaryOp op, Tensor<Float> b) {
         if (b.isScalar()) {
             binaryScalarOp(op, b.getFloat());

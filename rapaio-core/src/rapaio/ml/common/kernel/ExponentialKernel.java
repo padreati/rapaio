@@ -33,8 +33,6 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
-import rapaio.math.linear.DVector;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
@@ -64,12 +62,6 @@ public class ExponentialKernel extends AbstractKernel {
     }
 
     @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double value = deltaSumSquares(df1, row1, df2, row2);
-        return Math.exp(factor * value);
-    }
-
-    @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         double value = deltaSumSquares(v, u);
         return Math.exp(factor * value);
@@ -82,6 +74,6 @@ public class ExponentialKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "Exponential(sigma=" + Format.floatFlex(sigma) + ",factor=" + Format.floatFlex(factor) + ")";
+        return STR."Exponential(sigma=\{Format.floatFlex(sigma)},factor=\{Format.floatFlex(factor)})";
     }
 }

@@ -33,7 +33,7 @@ package rapaio.ml.common.kernel.cache;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
+import rapaio.math.tensor.Tensor;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
@@ -43,40 +43,33 @@ public class SolidKernelCache implements KernelCache {
     @Serial
     private static final long serialVersionUID = -1003713236239594088L;
 
-    private final Frame df;
     private Double[][] cache;
 
-    public SolidKernelCache(Frame df) {
-        this.df = df;
-        cache = new Double[df.rowCount()][df.rowCount()];
+    public SolidKernelCache(Tensor<Double> df) {
+        cache = new Double[df.dim(0)][df.dim(0)];
     }
 
     @Override
-    public Double retrieve(Frame df1, int row1, Frame df2, int row2) {
-        if (cache == null || df1 != df2) {
+    public Double retrieve(int row1, int row2) {
+        if (cache == null) {
             return null;
         }
         if (row1 > row2) {
-            return retrieve(df1, row2, df2, row1);
+            return retrieve(row2, row1);
         }
-        if (df1 == this.df) {
-            return cache[row1][row2];
-        }
-        return null;
+        return cache[row1][row2];
     }
 
     @Override
-    public void store(Frame df1, int row1, Frame df2, int row2, double value) {
-        if (cache == null || df1 != df2) {
+    public void store(int row1, int row2, double value) {
+        if (cache == null) {
             return;
         }
         if (row1 > row2) {
-            store(df1, row2, df2, row1, value);
+            store(row2, row1, value);
             return;
         }
-        if (df1 == this.df) {
-            cache[row1][row2] = value;
-        }
+        cache[row1][row2] = value;
     }
 
     @Override

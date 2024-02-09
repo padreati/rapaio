@@ -606,6 +606,12 @@ public sealed class BaseByteTensorStride extends AbstractTensor<Byte> permits Ve
         return this;
     }
 
+    @Override
+    public Tensor<Byte> sqr_() {
+        unaryOp(TensorUnaryOp.SQR);
+        return this;
+    }
+
     protected void binaryVectorOp(TensorBinaryOp op, Tensor<Byte> b) {
         if (b.isScalar()) {
             binaryScalarOp(op, b.getByte());
