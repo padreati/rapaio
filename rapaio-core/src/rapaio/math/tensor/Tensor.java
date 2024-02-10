@@ -904,7 +904,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default Tensor<N> sqr(Order order) {
-        return copy(order).tanh_();
+        return copy(order).sqr_();
     }
 
     Tensor<N> sqr_();

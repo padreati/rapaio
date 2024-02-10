@@ -48,12 +48,5 @@ public interface Kernel extends Serializable {
 
     boolean isLinear();
 
-    void buildKernelCache(Tensor<Double> df);
-
-    double compute(int row1, int row2, Tensor<Double> t1, Tensor<Double> t2);
-
     double compute(Tensor<Double> v, Tensor<Double> u);
-
-    default void clean() {
-    }
 }

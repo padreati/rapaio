@@ -34,9 +34,6 @@ package rapaio.ml.common.kernel;
 import java.io.Serial;
 
 import rapaio.math.tensor.Tensor;
-import rapaio.ml.common.kernel.cache.KernelCache;
-import rapaio.ml.common.kernel.cache.MapKernelCache;
-import rapaio.ml.common.kernel.cache.SolidKernelCache;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
@@ -45,17 +42,6 @@ public abstract class AbstractKernel implements Kernel {
 
     @Serial
     private static final long serialVersionUID = -2216556261751685749L;
-
-    private KernelCache cache;
-
-    @Override
-    public void buildKernelCache(Tensor<Double> df) {
-        if (df.dim(0) <= 10_000) {
-            cache = new SolidKernelCache(df);
-        } else {
-            cache = new MapKernelCache();
-        }
-    }
 
     @Override
     public boolean isLinear() {
@@ -66,19 +52,5 @@ public abstract class AbstractKernel implements Kernel {
         return u.sub(v).sqr().sum();
     }
 
-    @Override
-    public double compute(int row1, int row2, Tensor<Double> r1, Tensor<Double> r2) {
-        Double value = cache.retrieve(row1, row2);
-        if (value == null) {
-            value = compute(r1, r2);
-            cache.store(row1, row2, value);
-        }
-        return value;
-    }
-
-    @Override
-    public void clean() {
-        cache.clear();
-    }
 }
 

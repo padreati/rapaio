@@ -49,6 +49,7 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.PolyKernel;
 import rapaio.core.param.ValueParam;
+import rapaio.ml.common.kernel.cache.KernelCache;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
@@ -115,6 +116,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
             "solver", x -> Set.of("Keerthi1", "Keerthi2").contains(x));
 
     private static final double eps_delta = 1e-200;
+    private KernelCache kernelCache;
 
     private double[] alpha; // Lagrange multipliers from dual
     private double b;
@@ -276,7 +278,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         b = (s.bLow + s.bUp) / 2.0;
 
         // Save memory
-        kernel.get().clean();
+        kernelCache.clean();
 
         // If machine is linear, delete training data
         // and store weight vector in sparse format
@@ -418,7 +420,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         sparseIndices = null;
 
         // init kernel
-        kernel.get().buildKernelCache(train);
+        kernelCache = new KernelCache(train, kernel.get());
 
         // Initialize error cache
         s.fCache = new double[n];
@@ -569,9 +571,9 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         // Compute second derivative of objective function
         Tensor<Double> row1 = train.takesq(0, i1);
         Tensor<Double> row2 = train.takesq(0, i2);
-        double k11 = kernel.get().compute(i1, i1, row1, row1);
-        double k12 = kernel.get().compute(i1, i2, row1, row2);
-        double k22 = kernel.get().compute(i2, i2, row2, row2);
+        double k11 = kernelCache.cachedCompute(i1, i1, row1, row1);
+        double k12 = kernelCache.cachedCompute(i1, i2, row1, row2);
+        double k22 = kernelCache.cachedCompute(i2, i2, row2, row2);
         double eta = 2 * k12 - k11 - k22;
 
         double a1, a2;
@@ -658,8 +660,8 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
             if ((j != i1) && (j != i2)) {
                 Tensor<Double> rowj = train.takesq(0, j);
                 s.fCache[j] +=
-                        y1 * (a1 - alpha1) * kernel.get().compute(i1, j, row1, rowj) +
-                                y2 * (a2 - alpha2) * kernel.get().compute(i2, j, row2, rowj);
+                        y1 * (a1 - alpha1) * kernelCache.cachedCompute(i1, j, row1, rowj) +
+                                y2 * (a2 - alpha2) * kernelCache.cachedCompute(i2, j, row2, rowj);
             }
         }
 
