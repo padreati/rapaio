@@ -108,4 +108,8 @@ public final class FloatArrayStorage extends FloatStorage {
     public void saveFloat(FloatVector a, int offset, int[] index, int indexOffset, VectorMask<Float> mask) {
         a.intoArray(array, offset, index, indexOffset, mask);
     }
+
+    public float[] array() {
+        return array;
+    }
 }

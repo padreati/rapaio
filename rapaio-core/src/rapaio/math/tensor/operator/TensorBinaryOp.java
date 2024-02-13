@@ -35,6 +35,7 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorOperators;
 
 public interface TensorBinaryOp {
 
@@ -42,20 +43,22 @@ public interface TensorBinaryOp {
     TensorBinaryOp SUB = new BinaryOpSub();
     TensorBinaryOp MUL = new BinaryOpMul();
     TensorBinaryOp DIV = new BinaryOpDiv();
+    TensorBinaryOp MIN = new BinaryOpMin();
+    TensorBinaryOp MAX = new BinaryOpMax();
 
-    double applyDouble(double a, double b);
-
-    float applyFloat(float a, float b);
-
-    int applyInt(int a, int b);
-
-    byte applyByte(int a, int b);
+    byte applyByte(byte a, byte b);
 
     ByteVector applyByte(ByteVector a, ByteVector b);
 
+    int applyInt(int a, int b);
+
     IntVector applyInt(IntVector a, IntVector b);
 
+    float applyFloat(float a, float b);
+
     FloatVector applyFloat(FloatVector a, FloatVector b);
+
+    double applyDouble(double a, double b);
 
     DoubleVector applyDouble(DoubleVector a, DoubleVector b);
 }
@@ -63,13 +66,13 @@ public interface TensorBinaryOp {
 final class BinaryOpAdd implements TensorBinaryOp {
 
     @Override
-    public double applyDouble(double v, double a) {
-        return v + a;
+    public byte applyByte(byte a, byte b) {
+        return (byte) (a + b);
     }
 
     @Override
-    public float applyFloat(float v, float a) {
-        return v + a;
+    public ByteVector applyByte(ByteVector a, ByteVector b) {
+        return a.add(b);
     }
 
     @Override
@@ -78,13 +81,13 @@ final class BinaryOpAdd implements TensorBinaryOp {
     }
 
     @Override
-    public byte applyByte(int a, int b) {
-        return (byte) (a + b);
+    public IntVector applyInt(IntVector a, IntVector b) {
+        return a.add(b);
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
-        return a.add(b);
+    public float applyFloat(float v, float a) {
+        return v + a;
     }
 
     @Override
@@ -93,12 +96,12 @@ final class BinaryOpAdd implements TensorBinaryOp {
     }
 
     @Override
-    public IntVector applyInt(IntVector a, IntVector b) {
-        return a.add(b);
+    public double applyDouble(double v, double a) {
+        return v + a;
     }
 
     @Override
-    public ByteVector applyByte(ByteVector a, ByteVector b) {
+    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
         return a.add(b);
     }
 }
@@ -106,13 +109,13 @@ final class BinaryOpAdd implements TensorBinaryOp {
 final class BinaryOpSub implements TensorBinaryOp {
 
     @Override
-    public double applyDouble(double v, double a) {
-        return v - a;
+    public byte applyByte(byte a, byte b) {
+        return (byte) (a - b);
     }
 
     @Override
-    public float applyFloat(float v, float a) {
-        return v - a;
+    public ByteVector applyByte(ByteVector a, ByteVector b) {
+        return a.sub(b);
     }
 
     @Override
@@ -121,13 +124,13 @@ final class BinaryOpSub implements TensorBinaryOp {
     }
 
     @Override
-    public byte applyByte(int a, int b) {
-        return (byte) (a - b);
+    public IntVector applyInt(IntVector a, IntVector b) {
+        return a.sub(b);
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
-        return a.sub(b);
+    public float applyFloat(float v, float a) {
+        return v - a;
     }
 
     @Override
@@ -136,12 +139,12 @@ final class BinaryOpSub implements TensorBinaryOp {
     }
 
     @Override
-    public IntVector applyInt(IntVector a, IntVector b) {
-        return a.sub(b);
+    public double applyDouble(double v, double a) {
+        return v - a;
     }
 
     @Override
-    public ByteVector applyByte(ByteVector a, ByteVector b) {
+    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
         return a.sub(b);
     }
 }
@@ -149,13 +152,13 @@ final class BinaryOpSub implements TensorBinaryOp {
 final class BinaryOpMul implements TensorBinaryOp {
 
     @Override
-    public double applyDouble(double v, double a) {
-        return v * a;
+    public byte applyByte(byte a, byte b) {
+        return (byte) (a * b);
     }
 
     @Override
-    public float applyFloat(float v, float a) {
-        return v * a;
+    public ByteVector applyByte(ByteVector a, ByteVector b) {
+        return a.mul(b);
     }
 
     @Override
@@ -164,13 +167,13 @@ final class BinaryOpMul implements TensorBinaryOp {
     }
 
     @Override
-    public byte applyByte(int a, int b) {
-        return (byte) (a * b);
+    public IntVector applyInt(IntVector a, IntVector b) {
+        return a.mul(b);
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
-        return a.mul(b);
+    public float applyFloat(float v, float a) {
+        return v * a;
     }
 
     @Override
@@ -179,12 +182,12 @@ final class BinaryOpMul implements TensorBinaryOp {
     }
 
     @Override
-    public IntVector applyInt(IntVector a, IntVector b) {
-        return a.mul(b);
+    public double applyDouble(double v, double a) {
+        return v * a;
     }
 
     @Override
-    public ByteVector applyByte(ByteVector a, ByteVector b) {
+    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
         return a.mul(b);
     }
 }
@@ -192,13 +195,13 @@ final class BinaryOpMul implements TensorBinaryOp {
 final class BinaryOpDiv implements TensorBinaryOp {
 
     @Override
-    public double applyDouble(double v, double a) {
-        return v / a;
+    public byte applyByte(byte a, byte b) {
+        return (byte) (a / b);
     }
 
     @Override
-    public float applyFloat(float v, float a) {
-        return v / a;
+    public ByteVector applyByte(ByteVector a, ByteVector b) {
+        return a.div(b);
     }
 
     @Override
@@ -207,13 +210,13 @@ final class BinaryOpDiv implements TensorBinaryOp {
     }
 
     @Override
-    public byte applyByte(int a, int b) {
-        return (byte) (a / b);
+    public IntVector applyInt(IntVector a, IntVector b) {
+        return a.div(b);
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
-        return a.div(b);
+    public float applyFloat(float v, float a) {
+        return v / a;
     }
 
     @Override
@@ -222,12 +225,98 @@ final class BinaryOpDiv implements TensorBinaryOp {
     }
 
     @Override
-    public IntVector applyInt(IntVector a, IntVector b) {
+    public double applyDouble(double v, double a) {
+        return v / a;
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
         return a.div(b);
+    }
+}
+
+final class BinaryOpMin implements TensorBinaryOp {
+
+    @Override
+    public byte applyByte(byte a, byte b) {
+        return a >= b ? b : a;
     }
 
     @Override
     public ByteVector applyByte(ByteVector a, ByteVector b) {
-        return a.div(b);
+        return a.lanewise(VectorOperators.MIN, b);
+    }
+
+    @Override
+    public int applyInt(int a, int b) {
+        return Math.min(a, b);
+    }
+
+    @Override
+    public IntVector applyInt(IntVector a, IntVector b) {
+        return a.lanewise(VectorOperators.MIN, b);
+    }
+
+    @Override
+    public float applyFloat(float a, float b) {
+        return Math.min(a, b);
+    }
+
+    @Override
+    public FloatVector applyFloat(FloatVector a, FloatVector b) {
+        return a.lanewise(VectorOperators.MIN, b);
+    }
+
+    @Override
+    public double applyDouble(double a, double b) {
+        return Math.min(a, b);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
+        return a.lanewise(VectorOperators.MIN, b);
+    }
+}
+
+final class BinaryOpMax implements TensorBinaryOp {
+
+    @Override
+    public byte applyByte(byte a, byte b) {
+        return a <= b ? b : a;
+    }
+
+    @Override
+    public ByteVector applyByte(ByteVector a, ByteVector b) {
+        return a.lanewise(VectorOperators.MAX, b);
+    }
+
+    @Override
+    public int applyInt(int a, int b) {
+        return Math.max(a, b);
+    }
+
+    @Override
+    public IntVector applyInt(IntVector a, IntVector b) {
+        return a.lanewise(VectorOperators.MAX, b);
+    }
+
+    @Override
+    public float applyFloat(float a, float b) {
+        return Math.max(a, b);
+    }
+
+    @Override
+    public FloatVector applyFloat(FloatVector a, FloatVector b) {
+        return a.lanewise(VectorOperators.MAX, b);
+    }
+
+    @Override
+    public double applyDouble(double a, double b) {
+        return Math.max(a, b);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
+        return a.lanewise(VectorOperators.MAX, b);
     }
 }

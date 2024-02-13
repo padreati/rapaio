@@ -31,76 +31,46 @@
 
 package rapaio.math.tensor.manager.barray;
 
-import static java.lang.Math.sqrt;
-
 import static rapaio.util.Hardware.CORES;
 import static rapaio.util.Hardware.L2_CACHE_SIZE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Statistics;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.iterators.DensePointerIterator;
-import rapaio.math.tensor.iterators.LoopIterator;
-import rapaio.math.tensor.iterators.PointerIterator;
-import rapaio.math.tensor.iterators.ScalarLoopIterator;
 import rapaio.math.tensor.iterators.StrideLoopDescriptor;
-import rapaio.math.tensor.iterators.StrideLoopIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.layout.StrideWrapper;
-import rapaio.math.tensor.manager.AbstractTensor;
-import rapaio.math.tensor.manager.varray.VectorizedDoubleTensorStride;
+import rapaio.math.tensor.manager.AbstractStrideTensor;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
+import rapaio.math.tensor.storage.array.DoubleArrayStorage;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
-public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permits VectorizedDoubleTensorStride {
-
-    protected final StrideLayout layout;
-    protected final TensorManager engine;
-    protected final StrideLoopDescriptor loop;
+public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
 
     public BaseDoubleTensorStride(TensorManager engine, StrideLayout layout, Storage<Double> storage) {
-        super(storage);
-        this.layout = layout;
-        this.engine = engine;
-        this.loop = StrideLoopDescriptor.of(layout, layout.storageFastOrder());
+        super(engine, layout, storage);
     }
 
     @Override
     public DType<Double> dtype() {
         return DType.DOUBLE;
-    }
-
-    @Override
-    public TensorManager manager() {
-        return engine;
-    }
-
-    @Override
-    public StrideLayout layout() {
-        return layout;
     }
 
     @Override
@@ -130,26 +100,12 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
             }
         }
         var it = new StridePointerIterator(layout, askOrder);
-        Tensor<Double> copy = engine.ofDouble().zeros(askShape, askOrder);
+        Tensor<Double> copy = engine.zeros(dtype(), askShape, askOrder);
         var copyIt = copy.ptrIterator(Order.C);
         while (it.hasNext()) {
             copy.ptrSetDouble(copyIt.nextInt(), storage.getDouble(it.nextInt()));
         }
         return copy;
-    }
-
-    @Override
-    public Tensor<Double> t_() {
-        return engine.ofDouble().stride(layout.revert(), storage);
-    }
-
-    @Override
-    public Tensor<Double> ravel(Order askOrder) {
-        var compact = layout.computeFortranLayout(askOrder, true);
-        if (compact.shape().rank() == 1) {
-            return engine.ofDouble().stride(compact, storage);
-        }
-        return flatten(askOrder);
     }
 
     @Override
@@ -160,194 +116,11 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         var it = loopIterator(askOrder);
         while (it.hasNext()) {
             int off = it.nextInt();
-            for (int i = 0; i < it.size(); i++) {
-                out.setDouble(ptr++, storage.getDouble(off + i * it.step()));
+            for (int i = 0, p = off; i < it.size(); i++, p += it.step()) {
+                out.setDouble(ptr++, storage.getDouble(p));
             }
         }
         return engine.ofDouble().stride(StrideLayout.of(Shape.of(layout.size()), 0, new int[] {1}), out);
-    }
-
-    @Override
-    public Tensor<Double> squeeze(int axis) {
-        return layout.shape().dim(axis) != 1 ? this : engine.ofDouble().stride(layout.squeeze(axis), storage);
-    }
-
-    @Override
-    public Tensor<Double> unsqueeze(int axis) {
-        return engine.ofDouble().stride(layout.unsqueeze(axis), storage);
-    }
-
-    @Override
-    public Tensor<Double> permute(int... dims) {
-        return engine.ofDouble().stride(layout().permute(dims), storage);
-    }
-
-    @Override
-    public Tensor<Double> moveAxis(int src, int dst) {
-        return engine.ofDouble().stride(layout.moveAxis(src, dst), storage);
-    }
-
-    @Override
-    public Tensor<Double> swapAxis(int src, int dst) {
-        return engine.ofDouble().stride(layout.swapAxis(src, dst), storage);
-    }
-
-    @Override
-    public Tensor<Double> narrow(int axis, boolean keepdim, int start, int end) {
-        return engine.ofDouble().stride(layout.narrow(axis, keepdim, start, end), storage);
-    }
-
-    @Override
-    public Tensor<Double> narrowAll(boolean keepdim, int[] starts, int[] ends) {
-        return engine.ofDouble().stride(layout.narrowAll(keepdim, starts, ends), storage);
-    }
-
-    @Override
-    public List<Tensor<Double>> split(int axis, boolean keepdim, int... indexes) {
-        List<Tensor<Double>> result = new ArrayList<>(indexes.length);
-        for (int i = 0; i < indexes.length; i++) {
-            result.add(narrow(axis, keepdim, indexes[i], i < indexes.length - 1 ? indexes[i + 1] : shape().dim(axis)));
-        }
-        return result;
-    }
-
-    @Override
-    public List<Tensor<Double>> splitAll(boolean keepdim, int[][] indexes) {
-        if (indexes.length != rank()) {
-            throw new IllegalArgumentException(
-                    "Indexes length of %d is not the same as shape rank %d.".formatted(indexes.length, rank()));
-        }
-        List<Tensor<Double>> results = new ArrayList<>();
-        int[] starts = new int[indexes.length];
-        int[] ends = new int[indexes.length];
-        splitAllRecursive(results, indexes, keepdim, starts, ends, 0);
-        return results;
-    }
-
-    private void splitAllRecursive(List<Tensor<Double>> results, int[][] indexes, boolean keepdim, int[] starts, int[] ends, int level) {
-        if (level == indexes.length) {
-            return;
-        }
-        for (int i = 0; i < indexes[level].length; i++) {
-            starts[level] = indexes[level][i];
-            ends[level] = i < indexes[level].length - 1 ? indexes[level][i + 1] : shape().dim(level);
-            if (level == indexes.length - 1) {
-                results.add(narrowAll(keepdim, starts, ends));
-            } else {
-                splitAllRecursive(results, indexes, keepdim, starts, ends, level + 1);
-            }
-        }
-    }
-
-    @Override
-    public Tensor<Double> repeat(Order order, int axis, int repeat, boolean stack) {
-        List<Tensor<Double>> copies = new ArrayList<>(repeat);
-        for (int i = 0; i < repeat; i++) {
-            copies.add(this);
-        }
-        if (stack) {
-            return engine.stack(order, axis, copies);
-        } else {
-            return engine.concat(order, axis, copies);
-        }
-    }
-
-    @Override
-    public Tensor<Double> expand(int axis, int dim) {
-        if (layout.dim(axis) != 1) {
-            throw new IllegalArgumentException(STR."Dimension \{axis} must have size 1, but have size \{layout.dim(axis)}.");
-        }
-        if (dim < 1) {
-            throw new IllegalArgumentException(STR."Dimension of the new axis \{dim} must be positive.");
-        }
-        int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
-        int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
-
-        newDims[axis] = dim;
-        newStrides[axis] = 0;
-        return engine.ofDouble().stride(StrideLayout.of(Shape.of(newDims), layout.offset(), newStrides), storage);
-    }
-
-    @Override
-    public Tensor<Double> take(Order order, int axis, int... indices) {
-
-        if (axis < 0 || axis >= layout.rank()) {
-            throw new IllegalArgumentException(STR."Axis value \{axis} is out of bounds.");
-        }
-        if (indices == null || indices.length == 0) {
-            throw new IllegalArgumentException("Indices cannot be empty.");
-        }
-        for (int index : indices) {
-            if (index < 0 || index >= layout.dim(axis)) {
-                throw new IllegalArgumentException(STR."Index values are invalid, must be in range [0,\{layout.dim(axis) - 1}].");
-            }
-        }
-
-        // check if we can handle only through stride layout
-
-        // a single element
-        if (indices.length == 1) {
-            int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
-            int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
-            newDims[axis] = 1;
-            newStrides[axis] = 1;
-            int newOffset = layout().offset() + indices[0] * layout.stride(axis);
-            return engine.ofDouble().stride(StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
-        }
-
-        // a geometric sequence of indices, even if the step is 0 (repeated elements)
-        if (indices[1] - indices[0] >= 0) {
-            int step = indices[1] - indices[0];
-            boolean validSequence = true;
-            for (int i = 2; i < indices.length; i++) {
-                if (indices[i] - indices[i - 1] != step) {
-                    validSequence = false;
-                    break;
-                }
-            }
-            if (validSequence) {
-                int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
-                int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
-                newDims[axis] = indices.length;
-                newStrides[axis] = layout.stride(axis) * step;
-                int newOffset = layout.offset() + indices[0] * layout.stride(axis);
-                return engine.ofDouble().stride(StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
-            }
-        }
-
-        // if we failed, we copy data into a new tensor
-        List<Tensor<Double>> slices = new ArrayList<>();
-        for (int index : indices) {
-            slices.add(narrow(axis, true, index, index + 1));
-        }
-        return engine.concat(order, axis, slices);
-    }
-
-    @Override
-    public Tensor<Double> sort_(int axis, boolean asc) {
-        int[] newDims = layout.shape().narrowDims(axis);
-        int[] newStrides = layout.narrowStrides(axis);
-        int selDim = layout.dim(axis);
-        int selStride = layout.stride(axis);
-
-        var it = new StridePointerIterator(StrideLayout.of(Shape.of(newDims), layout().offset(), newStrides), Order.C, false);
-        while (it.hasNext()) {
-            StrideWrapper.of(it.nextInt(), selStride, selDim, this).sort(asc);
-        }
-        return this;
-    }
-
-    @Override
-    public void indirectSort(int[] indices, boolean asc) {
-        if (layout.rank() != 1) {
-            throw new IllegalArgumentException("Tensor must be flat (have a single dimension).");
-        }
-        for (int index : indices) {
-            if (index < 0 || index >= layout.size()) {
-                throw new IllegalArgumentException("Indices must be semi-positive and less than the size of the tensor.");
-            }
-        }
-        StrideWrapper.of(layout.offset(), layout.stride(0), layout.dim(0), this).sortIndirect(indices, asc);
     }
 
     @Override
@@ -373,36 +146,6 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     @Override
     public void ptrSet(int ptr, Double value) {
         storage.setDouble(ptr, value);
-    }
-
-    @Override
-    public Iterator<Double> iterator(Order askOrder) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
-                .map(storage::getDouble).iterator();
-    }
-
-    @Override
-    public Stream<Double> stream(Order order) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(order), Spliterator.ORDERED), false);
-    }
-
-    @Override
-    public PointerIterator ptrIterator(Order askOrder) {
-        if (layout.isCOrdered() && askOrder != Order.F) {
-            return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(-1));
-        }
-        if (layout.isFOrdered() && askOrder != Order.C) {
-            return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(0));
-        }
-        return new StridePointerIterator(layout, askOrder);
-    }
-
-    @Override
-    public LoopIterator loopIterator(Order askOrder) {
-        if (layout.rank() == 0) {
-            return new ScalarLoopIterator(layout.offset());
-        }
-        return new StrideLoopIterator(layout, askOrder);
     }
 
     @Override
@@ -432,8 +175,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
             if (loop.step == 1) {
                 storage.fillDouble(value, offset, loop.size);
             } else {
-                for (int i = 0; i < loop.size; i++) {
-                    int p = offset + i * loop.step;
+                for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                     storage.setDouble(p, value);
                 }
             }
@@ -444,8 +186,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     @Override
     public Tensor<Double> fillNan_(Double value) {
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
+            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 if (dtype().isNaN(storage.getDouble(p))) {
                     storage.setDouble(p, value);
                 }
@@ -457,8 +198,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     @Override
     public Tensor<Double> clamp_(Double min, Double max) {
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
+            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 if (!dtype().isNaN(min) && storage.getDouble(p) < min) {
                     storage.setDouble(p, min);
                 }
@@ -480,13 +220,13 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
 
     private void unaryOpStep(TensorUnaryOp op) {
         for (int off : loop.offsets) {
-            for (int i = 0, p = off; i < loop.size; i++) {
+            for (int i = 0, p = off; i < loop.size; i++, p += loop.step) {
                 storage.setDouble(p, op.applyDouble(storage.getDouble(p)));
-                p += loop.step;
             }
         }
     }
 
+    @Override
     protected void unaryOp(TensorUnaryOp op) {
         if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
@@ -499,119 +239,6 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     @Override
-    public Tensor<Double> rint_() {
-        unaryOp(TensorUnaryOp.RINT);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> ceil_() {
-        unaryOp(TensorUnaryOp.CEIL);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> floor_() {
-        unaryOp(TensorUnaryOp.FLOOR);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> abs_() {
-        unaryOp(TensorUnaryOp.ABS);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> negate_() {
-        unaryOp(TensorUnaryOp.NEG);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> log_() {
-        unaryOp(TensorUnaryOp.LOG);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> log1p_() {
-        unaryOp(TensorUnaryOp.LOG1P);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> exp_() {
-        unaryOp(TensorUnaryOp.EXP);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> expm1_() {
-        unaryOp(TensorUnaryOp.EXPM1);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> sin_() {
-        unaryOp(TensorUnaryOp.SIN);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> asin_() {
-        unaryOp(TensorUnaryOp.ASIN);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> sinh_() {
-        unaryOp(TensorUnaryOp.SINH);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> cos_() {
-        unaryOp(TensorUnaryOp.COS);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> acos_() {
-        unaryOp(TensorUnaryOp.ACOS);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> cosh_() {
-        unaryOp(TensorUnaryOp.COSH);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> tan_() {
-        unaryOp(TensorUnaryOp.TAN);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> atan_() {
-        unaryOp(TensorUnaryOp.ATAN);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> tanh_() {
-        unaryOp(TensorUnaryOp.TANH);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> sqr_() {
-        unaryOp(TensorUnaryOp.SQR);
-        return this;
-    }
-
     protected void binaryVectorOp(TensorBinaryOp op, Tensor<Double> b) {
         if (b.isScalar()) {
             binaryScalarOp(op, b.getDouble());
@@ -631,65 +258,17 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         }
     }
 
-    @Override
-    public Tensor<Double> add_(Tensor<Double> tensor) {
-        binaryVectorOp(TensorBinaryOp.ADD, tensor);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> sub_(Tensor<Double> tensor) {
-        binaryVectorOp(TensorBinaryOp.SUB, tensor);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> mul_(Tensor<Double> tensor) {
-        binaryVectorOp(TensorBinaryOp.MUL, tensor);
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> div_(Tensor<Double> tensor) {
-        binaryVectorOp(TensorBinaryOp.DIV, tensor);
-        return this;
-    }
-
     void binaryScalarOpStep(TensorBinaryOp op, double value) {
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
+            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 storage.setDouble(p, op.applyDouble(storage.getDouble(p), value));
             }
         }
     }
 
-    protected void binaryScalarOp(TensorBinaryOp op, double value) {
+    @Override
+    protected void binaryScalarOp(TensorBinaryOp op, Double value) {
         binaryScalarOpStep(op, value);
-    }
-
-    @Override
-    public BaseDoubleTensorStride add_(Double value) {
-        binaryScalarOp(TensorBinaryOp.ADD, value);
-        return this;
-    }
-
-    @Override
-    public BaseDoubleTensorStride sub_(Double value) {
-        binaryScalarOp(TensorBinaryOp.SUB, value);
-        return this;
-    }
-
-    @Override
-    public BaseDoubleTensorStride mul_(Double value) {
-        binaryScalarOp(TensorBinaryOp.MUL, value);
-        return this;
-    }
-
-    @Override
-    public BaseDoubleTensorStride div_(Double value) {
-        binaryScalarOp(TensorBinaryOp.DIV, value);
-        return this;
     }
 
     @Override
@@ -801,11 +380,11 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         List<Tensor<Double>> rows = chunk(0, false, 1);
         List<Tensor<Double>> cols = t.chunk(1, false, 1);
 
-        int chunk = (int) Math.floor(sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
+        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
 
         int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
-        int innerChunk = chunk > 64 ? (int) Math.ceil(sqrt(chunk / 4.)) : (int) Math.ceil(sqrt(chunk));
+        int innerChunk = chunk > 64 ? (int) Math.ceil(Math.sqrt(chunk / 4.)) : (int) Math.ceil(Math.sqrt(chunk));
 
         int iStride = ((StrideLayout) ret.layout()).stride(0);
         int jStride = ((StrideLayout) ret.layout()).stride(1);
@@ -856,7 +435,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         Tensor<Double> scatter = engine.ofDouble().zeros(Shape.of(dim(1), dim(1)));
         Tensor<Double> mean = engine.ofDouble().zeros(Shape.of(dim(1)));
         for (int i = 0; i < dim(1); i++) {
-            mean.setDouble((double) take(1, i).stats().mean(), i);
+            mean.setDouble((double) take(1, i).mean(), i);
         }
         for (int k = 0; k < dim(0); k++) {
             Tensor<Double> row = take(0, k).squeeze(0).sub(mean);
@@ -870,53 +449,22 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     @Override
-    public Double norm(Double p) {
-        if (p < 0) {
-            throw new IllegalArgumentException(STR."Norm power p=\{p} must have a value greater than 0.");
+    public Double norm(Double pow) {
+        if (pow < 0) {
+            throw new IllegalArgumentException(STR."Norm power p=\{pow} must have a value greater than 0.");
         }
-        if (dtype().castValue(1).equals(p)) {
-            return norm1();
+        if (dtype().castValue(1).equals(pow)) {
+            return abs().sum();
         }
-        if (dtype().castValue(2).equals(p)) {
-            return norm2();
+        if (dtype().castValue(2).equals(pow)) {
+            return (double) Math.sqrt(sqr().sum());
         }
-        return normp(p);
-    }
 
-    private Double norm1() {
         double sum = (double) 0;
         var it = loopIterator();
         while (it.hasNext()) {
             int offset = it.next();
-            for (int i = 0; i < it.size(); i++) {
-                int p = offset + i * it.step();
-                sum += (double) Math.abs(storage.getDouble(p));
-            }
-        }
-        return sum;
-    }
-
-    private Double norm2() {
-        double sum = (double) 0;
-        var it = loopIterator();
-        while (it.hasNext()) {
-            int offset = it.next();
-            for (int i = 0; i < it.size(); i++) {
-                int p = offset + i * it.step();
-                double value = storage.getDouble(p);
-                sum += (double) (value * value);
-            }
-        }
-        return (double) Math.sqrt(sum);
-    }
-
-    private Double normp(Double pow) {
-        double sum = (double) 0;
-        var it = loopIterator();
-        while (it.hasNext()) {
-            int offset = it.next();
-            for (int i = 0; i < it.size(); i++) {
-                int p = offset + i * it.step();
+            for (int i = 0, p = offset; i < it.size(); i++, p += it.step()) {
                 double value = (double) Math.abs(storage.getDouble(p));
                 sum += (double) Math.pow(value, pow);
             }
@@ -925,11 +473,12 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     @Override
-    public Tensor<Double> normalize_(Double p) {
-        return div_(norm(p));
+    public Tensor<Double> normalize_(Double pow) {
+        return div_(norm(pow));
     }
 
-    private Tensor<Double> alongAxisOperation(Order order, int axis, Function<Tensor<Double>, Double> op) {
+    @Override
+    protected Tensor<Double> alongAxisOperation(Order order, int axis, Function<Tensor<Double>, Double> op) {
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
         int selDim = layout.dim(axis);
@@ -971,28 +520,27 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     @Override
-    public Tensor<Double> mean(Order order, int axis) {
-        return alongAxisOperation(order, axis, Tensor::mean);
-    }
+    public Double nanMean() {
+        if (!dtype().floatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        int size = size() - nanCount();
+        // first pass compute raw mean
+        double sum = nanSum();
 
-    @Override
-    public Double std() {
-        return (double) Math.sqrt(var());
-    }
-
-    @Override
-    public Tensor<Double> std(Order order, int axis) {
-        return alongAxisOperation(order, axis, Tensor::std);
-    }
-
-    @Override
-    public Double stdc(int ddof) {
-        return (double) Math.sqrt(varc(ddof));
-    }
-
-    @Override
-    public Tensor<Double> stdc(Order order, int axis, int ddof) {
-        return alongAxisOperation(order, axis, t -> stdc(ddof));
+        double mean = (double) (sum / size);
+        // second pass adjustments for mean
+        sum = 0;
+        for (int off : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                double v = storage.getDouble(off + i * loop.step);
+                if (dtype().isNaN(v)) {
+                    continue;
+                }
+                sum += (double) (v - mean);
+            }
+        }
+        return (double) (mean + sum / size);
     }
 
     @Override
@@ -1021,18 +569,12 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         double sum2 = 0;
         double sum3 = 0;
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
+            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 sum2 += (double) ((storage.getDouble(p) - mean) * (storage.getDouble(p) - mean));
                 sum3 += (double) (storage.getDouble(p) - mean);
             }
         }
         return (double) ((sum2 - (sum3 * sum3) / size) / size);
-    }
-
-    @Override
-    public Tensor<Double> var(Order order, int axis) {
-        return alongAxisOperation(order, axis, Tensor::var);
     }
 
     @Override
@@ -1061,125 +603,12 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         double sum2 = 0;
         double sum3 = 0;
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
+            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 sum2 += (double) ((storage.getDouble(p) - mean) * (storage.getDouble(p) - mean));
                 sum3 += (double) (storage.getDouble(p) - mean);
             }
         }
         return (double) ((sum2 - (sum3 * sum3) / (size - ddof)) / (size - ddof));
-    }
-
-    @Override
-    public Tensor<Double> varc(Order order, int axis, int ddof) {
-        return alongAxisOperation(order, axis, t -> t.varc(ddof));
-    }
-
-    @Override
-    public Statistics<Double> stats() {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-
-        int size = size();
-        int nanSize = 0;
-        double mean;
-        double nanMean;
-        double variance;
-        double nanVariance;
-
-        // first pass compute raw mean
-        double sum = 0;
-        double nanSum = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
-                sum += storage.getDouble(p);
-                if (!dtype().isNaN(storage.getDouble(p))) {
-                    nanSum += storage.getDouble(p);
-                    nanSize++;
-                }
-            }
-        }
-        mean = (double) (sum / size);
-        nanMean = (double) (nanSum / nanSize);
-
-        // second pass adjustments for mean
-        sum = 0;
-        nanSum = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
-                sum += (double) (storage.getDouble(p) - mean);
-                if (!dtype().isNaN(storage.getDouble(p))) {
-                    nanSum += (double) (storage.getDouble(p) - nanMean);
-                }
-            }
-        }
-        mean += (double) (sum / size);
-        nanMean += (double) (nanSum / nanSize);
-
-        // third pass compute variance
-        double sum2 = 0;
-        double sum3 = 0;
-        double nanSum2 = 0;
-        double nanSum3 = 0;
-
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
-                sum2 += (double) ((storage.getDouble(p) - mean) * (storage.getDouble(p) - mean));
-                sum3 += (double) (storage.getDouble(p) - mean);
-                if (!dtype().isNaN(storage.getDouble(p))) {
-                    nanSum2 += (double) ((storage.getDouble(p) - nanMean) * (storage.getDouble(p) - nanMean));
-                    nanSum3 += (double) (storage.getDouble(p) - nanMean);
-                }
-            }
-        }
-        variance = (double) ((sum2 - (sum3 * sum3) / size) / size);
-        nanVariance = (double) ((nanSum2 - (nanSum3 * nanSum3) / nanSize) / nanSize);
-
-        return new Statistics<>(dtype(), size, nanSize, mean, nanMean, variance, nanVariance);
-    }
-
-    @Override
-    public Double sum() {
-        return associativeOp(TensorAssociativeOp.ADD);
-    }
-
-    @Override
-    public Tensor<Double> sum(Order order, int axis) {
-        return associativeOpNarrow(TensorAssociativeOp.ADD, order, axis);
-    }
-
-    @Override
-    public Double nanSum() {
-        return nanAssociativeOp(TensorAssociativeOp.ADD);
-    }
-
-    @Override
-    public Tensor<Double> nanSum(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorAssociativeOp.ADD, order, axis);
-    }
-
-    @Override
-    public Double prod() {
-        return associativeOp(TensorAssociativeOp.MUL);
-    }
-
-    @Override
-    public Tensor<Double> prod(Order order, int axis) {
-        return associativeOpNarrow(TensorAssociativeOp.MUL, order, axis);
-    }
-
-    @Override
-    public Double nanProd() {
-        return nanAssociativeOp(TensorAssociativeOp.MUL);
-    }
-
-    @Override
-    public Tensor<Double> nanProd(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorAssociativeOp.MUL, order, axis);
     }
 
     @Override
@@ -1191,7 +620,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         while (it.hasNext()) {
             int offset = it.next();
             for (int j = 0; j < loop.size; j++) {
-                double value = ptrGet(offset + j * loop.step);
+                double value = storage.getDouble(offset + j * loop.step);
                 if (value > argvalue) {
                     argvalue = value;
                     argmax = i;
@@ -1203,26 +632,6 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     @Override
-    public Double max() {
-        return associativeOp(TensorAssociativeOp.MAX);
-    }
-
-    @Override
-    public Tensor<Double> max(Order order, int axis) {
-        return associativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
-    }
-
-    @Override
-    public Double nanMax() {
-        return nanAssociativeOp(TensorAssociativeOp.MAX);
-    }
-
-    @Override
-    public Tensor<Double> nanMax(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
-    }
-
-    @Override
     public int argmin(Order order) {
         int argmin = -1;
         double argvalue = TensorAssociativeOp.MIN.initDouble();
@@ -1231,7 +640,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         while (it.hasNext()) {
             int offset = it.next();
             for (int j = 0; j < loop.size; j++) {
-                double value = ptrGet(offset + j * loop.step);
+                double value = storage.getDouble(offset + j * loop.step);
                 if (value < argvalue) {
                     argvalue = value;
                     argmin = i;
@@ -1243,31 +652,10 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     @Override
-    public Double min() {
-        return associativeOp(TensorAssociativeOp.MIN);
-    }
-
-    @Override
-    public Tensor<Double> min(Order order, int axis) {
-        return associativeOpNarrow(TensorAssociativeOp.MIN, order, axis);
-    }
-
-    @Override
-    public Double nanMin() {
-        return nanAssociativeOp(TensorAssociativeOp.MIN);
-    }
-
-    @Override
-    public Tensor<Double> nanMin(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorAssociativeOp.MIN, order, axis);
-    }
-
-    @Override
     public int nanCount() {
         int count = 0;
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
+            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 if (dtype().isNaN(storage.getDouble(p))) {
                     count++;
                 }
@@ -1280,8 +668,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     public int zeroCount() {
         int count = 0;
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
+            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 if (storage.getDouble(p) == 0) {
                     count++;
                 }
@@ -1290,22 +677,22 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         return count;
     }
 
-    protected double associativeOp(TensorAssociativeOp op) {
+    @Override
+    protected Double associativeOp(TensorAssociativeOp op) {
         double agg = op.initDouble();
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
+            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 agg = op.aggDouble(agg, storage.getDouble(p));
             }
         }
         return agg;
     }
 
-    protected double nanAssociativeOp(TensorAssociativeOp op) {
+    @Override
+    protected Double nanAssociativeOp(TensorAssociativeOp op) {
         double aggregate = op.initDouble();
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
+            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 if (!dtype().isNaN(storage.getDouble(p))) {
                     aggregate = op.aggDouble(aggregate, storage.getDouble(p));
                 }
@@ -1314,6 +701,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         return aggregate;
     }
 
+    @Override
     protected Tensor<Double> associativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
@@ -1331,6 +719,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         return res;
     }
 
+    @Override
     protected Tensor<Double> nanAssociativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
@@ -1367,8 +756,7 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         var loop = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
+            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 copy.setDouble(last++, storage.getDouble(p));
             }
         }
@@ -1453,15 +841,14 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
         var loop = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
+            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 dst.storage.setDouble(it2.nextInt(), src.storage.getDouble(p));
             }
         }
     }
 
     public double[] toArray() {
-        if (shape().rank() != 1) {
+        if (!isVector()) {
             throw new IllegalArgumentException("Only one dimensional tensors can be transformed into array.");
         }
         double[] copy = new double[size()];
@@ -1476,13 +863,9 @@ public sealed class BaseDoubleTensorStride extends AbstractTensor<Double> permit
     }
 
     public double[] asArray() {
-        if (shape().rank() != 1) {
-            throw new IllegalArgumentException("Only one dimensional tensors can be transformed into array.");
+        if (storage instanceof DoubleArrayStorage as && isVector() && layout.offset() == 0 && layout.stride(0) == 1) {
+            return as.array();
         }
-        // TODO FIX
-//        if (storage.size() == shape().dim(0) && layout.stride(0) == 1) {
-//            return storage.;
-//        }
         return toArray();
     }
 

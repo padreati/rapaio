@@ -41,12 +41,14 @@ import rapaio.math.tensor.TensorManager;
 public class TensorSandbox {
     public static void main(String[] args) throws IOException, URISyntaxException {
         var tmd1 = TensorManager.vectorizedArray().ofDouble();
-        var t1 = tmd1.random(Shape.of(1_000_000), new Random(42));
+        Random random = new Random(42);
+        var t1 = tmd1.random(Shape.of(1_000), random);
+        var t2 = tmd1.random(Shape.of(1_000), random);
 
-        var tmd2 = TensorManager.baseArray().ofDouble();
-        var t2 = tmd2.random(Shape.of(1_000_000), new Random(42));
+        t1.printContent();
+        t2.printContent();
 
-        System.out.println(t1.deepEquals(t2));
-        t2.floor_();
+        t1.max(t2).printContent();
+        t1.min(t2).printContent();
     }
 }

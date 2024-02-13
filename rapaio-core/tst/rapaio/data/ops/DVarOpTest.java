@@ -66,7 +66,7 @@ public class DVarOpTest {
 
         double sum1 = x.dt().nanSum();
         assertEquals(sum1, x.dtNew().sort_(0, true).nanSum(), 1e-12);
-        assertEquals(sum1, x.dtNew().sort_(0, false).stats().nanMean() * 75, 1e-12);
+        assertEquals(sum1, x.dtNew().sort_(0, false).nanMean() * 75, 1e-12);
         int[] rows = x.rowsComplete();
         x.dt().indirectSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).dt().nanSum(), TOLERANCE);

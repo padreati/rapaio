@@ -280,7 +280,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     public enum Initialize implements Serializable {
         ZERO(v -> 0.0),
         ONE(v -> 1.0),
-        EXPECTED_LOG_VAR(v -> Math.log(Math.min(1e-12, v.stats().mean() * (1 - v.stats().mean()))));
+        EXPECTED_LOG_VAR(v -> Math.log(Math.min(1e-12, v.mean() * (1 - v.mean()))));
 
         private static final long serialVersionUID = 8945270404852488614L;
         private final Function<Tensor<Double>, Double> function;

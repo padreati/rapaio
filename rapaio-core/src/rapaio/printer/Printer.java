@@ -103,18 +103,18 @@ public interface Printer {
     }
 
     default void printString(Printable printable) {
-        println(printable.toString());
+        print(printable.toString());
     }
 
     default void printSummary(Printable printable, POpt<?>... options) {
-        println(printable.toSummary(this, options));
+        print(printable.toSummary(this, options));
     }
 
     default void printContent(Printable printable, POpt<?>... options) {
-        println(printable.toContent(this, options));
+        print(printable.toContent(this, options));
     }
 
     default void printFullContent(Printable printable, POpt<?>... options) {
-        println(printable.toFullContent(this, options));
+        print(printable.toFullContent(this, options));
     }
 }

@@ -60,6 +60,7 @@ public interface TensorUnaryOp {
     TensorUnaryOp ATAN = new OpAtan();
     TensorUnaryOp TANH = new OpTanh();
     TensorUnaryOp SQR = new OpSqr();
+    TensorUnaryOp SQRT = new OpSqrt();
 
     /**
      * @return true if vector operations are implemented, false otherwise
@@ -1109,5 +1110,59 @@ final class OpSqr implements TensorUnaryOp {
     @Override
     public DoubleVector applyDouble(DoubleVector v) {
         return v.mul(v);
+    }
+}
+
+final class OpSqrt implements TensorUnaryOp {
+
+    @Override
+    public boolean vectorSupport() {
+        return true;
+    }
+
+    @Override
+    public boolean floatingPointOnly() {
+        return true;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.sqrt(v);
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.sqrt(v);
+    }
+
+    @Override
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.SQRT);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.SQRT);
     }
 }

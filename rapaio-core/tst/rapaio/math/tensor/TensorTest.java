@@ -41,7 +41,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -128,7 +127,6 @@ public class TensorTest {
             testExpand();
             testTake();
             aggregateOpsTest();
-            statisticsTest();
         }
 
         void buildTest() {
@@ -1183,52 +1181,6 @@ public class TensorTest {
             return sum;
         }
 
-        void statisticsTest() {
-
-            if (!g.dType().floatingPoint()) {
-                var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 20)).stats());
-                assertEquals("Operation available only for float tensors.", e.getMessage());
-                return;
-            }
-
-            var t1 = g.seq(Shape.of(10, 20));
-            var stat1 = t1.stats();
-            assertEquals(g.value(99.5), stat1.mean());
-            assertEquals(g.value(57.73430522661548), stat1.std());
-
-
-            var t2 = g.seq(Shape.of(43, 43));
-            var stat2 = t2.stats();
-
-            double sum2 = (43 * 43 - 1) * (43 * 43) / 2.;
-            double size = 43 * 43;
-
-            assertEquals(sum2, t2.sum().doubleValue());
-            assertEquals(sum2 / size, stat2.mean().doubleValue(), 1e-5);
-
-            var diff2 = t2.sub(stat2.mean());
-            var std2 = Math.sqrt(diff2.mul(diff2).div(g.value(t2.size())).sum().doubleValue());
-            assertEquals(std2, stat2.std().doubleValue(), 1e-3);
-
-            int k = 119;
-            var t3 = g.random(Shape.of(k, k, k));
-            Random random = new Random(42);
-            for (int i = 0; i < k / 2; i++) {
-                t3.set(g.value(Double.NaN), random.nextInt(k), random.nextInt(k), random.nextInt(k));
-            }
-
-            assertTrue(t3.nanCount() > 0);
-            var stat3 = t3.stats();
-
-            assertEquals(0, stat3.nanMean().doubleValue(), 1e-3);
-            double mean3 = stat3.nanMean().doubleValue();
-            double count3 = t3.size() - t3.nanCount();
-            var diff3 = t3.sub(g.value(mean3));
-            double var3 = diff3.mul(diff3).nanSum().doubleValue() / count3;
-            assertEquals(Math.sqrt(var3), stat3.nanStd().doubleValue(), 1e-3);
-
-            assertEquals(t3.size() - t3.nanCount(), stat3.nanSize());
-        }
     }
 
     private static <N extends Number> void assertTensorEqualValues(Tensor<N> t, Tensor<N> f) {

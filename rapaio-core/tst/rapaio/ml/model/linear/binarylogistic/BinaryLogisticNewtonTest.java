@@ -89,7 +89,7 @@ public class BinaryLogisticNewtonTest {
                 .lambdap.set(10.0)
                 .fit();
         assertFalse(result.converged());
-        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).stats().mean())), 1e-12);
+        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).mean())), 1e-12);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class BinaryLogisticNewtonTest {
                 .eps.set(0.0001)
                 .fit();
         assertTrue(result.converged());
-        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).stats().mean())), 1e-12);
+        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).mean())), 1e-12);
 
         // aligned with python
         assertEquals(-0.5584820971090904, result.w().get(0), TOL);
@@ -131,7 +131,7 @@ public class BinaryLogisticNewtonTest {
                 .eps.set(0.000000001)
                 .fit();
         assertFalse(result.converged());
-        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).stats().mean())), 1e-12);
+        assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).mean())), 1e-12);
     }
 
     @Test
@@ -152,7 +152,7 @@ public class BinaryLogisticNewtonTest {
                     .lambdap.set(lambda)
                     .fit();
             assertFalse(result.converged(), "Model not converge for lambda: " + lambda);
-            assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).stats().mean())), 1e-12);
+            assertEquals(0.5, 1. / (1. + Math.exp(-result.w().get(0) * x.take(1, 0).mean())), 1e-12);
             loss.addDouble(result.nll());
         }
 

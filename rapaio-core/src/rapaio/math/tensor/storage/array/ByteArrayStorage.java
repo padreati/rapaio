@@ -108,4 +108,8 @@ public final class ByteArrayStorage extends ByteStorage {
     public void saveByte(ByteVector a, int offset, int[] index, int indexOffset, VectorMask<Byte> mask) {
         a.intoArray(array, offset, index, indexOffset, mask);
     }
+
+    public byte[] array() {
+        return array;
+    }
 }

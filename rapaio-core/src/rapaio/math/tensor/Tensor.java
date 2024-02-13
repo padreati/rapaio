@@ -909,6 +909,16 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> sqr_();
 
+    default Tensor<N> sqrt() {
+        return sqrt(Order.defaultOrder());
+    }
+
+    default Tensor<N> sqrt(Order order) {
+        return copy(order).sqrt_();
+    }
+
+    Tensor<N> sqrt_();
+
 
     default Tensor<N> add(Tensor<N> tensor) {
         return add(tensor, Order.defaultOrder());
@@ -1023,6 +1033,62 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return div_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
     }
 
+    default Tensor<N> min(Tensor<N> tensor) {
+        return min(tensor, Order.defaultOrder());
+    }
+
+    default Tensor<N> min(Tensor<N> tensor, Order order) {
+        if (isScalar()) {
+            return tensor.copy(order).min_(get());
+        }
+        return copy(order).min_(tensor);
+    }
+
+    Tensor<N> min_(Tensor<N> tensor);
+
+    default Tensor<N> bmin(int axis, Tensor<N> tensor) {
+        return bmin(axis, tensor, Order.defaultOrder());
+    }
+
+    default Tensor<N> bmin(int axis, Tensor<N> tensor, Order order) {
+        if (isScalar()) {
+            return tensor.copy(order).min_(get());
+        }
+        return copy(order).bmin_(axis, tensor);
+    }
+
+    default Tensor<N> bmin_(int axis, Tensor<N> tensor) {
+        return min_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+    }
+
+    default Tensor<N> max(Tensor<N> tensor) {
+        return max(tensor, Order.defaultOrder());
+    }
+
+    default Tensor<N> max(Tensor<N> tensor, Order order) {
+        if (isScalar()) {
+            return tensor.copy(order).max_(get());
+        }
+        return copy(order).max_(tensor);
+    }
+
+    Tensor<N> max_(Tensor<N> tensor);
+
+    default Tensor<N> bmax(int axis, Tensor<N> tensor) {
+        return bmax(axis, tensor, Order.defaultOrder());
+    }
+
+    default Tensor<N> bmax(int axis, Tensor<N> tensor, Order order) {
+        if (isScalar()) {
+            return tensor.copy(order).max_(get());
+        }
+        return copy(order).bmax_(axis, tensor);
+    }
+
+    default Tensor<N> bmax_(int axis, Tensor<N> tensor) {
+        return max_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+    }
+
     default Tensor<N> add(N value) {
         return add(value, Order.defaultOrder());
     }
@@ -1062,6 +1128,26 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     Tensor<N> div_(N value);
+
+    default Tensor<N> min(N value) {
+        return min(value, Order.defaultOrder());
+    }
+
+    default Tensor<N> min(N value, Order order) {
+        return copy(order).min_(value);
+    }
+
+    Tensor<N> min_(N value);
+
+    default Tensor<N> max(N value) {
+        return max(value, Order.defaultOrder());
+    }
+
+    default Tensor<N> max(N value, Order order) {
+        return copy(order).max_(value);
+    }
+
+    Tensor<N> max_(N value);
 
     default Tensor<N> fma(N a, Tensor<N> t) {
         return fma(a, t, Order.defaultOrder());
@@ -1177,6 +1263,8 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> mean(Order order, int axis);
 
+    N nanMean();
+
     N std();
 
     default Tensor<N> std(int axis) {
@@ -1208,8 +1296,6 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     Tensor<N> varc(Order order, int axis, int ddof);
-
-    Statistics<N> stats();
 
     N sum();
 

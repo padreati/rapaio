@@ -108,4 +108,8 @@ public final class IntArrayStorage extends IntStorage {
     public void saveInt(IntVector a, int offset, int[] index, int indexOffset, VectorMask<Integer> mask) {
         a.intoArray(array, offset, index, indexOffset, mask);
     }
+
+    public int[] array() {
+        return array;
+    }
 }

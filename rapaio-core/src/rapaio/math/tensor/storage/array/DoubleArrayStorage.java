@@ -108,4 +108,8 @@ public final class DoubleArrayStorage extends DoubleStorage {
     public void saveDouble(DoubleVector a, int offset, int[] index, int indexOffset, VectorMask<Double> mask) {
         a.intoArray(array, offset, index, indexOffset, mask);
     }
+
+    public double[] array() {
+        return array;
+    }
 }

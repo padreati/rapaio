@@ -52,7 +52,7 @@ public class ChiSquareKernel extends AbstractKernel {
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         var sum = v.add(u);
         var delta = v.sub(u);
-        return 1 - 2 * delta.mul(delta).div(sum).sum();
+        return 1 - 2 * delta.sqr().div(sum).sum();
     }
 
     @Override
