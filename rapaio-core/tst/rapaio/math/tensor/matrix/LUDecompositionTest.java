@@ -60,7 +60,7 @@ public class LUDecompositionTest {
 
     @Test
     void testSuite() {
-        testPlan(TensorManager.baseArray().ofDouble());
+        testPlan(TensorManager.base().ofDouble());
     }
 
     <N extends Number> void testPlan(TensorManager.OfType<N> tmt) {

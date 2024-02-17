@@ -34,7 +34,7 @@ package rapaio.math.tensor;
 import java.util.Collection;
 import java.util.Random;
 
-import rapaio.math.tensor.manager.barray.BaseArrayTensorManager;
+import rapaio.math.tensor.manager.base.BaseTensorManager;
 
 /**
  * Starting point for working with tensors in a default manner. All those methods are available also through
@@ -46,7 +46,7 @@ import rapaio.math.tensor.manager.barray.BaseArrayTensorManager;
 public final class Tensors {
 
 
-    private static final TensorManager tm = new BaseArrayTensorManager();
+    private static final TensorManager tm = new BaseTensorManager();
     private static final TensorManager.OfType<Double> tmd = tm.ofDouble();
 
     private static final StorageFactory store = tm.storage();

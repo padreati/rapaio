@@ -35,26 +35,26 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.Vector;
 
-import rapaio.math.tensor.manager.barray.BaseArrayTensorManager;
-import rapaio.math.tensor.manager.varray.VectorizedArrayTensorManager;
+import rapaio.math.tensor.manager.base.BaseTensorManager;
+import rapaio.math.tensor.manager.vector.VectorTensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 
 public interface TensorManager {
 
-    static TensorManager baseArray() {
-        return new BaseArrayTensorManager();
+    static TensorManager base() {
+        return new BaseTensorManager();
     }
 
-    static TensorManager baseArray(int cpuThreads) {
-        return new BaseArrayTensorManager(cpuThreads);
+    static TensorManager base(int cpuThreads) {
+        return new BaseTensorManager(cpuThreads);
     }
 
-    static TensorManager vectorizedArray() {
-        return new VectorizedArrayTensorManager();
+    static TensorManager varray() {
+        return new VectorTensorManager();
     }
 
-    static TensorManager vectorizedArray(int cpuThreads) {
-        return new VectorizedArrayTensorManager(cpuThreads);
+    static TensorManager varray(int cpuThreads) {
+        return new VectorTensorManager(cpuThreads);
     }
 
     OfType<Double> ofDouble();

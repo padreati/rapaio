@@ -75,8 +75,8 @@ import rapaio.util.collection.DoubleArrays;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class CopyBenchmark {
 
-    private static final TensorManager.OfType<Double> base = TensorManager.baseArray().ofDouble();
-    private static final TensorManager.OfType<Double> vectorized = TensorManager.vectorizedArray().ofDouble();
+    private static final TensorManager.OfType<Double> base = TensorManager.base().ofDouble();
+    private static final TensorManager.OfType<Double> vectorized = TensorManager.varray().ofDouble();
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {

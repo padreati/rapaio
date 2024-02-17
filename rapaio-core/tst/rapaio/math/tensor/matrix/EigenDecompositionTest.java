@@ -60,7 +60,7 @@ public class EigenDecompositionTest {
 
     @Test
     void testAll() {
-        testSuite(TensorManager.baseArray().ofDouble());
+        testSuite(TensorManager.base().ofDouble());
     }
 
     <N extends Number> void testSuite(TensorManager.OfType<N> tmt) {

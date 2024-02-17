@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.manager.barray;
+package rapaio.math.tensor.manager.base;
 
 import static rapaio.util.Hardware.CORES;
 import static rapaio.util.Hardware.L2_CACHE_SIZE;
@@ -111,7 +111,8 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     public Tensor<Float> flatten(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
-        var out = engine.ofFloat().storage().zeros(layout.size());
+        var result = engine.ofFloat().zeros(Shape.of(layout.size()), askOrder);
+        var out = result.storage();
         int ptr = 0;
         var it = loopIterator(askOrder);
         while (it.hasNext()) {
@@ -120,7 +121,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
                 out.setFloat(ptr++, storage.getFloat(p));
             }
         }
-        return engine.ofFloat().stride(StrideLayout.of(Shape.of(layout.size()), 0, new int[] {1}), out);
+        return result;
     }
 
     @Override

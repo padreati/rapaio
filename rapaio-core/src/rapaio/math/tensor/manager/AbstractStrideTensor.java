@@ -56,8 +56,8 @@ import rapaio.math.tensor.iterators.StrideLoopIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.layout.StrideWrapper;
-import rapaio.math.tensor.manager.barray.BaseDoubleTensorStride;
-import rapaio.math.tensor.manager.varray.VectorizedDoubleTensorStride;
+import rapaio.math.tensor.manager.base.BaseDoubleTensorStride;
+import rapaio.math.tensor.manager.vector.VectorDoubleTensorStride;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
@@ -755,7 +755,7 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
                 return VarDouble.wrap(bs.asArray());
             }
         }
-        if (this instanceof VectorizedDoubleTensorStride bs) {
+        if (this instanceof VectorDoubleTensorStride bs) {
             if (bs.layout().offset() == 0 && bs.layout().stride(0) == 1) {
                 return VarDouble.wrap(bs.asArray());
             }

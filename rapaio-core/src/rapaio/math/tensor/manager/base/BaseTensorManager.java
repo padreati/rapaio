@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.manager.barray;
+package rapaio.math.tensor.manager.base;
 
 import java.util.Random;
 
@@ -45,13 +45,13 @@ import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 import rapaio.util.Hardware;
 
-public class BaseArrayTensorManager extends AbstractTensorManager {
+public class BaseTensorManager extends AbstractTensorManager {
 
-    public BaseArrayTensorManager() {
+    public BaseTensorManager() {
         this(Hardware.CORES);
     }
 
-    public BaseArrayTensorManager(int cpuThreads) {
+    public BaseTensorManager(int cpuThreads) {
         super(cpuThreads, new BaseArrayOfDouble(), new BaseArrayOfFloat(), new BaseArrayOfInt(), new BaseArrayOfByte(), new ArrayStorageFactory());
     }
 
@@ -66,7 +66,6 @@ public class BaseArrayTensorManager extends AbstractTensorManager {
             Normal normal = Normal.std();
             return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> normal.sampleNext(random));
         }
-
 
         @Override
         public Tensor<Double> stride(StrideLayout layout, Storage<Double> storage) {

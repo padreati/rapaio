@@ -29,7 +29,7 @@
  *
  */
 
-package rapaio.math.tensor.manager.varray;
+package rapaio.math.tensor.manager.vector;
 
 import java.util.Random;
 
@@ -45,13 +45,13 @@ import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 import rapaio.util.Hardware;
 
-public class VectorizedArrayTensorManager extends AbstractTensorManager {
+public class VectorTensorManager extends AbstractTensorManager {
 
-    public VectorizedArrayTensorManager() {
+    public VectorTensorManager() {
         this(Hardware.CORES);
     }
 
-    public VectorizedArrayTensorManager(int cpuThreads) {
+    public VectorTensorManager(int cpuThreads) {
         super(cpuThreads, new VArrayOfDouble(), new VArrayOfFloat(), new VArrayOfInt(), new VArrayOfByte(), new ArrayStorageFactory());
     }
 
@@ -69,7 +69,7 @@ public class VectorizedArrayTensorManager extends AbstractTensorManager {
 
         @Override
         public Tensor<Double> stride(StrideLayout layout, Storage<Double> storage) {
-            return new VectorizedDoubleTensorStride(parent, layout, storage);
+            return new VectorDoubleTensorStride(parent, layout, storage);
         }
     }
 
@@ -87,7 +87,7 @@ public class VectorizedArrayTensorManager extends AbstractTensorManager {
 
         @Override
         public Tensor<Float> stride(StrideLayout layout, Storage<Float> storage) {
-            return new VectorizedFloatTensorStride(parent, layout, storage);
+            return new VectorFloatTensorStride(parent, layout, storage);
         }
     }
 
@@ -104,7 +104,7 @@ public class VectorizedArrayTensorManager extends AbstractTensorManager {
 
         @Override
         public Tensor<Integer> stride(StrideLayout layout, Storage<Integer> storage) {
-            return new VectorizedIntTensorStride(parent, layout, storage);
+            return new VectorIntTensorStride(parent, layout, storage);
         }
     }
 
@@ -125,7 +125,7 @@ public class VectorizedArrayTensorManager extends AbstractTensorManager {
 
         @Override
         public Tensor<Byte> stride(StrideLayout layout, Storage<Byte> storage) {
-            return new VectorizedByteTensorStride(parent, layout, storage);
+            return new VectorByteTensorStride(parent, layout, storage);
         }
     }
 }

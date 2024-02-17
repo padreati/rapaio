@@ -32,23 +32,34 @@
 package rapaio.experiment.math;
 
 import java.io.IOException;
+import java.lang.foreign.Arena;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.ValueLayout;
+import java.lang.invoke.VarHandle;
 import java.net.URISyntaxException;
-import java.util.Random;
-
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorManager;
 
 public class TensorSandbox {
     public static void main(String[] args) throws IOException, URISyntaxException {
-        var tmd1 = TensorManager.vectorizedArray().ofDouble();
-        Random random = new Random(42);
-        var t1 = tmd1.random(Shape.of(1_000), random);
-        var t2 = tmd1.random(Shape.of(1_000), random);
 
-        t1.printContent();
-        t2.printContent();
+        int n = 100;
+        MemorySegment ms = Arena.ofAuto().allocate(100*8, ValueLayout.JAVA_DOUBLE.byteAlignment());
+        for (int i = 0; i < 100; i++) {
+            ms.setAtIndex(ValueLayout.JAVA_DOUBLE, i, i);
+        }
+        print(ms, 100);
 
-        t1.max(t2).printContent();
-        t1.min(t2).printContent();
+        VarHandle vh = ValueLayout.JAVA_DOUBLE.arrayElementVarHandle(100);
+        vh.set(ms, 0, 0, 1000d);
+
+        print(ms, 100);
+
+    }
+
+    private static void print(MemorySegment ms, int n) {
+        VarHandle vh = ValueLayout.JAVA_DOUBLE.arrayElementVarHandle(n);
+        for (int i = 0; i < n; i++) {
+            System.out.print(vh.get(ms, 0, i) + ", ");
+        }
+        System.out.println();
     }
 }

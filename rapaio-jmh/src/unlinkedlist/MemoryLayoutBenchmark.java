@@ -29,12 +29,16 @@
  *
  */
 
-package tensor;
+package unlinkedlist;
 
 import static rapaio.graphics.opt.GOptions.color;
 import static rapaio.graphics.opt.GOptions.labels;
 
 import java.io.IOException;
+import java.lang.foreign.Arena;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.ValueLayout;
+import java.lang.invoke.VarHandle;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -56,7 +60,6 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
 import commons.Utils;
-import jsat.linear.DenseMatrix;
 import rapaio.data.Frame;
 import rapaio.data.preprocessing.RefSort;
 import rapaio.data.preprocessing.VarApply;
@@ -64,98 +67,93 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
-import rapaio.math.tensor.Order;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Storage;
+import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 import rapaio.sys.WS;
 import rapaio.util.collection.DoubleArrays;
 
 @BenchmarkMode( {Mode.AverageTime})
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-public class FillBenchmark {
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
+public class MemoryLayoutBenchmark {
 
-    private static final TensorManager.OfType<Double> base = TensorManager.base().ofDouble();
-    private static final TensorManager.OfType<Double> vectorized = TensorManager.varray().ofDouble();
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
-        @Param( {"100","500", "1000", "2500", "5000", "10000"})
+//        @Param( {"100", "1000", "10000"})
+        @Param( {"100", "1000"})
+//        @Param( {"100"})
         private int n;
 
-        private DenseMatrix jsatA;
-
-        private Tensor<Double> bTc;
-        private Tensor<Double> bTf;
-
-        private Tensor<Double> vTc;
-        private Tensor<Double> vTf;
+        double[] array;
+        MemorySegment msArray;
+        MemorySegment msExternal;
+        Storage<Double> storage;
 
         @Setup(Level.Invocation)
         public void setup() {
             Random random = new Random(42);
-            double[] array = DoubleArrays.newFrom(0, n * n, _ -> random.nextDouble());
-
-            jsatA = new DenseMatrix(n, n);
-            int p = 0;
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    jsatA.set(i, j, array[p++]);
-                }
-            }
-
-            bTc = base.stride(Shape.of(n, n), Order.C, array);
-            bTf = base.stride(Shape.of(n, n), Order.F, array);
-            vTc = vectorized.stride(Shape.of(n, n), Order.C, array);
-            vTf = vectorized.stride(Shape.of(n, n), Order.F, array);
+            array = DoubleArrays.newFrom(0, n, _ -> random.nextDouble());
+            msArray = MemorySegment.ofArray(array);
+            storage = new ArrayStorageFactory().ofDouble().from(array);
+            msExternal = Arena.ofAuto().allocate(n * 8, 8);
         }
     }
 
     @Benchmark
-    public void fillJSAT(BenchmarkState bs, Blackhole bh) {
-        bs.jsatA.zeroOut();
-        bh.consume(bs.jsatA);
+    public void testArrayAdd(BenchmarkState bs, Blackhole bh) {
+        for (int i = 0; i < bs.n; i++) {
+            bs.array[i] = Math.log1p(bs.array[i]);
+        }
+        bh.consume(bs.array);
     }
 
     @Benchmark
-    public void fillBaseOrderC(BenchmarkState bs, Blackhole bh) {
-        bh.consume(bs.bTc.fill_(0.));
+    public void testMsAdd(BenchmarkState bs, Blackhole bh) {
+        VarHandle vh = ValueLayout.JAVA_DOUBLE.arrayElementVarHandle(bs.n);
+        for (int i = 0; i < bs.n; i++) {
+            double value = (double) vh.get(bs.msArray, 0, i);
+            vh.set(bs.msArray, 0, i, Math.log1p(value));
+        }
+        bh.consume(bs.msArray);
     }
 
     @Benchmark
-    public void fillBaseOrderF(BenchmarkState bs, Blackhole bh) {
-        bh.consume(bs.bTf.fill_(0.));
+    public void testMsExtAdd(BenchmarkState bs, Blackhole bh) {
+        VarHandle vh = ValueLayout.JAVA_DOUBLE.arrayElementVarHandle(bs.n);
+        for (int i = 0; i < bs.n; i++) {
+            double value = (double) vh.get(bs.msExternal, 0, i);
+            vh.set(bs.msExternal, 0, i, Math.log1p(value));
+        }
+        bh.consume(bs.msExternal);
     }
 
-
     @Benchmark
-    public void fillVecOrderC(BenchmarkState bs, Blackhole bh) {
-        bh.consume(bs.vTc.fill_(0.));
-    }
-
-    @Benchmark
-    public void fillVecOrderF(BenchmarkState bs, Blackhole bh) {
-        bh.consume(bs.vTf.fill_(0.));
+    public void testStorageAdd(BenchmarkState bs, Blackhole bh) {
+        for (int i = 0; i < bs.n; i++) {
+            double value = bs.storage.get(i);
+            bs.storage.setDouble(i, Math.log1p(value));
+        }
+        bh.consume(bs.storage);
     }
 
     public static void main(String[] args) throws RunnerException, IOException {
         Options opt = new OptionsBuilder()
-                .include(FillBenchmark.class.getSimpleName())
+                .include(MemoryLayoutBenchmark.class.getSimpleName())
                 .warmupTime(TimeValue.seconds(2))
                 .warmupIterations(2)
                 .measurementTime(TimeValue.seconds(2))
                 .measurementIterations(3)
                 .forks(1)
                 .resultFormat(ResultFormatType.CSV)
-                .result(Utils.resultPath(FillBenchmark.class))
+                .result(Utils.resultPath(MemoryLayoutBenchmark.class))
                 .build();
         new Runner(opt).run();
-        Utils.resultPromote(FillBenchmark.class);
+        Utils.resultPromote(MemoryLayoutBenchmark.class);
         printResults();
     }
 
     public static void printResults() {
-        Frame df = Csv.instance().quotes.set(true).read(Utils.resultPath(FillBenchmark.class));
+        Frame df = Csv.instance().quotes.set(true).read(Utils.resultPath(MemoryLayoutBenchmark.class));
         Plot plot = Plotter.plot();
         int i = 1;
         for (String benchmark : df.rvar("Benchmark").levels().stream().skip(1).toList()) {
