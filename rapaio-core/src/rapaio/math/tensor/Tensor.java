@@ -1279,7 +1279,14 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return copy(order).fma_(a, t);
     }
 
-    Tensor<N> fma_(N value, Tensor<N> t);
+    /**
+     * Adds in place the given matrix {@code t} multiplied by {@code factor} to the tensor element wise.
+     *
+     * @param factor multiplication factor
+     * @param t tensor to be multiplied and added to the current one
+     * @return same tensor with values changed
+     */
+    Tensor<N> fma_(N factor, Tensor<N> t);
 
     default Tensor<N> outer(Tensor<N> t) {
         if (!isVector() || !t.isVector()) {

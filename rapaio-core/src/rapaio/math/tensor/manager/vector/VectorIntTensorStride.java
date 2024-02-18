@@ -68,19 +68,17 @@ public final class VectorIntTensorStride extends BaseIntTensorStride implements 
     @Override
     public Tensor<Integer> fill_(Integer value) {
         for (int offset : loop.offsets) {
-            int bound = VS.loopBound(loop.size) * loop.step + offset;
+            int bound = VS.loopBound(loop.size);
             int i = 0;
-            if (bound > offset) {
-                IntVector fill = IntVector.broadcast(VS, value);
-                for (; i < bound; i += VS_LEN * loop.step) {
-                    if (loop.step == 1) {
-                        storage.saveInt(fill, offset + i * loop.step);
-                    } else {
-                        storage.saveInt(fill, offset + i * loop.step, loopIndexes, 0);
-                    }
+            IntVector fill = IntVector.broadcast(VS, value);
+            for (; i < bound; i += VS_LEN) {
+                if (loop.step == 1) {
+                    storage.saveInt(fill, offset + i * loop.step);
+                } else {
+                    storage.saveInt(fill, offset + i * loop.step, loopIndexes, 0);
                 }
             }
-            for (; i < loop.size + offset; i += loop.step) {
+            for (; i < loop.size; i++) {
                 storage.setInt(offset + i * loop.step, value);
             }
         }
@@ -89,25 +87,26 @@ public final class VectorIntTensorStride extends BaseIntTensorStride implements 
 
     @Override
     public Tensor<Integer> fillNan_(Integer value) {
+        if(!dtype().floatingPoint()) {
+            return this;
+        }
         for (int offset : loop.offsets) {
             int bound = VS.loopBound(loop.size);
             int i = 0;
-            if (bound > offset) {
-                IntVector fill = IntVector.broadcast(VS, value);
-                for (; i < bound; i += VS_LEN) {
-                    int p = offset + i * loop.step;
-                    if (loop.step == 1) {
-                        IntVector a = storage.loadInt(VS, p);
-                        VectorMask<Integer> m = a.test(VectorOperators.IS_NAN);
-                        storage.saveInt(fill, p, m);
-                    } else {
-                        IntVector a = storage.loadInt(VS, p, loopIndexes, 0);
-                        VectorMask<Integer> m = a.test(VectorOperators.IS_NAN);
-                        storage.saveInt(fill, p, loopIndexes, 0, m);
-                    }
+            IntVector fill = IntVector.broadcast(VS, value);
+            for (; i < bound; i += VS_LEN) {
+                int p = offset + i * loop.step;
+                if (loop.step == 1) {
+                    IntVector a = storage.loadInt(VS, p);
+                    VectorMask<Integer> m = a.test(VectorOperators.IS_NAN);
+                    storage.saveInt(fill, p, m);
+                } else {
+                    IntVector a = storage.loadInt(VS, p, loopIndexes, 0);
+                    VectorMask<Integer> m = a.test(VectorOperators.IS_NAN);
+                    storage.saveInt(fill, p, loopIndexes, 0, m);
                 }
             }
-            for (; i < loop.size + offset; i += loop.step) {
+            for (; i < loop.size; i++) {
                 int p = offset + i * loop.step;
                 if (dtype().isNaN(storage.getInt(p))) {
                     storage.setInt(p, value);

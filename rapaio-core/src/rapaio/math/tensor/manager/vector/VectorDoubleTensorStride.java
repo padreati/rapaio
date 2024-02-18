@@ -68,19 +68,17 @@ public final class VectorDoubleTensorStride extends BaseDoubleTensorStride imple
     @Override
     public Tensor<Double> fill_(Double value) {
         for (int offset : loop.offsets) {
-            int bound = VS.loopBound(loop.size) * loop.step + offset;
+            int bound = VS.loopBound(loop.size);
             int i = 0;
-            if (bound > offset) {
-                DoubleVector fill = DoubleVector.broadcast(VS, value);
-                for (; i < bound; i += VS_LEN * loop.step) {
-                    if (loop.step == 1) {
-                        storage.saveDouble(fill, offset + i * loop.step);
-                    } else {
-                        storage.saveDouble(fill, offset + i * loop.step, loopIndexes, 0);
-                    }
+            DoubleVector fill = DoubleVector.broadcast(VS, value);
+            for (; i < bound; i += VS_LEN) {
+                if (loop.step == 1) {
+                    storage.saveDouble(fill, offset + i * loop.step);
+                } else {
+                    storage.saveDouble(fill, offset + i * loop.step, loopIndexes, 0);
                 }
             }
-            for (; i < loop.size + offset; i += loop.step) {
+            for (; i < loop.size; i++) {
                 storage.setDouble(offset + i * loop.step, value);
             }
         }
@@ -89,25 +87,26 @@ public final class VectorDoubleTensorStride extends BaseDoubleTensorStride imple
 
     @Override
     public Tensor<Double> fillNan_(Double value) {
+        if(!dtype().floatingPoint()) {
+            return this;
+        }
         for (int offset : loop.offsets) {
             int bound = VS.loopBound(loop.size);
             int i = 0;
-            if (bound > offset) {
-                DoubleVector fill = DoubleVector.broadcast(VS, value);
-                for (; i < bound; i += VS_LEN) {
-                    int p = offset + i * loop.step;
-                    if (loop.step == 1) {
-                        DoubleVector a = storage.loadDouble(VS, p);
-                        VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
-                        storage.saveDouble(fill, p, m);
-                    } else {
-                        DoubleVector a = storage.loadDouble(VS, p, loopIndexes, 0);
-                        VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
-                        storage.saveDouble(fill, p, loopIndexes, 0, m);
-                    }
+            DoubleVector fill = DoubleVector.broadcast(VS, value);
+            for (; i < bound; i += VS_LEN) {
+                int p = offset + i * loop.step;
+                if (loop.step == 1) {
+                    DoubleVector a = storage.loadDouble(VS, p);
+                    VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
+                    storage.saveDouble(fill, p, m);
+                } else {
+                    DoubleVector a = storage.loadDouble(VS, p, loopIndexes, 0);
+                    VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
+                    storage.saveDouble(fill, p, loopIndexes, 0, m);
                 }
             }
-            for (; i < loop.size + offset; i += loop.step) {
+            for (; i < loop.size; i++) {
                 int p = offset + i * loop.step;
                 if (dtype().isNaN(storage.getDouble(p))) {
                     storage.setDouble(p, value);

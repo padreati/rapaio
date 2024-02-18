@@ -68,19 +68,17 @@ public final class VectorFloatTensorStride extends BaseFloatTensorStride impleme
     @Override
     public Tensor<Float> fill_(Float value) {
         for (int offset : loop.offsets) {
-            int bound = VS.loopBound(loop.size) * loop.step + offset;
+            int bound = VS.loopBound(loop.size);
             int i = 0;
-            if (bound > offset) {
-                FloatVector fill = FloatVector.broadcast(VS, value);
-                for (; i < bound; i += VS_LEN * loop.step) {
-                    if (loop.step == 1) {
-                        storage.saveFloat(fill, offset + i * loop.step);
-                    } else {
-                        storage.saveFloat(fill, offset + i * loop.step, loopIndexes, 0);
-                    }
+            FloatVector fill = FloatVector.broadcast(VS, value);
+            for (; i < bound; i += VS_LEN) {
+                if (loop.step == 1) {
+                    storage.saveFloat(fill, offset + i * loop.step);
+                } else {
+                    storage.saveFloat(fill, offset + i * loop.step, loopIndexes, 0);
                 }
             }
-            for (; i < loop.size + offset; i += loop.step) {
+            for (; i < loop.size; i++) {
                 storage.setFloat(offset + i * loop.step, value);
             }
         }
@@ -89,25 +87,26 @@ public final class VectorFloatTensorStride extends BaseFloatTensorStride impleme
 
     @Override
     public Tensor<Float> fillNan_(Float value) {
+        if(!dtype().floatingPoint()) {
+            return this;
+        }
         for (int offset : loop.offsets) {
             int bound = VS.loopBound(loop.size);
             int i = 0;
-            if (bound > offset) {
-                FloatVector fill = FloatVector.broadcast(VS, value);
-                for (; i < bound; i += VS_LEN) {
-                    int p = offset + i * loop.step;
-                    if (loop.step == 1) {
-                        FloatVector a = storage.loadFloat(VS, p);
-                        VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
-                        storage.saveFloat(fill, p, m);
-                    } else {
-                        FloatVector a = storage.loadFloat(VS, p, loopIndexes, 0);
-                        VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
-                        storage.saveFloat(fill, p, loopIndexes, 0, m);
-                    }
+            FloatVector fill = FloatVector.broadcast(VS, value);
+            for (; i < bound; i += VS_LEN) {
+                int p = offset + i * loop.step;
+                if (loop.step == 1) {
+                    FloatVector a = storage.loadFloat(VS, p);
+                    VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
+                    storage.saveFloat(fill, p, m);
+                } else {
+                    FloatVector a = storage.loadFloat(VS, p, loopIndexes, 0);
+                    VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
+                    storage.saveFloat(fill, p, loopIndexes, 0, m);
                 }
             }
-            for (; i < loop.size + offset; i += loop.step) {
+            for (; i < loop.size; i++) {
                 int p = offset + i * loop.step;
                 if (dtype().isNaN(storage.getFloat(p))) {
                     storage.setFloat(p, value);

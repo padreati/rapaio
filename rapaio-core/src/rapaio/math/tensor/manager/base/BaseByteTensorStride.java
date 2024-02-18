@@ -186,6 +186,9 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
 
     @Override
     public Tensor<Byte> fillNan_(Byte value) {
+        if(!dtype().floatingPoint()) {
+            return this;
+        }
         for (int offset : loop.offsets) {
             for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 if (dtype().isNaN(storage.getByte(p))) {
@@ -275,7 +278,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     @Override
     public Tensor<Byte> fma_(Byte a, Tensor<Byte> t) {
         if (t.isScalar()) {
-            byte tVal = t.getByte(0);
+            byte tVal = t.getByte();
             return add_((byte) (a * tVal));
         }
         if (!shape().equals(t.shape())) {
@@ -424,7 +427,6 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
                 throw new RuntimeException(e);
             }
         }
-
         return ret;
     }
 
@@ -434,12 +436,9 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
             throw new IllegalArgumentException("Scatter matrix can be computed only for matrices.");
         }
         Tensor<Byte> scatter = engine.ofByte().zeros(Shape.of(dim(1), dim(1)));
-        Tensor<Byte> mean = engine.ofByte().zeros(Shape.of(dim(1)));
-        for (int i = 0; i < dim(1); i++) {
-            mean.setByte((byte) take(1, i).mean(), i);
-        }
+        Tensor<Byte> mean = mean(0);
         for (int k = 0; k < dim(0); k++) {
-            Tensor<Byte> row = take(0, k).squeeze(0).sub(mean);
+            Tensor<Byte> row = takesq(0, k).sub(mean);
             for (int i = 0; i < row.size(); i++) {
                 for (int j = 0; j < row.size(); j++) {
                     scatter.incByte((byte) (row.getByte(i) * row.getByte(j)), i, j);

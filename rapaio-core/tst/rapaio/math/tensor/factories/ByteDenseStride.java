@@ -131,10 +131,10 @@ public final class ByteDenseStride extends ByteDense {
         }
 
         var array = engine.ofByte().storage().zeros(offset + shape.size());
-        byte[] buff = new byte[1];
-        for (int i = 0; i < array.size(); i++) {
-            random.nextBytes(buff);
-            array.set(i, buff[0]);
+        byte[] buff = new byte[shape.size()];
+        random.nextBytes(buff);
+        for (int i = 0; i < shape.size(); i++) {
+            array.set(i, buff[i]);
         }
         return ofType.stride(StrideLayout.of(shape, offset, strides), array);
     }

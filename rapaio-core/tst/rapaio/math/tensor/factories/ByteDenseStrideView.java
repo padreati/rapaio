@@ -74,9 +74,10 @@ public final class ByteDenseStrideView extends ByteDense {
     @Override
     public Tensor<Byte> random(Shape shape) {
         var t = zeros(shape);
-        byte[] buff = new byte[1];
+
+        byte[] buff = new byte[t.size()];
         random.nextBytes(buff);
-        t.apply_(Order.C, (pos, ptr) -> buff[0]);
+        t.apply_(Order.C, (i, p) -> buff[i]);
         return t;
     }
 }

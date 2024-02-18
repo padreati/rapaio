@@ -68,19 +68,17 @@ public final class VectorByteTensorStride extends BaseByteTensorStride implement
     @Override
     public Tensor<Byte> fill_(Byte value) {
         for (int offset : loop.offsets) {
-            int bound = VS.loopBound(loop.size) * loop.step + offset;
+            int bound = VS.loopBound(loop.size);
             int i = 0;
-            if (bound > offset) {
-                ByteVector fill = ByteVector.broadcast(VS, value);
-                for (; i < bound; i += VS_LEN * loop.step) {
-                    if (loop.step == 1) {
-                        storage.saveByte(fill, offset + i * loop.step);
-                    } else {
-                        storage.saveByte(fill, offset + i * loop.step, loopIndexes, 0);
-                    }
+            ByteVector fill = ByteVector.broadcast(VS, value);
+            for (; i < bound; i += VS_LEN) {
+                if (loop.step == 1) {
+                    storage.saveByte(fill, offset + i * loop.step);
+                } else {
+                    storage.saveByte(fill, offset + i * loop.step, loopIndexes, 0);
                 }
             }
-            for (; i < loop.size + offset; i += loop.step) {
+            for (; i < loop.size; i++) {
                 storage.setByte(offset + i * loop.step, value);
             }
         }
@@ -89,25 +87,26 @@ public final class VectorByteTensorStride extends BaseByteTensorStride implement
 
     @Override
     public Tensor<Byte> fillNan_(Byte value) {
+        if(!dtype().floatingPoint()) {
+            return this;
+        }
         for (int offset : loop.offsets) {
             int bound = VS.loopBound(loop.size);
             int i = 0;
-            if (bound > offset) {
-                ByteVector fill = ByteVector.broadcast(VS, value);
-                for (; i < bound; i += VS_LEN) {
-                    int p = offset + i * loop.step;
-                    if (loop.step == 1) {
-                        ByteVector a = storage.loadByte(VS, p);
-                        VectorMask<Byte> m = a.test(VectorOperators.IS_NAN);
-                        storage.saveByte(fill, p, m);
-                    } else {
-                        ByteVector a = storage.loadByte(VS, p, loopIndexes, 0);
-                        VectorMask<Byte> m = a.test(VectorOperators.IS_NAN);
-                        storage.saveByte(fill, p, loopIndexes, 0, m);
-                    }
+            ByteVector fill = ByteVector.broadcast(VS, value);
+            for (; i < bound; i += VS_LEN) {
+                int p = offset + i * loop.step;
+                if (loop.step == 1) {
+                    ByteVector a = storage.loadByte(VS, p);
+                    VectorMask<Byte> m = a.test(VectorOperators.IS_NAN);
+                    storage.saveByte(fill, p, m);
+                } else {
+                    ByteVector a = storage.loadByte(VS, p, loopIndexes, 0);
+                    VectorMask<Byte> m = a.test(VectorOperators.IS_NAN);
+                    storage.saveByte(fill, p, loopIndexes, 0, m);
                 }
             }
-            for (; i < loop.size + offset; i += loop.step) {
+            for (; i < loop.size; i++) {
                 int p = offset + i * loop.step;
                 if (dtype().isNaN(storage.getByte(p))) {
                     storage.setByte(p, value);

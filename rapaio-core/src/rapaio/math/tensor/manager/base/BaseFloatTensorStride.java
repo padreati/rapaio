@@ -186,6 +186,9 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
 
     @Override
     public Tensor<Float> fillNan_(Float value) {
+        if(!dtype().floatingPoint()) {
+            return this;
+        }
         for (int offset : loop.offsets) {
             for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
                 if (dtype().isNaN(storage.getFloat(p))) {
@@ -275,7 +278,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     public Tensor<Float> fma_(Float a, Tensor<Float> t) {
         if (t.isScalar()) {
-            float tVal = t.getFloat(0);
+            float tVal = t.getFloat();
             return add_((float) (a * tVal));
         }
         if (!shape().equals(t.shape())) {
@@ -424,7 +427,6 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
                 throw new RuntimeException(e);
             }
         }
-
         return ret;
     }
 
@@ -434,12 +436,9 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
             throw new IllegalArgumentException("Scatter matrix can be computed only for matrices.");
         }
         Tensor<Float> scatter = engine.ofFloat().zeros(Shape.of(dim(1), dim(1)));
-        Tensor<Float> mean = engine.ofFloat().zeros(Shape.of(dim(1)));
-        for (int i = 0; i < dim(1); i++) {
-            mean.setFloat((float) take(1, i).mean(), i);
-        }
+        Tensor<Float> mean = mean(0);
         for (int k = 0; k < dim(0); k++) {
-            Tensor<Float> row = take(0, k).squeeze(0).sub(mean);
+            Tensor<Float> row = takesq(0, k).sub(mean);
             for (int i = 0; i < row.size(); i++) {
                 for (int j = 0; j < row.size(); j++) {
                     scatter.incFloat((float) (row.getFloat(i) * row.getFloat(j)), i, j);

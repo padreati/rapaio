@@ -116,11 +116,9 @@ public class BaseTensorManager extends AbstractTensorManager {
 
         @Override
         public final Tensor<Byte> random(Shape shape, Random random, Order order) {
-            byte[] buff = new byte[1];
-            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> {
-                random.nextBytes(buff);
-                return buff[0];
-            });
+            byte[] buff = new byte[shape.size()];
+            random.nextBytes(buff);
+            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> buff[i]);
         }
 
         @Override

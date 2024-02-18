@@ -41,9 +41,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
+import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.factories.ByteDenseCol;
 import rapaio.math.tensor.factories.ByteDenseRow;
 import rapaio.math.tensor.factories.ByteDenseStride;
@@ -61,6 +64,7 @@ import rapaio.math.tensor.factories.IntegerDenseCol;
 import rapaio.math.tensor.factories.IntegerDenseRow;
 import rapaio.math.tensor.factories.IntegerDenseStride;
 import rapaio.math.tensor.factories.IntegerDenseStrideView;
+import rapaio.util.function.IntIntBiFunction;
 
 public class TensorTest {
 
@@ -107,6 +111,12 @@ public class TensorTest {
             scalarTest();
             testGet();
             testSet();
+            testInc();
+            testApply();
+            testFill();
+            testFillNaN();
+            testClamp();
+            testFma();
             testPrinting();
             testFlags();
             testReshape();
@@ -120,7 +130,9 @@ public class TensorTest {
             testMathBinaryVector();
             vdotTest();
             mvTest();
-            mmTest();
+            testMm();
+            testScatter();
+            testTrace();
             splitTest();
             chunkTest();
             testRepeatStackConcat();
@@ -190,6 +202,110 @@ public class TensorTest {
                     }
                 }
             }
+        }
+
+        void testInc() {
+            var t = g.zeros(Shape.of(2, 3, 4));
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 4; k++) {
+                        t.inc(g.value(10), i, j, k);
+                    }
+                }
+            }
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 4; k++) {
+                        assertEquals(g.value(10), t.get(i, j, k));
+                    }
+                }
+            }
+        }
+
+        void testApply() {
+            Function<N, N> fun = v -> g.value(v.doubleValue() + 1);
+            IntIntBiFunction<N> bfun = (i, p) -> g.value(i);
+
+            var t = g.seq(Shape.of(2, 3, 4));
+            var r = t.apply(fun);
+            assertTensorEqualValues(t.apply_(fun), r);
+
+            t = g.seq(Shape.of(2, 3, 4));
+            r = t.apply(Order.F, fun);
+            assertTensorEqualValues(t.apply_(fun), r);
+
+            t = g.seq(Shape.of(2, 3, 4));
+            r = t.apply(bfun);
+            assertTensorEqualValues(t.apply_(bfun), r);
+
+            t = g.seq(Shape.of(2, 3, 4));
+            r = t.apply(Order.F, bfun);
+            assertTensorEqualValues(t.apply_(Order.F, bfun), r);
+        }
+
+        void testFill() {
+            var t = g.seq(Shape.of(20, 20));
+            t.fill_(g.value(1));
+            assertEquals(g.value(t.shape().size()), t.sum());
+
+            double sum = 0;
+            for (int i = 0; i < t.storage().size(); i++) {
+                sum += t.storage().getDouble(i);
+            }
+            assertEquals(t.size(), sum);
+        }
+
+        void testFillNaN() {
+            var t = g.seq(Shape.of(20, 20));
+            t.apply_((i, p) -> i % 3 == 0 ? g.value(i) : g.value(Double.NaN));
+
+            double sum = 0;
+            for (int i = 0; i < t.size(); i++) {
+                if (i % 3 == 0) {
+                    sum += i;
+                }
+            }
+            assertEquals(g.value(sum), t.nanSum());
+            t.fillNan_(g.value(0));
+            assertEquals(g.value(sum), t.sum());
+            assertEquals(g.value(sum), t.nanSum());
+        }
+
+        void testClamp() {
+            N min = g.value(0);
+            N max = g.value(1);
+
+            var t = g.random(Shape.of(171, 171));
+            assertTrue(t.stream().anyMatch(v -> v.doubleValue() >= 1));
+            var r = t.clamp(min, max);
+            assertTensorEqualValues(t.clamp_(min, max), r);
+
+            t = g.random(Shape.of(171, 171));
+            assertTrue(t.stream().anyMatch(v -> v.doubleValue() >= 1));
+            r = t.clamp(Order.F, min, max);
+            assertTensorEqualValues(t.clamp_(min, max), r);
+        }
+
+        void testFma() {
+            var t1 = g.seq(Shape.of(10, 10));
+            var t2 = g.random(Shape.of(10, 10));
+
+            var r = t1.fma(g.value(2), t2);
+            assertTensorEqualValues(t1.fma_(g.value(2), t2), r);
+
+            t1 = g.seq(Shape.of(10, 10));
+            t2 = g.random(Shape.of(10, 10));
+            r = t1.fma(g.value(2), t2, Order.F);
+            assertTensorEqualValues(t1.fma_(g.value(2), t2), r);
+
+            IllegalArgumentException e =
+                    assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10)).fma(g.value(2), g.seq(Shape.of(10, 2))));
+            assertEquals("Tensors does not have the same shape.", e.getMessage());
+
+            t1 = g.seq(Shape.of(10, 10));
+            r = t1.fma(g.value(2), g.scalar(g.value(2)));
+
+            assertTensorEqualValues(t1.add(g.value(4)), r);
         }
 
         void testPrinting() {
@@ -577,7 +693,7 @@ public class TensorTest {
             assertTrue(t.deepEquals(t.copy(Order.C)));
             assertTrue(t.deepEquals(t.copy(Order.F)));
 
-            shape = Shape.of(21, 33, 21, 21);
+            shape = Shape.of(21, 33, 21);
             t = g.random(shape);
             assertTrue(t.deepEquals(t.copy(Order.C)));
             assertTrue(t.deepEquals(t.copy(Order.F)));
@@ -770,7 +886,7 @@ public class TensorTest {
 
             var t1 = g.seq(shape);
             var c1 = t1.copy();
-            var t2 = g.random(shape);
+            var t2 = g.seq(shape).add_(g.value(1));
             var c2 = t2.copy();
 
             assertTrue(c1.add(c2).deepEquals(t1.add_(t2)));
@@ -825,13 +941,13 @@ public class TensorTest {
             var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 1)).mv(g.seq(Shape.of(2))));
             assertEquals("Operands are not valid for matrix-vector multiplication (m = Shape: [10,1], v = Shape: [2]).", e.getMessage());
 
-            var m1 = g.seq(Shape.of(200, 31));
+            var m1 = g.seq(Shape.of(100, 31));
             var v1 = g.seq(Shape.of(31));
 
             var r1 = m1.mv(v1);
-            assertEquals(Shape.of(200), r1.shape());
+            assertEquals(Shape.of(100), r1.shape());
 
-            for (int i = 0; i < 200; i++) {
+            for (int i = 0; i < 100; i++) {
                 assertEquals(v1.add(g.value(i * 31)).vdot(v1), r1.get(i));
             }
 
@@ -840,7 +956,7 @@ public class TensorTest {
             assertEquals(v1.vdot(v1), r2.get(0));
         }
 
-        void mmTest() {
+        void testMm() {
 
             var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(2, 3)).mm(g.seq(Shape.of(4, 3))));
             assertEquals("Operands are not valid for matrix-matrix multiplication (m = Shape: [2,3], v = Shape: [4,3]).", e.getMessage());
@@ -860,7 +976,7 @@ public class TensorTest {
             assertTrue(e2.deepEquals(r2.squeeze(1)));
 
             var t3 = g.random(Shape.of(31, 42));
-            var t4 = g.random(Shape.of(42, 200));
+            var t4 = g.random(Shape.of(42, 100));
 
             var r3 = t3.mm(t4, Order.C);
             var rows = t3.chunk(0, false, 1);
@@ -882,6 +998,35 @@ public class TensorTest {
                 }
             }
 
+        }
+
+        void testScatter() {
+            if (!g.dType().floatingPoint()) {
+                return;
+            }
+            var t = g.random(Shape.of(10, 100));
+            var s = t.t().scatter();
+
+            var mean = t.mean(1).reshape(Shape.of(10, 1));
+            var r = g.zeros(Shape.of(10, 10));
+
+            for (int i = 0; i < t.dim(1); i++) {
+                r.add_(t.take(1, i).sub(mean).mm(t.take(1, i).sub(mean).t()));
+            }
+            assertTensorEqualValues(s, r);
+
+            IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(2, 3, 4)).scatter());
+            assertEquals("Scatter matrix can be computed only for matrices.", e.getMessage());
+        }
+
+        void testTrace() {
+            OperationNotAvailableException e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10)).trace());
+            assertEquals("This operation is available only on tensor matrix.", e.getMessage());
+
+            e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10, 11)).trace());
+            assertEquals("This operation is available only on a square matrix.", e.getMessage());
+
+            assertEquals(g.value(0. + 6 + 12 + 18 + 24), g.seq(Shape.of(5, 5)).trace());
         }
 
         void splitTest() {
@@ -1079,7 +1224,7 @@ public class TensorTest {
                 assertEquals(vt3.get(0, i), ma.get(2, i));
             }
 
-            indices = new int[] {3,5,7,9};
+            indices = new int[] {3, 5, 7, 9};
             var vt4 = ma.take(0, indices);
             assertSame(ma.storage(), vt4.storage());
             for (int i = 0; i < indices.length; i++) {
@@ -1191,7 +1336,11 @@ public class TensorTest {
         var itT = t.ptrIterator(order);
         var itF = f.ptrIterator(order);
         while (itF.hasNext()) {
-            assertEquals(t.ptrGet(itT.nextInt()), f.ptrGet(itF.nextInt()), STR."Error at tensor: \{t}, flatten: \{f}");
+            try {
+                assertEquals(t.ptrGet(itT.nextInt()), f.ptrGet(itF.nextInt()));
+            } catch (AssertionFailedError e) {
+                throw new AssertionFailedError(STR."Error at tensor: \{t}, flatten: \{f}", e);
+            }
         }
     }
 }
