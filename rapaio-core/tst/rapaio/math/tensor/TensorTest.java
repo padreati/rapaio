@@ -612,8 +612,8 @@ public class TensorTest {
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
                 assertTrue(t1.log1p().deepEquals(t1.log1p_()));
                 t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
-                assertTrue(t1.copy(Order.C).log1p_().deepEquals(t1.log1p(Order.F)));
-                assertTrue(t1.copy(Order.F).log1p_().deepEquals(t1.log1p(Order.C)));
+                assertTrue(t1.copy(Order.C).log1p_().deepEquals(t1.log1p(Order.C)));
+                assertTrue(t1.copy(Order.F).log1p_().deepEquals(t1.log1p(Order.F)));
             } else {
                 var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).log1p_());
                 assertEquals("This operation is available only for floating point tensors.", e.getMessage());
