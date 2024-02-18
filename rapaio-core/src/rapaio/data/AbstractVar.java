@@ -39,9 +39,6 @@ import java.io.Serial;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.unique.UniqueLabel;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
-import rapaio.math.linear.dense.DVectorVar;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
@@ -123,20 +120,6 @@ public abstract class AbstractVar implements Var {
             }
             default -> throw new IllegalArgumentException("Variable type does not hav an implementation.");
         }
-    }
-
-    @Override
-    public DVector dv() {
-        return new DVectorVar<>(this);
-    }
-
-    @Override
-    public DVector dvNew() {
-        double[] values = new double[size()];
-        for (int i = 0; i < size(); i++) {
-            values[i] = getDouble(i);
-        }
-        return new DVectorDense(0, size(), values);
     }
 
     @Serial

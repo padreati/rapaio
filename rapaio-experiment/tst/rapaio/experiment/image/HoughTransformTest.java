@@ -45,7 +45,7 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
 import rapaio.printer.ImageTools;
 
 /**
@@ -78,8 +78,6 @@ public class HoughTransformTest {
                 .rhoSize.set(100)
                 .fit(20, 20, bs);
 
-        DMatrix htm = ht.getHsMatrix();
-
         List<HoughTransform.Line> lines = ht.getLines(0.001);
         assertEquals(20, lines.get(0).count());
         assertEquals(20, lines.get(1).count());
@@ -106,7 +104,7 @@ public class HoughTransformTest {
                 .fit(100, 100, bs);
 
 
-        DMatrix htm = ht.getHsMatrix();
+        Tensor<Double> htm = ht.getHsMatrix();
 
 //        ImageTools.setSpeedRenderingHints();
 //        WS.draw(gridLayer(1, 2)

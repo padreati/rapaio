@@ -35,8 +35,9 @@ import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixDenseR;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -55,7 +56,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrixDenseR.wrap(3, 3,
+        Tensor<Double> frequency = Tensors.stride(Shape.of(3, 3),
                 2, 1, 1,
                 0, 1, 1,
                 0, 1, 4);
@@ -90,7 +91,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrixDenseR.wrap(2, 2, 2, 2, 1, 2);
+        Tensor<Double> frequency = Tensors.stride(Shape.of(2, 2), 2, 2, 1, 2);
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mul(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
@@ -120,7 +121,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = DMatrixDenseR.wrap(2, 2,
+        Tensor<Double> frequency = Tensors.stride(Shape.of(2, 2),
                 2, 2, 1, 2);
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mul(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));

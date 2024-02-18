@@ -38,7 +38,9 @@ import java.util.Set;
 
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -62,8 +64,8 @@ public final class Confusion implements Printable {
     private final Var actual;
     private final Var predict;
     private final List<String> factors;
-    private final DMatrix cmFrequency;
-    private final DMatrix cmProbability;
+    private final Tensor<Double> cmFrequency;
+    private final Tensor<Double> cmProbability;
     private final boolean binary;
 
     // true positive - predicted true and actual true
@@ -90,8 +92,8 @@ public final class Confusion implements Printable {
         this.predict = predict;
         validate();
         this.factors = actual.levels();
-        this.cmFrequency = DMatrix.empty(factors.size() - 1, factors.size() - 1);
-        this.cmProbability = DMatrix.empty(factors.size() - 1, factors.size() - 1);
+        this.cmFrequency = Tensors.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
+        this.cmProbability = Tensors.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
         this.binary = actual.levels().size() == 3;
         compute();
     }
@@ -131,7 +133,7 @@ public final class Confusion implements Printable {
         for (int i = 0; i < actual.size(); i++) {
             if (!actual.isMissing(i) && !predict.isMissing(i)) {
                 completeCases++;
-                cmFrequency.inc(actual.getInt(i) - offsetActual, predict.getInt(i) - offsetPredict, 1);
+                cmFrequency.incDouble(1, actual.getInt(i) - offsetActual, predict.getInt(i) - offsetPredict);
             }
         }
         acc = cmFrequency.trace();
@@ -143,7 +145,7 @@ public final class Confusion implements Printable {
         } else {
             acc = acc / completeCases;
         }
-        cmProbability.add(cmFrequency).mul(1.0 / completeCases);
+        cmProbability.add_(cmFrequency).div_(completeCases);
 
         if (binary) {
             tp = cmFrequency.get(0, 0);
@@ -429,7 +431,7 @@ public final class Confusion implements Printable {
      *
      * @return frequency confusion matrix
      */
-    public DMatrix frequencyMatrix() {
+    public Tensor<Double> frequencyMatrix() {
         return cmFrequency;
     }
 
@@ -440,7 +442,7 @@ public final class Confusion implements Printable {
      *
      * @return probability confusion matrix
      */
-    public DMatrix probabilityMatrix() {
+    public Tensor<Double> probabilityMatrix() {
         return cmProbability;
     }
 }

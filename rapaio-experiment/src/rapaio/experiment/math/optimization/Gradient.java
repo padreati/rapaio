@@ -31,8 +31,8 @@
 
 package rapaio.experiment.math.optimization;
 
+import rapaio.experiment.math.linear.DVector;
 import rapaio.math.MathTools;
-import rapaio.math.linear.DVector;
 import rapaio.util.Pair;
 
 /**

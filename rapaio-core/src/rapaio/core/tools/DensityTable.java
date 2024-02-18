@@ -46,12 +46,13 @@ import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixDenseC;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POpt;
 import rapaio.printer.TextTable;
+import rapaio.printer.opt.POpt;
 
 /**
  * Two-way table which holds frequencies between two discrete variables.
@@ -185,12 +186,12 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     private final Index<U> rowIndex;
     private final Index<V> colIndex;
 
-    private final DMatrix values;
+    private final Tensor<Double> values;
 
     public DensityTable(Index<U> rowIndex, Index<V> colIndex) {
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
-        this.values = DMatrixDenseC.fill(rowIndex.size(), colIndex.size(), 0);
+        this.values = Tensors.zeros(Shape.of(rowIndex.size(), colIndex.size()));
     }
 
     public int rows() {
@@ -218,11 +219,11 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     public void inc(int row, int col, double weight) {
-        values.inc(row, col, weight);
+        values.incDouble(weight, row, col);
     }
 
     public void inc(U row, V col, double weight) {
-        values.inc(rowIndex.getIndex(row), colIndex.getIndex(col), weight);
+        values.incDouble(weight, rowIndex.getIndex(row), colIndex.getIndex(col));
     }
 
     public double total() {
@@ -230,20 +231,16 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     public double[] rowTotals() {
-        return values.sum(1).denseCopy().array();
+        return values.sum(1).asDoubleArray();
     }
 
     public double[] colTotals() {
-        return values.sum(0).denseCopy().array();
+        return values.sum(0).asDoubleArray();
     }
 
     private DensityTable<U, V> copy() {
         var copy = new DensityTable<>(rowIndex, colIndex);
-        for (int i = 0; i < rowIndex.size(); i++) {
-            for (int j=0; j<colIndex.size(); j++) {
-                copy.values.set(i, j, values.get(i, j));
-            }
-        }
+        values.copyTo(copy.values);
         return copy;
     }
 
@@ -251,20 +248,20 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         var norm = copy();
         double total = norm.total();
         if (total > 0) {
-            norm.values.div(total);
+            norm.values.div_(total);
         }
         return norm;
     }
 
     public DensityTable<U, V> normalizeOnRows() {
         var norm = copy();
-        norm.values.div(norm.values.sum(1), 1);
+        norm.values.bdiv_(1, norm.values.sum(1));
         return norm;
     }
 
     public DensityTable<U, V> normalizeOnCols() {
         var norm = copy();
-        norm.values.div(norm.values.sum(0), 0);
+        norm.values.bdiv_(0, norm.values.sum(0));
         return norm;
     }
 
@@ -298,7 +295,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         for (int i = 0; i < rowIndex.size(); i++) {
             double total = 0;
             for (int j = 1; j < colIndex.size(); j++) {
-                total += values.get(i,j);
+                total += values.get(i, j);
             }
             if (total >= minWeight) {
                 count++;
@@ -322,7 +319,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     private void putValues(TextTable tt) {
         for (int i = 0; i < rowIndex.size(); i++) {
             for (int j = 0; j < colIndex.size(); j++) {
-                tt.floatFlex(i + 1, j + 1, values.get(i,j));
+                tt.floatFlex(i + 1, j + 1, values.get(i, j));
             }
         }
     }
@@ -367,7 +364,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
             double ginik = 1;
             for (int j = 0; j < straightTotals.size(); j++) {
                 if (splitByTotals.get(i) > 0) {
-                    var value = splitByRows ? values.get(i,j) : values.get(j,i);
+                    var value = splitByRows ? values.get(i, j) : values.get(j, i);
                     ginik -= pow(value / splitByTotals.get(i), 2);
                 }
             }
@@ -378,12 +375,12 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     private final DensityTableFunction concreteRowAverageEntropy = new DensityTableFunction(this, true,
-            (double total, double[] totals, DMatrix values, int rowLength, int colLength) -> {
+            (double total, double[] totals, Tensor<Double> values, int rowLength, int colLength) -> {
                 double gain = 0;
                 for (int i = 0; i < rowLength; i++) {
                     for (int j = 0; j < colLength; j++) {
-                        if (values.get(i,j) > 0) {
-                            gain += -log2(values.get(i,j) / totals[i]) * values.get(i,j) / total;
+                        if (values.get(i, j) > 0) {
+                            gain += -log2(values.get(i, j) / totals[i]) * values.get(i, j) / total;
                         }
                     }
                 }
@@ -391,7 +388,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
             });
 
     private final DensityTableFunction concreteRowIntrinsicInfo = new DensityTableFunction(this, true,
-            (double total, double[] totals, DMatrix values, int rowLength, int colLength) -> {
+            (double total, double[] totals, Tensor<Double> values, int rowLength, int colLength) -> {
                 double splitInfo = 0;
                 for (double val : totals) {
                     if (val > 0) {
@@ -401,7 +398,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                 return splitInfo;
             });
     private final DensityTableFunction concreteTotalColEntropy = new DensityTableFunction(this, false,
-            (double total, double[] totals, DMatrix values, int rowLength, int colLength) -> {
+            (double total, double[] totals, Tensor<Double> values, int rowLength, int colLength) -> {
                 double entropy = 0;
                 for (double val : totals) {
                     if (val > 0) {
@@ -417,7 +414,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
             double[] totals = new double[onRow ? dt.rowIndex.size() : dt.colIndex.size()];
             for (int i = 0; i < dt.rowIndex.size(); i++) {
                 for (int j = 0; j < dt.colIndex.size(); j++) {
-                    totals[onRow ? i : j] += dt.values.get(i,j);
+                    totals[onRow ? i : j] += dt.values.get(i, j);
                 }
             }
             double total = nanSum(totals, 0, totals.length);
@@ -427,7 +424,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
 
     @FunctionalInterface
     interface Function {
-        double apply(double total, double[] totals, DMatrix values, int rowLength, int colLength);
+        double apply(double total, double[] totals, Tensor<Double> values, int rowLength, int colLength);
     }
 }
 

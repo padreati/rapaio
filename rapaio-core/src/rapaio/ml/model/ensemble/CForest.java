@@ -43,6 +43,7 @@ import java.util.stream.IntStream;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
+import rapaio.core.param.ValueParam;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
@@ -57,11 +58,12 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.preprocessing.RefSort;
 import rapaio.data.sample.RowSampler;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ClassWeights;
 import rapaio.ml.common.VarSelector;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
@@ -125,7 +127,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
     // learning artifacts
     private List<ClassifierModel<?, ?, ?>> predictors = new ArrayList<>();
     private double oobError = Double.NaN;
-    private DMatrix oobDensities;
+    private Tensor<Double> oobDensities;
     private Var oobPredictedClasses;
     private Var oobTrueClass;
 
@@ -145,7 +147,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
         return oobError;
     }
 
-    public DMatrix oobDensities() {
+    public Tensor<Double> oobDensities() {
         return oobDensities;
     }
 
@@ -225,7 +227,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
     protected boolean coreFit(Frame df, Var weights) {
 
         if (oob.get()) {
-            oobDensities = DMatrix.fill(df.rowCount(), firstTargetLevels().size() - 1, 0.0);
+            oobDensities = Tensors.zeros(Shape.of(df.rowCount(), firstTargetLevels().size() - 1));
             oobTrueClass = df.rvar(firstTargetName()).copy();
             oobPredictedClasses = VarNominal.empty(df.rowCount(), firstTargetLevels());
         }
@@ -360,15 +362,14 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
         var prediction = model.predict(oobTest);
         for (int j = 0; j < oobTest.rowCount(); j++) {
             int fitIndex = prediction.firstClasses().getInt(j);
-            oobDensities.inc(oobMap.get(j), fitIndex - 1, 1.0);
+            oobDensities.incDouble(1.0, oobMap.get(j), fitIndex - 1);
         }
         oobPredictedClasses.clearRows();
         totalOobError = 0.0;
         totalOobInstances = 0.0;
 
-        int[] indexes = oobDensities.argmax(1);
-        for (int i = 0; i < indexes.length; i++) {
-            String bestLevel = firstTargetLevels().get(indexes[i] + 1);
+        for (int i = 0; i < oobDensities.dim(0); i++) {
+            String bestLevel = firstTargetLevels().get(oobDensities.takesq(0, i).argmax() + 1);
             oobPredictedClasses.setLabel(i, bestLevel);
             if (!bestLevel.equals(oobTrueClass.getLabel(i))) {
                 totalOobError++;

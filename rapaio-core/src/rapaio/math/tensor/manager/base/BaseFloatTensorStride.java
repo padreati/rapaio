@@ -44,6 +44,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
+import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -58,7 +59,6 @@ import rapaio.math.tensor.manager.AbstractStrideTensor;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
-import rapaio.math.tensor.storage.array.FloatArrayStorage;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
@@ -447,6 +447,21 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
             }
         }
         return scatter;
+    }
+
+    @Override
+    public Float trace() {
+        if (!isMatrix()) {
+            throw new OperationNotAvailableException("This operation is available only on tensor matrix.");
+        }
+        if (dim(0) != dim(1)) {
+            throw new OperationNotAvailableException("This operation is available only on a square matrix.");
+        }
+        float trace = 0;
+        for (int i = 0; i < dim(0); i++) {
+            trace += getFloat(i, i);
+        }
+        return trace;
     }
 
     @Override
@@ -846,28 +861,6 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
                 dst.storage.setFloat(it2.nextInt(), src.storage.getFloat(p));
             }
         }
-    }
-
-    public float[] toArray() {
-        if (!isVector()) {
-            throw new IllegalArgumentException("Only one dimensional tensors can be transformed into array.");
-        }
-        float[] copy = new float[size()];
-        int pos = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                int p = offset + i * loop.step;
-                copy[pos++] = storage.getFloat(p);
-            }
-        }
-        return copy;
-    }
-
-    public float[] asArray() {
-        if (storage instanceof FloatArrayStorage as && isVector() && layout.offset() == 0 && layout.stride(0) == 1) {
-            return as.array();
-        }
-        return toArray();
     }
 
     @Override

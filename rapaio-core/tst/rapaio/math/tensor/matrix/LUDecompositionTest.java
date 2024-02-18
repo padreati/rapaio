@@ -41,11 +41,11 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.linear.DMatrix;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 
 public class LUDecompositionTest {
 
@@ -106,7 +106,7 @@ public class LUDecompositionTest {
         Tensor<N> inv = m.lu().inv();
 
         assertTrue(m.lu().solve(tmt.eye(4)).deepEquals(inv));
-        assertTrue(m.mm(inv).deepEquals(DMatrix.eye(4), 1e-14));
+        assertTrue(m.mm(inv).deepEquals(Tensors.eye(4), 1e-14));
     }
 
     <N extends Number> void testSolve(TensorManager.OfType<N> tmt) {

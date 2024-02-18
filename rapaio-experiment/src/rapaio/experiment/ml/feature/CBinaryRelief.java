@@ -37,15 +37,15 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-import rapaio.experiment.ml.feature.relief.ReliefDifferenceFunction;
-import rapaio.experiment.ml.feature.relief.ReliefDistanceFunction;
-import rapaio.experiment.ml.feature.relief.ReliefImportance;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.math.linear.DMatrix;
+import rapaio.experiment.math.linear.DMatrix;
+import rapaio.experiment.ml.feature.relief.ReliefDifferenceFunction;
+import rapaio.experiment.ml.feature.relief.ReliefDistanceFunction;
+import rapaio.experiment.ml.feature.relief.ReliefImportance;
 import rapaio.util.collection.IntArrays;
 
 /**

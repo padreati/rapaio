@@ -35,10 +35,10 @@ import java.util.function.BiFunction;
 
 import rapaio.core.tools.Grid2D;
 import rapaio.data.VarDouble;
+import rapaio.experiment.math.linear.DVector;
 import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Plot;
-import rapaio.math.linear.DVector;
 import rapaio.sys.Experimental;
 
 /**

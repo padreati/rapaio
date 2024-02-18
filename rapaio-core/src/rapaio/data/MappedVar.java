@@ -35,8 +35,6 @@ import java.io.Serial;
 import java.time.Instant;
 import java.util.List;
 
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorVar;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
@@ -240,16 +238,6 @@ public class MappedVar extends AbstractVar {
     @Override
     public void clearRows() {
         mapping.clear();
-    }
-
-    @Override
-    public DVector dv() {
-        return new DVectorVar<>(this);
-    }
-
-    @Override
-    public DVector dvNew() {
-        return new DVectorVar<>(this);
     }
 
     @Override

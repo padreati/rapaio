@@ -20,4 +20,8 @@ module rapaio.experiment {
 
     exports rapaio.experiment.asm;
 
+    exports rapaio.experiment.math.linear;
+    exports rapaio.experiment.math.linear.base;
+    exports rapaio.experiment.math.linear.dense;
+    exports rapaio.experiment.math.linear.decomposition;
 }

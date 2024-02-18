@@ -21,7 +21,8 @@
 
 package rapaio.core.correlation;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Random;
 
@@ -32,7 +33,9 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 
 /**
  * Tests for pearson correlation
@@ -104,7 +107,7 @@ public class CorrPearsonTest {
         VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext(random)).name("z");
 
 
-        DMatrix exp = DMatrix.copy(3, 3,
+        Tensor<Double> exp = Tensors.stride(Shape.of(3, 3),
                 1.0, 0.8356446312071465, 0.7997143292750087,
                 0.8356446312071465, 1.0, 0.9938073109055182,
                 0.7997143292750087, 0.9938073109055182, 1.0);
@@ -113,7 +116,7 @@ public class CorrPearsonTest {
         DistanceMatrix m = cp.matrix();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                assertEquals(exp.get(i, j), m.get(i, j), TOL, "wrong values for [i,j]=[" + i + "," + j + "]");
+                assertEquals(exp.getDouble(i, j), m.get(i, j), TOL, "wrong values for [i,j]=[" + i + "," + j + "]");
             }
         }
 

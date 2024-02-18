@@ -30,7 +30,8 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensors;
 
 public class ChiSqTest {
 
@@ -81,7 +82,7 @@ public class ChiSqTest {
     @Test
     void testIndependence() {
 
-        ChiSqIndependence test1 = ChiSqIndependence.from(DMatrix.copy(2, 2, 38, 11, 14, 51), true);
+        ChiSqIndependence test1 = ChiSqIndependence.from(Tensors.stride(Shape.of(2, 2), 38, 11, 14, 51), true);
         assertEquals("""
                 > ChiSqIndependence
                 Pearson's Chi-squared test with Yates' continuity correction
@@ -100,7 +101,7 @@ public class ChiSqTest {
                 total 52         62          114 \s
                 """, test1.toSummary());
 
-        ChiSqIndependence test2 = ChiSqIndependence.from(DMatrix.copy(2, 2, 38, 11, 14, 51), false);
+        ChiSqIndependence test2 = ChiSqIndependence.from(Tensors.stride(Shape.of(2, 2), 38, 11, 14, 51), false);
         assertEquals("""
                 > ChiSqIndependence
                 Pearson's Chi-squared test

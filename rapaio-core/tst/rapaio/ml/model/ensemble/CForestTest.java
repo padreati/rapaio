@@ -80,13 +80,11 @@ public class CForestTest {
         var predClass = model.oobPredictedClasses();
         var densities = model.oobDensities();
 
-        int[] maxRows = densities.argmax(1);
-
-        assertEquals(iris.rowCount(), densities.rows());
-        assertEquals(model.firstTargetLevels().size() - 1, densities.cols());
+        assertEquals(iris.rowCount(), densities.dim(0));
+        assertEquals(model.firstTargetLevels().size() - 1, densities.dim(1));
 
         for (int i = 0; i < iris.rowCount(); i++) {
-            assertEquals(maxRows[i], predClass.getInt(i) - 1);
+            assertEquals(densities.takesq(0, i).argmax(), predClass.getInt(i) - 1);
         }
     }
 

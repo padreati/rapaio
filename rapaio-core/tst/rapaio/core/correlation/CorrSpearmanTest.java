@@ -36,7 +36,9 @@ import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 import rapaio.printer.opt.POpt;
 
 /**
@@ -126,7 +128,7 @@ public class CorrSpearmanTest {
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext(random)).name("y");
         VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext(random)).name("z");
 
-        DMatrix exp = DMatrix.copy(3, 3,
+        Tensor<Double> exp = Tensors.stride(Shape.of(3, 3),
                 1, 0.8789432182134321, 0.8789431613694316,
                 0.8789432182134321, 1, 0.999999997876,
                 0.8789431613694316, 0.999999997876, 1);

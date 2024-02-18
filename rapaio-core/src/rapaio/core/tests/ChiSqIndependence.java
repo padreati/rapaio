@@ -38,7 +38,7 @@ import java.util.List;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Var;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -66,29 +66,29 @@ public final class ChiSqIndependence implements HTest {
         return new ChiSqIndependence(DensityTable.fromLabels(false, x, y, null), yates);
     }
 
-    public static ChiSqIndependence from(DMatrix m, boolean yates) {
+    public static ChiSqIndependence from(Tensor<Double> m, boolean yates) {
         List<String> rowLevels = new ArrayList<>();
         List<String> colLevels = new ArrayList<>();
-        for (int i = 0; i < m.rows(); i++) {
-            rowLevels.add("R" + (i + 1));
+        for (int i = 0; i < m.dim(0); i++) {
+            rowLevels.add(STR."R\{i + 1}");
         }
-        for (int i = 0; i < m.cols(); i++) {
-            colLevels.add("C" + (i + 1));
+        for (int i = 0; i < m.dim(1); i++) {
+            colLevels.add(STR."C\{i + 1}");
         }
         return from(m, rowLevels, colLevels, yates);
     }
 
-    public static ChiSqIndependence from(DMatrix m, List<String> rowLevels, List<String> colLevels, boolean yates) {
-        if (m.rows() != rowLevels.size()) {
+    public static ChiSqIndependence from(Tensor<Double> m, List<String> rowLevels, List<String> colLevels, boolean yates) {
+        if (m.dim(0) != rowLevels.size()) {
             throw new IllegalArgumentException("Row levels length is different than matrix rows.");
         }
-        if (m.cols() != colLevels.size()) {
+        if (m.dim(1) != colLevels.size()) {
             throw new IllegalArgumentException("Col levels length is different than matrix cols.");
         }
         var dt = DensityTable.empty(true, rowLevels, colLevels);
-        for (int i = 0; i < m.rows(); i++) {
-            for (int j = 0; j < m.cols(); j++) {
-                dt.inc(i, j, m.get(i, j));
+        for (int i = 0; i < m.dim(0); i++) {
+            for (int j = 0; j < m.dim(1); j++) {
+                dt.inc(i, j, m.getDouble(i, j));
             }
         }
         return from(dt, yates);

@@ -61,6 +61,7 @@ import rapaio.math.tensor.manager.vector.VectorDoubleTensorStride;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
+import rapaio.math.tensor.storage.array.DoubleArrayStorage;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
@@ -752,12 +753,12 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
         }
         if (this instanceof BaseDoubleTensorStride bs) {
             if (bs.layout().offset() == 0 && bs.layout().stride(0) == 1) {
-                return VarDouble.wrap(bs.asArray());
+                return VarDouble.wrap(bs.asDoubleArray());
             }
         }
         if (this instanceof VectorDoubleTensorStride bs) {
             if (bs.layout().offset() == 0 && bs.layout().stride(0) == 1) {
-                return VarDouble.wrap(bs.asArray());
+                return VarDouble.wrap(bs.asDoubleArray());
             }
         }
         double[] copy = new double[layout().size()];
@@ -766,6 +767,29 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
             copy[i] = it.next().doubleValue();
         }
         return VarDouble.wrap(copy);
+    }
+
+    @Override
+    public double[] toDoubleArray(Order askOrder) {
+        double[] copy = new double[size()];
+        int pos = 0;
+        var loopIt = loopIterator(askOrder);
+        int[] offsets = loopIt.computeOffsets();
+        for (int offset : offsets) {
+            for (int i = 0; i < loopIt.size(); i++) {
+                int p = offset + i * loopIt.step();
+                copy[pos++] = storage.getDouble(p);
+            }
+        }
+        return copy;
+    }
+
+    @Override
+    public double[] asDoubleArray(Order askOrder) {
+        if (storage instanceof DoubleArrayStorage as && isVector() && layout.offset() == 0 && layout.stride(0) == 1) {
+            return as.array();
+        }
+        return toDoubleArray(askOrder);
     }
 
     @Override

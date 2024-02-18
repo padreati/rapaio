@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DMatrix;
 import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
@@ -41,7 +40,7 @@ public class SvmRegressionTest {
     private static final double TOL = 1e-16;
 
     private Frame df;
-    private DMatrix xs;
+    private Tensor<Double> xs;
     private Tensor<Double> ys;
 
     @BeforeEach
@@ -49,7 +48,7 @@ public class SvmRegressionTest {
         WS.initLog(Level.SEVERE);
         df = Datasets.loadISLAdvertising();
 
-        xs = DMatrix.copy(df.mapVars("TV,Radio"));
+        xs = df.mapVars("TV,Radio").dtNew();
         ys = df.rvar("Sales").dt();
     }
 

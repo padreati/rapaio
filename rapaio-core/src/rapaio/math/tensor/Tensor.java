@@ -269,6 +269,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * Creates a new tensor view with one truncated axis, all other axes remain the same.
      *
      * @param axis    axis to be truncated
+     * @param start   start index inclusive
+     * @param end     end index exclusive
+     * @return new view tensor with truncated axis
+     */
+    default Tensor<N> narrow(int axis, int start, int end) {
+        return narrow(axis, true, start, end);
+    }
+
+    /**
+     * Creates a new tensor view with one truncated axis, all other axes remain the same.
+     *
+     * @param axis    axis to be truncated
      * @param keepDim keep dimension or not
      * @param start   start index inclusive
      * @param end     end index exclusive
@@ -425,18 +437,74 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      */
     Tensor<N> take(Order order, int axis, int... indices);
 
+    /**
+     * Takes values along a given axis from the specified indices and squeeze the given axis if a single index is requested. For example,
+     * one can take a single row from a matrix tensor and the resulting tensor will have a single dimension, aka the resulting
+     * tensor will be a vector. This operation will create a view when is possible, otherwise will create
+     * a new copy of data. The indices value can be repeated or specified in any order as long as there are integer values in range
+     * {@code 0} inclusive and {@code dim(axis)} exclusive.
+     * <p>
+     * The resulting tensor will have the dimension specified by axis of size equal with the length of indices.
+     * <p>
+     * If a new copy is required, the storage order is the default order.
+     *
+     * @param axis    specified axis
+     * @param indices indices of the taken values along the specified axis
+     * @return tensor with mapped values along the given dimension
+     * @return new squeezed tensor
+     */
     default Tensor<N> takesq(int axis, int... indices) {
         return takesq(Order.defaultOrder(), axis, indices);
     }
 
+    /**
+     * Takes values along a given axis from the specified indices and squeeze the given axis if a single index is requested. For example,
+     * one can take a single row from a matrix tensor and the resulting tensor will have a single dimension, aka the resulting
+     * tensor will be a vector. This operation will create a view when is possible, otherwise will create
+     * a new copy of data. The indices value can be repeated or specified in any order as long as there are integer values in range
+     * {@code 0} inclusive and {@code dim(axis)} exclusive.
+     * <p>
+     * The resulting tensor will have the dimension specified by axis of size equal with the length of indices.
+     * <p>
+     * If a new copy is required, the storage order is the order specified by parameter.
+     *
+     * @param order   order specified for the new tensor, if a copy of the data is required
+     * @param axis    specified axis
+     * @param indices indices of the taken values along the specified axis
+     * @return tensor with mapped values along the given dimension
+     * @return new squeezed tensor
+     */
     default Tensor<N> takesq(Order order, int axis, int... indices) {
         return take(order, axis, indices).squeeze(axis);
     }
 
+    /**
+     * Removes values along a given dimension from the specified indices. This operation is similar with {@link #take(int, int...)},
+     * with the takes indices being the ones not specified in the remove indices.
+     * <p>
+     * This operation will return a view if possible, otherwise a copy of the data. If a copy is needed, the order of the copy data
+     * is the default order.
+     *
+     * @param axis    axis along to remove values
+     * @param indices indices of the values from the specified axis to be removes.
+     * @return tensor with removes values along the given dimension
+     */
     default Tensor<N> remove(int axis, int... indices) {
         return remove(Order.defaultOrder(), axis, indices);
     }
 
+    /**
+     * Removes values along a given dimension from the specified indices. This operation is similar with {@link #take(int, int...)},
+     * with the takes indices being the ones not specified in the remove indices.
+     * <p>
+     * This operation will return a view if possible, otherwise a copy of the data. If a copy is needed, the order of the copy data
+     * is the parameter specified order.
+     *
+     * @param order   order of the copied data, if a copy is needed
+     * @param axis    axis along to remove values
+     * @param indices indices of the values from the specified axis to be removes.
+     * @return tensor with removed values along the given dimension
+     */
     default Tensor<N> remove(Order order, int axis, int... indices) {
         Set<Integer> toRemove = new HashSet<>();
         for (int i : indices) {
@@ -451,22 +519,76 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return take(order, axis, toKeep.stream().mapToInt(i -> i).toArray());
     }
 
+    /**
+     * Removes values along a given dimension from the specified indices and squeeze the axis dimension if a single index is remaining.
+     * This operation is similar with {@link #take(int, int...)},
+     * with the takes indices being the ones not specified in the remove indices.
+     * <p>
+     * This operation will return a view if possible, otherwise a copy of the data. If a copy is needed, the order of the copy data
+     * is the default order.
+     *
+     * @param axis    axis along to remove values
+     * @param indices indices of the values from the specified axis to be removes.
+     * @return squeezed tensor with removed values along the given dimension
+     */
     default Tensor<N> removesq(int axis, int... indices) {
         return removesq(Order.defaultOrder(), axis, indices);
     }
 
+    /**
+     * Removes values along a given dimension from the specified indices and squeeze the axis dimension if a single index is remaining.
+     * This operation is similar with {@link #take(int, int...)},
+     * with the takes indices being the ones not specified in the remove indices.
+     * <p>
+     * This operation will return a view if possible, otherwise a copy of the data. If a copy is needed, the order of the copy data
+     * is the parameter specified order.
+     *
+     * @param order   order of the copied data, if a copy is needed
+     * @param axis    axis along to remove values
+     * @param indices indices of the values from the specified axis to be removes.
+     * @return squeezed tensor with removed values along the given dimension
+     */
     default Tensor<N> removesq(Order order, int axis, int... indices) {
         return remove(order, axis, indices).squeeze(axis);
     }
 
-    default Tensor<N> sort(int dim, boolean asc) {
-        return sort(Order.defaultOrder(), dim, asc);
+    /**
+     * Creates a new tensor with values sorted along the dimension given as parameters. The order is ascending or descending, given
+     * as parameter.
+     * <p>
+     * The order of the new tensor is the default order.
+     *
+     * @param axis dimension along which the values will be sorted
+     * @param asc  if true the values will be sorted in ascending order, otherwise in descending order
+     * @return a new copy tensor with values sorted along the given dimension
+     */
+    default Tensor<N> sort(int axis, boolean asc) {
+        return sort(Order.defaultOrder(), axis, asc);
     }
 
+    /**
+     * Creates a new tensor with values sorted along the dimension given as parameters. The order is ascending or descending, given
+     * as parameter.
+     * <p>
+     * The order of the new tensor is the order specified as parameter.
+     *
+     * @param order order of the new tensor
+     * @param axis  dimension along which the values will be sorted
+     * @param asc   if true the values will be sorted in ascending order, otherwise in descending order
+     * @return a new copy tensor with values sorted along the given dimension
+     */
     default Tensor<N> sort(Order order, int axis, boolean asc) {
         return copy(order).sort_(axis, asc);
     }
 
+    /**
+     * Sort in place values along the dimension given as parameter. The order is ascending or descending, given
+     * as parameter.
+     *
+     * @param axis dimension along which the values will be sorted
+     * @param asc  if true the values will be sorted in ascending order, otherwise in descending order
+     * @return same tensor instance with values sorted along the given dimension
+     */
     Tensor<N> sort_(int axis, boolean asc);
 
     /**
@@ -1239,6 +1361,8 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> scatter();
 
+    N trace();
+
     default N norm() {
         return norm(dtype().castValue(2));
     }
@@ -1373,8 +1497,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> nanMin(Order order, int axis);
 
+    /**
+     * Computes the number of NaN values. For integer value types this operation returns 0.
+     *
+     * @return number of NaN values
+     */
     int nanCount();
 
+    /**
+     * Computes the number of values equal with zero.
+     *
+     * @return number of zero values
+     */
     int zeroCount();
 
     /**
@@ -1406,6 +1540,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     VarDouble dv();
 
+    default double[] toDoubleArray() {
+        return toDoubleArray(Order.defaultOrder());
+    }
+
+    double[] toDoubleArray(Order askOrder);
+
+    default double[] asDoubleArray() {
+        return asDoubleArray(Order.defaultOrder());
+    }
+
+    double[] asDoubleArray(Order askOrder);
+
     default boolean deepEquals(Object t) {
         return deepEquals(t, 1e-100);
     }
@@ -1432,7 +1578,8 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
                     return false;
                 }
             }
+            return true;
         }
-        return true;
+        return false;
     }
 }

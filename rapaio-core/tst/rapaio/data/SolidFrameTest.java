@@ -34,7 +34,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -198,7 +200,7 @@ public class SolidFrameTest {
 
     @Test
     void testMatrixBuilders() {
-        DMatrix rm = DMatrix.copy(3, 3, true,
+        Tensor<Double> rm = Tensors.stride(Shape.of(3, 3),
                 1, 2, 3,
                 2, 3, 4,
                 3, 4, 5
@@ -231,7 +233,7 @@ public class SolidFrameTest {
 
     @Test
     void testAddClearRows() {
-        DMatrix rm = DMatrix.copy(3, 3, true,
+        Tensor<Double> rm = Tensors.stride(Shape.of(3, 3),
                 1, 2, 3,
                 2, 3, 4,
                 3, 4, 5

@@ -34,8 +34,8 @@ package rapaio.experiment.math.regression;
 import rapaio.data.Frame;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
+import rapaio.experiment.math.linear.DVector;
+import rapaio.experiment.math.linear.dense.DVectorDense;
 import rapaio.ml.model.linear.BinaryLogistic;
 import rapaio.printer.opt.POpts;
 

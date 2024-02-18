@@ -45,8 +45,6 @@ import rapaio.core.SamplingTools;
 import rapaio.data.preprocessing.VarTransform;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
@@ -386,22 +384,6 @@ public interface Var extends Serializable, Printable {
      * @return a solid copy of the current variable
      */
     Var copy();
-
-    /**
-     * Wrap double values into a {@link DVectorDense} instance.
-     * If wrapping is not possible, a copy is created. Only {@link VarDouble}
-     * allows wrapping of values.
-     *
-     * @return new wrapping DVector
-     */
-    DVector dv();
-
-    /**
-     * Wrap double values into a new copy {@link DVectorDense} instance.
-     *
-     * @return new copy DVector
-     */
-    DVector dvNew();
 
     default Tensor<Double> dt() {
         return Tensors.stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));

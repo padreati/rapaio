@@ -33,7 +33,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 
@@ -46,7 +46,7 @@ public class OneClassSvmTest {
     private Var x2;
     private Frame df;
 
-    private DMatrix xs;
+    private Tensor<Double> xs;
 
     @BeforeEach
     void beforeEach() {
@@ -64,7 +64,7 @@ public class OneClassSvmTest {
             x2.addDouble(uniform.sampleNext());
         }
         df = SolidFrame.byVars(x1, x2);
-        xs = DMatrix.copy(df);
+        xs = df.dtNew();
     }
 
     @Test

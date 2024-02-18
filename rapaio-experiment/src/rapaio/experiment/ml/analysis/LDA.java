@@ -45,8 +45,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.experiment.math.linear.DMatrix;
+import rapaio.experiment.math.linear.DVector;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -209,8 +209,8 @@ public class LDA implements Printable {
         DMatrix result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(VarRange.of(inputNames));
         return rest.varCount() == 0 ?
-                SolidFrame.matrix(result, names) :
-                SolidFrame.matrix(result, names).bindVars(df.removeVars(VarRange.of(inputNames)));
+                DMatrix.matrixFrame(result, names) :
+                DMatrix.matrixFrame(result, names).bindVars(df.removeVars(VarRange.of(inputNames)));
     }
 
     private void validate(Frame df, String... targetVars) {

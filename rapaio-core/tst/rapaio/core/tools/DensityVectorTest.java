@@ -205,15 +205,18 @@ public class DensityVectorTest {
                 VarDouble.copy(-2, 0, 2));
 
         dv2.normalize();
-        assertEquals(-2, dv2.get(1), TOL);
+        assertEquals(-0.5, dv2.get(1), TOL);
         assertEquals(0, dv2.get(2), TOL);
-        assertEquals(2, dv2.get(3), TOL);
+        assertEquals(0.5, dv2.get(3), TOL);
 
+        dv2 = DensityVector.fromLevelWeights(true,
+                VarNominal.copy("a", "b", "c"),
+                VarDouble.copy(-2, 0, 2));
         dv2.normalize(2);
 
-        assertEquals(-1. / 4, dv2.get(1), TOL);
+        assertEquals(-1/Math.sqrt(2), dv2.get(1), TOL);
         assertEquals(0, dv2.get(2), TOL);
-        assertEquals(1. / 4, dv2.get(3), TOL);
+        assertEquals(1/Math.sqrt(2), dv2.get(3), TOL);
     }
 
     @Test

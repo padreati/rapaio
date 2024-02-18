@@ -39,10 +39,6 @@ module rapaio.core {
     exports rapaio.io;
 
     exports rapaio.math.optimization.functions;
-    exports rapaio.math.linear;
-    exports rapaio.math.linear.base;
-    exports rapaio.math.linear.dense;
-    exports rapaio.math.linear.decomposition;
     exports rapaio.math.optimization;
     exports rapaio.math.optimization.linesearch;
     exports rapaio.math.optimization.scalar;

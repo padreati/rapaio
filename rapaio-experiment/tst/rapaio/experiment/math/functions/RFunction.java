@@ -31,7 +31,7 @@
 
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.DVector;
+import rapaio.experiment.math.linear.DVector;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.

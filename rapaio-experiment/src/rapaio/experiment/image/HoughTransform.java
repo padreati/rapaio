@@ -37,7 +37,8 @@ import static java.lang.Math.floor;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MathTools.HALF_PI;
+import static rapaio.math.MathTools.PI;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -47,11 +48,13 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import rapaio.core.stat.Quantiles;
-import rapaio.data.VarDouble;
-import rapaio.math.linear.DMatrix;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.core.stat.Quantiles;
+import rapaio.data.VarDouble;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 import rapaio.sys.Experimental;
 import rapaio.util.DoubleComparators;
 import rapaio.util.function.Double2DoubleFunction;
@@ -82,19 +85,19 @@ public class HoughTransform extends ParamSet<HoughTransform> {
     private double width;
     private double height;
 
-    private DMatrix hsMatrix;
+    private Tensor<Double> hsMatrix;
 
-    public DMatrix getHsMatrix() {
+    public Tensor<Double> getHsMatrix() {
         return hsMatrix;
     }
 
     public List<Line> getLines(double percentage) {
         List<Line> lines = new ArrayList<>();
-        double[] values = hsMatrix.valueStream().toArray();
+        double[] values = hsMatrix.toDoubleArray();
         double qvalue = Quantiles.of(VarDouble.wrap(values), 1 - percentage).values()[0];
         double d = sqrt(width * width + height * height);
-        for (int i = 0; i < hsMatrix.rows(); i++) {
-            for (int j = 0; j < hsMatrix.cols(); j++) {
+        for (int i = 0; i < hsMatrix.dim(0); i++) {
+            for (int j = 0; j < hsMatrix.dim(1); j++) {
                 double count = hsMatrix.get(i, j);
                 if (count > qvalue) {
                     double theta = j * PI / thetaSize.get();
@@ -118,12 +121,12 @@ public class HoughTransform extends ParamSet<HoughTransform> {
      * @param data   bit set data of the binary image as a continuous array ordered by rows.
      */
     public HoughTransform fit(int width, int height, BitSet data) {
-        hsMatrix = DMatrix.fill(rhoSize.get(), thetaSize.get(), 0);
+        hsMatrix = Tensors.zeros(Shape.of(rhoSize.get(), thetaSize.get()));
         populateHoughSpace(hsMatrix, width, height, data);
         return this;
     }
 
-    private void populateHoughSpace(DMatrix hs, int width, int height, BitSet data) {
+    private void populateHoughSpace(Tensor<Double> hs, int width, int height, BitSet data) {
         this.width = width;
         this.height = height;
 
@@ -137,7 +140,7 @@ public class HoughTransform extends ParamSet<HoughTransform> {
                     for (int k = 0; k < thetaSize.get(); k++) {
                         double theta = k * PI / thetaSize.get() - HALF_PI;
                         double rho = (j - x_half) * cos(theta) + (i - y_half) * sin(theta);
-                        hs.inc((int) floor((rho + d) * rhoSize.get() / (2 * d)), k, 1);
+                        hs.incDouble(1, (int) floor((rho + d) * rhoSize.get() / (2 * d)), k);
                     }
                 }
             }

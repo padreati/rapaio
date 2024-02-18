@@ -52,8 +52,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import rapaio.core.distributions.Distribution;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
@@ -594,17 +592,6 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         copy.data = Arrays.copyOf(data, rows);
         copy.rows = rows;
         return copy;
-    }
-
-    @Override
-    public DVector dv() {
-        return new DVectorDense(0, rows, data);
-    }
-
-    @Override
-    public DVector dvNew() {
-        double[] values = Arrays.copyOf(data, size());
-        return new DVectorDense(0, size(), values);
     }
 
     @Override

@@ -40,14 +40,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import rapaio.core.param.ListParam;
+import rapaio.core.param.ValueParam;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.core.param.ListParam;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
@@ -113,10 +113,8 @@ public class NaiveBayes extends ClassifierModel<NaiveBayes, ClassifierResult, Ru
 
     @Override
     public String fullName() {
-        return name() + "{prior=" + prior.get().fittedName() + ","
-                + "estimators=["
-                + estimators.get().stream().map(Estimator::fittedName).collect(Collectors.joining(","))
-                + "]}";
+        String estimatorLine = estimators.get().stream().map(Estimator::fittedName).collect(Collectors.joining(","));
+        return STR."\{name()}{prior=\{prior.get().fittedName()},estimators=[\{estimatorLine}]}";
     }
 
     @Override

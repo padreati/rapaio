@@ -33,7 +33,6 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.io.Serializable;
 
-import rapaio.math.linear.DVector;
 import rapaio.math.tensor.Tensor;
 
 public class SvmModel implements Serializable {

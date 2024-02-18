@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import rapaio.math.linear.DMatrix;
 import rapaio.math.tensor.Tensor;
 
 /**
@@ -115,20 +114,6 @@ public class SolidFrame extends AbstractFrame {
         List<Var> vars = new ArrayList<>();
         colNames.forEach(n -> vars.add(VarDouble.fill(rows, 0).name(n)));
         return SolidFrame.byVars(rows, vars);
-    }
-
-    public static Frame matrix(DMatrix m, String... varNames) {
-        return matrix(m, Arrays.asList(varNames));
-    }
-
-    public static Frame matrix(DMatrix m, List<String> varNames) {
-        Frame df = matrix(m.rows(), varNames);
-        for (int i = 0; i < m.rows(); i++) {
-            for (int j = 0; j < m.cols(); j++) {
-                df.setDouble(i, j, m.get(i, j));
-            }
-        }
-        return df;
     }
 
     public static Frame matrix(Tensor<Double> m, String... varNames) {
