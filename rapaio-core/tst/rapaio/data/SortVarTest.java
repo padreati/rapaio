@@ -35,8 +35,8 @@ import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.data.preprocessing.VarRefSort;
-import rapaio.data.preprocessing.VarSort;
+import rapaio.data.transform.VarRefSort;
+import rapaio.data.transform.VarSort;
 import rapaio.io.Csv;
 
 /**

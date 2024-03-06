@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
-import rapaio.data.preprocessing.VarToDoubleTransform;
+import rapaio.data.transform.VarToDoubleTransform;
 import rapaio.datasets.Datasets;
 
 /**

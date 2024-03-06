@@ -102,7 +102,7 @@ public class OneClassSvm extends ClusteringModel<OneClassSvm, ClusteringResult<O
 
     @Override
     protected OneClassSvm coreFit(Frame df, Var weights) {
-        Tensor<Double> x = df.mapVars(inputNames).dtNew();
+        Tensor<Double> x = df.mapVars(inputNames).tensor();
         ProblemInfo pi = ProblemInfo.from(x, VarDouble.empty(df.rowCount()), this);
         pi.checkValidProblem();
         model = Svm.svm_train(pi.computeProblem(), pi.computeParameters());
@@ -114,7 +114,7 @@ public class OneClassSvm extends ClusteringModel<OneClassSvm, ClusteringResult<O
 
     @Override
     protected ClusteringResult<OneClassSvm> corePredict(Frame df, boolean withScores) {
-        Tensor<Double> xs = df.mapVars(inputNames).dtNew();
+        Tensor<Double> xs = df.mapVars(inputNames).tensor();
 
         VarInt assign = VarInt.empty(df.rowCount()).name("clusters");
         VarDouble scores = VarDouble.empty(df.rowCount()).name("scores");

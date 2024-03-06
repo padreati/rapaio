@@ -36,9 +36,9 @@ import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
 import static rapaio.data.VarInt.wrap;
-import static rapaio.graphics.opt.GOptions.color;
-import static rapaio.graphics.opt.GOptions.fill;
-import static rapaio.graphics.opt.GOptions.pch;
+import static rapaio.graphics.opt.GOpts.color;
+import static rapaio.graphics.opt.GOpts.fill;
+import static rapaio.graphics.opt.GOpts.pch;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -56,8 +56,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.stream.VSpot;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.PchPalette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -73,29 +73,29 @@ public class BoxPlot extends Artist {
     private final Var[] vars;
     private final String[] names;
 
-    public BoxPlot(Var x, Var factor, GOption<?>... opts) {
+    public BoxPlot(Var x, Var factor, GOpt<?>... opts) {
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.getLabel(s.row()), mapping(VSpot::getDouble, toList())));
         names = factor.levels().stream().filter(map::containsKey).toArray(String[]::new);
         vars = Arrays.stream(names).map(map::get).map(VarDouble::copy).toArray(Var[]::new);
-        this.options = new GOptions().apply(opts);
+        this.options = new GOpts().apply(opts);
     }
 
-    public BoxPlot(Var x, GOption<?>... opts) {
+    public BoxPlot(Var x, GOpt<?>... opts) {
         this(new Var[]{x}, opts);
     }
 
-    public BoxPlot(Var[] vars, GOption<?>... opts) {
+    public BoxPlot(Var[] vars, GOpt<?>... opts) {
         this.vars = Arrays.copyOf(vars, vars.length);
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
-        this.options = new GOptions().apply(pch(wrap(0, 3)), color(0), fill(new Color(240, 240, 240))).apply(opts);
+        this.options = new GOpts().apply(pch(wrap(0, 3)), color(0), fill(new Color(240, 240, 240))).apply(opts);
     }
 
-    public BoxPlot(Frame df, GOption<?>... opts) {
+    public BoxPlot(Frame df, GOpt<?>... opts) {
         this.vars = df.varStream().filter(var -> var.stream().complete().findAny().isPresent()).toArray(Var[]::new);
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
-        this.options = new GOptions().apply(pch(wrap(0, 3)), color(0), fill(new Color(240, 240, 240))).apply(opts);
+        this.options = new GOpts().apply(pch(wrap(0, 3)), color(0), fill(new Color(240, 240, 240))).apply(opts);
     }
 
     @Override

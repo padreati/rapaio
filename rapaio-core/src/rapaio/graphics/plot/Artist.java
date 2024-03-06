@@ -34,14 +34,14 @@ package rapaio.graphics.plot;
 import java.awt.Graphics2D;
 import java.io.Serializable;
 
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpts;
 
 /**
  * @author Aurelian Tutuianu
  */
 public abstract class Artist implements Serializable {
 
-    protected GOptions options;
+    protected GOpts options;
     protected Plot plot;
 
     public void bind(Plot plot) {
@@ -59,7 +59,7 @@ public abstract class Artist implements Serializable {
 
     public abstract Axis.Type yAxisType();
 
-    public GOptions getOptions() {
+    public GOpts getOptions() {
         return options;
     }
 

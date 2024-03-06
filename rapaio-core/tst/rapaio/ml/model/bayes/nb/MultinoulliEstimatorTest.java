@@ -33,7 +33,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.data.preprocessing.OneHotEncoding;
+import rapaio.data.transform.OneHotEncoding;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/2/20.

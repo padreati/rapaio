@@ -13,13 +13,7 @@ module rapaio.experiment {
     requires javafx.graphics;
     requires javafx.swing;
 
-    requires org.objectweb.asm;
-    requires org.objectweb.asm.tree;
-    requires org.objectweb.asm.tree.analysis;
-    requires org.objectweb.asm.util;
-
-    exports rapaio.experiment.asm;
-
+    exports rapaio.experiment.fx;
     exports rapaio.experiment.math.linear;
     exports rapaio.experiment.math.linear.base;
     exports rapaio.experiment.math.linear.dense;

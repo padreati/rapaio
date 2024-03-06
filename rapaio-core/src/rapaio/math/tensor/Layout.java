@@ -31,6 +31,9 @@
 
 package rapaio.math.tensor;
 
+import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.util.NotImplementedException;
+
 /**
  * A layout describes the dimensionality of a tensor and its related properties.
  * The interface {@link Layout} does not propose any constraints regarding how the
@@ -130,18 +133,23 @@ public interface Layout {
     Layout squeeze();
 
     /**
-     * Removes the given dimension if is equal with 1.
+     * Removes all the given dimensions if they have size 1. If any of those dimensions does not have size 1,
+     * the dimension is left as it is. It follows that if none of the specified dimensions have size equal with one the
+     * layout will remain the same.
      *
      * @return same layout if dimension is not unitary, otherwise a new layout with all unitary dimensions removed
      */
-    Layout squeeze(int axis);
+    Layout squeeze(int... axes);
 
     /**
-     * Introduce a new dimension of length 1 on position given by axis.
-     * @param axis index of the new axis
+     * Introduce a new dimension of length 1 on positions given by axes.
+     *
+     * @param axes indices of the new axis
      * @return layout with new dimension
      */
-    Layout unsqueeze(int axis);
+    Layout stretch(int... axes);
+
+    Layout expand(int axis, int size);
 
     /**
      * Revert all axes of the layout
@@ -163,4 +171,28 @@ public interface Layout {
     Layout narrowAll(boolean keepDim, int[] starts, int[] ends);
 
     Layout permute(int[] dims);
+
+    static Order storageFastTandemOrder(Layout firstLayout, Layout secondLayout) {
+        if (firstLayout instanceof StrideLayout firstStride) {
+            if (secondLayout instanceof StrideLayout secondStride) {
+                // find first an agreement
+                if (firstStride.isCOrdered() && secondStride.isCOrdered()) {
+                    return Order.C;
+                }
+                if (firstLayout.isFOrdered() && secondLayout.isFOrdered()) {
+                    return Order.F;
+                }
+                // if no agreement, choose first if C/F
+                if (firstLayout.isCOrdered()) {
+                    return Order.C;
+                }
+                if (firstLayout.isFOrdered()) {
+                    return Order.F;
+                }
+                // if nothing, choose default
+                return Order.defaultOrder();
+            }
+        }
+        throw new NotImplementedException("This feature is not implemented yet for other layout types.");
+    }
 }

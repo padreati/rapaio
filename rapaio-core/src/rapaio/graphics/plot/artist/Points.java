@@ -33,8 +33,8 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.PchPalette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -56,10 +56,10 @@ public class Points extends Artist {
     private final Var x;
     private final Var y;
 
-    public Points(Var x, Var y, GOption<?>... opts) {
+    public Points(Var x, Var y, GOpt<?>... opts) {
         this.x = x;
         this.y = y;
-        this.options = new GOptions().apply(opts);
+        this.options = new GOpts().apply(opts);
     }
 
     @Override

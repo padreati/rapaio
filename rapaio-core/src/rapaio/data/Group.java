@@ -50,7 +50,7 @@ import rapaio.data.group.function.GroupFunNUnique;
 import rapaio.data.group.function.GroupFunSkewness;
 import rapaio.data.group.function.GroupFunStd;
 import rapaio.data.group.function.GroupFunSum;
-import rapaio.data.preprocessing.VarRefSort;
+import rapaio.data.transform.VarRefSort;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;

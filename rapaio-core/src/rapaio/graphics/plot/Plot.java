@@ -47,9 +47,9 @@ import rapaio.core.tools.Grid2D;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.preprocessing.VarSort;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.data.transform.VarSort;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.artist.ABLine;
 import rapaio.graphics.plot.artist.BarPlot;
@@ -95,7 +95,7 @@ public class Plot implements Figure {
     protected static final int TITLE_PAD = 40;
     protected static final int MINIMUM_PAD = 10;
 
-    final GOptions options = new GOptions();
+    final GOpts options = new GOpts();
 
     Rectangle viewport;
 
@@ -114,11 +114,11 @@ public class Plot implements Figure {
     private final Axis xAxis;
     private final Axis yAxis;
 
-    public Plot(GOption<?>... opts) {
+    public Plot(GOpt<?>... opts) {
         this(new Axis(), new Axis(), opts);
     }
 
-    public Plot(Axis xAxis, Axis yAxis, GOption<?>... opts) {
+    public Plot(Axis xAxis, Axis yAxis, GOpt<?>... opts) {
         bottomThick(true);
         bottomMarkers(true);
         leftThick(true);
@@ -363,155 +363,155 @@ public class Plot implements Figure {
 
     // COMPONENTS
 
-    public Plot hist(Var v, GOption<?>... opts) {
+    public Plot hist(Var v, GOpt<?>... opts) {
         add(new Histogram(v, opts));
         return this;
     }
 
-    public Plot hist(Var v, double minValue, double maxValue, GOption<?>... opts) {
+    public Plot hist(Var v, double minValue, double maxValue, GOpt<?>... opts) {
         add(new Histogram(v, minValue, maxValue, opts));
         return this;
     }
 
-    public Plot hist2d(Var x, Var y, GOption<?>... opts) {
+    public Plot hist2d(Var x, Var y, GOpt<?>... opts) {
         add(new Histogram2D(x, y, opts));
         return this;
     }
 
-    public Plot points(Var x, Var y, GOption<?>... opts) {
+    public Plot points(Var x, Var y, GOpt<?>... opts) {
         add(new Points(x, y, opts));
         return this;
     }
 
-    public Plot lines(Var y, GOption<?>... opts) {
+    public Plot lines(Var y, GOpt<?>... opts) {
         add(new Lines(y, opts));
         return this;
     }
 
-    public Plot lines(Var x, Var y, GOption<?>... opts) {
+    public Plot lines(Var x, Var y, GOpt<?>... opts) {
         add(new Lines(x, y, opts));
         return this;
     }
 
-    public Plot hLine(double a, GOption<?>... opts) {
+    public Plot hLine(double a, GOpt<?>... opts) {
         add(new ABLine(true, a, opts));
         return this;
     }
 
-    public Plot vLine(double a, GOption<?>... opts) {
+    public Plot vLine(double a, GOpt<?>... opts) {
         add(new ABLine(false, a, opts));
         return this;
     }
 
-    public Plot abLine(double a, double b, GOption<?>... opts) {
+    public Plot abLine(double a, double b, GOpt<?>... opts) {
         add(new ABLine(a, b, opts));
         return this;
     }
 
-    public Plot funLine(Double2DoubleFunction f, GOption<?>... opts) {
+    public Plot funLine(Double2DoubleFunction f, GOpt<?>... opts) {
         add(new FunLine(f, opts));
         return this;
     }
 
-    public Plot polyline(boolean closed, Var x, Var y, GOption<?>... opts) {
+    public Plot polyline(boolean closed, Var x, Var y, GOpt<?>... opts) {
         add(new PolyLine(closed, x, y, opts));
         return this;
     }
 
-    public Plot polyfill(Var x, Var y, GOption<?>... opts) {
+    public Plot polyfill(Var x, Var y, GOpt<?>... opts) {
         add(new PolyFill(x, y, opts));
         return this;
     }
 
-    public Plot polyfill(PolyPath polyPath, GOption<?>... opts) {
+    public Plot polyfill(PolyPath polyPath, GOpt<?>... opts) {
         add(new PolyFill(polyPath, opts));
         return this;
     }
 
-    public Plot densityLine(Var var, GOption<?>... opts) {
+    public Plot densityLine(Var var, GOpt<?>... opts) {
         add(new DensityLine(var, opts));
         return this;
     }
 
-    public Plot densityLine(Var var, double bandwidth, GOption<?>... opts) {
+    public Plot densityLine(Var var, double bandwidth, GOpt<?>... opts) {
         add(new DensityLine(var, bandwidth, opts));
         return this;
     }
 
-    public Plot densityLine(Var var, KFunc kfunc, GOption<?>... opts) {
+    public Plot densityLine(Var var, KFunc kfunc, GOpt<?>... opts) {
         add(new DensityLine(var, kfunc, opts));
         return this;
     }
 
-    public Plot densityLine(Var var, KFunc kfunc, double bandwidth, GOption<?>... opts) {
+    public Plot densityLine(Var var, KFunc kfunc, double bandwidth, GOpt<?>... opts) {
         add(new DensityLine(var, kfunc, bandwidth, opts));
         return this;
     }
 
-    public Plot rocCurve(ROC roc, GOption<?>... opts) {
+    public Plot rocCurve(ROC roc, GOpt<?>... opts) {
         add(new ROCCurve(roc, opts));
         return this;
     }
 
-    public Plot legend(double x, double y, GOption<?>... opts) {
+    public Plot legend(double x, double y, GOpt<?>... opts) {
         add(new Legend(x, y, opts));
         return this;
     }
 
-    public Plot legend(int place, GOption<?>... opts) {
+    public Plot legend(int place, GOpt<?>... opts) {
         add(new Legend(place, opts));
         return this;
     }
 
-    public Plot segmentLine(double x1, double y1, double x2, double y2, GOption<?>... opts) {
+    public Plot segmentLine(double x1, double y1, double x2, double y2, GOpt<?>... opts) {
         return segment(Segment.Type.LINE, x1, y1, x2, y2, opts);
     }
 
-    public Plot segmentArrow(double x1, double y1, double x2, double y2, GOption<?>... opts) {
+    public Plot segmentArrow(double x1, double y1, double x2, double y2, GOpt<?>... opts) {
         return segment(Segment.Type.ARROW, x1, y1, x2, y2, opts);
     }
 
-    public Plot segment(Segment.Type type, double x1, double y1, double x2, double y2, GOption<?>... opts) {
+    public Plot segment(Segment.Type type, double x1, double y1, double x2, double y2, GOpt<?>... opts) {
         add(new Segment(type, x1, y1, x2, y2, opts));
         return this;
     }
 
-    public Plot boxplot(Var x, Var factor, GOption<?>... opts) {
+    public Plot boxplot(Var x, Var factor, GOpt<?>... opts) {
         add(new BoxPlot(x, factor, opts));
         return this;
     }
 
-    public Plot boxplot(Var x, GOption<?>... opts) {
+    public Plot boxplot(Var x, GOpt<?>... opts) {
         add(new BoxPlot(x, opts));
         return this;
     }
 
-    public Plot boxplot(Var[] vars, GOption<?>... opts) {
+    public Plot boxplot(Var[] vars, GOpt<?>... opts) {
         add(new BoxPlot(vars, opts));
         return this;
     }
 
-    public Plot boxplot(Frame df, GOption<?>... opts) {
+    public Plot boxplot(Frame df, GOpt<?>... opts) {
         add(new BoxPlot(df, opts));
         return this;
     }
 
-    public Plot barplot(Var category, GOption<?>... opts) {
+    public Plot barplot(Var category, GOpt<?>... opts) {
         add(new BarPlot(category, null, null, opts));
         return this;
     }
 
-    public Plot barplot(Var category, Var cond, GOption<?>... opts) {
+    public Plot barplot(Var category, Var cond, GOpt<?>... opts) {
         add(new BarPlot(category, cond, null, opts));
         return this;
     }
 
-    public Plot barplot(Var category, Var cond, Var numeric, GOption<?>... opts) {
+    public Plot barplot(Var category, Var cond, Var numeric, GOpt<?>... opts) {
         add(new BarPlot(category, cond, numeric, opts));
         return this;
     }
 
-    public Plot qqplot(Var points, Distribution distribution, GOption<?>... opts) {
+    public Plot qqplot(Var points, Distribution distribution, GOpt<?>... opts) {
         Var x = VarSort.ascending().fapply(points);
         Var y = VarDouble.empty(x.size());
         for (int i = 0; i < y.size(); i++) {
@@ -526,37 +526,37 @@ public class Plot implements Figure {
     }
 
 
-    public Plot isoCurves(Grid2D grid, double[] levels, GOption<?>... opts) {
+    public Plot isoCurves(Grid2D grid, double[] levels, GOpt<?>... opts) {
         add(new IsoCurves(grid, true, true, levels, opts));
         return this;
     }
 
-    public Plot isoLines(Grid2D grid, double[] levels, GOption<?>... opts) {
+    public Plot isoLines(Grid2D grid, double[] levels, GOpt<?>... opts) {
         add(new IsoCurves(grid, true, false, levels, opts));
         return this;
     }
 
-    public Plot isoBands(Grid2D grid, double[] levels, GOption<?>... opts) {
+    public Plot isoBands(Grid2D grid, double[] levels, GOpt<?>... opts) {
         add(new IsoCurves(grid, false, true, levels, opts));
         return this;
     }
 
-    public Plot image(BufferedImage image, GOption<?>... opts) {
+    public Plot image(BufferedImage image, GOpt<?>... opts) {
         add(new ImageArtist(image, opts));
         return this;
     }
 
-    public Plot text(double x, double y, String text, GOption<?>... opts) {
+    public Plot text(double x, double y, String text, GOpt<?>... opts) {
         add(new Text(x, y, text, opts));
         return this;
     }
 
-    public Plot matrix(Tensor<?> m, GOption<?>... opts) {
+    public Plot matrix(Tensor<?> m, GOpt<?>... opts) {
         add(new Matrix(m, opts));
         return this;
     }
 
-    public Plot silhouette(ClusterSilhouette silhouette, GOption<?>... opts) {
+    public Plot silhouette(ClusterSilhouette silhouette, GOpt<?>... opts) {
         add(new Silhouette(silhouette, opts));
         return this;
     }

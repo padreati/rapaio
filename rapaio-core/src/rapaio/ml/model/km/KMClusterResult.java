@@ -63,7 +63,7 @@ public class KMClusterResult extends ClusteringResult<KMCluster> {
         super(model, df, assignment);
 
         Tensor<Double> c = model.getCentroidsMatrix();
-        Tensor<Double> m = df.dtNew();
+        Tensor<Double> m = df.tensor();
         int ccount = c.dim(0);
 
         Var id = VarInt.seq(1, ccount).name("ID");

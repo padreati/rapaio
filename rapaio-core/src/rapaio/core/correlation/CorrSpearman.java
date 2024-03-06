@@ -42,7 +42,7 @@ import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.preprocessing.VarRefSort;
+import rapaio.data.transform.VarRefSort;
 
 /**
  * Spearman's rank correlation coefficient.

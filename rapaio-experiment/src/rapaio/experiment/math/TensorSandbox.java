@@ -33,31 +33,21 @@ package rapaio.experiment.math;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Random;
 
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensors;
 
 public class TensorSandbox {
+
     public static void main(String[] args) throws IOException, URISyntaxException {
+        var a = Tensors.stride(Shape.of(2, 2), 1., 1, 0, 1);
+        var b = Tensors.stride(Shape.of(1, 2), -2, 2);
 
-        int n = 10;
-        int m = 100;
+        b.mm(a).printString();
 
-        var random = new Random(42);
-        var t = Tensors.random(Shape.of(n, m), random);
-        System.out.println(t);
-
-
-        System.out.println(t.t().scatter());
-
-        var mean = t.mean(1).reshape(Shape.of(10, 1));
-        var r = Tensors.zeros(Shape.of(n, n));
-
-        for (int i = 0; i < t.dim(1); i++) {
-            r.add_(t.take(1, i).sub(mean).mm(t.take(1, i).sub(mean).t()));
-        }
-        System.out.println(r);
-
+        b.mm(a).mm(Tensors.stride(0, 0).stretch(1)).printString();
+        b.mm(a).mm(Tensors.stride(0, 1).stretch(1)).printString();
+        b.mm(a).mm(Tensors.stride(1, 0).stretch(1)).printString();
+        b.mm(a).mm(Tensors.stride(1, 1).stretch(1)).printString();
     }
 }

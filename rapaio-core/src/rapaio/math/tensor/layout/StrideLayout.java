@@ -85,9 +85,11 @@ public interface StrideLayout extends Layout {
 
     StrideLayout squeeze();
 
-    StrideLayout squeeze(int axis);
+    StrideLayout squeeze(int... axes);
 
-    StrideLayout unsqueeze(int axis);
+    StrideLayout stretch(int... axes);
+
+    StrideLayout expand(int axis, int size);
 
     StrideLayout revert();
 

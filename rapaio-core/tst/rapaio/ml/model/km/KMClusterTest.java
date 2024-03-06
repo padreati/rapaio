@@ -166,7 +166,7 @@ public class KMClusterTest {
         var kmeansC = kmeans.getCentroidsMatrix();
         var kmediansC = kmedians.getCentroidsMatrix();
 
-        Tensor<Double> instances = df.dtNew();
+        Tensor<Double> instances = df.tensor();
 
         BiFunction<Tensor<Double>, Tensor<Double>, Double> dist = (u, v) -> u.copy().sub_(v).apply_(x -> x * x).sum();
 

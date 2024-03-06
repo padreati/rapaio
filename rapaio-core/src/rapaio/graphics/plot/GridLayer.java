@@ -40,8 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rapaio.printer.Figure;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.Palette;
 import rapaio.util.collection.DoubleArrays;
 
@@ -50,7 +50,7 @@ import rapaio.util.collection.DoubleArrays;
  */
 public class GridLayer implements Figure {
 
-    public static GridLayer of(int rows, int cols, GOption<?>... options) {
+    public static GridLayer of(int rows, int cols, GOpt<?>... options) {
         return new GridLayer(rows, cols, options);
     }
 
@@ -63,7 +63,7 @@ public class GridLayer implements Figure {
     protected static final int TITLE_PAD = 40;
     protected static final int MINIMUM_PAD = 20;
 
-    protected final GOptions options;
+    protected final GOpts options;
 
     protected Rectangle viewport;
     protected String title;
@@ -76,14 +76,14 @@ public class GridLayer implements Figure {
 
     protected int sizeTitle;
 
-    public GridLayer(int rows, int cols, GOption<?>... options) {
+    public GridLayer(int rows, int cols, GOpt<?>... options) {
         this.rows = rows;
         this.cols = cols;
         this.assign = new G[rows][cols];
-        this.options = new GOptions().apply(options);
+        this.options = new GOpts().apply(options);
     }
 
-    public GOptions getOptions() {
+    public GOpts getOptions() {
         return options;
     }
 

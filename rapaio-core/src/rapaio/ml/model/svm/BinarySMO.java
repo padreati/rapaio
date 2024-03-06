@@ -318,7 +318,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                 throw new IllegalArgumentException("After filtering other classes, there were no other rows remained.");
             }
             dfTrain = df.mapRows(map);
-            this.weights = w.mapRows(map).dtNew();
+            this.weights = w.mapRows(map).tensor();
             valid = true;
         } else if (!"?".equals(firstLabel.get())) {
             // one vs all type of classification
@@ -326,20 +326,20 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
             label2 = "~" + firstLabel.get();
             oneVsAll = true;
             dfTrain = df;
-            this.weights = w.dtNew();
+            this.weights = w.tensor();
             valid = true;
         } else if (targetLevels.size() == 2) {
             label1 = targetLevels.get(0);
             label2 = targetLevels.get(1);
             oneVsAll = false;
             dfTrain = df;
-            this.weights = w.dtNew();
+            this.weights = w.tensor();
             valid = true;
         }
 
         if (valid) {
 
-            this.train = dfTrain.mapVars(inputNames).dtNew();
+            this.train = dfTrain.mapVars(inputNames).tensor();
 
             y = new double[train.dim(0)];
             for (int i = 0; i < train.dim(0); i++) {
@@ -441,7 +441,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
-            double pred = predict(df.mapVars(inputNames).dtNew(), i);
+            double pred = predict(df.mapVars(inputNames).tensor(), i);
 
             cr.firstClasses().setLabel(i, pred < 0 ? label1 : label2);
             cr.firstDensity().setDouble(i, label1, -pred);

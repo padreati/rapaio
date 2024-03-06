@@ -23,10 +23,10 @@ package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.densityLine;
 import static rapaio.graphics.Plotter.gridLayer;
-import static rapaio.graphics.opt.GOptions.alpha;
-import static rapaio.graphics.opt.GOptions.color;
-import static rapaio.graphics.opt.GOptions.fill;
-import static rapaio.graphics.opt.GOptions.lwd;
+import static rapaio.graphics.opt.GOpts.alpha;
+import static rapaio.graphics.opt.GOpts.color;
+import static rapaio.graphics.opt.GOpts.fill;
+import static rapaio.graphics.opt.GOpts.lwd;
 
 import java.io.IOException;
 

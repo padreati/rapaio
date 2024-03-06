@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
-import rapaio.data.preprocessing.StandardScaler;
+import rapaio.data.transform.StandardScaler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.kernel.CauchyKernel;
 import rapaio.ml.common.kernel.ExponentialKernel;

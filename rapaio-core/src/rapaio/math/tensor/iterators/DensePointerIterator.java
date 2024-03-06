@@ -41,32 +41,31 @@ public final class DensePointerIterator implements PointerIterator {
     private final int size;
     private final int step;
 
-    private int pointer;
+    private int pos;
 
     public DensePointerIterator(Shape shape, int offset, int step) {
         this.offset = offset;
-        this.size = shape.size() * step + offset;
+        this.size = shape.size();
         this.step = step;
-        this.pointer = offset;
+        this.pos = 0;
     }
 
     @Override
     public int nextInt() {
-        if (pointer >= size) {
+        if (pos >= size) {
             throw new NoSuchElementException();
         }
-        int oldPointer = pointer;
-        pointer += step;
-        return oldPointer;
+        pos++;
+        return offset + (pos - 1) * step;
     }
 
     @Override
     public boolean hasNext() {
-        return pointer < size;
+        return pos < size;
     }
 
     @Override
     public int position() {
-        return (pointer - offset) / step - 1;
+        return pos - 1;
     }
 }

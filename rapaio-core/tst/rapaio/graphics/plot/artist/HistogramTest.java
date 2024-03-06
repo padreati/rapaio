@@ -22,7 +22,7 @@
 package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOptions.*;
+import static rapaio.graphics.opt.GOpts.*;
 
 import java.io.IOException;
 
@@ -67,6 +67,6 @@ public class HistogramTest extends AbstractArtistTest {
         Frame iris = Datasets.loadIrisDataset();
         var v = iris.rvar("sepal-length");
         assertTest(hist(v, bins(30), prob(true), fill(NColor.tab_purple))
-                .densityLine(v, (v.dt().max() - v.dt().min()) / 15), "hist-density-test");
+                .densityLine(v, (v.tensor_().max() - v.tensor_().min()) / 15), "hist-density-test");
     }
 }

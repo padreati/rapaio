@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.data.preprocessing.RefSort;
+import rapaio.data.transform.RefSort;
 import rapaio.datasets.Datasets;
 
 /**
@@ -45,8 +45,8 @@ public class MappedFrameTest {
     @Test
     void colsSortedTest() {
         Frame orig = Datasets.loadIrisDataset();
-        Frame sort = RefSort.by(RowComparators.doubleComparator(orig.rvar(1), true)).fapply(orig);
-        sort = RefSort.by(RowComparators.doubleComparator(orig.rvar(2), true)).fapply(sort);
+        Frame sort = RefSort.by(RowComparators.doubleComparator(orig.rvar(1), true)).fitApply(orig);
+        sort = RefSort.by(RowComparators.doubleComparator(orig.rvar(2), true)).fitApply(sort);
         for (int i = 0; i < sort.rowCount(); i++) {
             assertEquals(sort.getDouble(i, 0), sort.rvar(0).getDouble(i), 1e-10);
         }

@@ -31,7 +31,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.opt.GOptions.points;
+import static rapaio.graphics.opt.GOpts.points;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -42,8 +42,8 @@ import java.io.Serial;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.util.function.Double2DoubleFunction;
@@ -57,10 +57,10 @@ public class FunLine extends Artist {
     private static final long serialVersionUID = 8388944194915495215L;
     private final Double2DoubleFunction f;
 
-    public FunLine(Double2DoubleFunction f, GOption<?>... opts) {
+    public FunLine(Double2DoubleFunction f, GOpt<?>... opts) {
         this.f = f;
         // apply default values for function line
-        this.options = new GOptions().apply(points(1024)).apply(opts);
+        this.options = new GOpts().apply(points(1024)).apply(opts);
     }
 
     @Override

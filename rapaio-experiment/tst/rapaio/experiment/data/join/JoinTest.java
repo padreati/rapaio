@@ -44,7 +44,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
-import rapaio.data.preprocessing.RefSort;
+import rapaio.data.transform.RefSort;
 
 
 /**

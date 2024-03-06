@@ -33,6 +33,7 @@ package rapaio.math.tensor.layout;
 
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.util.collection.IntArrays;
 
 public record ScalarStrideLayout(int offset) implements StrideLayout {
 
@@ -100,16 +101,31 @@ public record ScalarStrideLayout(int offset) implements StrideLayout {
     }
 
     @Override
-    public StrideLayout squeeze(int axis) {
+    public StrideLayout squeeze(int... axes) {
         throw new IndexOutOfBoundsException();
     }
 
     @Override
-    public StrideLayout unsqueeze(int axis) {
-        if (axis != 0) {
-            throw new IndexOutOfBoundsException();
+    public StrideLayout stretch(int... axes) {
+        if (axes == null || axes.length == 0) {
+            return this;
         }
-        return StrideLayout.of(Shape.of(1), offset, new int[] {1});
+        for (int axis : axes) {
+            if (axis < 0 || axis >= axes.length) {
+                throw new IndexOutOfBoundsException();
+            }
+        }
+        if (IntArrays.containsDuplicates(axes)) {
+            throw new IllegalArgumentException("Axes contains duplicates.");
+        }
+        int[] dims = IntArrays.newFill(axes.length, 1);
+        int[] strides = IntArrays.newFill(axes.length, 0);
+        return StrideLayout.of(Shape.of(dims), offset, strides);
+    }
+
+    @Override
+    public StrideLayout expand(int axis, int size) {
+        throw new IllegalArgumentException("Scalar stride cannot be expanded.");
     }
 
     @Override

@@ -31,11 +31,11 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.opt.GOptions.HALIGN_CENTER;
-import static rapaio.graphics.opt.GOptions.HALIGN_RIGHT;
-import static rapaio.graphics.opt.GOptions.VALIGN_BOTTOM;
-import static rapaio.graphics.opt.GOptions.VALIGN_CENTER;
-import static rapaio.graphics.opt.GOptions.VALIGN_TOP;
+import static rapaio.graphics.opt.GOpts.HALIGN_CENTER;
+import static rapaio.graphics.opt.GOpts.HALIGN_RIGHT;
+import static rapaio.graphics.opt.GOpts.VALIGN_BOTTOM;
+import static rapaio.graphics.opt.GOpts.VALIGN_CENTER;
+import static rapaio.graphics.opt.GOpts.VALIGN_TOP;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -45,8 +45,8 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serial;
 import java.util.Arrays;
 
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -62,11 +62,11 @@ public class Text extends Artist {
     private final double y;
     private final String text;
 
-    public Text(double x, double y, String text, GOption<?>... opts) {
+    public Text(double x, double y, String text, GOpt<?>... opts) {
         this.x = x;
         this.y = y;
         this.text = text;
-        this.options = new GOptions().apply(opts);
+        this.options = new GOpts().apply(opts);
     }
 
     @Override

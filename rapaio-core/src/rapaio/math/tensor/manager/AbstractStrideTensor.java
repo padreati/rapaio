@@ -42,17 +42,16 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import rapaio.data.VarDouble;
+import rapaio.math.tensor.DType;
+import rapaio.math.tensor.Layout;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.iterators.DensePointerIterator;
-import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
-import rapaio.math.tensor.iterators.ScalarLoopIterator;
 import rapaio.math.tensor.iterators.StrideLoopDescriptor;
-import rapaio.math.tensor.iterators.StrideLoopIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.layout.StrideWrapper;
@@ -111,13 +110,21 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     }
 
     @Override
-    public final Tensor<N> squeeze(int axis) {
-        return layout.shape().dim(axis) != 1 ? this : engine.stride(dtype(), layout.squeeze(axis), storage);
+    public final Tensor<N> squeeze(int... axes) {
+        var newLayout = layout.squeeze(axes);
+        if (newLayout == layout) {
+            return this;
+        }
+        return engine.stride(dtype(), newLayout, storage);
     }
 
     @Override
-    public final Tensor<N> unsqueeze(int axis) {
-        return engine.stride(dtype(), layout.unsqueeze(axis), storage);
+    public final Tensor<N> stretch(int... axes) {
+        var newLayout = layout.stretch(axes);
+        if (newLayout == layout) {
+            return this;
+        }
+        return engine.stride(dtype(), newLayout, storage);
     }
 
     @Override
@@ -196,19 +203,8 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     }
 
     @Override
-    public final Tensor<N> expand(int axis, int dim) {
-        if (layout.dim(axis) != 1) {
-            throw new IllegalArgumentException(STR."Dimension \{axis} must have size 1, but have size \{layout.dim(axis)}.");
-        }
-        if (dim < 1) {
-            throw new IllegalArgumentException(STR."Dimension of the new axis \{dim} must be positive.");
-        }
-        int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
-        int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
-
-        newDims[axis] = dim;
-        newStrides[axis] = 0;
-        return engine.stride(dtype(), StrideLayout.of(Shape.of(newDims), layout.offset(), newStrides), storage);
+    public final Tensor<N> expand(int axis, int size) {
+        return engine.stride(dtype(), layout.expand(axis, size), storage);
     }
 
     @Override
@@ -413,14 +409,6 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
             return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(0));
         }
         return new StridePointerIterator(layout, askOrder);
-    }
-
-    @Override
-    public final LoopIterator loopIterator(Order askOrder) {
-        if (layout.rank() == 0) {
-            return new ScalarLoopIterator(layout.offset());
-        }
-        return new StrideLoopIterator(layout, askOrder);
     }
 
     protected abstract void unaryOp(TensorUnaryOp op);
@@ -773,11 +761,10 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     public double[] toDoubleArray(Order askOrder) {
         double[] copy = new double[size()];
         int pos = 0;
-        var loopIt = loopIterator(askOrder);
-        int[] offsets = loopIt.computeOffsets();
-        for (int offset : offsets) {
-            for (int i = 0; i < loopIt.size(); i++) {
-                int p = offset + i * loopIt.step();
+        var loop = StrideLoopDescriptor.of(layout, askOrder);
+        for (int offset : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                int p = offset + i * loop.step;
                 copy[pos++] = storage.getDouble(p);
             }
         }
@@ -894,5 +881,22 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     @Override
     public final String toSummary(Printer printer, POpt<?>... options) {
         return toString();
+    }
+
+    @Override
+    public <M extends Number> Tensor<M> cast(DType<M> dType, Order askOrder) {
+
+        askOrder = Order.autoFC(askOrder);
+        var castTensor = manager().ofType(dType).zeros(shape(), askOrder);
+
+        Order fastOrder = Layout.storageFastTandemOrder(castTensor.layout(), layout);
+        var loopDescriptor = StrideLoopDescriptor.of((StrideLayout) castTensor.layout(), fastOrder);
+        var iter = ptrIterator(fastOrder);
+        for (int offset : loopDescriptor.offsets) {
+            for (int i = 0; i < loopDescriptor.size; i++) {
+                castTensor.ptrSet(offset + i * loopDescriptor.step, dType.castValue(ptrGet(iter.nextInt())));
+            }
+        }
+        return castTensor;
     }
 }

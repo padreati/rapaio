@@ -63,8 +63,9 @@ public final class Shape {
     private Shape(int[] dims) {
         for (int dim : dims) {
             if (dim <= 0) {
-                throw new IllegalArgumentException("Invalid shape dimensions: ["
-                        + Arrays.stream(dims).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "]");
+                throw new IllegalArgumentException(STR."Invalid shape dimensions: [\{Arrays.stream(dims)
+                        .mapToObj(String::valueOf)
+                        .collect(Collectors.joining(","))}].");
             }
         }
         /*

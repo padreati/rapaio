@@ -65,7 +65,7 @@ public final class FloatDenseStrideView extends FloatDense {
             }
             strides[i] = l.dim(i - 1) * strides[i - 1] + 1;
         }
-        int len = offset;
+        int len = offset + 1;
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }

@@ -40,7 +40,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.data.preprocessing.RefSort;
+import rapaio.data.transform.RefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.VarSelector;
@@ -132,7 +132,7 @@ public class RTreeTest {
         Frame df = Datasets.loadISLAdvertising().removeVars(VarRange.of("ID", "Radio", "Newspaper"));
 
         String v = "TV";
-        Frame t = RefSort.by(df.rvar(v).refComparator()).fapply(df);
+        Frame t = RefSort.by(df.rvar(v).refComparator()).fitApply(df);
 
         RTree tree = RTree.newCART()
                 .maxDepth.set(10)

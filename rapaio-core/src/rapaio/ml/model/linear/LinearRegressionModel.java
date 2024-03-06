@@ -35,9 +35,8 @@ import java.io.Serial;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.preprocessing.AddIntercept;
+import rapaio.data.transform.AddIntercept;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -70,7 +69,7 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
     @Override
     protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
         // add intercept variable
-        Frame transformed = intercept.get() ? AddIntercept.transform().fapply(df) : df;
+        Frame transformed = intercept.get() ? AddIntercept.transform().fitApply(df) : df;
 
         // collect standard information
         return super.prepareFit(transformed, weights, targetVarNames);
@@ -79,8 +78,8 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        Tensor<Double> X = df.mapVars(inputNames()).dtNew();
-        Tensor<Double> Y = df.mapVars(targetNames()).dtNew();
+        Tensor<Double> X = df.mapVars(inputNames()).tensor();
+        Tensor<Double> Y = df.mapVars(targetNames()).tensor();
         beta = X.qr().solve(Y);
         return true;
     }

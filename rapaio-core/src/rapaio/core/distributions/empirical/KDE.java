@@ -37,7 +37,7 @@ import java.util.Arrays;
 
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
-import rapaio.data.preprocessing.VarSort;
+import rapaio.data.transform.VarSort;
 
 /**
  * Kernel density estimator.

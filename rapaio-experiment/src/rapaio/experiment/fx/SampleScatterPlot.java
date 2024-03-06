@@ -101,8 +101,8 @@ public class SampleScatterPlot extends Application {
 
         int aw = 3;
 
-        Point3D pmin = new Point3D(df.rvar(TV).dt().min(), df.rvar(Sales).dt().min(), df.rvar(Radio).dt().min());
-        Point3D pmax = new Point3D(df.rvar(TV).dt().max(), df.rvar(Sales).dt().max(), df.rvar(Radio).dt().max());
+        Point3D pmin = new Point3D(df.rvar(TV).tensor_().min(), df.rvar(Sales).tensor_().min(), df.rvar(Radio).tensor_().min());
+        Point3D pmax = new Point3D(df.rvar(TV).tensor_().max(), df.rvar(Sales).tensor_().max(), df.rvar(Radio).tensor_().max());
 
         Point3D plen = pmax.subtract(pmin);
 

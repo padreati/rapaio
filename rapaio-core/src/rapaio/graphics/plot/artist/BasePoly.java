@@ -35,8 +35,8 @@ import java.awt.Graphics2D;
 import java.io.Serial;
 
 import rapaio.data.Var;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -50,10 +50,10 @@ public abstract class BasePoly extends Artist {
     protected final Var x;
     protected final Var y;
 
-    public BasePoly(Var x, Var y, GOption<?>... opts) {
+    public BasePoly(Var x, Var y, GOpt<?>... opts) {
         this.x = x;
         this.y = y;
-        options = new GOptions().apply(opts);
+        options = new GOpts().apply(opts);
     }
 
     @Override

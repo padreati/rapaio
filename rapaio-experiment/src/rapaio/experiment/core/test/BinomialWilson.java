@@ -34,7 +34,7 @@ package rapaio.experiment.core.test;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.graphics.Plotter;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Plot;
 import rapaio.sys.WS;
 
@@ -79,7 +79,7 @@ public class BinomialWilson {
                 }
             }
         }
-        WS.draw(Plotter.points(ns, ks, GOptions.sz(2)));
+        WS.draw(Plotter.points(ns, ks, GOpts.sz(2)));
     }
 
     public static void main1(String[] args) {
@@ -101,8 +101,8 @@ public class BinomialWilson {
             }
 
 //            VarDouble x = VarDouble.seq(0, 1, 1.0/n);
-            p.lines( lbound, GOptions.color(n), GOptions.lwd(lwd));
-            p.lines( ubound, GOptions.color(n), GOptions.lwd(lwd));
+            p.lines( lbound, GOpts.color(n), GOpts.lwd(lwd));
+            p.lines( ubound, GOpts.color(n), GOpts.lwd(lwd));
         }
         WS.draw(p);
     }

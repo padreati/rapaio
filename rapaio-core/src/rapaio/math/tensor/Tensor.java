@@ -40,8 +40,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import rapaio.data.VarDouble;
-import rapaio.math.tensor.iterators.LoopIterator;
 import rapaio.math.tensor.iterators.PointerIterator;
+import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.matrix.CholeskyDecomposition;
 import rapaio.math.tensor.matrix.EigenDecomposition;
 import rapaio.math.tensor.matrix.LUDecomposition;
@@ -70,7 +70,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     /**
      * @return tensor layout
      */
-    Layout layout();
+    StrideLayout layout();
 
     /**
      * @return tensor shape
@@ -221,21 +221,21 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     Tensor<N> flatten(Order askOrder);
 
     /**
-     * Collapses the given axis if equals with one. This operation does not create a new copy of the data.
-     * If dimension doesn't have size one, the same tensor is returned.
+     * Collapses the given axes if are of dimension one. This operation does not create a new copy of the data.
+     * If any dimension doesn't have size one, the dimension will remain as it is.
      *
-     * @return view of the same tensor with the given dimension equal with one collapsed
+     * @return view of the same tensor with the given dimensions equal with one collapsed
      */
-    Tensor<N> squeeze(int axis);
+    Tensor<N> squeeze(int... axes);
 
     /**
-     * Creates a new tensor view with an additional dimension at the position specified by {@param axis}.
-     * Specified axis value should be between 0 (inclusive) and the number of dimensions (inclusive).
+     * Creates a new tensor view with an additional dimensions at the position specified by {@param axes}.
+     * Specified axes value should be between 0 (inclusive) and the number of dimensions plus the number of added axes (exclusive).
      *
-     * @param axis index of the axis to be added
-     * @return new view tensor with added axis
+     * @param axes indexes of the axes to be added
+     * @return new view tensor with added axes
      */
-    Tensor<N> unsqueeze(int axis);
+    Tensor<N> stretch(int... axes);
 
     /**
      * Creates a tensor view with dimensions permuted in the order specified in parameter. The
@@ -725,36 +725,6 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     PointerIterator ptrIterator(Order askOrder);
 
     /**
-     * Produces a loop iterator in the storage order. A loop iterator iterates
-     * through a series of objects which contains information which can be used
-     * in a for loop instruction. All loops have the same size and step.
-     * <p>
-     * This kind of iterators are useful for computational reasons. In general
-     * a for loop is faster than an iterator because it avoids the artifacts
-     * produced. On the other side it requires more code on the usage side,
-     * which eventually can be optimized by the compiler.
-     *
-     * @return loop iterator in storage order
-     */
-    default LoopIterator loopIterator() {
-        return loopIterator(Order.S);
-    }
-
-    /**
-     * Produces a loop iterator in the given order. A loop iterator iterates
-     * through a series of objects which contains information which can be used
-     * in a for loop instruction. All loops have the same size and step.
-     * <p>
-     * This kind of iterators are useful for computational reasons. In general
-     * a for loop is faster than an iterator because it avoids the artifacts
-     * produced. On the other side it requires more code on the usage side,
-     * which eventually can be optimized by the compiler.
-     *
-     * @return loop iterator in storage order
-     */
-    LoopIterator loopIterator(Order askOrder);
-
-    /**
      * Creates a new tensor in the default storage order, having as values the result of
      * a function which receives as parameters two integers: order index and storage pointer value.
      * <p>
@@ -1067,7 +1037,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default Tensor<N> badd_(int axis, Tensor<N> tensor) {
-        return add_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+        return add_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
 
@@ -1096,7 +1066,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default Tensor<N> bsub_(int axis, Tensor<N> tensor) {
-        return sub_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+        return sub_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
     default Tensor<N> mul(Tensor<N> tensor) {
@@ -1124,7 +1094,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default Tensor<N> bmul_(int axis, Tensor<N> tensor) {
-        return mul_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+        return mul_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
     default Tensor<N> div(Tensor<N> tensor) {
@@ -1152,7 +1122,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default Tensor<N> bdiv_(int axis, Tensor<N> tensor) {
-        return div_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+        return div_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
     default Tensor<N> min(Tensor<N> tensor) {
@@ -1180,7 +1150,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default Tensor<N> bmin_(int axis, Tensor<N> tensor) {
-        return min_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+        return min_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
     default Tensor<N> max(Tensor<N> tensor) {
@@ -1208,7 +1178,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default Tensor<N> bmax_(int axis, Tensor<N> tensor) {
-        return max_(tensor.unsqueeze(axis).expand(axis, dim(axis)));
+        return max_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
     default Tensor<N> add(N value) {
@@ -1292,7 +1262,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         if (!isVector() || !t.isVector()) {
             throw new IllegalArgumentException("Outer product is available only for vectors.");
         }
-        return unsqueeze(1).mm(t.unsqueeze(0));
+        return stretch(1).mm(t.stretch(0));
     }
 
     N vdot(Tensor<N> tensor);
@@ -1307,6 +1277,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      *
      * @return resized padded copy of the original vector
      */
+    @Deprecated
     Tensor<N> vpadCopy(int before, int after);
 
     Tensor<N> mv(Tensor<N> tensor);
@@ -1370,6 +1341,8 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     N trace();
 
+    Tensor<N> diag();
+
     default N norm() {
         return norm(dtype().castValue(2));
     }
@@ -1412,13 +1385,17 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> stdc(Order order, int axis, int ddof);
 
-    N var();
+    default N var() {
+        return varc(0);
+    }
 
     default Tensor<N> var(int axis) {
         return var(Order.defaultOrder(), axis);
     }
 
-    Tensor<N> var(Order order, int axis);
+    default Tensor<N> var(Order order, int axis) {
+        return varc(order, axis, 0);
+    }
 
     N varc(int ddof);
 
@@ -1517,6 +1494,12 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * @return number of zero values
      */
     int zeroCount();
+
+    default <M extends Number> Tensor<M> cast(DType<M> dType) {
+        return cast(dType, Order.defaultOrder());
+    }
+
+    <M extends Number> Tensor<M> cast(DType<M> dType, Order askOrder);
 
     /**
      * Creates a copy of the original tensor with the given order. Only {@link Order#C} or {@link Order#F} are allowed.

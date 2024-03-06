@@ -31,15 +31,15 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.opt.GOptions.position;
+import static rapaio.graphics.opt.GOpts.position;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.Serial;
 
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -54,9 +54,9 @@ public class ImageArtist extends Artist {
     private static final long serialVersionUID = -1903664389725485554L;
     private final BufferedImage image;
 
-    public ImageArtist(BufferedImage image, GOption<?>... opts) {
+    public ImageArtist(BufferedImage image, GOpt<?>... opts) {
         this.image = image;
-        options = new GOptions().apply(position(0, image.getHeight(), image.getWidth(), image.getHeight()))
+        options = new GOpts().apply(position(0, image.getHeight(), image.getWidth(), image.getHeight()))
                 .apply(opts);
     }
 

@@ -36,7 +36,7 @@ import java.util.function.BiFunction;
 import rapaio.core.tools.Grid2D;
 import rapaio.data.VarDouble;
 import rapaio.experiment.math.linear.DVector;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Plot;
 import rapaio.sys.Experimental;
@@ -119,7 +119,7 @@ public class VectorDataGrid {
             }
             q[q.length-1] *= 1.0001;
 
-            p.isoBands(grid, q, GOptions.palette(Palette.hueMono(hues[ch], 0f, 1f, 0.8f, min, max)));
+            p.isoBands(grid, q, GOpts.palette(Palette.hueMono(hues[ch], 0f, 1f, 0.8f, min, max)));
 //            p.isoLines(grid, () -> {
 //                Color[] colors = new Color[100];
 //                for (int i = 0; i < colors.length; i++) {

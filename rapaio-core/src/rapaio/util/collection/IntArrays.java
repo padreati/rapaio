@@ -33,6 +33,7 @@ package rapaio.util.collection;
 
 import java.io.Serial;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
 import java.util.Random;
@@ -49,6 +50,7 @@ import rapaio.util.function.Int2IntFunction;
  * A class providing static methods and objects that do useful things with
  * type-specific arrays of ints.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/8/19.
  */
 public final class IntArrays {
@@ -300,6 +302,17 @@ public final class IntArrays {
             }
         }
         return true;
+    }
+
+    public static boolean containsDuplicates(int[] indexes) {
+        HashSet<Integer> set = new HashSet<>();
+        for (int index : indexes) {
+            if (set.contains(index)) {
+                return true;
+            }
+            set.add(index);
+        }
+        return false;
     }
 
     public static int argmax(int[] array, int start, int end) {

@@ -64,7 +64,7 @@ public class OneClassSvmTest {
             x2.addDouble(uniform.sampleNext());
         }
         df = SolidFrame.byVars(x1, x2);
-        xs = df.dtNew();
+        xs = df.tensor();
     }
 
     @Test

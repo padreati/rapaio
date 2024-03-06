@@ -32,10 +32,10 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.data.preprocessing.VarApply;
-import rapaio.data.preprocessing.VarRefSort;
-import rapaio.data.preprocessing.VarSort;
-import rapaio.data.preprocessing.VarStandardScaler;
+import rapaio.data.transform.VarApply;
+import rapaio.data.transform.VarRefSort;
+import rapaio.data.transform.VarSort;
+import rapaio.data.transform.VarStandardScaler;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.

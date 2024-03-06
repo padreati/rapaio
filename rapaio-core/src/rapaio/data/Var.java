@@ -42,16 +42,19 @@ import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
 import rapaio.core.SamplingTools;
-import rapaio.data.preprocessing.VarTransform;
+import rapaio.data.transform.VarTransform;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.Tensors;
 import rapaio.math.tensor.storage.wrapper.VarDoubleStorage;
+import rapaio.math.tensor.storage.wrapper.VarFloatStorage;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
+import rapaio.util.NotImplementedException;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -385,16 +388,42 @@ public interface Var extends Serializable, Printable {
      */
     Var copy();
 
-    default Tensor<Double> dt() {
-        return Tensors.stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
+    default Tensor<Double> tensor_() {
+        return tensor_(DType.DOUBLE);
     }
 
-    default Tensor<Double> dtNew() {
-        double[] copy = new double[size()];
-        for (int i = 0; i < copy.length; i++) {
-            copy[i] = getDouble(i);
-        }
-        return Tensors.stride(Shape.of(size()), Order.C, copy);
+    @SuppressWarnings("unchecked")
+    default <N extends Number> Tensor<N> tensor_(DType<N> dType) {
+        return switch (dType.id()) {
+            case DOUBLE -> (Tensor<N>) Tensors.stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
+            case FLOAT -> (Tensor<N>) Tensors.ofFloat().stride(Shape.of(size()), Order.C, new VarFloatStorage(this));
+            default -> throw new NotImplementedException();
+        };
+    }
+
+    default Tensor<Double> tensor() {
+        return tensor(DType.DOUBLE);
+    }
+
+    @SuppressWarnings("unchecked")
+    default <N extends Number> Tensor<N> tensor(DType<N> dType) {
+        return switch (dType.id()) {
+            case DOUBLE -> {
+                double[] copy = new double[size()];
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = getDouble(i);
+                }
+                yield (Tensor<N>) Tensors.stride(Shape.of(size()), Order.C, copy);
+            }
+            case FLOAT -> {
+                float[] copy = new float[size()];
+                for (int i = 0; i < copy.length; i++) {
+                    copy[i] = getFloat(i);
+                }
+                yield (Tensor<N>) Tensors.ofFloat().stride(Shape.of(size()), Order.C, copy);
+            }
+            default -> throw new NotImplementedException();
+        };
     }
 
     /**

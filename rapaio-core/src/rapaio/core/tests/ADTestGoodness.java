@@ -42,7 +42,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.preprocessing.VarRefSort;
+import rapaio.data.transform.VarRefSort;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 

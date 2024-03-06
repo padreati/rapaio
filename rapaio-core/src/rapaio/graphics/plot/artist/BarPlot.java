@@ -31,9 +31,9 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.opt.GOptions.SORT_ASC;
-import static rapaio.graphics.opt.GOptions.SORT_DESC;
-import static rapaio.graphics.opt.GOptions.fill;
+import static rapaio.graphics.opt.GOpts.SORT_ASC;
+import static rapaio.graphics.opt.GOpts.SORT_DESC;
+import static rapaio.graphics.opt.GOpts.fill;
 
 import java.awt.Graphics2D;
 import java.io.Serial;
@@ -50,8 +50,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.VarType;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.util.collection.IntArrays;
@@ -72,7 +72,7 @@ public class BarPlot extends Artist {
     private final double[][] hits;
     private final double[] totals;
 
-    public BarPlot(Var category, Var condition, Var values, GOption<?>... opts) {
+    public BarPlot(Var category, Var condition, Var values, GOpt<?>... opts) {
         if (!categoryTypes.contains(category.type())) {
             throw new IllegalArgumentException("Categories are nominal only");
         }
@@ -90,7 +90,7 @@ public class BarPlot extends Artist {
         }
 
         int shift = 9;
-        this.options = new GOptions().apply(fill(VarInt.seq(shift, Unique.of(condition).uniqueCount()))).apply(opts);
+        this.options = new GOpts().apply(fill(VarInt.seq(shift, Unique.of(condition).uniqueCount()))).apply(opts);
 
         Map<String, Map<String, Double>> map = new HashMap<>();
         int rowCount = category.size();

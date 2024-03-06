@@ -33,6 +33,7 @@ package rapaio.math.tensor.iterators;
 
 import java.util.Arrays;
 
+import rapaio.math.tensor.Layout;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.layout.StrideLayout;
@@ -48,7 +49,7 @@ public final class StrideLoopDescriptor {
         return new StrideLoopDescriptor(shape, offset, strides, askOrder);
     }
 
-    public static StrideLoopDescriptor of(StrideLayout layout, Order askOrder) {
+    public static StrideLoopDescriptor of(Layout layout, Order askOrder) {
         return new StrideLoopDescriptor(layout, askOrder);
     }
 
@@ -61,23 +62,26 @@ public final class StrideLoopDescriptor {
         this(StrideLayout.of(shape, offset, strides), askOrder);
     }
 
-    private StrideLoopDescriptor(StrideLayout layout, Order askOrder) {
+    private StrideLoopDescriptor(Layout layout, Order askOrder) {
+        if (!(layout instanceof StrideLayout sl)) {
+            throw new IllegalArgumentException("Layout is not a stride layout.");
+        }
 
         if (layout.shape().rank() == 0) {
             size = 1;
             step = 1;
             count = 1;
-            offsets = new int[] {layout.offset()};
+            offsets = new int[] {sl.offset()};
             return;
         }
 
-        var compact = layout.computeFortranLayout(askOrder, true);
+        var compact = sl.computeFortranLayout(askOrder, true);
         size = compact.dim(0);
         step = compact.stride(0);
 
         if (compact.rank() == 1) {
             count = 1;
-            offsets = new int[] {layout.offset()};
+            offsets = new int[] {sl.offset()};
             return;
         }
 
@@ -85,7 +89,7 @@ public final class StrideLoopDescriptor {
         int[] outerStrides = Arrays.copyOfRange(compact.strides(), 1, compact.shape().rank());
 
         this.count = IntArrays.prod(outerDims, 0, outerDims.length);
-        this.offsets = IntArrays.newFill(count, layout.offset());
+        this.offsets = IntArrays.newFill(count, sl.offset());
 
         int inner = 1;
         for (int i = 0; i < outerDims.length; i++) {

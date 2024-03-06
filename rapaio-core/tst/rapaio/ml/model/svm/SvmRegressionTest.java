@@ -48,8 +48,8 @@ public class SvmRegressionTest {
         WS.initLog(Level.SEVERE);
         df = Datasets.loadISLAdvertising();
 
-        xs = df.mapVars("TV,Radio").dtNew();
-        ys = df.rvar("Sales").dt();
+        xs = df.mapVars("TV,Radio").tensor();
+        ys = df.rvar("Sales").tensor_();
     }
 
     @Test

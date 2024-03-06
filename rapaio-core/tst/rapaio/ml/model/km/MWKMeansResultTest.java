@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.data.preprocessing.Jitter;
+import rapaio.data.transform.Jitter;
 import rapaio.datasets.Datasets;
 
 public class MWKMeansResultTest {

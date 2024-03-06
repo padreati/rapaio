@@ -31,7 +31,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.opt.GOptions.color;
+import static rapaio.graphics.opt.GOpts.color;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -41,21 +41,21 @@ import java.awt.geom.Line2D;
 import java.io.Serial;
 
 import rapaio.graphics.Plotter;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
 /**
  * Artist which draws a line of the form y = f(x) = a*x + b
- * There is a generic form of the line by calling {@link #ABLine(double, double, GOption...)}.
+ * There is a generic form of the line by calling {@link #ABLine(double, double, GOpt...)}.
  * <p>
  * Also there is a simpler form for drawing horizontal or vertical lines.
- * The simpler form is called by using {@link #ABLine(boolean, double, GOption...)},
+ * The simpler form is called by using {@link #ABLine(boolean, double, GOpt...)},
  * with the boolean parameter specifying if the line is horizontal or vertical.
  * <p>
- * Also there are two dedicated shortcuts in plotter {@link Plotter#hLine(double, GOption...)}
- * and {@link Plotter#vLine(double, GOption...)} which can be used to have the shortest code.
+ * Also there are two dedicated shortcuts in plotter {@link Plotter#hLine(double, GOpt...)}
+ * and {@link Plotter#vLine(double, GOpt...)} which can be used to have the shortest code.
  * <p>
  * The default color is {@link Color#LIGHT_GRAY}, making this useful for drawing guides.
  *
@@ -70,20 +70,20 @@ public class ABLine extends Artist {
     private final boolean h;
     private final boolean v;
 
-    public ABLine(boolean horiz, double a, GOption<?>... opts) {
+    public ABLine(boolean horiz, double a, GOpt<?>... opts) {
         this.a = a;
         this.b = a;
         this.h = horiz;
         this.v = !horiz;
-        this.options = new GOptions().apply(color(Color.LIGHT_GRAY)).apply(opts);
+        this.options = new GOpts().apply(color(Color.LIGHT_GRAY)).apply(opts);
     }
 
-    public ABLine(double a, double b, GOption<?>... opts) {
+    public ABLine(double a, double b, GOpt<?>... opts) {
         this.a = a;
         this.b = b;
         this.h = false;
         this.v = false;
-        this.options = new GOptions().apply(color(Color.LIGHT_GRAY)).apply(opts);
+        this.options = new GOpts().apply(color(Color.LIGHT_GRAY)).apply(opts);
     }
 
     @Override

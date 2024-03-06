@@ -34,24 +34,31 @@ package rapaio.math.tensor;
 import java.util.Comparator;
 import java.util.Objects;
 
-public abstract class DType<N extends Number> {
+public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, DType.DTypeFloat, DType.DTypeInteger, DType.DTypeByte {
 
     public static final DType<Byte> BYTE = new DTypeByte();
     public static final DType<Integer> INTEGER = new DTypeInteger();
     public static final DType<Float> FLOAT = new DTypeFloat();
     public static final DType<Double> DOUBLE = new DTypeDouble();
 
-    private final String id;
+    public enum Id {
+        BYTE,
+        INTEGER,
+        FLOAT,
+        DOUBLE;
+    }
+
+    private final Id id;
     private final byte byteCount;
     private final boolean isInteger;
 
-    protected DType(String id, byte byteCount, boolean isInteger) {
+    protected DType(Id id, byte byteCount, boolean isInteger) {
         this.id = id;
         this.byteCount = byteCount;
         this.isInteger = isInteger;
     }
 
-    public String id() {
+    public Id id() {
         return id;
     }
 
@@ -99,12 +106,10 @@ public abstract class DType<N extends Number> {
         return Objects.hash(id);
     }
 
-    private static final class DTypeByte extends DType<Byte> {
-
-        private static final String ID = "BYTE";
+    public static final class DTypeByte extends DType<Byte> {
 
         public DTypeByte() {
-            super(ID, (byte) 4, true);
+            super(Id.BYTE, (byte) 4, true);
         }
 
         @Override
@@ -148,62 +153,58 @@ public abstract class DType<N extends Number> {
         }
     }
 
-    private static final class DTypeInteger extends DType<Integer> {
+    public static final class DTypeDouble extends DType<Double> {
 
-        private static final String ID = "INTEGER";
-
-        public DTypeInteger() {
-            super(ID, (byte) 4, true);
+        public DTypeDouble() {
+            super(Id.DOUBLE, (byte) 8, false);
         }
 
         @Override
-        public <M extends Number> Integer castValue(M value) {
-            return value.intValue();
+        public <M extends Number> Double castValue(M value) {
+            return value.doubleValue();
         }
 
         @Override
-        public Integer castValue(byte value) {
-            return (int) value;
+        public Double castValue(byte value) {
+            return (double) value;
         }
 
         @Override
-        public Integer castValue(int value) {
-            return (int) value;
+        public Double castValue(int value) {
+            return (double) value;
         }
 
         @Override
-        public Integer castValue(float value) {
-            return (int) value;
+        public Double castValue(float value) {
+            return (double) value;
         }
 
         @Override
-        public Integer castValue(double value) {
-            return (int) value;
+        public Double castValue(double value) {
+            return value;
         }
 
         @Override
-        public boolean isNaN(Integer value) {
-            return false;
+        public boolean isNaN(Double value) {
+            return Double.isNaN(value);
         }
 
         @Override
-        public Comparator<Integer> naturalComparator() {
+        public Comparator<Double> naturalComparator() {
             return Comparator.naturalOrder();
         }
 
         @Override
-        public Comparator<Integer> reverseComparator() {
+        public Comparator<Double> reverseComparator() {
             return Comparator.reverseOrder();
         }
     }
 
-    private static final class DTypeFloat extends DType<Float> {
+    public static final class DTypeFloat extends DType<Float> {
 
-
-        private static final String ID = "FLOAT";
 
         public DTypeFloat() {
-            super(ID, (byte) 4, false);
+            super(Id.FLOAT, (byte) 4, false);
         }
 
         @Override
@@ -247,51 +248,49 @@ public abstract class DType<N extends Number> {
         }
     }
 
-    private static final class DTypeDouble extends DType<Double> {
+    public static final class DTypeInteger extends DType<Integer> {
 
-        private static final String ID = "DOUBLE";
-
-        public DTypeDouble() {
-            super(ID, (byte) 8, false);
+        public DTypeInteger() {
+            super(Id.INTEGER, (byte) 4, true);
         }
 
         @Override
-        public <M extends Number> Double castValue(M value) {
-            return value.doubleValue();
+        public <M extends Number> Integer castValue(M value) {
+            return value.intValue();
         }
 
         @Override
-        public Double castValue(byte value) {
-            return (double) value;
+        public Integer castValue(byte value) {
+            return (int) value;
         }
 
         @Override
-        public Double castValue(int value) {
-            return (double) value;
+        public Integer castValue(int value) {
+            return (int) value;
         }
 
         @Override
-        public Double castValue(float value) {
-            return (double) value;
+        public Integer castValue(float value) {
+            return (int) value;
         }
 
         @Override
-        public Double castValue(double value) {
-            return value;
+        public Integer castValue(double value) {
+            return (int) value;
         }
 
         @Override
-        public boolean isNaN(Double value) {
-            return Double.isNaN(value);
+        public boolean isNaN(Integer value) {
+            return false;
         }
 
         @Override
-        public Comparator<Double> naturalComparator() {
+        public Comparator<Integer> naturalComparator() {
             return Comparator.naturalOrder();
         }
 
         @Override
-        public Comparator<Double> reverseComparator() {
+        public Comparator<Integer> reverseComparator() {
             return Comparator.reverseOrder();
         }
     }

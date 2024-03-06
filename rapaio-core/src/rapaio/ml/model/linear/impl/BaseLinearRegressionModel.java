@@ -37,7 +37,7 @@ import java.util.Objects;
 import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
-import rapaio.data.preprocessing.AddIntercept;
+import rapaio.data.transform.AddIntercept;
 import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.model.RegressionModel;
@@ -85,7 +85,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
 
     @Override
     protected PredSetup preparePredict(Frame df, boolean withResiduals, final double[] quantiles) {
-        Frame transformed = intercept.get() ? AddIntercept.transform().fapply(df) : df;
+        Frame transformed = intercept.get() ? AddIntercept.transform().fitApply(df) : df;
         return super.preparePredict(transformed, withResiduals, quantiles);
     }
 

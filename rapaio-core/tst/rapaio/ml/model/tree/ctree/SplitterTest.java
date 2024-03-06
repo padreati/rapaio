@@ -33,7 +33,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.preprocessing.VarApply;
+import rapaio.data.transform.VarApply;
 import rapaio.ml.model.tree.RowPredicate;
 import rapaio.util.Pair;
 

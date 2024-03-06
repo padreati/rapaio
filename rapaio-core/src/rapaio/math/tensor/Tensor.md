@@ -51,7 +51,7 @@ Example:
     Random random = new Random(42);
     VarDouble x = VarDouble.from(100, i -> random.nextGaussian());
     // apply absolute value function inplace on x
-    x.dt().abs_();
+    x.tensor_().abs_();
     // now all the values in x are positive
 
 ### Tensor Engine

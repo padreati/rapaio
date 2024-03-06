@@ -23,7 +23,7 @@ package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.corrGram;
 import static rapaio.graphics.Plotter.matrix;
-import static rapaio.graphics.opt.GOptions.color;
+import static rapaio.graphics.opt.GOpts.color;
 
 import java.io.IOException;
 import java.util.Random;

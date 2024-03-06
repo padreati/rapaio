@@ -35,9 +35,9 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.Vector;
 
+import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.manager.base.BaseTensorManager;
 import rapaio.math.tensor.manager.vector.VectorTensorManager;
-import rapaio.math.tensor.layout.StrideLayout;
 
 public interface TensorManager {
 

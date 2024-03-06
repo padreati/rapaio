@@ -103,7 +103,7 @@ public class PCATest {
             assertNotEquals(out1.getDouble(0, i), out2.getDouble(0, i));
         }
 
-        Tensor<Double> xx = df.dtNew();
+        Tensor<Double> xx = df.tensor();
         assertTrue(xx.mean(0).deepEquals(pca1.getMean()));
         assertTrue(xx.std(0).deepEquals(pca1.getStd()));
     }

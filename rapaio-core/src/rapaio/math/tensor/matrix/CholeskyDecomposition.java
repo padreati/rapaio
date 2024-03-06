@@ -167,7 +167,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
     public Tensor<N> solve(Tensor<N> b) {
         boolean vectorShape = b.rank() == 1;
         if (vectorShape) {
-            b = b.unsqueeze(1);
+            b = b.stretch(1);
         }
         if (b.dim(0) != ref.dim(0)) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");

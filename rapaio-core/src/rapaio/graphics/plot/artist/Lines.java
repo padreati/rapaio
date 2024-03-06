@@ -42,8 +42,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -58,15 +58,15 @@ public class Lines extends Artist {
     private final Var x;
     private final Var y;
 
-    public Lines(Var y, GOption<?>... opts) {
+    public Lines(Var y, GOpt<?>... opts) {
         this(VarDouble.seq(0, y.size() - 1).name("index"), y, opts);
     }
 
-    public Lines(Var x, Var y, GOption<?>... opts) {
+    public Lines(Var x, Var y, GOpt<?>... opts) {
         Frame df = BoundFrame.byVars(x, y).stream().complete().toMappedFrame();
         this.x = df.rvar(0).copy();
         this.y = df.rvar(1).copy();
-        this.options = new GOptions().apply(opts);
+        this.options = new GOpts().apply(opts);
     }
 
     @Override

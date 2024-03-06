@@ -31,7 +31,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.opt.GOptions.palette;
+import static rapaio.graphics.opt.GOpts.palette;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -43,8 +43,8 @@ import java.io.Serial;
 import rapaio.core.correlation.CorrPearson;
 import rapaio.core.correlation.CorrSpearman;
 import rapaio.core.tools.DistanceMatrix;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -74,11 +74,11 @@ public class CorrGram extends Artist {
     private final boolean labels;
     private final DistanceMatrix d;
 
-    public CorrGram(DistanceMatrix d, boolean labels, boolean grid, GOption<?>... opts) {
+    public CorrGram(DistanceMatrix d, boolean labels, boolean grid, GOpt<?>... opts) {
         this.labels = labels;
         this.grid = grid;
         this.d = d;
-        this.options = new GOptions().apply(palette(Palette.hue(0, 240, -1, 1))).apply(opts);
+        this.options = new GOpts().apply(palette(Palette.hue(0, 240, -1, 1))).apply(opts);
     }
 
     @Override

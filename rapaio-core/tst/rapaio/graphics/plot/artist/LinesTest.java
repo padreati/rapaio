@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.data.preprocessing.VarApply;
+import rapaio.data.transform.VarApply;
 import rapaio.datasets.Datasets;
 import rapaio.printer.Figure;
 import rapaio.printer.ImageTools;

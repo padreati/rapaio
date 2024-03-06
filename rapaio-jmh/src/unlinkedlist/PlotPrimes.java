@@ -32,8 +32,8 @@
 package unlinkedlist;
 
 import static rapaio.graphics.Plotter.points;
-import static rapaio.graphics.opt.GOptions.pch;
-import static rapaio.graphics.opt.GOptions.sz;
+import static rapaio.graphics.opt.GOpts.pch;
+import static rapaio.graphics.opt.GOpts.sz;
 
 import java.util.Arrays;
 import java.util.LinkedList;

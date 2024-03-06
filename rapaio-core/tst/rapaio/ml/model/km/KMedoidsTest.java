@@ -118,7 +118,7 @@ public class KMedoidsTest {
 
     @Test
     void testErrorWithinCluster() {
-        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(10)).dtNew();
+        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(10)).tensor();
 
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
@@ -128,7 +128,7 @@ public class KMedoidsTest {
 
     @Test
     void computeAssignmentTest() {
-        Tensor<Double> x = SolidFrame.byVars(VarDouble.from(100, () -> Normal.std().sampleNext(random))).dtNew();
+        Tensor<Double> x = SolidFrame.byVars(VarDouble.from(100, () -> Normal.std().sampleNext(random))).tensor();
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
 
@@ -146,7 +146,7 @@ public class KMedoidsTest {
 
     @Test
     void computeErrorTest() {
-        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(10)).dtNew();
+        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(10)).tensor();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
@@ -159,7 +159,7 @@ public class KMedoidsTest {
 
     @Test
     void updateNewClosestTest() {
-        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(21)).dtNew();
+        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(21)).tensor();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
@@ -202,7 +202,7 @@ public class KMedoidsTest {
 
     @Test
     void updateAllClosestTest() {
-        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(21)).dtNew();
+        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(21)).tensor();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
@@ -228,7 +228,7 @@ public class KMedoidsTest {
         Tensor<Double> x = Tensors.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
-        ).unsqueeze(1);
+        ).stretch(1);
         KMedoids km = KMedoids.newAlternateModel(2);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
@@ -241,7 +241,7 @@ public class KMedoidsTest {
         Tensor<Double> x = Tensors.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
-        ).unsqueeze(1);
+        ).stretch(1);
         KMedoids km = KMedoids.newAlternateModel(2);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
@@ -256,7 +256,7 @@ public class KMedoidsTest {
         Tensor<Double> x = Tensors.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
-        ).unsqueeze(1);
+        ).stretch(1);
         KMedoids km = KMedoids.newAlternateModel(2);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
@@ -268,7 +268,7 @@ public class KMedoidsTest {
         Tensor<Double> x = Tensors.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
-        ).unsqueeze(1);
+        ).stretch(1);
         KMedoids km = KMedoids.newAlternateModel(2);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 

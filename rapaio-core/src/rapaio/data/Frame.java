@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import rapaio.data.preprocessing.RefSort;
-import rapaio.data.preprocessing.Transform;
+import rapaio.data.transform.RefSort;
+import rapaio.data.transform.Transform;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
 import rapaio.math.tensor.Shape;
@@ -528,7 +528,7 @@ public interface Frame extends Serializable, Printable {
     default Frame fapply(Transform... transforms) {
         Frame df = this;
         for(var transform : transforms) {
-            df = transform.fapply(df);
+            df = transform.fitApply(df);
         }
         return df;
     }
@@ -568,7 +568,7 @@ public interface Frame extends Serializable, Printable {
         return this.fapply(RefSort.by(comparators));
     }
 
-    default Tensor<Double> dtNew() {
+    default Tensor<Double> tensor() {
         Tensor<Double> tensor = Tensors.zeros(Shape.of(rowCount(), varCount()));
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < varCount(); j++) {

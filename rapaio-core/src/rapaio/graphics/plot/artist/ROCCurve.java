@@ -36,8 +36,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.io.Serial;
 
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
@@ -52,9 +52,9 @@ public class ROCCurve extends Artist {
     private static final long serialVersionUID = 4110642211338491615L;
     private final ROC roc;
 
-    public ROCCurve(ROC roc, GOption<?>... opts) {
+    public ROCCurve(ROC roc, GOpt<?>... opts) {
         this.roc = roc;
-        options = new GOptions().apply(opts);
+        options = new GOpts().apply(opts);
     }
 
     @Override

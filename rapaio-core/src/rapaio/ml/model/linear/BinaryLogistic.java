@@ -209,7 +209,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
             case BINARY -> {
                 positiveLabel = "1";
                 negativeLabel = "0";
-                return target.dt();
+                return target.tensor_();
             }
             case NOMINAL -> {
                 var result = Tensors.zeros(Shape.of(target.size()));
@@ -240,7 +240,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         df.varStream()
                 .filter(v -> !targetName.equals(v.name()))
                 .forEach(variables::add);
-        return SolidFrame.byVars(variables).dtNew();
+        return SolidFrame.byVars(variables).tensor();
     }
 
     @Override
@@ -255,7 +255,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
         var p = Tensors.full(Shape.of(df.rowCount()), hasIntercept ? intercept.get() * w.getDouble(0) : 0);
         for (int i = 0; i < inputNames.length; i++) {
-            p.fma_(w.getDouble(i + offset), df.rvar(inputName(i)).dt());
+            p.fma_(w.getDouble(i + offset), df.rvar(inputName(i)).tensor_());
         }
         p.apply_(MathTools::logistic);
 

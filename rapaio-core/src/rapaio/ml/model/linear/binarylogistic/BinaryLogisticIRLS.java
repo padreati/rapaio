@@ -143,7 +143,7 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
         Tensor<Double> pvar = vp.mul(vnp).clamp(1e-6, Double.NaN);
 
         // H = X^t * I{p(1-p)} * X + I_lambda
-        Tensor<Double> xta = mx.t().mul(pvar.unsqueeze(0).expand(0, mx.t().dim(0)));
+        Tensor<Double> xta = mx.t().mul(pvar.stretch(0).expand(0, mx.t().dim(0)));
         Tensor<Double> h = xta.mm(mx);
         if (lambda > 0) {
             for (int i = 0; i < h.dim(0); i++) {

@@ -76,7 +76,7 @@ public enum Search implements Serializable {
             int targetIndex = df.varIndex(targetName);
 
             int[] rows = df.rvar(testIndex).rowsComplete();
-            df.rvar(testIndex).dt().indirectSort(rows, true);
+            df.rvar(testIndex).tensor_().indirectSort(rows, true);
 
             double[] leftWeight = new double[rows.length];
             double[] leftVar = new double[rows.length];

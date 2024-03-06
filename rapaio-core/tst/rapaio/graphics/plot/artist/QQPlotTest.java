@@ -22,8 +22,8 @@
 package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.qqplot;
-import static rapaio.graphics.opt.GOptions.fill;
-import static rapaio.graphics.opt.GOptions.pch;
+import static rapaio.graphics.opt.GOpts.fill;
+import static rapaio.graphics.opt.GOpts.pch;
 
 import java.awt.Color;
 import java.io.IOException;

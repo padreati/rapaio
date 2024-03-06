@@ -63,7 +63,7 @@ public class MWKMeansResult extends ClusteringResult<MWKMeans> {
         super(model, df, assignment);
 
         Tensor<Double> c = model.getCentroidsMatrix();
-        Tensor<Double> m = df.dtNew();
+        Tensor<Double> m = df.tensor();
         int ccount = c.dim(0);
 
         Var count = VarInt.fill(ccount, 0).name("count");

@@ -31,7 +31,7 @@
 
 package rapaio.graphics;
 
-import static rapaio.graphics.opt.GOptions.bins;
+import static rapaio.graphics.opt.GOpts.bins;
 
 import java.awt.image.BufferedImage;
 
@@ -42,7 +42,7 @@ import rapaio.core.tools.Grid2D;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.ABLine;
@@ -70,159 +70,159 @@ import rapaio.util.function.Double2DoubleFunction;
 
 public final class Plotter {
 
-    public static GridLayer gridLayer(int rows, int cols, GOption<?>... opts) {
+    public static GridLayer gridLayer(int rows, int cols, GOpt<?>... opts) {
         return GridLayer.of(rows, cols, opts);
     }
 
-    public static Plot plot(GOption<?>... opts) {
+    public static Plot plot(GOpt<?>... opts) {
         return new Plot(opts);
     }
 
-    public static Plot qqplot(Var points, Distribution dist, GOption<?>... opts) {
+    public static Plot qqplot(Var points, Distribution dist, GOpt<?>... opts) {
         return plot().qqplot(points, dist, opts);
     }
 
-    public static Plot boxplot(Var x, Var factor, GOption<?>... opts) {
+    public static Plot boxplot(Var x, Var factor, GOpt<?>... opts) {
         return plot().add(new BoxPlot(x, factor, opts));
     }
 
-    public static Plot boxplot(Var x, GOption<?>... opts) {
+    public static Plot boxplot(Var x, GOpt<?>... opts) {
         return plot().add(new BoxPlot(x, opts));
     }
 
-    public static Plot boxplot(Var[] vars, GOption<?>... opts) {
+    public static Plot boxplot(Var[] vars, GOpt<?>... opts) {
         return plot().add(new BoxPlot(vars, opts));
     }
 
-    public static Plot boxplot(Frame df, GOption<?>... opts) {
+    public static Plot boxplot(Frame df, GOpt<?>... opts) {
         return plot().add(new BoxPlot(df, opts));
     }
 
-    public static Plot hist(Var v, GOption<?>... opts) {
+    public static Plot hist(Var v, GOpt<?>... opts) {
         return plot().add(new Histogram(v, opts));
     }
 
-    public static Plot hist(Var v, double minValue, double maxValue, GOption<?>... opts) {
+    public static Plot hist(Var v, double minValue, double maxValue, GOpt<?>... opts) {
         return plot().add(new Histogram(v, minValue, maxValue, opts));
     }
 
-    public static Plot hist2d(Var x, Var y, GOption<?>... opts) {
+    public static Plot hist2d(Var x, Var y, GOpt<?>... opts) {
         return plot().add(new Histogram2D(x, y, opts));
     }
 
-    public static Plot polyline(boolean closed, Var x, Var y, GOption<?>... opts) {
+    public static Plot polyline(boolean closed, Var x, Var y, GOpt<?>... opts) {
         return plot().add(new PolyLine(closed, x, y, opts));
     }
 
-    public static Plot polyfill(Var x, Var y, GOption<?>... opts) {
+    public static Plot polyfill(Var x, Var y, GOpt<?>... opts) {
         return plot().add(new PolyFill(x, y, opts));
     }
 
-    public static Plot polyfill(PolyPath polyPath, GOption<?>... opts) {
+    public static Plot polyfill(PolyPath polyPath, GOpt<?>... opts) {
         return plot().add(new PolyFill(polyPath, opts));
     }
 
-    public static Plot densityLine(Var var, GOption<?>... opts) {
+    public static Plot densityLine(Var var, GOpt<?>... opts) {
         return plot().add(new DensityLine(var, opts));
     }
 
-    public static Plot densityLine(Var var, double bandwidth, GOption<?>... opts) {
+    public static Plot densityLine(Var var, double bandwidth, GOpt<?>... opts) {
         return plot().add(new DensityLine(var, bandwidth, opts));
     }
 
-    public static Plot densityLine(Var var, KFunc kfunc, GOption<?>... opts) {
+    public static Plot densityLine(Var var, KFunc kfunc, GOpt<?>... opts) {
         return plot().add(new DensityLine(var, kfunc, opts));
     }
 
-    public static Plot densityLine(Var var, KFunc kfunc, double bandwidth, GOption<?>... opts) {
+    public static Plot densityLine(Var var, KFunc kfunc, double bandwidth, GOpt<?>... opts) {
         return plot().add(new DensityLine(var, kfunc, bandwidth, opts));
     }
 
-    public static Plot funLine(Double2DoubleFunction f, GOption<?>... opts) {
+    public static Plot funLine(Double2DoubleFunction f, GOpt<?>... opts) {
         return plot().add(new FunLine(f, opts));
     }
 
-    public static Plot lines(Var x, Var y, GOption<?>... opts) {
+    public static Plot lines(Var x, Var y, GOpt<?>... opts) {
         return plot().add(new Lines(x, y, opts));
     }
 
-    public static Plot lines(Var y, GOption<?>... opts) {
+    public static Plot lines(Var y, GOpt<?>... opts) {
         return plot().add(new Lines(y, opts));
     }
 
-    public static Plot points(Var x, Var y, GOption<?>... opts) {
+    public static Plot points(Var x, Var y, GOpt<?>... opts) {
         return plot().add(new Points(x, y, opts));
     }
 
-    public static Plot points(Var y, GOption<?>... opts) {
+    public static Plot points(Var y, GOpt<?>... opts) {
         return plot().add(new Points(VarInt.seq(y.size()).name("pos"), y, opts));
     }
 
-    public static Plot rocCurve(ROC roc, GOption<?>... opts) {
+    public static Plot rocCurve(ROC roc, GOpt<?>... opts) {
         return plot().add(new ROCCurve(roc, opts));
     }
 
-    public static Plot barplot(Var category, GOption<?>... opts) {
+    public static Plot barplot(Var category, GOpt<?>... opts) {
         return plot().add(new BarPlot(category, null, null, opts));
     }
 
-    public static Plot barplot(Var category, Var cond, GOption<?>... opts) {
+    public static Plot barplot(Var category, Var cond, GOpt<?>... opts) {
         return plot().add(new BarPlot(category, cond, null, opts));
     }
 
-    public static Plot barplot(Var category, Var cond, Var numeric, GOption<?>... opts) {
+    public static Plot barplot(Var category, Var cond, Var numeric, GOpt<?>... opts) {
         return plot().add(new BarPlot(category, cond, numeric, opts));
     }
 
-    public static Plot hLine(double a, GOption<?>... opts) {
+    public static Plot hLine(double a, GOpt<?>... opts) {
         return plot().add(new ABLine(true, a, opts));
     }
 
-    public static Plot vLine(double a, GOption<?>... opts) {
+    public static Plot vLine(double a, GOpt<?>... opts) {
         return plot().add(new ABLine(false, a, opts));
     }
 
-    public static Plot abLine(double a, double b, GOption<?>... opts) {
+    public static Plot abLine(double a, double b, GOpt<?>... opts) {
         return plot().add(new ABLine(a, b, opts));
     }
 
-    public static Plot corrGram(DistanceMatrix d, GOption<?>... opts) {
+    public static Plot corrGram(DistanceMatrix d, GOpt<?>... opts) {
         return corrGram(d, true, true, opts);
     }
 
-    public static Plot corrGram(DistanceMatrix d, boolean labels, boolean grid, GOption<?>... opts) {
+    public static Plot corrGram(DistanceMatrix d, boolean labels, boolean grid, GOpt<?>... opts) {
         return plot().add(new CorrGram(d, labels, grid, opts));
     }
 
-    public static Plot image(BufferedImage image, GOption<?>... opts) {
+    public static Plot image(BufferedImage image, GOpt<?>... opts) {
         return plot().add(new ImageArtist(image, opts));
     }
 
-    public static Plot text(double x, double y, String text, GOption<?>... opts) {
+    public static Plot text(double x, double y, String text, GOpt<?>... opts) {
         return plot().add(new Text(x, y, text, opts));
     }
 
-    public static Plot matrix(Tensor<?> m, GOption<?>... opts) {
+    public static Plot matrix(Tensor<?> m, GOpt<?>... opts) {
         return plot().add(new Matrix(m, opts));
     }
 
-    public static Plot isoCurves(Grid2D grid, double[] levels, GOption<?>... opts) {
+    public static Plot isoCurves(Grid2D grid, double[] levels, GOpt<?>... opts) {
         return plot().add(new IsoCurves(grid, true, true, levels, opts));
     }
 
-    public static Plot isoLines(Grid2D grid, double[] levels, GOption<?>... opts) {
+    public static Plot isoLines(Grid2D grid, double[] levels, GOpt<?>... opts) {
         return plot().add(new IsoCurves(grid, true, false, levels, opts));
     }
 
-    public static Plot isoBands(Grid2D grid, double[] levels, GOption<?>... opts) {
+    public static Plot isoBands(Grid2D grid, double[] levels, GOpt<?>... opts) {
         return plot().add(new IsoCurves(grid, false, true, levels, opts));
     }
 
-    public static Plot silhouette(ClusterSilhouette silhouette, GOption<?>... opts) {
+    public static Plot silhouette(ClusterSilhouette silhouette, GOpt<?>... opts) {
         return plot().silhouette(silhouette, opts);
     }
 
-    public static GridLayer scatters(Frame df, GOption<?>... opts) {
+    public static GridLayer scatters(Frame df, GOpt<?>... opts) {
         var grid = gridLayer(df.varCount(), df.varCount());
         for (int i = 0; i < df.varCount(); i++) {
             for (int j = 0; j < df.varCount(); j++) {

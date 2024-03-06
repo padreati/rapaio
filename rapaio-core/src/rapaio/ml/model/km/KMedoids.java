@@ -117,7 +117,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
 
     @Override
     public KMedoids coreFit(Frame df, Var weights) {
-        Tensor<Double> x = df.mapVars(inputNames).dtNew();
+        Tensor<Double> x = df.mapVars(inputNames).tensor();
         if (k.get() > x.dim(0)) {
             throw new IllegalArgumentException(
                     "Number of clusters %d bigger than number of instances %d.".formatted(k.get(), x.dim(0)));
@@ -496,7 +496,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
 
     @Override
     public ClusteringResult<KMedoids> corePredict(Frame df, boolean withScores) {
-        Tensor<Double> x = df.mapVars(inputNames).dtNew();
+        Tensor<Double> x = df.mapVars(inputNames).tensor();
         int[] assign = new int[x.dim(0)];
         for (int i = 0; i < assign.length; i++) {
             int min = 0;

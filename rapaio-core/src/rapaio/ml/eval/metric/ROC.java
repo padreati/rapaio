@@ -41,7 +41,7 @@ import rapaio.data.RowComparators;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.data.preprocessing.VarRefSort;
+import rapaio.data.transform.VarRefSort;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;

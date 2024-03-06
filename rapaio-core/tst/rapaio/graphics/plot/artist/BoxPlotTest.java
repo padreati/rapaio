@@ -24,7 +24,7 @@ package rapaio.graphics.plot.artist;
 import static java.util.stream.Collectors.*;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOptions.*;
+import static rapaio.graphics.opt.GOpts.*;
 
 import java.io.IOException;
 import java.util.Arrays;

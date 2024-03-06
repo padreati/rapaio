@@ -39,8 +39,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.io.Serial;
 
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -63,13 +63,13 @@ public class Segment extends Artist {
         ARROW
     }
 
-    public Segment(Type type, double x1, double y1, double x2, double y2, GOption<?>... opts) {
+    public Segment(Type type, double x1, double y1, double x2, double y2, GOpt<?>... opts) {
         this.type = type;
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        this.options = new GOptions().apply(opts);
+        this.options = new GOpts().apply(opts);
     }
 
     @Override

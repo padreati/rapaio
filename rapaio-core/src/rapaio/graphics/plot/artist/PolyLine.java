@@ -39,7 +39,7 @@ import java.awt.geom.Path2D;
 import java.io.Serial;
 
 import rapaio.data.Var;
-import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOpt;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/26/20.
@@ -51,7 +51,7 @@ public class PolyLine extends BasePoly {
 
     private final boolean closed;
 
-    public PolyLine(boolean closed, Var x, Var y, GOption<?>... options) {
+    public PolyLine(boolean closed, Var x, Var y, GOpt<?>... options) {
         super(x, y, options);
         this.closed = closed;
     }

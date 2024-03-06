@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static rapaio.graphics.Plotter.plot;
-import static rapaio.graphics.opt.GOptions.color;
-import static rapaio.graphics.opt.GOptions.halign;
+import static rapaio.graphics.opt.GOpts.color;
+import static rapaio.graphics.opt.GOpts.halign;
 
 public class TextTest extends AbstractArtistTest {
 

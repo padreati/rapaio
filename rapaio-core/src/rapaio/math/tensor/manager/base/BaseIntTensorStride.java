@@ -114,11 +114,11 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
         var result = engine.ofInt().zeros(Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
-        var it = loopIterator(askOrder);
-        while (it.hasNext()) {
-            int off = it.nextInt();
-            for (int i = 0, p = off; i < it.size(); i++, p += it.step()) {
+        var loop = StrideLoopDescriptor.of(layout, askOrder);
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 out.setInt(ptr++, storage.getInt(p));
+                p += loop.step;
             }
         }
         return result;
@@ -172,12 +172,13 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
 
     @Override
     public Tensor<Integer> fill_(Integer value) {
-        for (int offset : loop.offsets) {
+        for (int p : loop.offsets) {
             if (loop.step == 1) {
-                storage.fillInt(value, offset, loop.size);
+                storage.fillInt(value, p, loop.size);
             } else {
-                for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+                for (int i = 0; i < loop.size; i++) {
                     storage.setInt(p, value);
+                    p += loop.step;
                 }
             }
         }
@@ -186,14 +187,15 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
 
     @Override
     public Tensor<Integer> fillNan_(Integer value) {
-        if(!dtype().floatingPoint()) {
+        if (!dtype().floatingPoint()) {
             return this;
         }
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (dtype().isNaN(storage.getInt(p))) {
                     storage.setInt(p, value);
                 }
+                p += loop.step;
             }
         }
         return this;
@@ -201,14 +203,15 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
 
     @Override
     public Tensor<Integer> clamp_(Integer min, Integer max) {
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (!dtype().isNaN(min) && storage.getInt(p) < min) {
                     storage.setInt(p, min);
                 }
                 if (!dtype().isNaN(max) && storage.getInt(p) > max) {
                     storage.setInt(p, max);
                 }
+                p += loop.step;
             }
         }
         return this;
@@ -223,9 +226,10 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     private void unaryOpStep(TensorUnaryOp op) {
-        for (int off : loop.offsets) {
-            for (int i = 0, p = off; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 storage.setInt(p, op.applyInt(storage.getInt(p)));
+                p += loop.step;
             }
         }
     }
@@ -263,9 +267,10 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     void binaryScalarOpStep(TensorBinaryOp op, int value) {
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 storage.setInt(p, op.applyInt(storage.getInt(p), value));
+                p += loop.step;
             }
         }
     }
@@ -313,17 +318,15 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
         BaseIntTensorStride dts = (BaseIntTensorStride) tensor;
+
+        int offset1 = layout.offset();
+        int offset2 = dts.layout.offset();
         int step1 = layout.stride(0);
         int step2 = dts.layout.stride(0);
 
-        int start1 = layout.offset() + start * step1;
-        int end1 = layout.offset() + end * step1;
-        int start2 = dts.layout.offset() + start * step2;
-
         int sum = 0;
-        for (int i = start1; i < end1; i += step1) {
-            sum += (int) (storage.getInt(i) * dts.storage.getInt(start2));
-            start2 += step2;
+        for (int i = start; i < end; i++) {
+            sum += (int) (storage.getInt(offset1 + i * step1) * dts.storage.getInt(offset2 + i * step2));
         }
         return sum;
     }
@@ -334,11 +337,11 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
             throw new IllegalArgumentException("This operation is available only for vectors.");
         }
         Storage<Integer> newStorage = engine.storage().ofInt().zeros(before + dim(0) + after);
-        var loop = loopIterator();
-        while (loop.hasNext()) {
-            int offset = loop.next();
-            for (int i = 0; i < loop.size(); i++) {
-                newStorage.setInt(before + i, ptrGetInt(offset + i * loop.step()));
+        var loop = StrideLoopDescriptor.of(layout, Order.S);
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                newStorage.setInt(before + i, ptrGetInt(p));
+                p += loop.step;
             }
         }
         return engine.ofInt().stride(Shape.of(before + dim(0) + after), Order.C, newStorage);
@@ -464,7 +467,26 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     @Override
+    public Tensor<Integer> diag() {
+        if (!isMatrix()) {
+            throw new OperationNotAvailableException("This operation is available only on tensor matrix.");
+        }
+        if (dim(0) != dim(1)) {
+            throw new OperationNotAvailableException("This operation is avaiable only on a square matrix.");
+        }
+        int n = dim(0);
+        int[] diag = new int[n];
+        for (int i = 0; i < n; i++) {
+            diag[i] = getInt(i, i);
+        }
+        return manager().ofInt().stride(Shape.of(n), diag);
+    }
+
+    @Override
     public Integer norm(Integer pow) {
+        if (!dtype().floatingPoint()) {
+            throw new OperationNotAvailableException("This operation is only available on floating point data types.");
+        }
         if (pow < 0) {
             throw new IllegalArgumentException(STR."Norm power p=\{pow} must have a value greater than 0.");
         }
@@ -476,12 +498,12 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
         }
 
         int sum = (int) 0;
-        var it = loopIterator();
-        while (it.hasNext()) {
-            int offset = it.next();
-            for (int i = 0, p = offset; i < it.size(); i++, p += it.step()) {
+        var loop = StrideLoopDescriptor.of(layout, Order.S);
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 int value = (int) Math.abs(storage.getInt(p));
                 sum += (int) Math.pow(value, pow);
+                p += loop.step;
             }
         }
         return (int) Math.pow(sum, 1. / pow);
@@ -526,9 +548,10 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
         int mean = (int) (sum / size);
         // second pass adjustments for mean
         sum = 0;
-        for (int off : loop.offsets) {
+        for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                sum += (int) (storage.getInt(off + i * loop.step) - mean);
+                sum += (int) (storage.getInt(p) - mean);
+                p += loop.step;
             }
         }
         return (int) (mean + sum / size);
@@ -546,9 +569,10 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
         int mean = (int) (sum / size);
         // second pass adjustments for mean
         sum = 0;
-        for (int off : loop.offsets) {
+        for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                int v = storage.getInt(off + i * loop.step);
+                int v = storage.getInt(p);
+                p += loop.step;
                 if (dtype().isNaN(v)) {
                     continue;
                 }
@@ -556,40 +580,6 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
             }
         }
         return (int) (mean + sum / size);
-    }
-
-    @Override
-    public Integer var() {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        int size = size();
-        // first pass compute raw mean
-        int sum = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                sum += storage.getInt(offset + i * loop.step);
-            }
-        }
-        int mean = (int) (sum / size);
-        // second pass adjustments for mean
-        sum = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                sum += (int) (storage.getInt(offset + i * loop.step) - mean);
-            }
-        }
-        mean += (int) (sum / size);
-        // third pass compute variance
-        int sum2 = 0;
-        int sum3 = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
-                sum2 += (int) ((storage.getInt(p) - mean) * (storage.getInt(p) - mean));
-                sum3 += (int) (storage.getInt(p) - mean);
-            }
-        }
-        return (int) ((sum2 - (sum3 * sum3) / size) / size);
     }
 
     @Override
@@ -617,10 +607,11 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
         // third pass compute variance
         int sum2 = 0;
         int sum3 = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 sum2 += (int) ((storage.getInt(p) - mean) * (storage.getInt(p) - mean));
                 sum3 += (int) (storage.getInt(p) - mean);
+                p += loop.step;
             }
         }
         return (int) ((sum2 - (sum3 * sum3) / (size - ddof)) / (size - ddof));
@@ -631,11 +622,11 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
         int argmax = -1;
         int argvalue = TensorAssociativeOp.MAX.initInt();
         var i = 0;
-        var it = loopIterator(order);
-        while (it.hasNext()) {
-            int offset = it.next();
+        var loop = StrideLoopDescriptor.of(layout, order);
+        for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
-                int value = storage.getInt(offset + j * loop.step);
+                int value = storage.getInt(p);
+                p += loop.step;
                 if (value > argvalue) {
                     argvalue = value;
                     argmax = i;
@@ -651,11 +642,11 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
         int argmin = -1;
         int argvalue = TensorAssociativeOp.MIN.initInt();
         var i = 0;
-        var it = loopIterator(order);
-        while (it.hasNext()) {
-            int offset = it.next();
+        var loop = StrideLoopDescriptor.of(layout, order);
+        for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
-                int value = storage.getInt(offset + j * loop.step);
+                int value = storage.getInt(p);
+                p += loop.step;
                 if (value < argvalue) {
                     argvalue = value;
                     argmin = i;
@@ -669,11 +660,12 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     @Override
     public int nanCount() {
         int count = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (dtype().isNaN(storage.getInt(p))) {
                     count++;
                 }
+                p += loop.step;
             }
         }
         return count;
@@ -682,11 +674,12 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     @Override
     public int zeroCount() {
         int count = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (storage.getInt(p) == 0) {
                     count++;
                 }
+                p += loop.step;
             }
         }
         return count;
@@ -695,9 +688,10 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     @Override
     protected Integer associativeOp(TensorAssociativeOp op) {
         int agg = op.initInt();
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 agg = op.aggInt(agg, storage.getInt(p));
+                p += loop.step;
             }
         }
         return agg;
@@ -706,11 +700,12 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     @Override
     protected Integer nanAssociativeOp(TensorAssociativeOp op) {
         int aggregate = op.initInt();
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (!dtype().isNaN(storage.getInt(p))) {
                     aggregate = op.aggInt(aggregate, storage.getInt(p));
                 }
+                p += loop.step;
             }
         }
         return aggregate;
@@ -770,9 +765,10 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     private void sameLayoutCopy(Storage<Integer> copy, Order askOrder) {
         var loop = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 copy.setInt(last++, storage.getInt(p));
+                p += loop.step;
             }
         }
     }
@@ -855,9 +851,10 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     private void directCopyTo(BaseIntTensorStride src, BaseIntTensorStride dst, Order askOrder) {
         var loop = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 dst.storage.setInt(it2.nextInt(), src.storage.getInt(p));
+                p += loop.step;
             }
         }
     }

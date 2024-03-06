@@ -186,7 +186,7 @@ public class QRDecomposition<N extends Number> implements Serializable {
         boolean isVector = B.isVector();
 
         if (isVector) {
-            B = B.unsqueeze(1);
+            B = B.stretch(1);
         }
 
         if (B.dim(0) != QR.dim(0)) {

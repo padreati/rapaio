@@ -114,11 +114,11 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         var result = engine.ofFloat().zeros(Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
-        var it = loopIterator(askOrder);
-        while (it.hasNext()) {
-            int off = it.nextInt();
-            for (int i = 0, p = off; i < it.size(); i++, p += it.step()) {
+        var loop = StrideLoopDescriptor.of(layout, askOrder);
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 out.setFloat(ptr++, storage.getFloat(p));
+                p += loop.step;
             }
         }
         return result;
@@ -172,12 +172,13 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
 
     @Override
     public Tensor<Float> fill_(Float value) {
-        for (int offset : loop.offsets) {
+        for (int p : loop.offsets) {
             if (loop.step == 1) {
-                storage.fillFloat(value, offset, loop.size);
+                storage.fillFloat(value, p, loop.size);
             } else {
-                for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+                for (int i = 0; i < loop.size; i++) {
                     storage.setFloat(p, value);
+                    p += loop.step;
                 }
             }
         }
@@ -186,14 +187,15 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
 
     @Override
     public Tensor<Float> fillNan_(Float value) {
-        if(!dtype().floatingPoint()) {
+        if (!dtype().floatingPoint()) {
             return this;
         }
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (dtype().isNaN(storage.getFloat(p))) {
                     storage.setFloat(p, value);
                 }
+                p += loop.step;
             }
         }
         return this;
@@ -201,14 +203,15 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
 
     @Override
     public Tensor<Float> clamp_(Float min, Float max) {
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (!dtype().isNaN(min) && storage.getFloat(p) < min) {
                     storage.setFloat(p, min);
                 }
                 if (!dtype().isNaN(max) && storage.getFloat(p) > max) {
                     storage.setFloat(p, max);
                 }
+                p += loop.step;
             }
         }
         return this;
@@ -223,9 +226,10 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     }
 
     private void unaryOpStep(TensorUnaryOp op) {
-        for (int off : loop.offsets) {
-            for (int i = 0, p = off; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 storage.setFloat(p, op.applyFloat(storage.getFloat(p)));
+                p += loop.step;
             }
         }
     }
@@ -263,9 +267,10 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     }
 
     void binaryScalarOpStep(TensorBinaryOp op, float value) {
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 storage.setFloat(p, op.applyFloat(storage.getFloat(p), value));
+                p += loop.step;
             }
         }
     }
@@ -313,17 +318,15 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
         BaseFloatTensorStride dts = (BaseFloatTensorStride) tensor;
+
+        int offset1 = layout.offset();
+        int offset2 = dts.layout.offset();
         int step1 = layout.stride(0);
         int step2 = dts.layout.stride(0);
 
-        int start1 = layout.offset() + start * step1;
-        int end1 = layout.offset() + end * step1;
-        int start2 = dts.layout.offset() + start * step2;
-
         float sum = 0;
-        for (int i = start1; i < end1; i += step1) {
-            sum += (float) (storage.getFloat(i) * dts.storage.getFloat(start2));
-            start2 += step2;
+        for (int i = start; i < end; i++) {
+            sum += (float) (storage.getFloat(offset1 + i * step1) * dts.storage.getFloat(offset2 + i * step2));
         }
         return sum;
     }
@@ -334,11 +337,11 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
             throw new IllegalArgumentException("This operation is available only for vectors.");
         }
         Storage<Float> newStorage = engine.storage().ofFloat().zeros(before + dim(0) + after);
-        var loop = loopIterator();
-        while (loop.hasNext()) {
-            int offset = loop.next();
-            for (int i = 0; i < loop.size(); i++) {
-                newStorage.setFloat(before + i, ptrGetFloat(offset + i * loop.step()));
+        var loop = StrideLoopDescriptor.of(layout, Order.S);
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                newStorage.setFloat(before + i, ptrGetFloat(p));
+                p += loop.step;
             }
         }
         return engine.ofFloat().stride(Shape.of(before + dim(0) + after), Order.C, newStorage);
@@ -464,7 +467,26 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     }
 
     @Override
+    public Tensor<Float> diag() {
+        if (!isMatrix()) {
+            throw new OperationNotAvailableException("This operation is available only on tensor matrix.");
+        }
+        if (dim(0) != dim(1)) {
+            throw new OperationNotAvailableException("This operation is avaiable only on a square matrix.");
+        }
+        int n = dim(0);
+        float[] diag = new float[n];
+        for (int i = 0; i < n; i++) {
+            diag[i] = getFloat(i, i);
+        }
+        return manager().ofFloat().stride(Shape.of(n), diag);
+    }
+
+    @Override
     public Float norm(Float pow) {
+        if (!dtype().floatingPoint()) {
+            throw new OperationNotAvailableException("This operation is only available on floating point data types.");
+        }
         if (pow < 0) {
             throw new IllegalArgumentException(STR."Norm power p=\{pow} must have a value greater than 0.");
         }
@@ -476,12 +498,12 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         }
 
         float sum = (float) 0;
-        var it = loopIterator();
-        while (it.hasNext()) {
-            int offset = it.next();
-            for (int i = 0, p = offset; i < it.size(); i++, p += it.step()) {
+        var loop = StrideLoopDescriptor.of(layout, Order.S);
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 float value = (float) Math.abs(storage.getFloat(p));
                 sum += (float) Math.pow(value, pow);
+                p += loop.step;
             }
         }
         return (float) Math.pow(sum, 1. / pow);
@@ -526,9 +548,10 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         float mean = (float) (sum / size);
         // second pass adjustments for mean
         sum = 0;
-        for (int off : loop.offsets) {
+        for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                sum += (float) (storage.getFloat(off + i * loop.step) - mean);
+                sum += (float) (storage.getFloat(p) - mean);
+                p += loop.step;
             }
         }
         return (float) (mean + sum / size);
@@ -546,9 +569,10 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         float mean = (float) (sum / size);
         // second pass adjustments for mean
         sum = 0;
-        for (int off : loop.offsets) {
+        for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                float v = storage.getFloat(off + i * loop.step);
+                float v = storage.getFloat(p);
+                p += loop.step;
                 if (dtype().isNaN(v)) {
                     continue;
                 }
@@ -556,40 +580,6 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
             }
         }
         return (float) (mean + sum / size);
-    }
-
-    @Override
-    public Float var() {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        int size = size();
-        // first pass compute raw mean
-        float sum = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                sum += storage.getFloat(offset + i * loop.step);
-            }
-        }
-        float mean = (float) (sum / size);
-        // second pass adjustments for mean
-        sum = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                sum += (float) (storage.getFloat(offset + i * loop.step) - mean);
-            }
-        }
-        mean += (float) (sum / size);
-        // third pass compute variance
-        float sum2 = 0;
-        float sum3 = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
-                sum2 += (float) ((storage.getFloat(p) - mean) * (storage.getFloat(p) - mean));
-                sum3 += (float) (storage.getFloat(p) - mean);
-            }
-        }
-        return (float) ((sum2 - (sum3 * sum3) / size) / size);
     }
 
     @Override
@@ -617,10 +607,11 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         // third pass compute variance
         float sum2 = 0;
         float sum3 = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 sum2 += (float) ((storage.getFloat(p) - mean) * (storage.getFloat(p) - mean));
                 sum3 += (float) (storage.getFloat(p) - mean);
+                p += loop.step;
             }
         }
         return (float) ((sum2 - (sum3 * sum3) / (size - ddof)) / (size - ddof));
@@ -631,11 +622,11 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         int argmax = -1;
         float argvalue = TensorAssociativeOp.MAX.initFloat();
         var i = 0;
-        var it = loopIterator(order);
-        while (it.hasNext()) {
-            int offset = it.next();
+        var loop = StrideLoopDescriptor.of(layout, order);
+        for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
-                float value = storage.getFloat(offset + j * loop.step);
+                float value = storage.getFloat(p);
+                p += loop.step;
                 if (value > argvalue) {
                     argvalue = value;
                     argmax = i;
@@ -651,11 +642,11 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         int argmin = -1;
         float argvalue = TensorAssociativeOp.MIN.initFloat();
         var i = 0;
-        var it = loopIterator(order);
-        while (it.hasNext()) {
-            int offset = it.next();
+        var loop = StrideLoopDescriptor.of(layout, order);
+        for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
-                float value = storage.getFloat(offset + j * loop.step);
+                float value = storage.getFloat(p);
+                p += loop.step;
                 if (value < argvalue) {
                     argvalue = value;
                     argmin = i;
@@ -669,11 +660,12 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     public int nanCount() {
         int count = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (dtype().isNaN(storage.getFloat(p))) {
                     count++;
                 }
+                p += loop.step;
             }
         }
         return count;
@@ -682,11 +674,12 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     public int zeroCount() {
         int count = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (storage.getFloat(p) == 0) {
                     count++;
                 }
+                p += loop.step;
             }
         }
         return count;
@@ -695,9 +688,10 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     protected Float associativeOp(TensorAssociativeOp op) {
         float agg = op.initFloat();
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 agg = op.aggFloat(agg, storage.getFloat(p));
+                p += loop.step;
             }
         }
         return agg;
@@ -706,11 +700,12 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     protected Float nanAssociativeOp(TensorAssociativeOp op) {
         float aggregate = op.initFloat();
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (!dtype().isNaN(storage.getFloat(p))) {
                     aggregate = op.aggFloat(aggregate, storage.getFloat(p));
                 }
+                p += loop.step;
             }
         }
         return aggregate;
@@ -770,9 +765,10 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     private void sameLayoutCopy(Storage<Float> copy, Order askOrder) {
         var loop = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 copy.setFloat(last++, storage.getFloat(p));
+                p += loop.step;
             }
         }
     }
@@ -855,9 +851,10 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     private void directCopyTo(BaseFloatTensorStride src, BaseFloatTensorStride dst, Order askOrder) {
         var loop = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 dst.storage.setFloat(it2.nextInt(), src.storage.getFloat(p));
+                p += loop.step;
             }
         }
     }

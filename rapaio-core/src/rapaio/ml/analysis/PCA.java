@@ -115,7 +115,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
         preFit(df);
 
         logger.fine("start pca predict");
-        Tensor<Double> x = df.dtNew();
+        Tensor<Double> x = df.tensor();
         logger.fine("compute mean, sd and do scaling");
         if (center.get()) {
             mean = x.mean(0);
@@ -177,7 +177,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
      */
     public Frame transform(String prefix, Frame df, int k) {
 
-        Tensor<Double> x = df.mapVars(inputNames).dtNew();
+        Tensor<Double> x = df.mapVars(inputNames).tensor();
 
         if (center.get()) {
             x.bsub_(0, mean);
@@ -212,7 +212,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
                 =================
                 input shape: rows=\{inputRows}, vars=\{inputVars}
                 eigen values:
-                \{eigenValues.unsqueeze(1).toContent(printer, options)}
+                \{eigenValues.stretch(1).toContent(printer, options)}
                 eigen vectors:
                 \{eigenVectors.toContent(printer, options)}
                 """;

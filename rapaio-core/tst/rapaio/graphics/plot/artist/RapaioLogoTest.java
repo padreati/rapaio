@@ -23,14 +23,14 @@ package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.gridLayer;
 import static rapaio.graphics.Plotter.plot;
-import static rapaio.graphics.opt.GOptions.alpha;
-import static rapaio.graphics.opt.GOptions.color;
-import static rapaio.graphics.opt.GOptions.fill;
-import static rapaio.graphics.opt.GOptions.font;
-import static rapaio.graphics.opt.GOptions.halign;
-import static rapaio.graphics.opt.GOptions.heights;
-import static rapaio.graphics.opt.GOptions.lwd;
-import static rapaio.graphics.opt.GOptions.valign;
+import static rapaio.graphics.opt.GOpts.alpha;
+import static rapaio.graphics.opt.GOpts.color;
+import static rapaio.graphics.opt.GOpts.fill;
+import static rapaio.graphics.opt.GOpts.font;
+import static rapaio.graphics.opt.GOpts.halign;
+import static rapaio.graphics.opt.GOpts.heights;
+import static rapaio.graphics.opt.GOpts.lwd;
+import static rapaio.graphics.opt.GOpts.valign;
 
 import java.awt.Color;
 import java.awt.Font;

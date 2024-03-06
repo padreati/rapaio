@@ -48,8 +48,8 @@ import java.util.Map;
 
 import rapaio.data.finance.FinBar;
 import rapaio.data.finance.FinBarSize;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -60,12 +60,12 @@ public class CandlestickChart extends Artist {
     private final List<FinBar> bars;
     private final FinBarSize barSize;
 
-    public CandlestickChart(List<FinBar> bars, FinBarSize barSize, GOption<?>... opts) {
+    public CandlestickChart(List<FinBar> bars, FinBarSize barSize, GOpt<?>... opts) {
         this.bars = bars;
         this.barSize = barSize;
 
         // default values can stay here, before general bind
-        options = new GOptions().apply(GOptions.fill(
+        options = new GOpts().apply(GOpts.fill(
                         NColor.tab_orange, // state 0
                         NColor.tab_green, // state 1
                         NColor.tab_red // state -1

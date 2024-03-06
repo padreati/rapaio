@@ -171,7 +171,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         errors = VarDouble.empty().name("errors");
 
         // initialize design matrix
-        Tensor<Double> x = df.mapVars(inputNames).dtNew();
+        Tensor<Double> x = df.mapVars(inputNames).tensor();
 
         Random random = getRandom();
 
@@ -210,7 +210,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     @Override
     public MWKMeansResult corePredict(Frame df, boolean withScores) {
 
-        Tensor<Double> x = df.mapVars(inputNames).dtNew();
+        Tensor<Double> x = df.mapVars(inputNames).tensor();
         int[] assign = computeAssignmentAndError(x, false);
 
         return MWKMeansResult.valueOf(this, df, VarInt.wrap(assign));

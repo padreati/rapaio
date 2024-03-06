@@ -37,7 +37,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarLong;
 import rapaio.data.VarNominal;
-import rapaio.data.preprocessing.VarRefSort;
+import rapaio.data.transform.VarRefSort;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.

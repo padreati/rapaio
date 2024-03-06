@@ -52,6 +52,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import rapaio.core.distributions.Distribution;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
@@ -67,6 +68,7 @@ import rapaio.printer.opt.POpt;
  * The placeholder for missing value is Double.NaN. Any form of usage of Double.NaN
  * on set/add operation will result in a missing value.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class VarDouble extends AbstractVar implements Iterable<Double> {
@@ -442,10 +444,10 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public float getFloat(int row) {
-        if(isMissing(row)) {
+        if (isMissing(row)) {
             return Float.NaN;
         }
-        return (float)data[row];
+        return (float) data[row];
     }
 
     @Override
@@ -595,8 +597,17 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    public Tensor<Double> dt() {
+    public Tensor<Double> tensor_() {
         return Tensors.stride(Shape.of(rows), Order.C, data);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <N extends Number> Tensor<N> tensor_(DType<N> dType) {
+        if (dType == DType.DOUBLE) {
+            return (Tensor<N>) Tensors.stride(Shape.of(rows), Order.C, data);
+        }
+        return super.tensor_(dType);
     }
 
     @Serial

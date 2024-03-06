@@ -434,11 +434,11 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
      * @return matrix of features
      */
     private Tensor<Double> buildInput(Frame df) {
-        return df.mapVars(inputNames).dtNew();
+        return df.mapVars(inputNames).tensor();
     }
 
     protected Tensor<Double> buildTarget(Frame df) {
-        return df.rvar(targetNames[0]).dtNew();
+        return df.rvar(targetNames[0]).tensor();
     }
 
     @Override
@@ -456,7 +456,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 for (int j = 0; j < vm.size(); j++) {
                     phi_m.setDouble(features.get(featureIndexes[j]).kernel.apply(feat.takesq(0, i)), j);
                 }
-                double variance = 1.0 / beta + phi_m.unsqueeze(0).mm(msigma).mv(phi_m).getDouble();
+                double variance = 1.0 / beta + phi_m.stretch(0).mm(msigma).mv(phi_m).getDouble();
                 Normal normal = Normal.of(pred, Math.sqrt(variance));
                 for (int j = 0; j < quantiles.length; j++) {
                     double q = normal.quantile(quantiles[j]);
@@ -859,8 +859,8 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             for (int i = 0; i < fcount; i++) {
                 Tensor<Double> left = phi_hat.takesq(1, i).take(0, indexes);
                 Tensor<Double> right = phi_dot_y.take(0, indexes);
-                ss[i] = beta * phi_hat.getDouble(i, i) - beta * beta * left.unsqueeze(0).mm(sigma).mv(left).getDouble(0);
-                qq[i] = beta * phi_dot_y.getDouble(i) - beta * beta * left.unsqueeze(0).mm(sigma).mv(right).getDouble(0);
+                ss[i] = beta * phi_hat.getDouble(i, i) - beta * beta * left.stretch(0).mm(sigma).mv(left).getDouble(0);
+                qq[i] = beta * phi_dot_y.getDouble(i) - beta * beta * left.stretch(0).mm(sigma).mv(right).getDouble(0);
             }
 
             for (int i = 0; i < fcount; i++) {
@@ -1111,7 +1111,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             for (int i = 0; i < active.size(); i++) {
                 gammaSum += alpha.getDouble(active.get(i).index) * sigma.getDouble(i, i);
             }
-            double low = yTy - 2 * m.vdot(computePhiDotY()) + m.unsqueeze(0).mm(phiHat).mv(m).getDouble();
+            double low = yTy - 2 * m.vdot(computePhiDotY()) + m.stretch(0).mm(phiHat).mv(m).getDouble();
             beta = (n - active.size() + gammaSum) / low;
         }
 

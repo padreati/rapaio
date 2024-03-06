@@ -56,7 +56,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.data.preprocessing.RefSort;
+import rapaio.data.transform.RefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;

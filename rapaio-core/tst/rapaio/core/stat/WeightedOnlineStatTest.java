@@ -50,7 +50,7 @@ public class WeightedOnlineStatTest {
         VarDouble w = VarDouble.from(x.size(), () -> unif.sampleNext(random));
 
         // normalize w
-        w.dt().mul_(1.0 / w.dt().nanSum());
+        w.tensor_().mul_(1.0 / w.tensor_().nanSum());
 
         WeightedOnlineStat left = WeightedOnlineStat.empty();
         for (int i = 0; i < x.size(); i++) {
@@ -75,7 +75,7 @@ public class WeightedOnlineStatTest {
         VarDouble w = VarDouble.fill(100, 1);
 
         VarDouble wnorm = w.copy();
-        wnorm.dt().mul_(1.0 / wnorm.dt().nanSum());
+        wnorm.tensor_().mul_(1.0 / wnorm.tensor_().nanSum());
 
         WeightedOnlineStat wstat = WeightedOnlineStat.empty();
         WeightedOnlineStat wnstat = WeightedOnlineStat.empty();

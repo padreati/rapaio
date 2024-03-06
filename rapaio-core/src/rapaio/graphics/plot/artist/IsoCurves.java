@@ -33,8 +33,8 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.core.tools.Grid2D;
 import rapaio.data.Var;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -61,12 +61,12 @@ public class IsoCurves extends Artist {
     private final boolean contour;
     private final boolean fill;
 
-    public IsoCurves(Grid2D grid, boolean contour, boolean fill, double[] levels, GOption<?>... opts) {
+    public IsoCurves(Grid2D grid, boolean contour, boolean fill, double[] levels, GOpt<?>... opts) {
         this.grid = grid;
         this.levels = levels;
         this.contour = contour;
         this.fill = fill;
-        this.options = new GOptions().apply(opts);
+        this.options = new GOpts().apply(opts);
     }
 
     @Override

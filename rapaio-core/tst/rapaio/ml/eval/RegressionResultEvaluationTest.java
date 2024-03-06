@@ -72,10 +72,10 @@ public class RegressionResultEvaluationTest {
                 .seed.set(123L);
 
         Var target = df.rvar(TARGET_NAME);
-        double mean = target.dt().nanMean();
+        double mean = target.tensor_().nanMean();
         double count = target.size();
 
-        double expectedScore = Math.sqrt(target.dtNew().sub_(mean).sqr_().nanSum() / count);
+        double expectedScore = Math.sqrt(target.tensor().sub_(mean).sqr_().nanSum() / count);
 
         RegressionEvaluationResult result = eval.run();
         assertEquals(2, result.getTrainScores().rowCount());

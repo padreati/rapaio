@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.preprocessing.VarRefSort;
+import rapaio.data.transform.VarRefSort;
 import rapaio.datasets.Datasets;
 import rapaio.ml.model.tree.RTree;
 

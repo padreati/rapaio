@@ -16,7 +16,7 @@ module rapaio.core {
     exports rapaio.core.tools;
 
     exports rapaio.data;
-    exports rapaio.data.preprocessing;
+    exports rapaio.data.transform;
     exports rapaio.data.format;
     exports rapaio.data.finance;
     exports rapaio.data.group;

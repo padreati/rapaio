@@ -25,7 +25,7 @@ import static java.lang.StrictMath.*;
 
 import static rapaio.graphics.Plotter.*;
 import static rapaio.graphics.opt.Palette.*;
-import static rapaio.graphics.opt.GOptions.*;
+import static rapaio.graphics.opt.GOpts.*;
 
 import java.io.IOException;
 import java.util.function.BiFunction;

@@ -36,6 +36,10 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
+import rapaio.math.tensor.operator.impl.AssocOpAdd;
+import rapaio.math.tensor.operator.impl.AssocOpMax;
+import rapaio.math.tensor.operator.impl.AssocOpMin;
+import rapaio.math.tensor.operator.impl.AssocOpMul;
 
 public interface TensorAssociativeOp {
 
@@ -45,357 +49,35 @@ public interface TensorAssociativeOp {
     TensorAssociativeOp MIN = new AssocOpMin();
 
     double initDouble();
+
     double aggDouble(double a, double b);
 
     float initFloat();
+
     float aggFloat(float a, float b);
 
     int initInt();
+
     int aggInt(int a, int b);
 
     byte initByte();
+
     byte aggByte(byte a, byte b);
 
     ByteVector initByte(VectorSpecies<Byte> species);
+
     IntVector initInt(VectorSpecies<Integer> species);
+
     FloatVector initFloat(VectorSpecies<Float> species);
+
     DoubleVector initDouble(VectorSpecies<Double> species);
 
     ByteVector aggByte(VectorSpecies<Byte> species, ByteVector a, ByteVector b);
+
     IntVector aggInt(VectorSpecies<Integer> species, IntVector a, IntVector b);
+
     FloatVector aggFloat(VectorSpecies<Float> species, FloatVector a, FloatVector b);
+
     DoubleVector aggDouble(VectorSpecies<Double> species, DoubleVector a, DoubleVector b);
-}
-
-final class AssocOpAdd implements TensorAssociativeOp {
-
-    @Override
-    public double initDouble() {
-        return 0;
-    }
-
-    @Override
-    public double aggDouble(double a, double b) {
-        return a + b;
-    }
-
-    @Override
-    public DoubleVector initDouble(VectorSpecies<Double> species) {
-        return DoubleVector.zero(species);
-    }
-
-    @Override
-    public DoubleVector aggDouble(VectorSpecies<Double> species, DoubleVector a, DoubleVector b) {
-        return a.add(b);
-    }
-
-    @Override
-    public float initFloat() {
-        return 0f;
-    }
-
-    @Override
-    public float aggFloat(float a, float b) {
-        return a + b;
-    }
-
-    @Override
-    public FloatVector initFloat(VectorSpecies<Float> species) {
-        return FloatVector.zero(species);
-    }
-
-    @Override
-    public FloatVector aggFloat(VectorSpecies<Float> species, FloatVector a, FloatVector b) {
-        return a.add(b);
-    }
-
-    @Override
-    public int initInt() {
-        return 0;
-    }
-
-    @Override
-    public int aggInt(int a, int b) {
-        return a + b;
-    }
-
-    @Override
-    public IntVector initInt(VectorSpecies<Integer> species) {
-        return IntVector.zero(species);
-    }
-
-    @Override
-    public IntVector aggInt(VectorSpecies<Integer> species, IntVector a, IntVector b) {
-        return a.add(b);
-    }
-
-    @Override
-    public byte initByte() {
-        return 0;
-    }
-
-    @Override
-    public byte aggByte(byte a, byte b) {
-        return (byte) (a + b);
-    }
-
-    @Override
-    public ByteVector initByte(VectorSpecies<Byte> species) {
-        return ByteVector.zero(species);
-    }
-
-    @Override
-    public ByteVector aggByte(VectorSpecies<Byte> species, ByteVector a, ByteVector b) {
-        return a.add(b);
-    }
-}
-
-final class AssocOpMul implements TensorAssociativeOp {
-
-    @Override
-    public double initDouble() {
-        return 1;
-    }
-
-    @Override
-    public double aggDouble(double a, double b) {
-        return a * b;
-    }
-
-    @Override
-    public DoubleVector initDouble(VectorSpecies<Double> species) {
-        return DoubleVector.broadcast(species, 1);
-    }
-
-    @Override
-    public DoubleVector aggDouble(VectorSpecies<Double> species, DoubleVector a, DoubleVector b) {
-        return a.mul(b);
-    }
-
-    @Override
-    public float initFloat() {
-        return 1f;
-    }
-
-    @Override
-    public float aggFloat(float a, float b) {
-        return a * b;
-    }
-
-    @Override
-    public FloatVector initFloat(VectorSpecies<Float> species) {
-        return FloatVector.broadcast(species, 1);
-    }
-
-    @Override
-    public FloatVector aggFloat(VectorSpecies<Float> species, FloatVector a, FloatVector b) {
-        return a.mul(b);
-    }
-
-    @Override
-    public int initInt() {
-        return 1;
-    }
-
-    @Override
-    public int aggInt(int a, int b) {
-        return a * b;
-    }
-
-    @Override
-    public IntVector initInt(VectorSpecies<Integer> species) {
-        return IntVector.broadcast(species, 1);
-    }
-
-    @Override
-    public IntVector aggInt(VectorSpecies<Integer> species, IntVector a, IntVector b) {
-        return a.mul(b);
-    }
-
-    @Override
-    public byte initByte() {
-        return 1;
-    }
-
-    @Override
-    public byte aggByte(byte a, byte b) {
-        return (byte) (a * b);
-    }
-
-    @Override
-    public ByteVector initByte(VectorSpecies<Byte> species) {
-        return ByteVector.broadcast(species, 1);
-    }
-
-    @Override
-    public ByteVector aggByte(VectorSpecies<Byte> species, ByteVector a, ByteVector b) {
-        return a.mul(b);
-    }
-}
-
-final class AssocOpMax implements TensorAssociativeOp {
-
-    @Override
-    public double initDouble() {
-        return Double.NEGATIVE_INFINITY;
-    }
-
-    @Override
-    public double aggDouble(double a, double b) {
-        return Math.max(a, b);
-    }
-
-    @Override
-    public DoubleVector initDouble(VectorSpecies<Double> species) {
-        return DoubleVector.broadcast(species, Double.NEGATIVE_INFINITY);
-    }
-
-    @Override
-    public DoubleVector aggDouble(VectorSpecies<Double> species, DoubleVector a, DoubleVector b) {
-        return a.max(b);
-    }
-
-    @Override
-    public float initFloat() {
-        return Float.NEGATIVE_INFINITY;
-    }
-
-    @Override
-    public float aggFloat(float a, float b) {
-        return Math.max(a, b);
-    }
-
-    @Override
-    public FloatVector initFloat(VectorSpecies<Float> species) {
-        return FloatVector.broadcast(species, Float.NEGATIVE_INFINITY);
-    }
-
-    @Override
-    public FloatVector aggFloat(VectorSpecies<Float> species, FloatVector a, FloatVector b) {
-        return a.max(b);
-    }
-
-    @Override
-    public int initInt() {
-        return Integer.MIN_VALUE;
-    }
-
-    @Override
-    public int aggInt(int a, int b) {
-        return Math.max(a, b);
-    }
-
-    @Override
-    public IntVector initInt(VectorSpecies<Integer> species) {
-        return IntVector.broadcast(species, Integer.MIN_VALUE);
-    }
-
-    @Override
-    public IntVector aggInt(VectorSpecies<Integer> species, IntVector a, IntVector b) {
-        return a.max(b);
-    }
-
-    @Override
-    public byte initByte() {
-        return Byte.MIN_VALUE;
-    }
-
-    @Override
-    public byte aggByte(byte a, byte b) {
-        return a >= b ? a : b;
-    }
-
-    @Override
-    public ByteVector initByte(VectorSpecies<Byte> species) {
-        return ByteVector.broadcast(species, Byte.MIN_VALUE);
-    }
-
-    @Override
-    public ByteVector aggByte(VectorSpecies<Byte> species, ByteVector a, ByteVector b) {
-        return a.max(b);
-    }
-}
-
-final class AssocOpMin implements TensorAssociativeOp {
-
-    @Override
-    public double initDouble() {
-        return Double.POSITIVE_INFINITY;
-    }
-
-    @Override
-    public double aggDouble(double a, double b) {
-        return Math.min(a, b);
-    }
-
-    @Override
-    public DoubleVector initDouble(VectorSpecies<Double> species) {
-        return DoubleVector.broadcast(species, Double.POSITIVE_INFINITY);
-    }
-
-    @Override
-    public DoubleVector aggDouble(VectorSpecies<Double> species, DoubleVector a, DoubleVector b) {
-        return a.min(b);
-    }
-
-    @Override
-    public float initFloat() {
-        return Float.POSITIVE_INFINITY;
-    }
-
-    @Override
-    public float aggFloat(float a, float b) {
-        return Math.min(a, b);
-    }
-
-    @Override
-    public FloatVector initFloat(VectorSpecies<Float> species) {
-        return FloatVector.broadcast(species, Float.POSITIVE_INFINITY);
-    }
-
-    @Override
-    public FloatVector aggFloat(VectorSpecies<Float> species, FloatVector a, FloatVector b) {
-        return a.min(b);
-    }
-
-    @Override
-    public int initInt() {
-        return Integer.MAX_VALUE;
-    }
-
-    @Override
-    public int aggInt(int a, int b) {
-        return Math.min(a, b);
-    }
-
-    @Override
-    public IntVector initInt(VectorSpecies<Integer> species) {
-        return IntVector.broadcast(species, Integer.MAX_VALUE);
-    }
-
-    @Override
-    public IntVector aggInt(VectorSpecies<Integer> species, IntVector a, IntVector b) {
-        return a.min(b);
-    }
-
-    @Override
-    public byte initByte() {
-        return Byte.MAX_VALUE;
-    }
-
-    @Override
-    public byte aggByte(byte a, byte b) {
-        return a >= b ? b : a;
-    }
-
-    @Override
-    public ByteVector initByte(VectorSpecies<Byte> species) {
-        return ByteVector.broadcast(species, Byte.MAX_VALUE);
-    }
-
-    @Override
-    public ByteVector aggByte(VectorSpecies<Byte> species, ByteVector a, ByteVector b) {
-        return a.min(b);
-    }
 }
 

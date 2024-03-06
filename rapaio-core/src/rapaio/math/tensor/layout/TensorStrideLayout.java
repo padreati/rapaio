@@ -281,42 +281,87 @@ public class TensorStrideLayout implements StrideLayout {
     }
 
     @Override
-    public StrideLayout squeeze(int axis) {
-        if (dim(axis) != 1) {
+    public StrideLayout squeeze(int... axes) {
+        if (axes.length == 0) {
             return this;
         }
-        int[] newDims = new int[rank() - 1];
-        int[] newStrides = new int[rank() - 1];
-        for (int i = 0; i < rank(); i++) {
-            if (i == axis) {
-                continue;
-            }
-            newDims[i < axis ? i : i - 1] = dim(i);
-            newStrides[i < axis ? i : i - 1] = strides[i];
+        if (axes.length > rank()) {
+            throw new IllegalArgumentException("Matrix allows maximum two axes as parameters.");
         }
-        return StrideLayout.of(Shape.of(newDims), offset, newStrides);
+        if (IntArrays.containsDuplicates(axes)) {
+            throw new IllegalArgumentException("Duplicates values in axis parameters.");
+        }
+
+        int len = 0;
+        int[] newDims = new int[rank()];
+        int[] newStrides = new int[rank()];
+
+        for (int i = 0; i < rank(); i++) {
+            boolean found = false;
+            for (int axis : axes) {
+                if (axis == i) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found || dim(i) > 1) {
+                newDims[len] = dim(i);
+                newStrides[len] = strides[i];
+                len++;
+            }
+        }
+        return new TensorStrideLayout(Shape.of(Arrays.copyOf(newDims, len)), offset, Arrays.copyOf(newStrides, len));
     }
 
     @Override
-    public StrideLayout unsqueeze(int axis) {
-        if (axis < 0 || axis > rank()) {
-            throw new IllegalArgumentException("Axis is out of bounds.");
+    public StrideLayout stretch(int... axes) {
+        if (axes == null || axes.length == 0) {
+            return this;
         }
-        int[] newDims = new int[rank() + 1];
-        int[] newStrides = new int[rank() + 1];
-        for (int i = 0; i < shape().rank(); i++) {
-            newDims[i < axis ? i : i + 1] = dim(i);
-            newStrides[i < axis ? i : i + 1] = stride(i);
+        for (int axis : axes) {
+            if (axis < 0 || axis >= axes.length + 2) {
+                throw new IndexOutOfBoundsException();
+            }
         }
-        newDims[axis] = 1;
-        if (isCOrdered()) {
-            newStrides[axis] = axis == rank() ? 1 : stride(axis);
-        } else if (isFOrdered()) {
-            newStrides[axis] = axis == 0 ? 1 : stride(axis);
-        } else {
-            newStrides[axis] = 1;
+        if (IntArrays.containsDuplicates(axes)) {
+            throw new IllegalArgumentException("Axes contains duplicates.");
+        }
+
+        int len = rank() + axes.length;
+        int[] newDims = IntArrays.newFill(len, 1);
+        int[] newStrides = IntArrays.newFill(len, 0);
+
+        int lastDim = 0;
+        for (int i = 0; i < len; i++) {
+            boolean found = false;
+            for (int axis : axes) {
+                if (axis == i) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                newDims[i] = dim(lastDim);
+                newStrides[i] = strides[lastDim];
+                lastDim++;
+            }
         }
         return StrideLayout.of(Shape.of(newDims), offset(), newStrides);
+    }
+
+    @Override
+    public StrideLayout expand(int axis, int size) {
+        if (dim(axis) != 1) {
+            throw new IllegalArgumentException(STR."Dimension \{axis} must have size 1, but have size \{dim(axis)}.");
+        }
+        if (axis < 0) {
+            throw new IllegalArgumentException(STR."Dimension of the new axis \{axis} must be positive.");
+        }
+        int[] newDims = Arrays.copyOf(dims(), dims().length);
+        int[] newStrides = Arrays.copyOf(strides, strides.length);
+        newDims[axis] = size;
+        newStrides[axis] = 0;
+        return StrideLayout.of(Shape.of(newDims), offset, newStrides);
     }
 
     @Override

@@ -39,7 +39,7 @@ import java.util.Objects;
 import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.preprocessing.AddIntercept;
+import rapaio.data.transform.AddIntercept;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensors;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
@@ -97,7 +97,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
     @Override
     protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
         // add intercept variable
-        Frame transformed = intercept.get() ? AddIntercept.transform().fapply(df) : df;
+        Frame transformed = intercept.get() ? AddIntercept.transform().fitApply(df) : df;
 
         // collect standard information
         FitSetup fitSetup = super.prepareFit(transformed, weights, targetVarNames);

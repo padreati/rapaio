@@ -37,7 +37,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.data.preprocessing.Jitter;
+import rapaio.data.transform.Jitter;
 import rapaio.datasets.Datasets;
 import rapaio.math.tensor.Tensors;
 import rapaio.ml.eval.RandIndex;

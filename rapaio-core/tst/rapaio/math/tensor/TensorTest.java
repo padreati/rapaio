@@ -124,20 +124,23 @@ public class TensorTest {
             testTranspose();
             testFlatten();
             testSqueezeMoveSwapAxis();
+            testStretch();
             testCopy();
             testMathUnary();
             testMathBinaryScalar();
             testMathBinaryVector();
-            vdotTest();
-            mvTest();
+            testVdot();
+            testMv();
             testMm();
             testScatter();
             testTrace();
+            testDiag();
             splitTest();
             chunkTest();
             testRepeatStackConcat();
             testExpand();
             testTake();
+            testNorm();
             aggregateOpsTest();
         }
 
@@ -609,6 +612,7 @@ public class TensorTest {
                 assertEquals(pos, it.position());
                 pos++;
             }
+            assertEquals(2 * 3 * 4, pos);
 
             it = t.ptrIterator(Order.F);
             pos = 0;
@@ -684,6 +688,13 @@ public class TensorTest {
 
             assertTrue(t.swapAxis(0, 2).deepEquals(t.swapAxis(0, 1).swapAxis(1, 2).swapAxis(0, 1)));
             assertTrue(t.moveAxis(0, 2).deepEquals(t.swapAxis(0, 1).swapAxis(1, 2)));
+        }
+
+        void testStretch() {
+            var scalar = g.scalar(g.value(10));
+            assertTensorEqualValues(scalar, scalar.stretch());
+            assertTensorEqualValues(g.zeros(Shape.of(1)).apply_(v -> g.value(10)), scalar.stretch(0));
+            assertTensorEqualValues(g.zeros(Shape.of(1, 1, 1)).apply_(v -> g.value(10)), scalar.stretch(2, 1, 0));
         }
 
         void testCopy() {
@@ -907,7 +918,7 @@ public class TensorTest {
             assertTrue(c1.mul(c2).div(c2).deepEquals(t1.mul_(t2).div_(t2)));
         }
 
-        void vdotTest() {
+        void testVdot() {
 
             int vLen = 23;
             Shape shape = Shape.of(50, vLen);
@@ -937,7 +948,7 @@ public class TensorTest {
             assertEquals(g.value(4 * 4 + 5 * 5 + 6 * 6), t2.vdot(t2, 4, 7));
         }
 
-        void mvTest() {
+        void testMv() {
             var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 1)).mv(g.seq(Shape.of(2))));
             assertEquals("Operands are not valid for matrix-vector multiplication (m = Shape: [10,1], v = Shape: [2]).", e.getMessage());
 
@@ -951,7 +962,7 @@ public class TensorTest {
                 assertEquals(v1.add(g.value(i * 31)).vdot(v1), r1.get(i));
             }
 
-            var r2 = v1.unsqueeze(0).mv(v1);
+            var r2 = v1.stretch(0).mv(v1);
             assertEquals(Shape.of(1), r2.shape());
             assertEquals(v1.vdot(v1), r2.get(0));
         }
@@ -1020,13 +1031,29 @@ public class TensorTest {
         }
 
         void testTrace() {
-            OperationNotAvailableException e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10)).trace());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10)).trace());
             assertEquals("This operation is available only on tensor matrix.", e.getMessage());
 
             e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10, 11)).trace());
             assertEquals("This operation is available only on a square matrix.", e.getMessage());
 
             assertEquals(g.value(0. + 6 + 12 + 18 + 24), g.seq(Shape.of(5, 5)).trace());
+        }
+
+        void testDiag() {
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10)).diag());
+            assertEquals("This operation is available only on tensor matrix.", e.getMessage());
+
+            e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10, 20)).diag());
+            assertEquals("This operation is avaiable only on a square matrix.", e.getMessage());
+
+            var expected = g.zeros(Shape.of(3));
+            expected.set(g.value(0), 0);
+            expected.set(g.value(4), 1);
+            expected.set(g.value(8), 2);
+            assertTensorEqualValues(expected, g.seq(Shape.of(3, 3)).diag());
+
+            assertTensorEqualValues(g.scalar(g.value(10)).stretch(0, 1), g.scalar(g.value(10)).stretch(0, 1).diag());
         }
 
         void splitTest() {
@@ -1159,7 +1186,7 @@ public class TensorTest {
 
             var list1 = new ArrayList<Tensor<N>>();
             for (int i = 0; i < 10; i++) {
-                list1.add(t1.unsqueeze(0));
+                list1.add(t1.stretch(0));
             }
             assertTrue(t2.deepEquals(g.engine().concat(0, list1)));
 
@@ -1195,7 +1222,7 @@ public class TensorTest {
             assertEquals("Dimension 0 must have size 1, but have size 10.", e.getMessage());
 
             e = assertThrows(IllegalArgumentException.class, () -> vx.expand(1, -10));
-            assertEquals("Dimension of the new axis -10 must be positive.", e.getMessage());
+            assertEquals("Invalid shape dimensions: [10,-10].", e.getMessage());
         }
 
         void testTake() {
@@ -1245,6 +1272,39 @@ public class TensorTest {
 
             e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 10)).take(0, 0, -1));
             assertEquals("Index values are invalid, must be in range [0,9].", e.getMessage());
+        }
+
+        void testNorm() {
+            var t1 = g.seq(Shape.of(10, 10));
+            var t2 = g.seq(Shape.of(100));
+            var t3 = g.seq(Shape.of(3));
+
+            switch (g.dType().id()) {
+                case DOUBLE:
+                    assertEquals(t1.norm(), t1.norm(g.value(2)));
+                    assertEquals(t2.abs().sum(), t2.norm(g.value(1)));
+                    assertEquals(t2.sqr().sum().doubleValue(), Math.pow(t2.norm(g.value(2)).doubleValue(), 2), 1e-5);
+                    assertEquals(g.value(Math.pow(1 + Math.pow(2, 0.5), 2)), t3.norm(g.value(0.5)));
+
+                    assertTensorEqualValues(t1.div(t1.norm(g.value(2))), t1.normalize(g.value(2)));
+                    break;
+                case FLOAT:
+                    assertEquals(t1.norm(), t1.norm(g.value(2)));
+                    assertEquals(t2.abs().sum(), t2.norm(g.value(1)));
+                    assertEquals(Math.sqrt(t2.sqr().sum().floatValue()), t2.norm(g.value(2)).floatValue(), 1e-4);
+                    assertEquals(g.value(Math.pow(1 + Math.pow(2, 0.5), 2)).floatValue(), t3.norm(g.value(0.5)).floatValue(), 1e-4);
+
+                    assertTensorEqualValues(t1.div(t1.norm(g.value(2))), t1.normalize(g.value(2)));
+                    break;
+                default:
+                    var e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(3, 2)).norm());
+                    assertEquals("This operation is only available on floating point data types.", e.getMessage());
+            }
+
+            if(g.dType().floatingPoint()) {
+                var e = assertThrows(IllegalArgumentException.class, () -> t1.norm(g.value(-1)));
+                assertEquals("Norm power p=-1.0 must have a value greater than 0.", e.getMessage());
+            }
         }
 
         void aggregateOpsTest() {
@@ -1329,18 +1389,22 @@ public class TensorTest {
     }
 
     private static <N extends Number> void assertTensorEqualValues(Tensor<N> t, Tensor<N> f) {
-        assertTensorEqualValues(Order.C, t, f);
-    }
-
-    private static <N extends Number> void assertTensorEqualValues(Order order, Tensor<N> t, Tensor<N> f) {
-        var itT = t.ptrIterator(order);
-        var itF = f.ptrIterator(order);
+        if (t.size() != f.size()) {
+            throw new AssertionFailedError(STR."Error at tensor: \{t}, flatten: \{f}");
+        }
+        var itT = t.ptrIterator(Order.defaultOrder());
+        var itF = f.ptrIterator(Order.defaultOrder());
+        int count = 0;
         while (itF.hasNext()) {
             try {
                 assertEquals(t.ptrGet(itT.nextInt()), f.ptrGet(itF.nextInt()));
             } catch (AssertionFailedError e) {
                 throw new AssertionFailedError(STR."Error at tensor: \{t}, flatten: \{f}", e);
             }
+            count++;
+        }
+        if (count != t.size()) {
+            throw new AssertionFailedError(STR."Error at tensor: \{t}, flatten: \{f}");
         }
     }
 }

@@ -39,7 +39,7 @@ import java.awt.geom.Path2D;
 import java.io.Serial;
 
 import rapaio.data.Var;
-import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOpt;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/26/20.
@@ -49,11 +49,11 @@ public class PolyFill extends BasePoly {
     @Serial
     private static final long serialVersionUID = 8507830080358347197L;
 
-    public PolyFill(PolyPath polyPath, GOption<?>...options) {
+    public PolyFill(PolyPath polyPath, GOpt<?>...options) {
         super(polyPath.getPath().v1, polyPath.getPath().v2, options);
     }
 
-    public PolyFill(Var x, Var y, GOption<?>... options) {
+    public PolyFill(Var x, Var y, GOpt<?>... options) {
         super(x, y, options);
     }
 

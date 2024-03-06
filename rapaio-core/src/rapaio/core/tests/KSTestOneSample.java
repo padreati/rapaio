@@ -35,7 +35,7 @@ import static rapaio.printer.Format.floatFlex;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
-import rapaio.data.preprocessing.VarSort;
+import rapaio.data.transform.VarSort;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;

@@ -23,7 +23,7 @@ package rapaio.graphics.plot.artist;
 
 import static rapaio.graphics.Plotter.points;
 import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOptions.*;
+import static rapaio.graphics.opt.GOpts.*;
 
 import java.io.IOException;
 
@@ -52,15 +52,15 @@ public class PointsTest extends AbstractArtistTest {
     @Test
     void testPoints() throws IOException {
 
-        Var x = df.rvar(0).dt().add_(11.0).log1p_().dv();
-        Var y = df.rvar(1).dt().add_(11.0).log1p_().dv();
+        Var x = df.rvar(0).tensor_().add_(11.0).log1p_().dv();
+        Var y = df.rvar(1).tensor_().add_(11.0).log1p_().dv();
         Var h = VarDouble.from(x.size(), row -> Math.pow(Math.hypot(x.getDouble(row), y.getDouble(row)), 1.5));
 
         Figure fig = gridLayer(2, 2)
                 .add(points(x))
                 .add(points(x, y, pch.circleFull(), fill(2), color(1)))
-                .add(points(x, y, pch.circleFull(), fill(h), sz(4), palette(Palette.hue(0, 240, h.dt().min(), h.dt().max()))))
-                .add(points(x, pch.circleFull(), fill(y), sz(3), palette(Palette.hue(0, 120, y.dt().min(), y.dt().max()))));
+                .add(points(x, y, pch.circleFull(), fill(h), sz(4), palette(Palette.hue(0, 240, h.tensor_().min(), h.tensor_().max()))))
+                .add(points(x, pch.circleFull(), fill(y), sz(3), palette(Palette.hue(0, 120, y.tensor_().min(), y.tensor_().max()))));
         assertTest(fig, "points-test");
     }
 }

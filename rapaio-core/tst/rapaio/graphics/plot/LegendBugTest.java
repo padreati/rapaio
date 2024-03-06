@@ -34,8 +34,8 @@ package rapaio.graphics.plot;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import static rapaio.graphics.Plotter.funLine;
-import static rapaio.graphics.opt.GOptions.color;
-import static rapaio.graphics.opt.GOptions.labels;
+import static rapaio.graphics.opt.GOpts.color;
+import static rapaio.graphics.opt.GOpts.labels;
 
 import org.junit.jupiter.api.Test;
 

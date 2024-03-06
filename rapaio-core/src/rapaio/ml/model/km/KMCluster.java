@@ -47,7 +47,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarType;
-import rapaio.data.preprocessing.VarSort;
+import rapaio.data.transform.VarSort;
 import rapaio.math.tensor.Tensor;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
@@ -209,7 +209,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
     public KMCluster coreFit(Frame initialDf, Var weights) {
 
         Random random = getRandom();
-        Tensor<Double> m = initialDf.dtNew();
+        Tensor<Double> m = initialDf.tensor();
         c = initializeClusters(random, m);
 
         int[] assignment = IntArrays.newFill(m.dim(0), -1);
@@ -370,7 +370,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
     @Override
     public KMClusterResult corePredict(Frame df, boolean withScores) {
         int[] assignment = IntArrays.newFill(df.rowCount(), -1);
-        Tensor<Double> m = df.dtNew();
+        Tensor<Double> m = df.tensor();
         assignToCentroids(m, assignment, false);
         return KMClusterResult.valueOf(this, df, VarInt.wrap(assignment));
     }

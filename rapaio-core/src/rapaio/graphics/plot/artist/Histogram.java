@@ -31,8 +31,8 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.opt.GOptions.bins;
-import static rapaio.graphics.opt.GOptions.fill;
+import static rapaio.graphics.opt.GOpts.bins;
+import static rapaio.graphics.opt.GOpts.fill;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -43,8 +43,8 @@ import java.io.Serial;
 
 import rapaio.core.tools.HistogramTable;
 import rapaio.data.Var;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
@@ -59,7 +59,7 @@ import rapaio.math.tensor.Tensor;
  * than minimum, respectively maximum values are used instead.
  * <p>
  * The number of bins could be given as parameter through graphical
- * {@link rapaio.graphics.opt.GOptions#bins(int)} option. If this is missing, the number
+ * {@link GOpts#bins(int)} option. If this is missing, the number
  * of bins is computed through Friedman-Diaconis estimator.
  * <p>
  * The range of displayed values is controlled through {@link Plot#xLim(double, double)}
@@ -77,13 +77,13 @@ public class Histogram extends Artist {
     private final String varName;
     private final HistogramTable hist;
 
-    public Histogram(Var v, GOption<?>... opts) {
+    public Histogram(Var v, GOpt<?>... opts) {
         this(v, Double.NaN, Double.NaN, opts);
     }
 
-    public Histogram(Var v, double rangeMinValue, double rangeMaxValue, GOption<?>... opts) {
+    public Histogram(Var v, double rangeMinValue, double rangeMaxValue, GOpt<?>... opts) {
         // default values for histogram
-        options = new GOptions().apply(fill(7)).apply(opts);
+        options = new GOpts().apply(fill(7)).apply(opts);
 
         this.varName = v.name();
         this.hist = new HistogramTable(v, rangeMinValue, rangeMaxValue, options.getBins());

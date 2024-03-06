@@ -31,8 +31,8 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.opt.GOptions.color;
-import static rapaio.graphics.opt.GOptions.palette;
+import static rapaio.graphics.opt.GOpts.color;
+import static rapaio.graphics.opt.GOpts.palette;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -41,8 +41,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 import java.io.Serial;
 
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -57,9 +57,9 @@ public class Matrix extends Artist {
     private static final long serialVersionUID = -642370269224702175L;
     private final Tensor<?> m;
 
-    public Matrix(Tensor<?> m, GOption<?>... opts) {
+    public Matrix(Tensor<?> m, GOpt<?>... opts) {
         this.m = m;
-        this.options = new GOptions()
+        this.options = new GOpts()
                 .apply(color(-1), palette(Palette.hue(0, 240, m.min().doubleValue(), m.max().doubleValue())))
                 .apply(opts);
     }

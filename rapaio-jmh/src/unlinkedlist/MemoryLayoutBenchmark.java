@@ -31,8 +31,8 @@
 
 package unlinkedlist;
 
-import static rapaio.graphics.opt.GOptions.color;
-import static rapaio.graphics.opt.GOptions.labels;
+import static rapaio.graphics.opt.GOpts.color;
+import static rapaio.graphics.opt.GOpts.labels;
 
 import java.io.IOException;
 import java.lang.foreign.Arena;
@@ -61,8 +61,8 @@ import org.openjdk.jmh.runner.options.TimeValue;
 
 import commons.Utils;
 import rapaio.data.Frame;
-import rapaio.data.preprocessing.RefSort;
-import rapaio.data.preprocessing.VarApply;
+import rapaio.data.transform.RefSort;
+import rapaio.data.transform.VarApply;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;

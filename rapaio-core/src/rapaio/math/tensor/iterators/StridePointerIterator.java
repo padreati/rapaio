@@ -41,8 +41,7 @@ public final class StridePointerIterator implements PointerIterator {
     private final StrideLayout c;
     private final int[] index;
     private int position = 0;
-    private int pointer;
-    private int newPointer;
+    private int ptr;
 
     public StridePointerIterator(StrideLayout layout, Order askOrder) {
         this(layout, askOrder, true);
@@ -52,8 +51,7 @@ public final class StridePointerIterator implements PointerIterator {
         c = layout.computeFortranLayout(askOrder, compact);
 
         this.index = new int[c.rank()];
-        this.pointer = c.offset();
-        this.newPointer = c.offset();
+        this.ptr = c.offset();
     }
 
     @Override
@@ -66,27 +64,27 @@ public final class StridePointerIterator implements PointerIterator {
         if (position >= c.size()) {
             throw new NoSuchElementException();
         }
-        pointer = newPointer;
+        int currentPtr = ptr;
         position++;
         int i = 0;
         if (c.rank() > 0) {
             index[i]++;
-            newPointer += c.stride(i);
+            ptr += c.stride(i);
         }
         while (i < c.strides().length) {
             if (index[i] == c.dim(i)) {
                 index[i] = 0;
-                newPointer -= c.dim(i) * c.stride(i);
+                ptr -= c.dim(i) * c.stride(i);
                 if (i < c.rank() - 1) {
                     index[i + 1]++;
-                    newPointer += c.stride(i + 1);
+                    ptr += c.stride(i + 1);
                 }
                 i++;
                 continue;
             }
             break;
         }
-        return pointer;
+        return currentPtr;
     }
 
     @Override

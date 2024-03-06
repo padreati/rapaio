@@ -59,8 +59,8 @@ public class IRLSSolverTest {
         Frame df = Datasets.loasSAheart().removeVars(0).removeVars("typea,adiposity");
         VarDouble intercept = VarDouble.fill(df.rowCount(), 1).name("(Intercept)");
         Frame dfa = SolidFrame.byVars(intercept).bindVars(df.removeVars("chd"));
-        A = dfa.dtNew();
-        b = df.rvar("chd").dtNew();
+        A = dfa.tensor();
+        b = df.rvar("chd").tensor();
     }
 
     @Test

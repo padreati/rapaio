@@ -41,8 +41,8 @@ import java.io.Serial;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.core.distributions.empirical.KDE;
@@ -62,23 +62,23 @@ public class DensityLine extends Artist {
     private final double bandwidth;
     private final KDE kde;
 
-    public DensityLine(Var var, GOption<?>... opts) {
+    public DensityLine(Var var, GOpt<?>... opts) {
         this(var, new KFuncGaussian(), KDE.silvermanBandwidth(var), opts);
     }
 
-    public DensityLine(Var var, double bandwidth, GOption<?>... opts) {
+    public DensityLine(Var var, double bandwidth, GOpt<?>... opts) {
         this(var, new KFuncGaussian(), bandwidth, opts);
     }
 
-    public DensityLine(Var var, KFunc kfunc, GOption<?>... opts) {
+    public DensityLine(Var var, KFunc kfunc, GOpt<?>... opts) {
         this(var, kfunc, KDE.silvermanBandwidth(var), opts);
     }
 
-    public DensityLine(Var var, KFunc kfunc, double bandwidth, GOption<?>... opts) {
+    public DensityLine(Var var, KFunc kfunc, double bandwidth, GOpt<?>... opts) {
         this.var = var;
         this.bandwidth = bandwidth;
         this.kde = KDE.of(var, kfunc, bandwidth);
-        options = new GOptions().apply(opts);
+        options = new GOpts().apply(opts);
     }
 
     @Override

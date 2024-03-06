@@ -170,8 +170,8 @@ public class BinaryLogisticNewtonTest {
 
         VarDouble y1 = VarDouble.from(100, row -> row > 50 ? 1. : 0);
 
-        Tensor<Double> x = SolidFrame.byVars(x1, x2).dtNew();
-        Tensor<Double> y = y1.dt();
+        Tensor<Double> x = SolidFrame.byVars(x1, x2).tensor();
+        Tensor<Double> y = y1.tensor_();
         Tensor<Double> w0 = Tensors.stride(0, 0);
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> new BinaryLogisticNewton()
@@ -189,8 +189,8 @@ public class BinaryLogisticNewtonTest {
 
         Tensor<Double> x = Tensors.zeros(Shape.of(2 * n, 2));
         x.take(1, 0).fill_(1.);
-        x.take(1, 1).squeeze(1).narrow(0, true, 0, n).add_(VarDouble.sample(Normal.of(0, 0.5), n).dt());
-        x.take(1, 1).squeeze(1).narrow(0, true, n, 2*n).add_(VarDouble.sample(Normal.of(1.5, 0.5), n).dt());
+        x.take(1, 1).squeeze(1).narrow(0, true, 0, n).add_(VarDouble.sample(Normal.of(0, 0.5), n).tensor_());
+        x.take(1, 1).squeeze(1).narrow(0, true, n, 2*n).add_(VarDouble.sample(Normal.of(1.5, 0.5), n).tensor_());
 
         Tensor<Double> y = Tensors.full(Shape.of(2 * n), 1.);
         y.narrow(0, true, n, 2 * n).fill_(0.);

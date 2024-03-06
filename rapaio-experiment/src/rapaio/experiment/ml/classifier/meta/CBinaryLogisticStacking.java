@@ -42,7 +42,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.data.preprocessing.VarApply;
+import rapaio.data.transform.VarApply;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;

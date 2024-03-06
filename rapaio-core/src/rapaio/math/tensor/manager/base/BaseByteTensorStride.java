@@ -114,11 +114,11 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         var result = engine.ofByte().zeros(Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
-        var it = loopIterator(askOrder);
-        while (it.hasNext()) {
-            int off = it.nextInt();
-            for (int i = 0, p = off; i < it.size(); i++, p += it.step()) {
+        var loop = StrideLoopDescriptor.of(layout, askOrder);
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 out.setByte(ptr++, storage.getByte(p));
+                p += loop.step;
             }
         }
         return result;
@@ -172,12 +172,13 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
 
     @Override
     public Tensor<Byte> fill_(Byte value) {
-        for (int offset : loop.offsets) {
+        for (int p : loop.offsets) {
             if (loop.step == 1) {
-                storage.fillByte(value, offset, loop.size);
+                storage.fillByte(value, p, loop.size);
             } else {
-                for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+                for (int i = 0; i < loop.size; i++) {
                     storage.setByte(p, value);
+                    p += loop.step;
                 }
             }
         }
@@ -186,14 +187,15 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
 
     @Override
     public Tensor<Byte> fillNan_(Byte value) {
-        if(!dtype().floatingPoint()) {
+        if (!dtype().floatingPoint()) {
             return this;
         }
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (dtype().isNaN(storage.getByte(p))) {
                     storage.setByte(p, value);
                 }
+                p += loop.step;
             }
         }
         return this;
@@ -201,14 +203,15 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
 
     @Override
     public Tensor<Byte> clamp_(Byte min, Byte max) {
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (!dtype().isNaN(min) && storage.getByte(p) < min) {
                     storage.setByte(p, min);
                 }
                 if (!dtype().isNaN(max) && storage.getByte(p) > max) {
                     storage.setByte(p, max);
                 }
+                p += loop.step;
             }
         }
         return this;
@@ -223,9 +226,10 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     private void unaryOpStep(TensorUnaryOp op) {
-        for (int off : loop.offsets) {
-            for (int i = 0, p = off; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 storage.setByte(p, op.applyByte(storage.getByte(p)));
+                p += loop.step;
             }
         }
     }
@@ -263,9 +267,10 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     void binaryScalarOpStep(TensorBinaryOp op, byte value) {
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 storage.setByte(p, op.applyByte(storage.getByte(p), value));
+                p += loop.step;
             }
         }
     }
@@ -313,17 +318,15 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
         BaseByteTensorStride dts = (BaseByteTensorStride) tensor;
+
+        int offset1 = layout.offset();
+        int offset2 = dts.layout.offset();
         int step1 = layout.stride(0);
         int step2 = dts.layout.stride(0);
 
-        int start1 = layout.offset() + start * step1;
-        int end1 = layout.offset() + end * step1;
-        int start2 = dts.layout.offset() + start * step2;
-
         byte sum = 0;
-        for (int i = start1; i < end1; i += step1) {
-            sum += (byte) (storage.getByte(i) * dts.storage.getByte(start2));
-            start2 += step2;
+        for (int i = start; i < end; i++) {
+            sum += (byte) (storage.getByte(offset1 + i * step1) * dts.storage.getByte(offset2 + i * step2));
         }
         return sum;
     }
@@ -334,11 +337,11 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
             throw new IllegalArgumentException("This operation is available only for vectors.");
         }
         Storage<Byte> newStorage = engine.storage().ofByte().zeros(before + dim(0) + after);
-        var loop = loopIterator();
-        while (loop.hasNext()) {
-            int offset = loop.next();
-            for (int i = 0; i < loop.size(); i++) {
-                newStorage.setByte(before + i, ptrGetByte(offset + i * loop.step()));
+        var loop = StrideLoopDescriptor.of(layout, Order.S);
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                newStorage.setByte(before + i, ptrGetByte(p));
+                p += loop.step;
             }
         }
         return engine.ofByte().stride(Shape.of(before + dim(0) + after), Order.C, newStorage);
@@ -464,7 +467,26 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
+    public Tensor<Byte> diag() {
+        if (!isMatrix()) {
+            throw new OperationNotAvailableException("This operation is available only on tensor matrix.");
+        }
+        if (dim(0) != dim(1)) {
+            throw new OperationNotAvailableException("This operation is avaiable only on a square matrix.");
+        }
+        int n = dim(0);
+        byte[] diag = new byte[n];
+        for (int i = 0; i < n; i++) {
+            diag[i] = getByte(i, i);
+        }
+        return manager().ofByte().stride(Shape.of(n), diag);
+    }
+
+    @Override
     public Byte norm(Byte pow) {
+        if (!dtype().floatingPoint()) {
+            throw new OperationNotAvailableException("This operation is only available on floating point data types.");
+        }
         if (pow < 0) {
             throw new IllegalArgumentException(STR."Norm power p=\{pow} must have a value greater than 0.");
         }
@@ -476,12 +498,12 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         }
 
         byte sum = (byte) 0;
-        var it = loopIterator();
-        while (it.hasNext()) {
-            int offset = it.next();
-            for (int i = 0, p = offset; i < it.size(); i++, p += it.step()) {
+        var loop = StrideLoopDescriptor.of(layout, Order.S);
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 byte value = (byte) Math.abs(storage.getByte(p));
                 sum += (byte) Math.pow(value, pow);
+                p += loop.step;
             }
         }
         return (byte) Math.pow(sum, 1. / pow);
@@ -526,9 +548,10 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         byte mean = (byte) (sum / size);
         // second pass adjustments for mean
         sum = 0;
-        for (int off : loop.offsets) {
+        for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                sum += (byte) (storage.getByte(off + i * loop.step) - mean);
+                sum += (byte) (storage.getByte(p) - mean);
+                p += loop.step;
             }
         }
         return (byte) (mean + sum / size);
@@ -546,9 +569,10 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         byte mean = (byte) (sum / size);
         // second pass adjustments for mean
         sum = 0;
-        for (int off : loop.offsets) {
+        for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                byte v = storage.getByte(off + i * loop.step);
+                byte v = storage.getByte(p);
+                p += loop.step;
                 if (dtype().isNaN(v)) {
                     continue;
                 }
@@ -556,40 +580,6 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
             }
         }
         return (byte) (mean + sum / size);
-    }
-
-    @Override
-    public Byte var() {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        int size = size();
-        // first pass compute raw mean
-        byte sum = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                sum += storage.getByte(offset + i * loop.step);
-            }
-        }
-        byte mean = (byte) (sum / size);
-        // second pass adjustments for mean
-        sum = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                sum += (byte) (storage.getByte(offset + i * loop.step) - mean);
-            }
-        }
-        mean += (byte) (sum / size);
-        // third pass compute variance
-        byte sum2 = 0;
-        byte sum3 = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
-                sum2 += (byte) ((storage.getByte(p) - mean) * (storage.getByte(p) - mean));
-                sum3 += (byte) (storage.getByte(p) - mean);
-            }
-        }
-        return (byte) ((sum2 - (sum3 * sum3) / size) / size);
     }
 
     @Override
@@ -617,10 +607,11 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         // third pass compute variance
         byte sum2 = 0;
         byte sum3 = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 sum2 += (byte) ((storage.getByte(p) - mean) * (storage.getByte(p) - mean));
                 sum3 += (byte) (storage.getByte(p) - mean);
+                p += loop.step;
             }
         }
         return (byte) ((sum2 - (sum3 * sum3) / (size - ddof)) / (size - ddof));
@@ -631,11 +622,11 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         int argmax = -1;
         byte argvalue = TensorAssociativeOp.MAX.initByte();
         var i = 0;
-        var it = loopIterator(order);
-        while (it.hasNext()) {
-            int offset = it.next();
+        var loop = StrideLoopDescriptor.of(layout, order);
+        for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
-                byte value = storage.getByte(offset + j * loop.step);
+                byte value = storage.getByte(p);
+                p += loop.step;
                 if (value > argvalue) {
                     argvalue = value;
                     argmax = i;
@@ -651,11 +642,11 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         int argmin = -1;
         byte argvalue = TensorAssociativeOp.MIN.initByte();
         var i = 0;
-        var it = loopIterator(order);
-        while (it.hasNext()) {
-            int offset = it.next();
+        var loop = StrideLoopDescriptor.of(layout, order);
+        for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
-                byte value = storage.getByte(offset + j * loop.step);
+                byte value = storage.getByte(p);
+                p += loop.step;
                 if (value < argvalue) {
                     argvalue = value;
                     argmin = i;
@@ -669,11 +660,12 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     @Override
     public int nanCount() {
         int count = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (dtype().isNaN(storage.getByte(p))) {
                     count++;
                 }
+                p += loop.step;
             }
         }
         return count;
@@ -682,11 +674,12 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     @Override
     public int zeroCount() {
         int count = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (storage.getByte(p) == 0) {
                     count++;
                 }
+                p += loop.step;
             }
         }
         return count;
@@ -695,9 +688,10 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     @Override
     protected Byte associativeOp(TensorAssociativeOp op) {
         byte agg = op.initByte();
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 agg = op.aggByte(agg, storage.getByte(p));
+                p += loop.step;
             }
         }
         return agg;
@@ -706,11 +700,12 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     @Override
     protected Byte nanAssociativeOp(TensorAssociativeOp op) {
         byte aggregate = op.initByte();
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 if (!dtype().isNaN(storage.getByte(p))) {
                     aggregate = op.aggByte(aggregate, storage.getByte(p));
                 }
+                p += loop.step;
             }
         }
         return aggregate;
@@ -770,9 +765,10 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     private void sameLayoutCopy(Storage<Byte> copy, Order askOrder) {
         var loop = StrideLoopDescriptor.of(layout, askOrder);
         var last = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 copy.setByte(last++, storage.getByte(p));
+                p += loop.step;
             }
         }
     }
@@ -855,9 +851,10 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     private void directCopyTo(BaseByteTensorStride src, BaseByteTensorStride dst, Order askOrder) {
         var loop = StrideLoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
-        for (int offset : loop.offsets) {
-            for (int i = 0, p = offset; i < loop.size; i++, p += loop.step) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
                 dst.storage.setByte(it2.nextInt(), src.storage.getByte(p));
+                p += loop.step;
             }
         }
     }

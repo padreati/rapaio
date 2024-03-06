@@ -42,9 +42,6 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.tensor.Order;
-import rapaio.math.tensor.Shape;
-
 public class ShapeTest {
 
     private Random random;
@@ -81,10 +78,10 @@ public class ShapeTest {
     @Test
     void testInvalid() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> Shape.of(1, 2, -3, 0));
-        assertEquals("Invalid shape dimensions: [1,2,-3,0]", e.getMessage());
+        assertEquals("Invalid shape dimensions: [1,2,-3,0].", e.getMessage());
 
         e = assertThrows(IllegalArgumentException.class, () -> Shape.of(0, 0));
-        assertEquals("Invalid shape dimensions: [0,0]", e.getMessage());
+        assertEquals("Invalid shape dimensions: [0,0].", e.getMessage());
     }
 
     @Test

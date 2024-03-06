@@ -31,10 +31,13 @@
 
 package rapaio.experiment.datasets;
 
+import static rapaio.graphics.opt.GOpts.bins;
+import static rapaio.graphics.opt.GOpts.horizontal;
+
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plotter;
-import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.sys.WS;
 
@@ -43,9 +46,9 @@ public class MyWeights {
     public static void main(String[] args) {
         Frame df = Datasets.loadMyWeights();
         df.printFullContent();
-        WS.draw(GridLayer.of(1,2, GOptions.widths(0.8, 0.2))
+        WS.draw(GridLayer.of(1,2, GOpts.widths(0.8, 0.2))
                 .add(Plotter.points(df.rvar("time"), df.rvar("weight")).lines(df.rvar("time"), df.rvar("weight")))
-                .add(Plotter.hist(df.rvar("weight"), GOptions.horizontal(true), GOptions.bins(10)))
+                .add(Plotter.hist(df.rvar("weight"), horizontal(true), bins(20)))
         );
     }
 }

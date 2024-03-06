@@ -32,7 +32,7 @@
 package rapaio.core.tests;
 
 import rapaio.data.Var;
-import rapaio.data.preprocessing.VarSort;
+import rapaio.data.transform.VarSort;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;

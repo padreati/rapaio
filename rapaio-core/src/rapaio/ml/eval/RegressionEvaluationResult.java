@@ -45,7 +45,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.group.GroupFun;
-import rapaio.data.preprocessing.RefSort;
+import rapaio.data.transform.RefSort;
 import rapaio.ml.eval.metric.RegressionMetric;
 import rapaio.ml.eval.split.Split;
 import rapaio.ml.model.RegressionResult;

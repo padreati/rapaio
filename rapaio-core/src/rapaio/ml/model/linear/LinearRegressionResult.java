@@ -40,7 +40,7 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.preprocessing.AddIntercept;
+import rapaio.data.transform.AddIntercept;
 import rapaio.math.MathTools;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
@@ -122,7 +122,7 @@ public class LinearRegressionResult extends RegressionResult {
                         features = df.bindVars(VarDouble.fill(df.rowCount(), 1).name(AddIntercept.INTERCEPT)).copy();
                     }
                 }
-                Tensor<Double> X = features.mapVars(model.inputNames()).dtNew();
+                Tensor<Double> X = features.mapVars(model.inputNames()).tensor();
                 Tensor<Double> m_beta_hat = X.t().mm(X).qr().inv();
 
                 for (int j = 0; j < model.inputNames().length; j++) {

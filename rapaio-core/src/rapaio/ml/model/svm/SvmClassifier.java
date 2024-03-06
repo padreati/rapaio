@@ -140,7 +140,7 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
-        Tensor<Double> x = df.mapVars(inputNames).dtNew();
+        Tensor<Double> x = df.mapVars(inputNames).tensor();
         Var target = df.rvar(firstTargetName());
 
         ProblemInfo pi = ProblemInfo.from(x, target, this);
@@ -159,7 +159,7 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
 
         ClassifierResult result = ClassifierResult.build(this, df, withClasses, withDistributions);
-        Tensor<Double> xs = df.mapVars(inputNames).dtNew();
+        Tensor<Double> xs = df.mapVars(inputNames).tensor();
         for (int i = 0; i < xs.dim(0); i++) {
             int k = problemInfo.levels().size();
 

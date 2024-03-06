@@ -35,6 +35,7 @@ import java.util.Arrays;
 
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
+import rapaio.util.collection.IntArrays;
 
 public final class VectorStrideLayout implements StrideLayout {
 
@@ -122,30 +123,64 @@ public final class VectorStrideLayout implements StrideLayout {
     }
 
     @Override
-    public StrideLayout squeeze(int axis) {
-        if (axis != 0) {
-            throw new IllegalArgumentException(STR."Invalid axis value: \{axis}.");
+    public StrideLayout squeeze(int... axes) {
+        if (axes.length == 0) {
+            return this;
+        }
+        if (axes.length == 1 && axes[0] != 0) {
+            throw new IllegalArgumentException(STR."Invalid axis value: \{axes[0]}.");
+        }
+        if (axes.length > 1) {
+            throw new IllegalArgumentException("Vectors accepts a single axis parameter");
         }
         return squeeze();
     }
 
     @Override
-    public StrideLayout unsqueeze(int axis) {
-        if (axis < 0 || axis > 1) {
-            throw new IllegalArgumentException("Axis is out of bounds.");
+    public StrideLayout stretch(int... axes) {
+        for (int axis : axes) {
+            if (axis < 0 || axis >= axes.length + 1) {
+                throw new IndexOutOfBoundsException();
+            }
         }
-        int[] newDims = new int[2];
-        int[] newStrides = new int[2];
-        if (axis == 0) {
-            newDims[0] = 1;
-            newDims[1] = dim(0);
-            newStrides[1] = stride;
-        } else {
-            newDims[0] = dim(0);
-            newDims[1] = 1;
-            newStrides[0] = stride;
+        if (IntArrays.containsDuplicates(axes)) {
+            throw new IllegalArgumentException("Axes contains duplicates.");
+        }
+
+        int len = axes.length + 1;
+        int[] newDims = IntArrays.newFill(len, 1);
+        int[] newStrides = IntArrays.newFill(len, 0);
+
+        for (int i = 0; i < len; i++) {
+            boolean found = false;
+            for (int axis : axes) {
+                if (axis == i) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                newDims[i] = dim(0);
+                newStrides[i] = stride;
+                break;
+            }
         }
         return StrideLayout.of(Shape.of(newDims), offset(), newStrides);
+    }
+
+    @Override
+    public StrideLayout expand(int axis, int size) {
+        if (dim(axis) != 1) {
+            throw new IllegalArgumentException(STR."Dimension \{axis} must have size 1, but have size \{dim(axis)}.");
+        }
+        if (axis != 0) {
+            throw new IllegalArgumentException(STR."Dimension of the new axis \{axis} must be zero.");
+        }
+        int[] newDims = Arrays.copyOf(dims(), dims().length);
+        int[] newStrides = Arrays.copyOf(strides(), strides().length);
+        newDims[axis] = size;
+        newStrides[axis] = 0;
+        return StrideLayout.of(Shape.of(newDims), offset, newStrides);
     }
 
     @Override
@@ -184,10 +219,10 @@ public final class VectorStrideLayout implements StrideLayout {
 
     @Override
     public StrideLayout narrowAll(boolean keepDim, int[] starts, int[] ends) {
-        if(starts==null || ends==null) {
+        if (starts == null || ends == null) {
             throw new IllegalArgumentException("Starts and ends cannot be null.");
         }
-        if(starts.length!=1|| ends.length!=1) {
+        if (starts.length != 1 || ends.length != 1) {
             throw new IllegalArgumentException("Starts and ends must have length 1.");
         }
         return narrow(0, keepDim, starts[0], ends[0]);
