@@ -41,13 +41,9 @@ public class TensorSandbox {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         var a = Tensors.stride(Shape.of(2, 2), 1., 1, 0, 1);
-        var b = Tensors.stride(Shape.of(1, 2), -2, 2);
+        var b = Tensors.ofByte().stride(Shape.of(2, 2), 1, 0, 1, 0);
 
-        b.mm(a).printString();
-
-        b.mm(a).mm(Tensors.stride(0, 0).stretch(1)).printString();
-        b.mm(a).mm(Tensors.stride(0, 1).stretch(1)).printString();
-        b.mm(a).mm(Tensors.stride(1, 0).stretch(1)).printString();
-        b.mm(a).mm(Tensors.stride(1, 1).stretch(1)).printString();
+        a.add(b).printString();
+        b.add(a).printString();
     }
 }

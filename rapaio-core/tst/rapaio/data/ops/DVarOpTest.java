@@ -68,16 +68,16 @@ public class DVarOpTest {
         assertEquals(sum1, x.tensor().sort_(0, true).nanSum(), 1e-12);
         assertEquals(sum1, x.tensor().sort_(0, false).nanMean() * 75, 1e-12);
         int[] rows = x.rowsComplete();
-        x.tensor_().indirectSort(rows, true);
+        x.tensor_().argSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).tensor_().nanSum(), TOLERANCE);
         rows = x.rowsComplete();
-        x.tensor_().indirectSort(rows, false);
+        x.tensor_().argSort(rows, false);
         assertEquals(sum1, x.mapRows(rows).tensor_().nanSum(), TOLERANCE);
         rows = x.rowsAll();
-        x.tensor_().indirectSort(rows, true);
+        x.tensor_().argSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).tensor_().nanSum(), TOLERANCE);
         rows = x.rowsAll();
-        x.tensor_().indirectSort(rows, true);
+        x.tensor_().argSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).tensor_().nanSum(), TOLERANCE);
     }
 
@@ -100,17 +100,17 @@ public class DVarOpTest {
         assertEquals(sum1, x.tensor().sort_(0, false).nanMean() * 75, 1e-10);
 
         int[] rows = x.rowsComplete();
-        x.tensor_().indirectSort(rows, true);
+        x.tensor_().argSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).tensor_().nanSum(), TOLERANCE);
         rows = x.rowsComplete();
-        x.tensor_().indirectSort(rows, false);
+        x.tensor_().argSort(rows, false);
         assertEquals(sum1, x.mapRows(rows).tensor_().nanSum(), TOLERANCE);
 
         rows = x.rowsAll();
-        x.tensor_().indirectSort(rows, true);
+        x.tensor_().argSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).tensor_().nanSum(), TOLERANCE);
         rows = x.rowsAll();
-        x.tensor_().indirectSort(rows, false);
+        x.tensor_().argSort(rows, false);
         assertEquals(sum1, x.mapRows(rows).tensor_().nanSum(), TOLERANCE);
     }
 

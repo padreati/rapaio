@@ -247,7 +247,7 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
     }
 
     @Override
-    protected void binaryVectorOp(TensorBinaryOp op, Tensor<Double> b) {
+    protected <M extends Number> void binaryVectorOp(TensorBinaryOp op, Tensor<M> b) {
         if (b.isScalar()) {
             binaryScalarOp(op, b.getDouble());
             return;
@@ -262,7 +262,7 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
         var refIt = b.ptrIterator(order);
         while (it.hasNext()) {
             int next = it.nextInt();
-            storage.setDouble(next, op.applyDouble(storage.getDouble(next), b.ptrGet(refIt.nextInt())));
+            storage.setDouble(next, op.applyDouble(storage.getDouble(next), b.ptrGetDouble(refIt.nextInt())));
         }
     }
 
@@ -281,7 +281,7 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
     }
 
     @Override
-    public Tensor<Double> fma_(Double a, Tensor<Double> t) {
+    public <M extends Number> Tensor<Double> fma_(Double a, Tensor<M> t) {
         if (t.isScalar()) {
             double tVal = t.getDouble();
             return add_((double) (a * tVal));
@@ -297,7 +297,7 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
         var refIt = t.ptrIterator(order);
         while (it.hasNext()) {
             int next = it.nextInt();
-            storage.setDouble(next, (double) Math.fma(t.ptrGet(refIt.nextInt()), aVal, storage.getDouble(next)));
+            storage.setDouble(next, (double) Math.fma(t.ptrGetDouble(refIt.nextInt()), aVal, storage.getDouble(next)));
         }
         return this;
     }

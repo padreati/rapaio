@@ -277,7 +277,7 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     }
 
     @Override
-    public void indirectSort(int[] indices, boolean asc) {
+    public void argSort(int[] indices, boolean asc) {
         if (layout.rank() != 1) {
             throw new IllegalArgumentException("Tensor must be flat (have a single dimension).");
         }
@@ -413,7 +413,7 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
 
     protected abstract void unaryOp(TensorUnaryOp op);
 
-    protected abstract void binaryVectorOp(TensorBinaryOp op, Tensor<N> b);
+    protected abstract <M extends Number> void binaryVectorOp(TensorBinaryOp op, Tensor<M> b);
 
     protected abstract void binaryScalarOp(TensorBinaryOp op, N value);
 
@@ -546,37 +546,37 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     }
 
     @Override
-    public final Tensor<N> add_(Tensor<N> tensor) {
+    public final <M extends Number> Tensor<N> add_(Tensor<M> tensor) {
         binaryVectorOp(TensorBinaryOp.ADD, tensor);
         return this;
     }
 
     @Override
-    public final Tensor<N> sub_(Tensor<N> tensor) {
+    public final <M extends Number> Tensor<N> sub_(Tensor<M> tensor) {
         binaryVectorOp(TensorBinaryOp.SUB, tensor);
         return this;
     }
 
     @Override
-    public final Tensor<N> mul_(Tensor<N> tensor) {
+    public final <M extends Number> Tensor<N> mul_(Tensor<M> tensor) {
         binaryVectorOp(TensorBinaryOp.MUL, tensor);
         return this;
     }
 
     @Override
-    public final Tensor<N> div_(Tensor<N> tensor) {
+    public final <M extends Number> Tensor<N> div_(Tensor<M> tensor) {
         binaryVectorOp(TensorBinaryOp.DIV, tensor);
         return this;
     }
 
     @Override
-    public final Tensor<N> min_(Tensor<N> tensor) {
+    public final <M extends Number> Tensor<N> min_(Tensor<M> tensor) {
         binaryVectorOp(TensorBinaryOp.MIN, tensor);
         return this;
     }
 
     @Override
-    public final Tensor<N> max_(Tensor<N> tensor) {
+    public final <M extends Number> Tensor<N> max_(Tensor<M> tensor) {
         binaryVectorOp(TensorBinaryOp.MAX, tensor);
         return this;
     }
@@ -890,7 +890,7 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
         var castTensor = manager().ofType(dType).zeros(shape(), askOrder);
 
         Order fastOrder = Layout.storageFastTandemOrder(castTensor.layout(), layout);
-        var loopDescriptor = StrideLoopDescriptor.of((StrideLayout) castTensor.layout(), fastOrder);
+        var loopDescriptor = StrideLoopDescriptor.of(castTensor.layout(), fastOrder);
         var iter = ptrIterator(fastOrder);
         for (int offset : loopDescriptor.offsets) {
             for (int i = 0; i < loopDescriptor.size; i++) {

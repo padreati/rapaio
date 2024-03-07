@@ -247,7 +247,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
-    protected void binaryVectorOp(TensorBinaryOp op, Tensor<Byte> b) {
+    protected <M extends Number> void binaryVectorOp(TensorBinaryOp op, Tensor<M> b) {
         if (b.isScalar()) {
             binaryScalarOp(op, b.getByte());
             return;
@@ -262,7 +262,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         var refIt = b.ptrIterator(order);
         while (it.hasNext()) {
             int next = it.nextInt();
-            storage.setByte(next, op.applyByte(storage.getByte(next), b.ptrGet(refIt.nextInt())));
+            storage.setByte(next, op.applyByte(storage.getByte(next), b.ptrGetByte(refIt.nextInt())));
         }
     }
 
@@ -281,7 +281,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
-    public Tensor<Byte> fma_(Byte a, Tensor<Byte> t) {
+    public <M extends Number> Tensor<Byte> fma_(Byte a, Tensor<M> t) {
         if (t.isScalar()) {
             byte tVal = t.getByte();
             return add_((byte) (a * tVal));
@@ -297,7 +297,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         var refIt = t.ptrIterator(order);
         while (it.hasNext()) {
             int next = it.nextInt();
-            storage.setByte(next, (byte) Math.fma(t.ptrGet(refIt.nextInt()), aVal, storage.getByte(next)));
+            storage.setByte(next, (byte) Math.fma(t.ptrGetByte(refIt.nextInt()), aVal, storage.getByte(next)));
         }
         return this;
     }

@@ -451,7 +451,6 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * @param axis    specified axis
      * @param indices indices of the taken values along the specified axis
      * @return tensor with mapped values along the given dimension
-     * @return new squeezed tensor
      */
     default Tensor<N> takesq(int axis, int... indices) {
         return takesq(Order.defaultOrder(), axis, indices);
@@ -472,7 +471,6 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * @param axis    specified axis
      * @param indices indices of the taken values along the specified axis
      * @return tensor with mapped values along the given dimension
-     * @return new squeezed tensor
      */
     default Tensor<N> takesq(Order order, int axis, int... indices) {
         return take(order, axis, indices).squeeze(axis);
@@ -598,7 +596,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * @param indices indices which will be sorted
      * @param asc     if true, than sort ascending, descending otherwise
      */
-    void indirectSort(int[] indices, boolean asc);
+    void argSort(int[] indices, boolean asc);
 
     /**
      * Get value at indexed position. An indexed position is a tuple of rank
@@ -1012,18 +1010,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     Tensor<N> sqrt_();
 
 
-    default Tensor<N> add(Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> add(Tensor<M> tensor) {
         return add(tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> add(Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> add(Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).add_(get());
+            return tensor.cast(dtype(), order).add_(get());
         }
         return copy(order).add_(tensor);
     }
 
-    Tensor<N> add_(Tensor<N> tensor);
+    <M extends Number> Tensor<N> add_(Tensor<M> tensor);
 
     default Tensor<N> badd(int axis, Tensor<N> tensor) {
         return badd(axis, tensor, Order.defaultOrder());
@@ -1041,18 +1039,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
 
-    default Tensor<N> sub(Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> sub(Tensor<M> tensor) {
         return sub(tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> sub(Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> sub(Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).sub_(get());
+            return tensor.cast(dtype(), order).sub_(get());
         }
         return copy(order).sub_(tensor);
     }
 
-    Tensor<N> sub_(Tensor<N> tensor);
+    <M extends Number> Tensor<N> sub_(Tensor<M> tensor);
 
     default Tensor<N> bsub(int axis, Tensor<N> tensor) {
         return bsub(axis, tensor, Order.defaultOrder());
@@ -1069,18 +1067,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return sub_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
-    default Tensor<N> mul(Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> mul(Tensor<M> tensor) {
         return mul(tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> mul(Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> mul(Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).mul_(get());
+            return tensor.cast(dtype(), order).mul_(get());
         }
         return copy(order).mul_(tensor);
     }
 
-    Tensor<N> mul_(Tensor<N> tensor);
+    <M extends Number> Tensor<N> mul_(Tensor<M> tensor);
 
     default Tensor<N> bmul(int axis, Tensor<N> tensor) {
         return bmul(axis, tensor, Order.defaultOrder());
@@ -1097,18 +1095,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return mul_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
-    default Tensor<N> div(Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> div(Tensor<M> tensor) {
         return div(tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> div(Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> div(Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).div_(get());
+            return tensor.cast(dtype(), order).div_(get());
         }
         return copy(order).div_(tensor);
     }
 
-    Tensor<N> div_(Tensor<N> tensor);
+    <M extends Number> Tensor<N> div_(Tensor<M> tensor);
 
     default Tensor<N> bdiv(int axis, Tensor<N> tensor) {
         return bdiv(axis, tensor, Order.defaultOrder());
@@ -1125,18 +1123,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return div_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
-    default Tensor<N> min(Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> min(Tensor<M> tensor) {
         return min(tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> min(Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> min(Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).min_(get());
+            return tensor.cast(dtype(), order).min_(get());
         }
         return copy(order).min_(tensor);
     }
 
-    Tensor<N> min_(Tensor<N> tensor);
+    <M extends Number> Tensor<N> min_(Tensor<M> tensor);
 
     default Tensor<N> bmin(int axis, Tensor<N> tensor) {
         return bmin(axis, tensor, Order.defaultOrder());
@@ -1153,18 +1151,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return min_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
-    default Tensor<N> max(Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> max(Tensor<M> tensor) {
         return max(tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> max(Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> max(Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).max_(get());
+            return tensor.cast(dtype(), order).max_(get());
         }
         return copy(order).max_(tensor);
     }
 
-    Tensor<N> max_(Tensor<N> tensor);
+    <M extends Number> Tensor<N> max_(Tensor<M> tensor);
 
     default Tensor<N> bmax(int axis, Tensor<N> tensor) {
         return bmax(axis, tensor, Order.defaultOrder());
@@ -1241,11 +1239,11 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> max_(N value);
 
-    default Tensor<N> fma(N a, Tensor<N> t) {
+    default <M extends Number> Tensor<N> fma(N a, Tensor<M> t) {
         return fma(a, t, Order.defaultOrder());
     }
 
-    default Tensor<N> fma(N a, Tensor<N> t, Order order) {
+    default <M extends Number> Tensor<N> fma(N a, Tensor<M> t, Order order) {
         return copy(order).fma_(a, t);
     }
 
@@ -1256,7 +1254,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * @param t tensor to be multiplied and added to the current one
      * @return same tensor with values changed
      */
-    Tensor<N> fma_(N factor, Tensor<N> t);
+    <M extends Number> Tensor<N> fma_(N factor, Tensor<M> t);
 
     default Tensor<N> outer(Tensor<N> t) {
         if (!isVector() || !t.isVector()) {
