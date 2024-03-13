@@ -43,14 +43,14 @@ import rapaio.util.collection.IntArrays;
  * A loop stride descriptor contains the same information as a loop iterator, but in a precomputed form.
  * It is an alternative to loop iterator, when you want pre-computed loop offsets.
  */
-public final class StrideLoopDescriptor {
+public final class LoopDescriptor {
 
-    public static StrideLoopDescriptor of(Shape shape, int offset, int[] strides, Order askOrder) {
-        return new StrideLoopDescriptor(shape, offset, strides, askOrder);
+    public static LoopDescriptor of(Shape shape, int offset, int[] strides, Order askOrder) {
+        return new LoopDescriptor(shape, offset, strides, askOrder);
     }
 
-    public static StrideLoopDescriptor of(Layout layout, Order askOrder) {
-        return new StrideLoopDescriptor(layout, askOrder);
+    public static LoopDescriptor of(Layout layout, Order askOrder) {
+        return new LoopDescriptor(layout, askOrder);
     }
 
     public final int size;
@@ -58,11 +58,11 @@ public final class StrideLoopDescriptor {
     public final int count;
     public final int[] offsets;
 
-    private StrideLoopDescriptor(Shape shape, int offset, int[] strides, Order askOrder) {
+    private LoopDescriptor(Shape shape, int offset, int[] strides, Order askOrder) {
         this(StrideLayout.of(shape, offset, strides), askOrder);
     }
 
-    private StrideLoopDescriptor(Layout layout, Order askOrder) {
+    private LoopDescriptor(Layout layout, Order askOrder) {
         if (!(layout instanceof StrideLayout sl)) {
             throw new IllegalArgumentException("Layout is not a stride layout.");
         }

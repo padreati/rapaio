@@ -42,7 +42,7 @@ import rapaio.math.tensor.Shape;
 import rapaio.util.IntComparators;
 import rapaio.util.collection.IntArrays;
 
-public class TensorStrideLayout implements StrideLayout {
+public class TensorStrideLayout extends AbstractStrideLayout {
 
     private static final int C_DENSE = 1;
     private static final int F_DENSE = 2;

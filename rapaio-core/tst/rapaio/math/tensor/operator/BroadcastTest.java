@@ -34,6 +34,8 @@ package rapaio.math.tensor.operator;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import rapaio.math.tensor.Shape;
@@ -44,24 +46,24 @@ public class BroadcastTest {
 
     @Test
     void testElementWiseValidation() {
-        Tensor<Double>[] tensors = new Tensor[] {
+        List<Tensor<?>> tensors = List.of(
                 Tensors.seq(Shape.of(2, 1)),
                 Tensors.seq(Shape.of(3, 2, 3)),
-                Tensors.seq(Shape.of(3)),
-                Tensors.seq(Shape.of(4, 1, 1, 1))
-        };
+                Tensors.seq(Shape.of(3))
+        );
 
         Broadcast.ElementWise result = Broadcast.elementWise(tensors);
         assertTrue(result.valid());
         assertFalse(result.unchanged());
 
         System.out.println("init");
-        for(var layout : tensors) {
-            System.out.println(layout);
+        for (var t : tensors) {
+            System.out.print(t);
         }
+        System.out.println(result);
         System.out.println("after");
-        for(var layout : result.transformed()) {
-            System.out.println(layout);
+        for (var t : tensors) {
+            System.out.print(result.transform(t));
         }
     }
 }

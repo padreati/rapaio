@@ -60,9 +60,6 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
 import commons.Utils;
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.VectorOperators;
-import jdk.incubator.vector.VectorSpecies;
 import jsat.linear.DenseVector;
 import rapaio.data.Frame;
 import rapaio.data.transform.RefSort;
@@ -82,7 +79,7 @@ public class StorageBenchmark {
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
-//        @Param( {"100", "1000", "10000"})
+        //        @Param( {"100", "1000", "10000"})
         @Param( {"10000"})
         private int n;
 
@@ -134,16 +131,8 @@ public class StorageBenchmark {
     }
 
     @Benchmark
-    public void absDoubleBufferVectorized(BenchmarkState bs, Blackhole bh) {
-        VectorSpecies<Double> vsd = DoubleVector.SPECIES_PREFERRED;
-        int bound = vsd.loopBound(bs.n);
-        int i = 0;
-        for (; i < bound; i+=vsd.length()) {
-            DoubleVector v = DoubleVector.fromMemorySegment(vsd, bs.memorySegment, i, bs.doubleBuffer.order());
-            v = v.lanewise(VectorOperators.ABS);
-            v.intoMemorySegment(bs.memorySegment, i, bs.doubleBuffer.order());
-        }
-        for(;i<bs.n; i++) {
+    public void absDoubleMS(BenchmarkState bs, Blackhole bh) {
+        for (int i = 0; i < bs.n; i++) {
             bs.memorySegment.setAtIndex(ValueLayout.JAVA_DOUBLE, i, Math.abs(bs.memorySegment.getAtIndex(ValueLayout.JAVA_DOUBLE, i)));
         }
         bh.consume(bs.memorySegment);

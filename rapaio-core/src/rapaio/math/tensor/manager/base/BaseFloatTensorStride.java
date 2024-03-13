@@ -51,7 +51,7 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.iterators.StrideLoopDescriptor;
+import rapaio.math.tensor.iterators.LoopDescriptor;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.layout.StrideWrapper;
@@ -78,30 +78,25 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         if (layout.shape().size() != askShape.size()) {
             throw new IllegalArgumentException("Incompatible shape size.");
         }
-
-        Order cmpOrder = askOrder == Order.C ? Order.C : Order.F;
-        var baseLayout = layout.computeFortranLayout(cmpOrder, true);
-        var compact = StrideLayout.ofDense(shape(), layout.offset(), cmpOrder).computeFortranLayout(cmpOrder, true);
-
-        if (baseLayout.equals(compact)) {
-            // we can create a view over tensor
-            int newOffset = layout.offset();
-            int[] newStrides = new int[askShape.rank()];
-            for (int i = 0; i < askShape.rank(); i++) {
-                int[] ione = new int[askShape.rank()];
-                ione[i] = 1;
-                int pos2 = askShape.position(cmpOrder, ione);
-                int[] v1 = layout.shape().index(cmpOrder, pos2);
-                int pointer2 = layout.pointer(v1);
-                newStrides[i] = pointer2 - newOffset;
-            }
-            if (askOrder == Order.C) {
-                IntArrays.reverse(newStrides);
+        if (Order.A == askOrder) {
+            if (layout.isCOrdered()) {
+                askOrder = Order.C;
+            } else if (layout.isFOrdered()) {
+                askOrder = Order.F;
+            } else {
+                askOrder = Order.defaultOrder();
             }
         }
+        if (Order.S == askOrder) {
+            throw new IllegalArgumentException("Illegal order specification.");
+        }
+        StrideLayout newLayout = layout.attemptReshape(askShape, askOrder);
+        if (newLayout != null) {
+            return manager.ofFloat().stride(newLayout, storage);
+        }
         var it = new StridePointerIterator(layout, askOrder);
-        Tensor<Float> copy = engine.zeros(dtype(), askShape, askOrder);
-        var copyIt = copy.ptrIterator(Order.C);
+        Tensor<Float> copy = manager.ofFloat().zeros(askShape, askOrder);
+        var copyIt = copy.ptrIterator(askOrder);
         while (it.hasNext()) {
             copy.ptrSetFloat(copyIt.nextInt(), storage.getFloat(it.nextInt()));
         }
@@ -111,10 +106,10 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     public Tensor<Float> flatten(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
-        var result = engine.ofFloat().zeros(Shape.of(layout.size()), askOrder);
+        var result = manager.ofFloat().zeros(Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
-        var loop = StrideLoopDescriptor.of(layout, askOrder);
+        var loop = LoopDescriptor.of(layout, askOrder);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 out.setFloat(ptr++, storage.getFloat(p));
@@ -235,7 +230,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     }
 
     @Override
-    protected void unaryOp(TensorUnaryOp op) {
+    public Tensor<Float> op_(TensorUnaryOp op) {
         if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
@@ -244,6 +239,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         } else {
             unaryOpStep(op);
         }
+        return this;
     }
 
     @Override
@@ -336,15 +332,15 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         if (!isVector()) {
             throw new IllegalArgumentException("This operation is available only for vectors.");
         }
-        Storage<Float> newStorage = engine.storage().ofFloat().zeros(before + dim(0) + after);
-        var loop = StrideLoopDescriptor.of(layout, Order.S);
+        Storage<Float> newStorage = manager.storage().ofFloat().zeros(before + dim(0) + after);
+        var loop = LoopDescriptor.of(layout, Order.S);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 newStorage.setFloat(before + i, ptrGetFloat(p));
                 p += loop.step;
             }
         }
-        return engine.ofFloat().stride(Shape.of(before + dim(0) + after), Order.C, newStorage);
+        return manager.ofFloat().stride(Shape.of(before + dim(0) + after), Order.C, newStorage);
     }
 
     @Override
@@ -354,7 +350,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
                     STR."Operands are not valid for matrix-vector multiplication \{"(m = %s, v = %s).".formatted(shape(),
                             tensor.shape())}");
         }
-        var result = engine.ofFloat().storage().zeros(shape().dim(0));
+        var result = manager.ofFloat().storage().zeros(shape().dim(0));
         var it = ptrIterator(Order.C);
         for (int i = 0; i < shape().dim(0); i++) {
             var innerIt = tensor.ptrIterator(Order.C);
@@ -365,7 +361,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
             result.setFloat(i, sum);
         }
         StrideLayout layout = StrideLayout.ofDense(Shape.of(shape().dim(0)), 0, Order.C);
-        return engine.ofFloat().stride(layout, result);
+        return manager.ofFloat().stride(layout, result);
     }
 
     @Override
@@ -381,8 +377,8 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         int n = shape().dim(1);
         int p = t.shape().dim(1);
 
-        var result = engine.ofFloat().storage().zeros(m * p);
-        var ret = engine.ofFloat().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
+        var result = manager.ofFloat().storage().zeros(m * p);
+        var ret = manager.ofFloat().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
 
         List<Tensor<Float>> rows = chunk(0, false, 1);
         List<Tensor<Float>> cols = t.chunk(1, false, 1);
@@ -397,7 +393,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         int jStride = ((StrideLayout) ret.layout()).stride(1);
 
         List<Future<?>> futures = new ArrayList<>();
-        try (ExecutorService service = Executors.newFixedThreadPool(engine.cpuThreads())) {
+        try (ExecutorService service = Executors.newFixedThreadPool(manager.cpuThreads())) {
             for (int r = 0; r < m; r += innerChunk) {
                 int rs = r;
                 int re = Math.min(m, r + innerChunk);
@@ -438,7 +434,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         if (!isMatrix()) {
             throw new IllegalArgumentException("Scatter matrix can be computed only for matrices.");
         }
-        Tensor<Float> scatter = engine.ofFloat().zeros(Shape.of(dim(1), dim(1)));
+        Tensor<Float> scatter = manager.ofFloat().zeros(Shape.of(dim(1), dim(1)));
         Tensor<Float> mean = mean(0);
         for (int k = 0; k < dim(0); k++) {
             Tensor<Float> row = takesq(0, k).sub(mean);
@@ -498,7 +494,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         }
 
         float sum = (float) 0;
-        var loop = StrideLoopDescriptor.of(layout, Order.S);
+        var loop = LoopDescriptor.of(layout, Order.S);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 float value = (float) Math.abs(storage.getFloat(p));
@@ -521,12 +517,12 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        Tensor<Float> res = engine.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
+        Tensor<Float> res = manager.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
         var resIt = res.ptrIterator(Order.C);
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            var stride = engine.ofFloat().stride(StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
+            var stride = manager.ofFloat().stride(StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
             res.ptrSet(resIt.next(), op.apply(stride));
         }
         return res;
@@ -622,7 +618,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         int argmax = -1;
         float argvalue = TensorAssociativeOp.MAX.initFloat();
         var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order);
+        var loop = LoopDescriptor.of(layout, order);
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 float value = storage.getFloat(p);
@@ -642,7 +638,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         int argmin = -1;
         float argvalue = TensorAssociativeOp.MIN.initFloat();
         var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order);
+        var loop = LoopDescriptor.of(layout, order);
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 float value = storage.getFloat(p);
@@ -718,7 +714,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        Tensor<Float> res = engine.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
+        Tensor<Float> res = manager.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
@@ -736,7 +732,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        Tensor<Float> res = engine.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
+        Tensor<Float> res = manager.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
@@ -751,8 +747,8 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     public Tensor<Float> copy(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
 
-        var copy = engine.ofFloat().storage().zeros(size());
-        var dst = engine.ofFloat().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
+        var copy = manager.ofFloat().storage().zeros(size());
+        var dst = manager.ofFloat().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
 
         if (layout.storageFastOrder() == askOrder) {
             sameLayoutCopy(copy, askOrder);
@@ -763,7 +759,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     }
 
     private void sameLayoutCopy(Storage<Float> copy, Order askOrder) {
-        var loop = StrideLoopDescriptor.of(layout, askOrder);
+        var loop = LoopDescriptor.of(layout, askOrder);
         var last = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
@@ -778,7 +774,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
 
         if (to instanceof BaseFloatTensorStride dst) {
 
-            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().byteCount() * 2 * engine.cpuThreads() * 8);
+            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().byteCount() * 2 * manager.cpuThreads() * 8);
 
             if (layout.size() > limit) {
 
@@ -798,7 +794,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
                 int[] starts = new int[slices.length];
                 int[] ends = new int[slices.length];
 
-                try (ExecutorService executor = Executors.newFixedThreadPool(engine.cpuThreads())) {
+                try (ExecutorService executor = Executors.newFixedThreadPool(manager.cpuThreads())) {
                     List<Future<?>> futures = new ArrayList<>();
                     Stack<Integer> stack = new Stack<>();
                     boolean loop = true;
@@ -849,7 +845,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     }
 
     private void directCopyTo(BaseFloatTensorStride src, BaseFloatTensorStride dst, Order askOrder) {
-        var loop = StrideLoopDescriptor.of(src.layout, askOrder);
+        var loop = LoopDescriptor.of(src.layout, askOrder);
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {

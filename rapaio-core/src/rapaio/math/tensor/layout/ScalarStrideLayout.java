@@ -37,11 +37,11 @@ import rapaio.util.collection.IntArrays;
 
 public record ScalarStrideLayout(int offset) implements StrideLayout {
 
-    private static final Shape shape = Shape.of();
+    private static final Shape SCALAR_SHAPE = Shape.of();
 
     @Override
     public Shape shape() {
-        return shape;
+        return SCALAR_SHAPE;
     }
 
     @Override
@@ -166,6 +166,11 @@ public record ScalarStrideLayout(int offset) implements StrideLayout {
     @Override
     public int[] narrowStrides(int axis) {
         throw new IndexOutOfBoundsException();
+    }
+
+    @Override
+    public StrideLayout attemptReshape(Shape shape, Order askOrder) {
+        return StrideLayout.of(shape, offset, new int[rank()]);
     }
 
     @Override

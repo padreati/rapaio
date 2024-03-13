@@ -67,19 +67,12 @@ public interface TensorManager {
 
     @SuppressWarnings("unchecked")
     default <N extends Number> OfType<N> ofType(DType<N> dType) {
-        if (dType.equals(DType.FLOAT)) {
-            return (OfType<N>) ofFloat();
-        }
-        if (dType.equals(DType.DOUBLE)) {
-            return (OfType<N>) ofDouble();
-        }
-        if (dType.equals(DType.INTEGER)) {
-            return (OfType<N>) ofInt();
-        }
-        if (dType.equals(DType.BYTE)) {
-            return (OfType<N>) ofByte();
-        }
-        return null;
+        return (OfType<N>) switch (dType.id()) {
+            case DOUBLE -> ofDouble();
+            case FLOAT -> ofFloat();
+            case INTEGER -> ofInt();
+            case BYTE -> ofByte();
+        };
     }
 
     StorageFactory storage();

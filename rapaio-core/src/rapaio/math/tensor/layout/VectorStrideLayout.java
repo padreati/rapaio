@@ -37,7 +37,7 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.util.collection.IntArrays;
 
-public final class VectorStrideLayout implements StrideLayout {
+public final class VectorStrideLayout extends AbstractStrideLayout {
 
     private final Shape shape;
     private final int offset;
@@ -244,6 +244,26 @@ public final class VectorStrideLayout implements StrideLayout {
     @Override
     public int[] narrowStrides(int axis) {
         return new int[0];
+    }
+
+    @Override
+    public StrideLayout attemptReshape(Shape shape, Order askOrder) {
+        if (Order.S == askOrder) {
+            throw new IllegalArgumentException("Requested order must be Order.C or Order.F.");
+        }
+        int[] newStrides = new int[shape.rank()];
+        if (Order.F == askOrder) {
+            newStrides[0] = stride;
+            for (int i = 1; i < newStrides.length; i++) {
+                newStrides[i] = newStrides[i - 1] * shape.dim(i - 1);
+            }
+        } else {
+            newStrides[newStrides.length - 1] = stride;
+            for (int i = newStrides.length - 2; i >= 0; i--) {
+                newStrides[i] = newStrides[i + 1] * shape.dim(i + 1);
+            }
+        }
+        return StrideLayout.of(shape, offset, newStrides);
     }
 
     @Override

@@ -114,4 +114,21 @@ public interface StrideLayout extends Layout {
     StrideLayout computeFortranLayout(Order askOrder, boolean compact);
 
     int[] narrowStrides(int axis);
+
+    /**
+     * Attempts to computes a stride layout for reshape, if possible.
+     * <p>
+     * The shape should be compatible (have the same size as original), but this validation is not checked, it is left in the scope
+     * of caller. This is to distinguish between cases when a reshape is invalid or requires copy.
+     * <p>
+     * If the attempt fails, which means a new copy of the data is required, the returned stride array is null.
+     * If no copy is needed, returns a new stride array prepared for use on the new tensor.
+     * <p>
+     * The "askOrder" argument describes how the array should be viewed during the reshape, not how it is stored in memory.
+     * If a copy is needed, this will be also the order of storage for the new copy.
+     * <p>
+     * If some output dimensions have length 1, the strides assigned to them are arbitrary. In the current implementation, they are the
+     * stride of the next-fastest index.
+     */
+    StrideLayout attemptReshape(Shape shape, Order askOrder);
 }

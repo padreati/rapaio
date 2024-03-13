@@ -34,7 +34,8 @@ package rapaio.math.tensor;
 public enum Order {
     C("C-style row major order"),
     F("Fortran-style col major order"),
-    S("Storage order");
+    S("Storage order"),
+    A("Automatic order, default value depending on the operation");
 
     public static Order defaultOrder() {
         return C;

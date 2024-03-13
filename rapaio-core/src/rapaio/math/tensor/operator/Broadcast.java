@@ -32,55 +32,93 @@
 package rapaio.math.tensor.operator;
 
 import java.util.Arrays;
+import java.util.List;
 
 import rapaio.math.tensor.Tensor;
+import rapaio.util.collection.IntArrays;
 
 public final class Broadcast {
 
-    @SafeVarargs
-    public static <N extends Number> ElementWise<N> elementWise(Tensor<N>... tensors) {
-        if (tensors.length == 0) {
-            return new ElementWise<>(true, true, tensors);
+    public static ElementWise elementWise(List<Tensor<?>> tensors) {
+        if (tensors.isEmpty()) {
+            return new ElementWise(true, true);
         }
         int len = 0;
-        int[] ranks = new int[tensors.length];
-        for (int i = 0; i < tensors.length; i++) {
-            int rank = tensors[i].rank();
+        int[] ranks = new int[tensors.size()];
+        for (int i = 0; i < tensors.size(); i++) {
+            int rank = tensors.get(i).rank();
             ranks[i] = rank;
             len = Math.max(rank, len);
         }
-        Tensor<N>[] transformed = Arrays.copyOf(tensors, tensors.length);
+        int[] dims = IntArrays.newFill(len, 1);
         boolean unchanged = true;
         for (int i = 1; i <= len; i++) {
-            int max = ranks[0] - i < 0 ? 0 : tensors[0].dim(ranks[0] - i);
-            for (int j = 1; j < tensors.length; j++) {
-                max = Math.max(max, ranks[j] - i < 0 ? 0 : tensors[j].dim(ranks[j] - i));
+            int max = ranks[0] - i < 0 ? 0 : tensors.getFirst().dim(ranks[0] - i);
+            for (int j = 1; j < tensors.size(); j++) {
+                max = Math.max(max, ranks[j] - i < 0 ? 0 : tensors.get(j).dim(ranks[j] - i));
             }
-            for (int j = 0; j < tensors.length; j++) {
+            dims[len - i] = max;
+            for (int j = 0; j < tensors.size(); j++) {
                 int index = ranks[j] - i;
                 if (index < 0) {
-                    transformed[j] = transformed[j].stretch(0).expand(0, max);
-                    continue;
-                }
-                int value = tensors[j].dim(index);
-                if (value == max) {
-                    continue;
-                }
-                if (value == 1) {
-                    transformed[j] = transformed[j].expand(index, max);
                     unchanged = false;
                     continue;
                 }
-                return new ElementWise<>(false, true, tensors);
+                int size = tensors.get(j).dim(index);
+                if (size == max) {
+                    continue;
+                }
+                if (size == 1) {
+                    unchanged = false;
+                    continue;
+                }
+                return new ElementWise(false, true);
             }
         }
-        return new ElementWise<>(true, unchanged, transformed);
+        return new ElementWise(true, unchanged, dims);
     }
 
-    public record ElementWise<N extends Number>(boolean valid, boolean unchanged, Tensor<N>... transformed) {
+    public record ElementWise(boolean valid, boolean unchanged, int... dims) {
 
         @SafeVarargs
         public ElementWise {
+        }
+
+        public <N extends Number> boolean hasShape(Tensor<N> t) {
+            if (t.rank() != dims.length) {
+                return false;
+            }
+            for (int i = 0; i < dims.length; i++) {
+                if (dims[i] != t.dim(i)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public <N extends Number> Tensor<N> transform(Tensor<N> t) {
+            for (int i = 1; i <= dims.length; i++) {
+                int index = t.rank() - i;
+                if (index < 0) {
+                    t = t.stretch(0).expand(0, dims[dims.length - i]);
+                    continue;
+                }
+                int dim = t.dim(index);
+                if (dim == dims[dims.length - i]) {
+                    continue;
+                }
+                if (dim == 1) {
+                    t = t.expand(index, dims[dims.length - i]);
+                    continue;
+                }
+                throw new IllegalArgumentException("Tensor not compatible for broadcasting.");
+            }
+            return t;
+        }
+
+        @Override
+        public String toString() {
+            return STR."ElementWise[valid=\{valid}, unchanged=\{unchanged}, dims=\{Arrays.toString(dims)}]";
         }
     }
 }

@@ -1,10 +1,5 @@
 "Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"tensor.StorageBenchmark.fillDoubleBuffer","avgt",1,3,0.000073,0.000029,"ms/op",100
-"tensor.StorageBenchmark.fillDoubleBuffer","avgt",1,3,0.001391,0.000765,"ms/op",1000
-"tensor.StorageBenchmark.fillDoubleBuffer","avgt",1,3,0.566621,0.949761,"ms/op",10000
-"tensor.StorageBenchmark.fillDoubleStorage","avgt",1,3,0.000080,0.000148,"ms/op",100
-"tensor.StorageBenchmark.fillDoubleStorage","avgt",1,3,0.001642,0.004201,"ms/op",1000
-"tensor.StorageBenchmark.fillDoubleStorage","avgt",1,3,0.618158,1.289917,"ms/op",10000
-"tensor.StorageBenchmark.floorJSAT","avgt",1,3,0.000178,0.000309,"ms/op",100
-"tensor.StorageBenchmark.floorJSAT","avgt",1,3,0.002717,0.005617,"ms/op",1000
-"tensor.StorageBenchmark.floorJSAT","avgt",1,3,0.572589,0.807436,"ms/op",10000
+"tensor.StorageBenchmark.absDoubleBuffer","avgt",1,3,0.536027,1.901625,"ms/op",10000
+"tensor.StorageBenchmark.absDoubleMS","avgt",1,3,0.654505,1.136855,"ms/op",10000
+"tensor.StorageBenchmark.absDoubleStorage","avgt",1,3,0.474412,0.300696,"ms/op",10000
+"tensor.StorageBenchmark.absJSAT","avgt",1,3,0.441923,0.374920,"ms/op",10000

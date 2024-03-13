@@ -40,7 +40,7 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.util.collection.IntArrays;
 
-public class MatrixStrideLayout implements StrideLayout {
+public class MatrixStrideLayout extends AbstractStrideLayout {
 
     private final Shape shape;
     private final int offset;

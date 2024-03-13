@@ -161,10 +161,10 @@ public final class VectorDoubleTensorStride extends BaseDoubleTensorStride imple
     }
 
     @Override
-    protected void unaryOp(TensorUnaryOp op) {
+    public Tensor<Double> op_(TensorUnaryOp op) {
         if (!op.vectorSupport()) {
-            super.unaryOp(op);
-            return;
+            super.op_(op);
+            return this;
         }
         if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
@@ -174,6 +174,7 @@ public final class VectorDoubleTensorStride extends BaseDoubleTensorStride imple
         } else {
             unaryOpStep(op);
         }
+        return this;
     }
 
     private void unaryOpUnit(TensorUnaryOp op) {

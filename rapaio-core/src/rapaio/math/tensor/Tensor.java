@@ -41,17 +41,35 @@ import java.util.stream.Stream;
 
 import rapaio.data.VarDouble;
 import rapaio.math.tensor.iterators.PointerIterator;
-import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.matrix.CholeskyDecomposition;
 import rapaio.math.tensor.matrix.EigenDecomposition;
 import rapaio.math.tensor.matrix.LUDecomposition;
 import rapaio.math.tensor.matrix.QRDecomposition;
 import rapaio.math.tensor.matrix.SVDecomposition;
+import rapaio.math.tensor.operator.TensorUnaryOp;
 import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
 
 /**
- * Parametrized interface for tensors. A tensor is a multidimensional array.
+ * Parametrized interface for tensors. A tensor is a multidimensional array. A tensor is homogeneous in that it contains
+ * elements of the same type. Elements are indexed organized in zero, one or multiple dimensions.
+ * <p>
+ * Tensors with a low number of dimensions are known also under specific names:
+ * <ul>
+ *     <li>scalar</li> a tensor with zero dimensions which contains a single element
+ *     <li>vector</li> a tensor with one dimension
+ *     <li>matrix</li> a tensor with two dimensions
+ * </ul>
+ * <p>
+ * The type of data elements from a tensor is marked as a generic data type and also described by {@link #dtype()}.
+ * <p>
+ * A tensor is created by a factory which implements {@link TensorManager}. Each tensor provides a link towards the manager
+ * which created it through {@link #manager()}.
+ * <p>
+ * The elements are logically organized like a hyper cube with a given number of dimensions {@link #rank()}. The size of each
+ * dimension is described by a {@link Shape} object and all the details related with how the elements are indexed and where is described
+ * by {@link Layout}. The implemented layout is a stride array layout provided by {@link rapaio.math.tensor.layout.StrideLayout}, but
+ * other layouts could be implemented (for example for special matrices or for sparse formats).
  *
  * @param <N> Generic data type which can be Byte, Integer, Float or Double.
  */
@@ -70,7 +88,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     /**
      * @return tensor layout
      */
-    StrideLayout layout();
+    Layout layout();
 
     /**
      * @return tensor shape
@@ -142,7 +160,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * @return new tensor instance, wrapping, if possible, the data from the old tensor.
      */
     default Tensor<N> reshape(Shape shape) {
-        return reshape(shape, Order.defaultOrder());
+        return reshape(shape, Order.A);
     }
 
     /**
@@ -268,9 +286,9 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     /**
      * Creates a new tensor view with one truncated axis, all other axes remain the same.
      *
-     * @param axis    axis to be truncated
-     * @param start   start index inclusive
-     * @param end     end index exclusive
+     * @param axis  axis to be truncated
+     * @param start start index inclusive
+     * @param end   end index exclusive
      * @return new view tensor with truncated axis
      */
     default Tensor<N> narrow(int axis, int start, int end) {
@@ -403,6 +421,10 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * @return new view over the original tensor with repeated data along a given dimension
      */
     Tensor<N> expand(int axis, int dim);
+
+    default Tensor<N> stretchExp(int axis, int dim) {
+        return stretch(axis).expand(axis, dim);
+    }
 
     /**
      * Take values along a given axis from specified indices. This operation will create a view when is possible, otherwise will create
@@ -808,204 +830,129 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> clamp_(N min, N max);
 
-    default Tensor<N> rint() {
-        return rint(Order.defaultOrder());
-    }
+    Tensor<N> op(TensorUnaryOp op);
 
-    default Tensor<N> rint(Order order) {
-        return copy(order).rint_();
-    }
+    Tensor<N> op(TensorUnaryOp op, Order order);
+
+    Tensor<N> op_(TensorUnaryOp op);
+
+    Tensor<N> rint();
+
+    Tensor<N> rint(Order order);
 
     Tensor<N> rint_();
 
-    default Tensor<N> ceil() {
-        return ceil(Order.defaultOrder());
-    }
+    Tensor<N> ceil();
 
-    default Tensor<N> ceil(Order order) {
-        return copy(order).ceil_();
-    }
+    Tensor<N> ceil(Order order);
 
     Tensor<N> ceil_();
 
-    default Tensor<N> floor() {
-        return floor(Order.defaultOrder());
-    }
+    Tensor<N> floor();
 
-    default Tensor<N> floor(Order order) {
-        return copy(order).floor_();
-    }
+    Tensor<N> floor(Order order);
 
     Tensor<N> floor_();
 
+    Tensor<N> abs();
 
-    default Tensor<N> abs() {
-        return abs(Order.defaultOrder());
-    }
-
-    default Tensor<N> abs(Order order) {
-        return copy(order).abs_();
-    }
+    Tensor<N> abs(Order order);
 
     Tensor<N> abs_();
 
-    default Tensor<N> negate() {
-        return negate(Order.defaultOrder());
-    }
+    Tensor<N> negate();
 
-    default Tensor<N> negate(Order order) {
-        return copy(order).negate_();
-    }
+    Tensor<N> negate(Order order);
 
     Tensor<N> negate_();
 
-    default Tensor<N> log() {
-        return log(Order.defaultOrder());
-    }
+    Tensor<N> log();
 
-    default Tensor<N> log(Order order) {
-        return copy(order).log_();
-    }
+    Tensor<N> log(Order order);
 
     Tensor<N> log_();
 
-    default Tensor<N> log1p() {
-        return log1p(Order.defaultOrder());
-    }
+    Tensor<N> log1p();
 
-    default Tensor<N> log1p(Order order) {
-        return copy(order).log1p_();
-    }
+    Tensor<N> log1p(Order order);
 
     Tensor<N> log1p_();
 
-    default Tensor<N> exp() {
-        return exp(Order.defaultOrder());
-    }
+    Tensor<N> exp();
 
-    default Tensor<N> exp(Order order) {
-        return copy(order).exp_();
-    }
+    Tensor<N> exp(Order order);
 
     Tensor<N> exp_();
 
-    default Tensor<N> expm1() {
-        return expm1(Order.defaultOrder());
-    }
+    Tensor<N> expm1();
 
-    default Tensor<N> expm1(Order order) {
-        return copy(order).expm1_();
-    }
+    Tensor<N> expm1(Order order);
 
     Tensor<N> expm1_();
 
-    default Tensor<N> sin() {
-        return sin(Order.defaultOrder());
-    }
+    Tensor<N> sin();
 
-    default Tensor<N> sin(Order order) {
-        return copy(order).sin_();
-    }
+    Tensor<N> sin(Order order);
 
     Tensor<N> sin_();
 
-    default Tensor<N> asin() {
-        return asin(Order.defaultOrder());
-    }
+    Tensor<N> asin();
 
-    default Tensor<N> asin(Order order) {
-        return copy(order).asin_();
-    }
+    Tensor<N> asin(Order order);
 
     Tensor<N> asin_();
 
-    default Tensor<N> sinh() {
-        return sinh(Order.defaultOrder());
-    }
+    Tensor<N> sinh();
 
-    default Tensor<N> sinh(Order order) {
-        return copy(order).sinh_();
-    }
+    Tensor<N> sinh(Order order);
 
     Tensor<N> sinh_();
 
-    default Tensor<N> cos() {
-        return cos(Order.defaultOrder());
-    }
+    Tensor<N> cos();
 
-    default Tensor<N> cos(Order order) {
-        return copy(order).cos_();
-    }
+    Tensor<N> cos(Order order);
 
     Tensor<N> cos_();
 
-    default Tensor<N> acos() {
-        return acos(Order.defaultOrder());
-    }
+    Tensor<N> acos();
 
-    default Tensor<N> acos(Order order) {
-        return copy(order).acos_();
-    }
+    Tensor<N> acos(Order order);
 
     Tensor<N> acos_();
 
-    default Tensor<N> cosh() {
-        return cosh(Order.defaultOrder());
-    }
+    Tensor<N> cosh();
 
-    default Tensor<N> cosh(Order order) {
-        return copy(order).cosh_();
-    }
+    Tensor<N> cosh(Order order);
 
     Tensor<N> cosh_();
 
-    default Tensor<N> tan() {
-        return tan(Order.defaultOrder());
-    }
+    Tensor<N> tan();
 
-    default Tensor<N> tan(Order order) {
-        return copy(order).tan_();
-    }
+    Tensor<N> tan(Order order);
 
     Tensor<N> tan_();
 
-    default Tensor<N> atan() {
-        return atan(Order.defaultOrder());
-    }
+    Tensor<N> atan();
 
-    default Tensor<N> atan(Order order) {
-        return copy(order).atan_();
-    }
+    Tensor<N> atan(Order order);
 
     Tensor<N> atan_();
 
-    default Tensor<N> tanh() {
-        return tanh(Order.defaultOrder());
-    }
+    Tensor<N> tanh();
 
-    default Tensor<N> tanh(Order order) {
-        return copy(order).tanh_();
-    }
+    Tensor<N> tanh(Order order);
 
     Tensor<N> tanh_();
 
-    default Tensor<N> sqr() {
-        return sqr(Order.defaultOrder());
-    }
+    Tensor<N> sqr();
 
-    default Tensor<N> sqr(Order order) {
-        return copy(order).sqr_();
-    }
+    Tensor<N> sqr(Order order);
 
     Tensor<N> sqr_();
 
-    default Tensor<N> sqrt() {
-        return sqrt(Order.defaultOrder());
-    }
+    Tensor<N> sqrt();
 
-    default Tensor<N> sqrt(Order order) {
-        return copy(order).sqrt_();
-    }
+    Tensor<N> sqrt(Order order);
 
     Tensor<N> sqrt_();
 
@@ -1023,19 +970,19 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     <M extends Number> Tensor<N> add_(Tensor<M> tensor);
 
-    default Tensor<N> badd(int axis, Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> badd(int axis, Tensor<M> tensor) {
         return badd(axis, tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> badd(int axis, Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> badd(int axis, Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).add_(get());
+            return tensor.cast(dtype(), order).add_(get());
         }
         return copy(order).badd_(axis, tensor);
     }
 
-    default Tensor<N> badd_(int axis, Tensor<N> tensor) {
-        return add_(tensor.stretch(axis).expand(axis, dim(axis)));
+    default <M extends Number> Tensor<N> badd_(int axis, Tensor<M> tensor) {
+        return add_(tensor.stretchExp(axis, dim(axis)));
     }
 
 
@@ -1251,7 +1198,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * Adds in place the given matrix {@code t} multiplied by {@code factor} to the tensor element wise.
      *
      * @param factor multiplication factor
-     * @param t tensor to be multiplied and added to the current one
+     * @param t      tensor to be multiplied and added to the current one
      * @return same tensor with values changed
      */
     <M extends Number> Tensor<N> fma_(N factor, Tensor<M> t);
