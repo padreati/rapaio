@@ -71,7 +71,8 @@ public class TensorTest {
     @Test
     void allTests() {
         managerTestSuite(TensorManager.base());
-        managerTestSuite(TensorManager.varray());
+        // postpone until jdk 22
+//        managerTestSuite(TensorManager.varray());
     }
 
     private void managerTestSuite(TensorManager eng) {
