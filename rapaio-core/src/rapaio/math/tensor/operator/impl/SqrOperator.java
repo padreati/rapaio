@@ -35,47 +35,58 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import rapaio.math.tensor.operator.TensorBinaryOp;
+import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class BinaryOpMul implements TensorBinaryOp {
+public final class SqrOperator implements TensorUnaryOp {
 
     @Override
-    public byte applyByte(byte a, byte b) {
-        return (byte) (a * b);
+    public boolean vectorSupport() {
+        return true;
     }
 
     @Override
-    public ByteVector applyByte(ByteVector a, ByteVector b) {
-        return a.mul(b);
+    public boolean floatingPointOnly() {
+        return false;
     }
 
     @Override
-    public int applyInt(int a, int b) {
-        return a * b;
+    public byte applyByte(byte v) {
+        return (byte) (v * v);
     }
 
     @Override
-    public IntVector applyInt(IntVector a, IntVector b) {
-        return a.mul(b);
+    public int applyInt(int v) {
+        return v * v;
     }
 
     @Override
-    public float applyFloat(float v, float a) {
-        return v * a;
+    public float applyFloat(float v) {
+        return v * v;
     }
 
     @Override
-    public FloatVector applyFloat(FloatVector a, FloatVector b) {
-        return a.mul(b);
+    public double applyDouble(double v) {
+        return v * v;
     }
 
     @Override
-    public double applyDouble(double v, double a) {
-        return v * a;
+    public ByteVector applyByte(ByteVector v) {
+        return v.mul(v);
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
-        return a.mul(b);
+    public IntVector applyInt(IntVector v) {
+        return v.mul(v);
+    }
+
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        return v.mul(v);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.mul(v);
     }
 }

@@ -35,11 +35,9 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorOperators;
-import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class UnaryOpTan implements TensorUnaryOp {
+public final class NegOperator implements TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {
@@ -48,47 +46,46 @@ public final class UnaryOpTan implements TensorUnaryOp {
 
     @Override
     public boolean floatingPointOnly() {
-        return true;
-    }
-
-    @Override
-    public byte applyByte(byte v) {
-        throw new OperationNotAvailableException();
-    }
-
-    @Override
-    public int applyInt(int v) {
-        throw new OperationNotAvailableException();
-    }
-
-    @Override
-    public float applyFloat(float v) {
-        return (float) Math.tan(v);
+        return false;
     }
 
     @Override
     public double applyDouble(double v) {
-        return Math.tan(v);
+        return -v;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return -v;
+    }
+
+    @Override
+    public int applyInt(int v) {
+        return -v;
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        return (byte) -v;
     }
 
     @Override
     public ByteVector applyByte(ByteVector v) {
-        throw new OperationNotAvailableException();
+        return v.neg();
     }
 
     @Override
     public IntVector applyInt(IntVector v) {
-        throw new OperationNotAvailableException();
+        return v.neg();
     }
-
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
-        return v.lanewise(VectorOperators.TAN);
+        return v.neg();
     }
 
     @Override
     public DoubleVector applyDouble(DoubleVector v) {
-        return v.lanewise(VectorOperators.TAN);
+        return v.neg();
     }
 }

@@ -35,60 +35,47 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorOperators;
-import rapaio.data.OperationNotAvailableException;
-import rapaio.math.tensor.operator.TensorUnaryOp;
+import rapaio.math.tensor.operator.TensorBinaryOp;
 
-public final class UnaryOpSin implements TensorUnaryOp {
+public final class DivOperator implements TensorBinaryOp {
 
     @Override
-    public boolean vectorSupport() {
-        return true;
+    public byte applyByte(byte a, byte b) {
+        return (byte) (a / b);
     }
 
     @Override
-    public boolean floatingPointOnly() {
-        return true;
+    public ByteVector applyByte(ByteVector a, ByteVector b) {
+        return a.div(b);
     }
 
     @Override
-    public byte applyByte(byte v) {
-        throw new OperationNotAvailableException();
+    public int applyInt(int a, int b) {
+        return a / b;
     }
 
     @Override
-    public int applyInt(int v) {
-        throw new OperationNotAvailableException();
+    public IntVector applyInt(IntVector a, IntVector b) {
+        return a.div(b);
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.sin(v);
+    public float applyFloat(float v, float a) {
+        return v / a;
     }
 
     @Override
-    public double applyDouble(double v) {
-        return Math.sin(v);
+    public FloatVector applyFloat(FloatVector a, FloatVector b) {
+        return a.div(b);
     }
 
     @Override
-    public ByteVector applyByte(ByteVector v) {
-        throw new OperationNotAvailableException();
+    public double applyDouble(double v, double a) {
+        return v / a;
     }
 
     @Override
-    public IntVector applyInt(IntVector v) {
-        throw new OperationNotAvailableException();
-    }
-
-
-    @Override
-    public FloatVector applyFloat(FloatVector v) {
-        return v.lanewise(VectorOperators.SIN);
-    }
-
-    @Override
-    public DoubleVector applyDouble(DoubleVector v) {
-        return v.lanewise(VectorOperators.SIN);
+    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
+        return a.div(b);
     }
 }

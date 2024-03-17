@@ -117,50 +117,6 @@ public final class VectorFloatTensorStride extends BaseFloatTensorStride impleme
     }
 
     @Override
-    public Tensor<Float> clamp_(Float min, Float max) {
-        for (int offset : loop.offsets) {
-            int bound = VS.loopBound(loop.size);
-            int i = 0;
-            for (; i < bound; i += VS_LEN) {
-                int p = offset + i * loop.step;
-                FloatVector a = loop.step == 1 ? storage.loadFloat(VS, p) : storage.loadFloat(VS, p, loopIndexes, 0);
-                boolean any = false;
-                if (!dtype().isNaN(min)) {
-                    VectorMask<Float> m = a.compare(VectorOperators.LT, min);
-                    if (m.anyTrue()) {
-                        a = a.blend(min, m);
-                        any = true;
-                    }
-                }
-                if (!dtype().isNaN(max)) {
-                    VectorMask<Float> m = a.compare(VectorOperators.GT, max);
-                    if (m.anyTrue()) {
-                        a = a.blend(max, m);
-                        any = true;
-                    }
-                }
-                if (any) {
-                    if (loop.step == 1) {
-                        storage.saveFloat(a, p);
-                    } else {
-                        storage.saveFloat(a, p, loopIndexes, 0);
-                    }
-                }
-            }
-            for (; i < loop.size; i++) {
-                int p = offset + i * loop.step;
-                if (!dtype().isNaN(min) && storage.getFloat(p) < min) {
-                    storage.setFloat(p, min);
-                }
-                if (!dtype().isNaN(max) && storage.getFloat(p) > max) {
-                    storage.setFloat(p, max);
-                }
-            }
-        }
-        return this;
-    }
-
-    @Override
     public Tensor<Float> op_(TensorUnaryOp op) {
         if (!op.vectorSupport()) {
             super.op_(op);

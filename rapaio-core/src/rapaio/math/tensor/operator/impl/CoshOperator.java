@@ -39,7 +39,7 @@ import jdk.incubator.vector.VectorOperators;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class UnaryOpAtan implements TensorUnaryOp {
+public final class CoshOperator implements TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {
@@ -61,14 +61,15 @@ public final class UnaryOpAtan implements TensorUnaryOp {
         throw new OperationNotAvailableException();
     }
 
+
     @Override
     public float applyFloat(float v) {
-        return (float) Math.atan(v);
+        return (float) Math.cosh(v);
     }
 
     @Override
     public double applyDouble(double v) {
-        return Math.atan(v);
+        return Math.cosh(v);
     }
 
     @Override
@@ -84,11 +85,11 @@ public final class UnaryOpAtan implements TensorUnaryOp {
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
-        return v.lanewise(VectorOperators.ATAN);
+        return v.lanewise(VectorOperators.COSH);
     }
 
     @Override
     public DoubleVector applyDouble(DoubleVector v) {
-        return v.lanewise(VectorOperators.ATAN);
+        return v.lanewise(VectorOperators.COSH);
     }
 }

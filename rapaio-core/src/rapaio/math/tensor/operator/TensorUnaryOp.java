@@ -35,49 +35,8 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import rapaio.math.tensor.operator.impl.UnaryOpAbs;
-import rapaio.math.tensor.operator.impl.UnaryOpAcos;
-import rapaio.math.tensor.operator.impl.UnaryOpAsin;
-import rapaio.math.tensor.operator.impl.UnaryOpAtan;
-import rapaio.math.tensor.operator.impl.UnaryOpCeil;
-import rapaio.math.tensor.operator.impl.UnaryOpCos;
-import rapaio.math.tensor.operator.impl.UnaryOpCosh;
-import rapaio.math.tensor.operator.impl.UnaryOpExp;
-import rapaio.math.tensor.operator.impl.UnaryOpExpm1;
-import rapaio.math.tensor.operator.impl.UnaryOpFloor;
-import rapaio.math.tensor.operator.impl.UnaryOpLog;
-import rapaio.math.tensor.operator.impl.UnaryOpLog1p;
-import rapaio.math.tensor.operator.impl.UnaryOpNeg;
-import rapaio.math.tensor.operator.impl.UnaryOpRint;
-import rapaio.math.tensor.operator.impl.UnaryOpSin;
-import rapaio.math.tensor.operator.impl.UnaryOpSinh;
-import rapaio.math.tensor.operator.impl.UnaryOpSqr;
-import rapaio.math.tensor.operator.impl.UnaryOpSqrt;
-import rapaio.math.tensor.operator.impl.UnaryOpTan;
-import rapaio.math.tensor.operator.impl.UnaryOpTanh;
 
 public interface TensorUnaryOp {
-
-    TensorUnaryOp RINT = new UnaryOpRint();
-    TensorUnaryOp CEIL = new UnaryOpCeil();
-    TensorUnaryOp FLOOR = new UnaryOpFloor();
-    TensorUnaryOp ABS = new UnaryOpAbs();
-    TensorUnaryOp NEG = new UnaryOpNeg();
-    TensorUnaryOp LOG = new UnaryOpLog();
-    TensorUnaryOp LOG1P = new UnaryOpLog1p();
-    TensorUnaryOp EXP = new UnaryOpExp();
-    TensorUnaryOp EXPM1 = new UnaryOpExpm1();
-    TensorUnaryOp SIN = new UnaryOpSin();
-    TensorUnaryOp ASIN = new UnaryOpAsin();
-    TensorUnaryOp SINH = new UnaryOpSinh();
-    TensorUnaryOp COS = new UnaryOpCos();
-    TensorUnaryOp ACOS = new UnaryOpAcos();
-    TensorUnaryOp COSH = new UnaryOpCosh();
-    TensorUnaryOp TAN = new UnaryOpTan();
-    TensorUnaryOp ATAN = new UnaryOpAtan();
-    TensorUnaryOp TANH = new UnaryOpTanh();
-    TensorUnaryOp SQR = new UnaryOpSqr();
-    TensorUnaryOp SQRT = new UnaryOpSqrt();
 
     /**
      * @return true if vector operations are implemented, false otherwise

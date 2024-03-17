@@ -58,6 +58,7 @@ import rapaio.math.tensor.layout.StrideWrapper;
 import rapaio.math.tensor.manager.AbstractStrideTensor;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
+import rapaio.math.tensor.operator.TensorOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
@@ -189,22 +190,6 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
             for (int i = 0; i < loop.size; i++) {
                 if (dtype().isNaN(storage.getByte(p))) {
                     storage.setByte(p, value);
-                }
-                p += loop.step;
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public Tensor<Byte> clamp_(Byte min, Byte max) {
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                if (!dtype().isNaN(min) && storage.getByte(p) < min) {
-                    storage.setByte(p, min);
-                }
-                if (!dtype().isNaN(max) && storage.getByte(p) > max) {
-                    storage.setByte(p, max);
                 }
                 p += loop.step;
             }
@@ -616,7 +601,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     @Override
     public int argmax(Order order) {
         int argmax = -1;
-        byte argvalue = TensorAssociativeOp.MAX.initByte();
+        byte argvalue = TensorOp.max().initByte();
         var i = 0;
         var loop = LoopDescriptor.of(layout, order);
         for (int p : loop.offsets) {
@@ -636,7 +621,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     @Override
     public int argmin(Order order) {
         int argmin = -1;
-        byte argvalue = TensorAssociativeOp.MIN.initByte();
+        byte argvalue = TensorOp.min().initByte();
         var i = 0;
         var loop = LoopDescriptor.of(layout, order);
         for (int p : loop.offsets) {
@@ -686,7 +671,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         byte agg = op.initByte();
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                agg = op.aggByte(agg, storage.getByte(p));
+                agg = op.applyByte(agg, storage.getByte(p));
                 p += loop.step;
             }
         }
@@ -699,7 +684,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 if (!dtype().isNaN(storage.getByte(p))) {
-                    aggregate = op.aggByte(aggregate, storage.getByte(p));
+                    aggregate = op.applyByte(aggregate, storage.getByte(p));
                 }
                 p += loop.step;
             }
@@ -719,7 +704,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            byte value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initByte(), op::aggByte);
+            byte value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initByte(), op::applyByte);
             res.ptrSet(resIt.next(), value);
         }
         return res;
@@ -737,7 +722,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            byte value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.BYTE, op.initByte(), op::aggByte);
+            byte value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.BYTE, op.initByte(), op::applyByte);
             res.ptrSet(resIt.next(), value);
         }
         return res;

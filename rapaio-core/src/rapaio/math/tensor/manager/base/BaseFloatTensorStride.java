@@ -58,6 +58,7 @@ import rapaio.math.tensor.layout.StrideWrapper;
 import rapaio.math.tensor.manager.AbstractStrideTensor;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
+import rapaio.math.tensor.operator.TensorOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
@@ -189,22 +190,6 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
             for (int i = 0; i < loop.size; i++) {
                 if (dtype().isNaN(storage.getFloat(p))) {
                     storage.setFloat(p, value);
-                }
-                p += loop.step;
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public Tensor<Float> clamp_(Float min, Float max) {
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                if (!dtype().isNaN(min) && storage.getFloat(p) < min) {
-                    storage.setFloat(p, min);
-                }
-                if (!dtype().isNaN(max) && storage.getFloat(p) > max) {
-                    storage.setFloat(p, max);
                 }
                 p += loop.step;
             }
@@ -616,7 +601,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     public int argmax(Order order) {
         int argmax = -1;
-        float argvalue = TensorAssociativeOp.MAX.initFloat();
+        float argvalue = TensorOp.max().initFloat();
         var i = 0;
         var loop = LoopDescriptor.of(layout, order);
         for (int p : loop.offsets) {
@@ -636,7 +621,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     public int argmin(Order order) {
         int argmin = -1;
-        float argvalue = TensorAssociativeOp.MIN.initFloat();
+        float argvalue = TensorOp.min().initFloat();
         var i = 0;
         var loop = LoopDescriptor.of(layout, order);
         for (int p : loop.offsets) {
@@ -686,7 +671,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         float agg = op.initFloat();
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                agg = op.aggFloat(agg, storage.getFloat(p));
+                agg = op.applyFloat(agg, storage.getFloat(p));
                 p += loop.step;
             }
         }
@@ -699,7 +684,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 if (!dtype().isNaN(storage.getFloat(p))) {
-                    aggregate = op.aggFloat(aggregate, storage.getFloat(p));
+                    aggregate = op.applyFloat(aggregate, storage.getFloat(p));
                 }
                 p += loop.step;
             }
@@ -719,7 +704,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            float value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initFloat(), op::aggFloat);
+            float value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initFloat(), op::applyFloat);
             res.ptrSet(resIt.next(), value);
         }
         return res;
@@ -737,7 +722,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            float value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.FLOAT, op.initFloat(), op::aggFloat);
+            float value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.FLOAT, op.initFloat(), op::applyFloat);
             res.ptrSet(resIt.next(), value);
         }
         return res;

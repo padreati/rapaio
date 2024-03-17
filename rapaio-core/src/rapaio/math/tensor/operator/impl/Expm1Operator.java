@@ -39,7 +39,7 @@ import jdk.incubator.vector.VectorOperators;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class UnaryOpAcos implements TensorUnaryOp {
+public final class Expm1Operator implements TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {
@@ -63,12 +63,12 @@ public final class UnaryOpAcos implements TensorUnaryOp {
 
     @Override
     public float applyFloat(float v) {
-        return (float) Math.acos(v);
+        return (float) Math.expm1(v);
     }
 
     @Override
     public double applyDouble(double v) {
-        return Math.acos(v);
+        return Math.expm1(v);
     }
 
     @Override
@@ -84,11 +84,11 @@ public final class UnaryOpAcos implements TensorUnaryOp {
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
-        return v.lanewise(VectorOperators.ACOS);
+        return v.lanewise(VectorOperators.EXPM1);
     }
 
     @Override
     public DoubleVector applyDouble(DoubleVector v) {
-        return v.lanewise(VectorOperators.ACOS);
+        return v.lanewise(VectorOperators.EXPM1);
     }
 }

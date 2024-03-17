@@ -36,48 +36,42 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
-import rapaio.math.tensor.operator.impl.AssocOpAdd;
-import rapaio.math.tensor.operator.impl.AssocOpMax;
-import rapaio.math.tensor.operator.impl.AssocOpMin;
-import rapaio.math.tensor.operator.impl.AssocOpMul;
 
 public interface TensorAssociativeOp {
 
-    TensorAssociativeOp ADD = new AssocOpAdd();
-    TensorAssociativeOp MUL = new AssocOpMul();
-    TensorAssociativeOp MAX = new AssocOpMax();
-    TensorAssociativeOp MIN = new AssocOpMin();
-
-    double initDouble();
-
-    double aggDouble(double a, double b);
-
-    float initFloat();
-
-    float aggFloat(float a, float b);
-
-    int initInt();
-
-    int aggInt(int a, int b);
-
     byte initByte();
 
-    byte aggByte(byte a, byte b);
+    byte applyByte(byte a, byte b);
 
     ByteVector initByte(VectorSpecies<Byte> species);
 
+    ByteVector applyByte(ByteVector a, ByteVector b);
+
+
+    int initInt();
+
+    int applyInt(int a, int b);
+
     IntVector initInt(VectorSpecies<Integer> species);
+
+    IntVector applyInt(IntVector a, IntVector b);
+
+
+    float initFloat();
+
+    float applyFloat(float a, float b);
 
     FloatVector initFloat(VectorSpecies<Float> species);
 
+    FloatVector applyFloat(FloatVector a, FloatVector b);
+
+
+    double initDouble();
+
+    double applyDouble(double a, double b);
+
     DoubleVector initDouble(VectorSpecies<Double> species);
 
-    ByteVector aggByte(VectorSpecies<Byte> species, ByteVector a, ByteVector b);
-
-    IntVector aggInt(VectorSpecies<Integer> species, IntVector a, IntVector b);
-
-    FloatVector aggFloat(VectorSpecies<Float> species, FloatVector a, FloatVector b);
-
-    DoubleVector aggDouble(VectorSpecies<Double> species, DoubleVector a, DoubleVector b);
+    DoubleVector applyDouble(DoubleVector a, DoubleVector b);
 }
 

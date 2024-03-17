@@ -35,11 +35,11 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
-import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class UnaryOpCos implements TensorUnaryOp {
+public final class FloorOperator implements TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {
@@ -48,47 +48,54 @@ public final class UnaryOpCos implements TensorUnaryOp {
 
     @Override
     public boolean floatingPointOnly() {
-        return true;
+        return false;
     }
 
     @Override
     public byte applyByte(byte v) {
-        throw new OperationNotAvailableException();
+        return v;
     }
 
     @Override
     public int applyInt(int v) {
-        throw new OperationNotAvailableException();
-    }
-
-    @Override
-    public double applyDouble(double v) {
-        return Math.cos(v);
+        return v;
     }
 
     @Override
     public float applyFloat(float v) {
-        return (float) Math.cos(v);
+        return (float) StrictMath.floor(v);
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return StrictMath.floor(v);
     }
 
     @Override
     public ByteVector applyByte(ByteVector v) {
-        throw new OperationNotAvailableException();
+        return v;
     }
 
     @Override
     public IntVector applyInt(IntVector v) {
-        throw new OperationNotAvailableException();
+        return v;
     }
-
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
-        return v.lanewise(VectorOperators.COS);
+        VectorMask<Float> m = v.compare(VectorOperators.LT, 0);
+        if (m.anyTrue()) {
+            v = v.sub(1.f, m);
+        }
+        return v.convert(VectorOperators.F2I, 0).convert(VectorOperators.I2F, 0).reinterpretAsFloats();
     }
 
     @Override
     public DoubleVector applyDouble(DoubleVector v) {
-        return v.lanewise(VectorOperators.COS);
+        VectorMask<Double> m = v.compare(VectorOperators.LT, 0);
+        if (m.anyTrue()) {
+            v = v.sub(1., m);
+        }
+        return v.convert(VectorOperators.D2L, 0).convert(VectorOperators.L2D, 0).reinterpretAsDoubles();
     }
 }

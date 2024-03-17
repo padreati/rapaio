@@ -117,50 +117,6 @@ public final class VectorIntTensorStride extends BaseIntTensorStride implements 
     }
 
     @Override
-    public Tensor<Integer> clamp_(Integer min, Integer max) {
-        for (int offset : loop.offsets) {
-            int bound = VS.loopBound(loop.size);
-            int i = 0;
-            for (; i < bound; i += VS_LEN) {
-                int p = offset + i * loop.step;
-                IntVector a = loop.step == 1 ? storage.loadInt(VS, p) : storage.loadInt(VS, p, loopIndexes, 0);
-                boolean any = false;
-                if (!dtype().isNaN(min)) {
-                    VectorMask<Integer> m = a.compare(VectorOperators.LT, min);
-                    if (m.anyTrue()) {
-                        a = a.blend(min, m);
-                        any = true;
-                    }
-                }
-                if (!dtype().isNaN(max)) {
-                    VectorMask<Integer> m = a.compare(VectorOperators.GT, max);
-                    if (m.anyTrue()) {
-                        a = a.blend(max, m);
-                        any = true;
-                    }
-                }
-                if (any) {
-                    if (loop.step == 1) {
-                        storage.saveInt(a, p);
-                    } else {
-                        storage.saveInt(a, p, loopIndexes, 0);
-                    }
-                }
-            }
-            for (; i < loop.size; i++) {
-                int p = offset + i * loop.step;
-                if (!dtype().isNaN(min) && storage.getInt(p) < min) {
-                    storage.setInt(p, min);
-                }
-                if (!dtype().isNaN(max) && storage.getInt(p) > max) {
-                    storage.setInt(p, max);
-                }
-            }
-        }
-        return this;
-    }
-
-    @Override
     public Tensor<Integer> op_(TensorUnaryOp op) {
         if (!op.vectorSupport()) {
             super.op_(op);

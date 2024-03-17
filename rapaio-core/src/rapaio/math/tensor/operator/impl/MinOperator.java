@@ -37,86 +37,90 @@ import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
+import rapaio.math.tensor.operator.TensorBinaryOp;
 
-public final class AssocOpAdd implements TensorAssociativeOp {
-
-    @Override
-    public double initDouble() {
-        return 0;
-    }
-
-    @Override
-    public double aggDouble(double a, double b) {
-        return a + b;
-    }
-
-    @Override
-    public DoubleVector initDouble(VectorSpecies<Double> species) {
-        return DoubleVector.zero(species);
-    }
-
-    @Override
-    public DoubleVector aggDouble(VectorSpecies<Double> species, DoubleVector a, DoubleVector b) {
-        return a.add(b);
-    }
-
-    @Override
-    public float initFloat() {
-        return 0f;
-    }
-
-    @Override
-    public float aggFloat(float a, float b) {
-        return a + b;
-    }
-
-    @Override
-    public FloatVector initFloat(VectorSpecies<Float> species) {
-        return FloatVector.zero(species);
-    }
-
-    @Override
-    public FloatVector aggFloat(VectorSpecies<Float> species, FloatVector a, FloatVector b) {
-        return a.add(b);
-    }
-
-    @Override
-    public int initInt() {
-        return 0;
-    }
-
-    @Override
-    public int aggInt(int a, int b) {
-        return a + b;
-    }
-
-    @Override
-    public IntVector initInt(VectorSpecies<Integer> species) {
-        return IntVector.zero(species);
-    }
-
-    @Override
-    public IntVector aggInt(VectorSpecies<Integer> species, IntVector a, IntVector b) {
-        return a.add(b);
-    }
+public final class MinOperator implements TensorAssociativeOp, TensorBinaryOp {
 
     @Override
     public byte initByte() {
-        return 0;
+        return Byte.MAX_VALUE;
     }
 
     @Override
-    public byte aggByte(byte a, byte b) {
-        return (byte) (a + b);
+    public byte applyByte(byte a, byte b) {
+        return a >= b ? b : a;
     }
 
     @Override
     public ByteVector initByte(VectorSpecies<Byte> species) {
-        return ByteVector.zero(species);
+        return ByteVector.broadcast(species, Byte.MAX_VALUE);
     }
 
     @Override
-    public ByteVector aggByte(VectorSpecies<Byte> species, ByteVector a, ByteVector b) {
-        return a.add(b);
+    public ByteVector applyByte(ByteVector a, ByteVector b) {
+        return a.min(b);
+    }
+
+
+    @Override
+    public int initInt() {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public int applyInt(int a, int b) {
+        return Math.min(a, b);
+    }
+
+    @Override
+    public IntVector initInt(VectorSpecies<Integer> species) {
+        return IntVector.broadcast(species, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public IntVector applyInt(IntVector a, IntVector b) {
+        return a.min(b);
+    }
+
+
+    @Override
+    public float initFloat() {
+        return Float.POSITIVE_INFINITY;
+    }
+
+    @Override
+    public float applyFloat(float a, float b) {
+        return Math.min(a, b);
+    }
+
+    @Override
+    public FloatVector initFloat(VectorSpecies<Float> species) {
+        return FloatVector.broadcast(species, Float.POSITIVE_INFINITY);
+    }
+
+    @Override
+    public FloatVector applyFloat(FloatVector a, FloatVector b) {
+        return a.min(b);
+    }
+
+
+    @Override
+    public double initDouble() {
+        return Double.POSITIVE_INFINITY;
+    }
+
+    @Override
+    public double applyDouble(double a, double b) {
+        return Math.min(a, b);
+    }
+
+    @Override
+    public DoubleVector initDouble(VectorSpecies<Double> species) {
+        return DoubleVector.broadcast(species, Double.POSITIVE_INFINITY);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
+        return a.min(b);
     }
 }

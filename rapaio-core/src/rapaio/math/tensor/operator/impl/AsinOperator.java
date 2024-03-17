@@ -35,39 +35,40 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorOperators;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class UnaryOpRint implements TensorUnaryOp {
+public final class AsinOperator implements TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean floatingPointOnly() {
-        return false;
-    }
-
-    @Override
-    public double applyDouble(double v) {
-        return Math.rint(v);
-    }
-
-    @Override
-    public float applyFloat(float v) {
-        return (float) Math.rint(v);
-    }
-
-    @Override
-    public int applyInt(int v) {
-        return v;
+        return true;
     }
 
     @Override
     public byte applyByte(byte v) {
-        return v;
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return (float) Math.asin(v);
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return Math.asin(v);
     }
 
     @Override
@@ -80,13 +81,14 @@ public final class UnaryOpRint implements TensorUnaryOp {
         throw new OperationNotAvailableException();
     }
 
+
     @Override
     public FloatVector applyFloat(FloatVector v) {
-        throw new OperationNotAvailableException();
+        return v.lanewise(VectorOperators.ASIN);
     }
 
     @Override
     public DoubleVector applyDouble(DoubleVector v) {
-        throw new OperationNotAvailableException();
+        return v.lanewise(VectorOperators.ASIN);
     }
 }

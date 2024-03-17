@@ -117,50 +117,6 @@ public final class VectorDoubleTensorStride extends BaseDoubleTensorStride imple
     }
 
     @Override
-    public Tensor<Double> clamp_(Double min, Double max) {
-        for (int offset : loop.offsets) {
-            int bound = VS.loopBound(loop.size);
-            int i = 0;
-            for (; i < bound; i += VS_LEN) {
-                int p = offset + i * loop.step;
-                DoubleVector a = loop.step == 1 ? storage.loadDouble(VS, p) : storage.loadDouble(VS, p, loopIndexes, 0);
-                boolean any = false;
-                if (!dtype().isNaN(min)) {
-                    VectorMask<Double> m = a.compare(VectorOperators.LT, min);
-                    if (m.anyTrue()) {
-                        a = a.blend(min, m);
-                        any = true;
-                    }
-                }
-                if (!dtype().isNaN(max)) {
-                    VectorMask<Double> m = a.compare(VectorOperators.GT, max);
-                    if (m.anyTrue()) {
-                        a = a.blend(max, m);
-                        any = true;
-                    }
-                }
-                if (any) {
-                    if (loop.step == 1) {
-                        storage.saveDouble(a, p);
-                    } else {
-                        storage.saveDouble(a, p, loopIndexes, 0);
-                    }
-                }
-            }
-            for (; i < loop.size; i++) {
-                int p = offset + i * loop.step;
-                if (!dtype().isNaN(min) && storage.getDouble(p) < min) {
-                    storage.setDouble(p, min);
-                }
-                if (!dtype().isNaN(max) && storage.getDouble(p) > max) {
-                    storage.setDouble(p, max);
-                }
-            }
-        }
-        return this;
-    }
-
-    @Override
     public Tensor<Double> op_(TensorUnaryOp op) {
         if (!op.vectorSupport()) {
             super.op_(op);

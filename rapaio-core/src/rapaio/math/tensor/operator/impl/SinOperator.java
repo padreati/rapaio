@@ -39,7 +39,7 @@ import jdk.incubator.vector.VectorOperators;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class UnaryOpExpm1 implements TensorUnaryOp {
+public final class SinOperator implements TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {
@@ -63,12 +63,12 @@ public final class UnaryOpExpm1 implements TensorUnaryOp {
 
     @Override
     public float applyFloat(float v) {
-        return (float) Math.expm1(v);
+        return (float) Math.sin(v);
     }
 
     @Override
     public double applyDouble(double v) {
-        return Math.expm1(v);
+        return Math.sin(v);
     }
 
     @Override
@@ -84,11 +84,11 @@ public final class UnaryOpExpm1 implements TensorUnaryOp {
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
-        return v.lanewise(VectorOperators.EXPM1);
+        return v.lanewise(VectorOperators.SIN);
     }
 
     @Override
     public DoubleVector applyDouble(DoubleVector v) {
-        return v.lanewise(VectorOperators.EXPM1);
+        return v.lanewise(VectorOperators.SIN);
     }
 }

@@ -35,21 +35,8 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import rapaio.math.tensor.operator.impl.BinaryOpAdd;
-import rapaio.math.tensor.operator.impl.BinaryOpDiv;
-import rapaio.math.tensor.operator.impl.BinaryOpMax;
-import rapaio.math.tensor.operator.impl.BinaryOpMin;
-import rapaio.math.tensor.operator.impl.BinaryOpMul;
-import rapaio.math.tensor.operator.impl.BinaryOpSub;
 
 public interface TensorBinaryOp {
-
-    TensorBinaryOp ADD = new BinaryOpAdd();
-    TensorBinaryOp SUB = new BinaryOpSub();
-    TensorBinaryOp MUL = new BinaryOpMul();
-    TensorBinaryOp DIV = new BinaryOpDiv();
-    TensorBinaryOp MIN = new BinaryOpMin();
-    TensorBinaryOp MAX = new BinaryOpMax();
 
     byte applyByte(byte a, byte b);
 

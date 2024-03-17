@@ -117,50 +117,6 @@ public final class VectorByteTensorStride extends BaseByteTensorStride implement
     }
 
     @Override
-    public Tensor<Byte> clamp_(Byte min, Byte max) {
-        for (int offset : loop.offsets) {
-            int bound = VS.loopBound(loop.size);
-            int i = 0;
-            for (; i < bound; i += VS_LEN) {
-                int p = offset + i * loop.step;
-                ByteVector a = loop.step == 1 ? storage.loadByte(VS, p) : storage.loadByte(VS, p, loopIndexes, 0);
-                boolean any = false;
-                if (!dtype().isNaN(min)) {
-                    VectorMask<Byte> m = a.compare(VectorOperators.LT, min);
-                    if (m.anyTrue()) {
-                        a = a.blend(min, m);
-                        any = true;
-                    }
-                }
-                if (!dtype().isNaN(max)) {
-                    VectorMask<Byte> m = a.compare(VectorOperators.GT, max);
-                    if (m.anyTrue()) {
-                        a = a.blend(max, m);
-                        any = true;
-                    }
-                }
-                if (any) {
-                    if (loop.step == 1) {
-                        storage.saveByte(a, p);
-                    } else {
-                        storage.saveByte(a, p, loopIndexes, 0);
-                    }
-                }
-            }
-            for (; i < loop.size; i++) {
-                int p = offset + i * loop.step;
-                if (!dtype().isNaN(min) && storage.getByte(p) < min) {
-                    storage.setByte(p, min);
-                }
-                if (!dtype().isNaN(max) && storage.getByte(p) > max) {
-                    storage.setByte(p, max);
-                }
-            }
-        }
-        return this;
-    }
-
-    @Override
     public Tensor<Byte> op_(TensorUnaryOp op) {
         if (!op.vectorSupport()) {
             super.op_(op);

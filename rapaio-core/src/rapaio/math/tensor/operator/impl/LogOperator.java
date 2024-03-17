@@ -36,47 +36,58 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorOperators;
-import rapaio.math.tensor.operator.TensorBinaryOp;
+import rapaio.data.OperationNotAvailableException;
+import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class BinaryOpMin implements TensorBinaryOp {
+public final class LogOperator implements TensorUnaryOp {
 
     @Override
-    public byte applyByte(byte a, byte b) {
-        return a >= b ? b : a;
+    public boolean vectorSupport() {
+        return true;
     }
 
     @Override
-    public ByteVector applyByte(ByteVector a, ByteVector b) {
-        return a.lanewise(VectorOperators.MIN, b);
+    public boolean floatingPointOnly() {
+        return true;
     }
 
     @Override
-    public int applyInt(int a, int b) {
-        return Math.min(a, b);
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
-    public IntVector applyInt(IntVector a, IntVector b) {
-        return a.lanewise(VectorOperators.MIN, b);
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
-    public float applyFloat(float a, float b) {
-        return Math.min(a, b);
+    public double applyDouble(double v) {
+        return Math.log(v);
     }
 
     @Override
-    public FloatVector applyFloat(FloatVector a, FloatVector b) {
-        return a.lanewise(VectorOperators.MIN, b);
+    public float applyFloat(float v) {
+        return (float) Math.log(v);
     }
 
     @Override
-    public double applyDouble(double a, double b) {
-        return Math.min(a, b);
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
-        return a.lanewise(VectorOperators.MIN, b);
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.LOG);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.LOG);
     }
 }

@@ -58,6 +58,7 @@ import rapaio.math.tensor.layout.StrideWrapper;
 import rapaio.math.tensor.manager.AbstractStrideTensor;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
+import rapaio.math.tensor.operator.TensorOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
@@ -189,22 +190,6 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
             for (int i = 0; i < loop.size; i++) {
                 if (dtype().isNaN(storage.getDouble(p))) {
                     storage.setDouble(p, value);
-                }
-                p += loop.step;
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public Tensor<Double> clamp_(Double min, Double max) {
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                if (!dtype().isNaN(min) && storage.getDouble(p) < min) {
-                    storage.setDouble(p, min);
-                }
-                if (!dtype().isNaN(max) && storage.getDouble(p) > max) {
-                    storage.setDouble(p, max);
                 }
                 p += loop.step;
             }
@@ -616,7 +601,7 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
     @Override
     public int argmax(Order order) {
         int argmax = -1;
-        double argvalue = TensorAssociativeOp.MAX.initDouble();
+        double argvalue = TensorOp.max().initDouble();
         var i = 0;
         var loop = LoopDescriptor.of(layout, order);
         for (int p : loop.offsets) {
@@ -636,7 +621,7 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
     @Override
     public int argmin(Order order) {
         int argmin = -1;
-        double argvalue = TensorAssociativeOp.MIN.initDouble();
+        double argvalue = TensorOp.min().initDouble();
         var i = 0;
         var loop = LoopDescriptor.of(layout, order);
         for (int p : loop.offsets) {
@@ -686,7 +671,7 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
         double agg = op.initDouble();
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                agg = op.aggDouble(agg, storage.getDouble(p));
+                agg = op.applyDouble(agg, storage.getDouble(p));
                 p += loop.step;
             }
         }
@@ -699,7 +684,7 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 if (!dtype().isNaN(storage.getDouble(p))) {
-                    aggregate = op.aggDouble(aggregate, storage.getDouble(p));
+                    aggregate = op.applyDouble(aggregate, storage.getDouble(p));
                 }
                 p += loop.step;
             }
@@ -719,7 +704,7 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            double value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initDouble(), op::aggDouble);
+            double value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initDouble(), op::applyDouble);
             res.ptrSet(resIt.next(), value);
         }
         return res;
@@ -737,7 +722,7 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            double value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.DOUBLE, op.initDouble(), op::aggDouble);
+            double value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.DOUBLE, op.initDouble(), op::applyDouble);
             res.ptrSet(resIt.next(), value);
         }
         return res;

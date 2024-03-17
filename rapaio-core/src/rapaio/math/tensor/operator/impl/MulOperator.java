@@ -37,68 +37,9 @@ import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
+import rapaio.math.tensor.operator.TensorBinaryOp;
 
-public final class AssocOpMul implements TensorAssociativeOp {
-
-    @Override
-    public double initDouble() {
-        return 1;
-    }
-
-    @Override
-    public double aggDouble(double a, double b) {
-        return a * b;
-    }
-
-    @Override
-    public DoubleVector initDouble(VectorSpecies<Double> species) {
-        return DoubleVector.broadcast(species, 1);
-    }
-
-    @Override
-    public DoubleVector aggDouble(VectorSpecies<Double> species, DoubleVector a, DoubleVector b) {
-        return a.mul(b);
-    }
-
-    @Override
-    public float initFloat() {
-        return 1f;
-    }
-
-    @Override
-    public float aggFloat(float a, float b) {
-        return a * b;
-    }
-
-    @Override
-    public FloatVector initFloat(VectorSpecies<Float> species) {
-        return FloatVector.broadcast(species, 1);
-    }
-
-    @Override
-    public FloatVector aggFloat(VectorSpecies<Float> species, FloatVector a, FloatVector b) {
-        return a.mul(b);
-    }
-
-    @Override
-    public int initInt() {
-        return 1;
-    }
-
-    @Override
-    public int aggInt(int a, int b) {
-        return a * b;
-    }
-
-    @Override
-    public IntVector initInt(VectorSpecies<Integer> species) {
-        return IntVector.broadcast(species, 1);
-    }
-
-    @Override
-    public IntVector aggInt(VectorSpecies<Integer> species, IntVector a, IntVector b) {
-        return a.mul(b);
-    }
+public final class MulOperator implements TensorAssociativeOp, TensorBinaryOp {
 
     @Override
     public byte initByte() {
@@ -106,7 +47,7 @@ public final class AssocOpMul implements TensorAssociativeOp {
     }
 
     @Override
-    public byte aggByte(byte a, byte b) {
+    public byte applyByte(byte a, byte b) {
         return (byte) (a * b);
     }
 
@@ -116,7 +57,70 @@ public final class AssocOpMul implements TensorAssociativeOp {
     }
 
     @Override
-    public ByteVector aggByte(VectorSpecies<Byte> species, ByteVector a, ByteVector b) {
+    public ByteVector applyByte(ByteVector a, ByteVector b) {
+        return a.mul(b);
+    }
+
+
+    @Override
+    public int initInt() {
+        return 1;
+    }
+
+    @Override
+    public int applyInt(int a, int b) {
+        return a * b;
+    }
+
+    @Override
+    public IntVector initInt(VectorSpecies<Integer> species) {
+        return IntVector.broadcast(species, 1);
+    }
+
+    @Override
+    public IntVector applyInt(IntVector a, IntVector b) {
+        return a.mul(b);
+    }
+
+
+    @Override
+    public float initFloat() {
+        return 1f;
+    }
+
+    @Override
+    public float applyFloat(float a, float b) {
+        return a * b;
+    }
+
+    @Override
+    public FloatVector initFloat(VectorSpecies<Float> species) {
+        return FloatVector.broadcast(species, 1);
+    }
+
+    @Override
+    public FloatVector applyFloat(FloatVector a, FloatVector b) {
+        return a.mul(b);
+    }
+
+
+    @Override
+    public double initDouble() {
+        return 1;
+    }
+
+    @Override
+    public double applyDouble(double a, double b) {
+        return a * b;
+    }
+
+    @Override
+    public DoubleVector initDouble(VectorSpecies<Double> species) {
+        return DoubleVector.broadcast(species, 1);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
         return a.mul(b);
     }
 }

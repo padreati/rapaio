@@ -59,12 +59,14 @@ import rapaio.math.tensor.manager.base.BaseDoubleTensorStride;
 import rapaio.math.tensor.manager.vector.VectorDoubleTensorStride;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
+import rapaio.math.tensor.operator.TensorOp;
+import rapaio.math.tensor.operator.TensorUnaryOp;
 import rapaio.math.tensor.storage.array.DoubleArrayStorage;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 
-public abstract class AbstractStrideTensor<N extends Number> extends AbstractTensor<N> {
+public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N> {
 
     protected final Storage<N> storage;
     protected final StrideLayout layout;
@@ -409,6 +411,19 @@ public abstract class AbstractStrideTensor<N extends Number> extends AbstractTen
         return new StridePointerIterator(layout, askOrder);
     }
 
+    @Override
+    public final Tensor<N> op(TensorUnaryOp op) {
+        return op(op, Order.defaultOrder());
+    }
+
+    @Override
+    public final Tensor<N> op(TensorUnaryOp op, Order order) {
+        return copy(order).op_(op);
+    }
+
+    @Override
+    public abstract Tensor<N> op_(TensorUnaryOp op);
+
     protected abstract <M extends Number> void binaryVectorOp(TensorBinaryOp op, Tensor<M> b);
 
     protected abstract void binaryScalarOp(TensorBinaryOp op, N value);
@@ -423,154 +438,154 @@ public abstract class AbstractStrideTensor<N extends Number> extends AbstractTen
 
     @Override
     public final <M extends Number> Tensor<N> add_(Tensor<M> tensor) {
-        binaryVectorOp(TensorBinaryOp.ADD, tensor);
+        binaryVectorOp(TensorOp.add(), tensor);
         return this;
     }
 
     @Override
     public final <M extends Number> Tensor<N> sub_(Tensor<M> tensor) {
-        binaryVectorOp(TensorBinaryOp.SUB, tensor);
+        binaryVectorOp(TensorOp.sub(), tensor);
         return this;
     }
 
     @Override
     public final <M extends Number> Tensor<N> mul_(Tensor<M> tensor) {
-        binaryVectorOp(TensorBinaryOp.MUL, tensor);
+        binaryVectorOp(TensorOp.mul(), tensor);
         return this;
     }
 
     @Override
     public final <M extends Number> Tensor<N> div_(Tensor<M> tensor) {
-        binaryVectorOp(TensorBinaryOp.DIV, tensor);
+        binaryVectorOp(TensorOp.div(), tensor);
         return this;
     }
 
     @Override
     public final <M extends Number> Tensor<N> min_(Tensor<M> tensor) {
-        binaryVectorOp(TensorBinaryOp.MIN, tensor);
+        binaryVectorOp(TensorOp.min(), tensor);
         return this;
     }
 
     @Override
     public final <M extends Number> Tensor<N> max_(Tensor<M> tensor) {
-        binaryVectorOp(TensorBinaryOp.MAX, tensor);
+        binaryVectorOp(TensorOp.max(), tensor);
         return this;
     }
 
     @Override
     public final Tensor<N> add_(N value) {
-        binaryScalarOp(TensorBinaryOp.ADD, value);
+        binaryScalarOp(TensorOp.add(), value);
         return this;
     }
 
     @Override
     public final Tensor<N> sub_(N value) {
-        binaryScalarOp(TensorBinaryOp.SUB, value);
+        binaryScalarOp(TensorOp.sub(), value);
         return this;
     }
 
     @Override
     public final Tensor<N> mul_(N value) {
-        binaryScalarOp(TensorBinaryOp.MUL, value);
+        binaryScalarOp(TensorOp.mul(), value);
         return this;
     }
 
     @Override
     public final Tensor<N> div_(N value) {
-        binaryScalarOp(TensorBinaryOp.DIV, value);
+        binaryScalarOp(TensorOp.div(), value);
         return this;
     }
 
     @Override
     public final Tensor<N> min_(N value) {
-        binaryScalarOp(TensorBinaryOp.MIN, value);
+        binaryScalarOp(TensorOp.min(), value);
         return this;
     }
 
     @Override
     public final Tensor<N> max_(N value) {
-        binaryScalarOp(TensorBinaryOp.MAX, value);
+        binaryScalarOp(TensorOp.max(), value);
         return this;
     }
 
     @Override
     public final N sum() {
-        return associativeOp(TensorAssociativeOp.ADD);
+        return associativeOp(TensorOp.add());
     }
 
     @Override
     public final Tensor<N> sum(Order order, int axis) {
-        return associativeOpNarrow(TensorAssociativeOp.ADD, order, axis);
+        return associativeOpNarrow(TensorOp.add(), order, axis);
     }
 
     @Override
     public final N nanSum() {
-        return nanAssociativeOp(TensorAssociativeOp.ADD);
+        return nanAssociativeOp(TensorOp.add());
     }
 
     @Override
     public final Tensor<N> nanSum(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorAssociativeOp.ADD, order, axis);
+        return nanAssociativeOpNarrow(TensorOp.add(), order, axis);
     }
 
     @Override
     public final N prod() {
-        return associativeOp(TensorAssociativeOp.MUL);
+        return associativeOp(TensorOp.mul());
     }
 
     @Override
     public final Tensor<N> prod(Order order, int axis) {
-        return associativeOpNarrow(TensorAssociativeOp.MUL, order, axis);
+        return associativeOpNarrow(TensorOp.mul(), order, axis);
     }
 
     @Override
     public final N nanProd() {
-        return nanAssociativeOp(TensorAssociativeOp.MUL);
+        return nanAssociativeOp(TensorOp.mul());
     }
 
     @Override
     public final Tensor<N> nanProd(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorAssociativeOp.MUL, order, axis);
+        return nanAssociativeOpNarrow(TensorOp.mul(), order, axis);
     }
 
     @Override
     public final N max() {
-        return associativeOp(TensorAssociativeOp.MAX);
+        return associativeOp(TensorOp.max());
     }
 
     @Override
     public final Tensor<N> max(Order order, int axis) {
-        return associativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
+        return associativeOpNarrow(TensorOp.max(), order, axis);
     }
 
     @Override
     public final N nanMax() {
-        return nanAssociativeOp(TensorAssociativeOp.MAX);
+        return nanAssociativeOp(TensorOp.max());
     }
 
     @Override
     public final Tensor<N> nanMax(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorAssociativeOp.MAX, order, axis);
+        return nanAssociativeOpNarrow(TensorOp.max(), order, axis);
     }
 
     @Override
     public final N min() {
-        return associativeOp(TensorAssociativeOp.MIN);
+        return associativeOp(TensorOp.min());
     }
 
     @Override
     public final Tensor<N> min(Order order, int axis) {
-        return associativeOpNarrow(TensorAssociativeOp.MIN, order, axis);
+        return associativeOpNarrow(TensorOp.min(), order, axis);
     }
 
     @Override
     public final N nanMin() {
-        return nanAssociativeOp(TensorAssociativeOp.MIN);
+        return nanAssociativeOp(TensorOp.min());
     }
 
     @Override
     public final Tensor<N> nanMin(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorAssociativeOp.MIN, order, axis);
+        return nanAssociativeOpNarrow(TensorOp.min(), order, axis);
     }
 
     protected abstract Tensor<N> alongAxisOperation(Order order, int axis, Function<Tensor<N>, N> op);
@@ -768,9 +783,10 @@ public abstract class AbstractStrideTensor<N extends Number> extends AbstractTen
         Order fastOrder = Layout.storageFastTandemOrder(castTensor.layout(), layout);
         var loopDescriptor = LoopDescriptor.of(castTensor.layout(), fastOrder);
         var iter = ptrIterator(fastOrder);
-        for (int offset : loopDescriptor.offsets) {
+        for (int p : loopDescriptor.offsets) {
             for (int i = 0; i < loopDescriptor.size; i++) {
-                castTensor.ptrSet(offset + i * loopDescriptor.step, dType.castValue(ptrGet(iter.nextInt())));
+                castTensor.ptrSet(p, dType.castValue(ptrGet(iter.nextInt())));
+                p += loopDescriptor.step;
             }
         }
         return castTensor;

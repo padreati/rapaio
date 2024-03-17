@@ -34,30 +34,14 @@ package rapaio.experiment.math;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import rapaio.math.tensor.Order;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensors;
-
 public class TensorSandbox {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
-        var t1 = Tensors.seq(Shape.of(6)).reshape(Shape.of(3, 2));
-        t1.printString();
-
-        t1.reshape(Shape.of(2, 3)).printString();
-        t1.ravel().reshape(Shape.of(2, 3)).printString();
-
-        t1.reshape(Shape.of(2, 3), Order.F).printString();
-        t1.ravel(Order.F).reshape(Shape.of(2, 3), Order.F).printString();
-        System.out.println();
-
-
-        var t2 = Tensors.stride(Shape.of(2, 3), 1, 2, 3, 4, 5, 6);
-
-        t2.reshape(Shape.of(6), Order.C).printString();
-        t2.reshape(Shape.of(6), Order.F).printString();
-        t2.reshape(Shape.of(3,2)).printString();
-
+        double odds = 7;
+        double proc = 1/odds;
+        for (int i = 1; i <= 5; i++) {
+            double pow = Math.pow(proc, i);
+            System.out.println(i + ") cota:" + Math.round(100./pow)/100. + ", proc:" + pow);        }
     }
 }

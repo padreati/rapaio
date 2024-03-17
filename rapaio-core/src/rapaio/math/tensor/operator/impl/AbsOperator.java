@@ -35,11 +35,10 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorMask;
-import jdk.incubator.vector.VectorOperators;
+import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class UnaryOpFloor implements TensorUnaryOp {
+public final class AbsOperator implements TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {
@@ -52,50 +51,42 @@ public final class UnaryOpFloor implements TensorUnaryOp {
     }
 
     @Override
-    public byte applyByte(byte v) {
-        return v;
-    }
-
-    @Override
-    public int applyInt(int v) {
-        return v;
+    public double applyDouble(double v) {
+        return Math.abs(v);
     }
 
     @Override
     public float applyFloat(float v) {
-        return (float) StrictMath.floor(v);
+        return Math.abs(v);
     }
 
     @Override
-    public double applyDouble(double v) {
-        return StrictMath.floor(v);
+    public int applyInt(int v) {
+        return Math.abs(v);
+    }
+
+    @Override
+    public byte applyByte(byte v) {
+        return (byte) Math.abs(v);
     }
 
     @Override
     public ByteVector applyByte(ByteVector v) {
-        return v;
+        return v.abs();
     }
 
     @Override
     public IntVector applyInt(IntVector v) {
-        return v;
+        return v.abs();
     }
 
     @Override
     public FloatVector applyFloat(FloatVector v) {
-        VectorMask<Float> m = v.compare(VectorOperators.LT, 0);
-        if (m.anyTrue()) {
-            v = v.sub(1.f, m);
-        }
-        return v.convert(VectorOperators.F2I, 0).convert(VectorOperators.I2F, 0).reinterpretAsFloats();
+        return v.abs();
     }
 
     @Override
     public DoubleVector applyDouble(DoubleVector v) {
-        VectorMask<Double> m = v.compare(VectorOperators.LT, 0);
-        if (m.anyTrue()) {
-            v = v.sub(1., m);
-        }
-        return v.convert(VectorOperators.D2L, 0).convert(VectorOperators.L2D, 0).reinterpretAsDoubles();
+        return v.abs();
     }
 }

@@ -35,47 +35,60 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import rapaio.math.tensor.operator.TensorBinaryOp;
+import jdk.incubator.vector.VectorOperators;
+import rapaio.data.OperationNotAvailableException;
+import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class BinaryOpSub implements TensorBinaryOp {
+public final class CosOperator implements TensorUnaryOp {
 
     @Override
-    public byte applyByte(byte a, byte b) {
-        return (byte) (a - b);
+    public boolean vectorSupport() {
+        return true;
     }
 
     @Override
-    public ByteVector applyByte(ByteVector a, ByteVector b) {
-        return a.sub(b);
+    public boolean floatingPointOnly() {
+        return true;
     }
 
     @Override
-    public int applyInt(int a, int b) {
-        return a - b;
+    public byte applyByte(byte v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
-    public IntVector applyInt(IntVector a, IntVector b) {
-        return a.sub(b);
+    public int applyInt(int v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
-    public float applyFloat(float v, float a) {
-        return v - a;
+    public double applyDouble(double v) {
+        return Math.cos(v);
     }
 
     @Override
-    public FloatVector applyFloat(FloatVector a, FloatVector b) {
-        return a.sub(b);
+    public float applyFloat(float v) {
+        return (float) Math.cos(v);
     }
 
     @Override
-    public double applyDouble(double v, double a) {
-        return v - a;
+    public ByteVector applyByte(ByteVector v) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
-        return a.sub(b);
+    public IntVector applyInt(IntVector v) {
+        throw new OperationNotAvailableException();
+    }
+
+
+    @Override
+    public FloatVector applyFloat(FloatVector v) {
+        return v.lanewise(VectorOperators.COS);
+    }
+
+    @Override
+    public DoubleVector applyDouble(DoubleVector v) {
+        return v.lanewise(VectorOperators.COS);
     }
 }
