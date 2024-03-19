@@ -117,9 +117,9 @@ public final class VectorFloatTensorStride extends BaseFloatTensorStride impleme
     }
 
     @Override
-    public Tensor<Float> op_(TensorUnaryOp op) {
+    public Tensor<Float> unaryOp_(TensorUnaryOp op) {
         if (!op.vectorSupport()) {
-            super.op_(op);
+            super.unaryOp_(op);
             return this;
         }
         if (op.floatingPointOnly() && !dtype().floatingPoint()) {

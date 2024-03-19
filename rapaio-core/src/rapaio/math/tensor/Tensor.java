@@ -46,6 +46,7 @@ import rapaio.math.tensor.matrix.EigenDecomposition;
 import rapaio.math.tensor.matrix.LUDecomposition;
 import rapaio.math.tensor.matrix.QRDecomposition;
 import rapaio.math.tensor.matrix.SVDecomposition;
+import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 import rapaio.printer.Printable;
@@ -313,12 +314,12 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     Tensor<N> expand(int axis, int dim);
 
     /**
-     * Combined method of a chain call for {@link #stretch(int...)} and {@link #expand(int, int)} for a single axis. 
-     * It creates a new dimension with repeated data along the new dimension.  
+     * Combined method of a chain call for {@link #stretch(int...)} and {@link #expand(int, int)} for a single axis.
+     * It creates a new dimension with repeated data along the new dimension.
      *
-     * @param axis the index of the new dimension, if there is already a dimension on that position, that dimensions and all dimension 
+     * @param axis the index of the new dimension, if there is already a dimension on that position, that dimensions and all dimension
      *             to the left are shifted one position
-     * @param dim the size of the new dimension
+     * @param dim  the size of the new dimension
      * @return new view with repeated data along a new dimension
      */
     default Tensor<N> strexp(int axis, int dim) {
@@ -874,276 +875,283 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> fillNan_(N value);
 
-    Tensor<N> op(TensorUnaryOp op);
+    Tensor<N> unaryOp(TensorUnaryOp op);
 
-    Tensor<N> op(TensorUnaryOp op, Order order);
+    Tensor<N> unaryOp(TensorUnaryOp op, Order order);
 
-    Tensor<N> op_(TensorUnaryOp op);
+    Tensor<N> unaryOp_(TensorUnaryOp op);
 
     default Tensor<N> clamp(N min, N max) {
-        return op(TensorOp.clamp(dtype(), min, max));
+        return unaryOp(TensorOp.clamp(dtype(), min, max));
     }
 
     default Tensor<N> clamp(Order order, N min, N max) {
-        return op(TensorOp.clamp(dtype(), min, max), order);
+        return unaryOp(TensorOp.clamp(dtype(), min, max), order);
     }
 
     default Tensor<N> clamp_(N min, N max) {
-        return op_(TensorOp.clamp(dtype(), min, max));
+        return unaryOp_(TensorOp.clamp(dtype(), min, max));
     }
 
     default Tensor<N> rint() {
-        return op(TensorOp.rint());
+        return unaryOp(TensorOp.rint());
     }
 
     default Tensor<N> rint(Order order) {
-        return op(TensorOp.rint(), order);
+        return unaryOp(TensorOp.rint(), order);
     }
 
     default Tensor<N> rint_() {
-        return op_(TensorOp.rint());
+        return unaryOp_(TensorOp.rint());
     }
 
     default Tensor<N> ceil() {
-        return op(TensorOp.ceil());
+        return unaryOp(TensorOp.ceil());
     }
 
     default Tensor<N> ceil(Order order) {
-        return op(TensorOp.ceil(), order);
+        return unaryOp(TensorOp.ceil(), order);
     }
 
     default Tensor<N> ceil_() {
-        return op_(TensorOp.ceil());
+        return unaryOp_(TensorOp.ceil());
     }
 
     default Tensor<N> floor() {
-        return op(TensorOp.floor());
+        return unaryOp(TensorOp.floor());
     }
 
     default Tensor<N> floor(Order order) {
-        return op(TensorOp.floor(), order);
+        return unaryOp(TensorOp.floor(), order);
     }
 
     default Tensor<N> floor_() {
-        return op_(TensorOp.floor());
+        return unaryOp_(TensorOp.floor());
     }
 
     default Tensor<N> abs() {
-        return op(TensorOp.abs());
+        return unaryOp(TensorOp.abs());
     }
 
     default Tensor<N> abs(Order order) {
-        return op(TensorOp.abs(), order);
+        return unaryOp(TensorOp.abs(), order);
     }
 
     default Tensor<N> abs_() {
-        return op_(TensorOp.abs());
+        return unaryOp_(TensorOp.abs());
     }
 
     default Tensor<N> negate() {
-        return op(TensorOp.neg());
+        return unaryOp(TensorOp.neg());
     }
 
     default Tensor<N> negate(Order order) {
-        return op(TensorOp.neg(), order);
+        return unaryOp(TensorOp.neg(), order);
     }
 
     default Tensor<N> negate_() {
-        return op_(TensorOp.neg());
+        return unaryOp_(TensorOp.neg());
     }
 
     default Tensor<N> log() {
-        return op(TensorOp.log());
+        return unaryOp(TensorOp.log());
     }
 
     default Tensor<N> log(Order order) {
-        return op(TensorOp.log(), order);
+        return unaryOp(TensorOp.log(), order);
     }
 
     default Tensor<N> log_() {
-        return op_(TensorOp.log());
+        return unaryOp_(TensorOp.log());
     }
 
     default Tensor<N> log1p() {
-        return op(TensorOp.log1p());
+        return unaryOp(TensorOp.log1p());
     }
 
     default Tensor<N> log1p(Order order) {
-        return op(TensorOp.log1p(), order);
+        return unaryOp(TensorOp.log1p(), order);
     }
 
     default Tensor<N> log1p_() {
-        return op_(TensorOp.log1p());
+        return unaryOp_(TensorOp.log1p());
     }
 
     default Tensor<N> exp() {
-        return op(TensorOp.exp());
+        return unaryOp(TensorOp.exp());
     }
 
     default Tensor<N> exp(Order order) {
-        return op(TensorOp.exp(), order);
+        return unaryOp(TensorOp.exp(), order);
     }
 
     default Tensor<N> exp_() {
-        return op_(TensorOp.exp());
+        return unaryOp_(TensorOp.exp());
     }
 
     default Tensor<N> expm1() {
-        return op(TensorOp.expm1());
+        return unaryOp(TensorOp.expm1());
     }
 
     default Tensor<N> expm1(Order order) {
-        return op(TensorOp.expm1(), order);
+        return unaryOp(TensorOp.expm1(), order);
     }
 
     default Tensor<N> expm1_() {
-        return op_(TensorOp.expm1());
+        return unaryOp_(TensorOp.expm1());
     }
 
     default Tensor<N> sin() {
-        return op(TensorOp.sin());
+        return unaryOp(TensorOp.sin());
     }
 
     default Tensor<N> sin(Order order) {
-        return op(TensorOp.sin(), order);
+        return unaryOp(TensorOp.sin(), order);
     }
 
     default Tensor<N> sin_() {
-        return op_(TensorOp.sin());
+        return unaryOp_(TensorOp.sin());
     }
 
     default Tensor<N> asin() {
-        return op(TensorOp.asin());
+        return unaryOp(TensorOp.asin());
     }
 
     default Tensor<N> asin(Order order) {
-        return op(TensorOp.asin(), order);
+        return unaryOp(TensorOp.asin(), order);
     }
 
     default Tensor<N> asin_() {
-        return op_(TensorOp.asin());
+        return unaryOp_(TensorOp.asin());
     }
 
     default Tensor<N> sinh() {
-        return op(TensorOp.sinh());
+        return unaryOp(TensorOp.sinh());
     }
 
     default Tensor<N> sinh(Order order) {
-        return op(TensorOp.sinh(), order);
+        return unaryOp(TensorOp.sinh(), order);
     }
 
     default Tensor<N> sinh_() {
-        return op_(TensorOp.sinh());
+        return unaryOp_(TensorOp.sinh());
     }
 
     default Tensor<N> cos() {
-        return op(TensorOp.cos());
+        return unaryOp(TensorOp.cos());
     }
 
     default Tensor<N> cos(Order order) {
-        return op(TensorOp.cos(), order);
+        return unaryOp(TensorOp.cos(), order);
     }
 
     default Tensor<N> cos_() {
-        return op_(TensorOp.cos());
+        return unaryOp_(TensorOp.cos());
     }
 
     default Tensor<N> acos() {
-        return op(TensorOp.acos());
+        return unaryOp(TensorOp.acos());
     }
 
     default Tensor<N> acos(Order order) {
-        return op(TensorOp.acos(), order);
+        return unaryOp(TensorOp.acos(), order);
     }
 
     default Tensor<N> acos_() {
-        return op_(TensorOp.acos());
+        return unaryOp_(TensorOp.acos());
     }
 
     default Tensor<N> cosh() {
-        return op(TensorOp.cosh());
+        return unaryOp(TensorOp.cosh());
     }
 
     default Tensor<N> cosh(Order order) {
-        return op(TensorOp.cosh(), order);
+        return unaryOp(TensorOp.cosh(), order);
     }
 
     default Tensor<N> cosh_() {
-        return op_(TensorOp.cosh());
+        return unaryOp_(TensorOp.cosh());
     }
 
     default Tensor<N> tan() {
-        return op(TensorOp.tan());
+        return unaryOp(TensorOp.tan());
     }
 
     default Tensor<N> tan(Order order) {
-        return op(TensorOp.tan(), order);
+        return unaryOp(TensorOp.tan(), order);
     }
 
     default Tensor<N> tan_() {
-        return op_(TensorOp.tan());
+        return unaryOp_(TensorOp.tan());
     }
 
     default Tensor<N> atan() {
-        return op(TensorOp.atan());
+        return unaryOp(TensorOp.atan());
     }
 
     default Tensor<N> atan(Order order) {
-        return op(TensorOp.atan(), order);
+        return unaryOp(TensorOp.atan(), order);
     }
 
     default Tensor<N> atan_() {
-        return op_(TensorOp.atan());
+        return unaryOp_(TensorOp.atan());
     }
 
     default Tensor<N> tanh() {
-        return op(TensorOp.tanh());
+        return unaryOp(TensorOp.tanh());
     }
 
     default Tensor<N> tanh(Order order) {
-        return op(TensorOp.tanh(), order);
+        return unaryOp(TensorOp.tanh(), order);
     }
 
     default Tensor<N> tanh_() {
-        return op_(TensorOp.tanh());
+        return unaryOp_(TensorOp.tanh());
     }
 
     default Tensor<N> sqr() {
-        return op(TensorOp.sqr());
+        return unaryOp(TensorOp.sqr());
     }
 
     default Tensor<N> sqr(Order order) {
-        return op(TensorOp.sqr(), order);
+        return unaryOp(TensorOp.sqr(), order);
     }
 
     default Tensor<N> sqr_() {
-        return op_(TensorOp.sqr());
+        return unaryOp_(TensorOp.sqr());
     }
 
     default Tensor<N> sqrt() {
-        return op(TensorOp.sqrt());
+        return unaryOp(TensorOp.sqrt());
     }
 
     default Tensor<N> sqrt(Order order) {
-        return op(TensorOp.sqrt(), order);
+        return unaryOp(TensorOp.sqrt(), order);
     }
 
     default Tensor<N> sqrt_() {
-        return op_(TensorOp.sqrt());
+        return unaryOp_(TensorOp.sqrt());
     }
 
+    <M extends Number> Tensor<N> binaryOp(TensorBinaryOp op, Tensor<M> t, Order order);
+
+    <M extends Number> Tensor<N> binaryOp_(TensorBinaryOp op, Tensor<M> value);
+
+    <M extends Number> Tensor<N> binaryOp(TensorBinaryOp op, M value, Order order);
+
+    <M extends Number> Tensor<N> binaryOp_(TensorBinaryOp op, M value);
+
     default <M extends Number> Tensor<N> add(Tensor<M> tensor) {
-        return add(tensor, Order.defaultOrder());
+        return binaryOp(TensorOp.add(), tensor, Order.defaultOrder());
     }
 
     default <M extends Number> Tensor<N> add(Tensor<M> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).add_(get());
-        }
-        return copy(order).add_(tensor);
+        return binaryOp(TensorOp.add(), tensor, order);
     }
 
-    <M extends Number> Tensor<N> add_(Tensor<M> tensor);
+    default <M extends Number> Tensor<N> add_(Tensor<M> tensor) {
+        return binaryOp_(TensorOp.add(), tensor);
+    }
 
     default <M extends Number> Tensor<N> badd(int axis, Tensor<M> tensor) {
         return badd(axis, tensor, Order.defaultOrder());
@@ -1160,19 +1168,17 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return add_(tensor.strexp(axis, dim(axis)));
     }
 
-
     default <M extends Number> Tensor<N> sub(Tensor<M> tensor) {
-        return sub(tensor, Order.defaultOrder());
+        return binaryOp(TensorOp.sub(), tensor, Order.defaultOrder());
     }
 
     default <M extends Number> Tensor<N> sub(Tensor<M> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).sub_(get());
-        }
-        return copy(order).sub_(tensor);
+        return binaryOp(TensorOp.sub(), tensor, order);
     }
 
-    <M extends Number> Tensor<N> sub_(Tensor<M> tensor);
+    default <M extends Number> Tensor<N> sub_(Tensor<M> tensor) {
+        return binaryOp_(TensorOp.sub(), tensor);
+    }
 
     default Tensor<N> bsub(int axis, Tensor<N> tensor) {
         return bsub(axis, tensor, Order.defaultOrder());
@@ -1190,17 +1196,16 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default <M extends Number> Tensor<N> mul(Tensor<M> tensor) {
-        return mul(tensor, Order.defaultOrder());
+        return binaryOp(TensorOp.mul(), tensor, Order.defaultOrder());
     }
 
     default <M extends Number> Tensor<N> mul(Tensor<M> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).mul_(get());
-        }
-        return copy(order).mul_(tensor);
+        return binaryOp(TensorOp.mul(), tensor, order);
     }
 
-    <M extends Number> Tensor<N> mul_(Tensor<M> tensor);
+    default <M extends Number> Tensor<N> mul_(Tensor<M> tensor) {
+        return binaryOp_(TensorOp.mul(), tensor);
+    }
 
     default Tensor<N> bmul(int axis, Tensor<N> tensor) {
         return bmul(axis, tensor, Order.defaultOrder());
@@ -1218,17 +1223,16 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default <M extends Number> Tensor<N> div(Tensor<M> tensor) {
-        return div(tensor, Order.defaultOrder());
+        return binaryOp(TensorOp.div(), tensor, Order.defaultOrder());
     }
 
     default <M extends Number> Tensor<N> div(Tensor<M> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).div_(get());
-        }
-        return copy(order).div_(tensor);
+        return binaryOp(TensorOp.div(), tensor, order);
     }
 
-    <M extends Number> Tensor<N> div_(Tensor<M> tensor);
+    default <M extends Number> Tensor<N> div_(Tensor<M> tensor) {
+        return binaryOp_(TensorOp.div(), tensor);
+    }
 
     default Tensor<N> bdiv(int axis, Tensor<N> tensor) {
         return bdiv(axis, tensor, Order.defaultOrder());
@@ -1246,17 +1250,16 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default <M extends Number> Tensor<N> min(Tensor<M> tensor) {
-        return min(tensor, Order.defaultOrder());
+        return binaryOp(TensorOp.min(), tensor, Order.defaultOrder());
     }
 
     default <M extends Number> Tensor<N> min(Tensor<M> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).min_(get());
-        }
-        return copy(order).min_(tensor);
+        return binaryOp(TensorOp.min(), tensor, order);
     }
 
-    <M extends Number> Tensor<N> min_(Tensor<M> tensor);
+    default <M extends Number> Tensor<N> min_(Tensor<M> tensor) {
+        return binaryOp_(TensorOp.min(), tensor);
+    }
 
     default Tensor<N> bmin(int axis, Tensor<N> tensor) {
         return bmin(axis, tensor, Order.defaultOrder());
@@ -1274,17 +1277,16 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default <M extends Number> Tensor<N> max(Tensor<M> tensor) {
-        return max(tensor, Order.defaultOrder());
+        return binaryOp(TensorOp.max(), tensor, Order.defaultOrder());
     }
 
     default <M extends Number> Tensor<N> max(Tensor<M> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).max_(get());
-        }
-        return copy(order).max_(tensor);
+        return binaryOp(TensorOp.max(), tensor, order);
     }
 
-    <M extends Number> Tensor<N> max_(Tensor<M> tensor);
+    default <M extends Number> Tensor<N> max_(Tensor<M> tensor) {
+        return binaryOp_(TensorOp.max(), tensor);
+    }
 
     default Tensor<N> bmax(int axis, Tensor<N> tensor) {
         return bmax(axis, tensor, Order.defaultOrder());
@@ -1302,64 +1304,76 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     default Tensor<N> add(N value) {
-        return add(value, Order.defaultOrder());
+        return binaryOp(TensorOp.add(), value, Order.defaultOrder());
     }
 
     default Tensor<N> add(N value, Order order) {
-        return copy(order).add_(value);
+        return binaryOp(TensorOp.add(), value, order);
     }
 
-    Tensor<N> add_(N value);
+    default Tensor<N> add_(N value) {
+        return binaryOp_(TensorOp.add(), value);
+    }
 
     default Tensor<N> sub(N value) {
-        return sub(value, Order.defaultOrder());
+        return binaryOp(TensorOp.sub(), value, Order.defaultOrder());
     }
 
     default Tensor<N> sub(N value, Order order) {
-        return copy(order).sub_(value);
+        return binaryOp(TensorOp.sub(), value, order);
     }
 
-    Tensor<N> sub_(N value);
+    default Tensor<N> sub_(N value) {
+        return binaryOp_(TensorOp.sub(), value);
+    }
 
     default Tensor<N> mul(N value) {
-        return mul(value, Order.defaultOrder());
+        return binaryOp(TensorOp.mul(), value, Order.defaultOrder());
     }
 
     default Tensor<N> mul(N value, Order order) {
-        return copy(order).mul_(value);
+        return binaryOp(TensorOp.mul(), value, order);
     }
 
-    Tensor<N> mul_(N value);
+    default Tensor<N> mul_(N value) {
+        return binaryOp_(TensorOp.mul(), value);
+    }
 
     default Tensor<N> div(N value) {
-        return div(value, Order.defaultOrder());
+        return binaryOp(TensorOp.div(), value, Order.defaultOrder());
     }
 
     default Tensor<N> div(N value, Order order) {
-        return copy(order).div_(value);
+        return binaryOp(TensorOp.div(), value, order);
     }
 
-    Tensor<N> div_(N value);
+    default Tensor<N> div_(N value) {
+        return binaryOp_(TensorOp.div(), value);
+    }
 
     default Tensor<N> min(N value) {
-        return min(value, Order.defaultOrder());
+        return binaryOp(TensorOp.min(), value, Order.defaultOrder());
     }
 
     default Tensor<N> min(N value, Order order) {
-        return copy(order).min_(value);
+        return binaryOp(TensorOp.min(), value, order);
     }
 
-    Tensor<N> min_(N value);
+    default Tensor<N> min_(N value) {
+        return binaryOp_(TensorOp.min(), value);
+    }
 
     default Tensor<N> max(N value) {
-        return max(value, Order.defaultOrder());
+        return binaryOp(TensorOp.max(), value, Order.defaultOrder());
     }
 
     default Tensor<N> max(N value, Order order) {
-        return copy(order).max_(value);
+        return binaryOp(TensorOp.max(), value, order);
     }
 
-    Tensor<N> max_(N value);
+    default Tensor<N> max_(N value) {
+        return binaryOp_(TensorOp.max(), value);
+    }
 
     default <M extends Number> Tensor<N> fma(N a, Tensor<M> t) {
         return fma(a, t, Order.defaultOrder());

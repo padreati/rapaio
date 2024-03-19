@@ -215,7 +215,7 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     @Override
-    public Tensor<Integer> op_(TensorUnaryOp op) {
+    public Tensor<Integer> unaryOp_(TensorUnaryOp op) {
         if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
@@ -228,10 +228,9 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     @Override
-    protected <M extends Number> void binaryVectorOp(TensorBinaryOp op, Tensor<M> b) {
+    public <M extends Number> Tensor<Integer> binaryOp_(TensorBinaryOp op, Tensor<M> b) {
         if (b.isScalar()) {
-            binaryScalarOp(op, b.getInt());
-            return;
+            return binaryOp_(op, b.getInt());
         }
         if (!shape().equals(b.shape())) {
             throw new IllegalArgumentException("Tensors does not have the same shape.");
@@ -245,20 +244,19 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
             int next = it.nextInt();
             storage.setInt(next, op.applyInt(storage.getInt(next), b.ptrGetInt(refIt.nextInt())));
         }
-    }
-
-    void binaryScalarOpStep(TensorBinaryOp op, int value) {
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                storage.setInt(p, op.applyInt(storage.getInt(p), value));
-                p += loop.step;
-            }
-        }
+        return this;
     }
 
     @Override
-    protected void binaryScalarOp(TensorBinaryOp op, Integer value) {
-        binaryScalarOpStep(op, value);
+    public <M extends Number> Tensor<Integer> binaryOp_(TensorBinaryOp op, M value) {
+        int v = value.intValue();
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                storage.setInt(p, op.applyInt(storage.getInt(p), v));
+                p += loop.step;
+            }
+        }
+        return this;
     }
 
     @Override

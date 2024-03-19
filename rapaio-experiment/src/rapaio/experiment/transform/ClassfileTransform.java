@@ -29,26 +29,10 @@
  *
  */
 
-package rapaio.experiment.math;
+package rapaio.experiment.transform;
 
-import java.io.IOException;
-import java.lang.foreign.MemoryLayout;
-import java.lang.foreign.MemorySegment;
-import java.lang.foreign.ValueLayout;
-import java.net.URISyntaxException;
+public class ClassfileTransform {
 
-public class TensorSandbox {
-
-    public static void main(String[] args) throws IOException, URISyntaxException {
-
-        double[] array = new double[100];
-        MemorySegment ms = MemorySegment.ofArray(array);
-
-        var vh = MemoryLayout.sequenceLayout(100, ValueLayout.JAVA_DOUBLE).varHandle();
-        vh.set(0, 1.3344);
-
-        for (int i = 0; i < 10; i++) {
-            System.out.print(array[i] + ", ");
-        }
+    public static void main(String[] args) {
     }
 }

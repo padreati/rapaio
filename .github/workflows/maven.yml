@@ -12,8 +12,8 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        java-version: [ 21 ]
-        distro: [ 'corretto', 'zulu' ]
+        java-version: [ 22 ]
+        distro: [ 'oracle', 'zulu' ]
     runs-on: ${{ matrix.os }}
 
 

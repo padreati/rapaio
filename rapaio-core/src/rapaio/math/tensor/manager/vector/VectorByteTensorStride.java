@@ -117,9 +117,9 @@ public final class VectorByteTensorStride extends BaseByteTensorStride implement
     }
 
     @Override
-    public Tensor<Byte> op_(TensorUnaryOp op) {
+    public Tensor<Byte> unaryOp_(TensorUnaryOp op) {
         if (!op.vectorSupport()) {
-            super.op_(op);
+            super.unaryOp_(op);
             return this;
         }
         if (op.floatingPointOnly() && !dtype().floatingPoint()) {

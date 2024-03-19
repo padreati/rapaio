@@ -412,21 +412,17 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     }
 
     @Override
-    public final Tensor<N> op(TensorUnaryOp op) {
-        return op(op, Order.defaultOrder());
+    public final Tensor<N> unaryOp(TensorUnaryOp op) {
+        return unaryOp(op, Order.defaultOrder());
     }
 
     @Override
-    public final Tensor<N> op(TensorUnaryOp op, Order order) {
-        return copy(order).op_(op);
+    public final Tensor<N> unaryOp(TensorUnaryOp op, Order order) {
+        return copy(order).unaryOp_(op);
     }
 
     @Override
-    public abstract Tensor<N> op_(TensorUnaryOp op);
-
-    protected abstract <M extends Number> void binaryVectorOp(TensorBinaryOp op, Tensor<M> b);
-
-    protected abstract void binaryScalarOp(TensorBinaryOp op, N value);
+    public abstract Tensor<N> unaryOp_(TensorUnaryOp op);
 
     protected abstract N associativeOp(TensorAssociativeOp op);
 
@@ -437,76 +433,23 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     protected abstract Tensor<N> nanAssociativeOpNarrow(TensorAssociativeOp op, Order order, int axis);
 
     @Override
-    public final <M extends Number> Tensor<N> add_(Tensor<M> tensor) {
-        binaryVectorOp(TensorOp.add(), tensor);
-        return this;
+    public final <M extends Number> Tensor<N> binaryOp(TensorBinaryOp op, Tensor<M> t, Order order) {
+        if (isScalar()) {
+            return t.cast(dtype(), order).binaryOp_(op, get());
+        }
+        return copy(order).binaryOp_(op, t);
     }
 
     @Override
-    public final <M extends Number> Tensor<N> sub_(Tensor<M> tensor) {
-        binaryVectorOp(TensorOp.sub(), tensor);
-        return this;
+    public abstract <M extends Number> Tensor<N> binaryOp_(TensorBinaryOp op, Tensor<M> t);
+
+    @Override
+    public final <M extends Number> Tensor<N> binaryOp(TensorBinaryOp op, M value, Order order) {
+        return copy(order).binaryOp_(op, value);
     }
 
     @Override
-    public final <M extends Number> Tensor<N> mul_(Tensor<M> tensor) {
-        binaryVectorOp(TensorOp.mul(), tensor);
-        return this;
-    }
-
-    @Override
-    public final <M extends Number> Tensor<N> div_(Tensor<M> tensor) {
-        binaryVectorOp(TensorOp.div(), tensor);
-        return this;
-    }
-
-    @Override
-    public final <M extends Number> Tensor<N> min_(Tensor<M> tensor) {
-        binaryVectorOp(TensorOp.min(), tensor);
-        return this;
-    }
-
-    @Override
-    public final <M extends Number> Tensor<N> max_(Tensor<M> tensor) {
-        binaryVectorOp(TensorOp.max(), tensor);
-        return this;
-    }
-
-    @Override
-    public final Tensor<N> add_(N value) {
-        binaryScalarOp(TensorOp.add(), value);
-        return this;
-    }
-
-    @Override
-    public final Tensor<N> sub_(N value) {
-        binaryScalarOp(TensorOp.sub(), value);
-        return this;
-    }
-
-    @Override
-    public final Tensor<N> mul_(N value) {
-        binaryScalarOp(TensorOp.mul(), value);
-        return this;
-    }
-
-    @Override
-    public final Tensor<N> div_(N value) {
-        binaryScalarOp(TensorOp.div(), value);
-        return this;
-    }
-
-    @Override
-    public final Tensor<N> min_(N value) {
-        binaryScalarOp(TensorOp.min(), value);
-        return this;
-    }
-
-    @Override
-    public final Tensor<N> max_(N value) {
-        binaryScalarOp(TensorOp.max(), value);
-        return this;
-    }
+    public abstract <M extends Number> Tensor<N> binaryOp_(TensorBinaryOp op, M value);
 
     @Override
     public final N sum() {

@@ -215,7 +215,7 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
     }
 
     @Override
-    public Tensor<Double> op_(TensorUnaryOp op) {
+    public Tensor<Double> unaryOp_(TensorUnaryOp op) {
         if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
@@ -228,10 +228,9 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
     }
 
     @Override
-    protected <M extends Number> void binaryVectorOp(TensorBinaryOp op, Tensor<M> b) {
+    public <M extends Number> Tensor<Double> binaryOp_(TensorBinaryOp op, Tensor<M> b) {
         if (b.isScalar()) {
-            binaryScalarOp(op, b.getDouble());
-            return;
+            return binaryOp_(op, b.getDouble());
         }
         if (!shape().equals(b.shape())) {
             throw new IllegalArgumentException("Tensors does not have the same shape.");
@@ -245,20 +244,19 @@ public class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
             int next = it.nextInt();
             storage.setDouble(next, op.applyDouble(storage.getDouble(next), b.ptrGetDouble(refIt.nextInt())));
         }
-    }
-
-    void binaryScalarOpStep(TensorBinaryOp op, double value) {
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                storage.setDouble(p, op.applyDouble(storage.getDouble(p), value));
-                p += loop.step;
-            }
-        }
+        return this;
     }
 
     @Override
-    protected void binaryScalarOp(TensorBinaryOp op, Double value) {
-        binaryScalarOpStep(op, value);
+    public <M extends Number> Tensor<Double> binaryOp_(TensorBinaryOp op, M value) {
+        double v = value.doubleValue();
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                storage.setDouble(p, op.applyDouble(storage.getDouble(p), v));
+                p += loop.step;
+            }
+        }
+        return this;
     }
 
     @Override
