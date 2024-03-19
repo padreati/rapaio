@@ -91,13 +91,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <configuration>
                     <release>${maven.compiler.release}</release>
                     <compilerArgs>
                         <compilerArg>--enable-preview</compilerArg>
                         <compilerArg>--add-modules</compilerArg>
-                        <compilerArg>java.base,jdk.incubator.vector,java.lang.classfile</compilerArg>
+                        <compilerArg>java.base,jdk.incubator.vector</compilerArg>
                     </compilerArgs>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
@@ -106,11 +106,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.2.3</version>
                 <configuration>
                     <reuseForks>true</reuseForks>
                     <!--suppress UnresolvedMavenProperty -->
-                    <argLine>${argLine} --enable-preview --add-modules java.base,jdk.incubator.vector,java.lang.classfile</argLine>
+                    <argLine>${argLine} --enable-preview --add-modules java.base,jdk.incubator.vector</argLine>
                 </configuration>
             </plugin>
             <plugin>

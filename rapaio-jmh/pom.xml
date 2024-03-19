@@ -46,12 +46,12 @@
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
             <artifactId>jmh-core</artifactId>
-            <version>1.36</version>
+            <version>1.37</version>
         </dependency>
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
             <artifactId>jmh-generator-annprocess</artifactId>
-            <version>1.36</version>
+            <version>1.37</version>
         </dependency>
         <dependency>
             <groupId>io.github.padreati</groupId>
@@ -75,7 +75,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <configuration>
                     <compilerVersion>${maven.compiler.source}</compilerVersion>
                     <source>${maven.compiler.source}</source>

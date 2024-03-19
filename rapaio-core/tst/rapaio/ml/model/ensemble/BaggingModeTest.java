@@ -31,8 +31,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -46,7 +44,6 @@ import rapaio.ml.model.ClassifierResult;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/14/20.
  */
-@ExtendWith(MockitoExtension.class)
 public class BaggingModeTest {
 
     private static final List<String> dictionary = List.of("?", "a", "b", "c");
