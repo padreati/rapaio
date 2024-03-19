@@ -769,10 +769,11 @@ public class TensorTest {
             }
 
             if (g.dType().floatingPoint()) {
-                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                t1 = g.random(Shape.of(41, 31)).sub_(g.value(0.5));
                 assertTrue(t1.sin().deepEquals(t1.sin_()));
-                t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+                t1 = g.random(Shape.of(41, 31)).sub_(g.value(0.5));
                 assertTrue(t1.copy(Order.C).sin_().deepEquals(t1.sin(Order.C)));
+                t1 = g.random(Shape.of(41, 31)).sub_(g.value(0.5));
                 assertTrue(t1.copy(Order.F).sin_().deepEquals(t1.sin(Order.F)));
             } else {
                 var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).sin_());
