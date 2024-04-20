@@ -311,22 +311,6 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
-    public Tensor<Byte> vpadCopy(int before, int after) {
-        if (!isVector()) {
-            throw new IllegalArgumentException("This operation is available only for vectors.");
-        }
-        Storage<Byte> newStorage = manager.storage().ofByte().zeros(before + dim(0) + after);
-        var loop = LoopDescriptor.of(layout, Order.S);
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                newStorage.setByte(before + i, ptrGetByte(p));
-                p += loop.step;
-            }
-        }
-        return manager.ofByte().stride(Shape.of(before + dim(0) + after), Order.C, newStorage);
-    }
-
-    @Override
     public Tensor<Byte> mv(Tensor<Byte> tensor) {
         if (shape().rank() != 2 || tensor.shape().rank() != 1 || shape().dim(1) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(

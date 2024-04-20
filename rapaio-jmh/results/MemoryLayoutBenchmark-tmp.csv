@@ -1,9 +1,9 @@
 "Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"unlinkedlist.MemoryLayoutBenchmark.testArrayAdd","avgt",1,3,0.852690,0.157062,"us/op",100
-"unlinkedlist.MemoryLayoutBenchmark.testArrayAdd","avgt",1,3,8.864625,9.019847,"us/op",1000
-"unlinkedlist.MemoryLayoutBenchmark.testMsAdd","avgt",1,3,13.445373,9.001386,"us/op",100
-"unlinkedlist.MemoryLayoutBenchmark.testMsAdd","avgt",1,3,519.233632,404.313863,"us/op",1000
-"unlinkedlist.MemoryLayoutBenchmark.testMsExtAdd","avgt",1,3,12.444868,14.724895,"us/op",100
-"unlinkedlist.MemoryLayoutBenchmark.testMsExtAdd","avgt",1,3,490.083294,259.038269,"us/op",1000
-"unlinkedlist.MemoryLayoutBenchmark.testStorageAdd","avgt",1,3,0.961266,0.156944,"us/op",100
-"unlinkedlist.MemoryLayoutBenchmark.testStorageAdd","avgt",1,3,8.848519,3.985644,"us/op",1000
+"unlinkedlist.MemoryLayoutBenchmark.testArrayAdd","avgt",1,3,0.867511,0.085180,"us/op",100
+"unlinkedlist.MemoryLayoutBenchmark.testArrayAdd","avgt",1,3,8.411781,4.552787,"us/op",1000
+"unlinkedlist.MemoryLayoutBenchmark.testMsAdd","avgt",1,3,1.328063,1.233315,"us/op",100
+"unlinkedlist.MemoryLayoutBenchmark.testMsAdd","avgt",1,3,12.103220,12.051159,"us/op",1000
+"unlinkedlist.MemoryLayoutBenchmark.testMsExtAdd","avgt",1,3,0.450773,0.210801,"us/op",100
+"unlinkedlist.MemoryLayoutBenchmark.testMsExtAdd","avgt",1,3,4.241888,0.687645,"us/op",1000
+"unlinkedlist.MemoryLayoutBenchmark.testStorageAdd","avgt",1,3,1.093647,2.221864,"us/op",100
+"unlinkedlist.MemoryLayoutBenchmark.testStorageAdd","avgt",1,3,9.444591,16.869948,"us/op",1000

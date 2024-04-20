@@ -124,7 +124,7 @@ public class CodeGenApp {
     }
 
     public static void main(String[] args) {
-        String root = args.length == 1 ? args[0] : "/home/ati/work/rapaio/rapaio-core/src/";
+        String root = args.length == 1 ? args[0] : GlobalProperties.defaultSourceRoot();
         templates.forEach(template -> {
             try {
                 template.run(root);

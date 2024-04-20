@@ -32,6 +32,7 @@
 package rapaio.math.tensor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -1403,16 +1404,24 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     N vdot(Tensor<N> tensor, int start, int end);
 
+    default Tensor<N> pad(int before, int after) {
+        return pad(0, before, after);
+    }
+
     /**
-     * Creates a padded copy of a vector. A padded copy will also be a vector of dimension {@code before + dim(0) + after},
-     * having first and last elements padded with 0.
+     * Creates a padded copy of a tensor along a given dimension. The padded copy will be a tensor with the same shape other then the
+     * specified dimension which will have size {@code before + dim(0) + after}, having first and last elements padded with 0.
      * <p>
-     * This operation is available only for vectors.
      *
-     * @return resized padded copy of the original vector
+     * @return resized padded copy of the original tensor
      */
-    @Deprecated
-    Tensor<N> vpadCopy(int before, int after);
+    default Tensor<N> pad(int axis, int before, int after) {
+        int[] newDims = Arrays.copyOf(dims(), rank());
+        newDims[axis] += before + after;
+        Tensor<N> copy = manager().ofType(dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
+        copyTo(copy.narrow(axis, true, before, before + dim(axis)));
+        return copy;
+    }
 
     Tensor<N> mv(Tensor<N> tensor);
 

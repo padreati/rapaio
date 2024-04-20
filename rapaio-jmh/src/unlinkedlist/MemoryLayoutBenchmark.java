@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
-import java.lang.invoke.VarHandle;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -109,20 +108,18 @@ public class MemoryLayoutBenchmark {
 
     @Benchmark
     public void testMsAdd(BenchmarkState bs, Blackhole bh) {
-        VarHandle vh = ValueLayout.JAVA_DOUBLE.arrayElementVarHandle(bs.n);
         for (int i = 0; i < bs.n; i++) {
-            double value = (double) vh.get(bs.msArray, 0, i);
-            vh.set(bs.msArray, 0, i, Math.log1p(value));
+            double value = bs.msArray.getAtIndex(ValueLayout.JAVA_DOUBLE, i);
+            bs.msArray.setAtIndex(ValueLayout.JAVA_DOUBLE, i, Math.log1p(value));
         }
         bh.consume(bs.msArray);
     }
 
     @Benchmark
     public void testMsExtAdd(BenchmarkState bs, Blackhole bh) {
-        VarHandle vh = ValueLayout.JAVA_DOUBLE.arrayElementVarHandle(bs.n);
         for (int i = 0; i < bs.n; i++) {
-            double value = (double) vh.get(bs.msExternal, 0, i);
-            vh.set(bs.msExternal, 0, i, Math.log1p(value));
+            double value = bs.msExternal.getAtIndex(ValueLayout.JAVA_DOUBLE, i);
+            bs.msExternal.setAtIndex(ValueLayout.JAVA_DOUBLE, i, Math.log1p(value));
         }
         bh.consume(bs.msExternal);
     }

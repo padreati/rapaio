@@ -112,7 +112,7 @@ public class Cache {
                 old.data = null;
             }
             // allocate new space
-            h.data = (h.data == null) ? Tensors.zeros(Shape.of(len)) : h.data.vpadCopy(0, more);
+            h.data = (h.data == null) ? Tensors.zeros(Shape.of(len)) : h.data.pad(0, more);
             size -= more;
         }
 

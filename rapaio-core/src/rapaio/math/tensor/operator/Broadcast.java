@@ -78,10 +78,10 @@ public final class Broadcast {
         return new ElementWise(true, unchanged, dims);
     }
 
-    public record ElementWise(boolean valid, boolean unchanged, int... dims) {
+    public record ElementWise(boolean valid, boolean unchanged, int[] dims) {
 
-        @SafeVarargs
-        public ElementWise {
+        public ElementWise(boolean valid, boolean unchanged) {
+            this(valid, unchanged, new int[0]);
         }
 
         public <N extends Number> boolean hasShape(Tensor<N> t) {
@@ -118,7 +118,7 @@ public final class Broadcast {
 
         @Override
         public String toString() {
-            return STR."ElementWise[valid=\{valid}, unchanged=\{unchanged}, dims=\{Arrays.toString(dims)}]";
+            return String.format("ElementWise[valid=%b, unchanged=%b, dims=%s]", valid, unchanged, Arrays.toString(dims));
         }
     }
 }

@@ -29,15 +29,13 @@
  *
  */
 
-package rapaio.experiment.math;
+package rapaio.codegen;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+public final class GlobalProperties {
 
-public class TensorSandbox {
+    private static final String DEFAULT_SOURCE_ROOT = "/home/ati/work/rapaio/rapaio-core/src/";
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
-
-        System.out.println(76./3);
+    public static String defaultSourceRoot() {
+        return DEFAULT_SOURCE_ROOT;
     }
 }
