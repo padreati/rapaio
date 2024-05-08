@@ -46,6 +46,7 @@ import java.util.function.Function;
 
 import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.DType;
+import rapaio.math.tensor.Layout;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
@@ -720,7 +721,7 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
         if (layout.storageFastOrder() == askOrder) {
             sameLayoutCopy(copy, askOrder);
         } else {
-            copyTo(dst, askOrder);
+            copyTo(dst);
         }
         return dst;
     }
@@ -737,7 +738,9 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     @Override
-    public Tensor<Integer> copyTo(Tensor<Integer> to, Order askOrder) {
+    public Tensor<Integer> copyTo(Tensor<Integer> to) {
+
+        Order askOrder = Layout.storageFastTandemOrder(layout, to.layout());
 
         if (to instanceof BaseIntTensorStride dst) {
 
@@ -824,8 +827,7 @@ public class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
 
     @Override
     public String toString() {
-        String strDIms = Arrays.toString(layout.dims());
-        String strStrides = Arrays.toString(layout.strides());
-        return STR."BaseStride{\{dtype().id()},\{strDIms},\{layout.offset()},\{strStrides}}\n\{toContent()}";
+        return String.format("BaseStride{%s,%s,%s,%s}\n%s", dtype().id(), Arrays.toString(layout.dims()), layout.offset(),
+                Arrays.toString(layout.strides()), toContent());
     }
 }

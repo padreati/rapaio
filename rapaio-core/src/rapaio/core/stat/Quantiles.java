@@ -53,7 +53,7 @@ import rapaio.util.collection.DoubleArrays;
  * <p>
  * <p>
  * For further reference see:
- * http://en.wikipedia.org/wiki/Quantile
+ * <a href="http://en.wikipedia.org/wiki/Quantile">http://en.wikipedia.org/wiki/Quantile</a>
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */

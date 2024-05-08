@@ -31,27 +31,29 @@
 
 package rapaio.experiment.math;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.lang.foreign.MemorySegment;
+import java.nio.ByteOrder;
 
-import rapaio.math.tensor.Order;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensors;
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorSpecies;
 
-public class TensorSandbox {
+public class MemorySegmentSandbox {
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    public static void main(String[] args) {
 
-        var tc = Tensors.seq(Shape.of(2,3), Order.C);
-        var tf = Tensors.seq(Shape.of(2,3), Order.F);
 
-        var copyc = Tensors.zeros(Shape.of(2,3), Order.C);
-        var copyf = Tensors.zeros(Shape.of(2,3), Order.F);
+        VectorSpecies<Double> vsd = DoubleVector.SPECIES_PREFERRED;
+        int[] indexes = new int[vsd.length()];
+        for (int i = 0; i < indexes.length; i++) {
+            indexes[i] = i * 2;
+        }
 
-        tc.copyTo(copyc).printString();
-        tc.copyTo(copyf).printString();
+        double[] array = new double[1000];
+        // read with index map elements 2 by 2
+        DoubleVector.fromArray(vsd, array, 0, indexes, 0);
 
-        tf.copyTo(copyc).printString();
-        tf.copyTo(copyf).printString();
+        MemorySegment ms = MemorySegment.ofArray(array);
+        // no possible to read with index map
+        vsd.fromMemorySegment(ms, 0, ByteOrder.nativeOrder());
     }
 }

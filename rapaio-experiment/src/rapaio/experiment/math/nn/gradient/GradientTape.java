@@ -60,7 +60,7 @@ public class GradientTape {
     }
 
     public String register(String name, DiffTensor dt) {
-        String key = (name == null) ? STR."v\{nameSeq.getAndAdd(1)}" : name;
+        String key = (name == null) ? ("v" + nameSeq.getAndAdd(1)) : name;
         nameMap.put(key, dt);
         return key;
     }
@@ -82,7 +82,7 @@ public class GradientTape {
 
         // It starts by initializing the 'seed' dL / dL, which is 1
         dlMap.put(loss.name(), DoubleDiffTensor.of(one, this));
-        System.out.println(STR."\{loss.name()} ------------------------");
+        System.out.println(loss.name() + " ------------------------");
 
         // look up dL_dentries.If a variable is never used to compute the loss,
         // we consider its gradient None, see the note below about zeros for more information.

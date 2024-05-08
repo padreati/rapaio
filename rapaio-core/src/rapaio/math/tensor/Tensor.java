@@ -1181,18 +1181,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return binaryOp_(TensorOp.sub(), tensor);
     }
 
-    default Tensor<N> bsub(int axis, Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> bsub(int axis, Tensor<M> tensor) {
         return bsub(axis, tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> bsub(int axis, Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> bsub(int axis, Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).sub_(get());
+            return tensor.cast(dtype(), order).sub_(get());
         }
         return copy(order).bsub_(axis, tensor);
     }
 
-    default Tensor<N> bsub_(int axis, Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> bsub_(int axis, Tensor<M> tensor) {
         return sub_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
@@ -1208,18 +1208,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return binaryOp_(TensorOp.mul(), tensor);
     }
 
-    default Tensor<N> bmul(int axis, Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> bmul(int axis, Tensor<M> tensor) {
         return bmul(axis, tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> bmul(int axis, Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> bmul(int axis, Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).mul_(get());
+            return tensor.cast(dtype(), order).mul_(get());
         }
         return copy(order).bmul_(axis, tensor);
     }
 
-    default Tensor<N> bmul_(int axis, Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> bmul_(int axis, Tensor<M> tensor) {
         return mul_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
@@ -1235,18 +1235,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return binaryOp_(TensorOp.div(), tensor);
     }
 
-    default Tensor<N> bdiv(int axis, Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> bdiv(int axis, Tensor<M> tensor) {
         return bdiv(axis, tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> bdiv(int axis, Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> bdiv(int axis, Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).div_(get());
+            return tensor.cast(dtype(), order).div_(get());
         }
         return copy(order).bdiv_(axis, tensor);
     }
 
-    default Tensor<N> bdiv_(int axis, Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> bdiv_(int axis, Tensor<M> tensor) {
         return div_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
@@ -1262,18 +1262,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return binaryOp_(TensorOp.min(), tensor);
     }
 
-    default Tensor<N> bmin(int axis, Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> bmin(int axis, Tensor<M> tensor) {
         return bmin(axis, tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> bmin(int axis, Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> bmin(int axis, Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).min_(get());
+            return tensor.cast(dtype(), order).min_(get());
         }
         return copy(order).bmin_(axis, tensor);
     }
 
-    default Tensor<N> bmin_(int axis, Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> bmin_(int axis, Tensor<M> tensor) {
         return min_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
@@ -1289,18 +1289,18 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
         return binaryOp_(TensorOp.max(), tensor);
     }
 
-    default Tensor<N> bmax(int axis, Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> bmax(int axis, Tensor<M> tensor) {
         return bmax(axis, tensor, Order.defaultOrder());
     }
 
-    default Tensor<N> bmax(int axis, Tensor<N> tensor, Order order) {
+    default <M extends Number> Tensor<N> bmax(int axis, Tensor<M> tensor, Order order) {
         if (isScalar()) {
-            return tensor.copy(order).max_(get());
+            return tensor.cast(dtype(), order).max_(get());
         }
         return copy(order).bmax_(axis, tensor);
     }
 
-    default Tensor<N> bmax_(int axis, Tensor<N> tensor) {
+    default <M extends Number> Tensor<N> bmax_(int axis, Tensor<M> tensor) {
         return max_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
@@ -1403,25 +1403,6 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     N vdot(Tensor<N> tensor);
 
     N vdot(Tensor<N> tensor, int start, int end);
-
-    default Tensor<N> pad(int before, int after) {
-        return pad(0, before, after);
-    }
-
-    /**
-     * Creates a padded copy of a tensor along a given dimension. The padded copy will be a tensor with the same shape other then the
-     * specified dimension which will have size {@code before + dim(0) + after}, having first and last elements padded with 0.
-     * <p>
-     *
-     * @return resized padded copy of the original tensor
-     */
-    default Tensor<N> pad(int axis, int before, int after) {
-        int[] newDims = Arrays.copyOf(dims(), rank());
-        newDims[axis] += before + after;
-        Tensor<N> copy = manager().ofType(dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
-        copyTo(copy.narrow(axis, true, before, before + dim(axis)));
-        return copy;
-    }
 
     Tensor<N> mv(Tensor<N> tensor);
 
@@ -1645,6 +1626,32 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     <M extends Number> Tensor<M> cast(DType<M> dType, Order askOrder);
 
     /**
+     * Creates a padded copy of a tensor along the first dimension. The padded copy will be a tensor with the same shape other then the
+     * first dimension which will have size {@code before + dim(0) + after}, having first and last elements padded with 0.
+     * <p>
+     *
+     * @return resized padded copy of the original tensor
+     */
+    default Tensor<N> pad(int before, int after) {
+        return pad(0, before, after);
+    }
+
+    /**
+     * Creates a padded copy of a tensor along a given dimension. The padded copy will be a tensor with the same shape other then the
+     * specified dimension which will have size {@code before + dim(axis) + after}, having first and last elements padded with 0.
+     * <p>
+     *
+     * @return resized padded copy of the original tensor
+     */
+    default Tensor<N> pad(int axis, int before, int after) {
+        int[] newDims = Arrays.copyOf(dims(), rank());
+        newDims[axis] += before + after;
+        Tensor<N> copy = manager().ofType(dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
+        copyTo(copy.narrow(axis, true, before, before + dim(axis)));
+        return copy;
+    }
+
+    /**
      * Creates a copy of the original tensor with the given order. Only {@link Order#C} or {@link Order#F} are allowed.
      * <p>
      * The order does not determine how values are read, but how values will be stored.
@@ -1665,11 +1672,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      */
     Tensor<N> copy(Order askOrder);
 
-    default Tensor<N> copyTo(Tensor<N> dst) {
-        return copyTo(dst, Order.S);
-    }
-
-    Tensor<N> copyTo(Tensor<N> dst, Order askOrder);
+    Tensor<N> copyTo(Tensor<N> dst);
 
     VarDouble dv();
 
