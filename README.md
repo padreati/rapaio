@@ -51,12 +51,12 @@ KMeans. Additionally there is a fair share of graphical tools and linear algebra
 
 ## Installation
 
-Last published release on maven central is 6.0.0
+Last published release on maven central is 6.1.0
 
     <dependency>
         <groupId>io.github.padreati</groupId>
         <artifactId>rapaio-core</artifactId>
-        <version>6.0.0</version>
+        <version>6.1.0</version>
     </dependency>
 
 The best way for exploration is through jupyter / jupyter-lab notebooks. This is excellent for experimenting with interactive notebooks or
@@ -64,7 +64,7 @@ to document the ideas you are working on. You have to install `jupyter` / `jupyt
 For more information you can follow the instruction from
 [Rapaio Jupyter Kernel](https://github.com/padreati/rapaio-jupyter-kernel#installation). 
 
-    %dependency /add io.github.padreati:rapaio-core:6.0.0
+    %dependency /add io.github.padreati:rapaio-core:6.1.0
     %dependency /resolve
 
 ## Acknowledgements
