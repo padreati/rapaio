@@ -38,7 +38,7 @@ import jdk.incubator.vector.IntVector;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class CeilOperator implements TensorUnaryOp {
+public final class CeilOperator extends TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {

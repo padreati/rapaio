@@ -44,6 +44,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x,y) = - log (\lVert x-y \rVert ^d + 1)
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class LogKernel extends AbstractKernel {
@@ -69,6 +70,6 @@ public class LogKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."Log(degree=\{Format.floatFlex(degree)})";
+        return "Log(degree=" + Format.floatFlex(degree) + ")";
     }
 }

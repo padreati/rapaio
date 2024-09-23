@@ -122,39 +122,54 @@ public final class HistogramTable implements Printable {
     @Override
     public String toSummary(Printer printer, POpt<?>... options) {
         var pOpts = printer.getOptions().bind(options);
-        return STR."""
+        return """
                 HistogramTable
                 ==============
-                min=\{pOpts.getFloatFormat().format(min)}
-                max=\{pOpts.getFloatFormat().format(max)}
-                bins=\{bins}
+                min=%s
+                max=%s
+                bins=%d
                 freq=[
-                \{DoubleArrays.toContent(freq, printer, options)}]}""";
+                %s]}""".formatted(
+                pOpts.getFloatFormat().format(min),
+                pOpts.getFloatFormat().format(max),
+                bins,
+                DoubleArrays.toContent(freq, printer, options)
+        );
     }
 
     @Override
     public String toContent(Printer printer, POpt<?>... options) {
         var pOpts = printer.getOptions().bind(options);
-        return STR."""
+        return """
                 HistogramTable
                 ==============
-                min=\{pOpts.getFloatFormat().format(min)}
-                max=\{pOpts.getFloatFormat().format(max)}
-                bins=\{bins}
+                min=%s
+                max=%s
+                bins=%d
                 freq=[
-                \{DoubleArrays.toContent(freq, printer, options)}]}""";
+                %s]}""".formatted(
+                pOpts.getFloatFormat().format(min),
+                pOpts.getFloatFormat().format(max),
+                bins,
+                DoubleArrays.toContent(freq, printer, options)
+        );
     }
 
     @Override
     public String toFullContent(Printer printer, POpt<?>... options) {
         var pOpts = printer.getOptions().bind(options);
-        return STR."""
+        return """
                 HistogramTable
                 ==============
-                min=\{pOpts.getFloatFormat().format(min)}
-                max=\{pOpts.getFloatFormat().format(max)}
-                bins=\{bins}
+                min=%s
+                max=%s
+                bins=%d
                 freq=[
-                \{DoubleArrays.toFullContent(freq, printer, options)}]}""";
+                %s]}""".formatted(
+                pOpts.getFloatFormat().format(min),
+                pOpts.getFloatFormat().format(max),
+                bins,
+                DoubleArrays.toFullContent(freq, printer, options)
+        );
     }
 }

@@ -107,6 +107,7 @@ public class WaveletKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."Wavelet(invariant=\{invariant},dilation=\{Format.floatFlex(dilation)},translation=\{Format.floatFlex(translation)})";
+        return "Wavelet(invariant=" + invariant + ",dilation=" + Format.floatFlex(dilation) + ",translation=" + Format.floatFlex(
+                translation) + ")";
     }
 }

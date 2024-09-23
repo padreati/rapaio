@@ -114,7 +114,7 @@ public class NaiveBayes extends ClassifierModel<NaiveBayes, ClassifierResult, Ru
     @Override
     public String fullName() {
         String estimatorLine = estimators.get().stream().map(Estimator::fittedName).collect(Collectors.joining(","));
-        return STR."\{name()}{prior=\{prior.get().fittedName()},estimators=[\{estimatorLine}]}";
+        return name() + "{prior=" + prior.get().fittedName() + ",estimators=[" + estimatorLine + "]}";
     }
 
     @Override

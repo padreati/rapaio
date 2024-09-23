@@ -87,7 +87,7 @@ public final class VectorDoubleTensorStride extends BaseDoubleTensorStride imple
 
     @Override
     public Tensor<Double> fillNan_(Double value) {
-        if(!dtype().floatingPoint()) {
+        if (!dtype().floatingPoint()) {
             return this;
         }
         for (int offset : loop.offsets) {
@@ -905,6 +905,6 @@ public final class VectorDoubleTensorStride extends BaseDoubleTensorStride imple
     public String toString() {
         String strDIms = Arrays.toString(layout.dims());
         String strStrides = Arrays.toString(layout.strides());
-        return STR."VectorStride{\{dtype().id()},\{strDIms},\{layout.offset()},\{strStrides}}\n\{toContent()}";
+        return "VectorStride{" + dtype().id() + "," + strDIms + "," + layout.offset() + "," + strStrides + "}\n" + toContent();
     }
 }

@@ -74,6 +74,6 @@ public class SphericalKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."Spherical(sigma=\{Format.floatFlex(sigma)})";
+        return "Spherical(sigma="+Format.floatFlex(sigma)+")";
     }
 }

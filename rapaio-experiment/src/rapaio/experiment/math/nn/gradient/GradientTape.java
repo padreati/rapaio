@@ -31,18 +31,14 @@
 
 package rapaio.experiment.math.nn.gradient;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-
 import rapaio.experiment.math.nn.DiffTensor;
 import rapaio.experiment.math.nn.data.DoubleDiffTensor;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.Tensors;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 public class GradientTape {
 
@@ -115,7 +111,7 @@ public class GradientTape {
 
         // print some information to understand the values of each intermediate
         for (var entry : dlMap.entrySet()) {
-            System.out.println(STR."d\{loss.name()}_d\{entry.getKey()} = \{entry.getValue().name()}");
+            System.out.printf("d%s_d%s = %s%n", loss.name(), entry.getKey(), entry.getValue().name());
             System.out.println("------------------------");
         }
 

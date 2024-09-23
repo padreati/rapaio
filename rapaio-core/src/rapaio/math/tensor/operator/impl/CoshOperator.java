@@ -39,7 +39,7 @@ import jdk.incubator.vector.VectorOperators;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class CoshOperator implements TensorUnaryOp {
+public final class CoshOperator extends TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {

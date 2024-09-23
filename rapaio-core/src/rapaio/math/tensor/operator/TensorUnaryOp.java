@@ -36,29 +36,29 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 
-public interface TensorUnaryOp {
+public abstract class TensorUnaryOp {
 
     /**
      * @return true if vector operations are implemented, false otherwise
      */
-    boolean vectorSupport();
+    public abstract boolean vectorSupport();
 
-    boolean floatingPointOnly();
+    public abstract boolean floatingPointOnly();
 
-    byte applyByte(byte v);
+    public abstract byte applyByte(byte v);
 
-    int applyInt(int v);
+    public abstract int applyInt(int v);
 
-    double applyDouble(double v);
+    public abstract double applyDouble(double v);
 
-    float applyFloat(float v);
+    public abstract float applyFloat(float v);
 
-    ByteVector applyByte(ByteVector v);
+    public abstract ByteVector applyByte(ByteVector v);
 
-    IntVector applyInt(IntVector v);
+    public abstract IntVector applyInt(IntVector v);
 
-    FloatVector applyFloat(FloatVector v);
+    public abstract FloatVector applyFloat(FloatVector v);
 
-    DoubleVector applyDouble(DoubleVector v);
+    public abstract DoubleVector applyDouble(DoubleVector v);
 }
 

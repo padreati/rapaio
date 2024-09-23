@@ -39,7 +39,7 @@ import jdk.incubator.vector.VectorOperators;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public class ClampOperator<N extends Number> implements TensorUnaryOp {
+public class ClampOperator<N extends Number> extends TensorUnaryOp {
 
     private final boolean hasMin;
     private final boolean hasMax;

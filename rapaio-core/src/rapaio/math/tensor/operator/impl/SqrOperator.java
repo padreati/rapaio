@@ -37,7 +37,7 @@ import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class SqrOperator implements TensorUnaryOp {
+public final class SqrOperator extends TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {

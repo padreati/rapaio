@@ -61,6 +61,7 @@ import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
+import rapaio.printer.Format;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
@@ -315,8 +316,8 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     public Tensor<Float> mv(Tensor<Float> tensor) {
         if (shape().rank() != 2 || tensor.shape().rank() != 1 || shape().dim(1) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(
-                    STR."Operands are not valid for matrix-vector multiplication \{"(m = %s, v = %s).".formatted(shape(),
-                            tensor.shape())}");
+                    String.format("Operands are not valid for matrix-vector multiplication (m = %s, v = %s).",
+                            shape(), tensor.shape()));
         }
         var result = manager.ofFloat().storage().zeros(shape().dim(0));
         var it = ptrIterator(Order.C);
@@ -336,7 +337,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     public Tensor<Float> mm(Tensor<Float> t, Order askOrder) {
         if (shape().rank() != 2 || t.shape().rank() != 2 || shape().dim(1) != t.shape().dim(0)) {
             throw new IllegalArgumentException(
-                    STR."Operands are not valid for matrix-matrix multiplication \{"(m = %s, v = %s).".formatted(shape(), t.shape())}");
+                    String.format("Operands are not valid for matrix-matrix multiplication (m = %s, v = %s).", shape(), t.shape()));
         }
         if (askOrder == Order.S) {
             throw new IllegalArgumentException("Illegal askOrder value, must be Order.C or Order.F");
@@ -452,7 +453,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
             throw new OperationNotAvailableException("This operation is only available on floating point data types.");
         }
         if (pow < 0) {
-            throw new IllegalArgumentException(STR."Norm power p=\{pow} must have a value greater than 0.");
+            throw new IllegalArgumentException(String.format("Norm power p=%s must have a value greater than 0.", Format.floatFlex(pow)));
         }
         if (dtype().castValue(1).equals(pow)) {
             return abs().sum();
@@ -490,7 +491,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            var stride = manager.ofFloat().stride(StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
+            var stride = manager.ofFloat().stride(StrideLayout.of(Shape.of(selDim), ptr, new int[]{selStride}), storage);
             res.ptrSet(resIt.next(), op.apply(stride));
         }
         return res;
@@ -584,7 +585,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     public int argmax(Order order) {
         int argmax = -1;
-        float argvalue = TensorOp.max().initFloat();
+        float argvalue = TensorOp.maxAssoc().initFloat();
         var i = 0;
         var loop = LoopDescriptor.of(layout, order);
         for (int p : loop.offsets) {
@@ -604,7 +605,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     public int argmin(Order order) {
         int argmin = -1;
-        float argvalue = TensorOp.min().initFloat();
+        float argvalue = TensorOp.minAssoc().initFloat();
         var i = 0;
         var loop = LoopDescriptor.of(layout, order);
         for (int p : loop.offsets) {

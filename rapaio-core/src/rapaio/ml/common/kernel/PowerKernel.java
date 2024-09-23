@@ -43,6 +43,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x,y) = - \lVert x-y \rVert ^d
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class PowerKernel extends AbstractKernel {
@@ -68,6 +69,6 @@ public class PowerKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."Power(degree=\{Format.floatFlex(degree)})";
+        return "Power(degree=" + Format.floatFlex(degree) + ")";
     }
 }

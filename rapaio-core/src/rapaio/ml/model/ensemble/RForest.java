@@ -168,12 +168,12 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
 
     @Override
     public String toString() {
-        return STR."\{fullName()}, is fitted: \{isFitted()}";
+        return fullName() + ", is fitted: " + isFitted();
     }
 
     @Override
     public String toSummary(Printer printer, POpt<?>... options) {
-        return STR."Model:\n\{fullName()}\nfitted: \{isFitted()}\n";
+        return "Model:\n" + fullName() + "\nfitted: " + isFitted() + "\n";
     }
 
     @Override

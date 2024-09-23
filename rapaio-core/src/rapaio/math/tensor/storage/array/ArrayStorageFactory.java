@@ -52,7 +52,7 @@ public class ArrayStorageFactory implements StorageFactory {
         if (DType.BYTE == dType) {
             return (OfType<N>) new OfTypeByte();
         }
-        throw new IllegalArgumentException(STR."DType \{dType} unrecognized.");
+        throw new IllegalArgumentException("DType "+dType+" unrecognized.");
     }
 
     private static final class OfTypeByte implements StorageFactory.OfType<Byte> {

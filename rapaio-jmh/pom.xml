@@ -26,11 +26,11 @@
     <parent>
         <artifactId>rapaio</artifactId>
         <groupId>io.github.padreati</groupId>
-        <version>6.1.0</version>
+        <version>7.0.0</version>
     </parent>
 
     <artifactId>rapaio-jmh</artifactId>
-    <version>6.1.0</version>
+    <version>7.0.0</version>
     <packaging>jar</packaging>
 
     <name>rapaio-jmh</name>
@@ -56,12 +56,12 @@
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-core</artifactId>
-            <version>6.0.0</version>
+            <version>7.0.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-experiment</artifactId>
-            <version>6.0.0</version>
+            <version>7.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.edwardraff</groupId>
@@ -86,7 +86,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

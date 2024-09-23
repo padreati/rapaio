@@ -352,10 +352,10 @@ public class TensorStrideLayout extends AbstractStrideLayout {
     @Override
     public StrideLayout expand(int axis, int size) {
         if (dim(axis) != 1) {
-            throw new IllegalArgumentException(STR."Dimension \{axis} must have size 1, but have size \{dim(axis)}.");
+            throw new IllegalArgumentException("Dimension " + axis + " must have size 1, but have size " + dim(axis) + ".");
         }
         if (axis < 0) {
-            throw new IllegalArgumentException(STR."Dimension of the new axis \{axis} must be positive.");
+            throw new IllegalArgumentException("Dimension of the new axis " + axis + " must be positive.");
         }
         int[] newDims = Arrays.copyOf(dims(), dims().length);
         int[] newStrides = Arrays.copyOf(strides, strides.length);
@@ -499,8 +499,8 @@ public class TensorStrideLayout extends AbstractStrideLayout {
 
     @Override
     public String toString() {
-        return STR."TensorStride([\{
-                IntStream.of(shape.dims()).mapToObj(String::valueOf).collect(Collectors.joining(","))}],\{
-                offset},[\{IntStream.of(strides).mapToObj(String::valueOf).collect(Collectors.joining(","))}])";
+        return "TensorStride([" +
+                IntStream.of(shape.dims()).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "]," +
+                offset + ",[" + IntStream.of(strides).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "])";
     }
 }

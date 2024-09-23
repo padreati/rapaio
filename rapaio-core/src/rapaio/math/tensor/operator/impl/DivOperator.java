@@ -37,7 +37,7 @@ import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 
-public final class DivOperator implements TensorBinaryOp {
+public final class DivOperator extends TensorBinaryOp {
 
     @Override
     public byte applyByte(byte a, byte b) {

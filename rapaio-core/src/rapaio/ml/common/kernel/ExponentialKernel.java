@@ -42,6 +42,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x, y) = \exp\left(-\frac{ \lVert x-y \rVert }{2\sigma^2}\right)
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class ExponentialKernel extends AbstractKernel {
@@ -74,6 +75,6 @@ public class ExponentialKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."Exponential(sigma=\{Format.floatFlex(sigma)},factor=\{Format.floatFlex(factor)})";
+        return "Exponential(sigma=" + Format.floatFlex(sigma) + ",factor=" + Format.floatFlex(factor) + ")";
     }
 }

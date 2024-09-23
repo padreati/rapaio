@@ -69,6 +69,7 @@ import rapaio.printer.Format;
  * in the extended case of Multinomial distribution, we prefer this setup to cover both
  * situations.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/20.
  */
 public class MultinomialEstimator extends AbstractEstimator {
@@ -125,7 +126,8 @@ public class MultinomialEstimator extends AbstractEstimator {
 
     @Override
     public String name() {
-        return "Multinomial{laplaceSmoother=" + Format.floatFlexLong(laplaceSmoother) + ", tests=[" + String.join(",", getTestNames()) + "]}";
+        return "Multinomial{laplaceSmoother=" + Format.floatFlexLong(laplaceSmoother) + ", tests=[" + String.join(",", getTestNames())
+                + "]}";
     }
 
     @Override
@@ -133,11 +135,14 @@ public class MultinomialEstimator extends AbstractEstimator {
         if (targetLevels == null) {
             return name();
         }
-        return STR."Multinomial{laplaceSmoother=\{Format.floatFlexLong(laplaceSmoother)}, tests=[\{String.join(",",
-                getTestNames())}],distributions=[\{targetLevels.stream()
-                .map(targetLevel -> targetLevel + ":[" + densityMap.get(targetLevel)
-                        .stream().map(Format::floatFlexLong).collect(Collectors.joining(",")) + "]")
-                .collect(Collectors.joining(","))}]}";
+        return "Multinomial{laplaceSmoother=%s, tests=[%s],distributions=[%s]}".formatted(
+                Format.floatFlexLong(laplaceSmoother),
+                String.join(",", getTestNames()),
+                targetLevels.stream()
+                        .map(targetLevel -> targetLevel + ":[" + densityMap.get(targetLevel)
+                                .stream().map(Format::floatFlexLong).collect(Collectors.joining(",")) + "]")
+                        .collect(Collectors.joining(","))
+        );
     }
 
     @Override

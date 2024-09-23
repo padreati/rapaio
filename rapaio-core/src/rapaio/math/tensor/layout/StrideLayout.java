@@ -45,7 +45,7 @@ public interface StrideLayout extends Layout {
     static StrideLayout of(Shape shape, int offset, int[] strides) {
         if (shape.rank() != strides.length) {
             throw new IllegalArgumentException(
-                    STR."Dimensions and strides must have same length (dim size: \{shape.rank()}, stride size: \{strides.length}.");
+                    "Dimensions and strides must have same length (dim size: " + shape.rank() + ", stride size: " + strides.length + ".");
         }
         return switch (shape.rank()) {
             case 0 -> new ScalarStrideLayout(offset);

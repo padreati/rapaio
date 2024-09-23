@@ -69,7 +69,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
             throw new IllegalArgumentException("Only square matrices can have Cholesky decomposition.");
         }
         if(ref.dtype().isInteger()) {
-            throw new IllegalArgumentException(STR."Cannot compute decomposition for integer types (dtype: \{ref.dtype().id()})");
+            throw new IllegalArgumentException("Cannot compute decomposition for integer types (dtype: "+ref.dtype().id()+")");
         }
         this.tmt = ref.manager().ofType(ref.dtype());
         this.ref = ref;

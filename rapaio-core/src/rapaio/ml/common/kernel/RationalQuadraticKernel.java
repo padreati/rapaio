@@ -42,6 +42,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x, y) = 1 - \frac{\lVert x-y \rVert^2}{\lVert x-y \rVert^2 + c}
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class RationalQuadraticKernel extends AbstractKernel {
@@ -69,6 +70,6 @@ public class RationalQuadraticKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."RationalQuadratic(c=\{Format.floatFlex(c)})";
+        return "RationalQuadratic(c=" + Format.floatFlex(c) + ")";
     }
 }

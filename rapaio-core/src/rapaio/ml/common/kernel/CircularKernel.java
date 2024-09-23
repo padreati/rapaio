@@ -75,6 +75,6 @@ public class CircularKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."Circular(sigma=\{Format.floatFlex(sigma)})";
+        return "Circular(sigma="+Format.floatFlex(sigma)+")";
     }
 }

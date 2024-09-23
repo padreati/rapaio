@@ -39,7 +39,7 @@ import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class FloorOperator implements TensorUnaryOp {
+public final class FloorOperator extends TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {

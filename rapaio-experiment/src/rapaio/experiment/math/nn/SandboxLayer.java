@@ -31,13 +31,13 @@
 
 package rapaio.experiment.math.nn;
 
-import java.util.List;
-import java.util.Random;
-
 import rapaio.experiment.math.nn.data.DoubleDiffTensor;
 import rapaio.experiment.math.nn.gradient.GradientTape;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensors;
+
+import java.util.List;
+import java.util.Random;
 
 public class SandboxLayer {
 
@@ -73,7 +73,7 @@ public class SandboxLayer {
 
         List<DiffTensor> gradients = tape.grad(p, List.of(x, y));
         for(var gradient : gradients) {
-            System.out.println(STR."\{gradient.name()} =\n\{gradient.asDouble().toContent()}");
+            System.out.printf("%s =\n%s", gradient.name(), gradient.asDouble().toContent());
         }
 
         DiffTensor d;

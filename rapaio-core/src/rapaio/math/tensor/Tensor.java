@@ -31,27 +31,18 @@
 
 package rapaio.math.tensor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
 import rapaio.data.VarDouble;
 import rapaio.math.tensor.iterators.PointerIterator;
-import rapaio.math.tensor.matrix.CholeskyDecomposition;
-import rapaio.math.tensor.matrix.EigenDecomposition;
-import rapaio.math.tensor.matrix.LUDecomposition;
-import rapaio.math.tensor.matrix.QRDecomposition;
-import rapaio.math.tensor.matrix.SVDecomposition;
+import rapaio.math.tensor.matrix.*;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Parametrized interface for tensors. A tensor is a multidimensional array. A tensor is homogeneous in that it contains
@@ -199,7 +190,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
      * <p>
      * In order to reshape a tensor, the source shape and destination shape must have the same size.
      * <p>
-     * The indexes are interpreted according with order parameter:
+     * The indexes are interpreted according to order parameter:
      * <ul>
      *     <li>Order.C</li> indexes are read in C order, last dimension is the fastest dimension
      *     <li>Order.F</li> first dimension is the fastest dimension

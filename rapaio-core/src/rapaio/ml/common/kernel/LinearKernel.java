@@ -65,7 +65,7 @@ public class LinearKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."LinearKernel(c=\{Format.floatFlex(c)})";
+        return "LinearKernel(c="+Format.floatFlex(c)+")";
     }
 
     @Override

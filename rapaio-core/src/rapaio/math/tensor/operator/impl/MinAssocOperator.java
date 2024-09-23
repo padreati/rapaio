@@ -35,13 +35,24 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import rapaio.math.tensor.operator.TensorBinaryOp;
+import jdk.incubator.vector.VectorSpecies;
+import rapaio.math.tensor.operator.TensorAssociativeOp;
 
-public final class MinOperator extends TensorBinaryOp {
+public final class MinAssocOperator extends TensorAssociativeOp {
+
+    @Override
+    public byte initByte() {
+        return Byte.MAX_VALUE;
+    }
 
     @Override
     public byte applyByte(byte a, byte b) {
         return a >= b ? b : a;
+    }
+
+    @Override
+    public ByteVector initByte(VectorSpecies<Byte> species) {
+        return ByteVector.broadcast(species, Byte.MAX_VALUE);
     }
 
     @Override
@@ -51,8 +62,18 @@ public final class MinOperator extends TensorBinaryOp {
 
 
     @Override
+    public int initInt() {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
     public int applyInt(int a, int b) {
         return Math.min(a, b);
+    }
+
+    @Override
+    public IntVector initInt(VectorSpecies<Integer> species) {
+        return IntVector.broadcast(species, Integer.MAX_VALUE);
     }
 
     @Override
@@ -62,8 +83,18 @@ public final class MinOperator extends TensorBinaryOp {
 
 
     @Override
+    public float initFloat() {
+        return Float.POSITIVE_INFINITY;
+    }
+
+    @Override
     public float applyFloat(float a, float b) {
         return Math.min(a, b);
+    }
+
+    @Override
+    public FloatVector initFloat(VectorSpecies<Float> species) {
+        return FloatVector.broadcast(species, Float.POSITIVE_INFINITY);
     }
 
     @Override
@@ -73,8 +104,18 @@ public final class MinOperator extends TensorBinaryOp {
 
 
     @Override
+    public double initDouble() {
+        return Double.POSITIVE_INFINITY;
+    }
+
+    @Override
     public double applyDouble(double a, double b) {
         return Math.min(a, b);
+    }
+
+    @Override
+    public DoubleVector initDouble(VectorSpecies<Double> species) {
+        return DoubleVector.broadcast(species, Double.POSITIVE_INFINITY);
     }
 
     @Override

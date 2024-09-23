@@ -44,6 +44,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x,y) = \frac{1}{1 + \lVert x-y \rVert ^d}
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
 public class GeneralizedStudentTKernel extends AbstractKernel {
@@ -70,6 +71,6 @@ public class GeneralizedStudentTKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."GeneralizedStudent(degree=\{Format.floatFlex(degree)})";
+        return "GeneralizedStudent(degree=" + Format.floatFlex(degree) + ")";
     }
 }

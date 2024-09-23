@@ -36,22 +36,22 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 
-public interface TensorBinaryOp {
+public abstract class TensorBinaryOp {
 
-    byte applyByte(byte a, byte b);
+    public abstract byte applyByte(byte a, byte b);
 
-    ByteVector applyByte(ByteVector a, ByteVector b);
+    public abstract ByteVector applyByte(ByteVector a, ByteVector b);
 
-    int applyInt(int a, int b);
+    public abstract int applyInt(int a, int b);
 
-    IntVector applyInt(IntVector a, IntVector b);
+    public abstract IntVector applyInt(IntVector a, IntVector b);
 
-    float applyFloat(float a, float b);
+    public abstract float applyFloat(float a, float b);
 
-    FloatVector applyFloat(FloatVector a, FloatVector b);
+    public abstract FloatVector applyFloat(FloatVector a, FloatVector b);
 
-    double applyDouble(double a, double b);
+    public abstract double applyDouble(double a, double b);
 
-    DoubleVector applyDouble(DoubleVector a, DoubleVector b);
+    public abstract DoubleVector applyDouble(DoubleVector a, DoubleVector b);
 }
 

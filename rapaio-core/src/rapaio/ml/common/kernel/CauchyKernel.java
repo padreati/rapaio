@@ -43,6 +43,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x, y) = \frac{1}{1 + \frac{\lVert x-y \rVert^2}{\sigma^2} }
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
 public class CauchyKernel extends AbstractKernel {
@@ -78,6 +79,6 @@ public class CauchyKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."Cauchy(\{Format.floatFlex(sigma)})";
+        return "Cauchy(" + Format.floatFlex(sigma) + ")";
     }
 }

@@ -44,6 +44,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x,y) = \sum_{i=1}^m \min(|x_i|^\alpha,|y_i|^\beta)
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
 public class GeneralizedMinKernel extends AbstractKernel {
@@ -78,6 +79,6 @@ public class GeneralizedMinKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."GeneralizedMean(alpha=\{Format.floatFlex(alpha)},beta=\{Format.floatFlex(beta)})";
+        return "GeneralizedMean(alpha=" + Format.floatFlex(alpha) + ",beta=" + Format.floatFlex(beta) + ")";
     }
 }

@@ -35,10 +35,9 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class AbsOperator implements TensorUnaryOp {
+public final class AbsOperator extends TensorUnaryOp {
 
     @Override
     public boolean vectorSupport() {

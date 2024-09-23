@@ -54,6 +54,7 @@ import rapaio.math.tensor.Tensor;
  * using a linear kernel are often equivalent to their non-kernel
  * counterparts, i.e. KPCA with linear kernel is the same as standard PCA.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 public class PolyKernel extends AbstractKernel {
@@ -85,7 +86,7 @@ public class PolyKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."PolyKernel(exp=\{floatFlex(exponent)},bias=\{floatFlex(bias)},slope=\{floatFlex(slope)})";
+        return "PolyKernel(exp=" + floatFlex(exponent) + ",bias=" + floatFlex(bias) + ",slope=" + floatFlex(slope) + ")";
     }
 
     public PolyKernel(double exponent, double bias, double slope) {

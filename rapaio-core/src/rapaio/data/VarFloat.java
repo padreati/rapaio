@@ -307,7 +307,7 @@ public final class VarFloat extends AbstractVar implements Iterable<Float> {
      */
     private VarFloat(int rows, int capacity, float fill) {
         if (rows < 0) {
-            throw new IllegalArgumentException(STR."Illegal row count: \{rows}");
+            throw new IllegalArgumentException("Illegal row count: " + rows);
         }
         this.data = new float[capacity];
         this.rows = rows;

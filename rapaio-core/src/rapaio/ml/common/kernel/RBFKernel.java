@@ -53,6 +53,7 @@ import rapaio.math.tensor.Tensor;
  * In the other hand, if underestimated, the function will lack regularization
  * and the decision boundary will be highly sensitive to noise in training data.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 public class RBFKernel extends AbstractKernel {
@@ -88,6 +89,6 @@ public class RBFKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."RBF(gamma=\{floatFlex(gamma)})";
+        return "RBF(gamma=" + floatFlex(gamma) + ")";
     }
 }

@@ -54,6 +54,7 @@ import rapaio.printer.Format;
  * <p>
  * Which they also prove as an admissible kernel function.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 public class WaveKernel extends AbstractKernel {
@@ -87,6 +88,6 @@ public class WaveKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."Wave(theta=\{Format.floatFlex(theta)})";
+        return "Wave(theta=" + Format.floatFlex(theta) + ")";
     }
 }

@@ -57,6 +57,7 @@ import rapaio.printer.Format;
  * A more detailed study on sigmoid kernels can be found in the
  * works by Hsuan-Tien and Chih-Jen.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class SigmoidKernel extends AbstractKernel {
@@ -84,6 +85,6 @@ public class SigmoidKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."Sigmoid(alpha=\{Format.floatFlex(alpha)},c=\{Format.floatFlex(c)})";
+        return "Sigmoid(alpha=" + Format.floatFlex(alpha) + ",c=" + Format.floatFlex(c) + ")";
     }
 }

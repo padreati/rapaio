@@ -512,7 +512,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
     @Override
     public String toFullContent(Printer printer, POpt<?>... options) {
-        return STR."\{toSummary(printer, options)}> sigma: \n\{msigma.toContent(options)}";
+        return toSummary(printer, options) + "> sigma: \n" + msigma.toContent(options);
     }
 
     private static abstract class MethodImpl {

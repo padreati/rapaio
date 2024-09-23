@@ -52,6 +52,7 @@ import rapaio.math.tensor.Tensor;
  * Since this is a minimization algorithm, with each iteration it advances in the direction
  * of negative gradient to improve the function.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
 public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> implements Solver {
@@ -87,12 +88,12 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
     /**
      * Function's derivative
      */
-    public final ValueParam<RDerivative, SteepestDescentSolver> d1f = new ValueParam<>(this,null, "d1f");
+    public final ValueParam<RDerivative, SteepestDescentSolver> d1f = new ValueParam<>(this, null, "d1f");
 
     /**
      * Initial value
      */
-    public final ValueParam<Tensor<Double>, SteepestDescentSolver> x0 = new ValueParam<>(this,null, "x0");
+    public final ValueParam<Tensor<Double>, SteepestDescentSolver> x0 = new ValueParam<>(this, null, "x0");
 
     private Tensor<Double> sol;
 
@@ -124,7 +125,7 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
 
     @Override
     public String toString() {
-        return STR."solution: \{sol.toString()},converged: \{converged},iterations: \{solutions.size()}";
+        return "solution: %s,converged: %b,iterations: %d".formatted(sol.toString(), converged, solutions.size());
     }
 
     @Override

@@ -211,14 +211,14 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     public final Tensor<N> take(Order order, int axis, int... indices) {
 
         if (axis < 0 || axis >= layout.rank()) {
-            throw new IllegalArgumentException(STR."Axis value \{axis} is out of bounds.");
+            throw new IllegalArgumentException(String.format("Axis value %d is out of bounds.", axis));
         }
         if (indices == null || indices.length == 0) {
             throw new IllegalArgumentException("Indices cannot be empty.");
         }
         for (int index : indices) {
             if (index < 0 || index >= layout.dim(axis)) {
-                throw new IllegalArgumentException(STR."Index values are invalid, must be in range [0,\{layout.dim(axis) - 1}].");
+                throw new IllegalArgumentException(String.format("Index values are invalid, must be in range [0,%d].", layout.dim(axis) - 1));
             }
         }
 
@@ -453,82 +453,82 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
 
     @Override
     public final N sum() {
-        return associativeOp(TensorOp.add());
+        return associativeOp(TensorOp.addAssoc());
     }
 
     @Override
     public final Tensor<N> sum(Order order, int axis) {
-        return associativeOpNarrow(TensorOp.add(), order, axis);
+        return associativeOpNarrow(TensorOp.addAssoc(), order, axis);
     }
 
     @Override
     public final N nanSum() {
-        return nanAssociativeOp(TensorOp.add());
+        return nanAssociativeOp(TensorOp.addAssoc());
     }
 
     @Override
     public final Tensor<N> nanSum(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorOp.add(), order, axis);
+        return nanAssociativeOpNarrow(TensorOp.addAssoc(), order, axis);
     }
 
     @Override
     public final N prod() {
-        return associativeOp(TensorOp.mul());
+        return associativeOp(TensorOp.mulAssoc());
     }
 
     @Override
     public final Tensor<N> prod(Order order, int axis) {
-        return associativeOpNarrow(TensorOp.mul(), order, axis);
+        return associativeOpNarrow(TensorOp.mulAssoc(), order, axis);
     }
 
     @Override
     public final N nanProd() {
-        return nanAssociativeOp(TensorOp.mul());
+        return nanAssociativeOp(TensorOp.mulAssoc());
     }
 
     @Override
     public final Tensor<N> nanProd(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorOp.mul(), order, axis);
+        return nanAssociativeOpNarrow(TensorOp.mulAssoc(), order, axis);
     }
 
     @Override
     public final N max() {
-        return associativeOp(TensorOp.max());
+        return associativeOp(TensorOp.maxAssoc());
     }
 
     @Override
     public final Tensor<N> max(Order order, int axis) {
-        return associativeOpNarrow(TensorOp.max(), order, axis);
+        return associativeOpNarrow(TensorOp.maxAssoc(), order, axis);
     }
 
     @Override
     public final N nanMax() {
-        return nanAssociativeOp(TensorOp.max());
+        return nanAssociativeOp(TensorOp.maxAssoc());
     }
 
     @Override
     public final Tensor<N> nanMax(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorOp.max(), order, axis);
+        return nanAssociativeOpNarrow(TensorOp.maxAssoc(), order, axis);
     }
 
     @Override
     public final N min() {
-        return associativeOp(TensorOp.min());
+        return associativeOp(TensorOp.minAssoc());
     }
 
     @Override
     public final Tensor<N> min(Order order, int axis) {
-        return associativeOpNarrow(TensorOp.min(), order, axis);
+        return associativeOpNarrow(TensorOp.minAssoc(), order, axis);
     }
 
     @Override
     public final N nanMin() {
-        return nanAssociativeOp(TensorOp.min());
+        return nanAssociativeOp(TensorOp.minAssoc());
     }
 
     @Override
     public final Tensor<N> nanMin(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorOp.min(), order, axis);
+        return nanAssociativeOpNarrow(TensorOp.minAssoc(), order, axis);
     }
 
     protected abstract Tensor<N> alongAxisOperation(Order order, int axis, Function<Tensor<N>, N> op);
@@ -555,7 +555,7 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
 
     @Override
     public final Tensor<N> stdc(Order order, int axis, int ddof) {
-        return alongAxisOperation(order, axis, t -> stdc(ddof));
+        return alongAxisOperation(order, axis, __ -> stdc(ddof));
     }
 
     @Override

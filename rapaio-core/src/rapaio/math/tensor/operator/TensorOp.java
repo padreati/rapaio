@@ -34,6 +34,7 @@ package rapaio.math.tensor.operator;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.operator.impl.AbsOperator;
 import rapaio.math.tensor.operator.impl.AcosOperator;
+import rapaio.math.tensor.operator.impl.AddAssocOperator;
 import rapaio.math.tensor.operator.impl.AddOperator;
 import rapaio.math.tensor.operator.impl.AsinOperator;
 import rapaio.math.tensor.operator.impl.AtanOperator;
@@ -47,8 +48,11 @@ import rapaio.math.tensor.operator.impl.Expm1Operator;
 import rapaio.math.tensor.operator.impl.FloorOperator;
 import rapaio.math.tensor.operator.impl.LogOperator;
 import rapaio.math.tensor.operator.impl.Log1pOperator;
+import rapaio.math.tensor.operator.impl.MaxAssocOperator;
 import rapaio.math.tensor.operator.impl.MaxOperator;
+import rapaio.math.tensor.operator.impl.MinAssocOperator;
 import rapaio.math.tensor.operator.impl.MinOperator;
+import rapaio.math.tensor.operator.impl.MulAssocOperator;
 import rapaio.math.tensor.operator.impl.MulOperator;
 import rapaio.math.tensor.operator.impl.NegOperator;
 import rapaio.math.tensor.operator.impl.RintOperator;
@@ -93,6 +97,11 @@ public final class TensorOp {
     private static final DivOperator DIV = new DivOperator();
     private static final MinOperator MIN = new MinOperator();
     private static final MaxOperator MAX = new MaxOperator();
+
+    private static final AddAssocOperator ADD_ASSOC = new AddAssocOperator();
+    private static final MulAssocOperator MUL_ASSOC = new MulAssocOperator();
+    private static final MinAssocOperator MIN_ASSOC = new MinAssocOperator();
+    private static final MaxAssocOperator MAX_ASSOC = new MaxAssocOperator();
 
 
     public static RintOperator rint() {
@@ -200,6 +209,22 @@ public final class TensorOp {
 
     public static MaxOperator max() {
         return MAX;
+    }
+
+    public static AddAssocOperator addAssoc() {
+        return ADD_ASSOC;
+    }
+
+    public static MulAssocOperator mulAssoc() {
+        return MUL_ASSOC;
+    }
+
+    public static MinAssocOperator minAssoc() {
+        return MIN_ASSOC;
+    }
+
+    public static MaxAssocOperator maxAssoc() {
+        return MAX_ASSOC;
     }
 
     public static <N extends Number> ClampOperator<N> clamp(DType<N> dtype, N min, N max) {

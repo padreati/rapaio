@@ -87,7 +87,7 @@ public final class VectorByteTensorStride extends BaseByteTensorStride implement
 
     @Override
     public Tensor<Byte> fillNan_(Byte value) {
-        if(!dtype().floatingPoint()) {
+        if (!dtype().floatingPoint()) {
             return this;
         }
         for (int offset : loop.offsets) {
@@ -905,6 +905,6 @@ public final class VectorByteTensorStride extends BaseByteTensorStride implement
     public String toString() {
         String strDIms = Arrays.toString(layout.dims());
         String strStrides = Arrays.toString(layout.strides());
-        return STR."VectorStride{\{dtype().id()},\{strDIms},\{layout.offset()},\{strStrides}}\n\{toContent()}";
+        return "VectorStride{" + dtype().id() + "," + strDIms + "," + layout.offset() + "," + strStrides + "}\n" + toContent();
     }
 }

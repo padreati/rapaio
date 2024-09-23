@@ -46,7 +46,8 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
     public VectorStrideLayout(Shape shape, int offset, int[] strides) {
         if (shape.rank() != 1 || strides == null || strides.length != 1) {
             throw new IllegalArgumentException(
-                    STR."Shape or strides invalid for one dimensional tensors (shape:\{shape}, strides:\{Arrays.toString(strides)}).");
+                    "Shape or strides invalid for one dimensional tensors (shape:" + shape + ", strides:" + Arrays.toString(strides)
+                            + ").");
         }
         this.shape = shape;
         this.offset = offset;
@@ -111,7 +112,7 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
         if (i == 0) {
             return stride;
         }
-        throw new IllegalArgumentException(STR."Invalid stride index \{i}");
+        throw new IllegalArgumentException("Invalid stride index " + i);
     }
 
     @Override
@@ -128,7 +129,7 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
             return this;
         }
         if (axes.length == 1 && axes[0] != 0) {
-            throw new IllegalArgumentException(STR."Invalid axis value: \{axes[0]}.");
+            throw new IllegalArgumentException("Invalid axis value: " + axes[0] + ".");
         }
         if (axes.length > 1) {
             throw new IllegalArgumentException("Vectors accepts a single axis parameter");
@@ -171,10 +172,10 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
     @Override
     public StrideLayout expand(int axis, int size) {
         if (dim(axis) != 1) {
-            throw new IllegalArgumentException(STR."Dimension \{axis} must have size 1, but have size \{dim(axis)}.");
+            throw new IllegalArgumentException("Dimension " + axis + " must have size 1, but have size " + dim(axis) + ".");
         }
         if (axis != 0) {
-            throw new IllegalArgumentException(STR."Dimension of the new axis \{axis} must be zero.");
+            throw new IllegalArgumentException("Dimension of the new axis " + axis + " must be zero.");
         }
         int[] newDims = Arrays.copyOf(dims(), dims().length);
         int[] newStrides = Arrays.copyOf(strides(), strides().length);
@@ -207,10 +208,10 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
     @Override
     public StrideLayout narrow(int axis, boolean keepDim, int start, int end) {
         if (axis != 0) {
-            throw new IllegalArgumentException(STR."Invalid axis value: \{axis}");
+            throw new IllegalArgumentException("Invalid axis value: " + axis);
         }
         if (!keepDim && (end - start != 1)) {
-            throw new IllegalArgumentException(STR."Invalid value for keepDim: \{keepDim} if the resulting tensor is not a scalar.");
+            throw new IllegalArgumentException("Invalid value for keepDim: " + keepDim + " if the resulting tensor is not a scalar.");
         }
         return keepDim ?
                 StrideLayout.of(Shape.of(end - start), offset + stride * start, new int[] {stride}) :
@@ -231,7 +232,7 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
     @Override
     public StrideLayout permute(int[] dims) {
         if (dims == null || dims.length != 1 || dims[0] != 0) {
-            throw new IllegalArgumentException(STR."Permutation indices are not valid: \{Arrays.toString(dims)}");
+            throw new IllegalArgumentException("Permutation indices are not valid: " + Arrays.toString(dims));
         }
         return this;
     }
@@ -268,6 +269,6 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
 
     @Override
     public String toString() {
-        return STR."VectorStride([\{dim(0)}],\{offset},[\{stride(0)}])";
+        return "VectorStride([" + dim(0) + "]," + offset + ",[" + stride(0) + "])";
     }
 }

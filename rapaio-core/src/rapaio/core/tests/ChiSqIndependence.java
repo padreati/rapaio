@@ -70,10 +70,10 @@ public final class ChiSqIndependence implements HTest {
         List<String> rowLevels = new ArrayList<>();
         List<String> colLevels = new ArrayList<>();
         for (int i = 0; i < m.dim(0); i++) {
-            rowLevels.add(STR."R\{i + 1}");
+            rowLevels.add("R%d".formatted(i + 1));
         }
         for (int i = 0; i < m.dim(1); i++) {
-            colLevels.add(STR."C\{i + 1}");
+            colLevels.add("C%d".formatted(i + 1));
         }
         return from(m, rowLevels, colLevels, yates);
     }
@@ -154,14 +154,21 @@ public final class ChiSqIndependence implements HTest {
     @Override
     public String toSummary(Printer printer, POpt<?>... options) {
 
-        return STR."""
+        return """
                 > ChiSqIndependence
-                Pearson's Chi-squared test\{(yates ? " with Yates' continuity correction" : "")}
-
-                X-squared = \{Format.floatFlex(chiValue)}, df = \{df}, p-value = \{Format.pValue(pValue)}
+                Pearson's Chi-squared test%s
+                
+                X-squared = %s, df = %d, p-value = %s
                 Observed data:
-                \{observed.toSummary(printer, options)}
+                %s
                 Expected data:
-                \{expected.toSummary(printer, options)}""";
+                %s""".formatted(
+                yates ? " with Yates' continuity correction" : "",
+                Format.floatFlex(chiValue),
+                df,
+                Format.pValue(pValue),
+                observed.toSummary(printer, options),
+                expected.toSummary(printer, options)
+        );
     }
 }

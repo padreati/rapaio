@@ -71,6 +71,6 @@ public class MultiQuadricKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."MultiQuadratic(c=\{Format.floatFlex(c)})";
+        return "MultiQuadratic(c="+Format.floatFlex(c)+")";
     }
 }

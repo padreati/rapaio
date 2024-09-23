@@ -159,8 +159,8 @@ public class PCA extends ParamSet<PCA> implements Printable {
     /**
      * Transforms a given matrix into projections of the first k principal components.
      *
-     * @param df     initial data frame
-     * @param k      number of principal components used
+     * @param df initial data frame
+     * @param k  number of principal components used
      * @return transformed input
      */
     public Frame transform(Frame df, int k) {
@@ -207,15 +207,16 @@ public class PCA extends ParamSet<PCA> implements Printable {
     }
 
     public String toSummary(Printer printer, POpt<?>... options) {
-        return STR."""
+        return """
                 PCA decomposition
                 =================
-                input shape: rows=\{inputRows}, vars=\{inputVars}
+                input shape: rows=%d, vars=%s
                 eigen values:
-                \{eigenValues.stretch(1).toContent(printer, options)}
+                %s
                 eigen vectors:
-                \{eigenVectors.toContent(printer, options)}
-                """;
+                %s
+                """.formatted(inputRows, inputVars, eigenValues.stretch(1).toContent(printer, options),
+                eigenVectors.toContent(printer, options));
     }
 
     @Override

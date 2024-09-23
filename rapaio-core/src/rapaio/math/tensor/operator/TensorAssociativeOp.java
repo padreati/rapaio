@@ -37,41 +37,41 @@ import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
 
-public interface TensorAssociativeOp {
+public abstract class TensorAssociativeOp {
 
-    byte initByte();
+    public abstract byte initByte();
 
-    byte applyByte(byte a, byte b);
+    public abstract byte applyByte(byte a, byte b);
 
-    ByteVector initByte(VectorSpecies<Byte> species);
+    public abstract ByteVector initByte(VectorSpecies<Byte> species);
 
-    ByteVector applyByte(ByteVector a, ByteVector b);
-
-
-    int initInt();
-
-    int applyInt(int a, int b);
-
-    IntVector initInt(VectorSpecies<Integer> species);
-
-    IntVector applyInt(IntVector a, IntVector b);
+    public abstract ByteVector applyByte(ByteVector a, ByteVector b);
 
 
-    float initFloat();
+    public abstract int initInt();
 
-    float applyFloat(float a, float b);
+    public abstract int applyInt(int a, int b);
 
-    FloatVector initFloat(VectorSpecies<Float> species);
+    public abstract IntVector initInt(VectorSpecies<Integer> species);
 
-    FloatVector applyFloat(FloatVector a, FloatVector b);
+    public abstract IntVector applyInt(IntVector a, IntVector b);
 
 
-    double initDouble();
+    public abstract float initFloat();
 
-    double applyDouble(double a, double b);
+    public abstract float applyFloat(float a, float b);
 
-    DoubleVector initDouble(VectorSpecies<Double> species);
+    public abstract FloatVector initFloat(VectorSpecies<Float> species);
 
-    DoubleVector applyDouble(DoubleVector a, DoubleVector b);
+    public abstract FloatVector applyFloat(FloatVector a, FloatVector b);
+
+
+    public abstract double initDouble();
+
+    public abstract double applyDouble(double a, double b);
+
+    public abstract DoubleVector initDouble(VectorSpecies<Double> species);
+
+    public abstract DoubleVector applyDouble(DoubleVector a, DoubleVector b);
 }
 

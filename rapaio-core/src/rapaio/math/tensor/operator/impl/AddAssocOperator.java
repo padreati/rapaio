@@ -35,50 +35,90 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import rapaio.math.tensor.operator.TensorBinaryOp;
+import jdk.incubator.vector.VectorSpecies;
+import rapaio.math.tensor.operator.TensorAssociativeOp;
 
-public final class MinOperator extends TensorBinaryOp {
+public final class AddAssocOperator extends TensorAssociativeOp {
+
+    @Override
+    public byte initByte() {
+        return 0;
+    }
 
     @Override
     public byte applyByte(byte a, byte b) {
-        return a >= b ? b : a;
+        return (byte) (a + b);
+    }
+
+    @Override
+    public ByteVector initByte(VectorSpecies<Byte> species) {
+        return ByteVector.zero(species);
     }
 
     @Override
     public ByteVector applyByte(ByteVector a, ByteVector b) {
-        return a.min(b);
+        return a.add(b);
     }
 
 
     @Override
+    public int initInt() {
+        return 0;
+    }
+
+    @Override
     public int applyInt(int a, int b) {
-        return Math.min(a, b);
+        return a + b;
+    }
+
+    @Override
+    public IntVector initInt(VectorSpecies<Integer> species) {
+        return IntVector.zero(species);
     }
 
     @Override
     public IntVector applyInt(IntVector a, IntVector b) {
-        return a.min(b);
+        return a.add(b);
     }
 
 
     @Override
-    public float applyFloat(float a, float b) {
-        return Math.min(a, b);
+    public float initFloat() {
+        return 0f;
+    }
+
+    @Override
+    public float applyFloat(float v, float a) {
+        return v + a;
+    }
+
+    @Override
+    public FloatVector initFloat(VectorSpecies<Float> species) {
+        return FloatVector.zero(species);
     }
 
     @Override
     public FloatVector applyFloat(FloatVector a, FloatVector b) {
-        return a.min(b);
+        return a.add(b);
     }
 
+    @Override
+    public double initDouble() {
+        return 0;
+    }
 
     @Override
-    public double applyDouble(double a, double b) {
-        return Math.min(a, b);
+    public double applyDouble(double v, double a) {
+        return v + a;
+    }
+
+    @Override
+    public DoubleVector initDouble(VectorSpecies<Double> species) {
+        return DoubleVector.zero(species);
     }
 
     @Override
     public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
-        return a.min(b);
+        return a.add(b);
     }
 }

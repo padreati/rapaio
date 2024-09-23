@@ -35,25 +35,13 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorSpecies;
-import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 
-public final class MaxOperator implements TensorAssociativeOp, TensorBinaryOp {
-
-    @Override
-    public byte initByte() {
-        return Byte.MIN_VALUE;
-    }
+public final class MaxOperator extends TensorBinaryOp {
 
     @Override
     public byte applyByte(byte a, byte b) {
         return a >= b ? a : b;
-    }
-
-    @Override
-    public ByteVector initByte(VectorSpecies<Byte> species) {
-        return ByteVector.broadcast(species, Byte.MIN_VALUE);
     }
 
     @Override
@@ -63,18 +51,8 @@ public final class MaxOperator implements TensorAssociativeOp, TensorBinaryOp {
 
 
     @Override
-    public int initInt() {
-        return Integer.MIN_VALUE;
-    }
-
-    @Override
     public int applyInt(int a, int b) {
         return Math.max(a, b);
-    }
-
-    @Override
-    public IntVector initInt(VectorSpecies<Integer> species) {
-        return IntVector.broadcast(species, Integer.MIN_VALUE);
     }
 
     @Override
@@ -84,18 +62,8 @@ public final class MaxOperator implements TensorAssociativeOp, TensorBinaryOp {
 
 
     @Override
-    public float initFloat() {
-        return Float.NEGATIVE_INFINITY;
-    }
-
-    @Override
     public float applyFloat(float a, float b) {
         return Math.max(a, b);
-    }
-
-    @Override
-    public FloatVector initFloat(VectorSpecies<Float> species) {
-        return FloatVector.broadcast(species, Float.NEGATIVE_INFINITY);
     }
 
     @Override
@@ -105,18 +73,8 @@ public final class MaxOperator implements TensorAssociativeOp, TensorBinaryOp {
 
 
     @Override
-    public double initDouble() {
-        return Double.NEGATIVE_INFINITY;
-    }
-
-    @Override
     public double applyDouble(double a, double b) {
         return Math.max(a, b);
-    }
-
-    @Override
-    public DoubleVector initDouble(VectorSpecies<Double> species) {
-        return DoubleVector.broadcast(species, Double.NEGATIVE_INFINITY);
     }
 
     @Override

@@ -35,25 +35,13 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorSpecies;
-import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 
-public final class MulOperator implements TensorAssociativeOp, TensorBinaryOp {
-
-    @Override
-    public byte initByte() {
-        return 1;
-    }
+public final class MulOperator extends TensorBinaryOp {
 
     @Override
     public byte applyByte(byte a, byte b) {
         return (byte) (a * b);
-    }
-
-    @Override
-    public ByteVector initByte(VectorSpecies<Byte> species) {
-        return ByteVector.broadcast(species, 1);
     }
 
     @Override
@@ -63,18 +51,8 @@ public final class MulOperator implements TensorAssociativeOp, TensorBinaryOp {
 
 
     @Override
-    public int initInt() {
-        return 1;
-    }
-
-    @Override
     public int applyInt(int a, int b) {
         return a * b;
-    }
-
-    @Override
-    public IntVector initInt(VectorSpecies<Integer> species) {
-        return IntVector.broadcast(species, 1);
     }
 
     @Override
@@ -84,18 +62,8 @@ public final class MulOperator implements TensorAssociativeOp, TensorBinaryOp {
 
 
     @Override
-    public float initFloat() {
-        return 1f;
-    }
-
-    @Override
     public float applyFloat(float a, float b) {
         return a * b;
-    }
-
-    @Override
-    public FloatVector initFloat(VectorSpecies<Float> species) {
-        return FloatVector.broadcast(species, 1);
     }
 
     @Override
@@ -105,18 +73,8 @@ public final class MulOperator implements TensorAssociativeOp, TensorBinaryOp {
 
 
     @Override
-    public double initDouble() {
-        return 1;
-    }
-
-    @Override
     public double applyDouble(double a, double b) {
         return a * b;
-    }
-
-    @Override
-    public DoubleVector initDouble(VectorSpecies<Double> species) {
-        return DoubleVector.broadcast(species, 1);
     }
 
     @Override

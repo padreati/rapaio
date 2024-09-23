@@ -45,6 +45,7 @@ import rapaio.printer.Format;
  * <p>
  * k(x, y) = \frac{1}{\sqrt{\lVert x-y \rVert^2 + \theta^2}}
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class InverseMultiQuadricKernel extends AbstractKernel {
@@ -73,6 +74,6 @@ public class InverseMultiQuadricKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return STR."InverseMultiQuadric(c=\{Format.floatFlex(c)})";
+        return "InverseMultiQuadric(c=" + Format.floatFlex(c) + ")";
     }
 }

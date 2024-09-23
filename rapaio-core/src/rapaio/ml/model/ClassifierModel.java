@@ -337,12 +337,14 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
         if (capabilities().minTargetCount() > targets.size()) {
             String targetVarNames = String.join(",", targetVars);
             throw new IllegalArgumentException(
-                    STR."Minimum number of targets (\{capabilities().minTargetCount()}) is not met. Targets specified: [\{targetVarNames}]");
+                    "Minimum number of targets (" + capabilities().minTargetCount() + ") is not met. Targets specified: [" + targetVarNames
+                            + "]");
         }
         if (capabilities().maxTargetCount() < targets.size()) {
             String targetVarNames = String.join(",", targetVars);
             throw new IllegalArgumentException(
-                    STR."Maximum number of targets (\{capabilities().maxTargetCount()}) is not met. Targets specified: [\{targetVarNames}]");
+                    "Maximum number of targets (" + capabilities().maxTargetCount() + ") is not met. Targets specified: [" + targetVarNames
+                            + "]");
         }
 
         this.targetNames = targets.toArray(new String[0]);
@@ -369,18 +371,18 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     protected abstract R corePredict(Frame df, boolean withClasses, boolean withDistributions);
 
     public String fullNameSummary() {
-        return STR."""
-            \{name()} model
-            ================
-
-            Description:
-            \{fullName()}
-
-            """;
+        return """
+                %s model
+                ================
+                
+                Description:
+                %s
+                
+                """.formatted(name(), fullName());
     }
 
     public String capabilitiesSummary() {
-        return STR."Capabilities:\n\{capabilities().toString()}\n";
+        return "Capabilities:\n" + capabilities() + "\n";
     }
 
     public String inputVarsSummary(Printer printer, POpt<?>... options) {

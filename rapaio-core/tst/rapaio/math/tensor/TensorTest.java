@@ -1304,7 +1304,7 @@ public class TensorTest {
 
             if(g.dType().floatingPoint()) {
                 var e = assertThrows(IllegalArgumentException.class, () -> t1.norm(g.value(-1)));
-                assertEquals("Norm power p=-1.0 must have a value greater than 0.", e.getMessage());
+                assertEquals("Norm power p=-1 must have a value greater than 0.", e.getMessage());
             }
         }
 
@@ -1391,7 +1391,7 @@ public class TensorTest {
 
     private static <N extends Number> void assertTensorEqualValues(Tensor<N> t, Tensor<N> f) {
         if (t.size() != f.size()) {
-            throw new AssertionFailedError(STR."Error at tensor: \{t}, flatten: \{f}");
+            throw new AssertionFailedError(String.format("Error at tensor: %s, flatten: %s", t, f));
         }
         var itT = t.ptrIterator(Order.defaultOrder());
         var itF = f.ptrIterator(Order.defaultOrder());
@@ -1400,12 +1400,12 @@ public class TensorTest {
             try {
                 assertEquals(t.ptrGet(itT.nextInt()), f.ptrGet(itF.nextInt()));
             } catch (AssertionFailedError e) {
-                throw new AssertionFailedError(STR."Error at tensor: \{t}, flatten: \{f}", e);
+                throw new AssertionFailedError(String.format("Error at tensor: %s, flatten: %s", t, f), e);
             }
             count++;
         }
         if (count != t.size()) {
-            throw new AssertionFailedError(STR."Error at tensor: \{t}, flatten: \{f}");
+            throw new AssertionFailedError(String.format("Error at tensor: %s, flatten: %s", t, f));
         }
     }
 }

@@ -175,6 +175,6 @@ public record ScalarStrideLayout(int offset) implements StrideLayout {
 
     @Override
     public String toString() {
-        return STR."ScalarStride([],\{offset},[])";
+        return "ScalarStride([]," + offset + ",[])";
     }
 }
