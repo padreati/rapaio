@@ -83,11 +83,6 @@ public class CodeGenApp {
                 .dst.set("rapaio/math/tensor/manager/base/BaseFloatTensorStride.java")
                 .replaces.set(floatReplaces)
         );
-        templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/vector/VectorDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/manager/vector/VectorFloatTensorStride.java")
-                .replaces.set(floatReplaces)
-        );
 
         templates.add(new CodeGenTemplate()
                 .src.set("rapaio/math/tensor/storage/array/DoubleArrayStorage.java")
@@ -99,11 +94,6 @@ public class CodeGenApp {
                 .dst.set("rapaio/math/tensor/manager/base/BaseIntTensorStride.java")
                 .replaces.set(intReplaces)
         );
-        templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/vector/VectorDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/manager/vector/VectorIntTensorStride.java")
-                .replaces.set(intReplaces)
-        );
 
         templates.add(new CodeGenTemplate()
                 .src.set("rapaio/math/tensor/storage/array/DoubleArrayStorage.java")
@@ -113,11 +103,6 @@ public class CodeGenApp {
         templates.add(new CodeGenTemplate()
                 .src.set("rapaio/math/tensor/manager/base/BaseDoubleTensorStride.java")
                 .dst.set("rapaio/math/tensor/manager/base/BaseByteTensorStride.java")
-                .replaces.set(byteReplaces)
-        );
-        templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/vector/VectorDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/manager/vector/VectorByteTensorStride.java")
                 .replaces.set(byteReplaces)
         );
 

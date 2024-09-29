@@ -131,7 +131,7 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
     }
 
     private double negativeLogLikelihood(Tensor<Double> y, Tensor<Double> ny, Tensor<Double> w, double lambda, Tensor<Double> p, Tensor<Double> np) {
-        Tensor<Double> logp = p.clamp_(1e-6, Double.NaN).log();
+        Tensor<Double> logp = p.clamp(1e-6, Double.NaN).log();
         Tensor<Double> lognp = np.clamp(1e-6, Double.NaN).log();
 
         return -logp.vdot(y) - lognp.vdot(ny) + lambda * w.norm(2.) / 2;

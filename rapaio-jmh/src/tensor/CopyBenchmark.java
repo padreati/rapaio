@@ -76,7 +76,6 @@ import rapaio.util.collection.DoubleArrays;
 public class CopyBenchmark {
 
     private static final TensorManager.OfType<Double> base = TensorManager.base().ofDouble();
-    private static final TensorManager.OfType<Double> vectorized = TensorManager.varray().ofDouble();
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
@@ -87,9 +86,6 @@ public class CopyBenchmark {
 
         private Tensor<Double> bTc;
         private Tensor<Double> bTf;
-
-        private Tensor<Double> vTc;
-        private Tensor<Double> vTf;
 
         @Setup(Level.Invocation)
         public void setup() {
@@ -106,8 +102,6 @@ public class CopyBenchmark {
 
             bTc = base.stride(Shape.of(n, n), Order.C, array);
             bTf = base.stride(Shape.of(n, n), Order.F, array);
-            vTc = vectorized.stride(Shape.of(n, n), Order.C, array);
-            vTf = vectorized.stride(Shape.of(n, n), Order.F, array);
         }
     }
 
@@ -128,18 +122,6 @@ public class CopyBenchmark {
         bh.consume(transpose);
     }
 
-
-    @Benchmark
-    public void transposeVecOrderC(BenchmarkState bs, Blackhole bh) {
-        var transpose = bs.vTc.t();
-        bh.consume(transpose);
-    }
-
-    @Benchmark
-    public void transposeVecOrderF(BenchmarkState bs, Blackhole bh) {
-        var transpose = bs.vTf.t();
-        bh.consume(transpose);
-    }
 
     public static void main(String[] args) throws RunnerException, IOException {
         Options opt = new OptionsBuilder()

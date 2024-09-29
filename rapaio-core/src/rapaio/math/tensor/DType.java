@@ -34,6 +34,12 @@ package rapaio.math.tensor;
 import java.util.Comparator;
 import java.util.Objects;
 
+import jdk.incubator.vector.ByteVector;
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorSpecies;
+
 public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, DType.DTypeFloat, DType.DTypeInteger, DType.DTypeByte {
 
     public static final DType<Byte> BYTE = new DTypeByte();
@@ -90,6 +96,8 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
 
     public abstract Comparator<N> reverseComparator();
 
+    public abstract VectorSpecies<N> vectorSpecies();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -107,6 +115,8 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
     }
 
     public static final class DTypeByte extends DType<Byte> {
+
+        private static final VectorSpecies<Byte> vs = ByteVector.SPECIES_PREFERRED;
 
         public DTypeByte() {
             super(Id.BYTE, (byte) 4, true);
@@ -151,9 +161,16 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
         public Comparator<Byte> reverseComparator() {
             return Comparator.reverseOrder();
         }
+
+        @Override
+        public VectorSpecies<Byte> vectorSpecies() {
+            return vs;
+        }
     }
 
     public static final class DTypeDouble extends DType<Double> {
+
+        private static final VectorSpecies<Double> vs = DoubleVector.SPECIES_PREFERRED;
 
         public DTypeDouble() {
             super(Id.DOUBLE, (byte) 8, false);
@@ -198,10 +215,16 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
         public Comparator<Double> reverseComparator() {
             return Comparator.reverseOrder();
         }
+
+        @Override
+        public VectorSpecies<Double> vectorSpecies() {
+            return vs;
+        }
     }
 
     public static final class DTypeFloat extends DType<Float> {
 
+        private static final VectorSpecies<Float> vs = FloatVector.SPECIES_PREFERRED;
 
         public DTypeFloat() {
             super(Id.FLOAT, (byte) 4, false);
@@ -246,9 +269,16 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
         public Comparator<Float> reverseComparator() {
             return Comparator.reverseOrder();
         }
+
+        @Override
+        public VectorSpecies<Float> vectorSpecies() {
+            return vs;
+        }
     }
 
     public static final class DTypeInteger extends DType<Integer> {
+
+        private static final VectorSpecies<Integer> vs = IntVector.SPECIES_PREFERRED;
 
         public DTypeInteger() {
             super(Id.INTEGER, (byte) 4, true);
@@ -292,6 +322,11 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
         @Override
         public Comparator<Integer> reverseComparator() {
             return Comparator.reverseOrder();
+        }
+
+        @Override
+        public VectorSpecies<Integer> vectorSpecies() {
+            return vs;
         }
     }
 }

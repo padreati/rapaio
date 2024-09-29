@@ -71,7 +71,6 @@ public class TensorTest {
     @Test
     void allTests() {
         managerTestSuite(TensorManager.base());
-        managerTestSuite(TensorManager.varray());
     }
 
     private void managerTestSuite(TensorManager eng) {

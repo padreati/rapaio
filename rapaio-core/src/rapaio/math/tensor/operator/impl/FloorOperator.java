@@ -31,12 +31,7 @@
 
 package rapaio.math.tensor.operator.impl;
 
-import jdk.incubator.vector.ByteVector;
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorMask;
-import jdk.incubator.vector.VectorOperators;
+import rapaio.math.tensor.iterators.LoopDescriptor;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
 public final class FloorOperator extends TensorUnaryOp {
@@ -72,30 +67,62 @@ public final class FloorOperator extends TensorUnaryOp {
     }
 
     @Override
-    public ByteVector applyByte(ByteVector v) {
-        return v;
+    protected void applyUnit(LoopDescriptor<Byte> loop, byte[] array) {
     }
 
     @Override
-    public IntVector applyInt(IntVector v) {
-        return v;
+    protected void applyStep(LoopDescriptor<Byte> loop, byte[] array) {
     }
 
     @Override
-    public FloatVector applyFloat(FloatVector v) {
-        VectorMask<Float> m = v.compare(VectorOperators.LT, 0);
-        if (m.anyTrue()) {
-            v = v.sub(1.f, m);
+    protected void applyUnit(LoopDescriptor<Integer> loop, int[] array) {
+    }
+
+    @Override
+    protected void applyStep(LoopDescriptor<Integer> loop, int[] array) {
+    }
+
+    @Override
+    protected void applyUnit(LoopDescriptor<Float> loop, float[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                array[p] = (float) Math.floor(array[p]);
+                p++;
+            }
         }
-        return v.convert(VectorOperators.F2I, 0).convert(VectorOperators.I2F, 0).reinterpretAsFloats();
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector v) {
-        VectorMask<Double> m = v.compare(VectorOperators.LT, 0);
-        if (m.anyTrue()) {
-            v = v.sub(1., m);
+    protected void applyStep(LoopDescriptor<Float> loop, float[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                array[p] = (float) Math.floor(array[p]);
+                p += loop.step;
+            }
         }
-        return v.convert(VectorOperators.D2L, 0).convert(VectorOperators.L2D, 0).reinterpretAsDoubles();
+    }
+
+    @Override
+    protected void applyUnit(LoopDescriptor<Double> loop, double[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                array[p] = Math.floor(array[p]);
+                p++;
+            }
+        }
+    }
+
+    @Override
+    protected void applyStep(LoopDescriptor<Double> loop, double[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                array[p] = Math.floor(array[p]);
+                p += loop.step;
+            }
+        }
     }
 }

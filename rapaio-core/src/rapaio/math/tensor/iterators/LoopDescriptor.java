@@ -33,6 +33,7 @@ package rapaio.math.tensor.iterators;
 
 import java.util.Arrays;
 
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.Layout;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -41,43 +42,53 @@ import rapaio.util.collection.IntArrays;
 
 /**
  * A loop stride descriptor contains the same information as a loop iterator, but in a precomputed form.
- * It is an alternative to loop iterator, when you want pre-computed loop offsets.
+ * It is an alternative to loop iterator, when you want precomputed loop offsets.
  */
-public final class LoopDescriptor {
+public final class LoopDescriptor<N extends Number> {
 
-    public static LoopDescriptor of(Shape shape, int offset, int[] strides, Order askOrder) {
-        return new LoopDescriptor(shape, offset, strides, askOrder);
+    public static <N extends Number> LoopDescriptor<N> of(Shape shape, int offset, int[] strides, Order askOrder, VectorSpecies<N> vs) {
+        return new LoopDescriptor<>(shape, offset, strides, askOrder, vs);
     }
 
-    public static LoopDescriptor of(Layout layout, Order askOrder) {
-        return new LoopDescriptor(layout, askOrder);
+    public static <N extends Number> LoopDescriptor<N> of(Layout layout, Order askOrder, VectorSpecies<N> vs) {
+        return new LoopDescriptor<>(layout, askOrder, vs);
     }
 
     public final int size;
     public final int step;
     public final int count;
     public final int[] offsets;
+    public final VectorSpecies<N> vs;
+    public final int simdLen;
+    public final int simdBound;
+    public final int[] simdOffsets;
 
-    private LoopDescriptor(Shape shape, int offset, int[] strides, Order askOrder) {
-        this(StrideLayout.of(shape, offset, strides), askOrder);
+    private LoopDescriptor(Shape shape, int offset, int[] strides, Order askOrder, VectorSpecies<N> vs) {
+        this(StrideLayout.of(shape, offset, strides), askOrder, vs);
     }
 
-    private LoopDescriptor(Layout layout, Order askOrder) {
+    private LoopDescriptor(Layout layout, Order askOrder, VectorSpecies<N> vs) {
         if (!(layout instanceof StrideLayout sl)) {
             throw new IllegalArgumentException("Layout is not a stride layout.");
         }
+        this.vs = vs;
+        this.simdLen = vs.length();
 
         if (layout.shape().rank() == 0) {
             size = 1;
             step = 1;
             count = 1;
+            simdBound = 1;
             offsets = new int[] {sl.offset()};
+            simdOffsets = simdOffsets(1);
             return;
         }
 
         var compact = sl.computeFortranLayout(askOrder, true);
         size = compact.dim(0);
         step = compact.stride(0);
+        simdBound = vs.loopBound(size);
+        simdOffsets = simdOffsets(vs.length());
 
         if (compact.rank() == 1) {
             count = 1;
@@ -108,5 +119,13 @@ public final class LoopDescriptor {
             }
             inner *= dim;
         }
+    }
+
+    private int[] simdOffsets(int len) {
+        int[] offsetMap = new int[len];
+        for (int i = 0; i < len; i++) {
+            offsetMap[i] = i * step;
+        }
+        return offsetMap;
     }
 }

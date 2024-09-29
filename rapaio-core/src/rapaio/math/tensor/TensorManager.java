@@ -37,7 +37,6 @@ import java.util.Vector;
 
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.manager.base.BaseTensorManager;
-import rapaio.math.tensor.manager.vector.VectorTensorManager;
 
 public interface TensorManager {
 
@@ -47,14 +46,6 @@ public interface TensorManager {
 
     static TensorManager base(int cpuThreads) {
         return new BaseTensorManager(cpuThreads);
-    }
-
-    static TensorManager varray() {
-        return new VectorTensorManager();
-    }
-
-    static TensorManager varray(int cpuThreads) {
-        return new VectorTensorManager(cpuThreads);
     }
 
     OfType<Double> ofDouble();

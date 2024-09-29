@@ -61,6 +61,7 @@ import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
+import rapaio.math.tensor.storage.array.ByteArrayStorage;
 import rapaio.printer.Format;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
@@ -112,7 +113,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         var result = manager.ofByte().zeros(Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
-        var loop = LoopDescriptor.of(layout, askOrder);
+        var loop = LoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 out.setByte(ptr++, storage.getByte(p));
@@ -169,21 +170,6 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
-    public Tensor<Byte> fill_(Byte value) {
-        for (int p : loop.offsets) {
-            if (loop.step == 1) {
-                storage.fillByte(value, p, loop.size);
-            } else {
-                for (int i = 0; i < loop.size; i++) {
-                    storage.setByte(p, value);
-                    p += loop.step;
-                }
-            }
-        }
-        return this;
-    }
-
-    @Override
     public Tensor<Byte> fillNan_(Byte value) {
         if (!dtype().floatingPoint()) {
             return this;
@@ -197,14 +183,6 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
             }
         }
         return this;
-    }
-
-    private void unaryOpUnit(TensorUnaryOp op) {
-        for (int off : loop.offsets) {
-            for (int i = off; i < loop.size + off; i++) {
-                storage.setByte(i, op.applyByte(storage.getByte(i)));
-            }
-        }
     }
 
     private void unaryOpStep(TensorUnaryOp op) {
@@ -221,11 +199,11 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
-        if (loop.step == 1) {
-            unaryOpUnit(op);
-        } else {
-            unaryOpStep(op);
+        if (storage instanceof ByteArrayStorage specStorage) {
+            op.apply(loop, specStorage.array());
+            return this;
         }
+        unaryOpStep(op);
         return this;
     }
 
@@ -463,7 +441,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         }
 
         byte sum = (byte) 0;
-        var loop = LoopDescriptor.of(layout, Order.S);
+        var loop = LoopDescriptor.of(layout, Order.S, dtype().vectorSpecies());
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 byte value = (byte) Math.abs(storage.getByte(p));
@@ -491,7 +469,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         while (it.hasNext()) {
             int ptr = it.nextInt();
-            var stride = manager.ofByte().stride(StrideLayout.of(Shape.of(selDim), ptr, new int[]{selStride}), storage);
+            var stride = manager.ofByte().stride(StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
             res.ptrSet(resIt.next(), op.apply(stride));
         }
         return res;
@@ -587,7 +565,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         int argmax = -1;
         byte argvalue = TensorOp.maxAssoc().initByte();
         var i = 0;
-        var loop = LoopDescriptor.of(layout, order);
+        var loop = LoopDescriptor.of(layout, order, dtype().vectorSpecies());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 byte value = storage.getByte(p);
@@ -607,7 +585,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         int argmin = -1;
         byte argvalue = TensorOp.minAssoc().initByte();
         var i = 0;
-        var loop = LoopDescriptor.of(layout, order);
+        var loop = LoopDescriptor.of(layout, order, dtype().vectorSpecies());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 byte value = storage.getByte(p);
@@ -728,7 +706,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     private void sameLayoutCopy(Storage<Byte> copy, Order askOrder) {
-        var loop = LoopDescriptor.of(layout, askOrder);
+        var loop = LoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
         var last = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
@@ -816,7 +794,7 @@ public class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     private void directCopyTo(BaseByteTensorStride src, BaseByteTensorStride dst, Order askOrder) {
-        var loop = LoopDescriptor.of(src.layout, askOrder);
+        var loop = LoopDescriptor.of(src.layout, askOrder, dtype().vectorSpecies());
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {

@@ -37,9 +37,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <uberjar.name>benchmarks</uberjar.name>
-
     </properties>
 
     <dependencies>

@@ -31,12 +31,8 @@
 
 package rapaio.math.tensor.operator.impl;
 
-import jdk.incubator.vector.ByteVector;
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorOperators;
 import rapaio.math.tensor.DType;
+import rapaio.math.tensor.iterators.LoopDescriptor;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
 public class ClampOperator<N extends Number> extends TensorUnaryOp {
@@ -122,54 +118,130 @@ public class ClampOperator<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    public ByteVector applyByte(ByteVector v) {
-        if(hasMin) {
-            var mask = v.compare(VectorOperators.LT, byteMin);
-            v = v.blend(byteMin, mask);
+    protected void applyUnit(LoopDescriptor<Byte> loop, byte[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                if (hasMin) {
+                    array[p] = (byte) Math.max(array[p], byteMin);
+                }
+                if (hasMax) {
+                    array[p] = (byte) Math.min(array[p], byteMax);
+                }
+                p++;
+            }
         }
-        if(hasMax) {
-            var mask = v.compare(VectorOperators.GT, byteMax);
-            v = v.blend(byteMax, mask);
-        }
-        return v;
     }
 
     @Override
-    public IntVector applyInt(IntVector v) {
-        if(hasMin) {
-            var mask = v.compare(VectorOperators.LT, intMin);
-            v = v.blend(intMin, mask);
+    protected void applyStep(LoopDescriptor<Byte> loop, byte[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                if (hasMin) {
+                    array[p] = (byte) Math.max(array[p], byteMin);
+                }
+                if (hasMax) {
+                    array[p] = (byte) Math.min(array[p], byteMax);
+                }
+                p += loop.step;
+            }
         }
-        if(hasMax) {
-            var mask = v.compare(VectorOperators.GT, intMax);
-            v = v.blend(intMax, mask);
-        }
-        return v;
     }
 
     @Override
-    public FloatVector applyFloat(FloatVector v) {
-        if(hasMin) {
-            var mask = v.compare(VectorOperators.LT, floatMin);
-            v = v.blend(floatMin, mask);
+    protected void applyUnit(LoopDescriptor<Integer> loop, int[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                if (hasMin) {
+                    array[p] = Math.max(array[p], intMin);
+                }
+                if (hasMax) {
+                    array[p] = Math.min(array[p], intMax);
+                }
+                p++;
+            }
         }
-        if(hasMax) {
-            var mask = v.compare(VectorOperators.GT, floatMax);
-            v = v.blend(floatMax, mask);
-        }
-        return v;
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector v) {
-        if(hasMin) {
-            var mask = v.compare(VectorOperators.LT, doubleMin);
-            v = v.blend(doubleMin, mask);
+    protected void applyStep(LoopDescriptor<Integer> loop, int[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                if (hasMin) {
+                    array[p] = Math.max(array[p], intMin);
+                }
+                if (hasMax) {
+                    array[p] = Math.min(array[p], intMax);
+                }
+                p += loop.step;
+            }
         }
-        if(hasMax) {
-            var mask = v.compare(VectorOperators.GT, doubleMax);
-            v = v.blend(doubleMax, mask);
+    }
+
+    @Override
+    protected void applyUnit(LoopDescriptor<Float> loop, float[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                if (hasMin) {
+                    array[p] = Math.max(array[p], floatMin);
+                }
+                if (hasMax) {
+                    array[p] = Math.min(array[p], floatMax);
+                }
+                p++;
+            }
         }
-        return v;
+    }
+
+    @Override
+    protected void applyStep(LoopDescriptor<Float> loop, float[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                if (hasMin) {
+                    array[p] = Math.max(array[p], floatMin);
+                }
+                if (hasMax) {
+                    array[p] = Math.min(array[p], floatMax);
+                }
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnit(LoopDescriptor<Double> loop, double[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                if (hasMin) {
+                    array[p] = Math.max(array[p], doubleMin);
+                }
+                if (hasMax) {
+                    array[p] = Math.min(array[p], doubleMax);
+                }
+                p++;
+            }
+        }
+    }
+
+    @Override
+    protected void applyStep(LoopDescriptor<Double> loop, double[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.size; i++) {
+                if (hasMin) {
+                    array[p] = Math.max(array[p], doubleMin);
+                }
+                if (hasMax) {
+                    array[p] = Math.min(array[p], doubleMax);
+                }
+                p += loop.step;
+            }
+        }
     }
 }

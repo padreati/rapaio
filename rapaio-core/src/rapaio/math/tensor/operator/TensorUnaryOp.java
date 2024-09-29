@@ -31,10 +31,8 @@
 
 package rapaio.math.tensor.operator;
 
-import jdk.incubator.vector.ByteVector;
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.IntVector;
+import rapaio.data.OperationNotAvailableException;
+import rapaio.math.tensor.iterators.LoopDescriptor;
 
 public abstract class TensorUnaryOp {
 
@@ -53,12 +51,58 @@ public abstract class TensorUnaryOp {
 
     public abstract float applyFloat(float v);
 
-    public abstract ByteVector applyByte(ByteVector v);
+    public final void apply(LoopDescriptor<Byte> loop, byte[] array) {
+        if(floatingPointOnly()) {
+            throw new OperationNotAvailableException();
+        }
+        if (loop.step == 1) {
+            applyUnit(loop, array);
+        } else {
+            applyStep(loop, array);
+        }
+    }
 
-    public abstract IntVector applyInt(IntVector v);
+    protected abstract void applyUnit(LoopDescriptor<Byte> loop, byte[] array);
 
-    public abstract FloatVector applyFloat(FloatVector v);
+    protected abstract void applyStep(LoopDescriptor<Byte> loop, byte[] array);
 
-    public abstract DoubleVector applyDouble(DoubleVector v);
+    public final void apply(LoopDescriptor<Integer> loop, int[] array) {
+        if(floatingPointOnly()) {
+            throw new OperationNotAvailableException();
+        }
+        if (loop.step == 1) {
+            applyUnit(loop, array);
+        } else {
+            applyStep(loop, array);
+        }
+    }
+
+    protected abstract void applyUnit(LoopDescriptor<Integer> loop, int[] array);
+
+    protected abstract void applyStep(LoopDescriptor<Integer> loop, int[] array);
+
+    public final void apply(LoopDescriptor<Float> loop, float[] array) {
+        if (loop.step == 1) {
+            applyUnit(loop, array);
+        } else {
+            applyStep(loop, array);
+        }
+    }
+
+    protected abstract void applyUnit(LoopDescriptor<Float> loop, float[] array);
+
+    protected abstract void applyStep(LoopDescriptor<Float> loop, float[] array);
+
+    public final void apply(LoopDescriptor<Double> loop, double[] array) {
+        if (loop.step == 1) {
+            applyUnit(loop, array);
+        } else {
+            applyStep(loop, array);
+        }
+    }
+
+    protected abstract void applyUnit(LoopDescriptor<Double> loop, double[] array);
+
+    protected abstract void applyStep(LoopDescriptor<Double> loop, double[] array);
 }
 

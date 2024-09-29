@@ -56,7 +56,6 @@ import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.layout.StrideWrapper;
 import rapaio.math.tensor.manager.base.BaseDoubleTensorStride;
-import rapaio.math.tensor.manager.vector.VectorDoubleTensorStride;
 import rapaio.math.tensor.operator.TensorAssociativeOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorOp;
@@ -71,13 +70,13 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     protected final Storage<N> storage;
     protected final StrideLayout layout;
     protected final TensorManager manager;
-    protected final LoopDescriptor loop;
+    protected final LoopDescriptor<N> loop;
 
     public AbstractStrideTensor(TensorManager manager, StrideLayout layout, Storage<N> storage) {
         this.storage = storage;
         this.layout = layout;
         this.manager = manager;
-        this.loop = LoopDescriptor.of(layout, layout.storageFastOrder());
+        this.loop = LoopDescriptor.of(layout, layout.storageFastOrder(), dtype().vectorSpecies());
     }
 
     @Override
@@ -578,11 +577,6 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
                 return VarDouble.wrap(bs.asDoubleArray());
             }
         }
-        if (this instanceof VectorDoubleTensorStride bs) {
-            if (bs.layout().offset() == 0 && bs.layout().stride(0) == 1) {
-                return VarDouble.wrap(bs.asDoubleArray());
-            }
-        }
         double[] copy = new double[layout().size()];
         var it = iterator(Order.C);
         for (int i = 0; i < copy.length; i++) {
@@ -595,7 +589,7 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     public double[] toDoubleArray(Order askOrder) {
         double[] copy = new double[size()];
         int pos = 0;
-        var loop = LoopDescriptor.of(layout, askOrder);
+        var loop = LoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;
@@ -724,7 +718,7 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
         var castTensor = manager().ofType(dType).zeros(shape(), askOrder);
 
         Order fastOrder = Layout.storageFastTandemOrder(castTensor.layout(), layout);
-        var loopDescriptor = LoopDescriptor.of(castTensor.layout(), fastOrder);
+        var loopDescriptor = LoopDescriptor.of(castTensor.layout(), fastOrder, dType.vectorSpecies());
         var iter = ptrIterator(fastOrder);
         for (int p : loopDescriptor.offsets) {
             for (int i = 0; i < loopDescriptor.size; i++) {

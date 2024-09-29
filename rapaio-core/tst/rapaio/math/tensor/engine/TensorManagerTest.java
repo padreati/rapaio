@@ -47,8 +47,8 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.manager.vector.VectorTensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
+import rapaio.math.tensor.manager.base.BaseTensorManager;
 
 public class TensorManagerTest {
 
@@ -61,9 +61,7 @@ public class TensorManagerTest {
 
     @Test
     void mainTestLoop() {
-
-        testManagerSuite(new VectorTensorManager());
-        testManagerSuite(new VectorTensorManager());
+        testManagerSuite(new BaseTensorManager());
     }
 
     void testManagerSuite(TensorManager engine) {

@@ -35,6 +35,7 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
+import rapaio.math.tensor.iterators.LoopDescriptor;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
 public final class SqrOperator extends TensorUnaryOp {
@@ -70,23 +71,138 @@ public final class SqrOperator extends TensorUnaryOp {
     }
 
     @Override
-    public ByteVector applyByte(ByteVector v) {
-        return v.mul(v);
+    protected void applyUnit(LoopDescriptor<Byte> loop, byte[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = ByteVector.fromArray(loop.vs, array, p);
+                a = a.mul(a);
+                a.intoArray(array, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = (byte) (array[p] * array[p]);
+                p++;
+            }
+        }
     }
 
     @Override
-    public IntVector applyInt(IntVector v) {
-        return v.mul(v);
+    protected void applyStep(LoopDescriptor<Byte> loop, byte[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = ByteVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                a = a.mul(a);
+                a.intoArray(array, p, loop.simdOffsets, 0);
+                p += loop.step * loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = (byte) (array[p] * array[p]);
+                p += loop.step;
+            }
+        }
     }
 
-
     @Override
-    public FloatVector applyFloat(FloatVector v) {
-        return v.mul(v);
+    protected void applyUnit(LoopDescriptor<Integer> loop, int[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = IntVector.fromArray(loop.vs, array, p);
+                a = a.mul(a);
+                a.intoArray(array, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = array[p] * array[p];
+                p++;
+            }
+        }
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector v) {
-        return v.mul(v);
+    protected void applyStep(LoopDescriptor<Integer> loop, int[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = IntVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                a = a.mul(a);
+                a.intoArray(array, p, loop.simdOffsets, 0);
+                p += loop.step * loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = array[p] * array[p];
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnit(LoopDescriptor<Float> loop, float[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = FloatVector.fromArray(loop.vs, array, p);
+                a = a.mul(a);
+                a.intoArray(array, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = array[p] * array[p];
+                p++;
+            }
+        }
+    }
+
+    @Override
+    protected void applyStep(LoopDescriptor<Float> loop, float[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                a = a.mul(a);
+                a.intoArray(array, p, loop.simdOffsets, 0);
+                p += loop.step * loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = array[p] * array[p];
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnit(LoopDescriptor<Double> loop, double[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p);
+                a = a.mul(a);
+                a.intoArray(array, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = array[p] * array[p];
+                p++;
+            }
+        }
+    }
+
+    @Override
+    protected void applyStep(LoopDescriptor<Double> loop, double[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                a = a.mul(a);
+                a.intoArray(array, p, loop.simdOffsets, 0);
+                p += loop.step * loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = array[p] * array[p];
+                p += loop.step;
+            }
+        }
     }
 }

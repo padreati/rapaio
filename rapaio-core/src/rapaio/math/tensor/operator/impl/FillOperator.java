@@ -31,14 +31,27 @@
 
 package rapaio.math.tensor.operator.impl;
 
+import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.VectorOperators;
-import rapaio.data.OperationNotAvailableException;
+import jdk.incubator.vector.IntVector;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.iterators.LoopDescriptor;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class SinOperator extends TensorUnaryOp {
+public class FillOperator<N extends Number> extends TensorUnaryOp {
+
+    private final byte fillByte;
+    private final int fillInt;
+    private final float fillFloat;
+    private final double fillDouble;
+
+    public FillOperator(DType<N> dtype, N fill) {
+        fillByte = fill.byteValue();
+        fillInt = fill.intValue();
+        fillFloat = fill.floatValue();
+        fillDouble = fill.doubleValue();
+    }
 
     @Override
     public boolean vectorSupport() {
@@ -47,57 +60,104 @@ public final class SinOperator extends TensorUnaryOp {
 
     @Override
     public boolean floatingPointOnly() {
-        return true;
+        return false;
     }
 
     @Override
     public byte applyByte(byte v) {
-        throw new OperationNotAvailableException();
+        return fillByte;
     }
 
     @Override
     public int applyInt(int v) {
-        throw new OperationNotAvailableException();
-    }
-
-    @Override
-    public float applyFloat(float v) {
-        return (float) Math.sin(v);
+        return fillInt;
     }
 
     @Override
     public double applyDouble(double v) {
-        return Math.sin(v);
+        return fillDouble;
+    }
+
+    @Override
+    public float applyFloat(float v) {
+        return fillFloat;
     }
 
     @Override
     protected void applyUnit(LoopDescriptor<Byte> loop, byte[] array) {
-    }
-
-    @Override
-    protected void applyStep(LoopDescriptor<Byte> loop, byte[] array) {
-    }
-
-    @Override
-    protected void applyUnit(LoopDescriptor<Integer> loop, int[] array) {
-    }
-
-    @Override
-    protected void applyStep(LoopDescriptor<Integer> loop, int[] array) {
-    }
-
-    @Override
-    protected void applyUnit(LoopDescriptor<Float> loop, float[] array) {
+        var a = ByteVector.broadcast(loop.vs, fillByte);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p);
-                a = a.lanewise(VectorOperators.SIN);
                 a.intoArray(array, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (float) Math.sin(array[p]);
+                array[p] = fillByte;
+                p++;
+            }
+        }
+    }
+
+    @Override
+    protected void applyStep(LoopDescriptor<Byte> loop, byte[] array) {
+        var a = ByteVector.broadcast(loop.vs, fillByte);
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                a.intoArray(array, p, loop.simdOffsets, 0);
+                p += loop.step * loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = fillByte;
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnit(LoopDescriptor<Integer> loop, int[] array) {
+        var a = IntVector.broadcast(loop.vs, fillInt);
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                a.intoArray(array, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = fillInt;
+                p++;
+            }
+        }
+    }
+
+    @Override
+    protected void applyStep(LoopDescriptor<Integer> loop, int[] array) {
+        var a = IntVector.broadcast(loop.vs, fillInt);
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                a.intoArray(array, p, loop.simdOffsets, 0);
+                p += loop.step * loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = fillInt;
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnit(LoopDescriptor<Float> loop, float[] array) {
+        var a = FloatVector.broadcast(loop.vs, fillFloat);
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                a.intoArray(array, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = fillFloat;
                 p++;
             }
         }
@@ -105,16 +165,15 @@ public final class SinOperator extends TensorUnaryOp {
 
     @Override
     protected void applyStep(LoopDescriptor<Float> loop, float[] array) {
+        var a = FloatVector.broadcast(loop.vs, fillFloat);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
-                a = a.lanewise(VectorOperators.SIN);
                 a.intoArray(array, p, loop.simdOffsets, 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (float) Math.sin(array[p]);
+                array[p] = fillFloat;
                 p += loop.step;
             }
         }
@@ -122,16 +181,15 @@ public final class SinOperator extends TensorUnaryOp {
 
     @Override
     protected void applyUnit(LoopDescriptor<Double> loop, double[] array) {
+        var a = DoubleVector.broadcast(loop.vs, fillDouble);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p);
-                a = a.lanewise(VectorOperators.SIN);
                 a.intoArray(array, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.sin(array[p]);
+                array[p] = fillDouble;
                 p++;
             }
         }
@@ -139,16 +197,15 @@ public final class SinOperator extends TensorUnaryOp {
 
     @Override
     protected void applyStep(LoopDescriptor<Double> loop, double[] array) {
+        var a = DoubleVector.broadcast(loop.vs, fillDouble);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
-                a = a.lanewise(VectorOperators.SIN);
                 a.intoArray(array, p, loop.simdOffsets, 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.sin(array[p]);
+                array[p] = fillDouble;
                 p += loop.step;
             }
         }

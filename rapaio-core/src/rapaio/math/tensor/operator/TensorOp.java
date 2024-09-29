@@ -45,6 +45,7 @@ import rapaio.math.tensor.operator.impl.CoshOperator;
 import rapaio.math.tensor.operator.impl.DivOperator;
 import rapaio.math.tensor.operator.impl.ExpOperator;
 import rapaio.math.tensor.operator.impl.Expm1Operator;
+import rapaio.math.tensor.operator.impl.FillOperator;
 import rapaio.math.tensor.operator.impl.FloorOperator;
 import rapaio.math.tensor.operator.impl.LogOperator;
 import rapaio.math.tensor.operator.impl.Log1pOperator;
@@ -229,5 +230,9 @@ public final class TensorOp {
 
     public static <N extends Number> ClampOperator<N> clamp(DType<N> dtype, N min, N max) {
         return new ClampOperator<>(dtype, min, max);
+    }
+
+    public static <N extends Number> FillOperator<N> fill(DType<N> dtype, N fill) {
+        return new FillOperator<>(dtype, fill);
     }
 }

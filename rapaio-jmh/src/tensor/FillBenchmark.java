@@ -76,7 +76,6 @@ import rapaio.util.collection.DoubleArrays;
 public class FillBenchmark {
 
     private static final TensorManager.OfType<Double> base = TensorManager.base().ofDouble();
-    private static final TensorManager.OfType<Double> vectorized = TensorManager.varray().ofDouble();
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
@@ -87,9 +86,6 @@ public class FillBenchmark {
 
         private Tensor<Double> bTc;
         private Tensor<Double> bTf;
-
-        private Tensor<Double> vTc;
-        private Tensor<Double> vTf;
 
         @Setup(Level.Invocation)
         public void setup() {
@@ -106,8 +102,6 @@ public class FillBenchmark {
 
             bTc = base.stride(Shape.of(n, n), Order.C, array);
             bTf = base.stride(Shape.of(n, n), Order.F, array);
-            vTc = vectorized.stride(Shape.of(n, n), Order.C, array);
-            vTf = vectorized.stride(Shape.of(n, n), Order.F, array);
         }
     }
 
@@ -125,17 +119,6 @@ public class FillBenchmark {
     @Benchmark
     public void fillBaseOrderF(BenchmarkState bs, Blackhole bh) {
         bh.consume(bs.bTf.fill_(0.));
-    }
-
-
-    @Benchmark
-    public void fillVecOrderC(BenchmarkState bs, Blackhole bh) {
-        bh.consume(bs.vTc.fill_(0.));
-    }
-
-    @Benchmark
-    public void fillVecOrderF(BenchmarkState bs, Blackhole bh) {
-        bh.consume(bs.vTf.fill_(0.));
     }
 
     public static void main(String[] args) throws RunnerException, IOException {

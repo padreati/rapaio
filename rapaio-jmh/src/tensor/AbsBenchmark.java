@@ -76,7 +76,6 @@ import rapaio.util.collection.DoubleArrays;
 public class AbsBenchmark {
 
     private static final TensorManager.OfType<Double> base = TensorManager.base().ofDouble();
-    private static final TensorManager.OfType<Double> vectorized = TensorManager.varray().ofDouble();
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
@@ -87,9 +86,6 @@ public class AbsBenchmark {
 
         private Tensor<Double> bTc;
         private Tensor<Double> bTf;
-
-        private Tensor<Double> vTc;
-        private Tensor<Double> vTf;
 
         @Setup(Level.Invocation)
         public void setup() {
@@ -106,8 +102,6 @@ public class AbsBenchmark {
 
             bTc = base.stride(Shape.of(n, n), Order.C, array);
             bTf = base.stride(Shape.of(n, n), Order.F, array);
-            vTc = vectorized.stride(Shape.of(n, n), Order.C, array);
-            vTf = vectorized.stride(Shape.of(n, n), Order.F, array);
         }
     }
 
@@ -131,16 +125,6 @@ public class AbsBenchmark {
         bh.consume(bs.bTf.abs_());
     }
 
-
-    @Benchmark
-    public void fillVecOrderC(BenchmarkState bs, Blackhole bh) {
-        bh.consume(bs.vTc.abs_());
-    }
-
-    @Benchmark
-    public void fillVecOrderF(BenchmarkState bs, Blackhole bh) {
-        bh.consume(bs.vTf.abs_());
-    }
 
     public static void main(String[] args) throws RunnerException, IOException {
         Options opt = new OptionsBuilder()

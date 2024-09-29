@@ -31,12 +31,11 @@
 
 package rapaio.math.tensor.operator.impl;
 
-import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorOperators;
 import rapaio.data.OperationNotAvailableException;
+import rapaio.math.tensor.iterators.LoopDescriptor;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
 public final class LogOperator extends TensorUnaryOp {
@@ -72,22 +71,86 @@ public final class LogOperator extends TensorUnaryOp {
     }
 
     @Override
-    public ByteVector applyByte(ByteVector v) {
-        throw new OperationNotAvailableException();
+    protected void applyUnit(LoopDescriptor<Byte> loop, byte[] array) {
     }
 
     @Override
-    public IntVector applyInt(IntVector v) {
-        throw new OperationNotAvailableException();
+    protected void applyStep(LoopDescriptor<Byte> loop, byte[] array) {
     }
 
     @Override
-    public FloatVector applyFloat(FloatVector v) {
-        return v.lanewise(VectorOperators.LOG);
+    protected void applyUnit(LoopDescriptor<Integer> loop, int[] array) {
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector v) {
-        return v.lanewise(VectorOperators.LOG);
+    protected void applyStep(LoopDescriptor<Integer> loop, int[] array) {
+    }
+
+    @Override
+    protected void applyUnit(LoopDescriptor<Float> loop, float[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = FloatVector.fromArray(loop.vs, array, p);
+                a = a.lanewise(VectorOperators.LOG);
+                a.intoArray(array, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = (float) Math.log(array[p]);
+                p++;
+            }
+        }
+    }
+
+    @Override
+    protected void applyStep(LoopDescriptor<Float> loop, float[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                a = a.lanewise(VectorOperators.LOG);
+                a.intoArray(array, p, loop.simdOffsets, 0);
+                p += loop.step * loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = (float) Math.log(array[p]);
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnit(LoopDescriptor<Double> loop, double[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p);
+                a = a.lanewise(VectorOperators.LOG);
+                a.intoArray(array, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = Math.log(array[p]);
+                p++;
+            }
+        }
+    }
+
+    @Override
+    protected void applyStep(LoopDescriptor<Double> loop, double[] array) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                a = a.lanewise(VectorOperators.LOG);
+                a.intoArray(array, p, loop.simdOffsets, 0);
+                p += loop.step * loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                array[p] = Math.log(array[p]);
+                p += loop.step;
+            }
+        }
     }
 }
