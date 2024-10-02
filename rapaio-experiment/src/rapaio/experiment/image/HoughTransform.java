@@ -55,14 +55,12 @@ import rapaio.data.VarDouble;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.Tensors;
-import rapaio.sys.Experimental;
 import rapaio.util.DoubleComparators;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/21.
  */
-@Experimental
 public class HoughTransform extends ParamSet<HoughTransform> {
 
     public static HoughTransform newTransform() {

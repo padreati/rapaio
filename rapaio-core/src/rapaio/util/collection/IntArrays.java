@@ -57,7 +57,7 @@ public final class IntArrays {
 
     /**
      * Creates a new array filled with given value. If the filled value is 0,
-     * the a fill is avoided since the initialization is done with 0.
+     * the fill is avoided since the initialization is done with 0.
      *
      * @param size  size of the array
      * @param value value to fill the array with
@@ -93,8 +93,8 @@ public final class IntArrays {
      */
     public static int[] newSeq(int start, int end) {
         int[] data = new int[end - start];
-        for (int i = 0; i < end - start; i++) {
-            data[i] = start + i;
+        for (int i = start; i < end ; i++) {
+            data[i] = i;
         }
         return data;
     }
