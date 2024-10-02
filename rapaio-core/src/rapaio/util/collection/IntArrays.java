@@ -91,10 +91,10 @@ public final class IntArrays {
      * @param end   sequence ending value (exclusive)
      * @return array with sequence values
      */
-    public static int[] newSeq(int start, int end) {
+    public static int[] newSeq(final int start, final int end) {
         int[] data = new int[end - start];
-        for (int i = start; i < end ; i++) {
-            data[i] = i;
+        for (int i = 0; i < end - start ; i++) {
+            data[i] = i + start;
         }
         return data;
     }
