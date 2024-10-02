@@ -77,7 +77,7 @@ public final class DoubleDiffTensor extends AbstractDiffTensor {
     @Override
     public DiffTensor mul(DiffTensor t, GradientTape tape) {
         DiffTensor r = DoubleDiffTensor.of(this.tensor.mul(t.asDouble()), tape);
-        System.out.println(STR."\{r.name()} = \{this.name} * \{t.name()}");
+        System.out.printf("%s = %s * %s%n", r.name(), this.name, t.name());
 
         List<String> inputs = List.of(this.name(), t.name());
         List<String> outputs = List.of(r.name());
@@ -135,12 +135,12 @@ def operator_expand(self: Variable, sizes: List[int]) -> 'Variable':
     public DiffTensor add(DiffTensor rhs, GradientTape tape) {
         // Add follows a similar pattern to Mul, but it doesn't end up  capturing any variables.
         var r = DoubleDiffTensor.of(tensor.add(rhs.asDouble()), tape);
-        System.out.println(STR."\{r.name()} = \{this.name()} + \{rhs.name()}");
+        System.out.printf("%s = %s + %s%n", r.name(), this.name(), rhs.name());
         Function<List<DiffTensor>, List<DiffTensor>> propagate = dL_doutputs -> {
             var dL_dr = dL_doutputs.getFirst();
             return List.of(dL_dr, dL_dr);
         };
-        tape.add(List.of(this.name(), rhs.name()),List.of(r.name()),propagate);
+        tape.add(List.of(this.name(), rhs.name()), List.of(r.name()), propagate);
         return r;
     }
 }

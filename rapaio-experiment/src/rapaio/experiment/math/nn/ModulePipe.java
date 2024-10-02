@@ -81,7 +81,8 @@ public final class ModulePipe {
 
     @Override
     public String toString() {
-        return STR."ModulePipe{inputs:[\{inputs.stream().map(Module::name).collect(Collectors.joining(","))}],outputs:[\{outputs.stream()
-                .map(Module::name).collect(Collectors.joining(","))}]}";
+        return String.format("ModulePipe{inputs:[%s],outputs:[%s]}",
+                inputs.stream().map(Module::name).collect(Collectors.joining(",")),
+                outputs.stream().map(Module::name).collect(Collectors.joining(",")));
     }
 }

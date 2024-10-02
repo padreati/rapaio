@@ -60,7 +60,7 @@ public abstract class Module implements Printable {
     }
 
     public void compile() {
-        if(!compiled) {
+        if (!compiled) {
             // TODO
         }
     }
@@ -104,6 +104,6 @@ public abstract class Module implements Printable {
 
     @Override
     public String toString() {
-        return STR."Module \{name}, type: \{getClass().getSimpleName()}";
+        return "Module %s, type: %s".formatted(name, getClass().getSimpleName());
     }
 }

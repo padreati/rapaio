@@ -44,14 +44,14 @@ public class Graph {
 
     public void registerNode(Node node) {
         if (nodeMap.containsKey(node.name())) {
-            throw new IllegalArgumentException(STR."Graph contains already a node with the same name: \{node.name()}");
+            throw new IllegalArgumentException("Graph contains already a node with the same name: " + node.name());
         }
         this.nodeMap.put(node.name(), node);
     }
 
     public void compile(Node op) {
         List<Node> list = postorder(op);
-        for(var node : list) {
+        for (var node : list) {
             node.compile();
         }
     }

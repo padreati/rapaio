@@ -60,7 +60,7 @@ public class Sequential extends Module {
         for (var module : modules) {
             if (set.contains(module)) {
                 throw new IllegalArgumentException(
-                        STR."Invalid module, since module instances are not unique. Duplicated module name: \{name}");
+                        "Invalid module, since module instances are not unique. Duplicated module name: " + name);
             }
             set.add(module);
         }
