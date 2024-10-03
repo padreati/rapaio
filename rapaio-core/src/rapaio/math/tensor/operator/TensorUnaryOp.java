@@ -3,17 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
- *    Copyright 2020 Aurelian Tutuianu
- *    Copyright 2021 Aurelian Tutuianu
- *    Copyright 2022 Aurelian Tutuianu
- *    Copyright 2023 Aurelian Tutuianu
+ *    Copyright 2013 - 2025 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -35,11 +25,6 @@ import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.iterators.LoopDescriptor;
 
 public abstract class TensorUnaryOp {
-
-    /**
-     * @return true if vector operations are implemented, false otherwise
-     */
-    public abstract boolean vectorSupport();
 
     public abstract boolean floatingPointOnly();
 

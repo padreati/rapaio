@@ -3,17 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
- *    Copyright 2020 Aurelian Tutuianu
- *    Copyright 2021 Aurelian Tutuianu
- *    Copyright 2022 Aurelian Tutuianu
- *    Copyright 2023 Aurelian Tutuianu
+ *    Copyright 2013 - 2025 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -39,7 +29,7 @@ import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.manager.AbstractManagerOfType;
+import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.manager.AbstractTensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.storage.array.ArrayStorageFactory;
@@ -52,10 +42,11 @@ public class BaseTensorManager extends AbstractTensorManager {
     }
 
     public BaseTensorManager(int cpuThreads) {
-        super(cpuThreads, new BaseArrayOfDouble(), new BaseArrayOfFloat(), new BaseArrayOfInt(), new BaseArrayOfByte(), new ArrayStorageFactory());
+        super(cpuThreads, new BaseArrayOfDouble(), new BaseArrayOfFloat(), new BaseArrayOfInt(), new BaseArrayOfByte(),
+                new ArrayStorageFactory());
     }
 
-    protected static class BaseArrayOfDouble extends AbstractManagerOfType<Double> {
+    protected static class BaseArrayOfDouble extends TensorManager.OfType<Double> {
 
         public BaseArrayOfDouble() {
             super(DType.DOUBLE);
@@ -64,7 +55,7 @@ public class BaseTensorManager extends AbstractTensorManager {
         @Override
         public final Tensor<Double> random(Shape shape, Random random, Order order) {
             Normal normal = Normal.std();
-            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> normal.sampleNext(random));
+            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> normal.sampleNext(random));
         }
 
         @Override
@@ -73,7 +64,7 @@ public class BaseTensorManager extends AbstractTensorManager {
         }
     }
 
-    protected static class BaseArrayOfFloat extends AbstractManagerOfType<Float> {
+    protected static class BaseArrayOfFloat extends TensorManager.OfType<Float> {
 
         public BaseArrayOfFloat() {
             super(DType.FLOAT);
@@ -82,7 +73,7 @@ public class BaseTensorManager extends AbstractTensorManager {
         @Override
         public final Tensor<Float> random(Shape shape, Random random, Order order) {
             Normal normal = Normal.std();
-            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> (float)normal.sampleNext(random));
+            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> (float) normal.sampleNext(random));
         }
 
         @Override
@@ -91,7 +82,7 @@ public class BaseTensorManager extends AbstractTensorManager {
         }
     }
 
-    protected static class BaseArrayOfInt extends AbstractManagerOfType<Integer> {
+    protected static class BaseArrayOfInt extends TensorManager.OfType<Integer> {
 
         public BaseArrayOfInt() {
             super(DType.INTEGER);
@@ -99,7 +90,7 @@ public class BaseTensorManager extends AbstractTensorManager {
 
         @Override
         public final Tensor<Integer> random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> random.nextInt());
+            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> random.nextInt());
         }
 
         @Override
@@ -108,7 +99,7 @@ public class BaseTensorManager extends AbstractTensorManager {
         }
     }
 
-    protected static class BaseArrayOfByte extends AbstractManagerOfType<Byte> {
+    protected static class BaseArrayOfByte extends TensorManager.OfType<Byte> {
 
         public BaseArrayOfByte() {
             super(DType.BYTE);
@@ -118,7 +109,7 @@ public class BaseTensorManager extends AbstractTensorManager {
         public final Tensor<Byte> random(Shape shape, Random random, Order order) {
             byte[] buff = new byte[shape.size()];
             random.nextBytes(buff);
-            return zeros(shape, Order.autoFC(order)).apply_(order, (i, p) -> buff[i]);
+            return zeros(shape, Order.autoFC(order)).apply_(order, (i, _) -> buff[i]);
         }
 
         @Override

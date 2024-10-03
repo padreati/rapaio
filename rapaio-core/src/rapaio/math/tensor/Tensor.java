@@ -3,17 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
- *    Copyright 2020 Aurelian Tutuianu
- *    Copyright 2021 Aurelian Tutuianu
- *    Copyright 2022 Aurelian Tutuianu
- *    Copyright 2023 Aurelian Tutuianu
+ *    Copyright 2013 - 2025 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -54,10 +44,10 @@ import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
 
 /**
- * Parametrized interface for tensors. A tensor is a multidimensional array. A tensor is homogeneous in that it contains
- * elements of the same type. Elements are indexed organized in zero, one or multiple dimensions.
+ * Parametrized interface for tensors. A tensor is a multidimensional array which contains elements of the same type.
+ * Elements are indexed organized in zero, one or multiple dimensions.
  * <p>
- * Tensors with a low number of dimensions are known also under specific names:
+ * Tensors with a low number of dimensions are known also under more specific names:
  * <ul>
  *     <li>scalar</li> a tensor with zero dimensions which contains a single element
  *     <li>vector</li> a tensor with one dimension
@@ -70,8 +60,9 @@ import rapaio.util.function.IntIntBiFunction;
  * which created it through {@link #manager()}.
  * <p>
  * The elements are logically organized like a hyper cube with a given number of dimensions {@link #rank()}. The size of each
- * dimension is described by a {@link Shape} object and all the details related with how the elements are indexed and where is described
- * by {@link Layout}. The implemented layout is a stride array layout provided by {@link rapaio.math.tensor.layout.StrideLayout}, but
+ * dimension is described by a {@link Shape} object and the {@link Layout} describes how the details related
+ * with how the elements' indexing.
+ * The implemented layout is a stride array layout provided by {@link rapaio.math.tensor.layout.StrideLayout}, but
  * other layouts could be implemented (for example for special matrices or for sparse formats).
  *
  * @param <N> Generic data type which can be Byte, Integer, Float or Double.
@@ -99,7 +90,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     Layout layout();
 
     /**
-     * Shape describes the number of dimensions and the size on each dimension of the multi dimensional elements.
+     * Shape describes the number of dimensions and the size on each dimension of the multidimensional elements.
      *
      * @return tensor shape
      */
@@ -878,10 +869,12 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
 
     Tensor<N> unaryOp_(TensorUnaryOp op);
 
-    Tensor<N> fillNan_(N value);
-
     default Tensor<N> fill_(N value) {
-        return unaryOp_(TensorOp.fill(dtype(), value));
+        return unaryOp_(TensorOp.fill(value));
+    }
+
+    default Tensor<N> fillNan_(N value) {
+        return unaryOp_(TensorOp.fillNan(value));
     }
 
     default Tensor<N> clamp(N min, N max) {
@@ -1639,7 +1632,7 @@ public interface Tensor<N extends Number> extends Printable, Iterable<N> {
     }
 
     /**
-     * Creates a padded copy of a tensor along a given dimension. The padded copy will be a tensor with the same shape other then the
+     * Creates a padded copy of a tensor along a given dimension. The padded copy will be a tensor with the same shape different from the
      * specified dimension which will have size {@code before + dim(axis) + after}, having first and last elements padded with 0.
      * <p>
      *

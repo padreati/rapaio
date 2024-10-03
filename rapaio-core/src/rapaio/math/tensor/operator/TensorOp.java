@@ -3,17 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
- *    Copyright 2020 Aurelian Tutuianu
- *    Copyright 2021 Aurelian Tutuianu
- *    Copyright 2022 Aurelian Tutuianu
- *    Copyright 2023 Aurelian Tutuianu
+ *    Copyright 2013 - 2025 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -45,6 +35,7 @@ import rapaio.math.tensor.operator.impl.CoshOperator;
 import rapaio.math.tensor.operator.impl.DivOperator;
 import rapaio.math.tensor.operator.impl.ExpOperator;
 import rapaio.math.tensor.operator.impl.Expm1Operator;
+import rapaio.math.tensor.operator.impl.FillNanOperator;
 import rapaio.math.tensor.operator.impl.FillOperator;
 import rapaio.math.tensor.operator.impl.FloorOperator;
 import rapaio.math.tensor.operator.impl.LogOperator;
@@ -232,7 +223,11 @@ public final class TensorOp {
         return new ClampOperator<>(dtype, min, max);
     }
 
-    public static <N extends Number> FillOperator<N> fill(DType<N> dtype, N fill) {
-        return new FillOperator<>(dtype, fill);
+    public static <N extends Number> FillOperator<N> fill(N fill) {
+        return new FillOperator<>(fill);
+    }
+
+    public static <N extends Number>FillNanOperator<N> fillNan(N fill) {
+        return new FillNanOperator<>(fill);
     }
 }

@@ -24,35 +24,42 @@ package rapaio.math.tensor.operator.impl;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
-import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.iterators.LoopDescriptor;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
-public final class LogOperator extends TensorUnaryOp {
+public class FillNanOperator<N extends Number> extends TensorUnaryOp {
+
+    private final float fillFloat;
+    private final double fillDouble;
+
+    public FillNanOperator(N fill) {
+        fillFloat = fill.floatValue();
+        fillDouble = fill.doubleValue();
+    }
 
     @Override
     public boolean floatingPointOnly() {
-        return true;
+        return false;
     }
 
     @Override
     public byte applyByte(byte v) {
-        throw new OperationNotAvailableException();
+        return v;
     }
 
     @Override
     public int applyInt(int v) {
-        throw new OperationNotAvailableException();
+        return v;
     }
 
     @Override
     public double applyDouble(double v) {
-        return Math.log(v);
+        return Double.isNaN(v) ? fillDouble : v;
     }
 
     @Override
     public float applyFloat(float v) {
-        return (float) Math.log(v);
+        return Float.isNaN(v) ? fillFloat : v;
     }
 
     @Override
@@ -73,16 +80,17 @@ public final class LogOperator extends TensorUnaryOp {
 
     @Override
     protected void applyUnit(LoopDescriptor<Float> loop, float[] array) {
+        var a = FloatVector.broadcast(loop.vs, fillFloat);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p);
-                a = a.lanewise(VectorOperators.LOG);
-                a.intoArray(array, p);
+                FloatVector b = FloatVector.fromArray(loop.vs, array, p);
+                b = b.blend(a, b.test(VectorOperators.IS_NAN));
+                b.intoArray(array, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (float) Math.log(array[p]);
+                array[p] = Float.isNaN(array[p]) ? fillFloat : array[p];
                 p++;
             }
         }
@@ -90,16 +98,17 @@ public final class LogOperator extends TensorUnaryOp {
 
     @Override
     protected void applyStep(LoopDescriptor<Float> loop, float[] array) {
+        var a = FloatVector.broadcast(loop.vs, fillFloat);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
-                a = a.lanewise(VectorOperators.LOG);
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                FloatVector b = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                b = b.blend(a, b.test(VectorOperators.IS_NAN));
+                b.intoArray(array, p, loop.simdOffsets, 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (float) Math.log(array[p]);
+                array[p] = Float.isNaN(array[p]) ? fillFloat : array[p];
                 p += loop.step;
             }
         }
@@ -107,16 +116,17 @@ public final class LogOperator extends TensorUnaryOp {
 
     @Override
     protected void applyUnit(LoopDescriptor<Double> loop, double[] array) {
+        var a = DoubleVector.broadcast(loop.vs, fillDouble);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p);
-                a = a.lanewise(VectorOperators.LOG);
-                a.intoArray(array, p);
+                DoubleVector b = DoubleVector.fromArray(loop.vs, array, p);
+                b = b.blend(a, b.test(VectorOperators.IS_NAN));
+                b.intoArray(array, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.log(array[p]);
+                array[p] = Double.isNaN(array[p]) ? fillDouble : array[p];
                 p++;
             }
         }
@@ -124,16 +134,17 @@ public final class LogOperator extends TensorUnaryOp {
 
     @Override
     protected void applyStep(LoopDescriptor<Double> loop, double[] array) {
+        var a = DoubleVector.broadcast(loop.vs, fillDouble);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
-                a = a.lanewise(VectorOperators.LOG);
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                DoubleVector b = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                b = b.blend(a, b.test(VectorOperators.IS_NAN));
+                b.intoArray(array, p, loop.simdOffsets, 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.log(array[p]);
+                array[p] = Double.isNaN(array[p]) ? fillDouble : array[p];
                 p += loop.step;
             }
         }
