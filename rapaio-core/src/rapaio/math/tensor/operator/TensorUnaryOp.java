@@ -22,7 +22,12 @@
 package rapaio.math.tensor.operator;
 
 import rapaio.data.OperationNotAvailableException;
+import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.iterators.LoopDescriptor;
+import rapaio.math.tensor.storage.array.ByteArrayStorage;
+import rapaio.math.tensor.storage.array.DoubleArrayStorage;
+import rapaio.math.tensor.storage.array.FloatArrayStorage;
+import rapaio.math.tensor.storage.array.IntArrayStorage;
 
 public abstract class TensorUnaryOp {
 
@@ -36,58 +41,110 @@ public abstract class TensorUnaryOp {
 
     public abstract float applyFloat(float v);
 
-    public final void apply(LoopDescriptor<Byte> loop, byte[] array) {
-        if(floatingPointOnly()) {
+    public final void applyByte(LoopDescriptor<Byte> loop, Storage<Byte> storage) {
+        if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
-        if (loop.step == 1) {
-            applyUnit(loop, array);
+        if (storage instanceof ByteArrayStorage as) {
+            if (loop.step == 1) {
+                applyUnitByte(loop, as.array());
+            } else {
+                applyStepByte(loop, as.array());
+            }
         } else {
-            applyStep(loop, array);
+            applyGenericByte(loop, storage);
         }
     }
 
-    protected abstract void applyUnit(LoopDescriptor<Byte> loop, byte[] array);
+    private void applyGenericByte(LoopDescriptor<Byte> loop, Storage<Byte> storage) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                storage.setByte(p, applyByte(storage.getByte(p)));
+                p += loop.step;
+            }
+        }
+    }
 
-    protected abstract void applyStep(LoopDescriptor<Byte> loop, byte[] array);
+    protected abstract void applyUnitByte(LoopDescriptor<Byte> loop, byte[] array);
 
-    public final void apply(LoopDescriptor<Integer> loop, int[] array) {
-        if(floatingPointOnly()) {
+    protected abstract void applyStepByte(LoopDescriptor<Byte> loop, byte[] array);
+
+    public final void applyInt(LoopDescriptor<Integer> loop, Storage<Integer> storage) {
+        if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
-        if (loop.step == 1) {
-            applyUnit(loop, array);
+        if (storage instanceof IntArrayStorage as) {
+            if (loop.step == 1) {
+                applyUnitInt(loop, as.array());
+            } else {
+                applyStepInt(loop, as.array());
+            }
         } else {
-            applyStep(loop, array);
+            applyGenericInt(loop, storage);
         }
     }
 
-    protected abstract void applyUnit(LoopDescriptor<Integer> loop, int[] array);
-
-    protected abstract void applyStep(LoopDescriptor<Integer> loop, int[] array);
-
-    public final void apply(LoopDescriptor<Float> loop, float[] array) {
-        if (loop.step == 1) {
-            applyUnit(loop, array);
-        } else {
-            applyStep(loop, array);
+    private void applyGenericInt(LoopDescriptor<Integer> loop, Storage<Integer> storage) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                storage.setInt(p, applyInt(storage.getInt(p)));
+                p += loop.step;
+            }
         }
     }
 
-    protected abstract void applyUnit(LoopDescriptor<Float> loop, float[] array);
+    protected abstract void applyUnitInt(LoopDescriptor<Integer> loop, int[] array);
 
-    protected abstract void applyStep(LoopDescriptor<Float> loop, float[] array);
+    protected abstract void applyStepInt(LoopDescriptor<Integer> loop, int[] array);
 
-    public final void apply(LoopDescriptor<Double> loop, double[] array) {
-        if (loop.step == 1) {
-            applyUnit(loop, array);
+    public final void applyFloat(LoopDescriptor<Float> loop, Storage<Float> storage) {
+        if (storage instanceof FloatArrayStorage as) {
+            if (loop.step == 1) {
+                applyUnitFloat(loop, as.array());
+            } else {
+                applyStepFloat(loop, as.array());
+            }
         } else {
-            applyStep(loop, array);
+            applyGenericFloat(loop, storage);
         }
     }
 
-    protected abstract void applyUnit(LoopDescriptor<Double> loop, double[] array);
+    private void applyGenericFloat(LoopDescriptor<Float> loop, Storage<Float> storage) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                storage.setFloat(p, applyFloat(storage.getFloat(p)));
+                p += loop.step;
+            }
+        }
+    }
 
-    protected abstract void applyStep(LoopDescriptor<Double> loop, double[] array);
+    protected abstract void applyUnitFloat(LoopDescriptor<Float> loop, float[] array);
+
+    protected abstract void applyStepFloat(LoopDescriptor<Float> loop, float[] array);
+
+    public final void applyDouble(LoopDescriptor<Double> loop, Storage<Double> storage) {
+        if (storage instanceof DoubleArrayStorage as) {
+            if (loop.step == 1) {
+                applyUnitDouble(loop, as.array());
+            } else {
+                applyStepDouble(loop, as.array());
+            }
+        } else {
+            applyGenericDouble(loop, storage);
+        }
+    }
+
+    private void applyGenericDouble(LoopDescriptor<Double> loop, Storage<Double> storage) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                storage.setDouble(p, applyDouble(storage.getDouble(p)));
+                p += loop.step;
+            }
+        }
+    }
+
+    protected abstract void applyUnitDouble(LoopDescriptor<Double> loop, double[] array);
+
+    protected abstract void applyStepDouble(LoopDescriptor<Double> loop, double[] array);
 }
 

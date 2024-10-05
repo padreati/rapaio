@@ -22,212 +22,211 @@
 package rapaio.math.tensor.operator;
 
 import rapaio.math.tensor.DType;
-import rapaio.math.tensor.operator.impl.AbsOperator;
-import rapaio.math.tensor.operator.impl.AcosOperator;
-import rapaio.math.tensor.operator.impl.AddAssocOperator;
-import rapaio.math.tensor.operator.impl.AddOperator;
-import rapaio.math.tensor.operator.impl.AsinOperator;
-import rapaio.math.tensor.operator.impl.AtanOperator;
-import rapaio.math.tensor.operator.impl.CeilOperator;
-import rapaio.math.tensor.operator.impl.ClampOperator;
-import rapaio.math.tensor.operator.impl.CosOperator;
-import rapaio.math.tensor.operator.impl.CoshOperator;
-import rapaio.math.tensor.operator.impl.DivOperator;
-import rapaio.math.tensor.operator.impl.ExpOperator;
-import rapaio.math.tensor.operator.impl.Expm1Operator;
-import rapaio.math.tensor.operator.impl.FillNanOperator;
-import rapaio.math.tensor.operator.impl.FillOperator;
-import rapaio.math.tensor.operator.impl.FloorOperator;
-import rapaio.math.tensor.operator.impl.LogOperator;
-import rapaio.math.tensor.operator.impl.Log1pOperator;
-import rapaio.math.tensor.operator.impl.MaxAssocOperator;
-import rapaio.math.tensor.operator.impl.MaxOperator;
-import rapaio.math.tensor.operator.impl.MinAssocOperator;
-import rapaio.math.tensor.operator.impl.MinOperator;
-import rapaio.math.tensor.operator.impl.MulAssocOperator;
-import rapaio.math.tensor.operator.impl.MulOperator;
-import rapaio.math.tensor.operator.impl.NegOperator;
-import rapaio.math.tensor.operator.impl.RintOperator;
-import rapaio.math.tensor.operator.impl.SinOperator;
-import rapaio.math.tensor.operator.impl.SinhOperator;
-import rapaio.math.tensor.operator.impl.SqrOperator;
-import rapaio.math.tensor.operator.impl.SqrtOperator;
-import rapaio.math.tensor.operator.impl.SubOperator;
-import rapaio.math.tensor.operator.impl.TanOperator;
-import rapaio.math.tensor.operator.impl.TanhOperator;
+import rapaio.math.tensor.operator.impl.UnaryOpAbs;
+import rapaio.math.tensor.operator.impl.UnaryOpAcos;
+import rapaio.math.tensor.operator.impl.ReduceOpAdd;
+import rapaio.math.tensor.operator.impl.BinaryOpAdd;
+import rapaio.math.tensor.operator.impl.UnaryOpAsin;
+import rapaio.math.tensor.operator.impl.UnaryOpAtan;
+import rapaio.math.tensor.operator.impl.UnaryOpCeil;
+import rapaio.math.tensor.operator.impl.UnaryOpClamp;
+import rapaio.math.tensor.operator.impl.UnaryOpCos;
+import rapaio.math.tensor.operator.impl.UnaryOpCosh;
+import rapaio.math.tensor.operator.impl.BinaryOpDiv;
+import rapaio.math.tensor.operator.impl.UnaryOpExp;
+import rapaio.math.tensor.operator.impl.UnaryOpExpm1;
+import rapaio.math.tensor.operator.impl.UnaryOpFillNan;
+import rapaio.math.tensor.operator.impl.UnaryOpFill;
+import rapaio.math.tensor.operator.impl.UnaryOpFloor;
+import rapaio.math.tensor.operator.impl.UnaryOpLog;
+import rapaio.math.tensor.operator.impl.UnaryOpLog1p;
+import rapaio.math.tensor.operator.impl.ReduceOpMax;
+import rapaio.math.tensor.operator.impl.BinaryOpMax;
+import rapaio.math.tensor.operator.impl.ReduceOpMin;
+import rapaio.math.tensor.operator.impl.BinaryOpMin;
+import rapaio.math.tensor.operator.impl.ReduceOpMul;
+import rapaio.math.tensor.operator.impl.BinaryOpMul;
+import rapaio.math.tensor.operator.impl.UnaryOpNeg;
+import rapaio.math.tensor.operator.impl.UnaryOpRint;
+import rapaio.math.tensor.operator.impl.UnaryOpSin;
+import rapaio.math.tensor.operator.impl.UnaryOpSinh;
+import rapaio.math.tensor.operator.impl.UnaryOpSqr;
+import rapaio.math.tensor.operator.impl.UnaryOpSqrt;
+import rapaio.math.tensor.operator.impl.BinaryOpSub;
+import rapaio.math.tensor.operator.impl.UnaryOpTan;
+import rapaio.math.tensor.operator.impl.UnaryOpTanh;
 
 public final class TensorOp {
 
-    private static final AbsOperator ABS = new AbsOperator();
-    private static final NegOperator NEG = new NegOperator();
+    private static final UnaryOpAbs ABS = new UnaryOpAbs();
+    private static final UnaryOpNeg NEG = new UnaryOpNeg();
 
-    private static final ExpOperator EXP = new ExpOperator();
-    private static final Expm1Operator EXPM1 = new Expm1Operator();
-    private static final LogOperator LOG = new LogOperator();
-    private static final Log1pOperator LOG1P = new Log1pOperator();
+    private static final UnaryOpExp EXP = new UnaryOpExp();
+    private static final UnaryOpExpm1 EXPM1 = new UnaryOpExpm1();
+    private static final UnaryOpLog LOG = new UnaryOpLog();
+    private static final UnaryOpLog1p LOG1P = new UnaryOpLog1p();
 
-    private static final CeilOperator CEIL = new CeilOperator();
-    private static final FloorOperator FLOOR = new FloorOperator();
-    private static final RintOperator RINT = new RintOperator();
+    private static final UnaryOpCeil CEIL = new UnaryOpCeil();
+    private static final UnaryOpFloor FLOOR = new UnaryOpFloor();
+    private static final UnaryOpRint RINT = new UnaryOpRint();
 
-    private static final SinOperator SIN = new SinOperator();
-    private static final AsinOperator ASIN = new AsinOperator();
-    private static final SinhOperator SINH = new SinhOperator();
-    private static final CosOperator COS = new CosOperator();
-    private static final AcosOperator ACOS = new AcosOperator();
-    private static final CoshOperator COSH = new CoshOperator();
-    private static final TanOperator TAN = new TanOperator();
-    private static final AtanOperator ATAN = new AtanOperator();
-    private static final TanhOperator TANH = new TanhOperator();
+    private static final UnaryOpSin SIN = new UnaryOpSin();
+    private static final UnaryOpAsin ASIN = new UnaryOpAsin();
+    private static final UnaryOpSinh SINH = new UnaryOpSinh();
+    private static final UnaryOpCos COS = new UnaryOpCos();
+    private static final UnaryOpAcos ACOS = new UnaryOpAcos();
+    private static final UnaryOpCosh COSH = new UnaryOpCosh();
+    private static final UnaryOpTan TAN = new UnaryOpTan();
+    private static final UnaryOpAtan ATAN = new UnaryOpAtan();
+    private static final UnaryOpTanh TANH = new UnaryOpTanh();
 
-    private static final SqrOperator SQR = new SqrOperator();
-    private static final SqrtOperator SQRT = new SqrtOperator();
+    private static final UnaryOpSqr SQR = new UnaryOpSqr();
+    private static final UnaryOpSqrt SQRT = new UnaryOpSqrt();
 
-    private static final AddOperator ADD = new AddOperator();
-    private static final SubOperator SUB = new SubOperator();
-    private static final MulOperator MUL = new MulOperator();
-    private static final DivOperator DIV = new DivOperator();
-    private static final MinOperator MIN = new MinOperator();
-    private static final MaxOperator MAX = new MaxOperator();
+    private static final BinaryOpAdd ADD = new BinaryOpAdd();
+    private static final BinaryOpSub SUB = new BinaryOpSub();
+    private static final BinaryOpMul MUL = new BinaryOpMul();
+    private static final BinaryOpDiv DIV = new BinaryOpDiv();
+    private static final BinaryOpMin MIN = new BinaryOpMin();
+    private static final BinaryOpMax MAX = new BinaryOpMax();
 
-    private static final AddAssocOperator ADD_ASSOC = new AddAssocOperator();
-    private static final MulAssocOperator MUL_ASSOC = new MulAssocOperator();
-    private static final MinAssocOperator MIN_ASSOC = new MinAssocOperator();
-    private static final MaxAssocOperator MAX_ASSOC = new MaxAssocOperator();
+    private static final ReduceOpAdd ADD_ASSOC = new ReduceOpAdd();
+    private static final ReduceOpMul MUL_ASSOC = new ReduceOpMul();
+    private static final ReduceOpMin MIN_ASSOC = new ReduceOpMin();
+    private static final ReduceOpMax MAX_ASSOC = new ReduceOpMax();
 
 
-    public static RintOperator rint() {
+    public static UnaryOpRint unaryRint() {
         return RINT;
     }
 
-    public static CeilOperator ceil() {
+    public static UnaryOpCeil unaryCeil() {
         return CEIL;
     }
 
-    public static FloorOperator floor() {
+    public static UnaryOpFloor unaryFloor() {
         return FLOOR;
     }
 
 
-    public static AbsOperator abs() {
+    public static UnaryOpAbs unaryAbs() {
         return ABS;
     }
 
-    public static NegOperator neg() {
+    public static UnaryOpNeg unaryNeg() {
         return NEG;
     }
 
-    public static LogOperator log() {
+    public static UnaryOpLog unaryLog() {
         return LOG;
     }
 
-    public static Log1pOperator log1p() {
+    public static UnaryOpLog1p unaryLog1p() {
         return LOG1P;
     }
 
-    public static ExpOperator exp() {
+    public static UnaryOpExp unaryExp() {
         return EXP;
     }
 
-    public static Expm1Operator expm1() {
+    public static UnaryOpExpm1 unaryExpm1() {
         return EXPM1;
     }
 
-    public static SinOperator sin() {
+    public static UnaryOpSin unarySin() {
         return SIN;
     }
 
-    public static AsinOperator asin() {
+    public static UnaryOpAsin unaryAsin() {
         return ASIN;
     }
 
-    public static SinhOperator sinh() {
+    public static UnaryOpSinh unarySinh() {
         return SINH;
     }
 
-    public static CosOperator cos() {
+    public static UnaryOpCos unaryCos() {
         return COS;
     }
 
-    public static AcosOperator acos() {
+    public static UnaryOpAcos unaryAcos() {
         return ACOS;
     }
 
-    public static CoshOperator cosh() {
+    public static UnaryOpCosh unaryCosh() {
         return COSH;
     }
 
-    public static TanOperator tan() {
+    public static UnaryOpTan unaryTan() {
         return TAN;
     }
 
-    public static AtanOperator atan() {
+    public static UnaryOpAtan unaryAtan() {
         return ATAN;
     }
 
-    public static TanhOperator tanh() {
+    public static UnaryOpTanh unaryTanh() {
         return TANH;
     }
 
-
-    public static SqrOperator sqr() {
+    public static UnaryOpSqr unarySqr() {
         return SQR;
     }
 
-    public static SqrtOperator sqrt() {
+    public static UnaryOpSqrt unarySqrt() {
         return SQRT;
     }
 
+    public static <N extends Number> UnaryOpClamp<N> unaryClamp(DType<N> dtype, N min, N max) {
+        return new UnaryOpClamp<>(dtype, min, max);
+    }
 
-    public static AddOperator add() {
+    public static <N extends Number> UnaryOpFill<N> unaryFill(N fill) {
+        return new UnaryOpFill<>(fill);
+    }
+
+    public static <N extends Number> UnaryOpFillNan<N> unaryFillNan(N fill) {
+        return new UnaryOpFillNan<>(fill);
+    }
+
+
+    public static BinaryOpAdd binaryAdd() {
         return ADD;
     }
 
-    public static SubOperator sub() {
+    public static BinaryOpSub binarySub() {
         return SUB;
     }
 
-    public static MulOperator mul() {
+    public static BinaryOpMul binaryMul() {
         return MUL;
     }
 
-    public static DivOperator div() {
+    public static BinaryOpDiv binaryDiv() {
         return DIV;
     }
 
-    public static MinOperator min() {
+    public static BinaryOpMin binaryMin() {
         return MIN;
     }
 
-    public static MaxOperator max() {
+    public static BinaryOpMax binaryMax() {
         return MAX;
     }
 
-    public static AddAssocOperator addAssoc() {
+    public static ReduceOpAdd reduceAdd() {
         return ADD_ASSOC;
     }
 
-    public static MulAssocOperator mulAssoc() {
+    public static ReduceOpMul reduceMul() {
         return MUL_ASSOC;
     }
 
-    public static MinAssocOperator minAssoc() {
+    public static ReduceOpMin reduceMin() {
         return MIN_ASSOC;
     }
 
-    public static MaxAssocOperator maxAssoc() {
+    public static ReduceOpMax reduceMax() {
         return MAX_ASSOC;
-    }
-
-    public static <N extends Number> ClampOperator<N> clamp(DType<N> dtype, N min, N max) {
-        return new ClampOperator<>(dtype, min, max);
-    }
-
-    public static <N extends Number> FillOperator<N> fill(N fill) {
-        return new FillOperator<>(fill);
-    }
-
-    public static <N extends Number>FillNanOperator<N> fillNan(N fill) {
-        return new FillNanOperator<>(fill);
     }
 }

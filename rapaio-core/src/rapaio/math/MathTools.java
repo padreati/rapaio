@@ -1050,4 +1050,44 @@ public class MathTools {
         }
         return a;
     }
+
+    /**
+     * Computes binomial coefficient which appears in the expansion of
+     * polynomial `(1+x)^n`. Sometimes this is read as <i>n choose k</i>.
+     * <p>
+     * Also, the binomial coefficient is number of k-element subsets
+     * (or k-combinations) of an n-element set.
+     * <p>
+     * This method does not throw exception on overflow, instead it returns
+     * as result. As such, if one wants to test for a correct computed value without
+     * overflow it has to check for its sign.
+     *
+     * @param n size of the set to choose from
+     * @param k size of the subsets
+     * @return binomial coefficient
+     */
+    public static long combinations(int n, int k) {
+        if (n == 0 || k == 0) {
+            return 1;
+        }
+        if (k > n) {
+            return 0;
+        }
+        if (k > n - k) {
+            k = n - k;
+        }
+        if (k == 1) {
+            return n;
+        }
+        long c = 1;
+        for (int d = 0; d < k; ) {
+            c *= n - d;
+            d++;
+            c /= d;
+            if (c < 0) {
+                return -1;
+            }
+        }
+        return c;
+    }
 }

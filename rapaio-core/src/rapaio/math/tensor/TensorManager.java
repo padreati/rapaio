@@ -21,33 +21,71 @@
 
 package rapaio.math.tensor;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
-import java.util.Vector;
+import java.util.stream.Collectors;
 
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.manager.base.BaseTensorManager;
+import rapaio.util.Hardware;
 
-public interface TensorManager {
+public abstract class TensorManager {
 
-    static TensorManager base() {
-        return new BaseTensorManager();
+    public static TensorManager base() {
+        return new BaseTensorManager(Hardware.CORES);
     }
 
-    static TensorManager base(int cpuThreads) {
+    public static TensorManager base(int cpuThreads) {
         return new BaseTensorManager(cpuThreads);
     }
 
-    OfType<Double> ofDouble();
+    protected final int cpuThreads;
+    protected final OfType<Double> ofDouble;
+    protected final OfType<Float> ofFloat;
+    protected final OfType<Integer> ofInt;
+    protected final OfType<Byte> ofByte;
+    protected final StorageFactory storageFactory;
 
-    OfType<Float> ofFloat();
+    public TensorManager(int cpuThreads,
+            OfType<Double> ofDouble,
+            OfType<Float> ofFloat,
+            OfType<Integer> ofInt,
+            OfType<Byte> ofByte,
+            StorageFactory storageFactory) {
+        this.cpuThreads = cpuThreads;
 
-    OfType<Integer> ofInt();
+        this.ofDouble = ofDouble;
+        this.ofFloat = ofFloat;
+        this.ofInt = ofInt;
+        this.ofByte = ofByte;
+        this.storageFactory = storageFactory;
 
-    OfType<Byte> ofByte();
+        this.ofDouble.registerParent(this, storageFactory.ofType(DType.DOUBLE));
+        this.ofFloat.registerParent(this, storageFactory.ofType(DType.FLOAT));
+        this.ofInt.registerParent(this, storageFactory.ofType(DType.INTEGER));
+        this.ofByte.registerParent(this, storageFactory.ofType(DType.BYTE));
+    }
+
+    public final OfType<Double> ofDouble() {
+        return ofDouble;
+    }
+
+    public final OfType<Float> ofFloat() {
+        return ofFloat;
+    }
+
+    public final OfType<Integer> ofInt() {
+        return ofInt;
+    }
+
+    public final OfType<Byte> ofByte() {
+        return ofByte;
+    }
 
     @SuppressWarnings("unchecked")
-    default <N extends Number> OfType<N> ofType(DType<N> dType) {
+    public final <N extends Number> OfType<N> ofType(DType<N> dType) {
         return (OfType<N>) switch (dType.id()) {
             case DOUBLE -> ofDouble();
             case FLOAT -> ofFloat();
@@ -56,85 +94,89 @@ public interface TensorManager {
         };
     }
 
-    StorageFactory storage();
+    public final StorageFactory storage() {
+        return storageFactory;
+    }
 
-    int cpuThreads();
+    public final int cpuThreads() {
+        return cpuThreads;
+    }
 
-    default <N extends Number> Tensor<N> scalar(DType<N> dType, N value) {
+    public final <N extends Number> Tensor<N> scalar(DType<N> dType, N value) {
         return ofType(dType).scalar(value);
     }
 
-    default <N extends Number> Tensor<N> zeros(DType<N> dType, Shape shape) {
+    public final <N extends Number> Tensor<N> zeros(DType<N> dType, Shape shape) {
         return ofType(dType).zeros(shape, Order.defaultOrder());
     }
 
-    default <N extends Number> Tensor<N> zeros(DType<N> dType, Shape shape, Order order) {
+    public final <N extends Number> Tensor<N> zeros(DType<N> dType, Shape shape, Order order) {
         return ofType(dType).zeros(shape, order);
     }
 
-    default <N extends Number> Tensor<N> eye(DType<N> dType, int n) {
+    public final <N extends Number> Tensor<N> eye(DType<N> dType, int n) {
         return ofType(dType).eye(n, Order.defaultOrder());
     }
 
-    default <N extends Number> Tensor<N> eye(DType<N> dType, int n, Order order) {
+    public final <N extends Number> Tensor<N> eye(DType<N> dType, int n, Order order) {
         return ofType(dType).eye(n, order);
     }
 
-    default <N extends Number> Tensor<N> full(DType<N> dType, Shape shape, N value) {
+    public final <N extends Number> Tensor<N> full(DType<N> dType, Shape shape, N value) {
         return ofType(dType).full(shape, value, Order.defaultOrder());
     }
 
-    default <N extends Number> Tensor<N> full(DType<N> dType, Shape shape, N value, Order order) {
+    public final <N extends Number> Tensor<N> full(DType<N> dType, Shape shape, N value, Order order) {
         return ofType(dType).full(shape, value, order);
     }
 
-    default <N extends Number> Tensor<N> seq(DType<N> dType, Shape shape) {
+    public final <N extends Number> Tensor<N> seq(DType<N> dType, Shape shape) {
         return ofType(dType).seq(shape, Order.defaultOrder());
     }
 
-    default <N extends Number> Tensor<N> seq(DType<N> dType, Shape shape, Order order) {
+    public final <N extends Number> Tensor<N> seq(DType<N> dType, Shape shape, Order order) {
         return ofType(dType).seq(shape, order);
     }
 
-    default <N extends Number> Tensor<N> random(DType<N> dType, Shape shape, Random random) {
+    public final <N extends Number> Tensor<N> random(DType<N> dType, Shape shape, Random random) {
         return ofType(dType).random(shape, random, Order.defaultOrder());
     }
 
-    default <N extends Number> Tensor<N> random(DType<N> dType, Shape shape, Random random, Order order) {
+    public final <N extends Number> Tensor<N> random(DType<N> dType, Shape shape, Random random, Order order) {
         return ofType(dType).random(shape, random, order);
     }
 
 
-    default <N extends Number, M extends Number> Tensor<N> strideCast(DType<N> dType, Shape shape, Order order, Storage<M> storage) {
+    public final <N extends Number, M extends Number> Tensor<N> strideCast(DType<N> dType, Shape shape, Order order, Storage<M> storage) {
         return ofType(dType).strideCast(StrideLayout.ofDense(shape, 0, order), storage);
     }
 
-    default <N extends Number, M extends Number> Tensor<N> strideCast(DType<N> dType, StrideLayout layout, Storage<M> storage) {
+    public final <N extends Number, M extends Number> Tensor<N> strideCast(DType<N> dType, StrideLayout layout, Storage<M> storage) {
         return ofType(dType).strideCast(layout, storage);
     }
 
 
-    default <N extends Number, V extends Vector<N>> Tensor<N> stride(DType<N> dType, Shape shape, Order order, Storage<N> storage) {
+    public final <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, Storage<N> storage) {
         return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage);
     }
 
-    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, byte[] array) {
+    public final <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, byte[] array) {
         return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
     }
 
-    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, int[] array) {
+    public final <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, int[] array) {
         return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
     }
 
-    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, float[] array) {
+    public final <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, float[] array) {
         return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
     }
 
-    default <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, double[] array) {
+    public final <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, double[] array) {
         return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
     }
 
-    default <N extends Number> Tensor<N> stride(DType<N> dType, StrideLayout layout, Storage<N> storage) {
+    public final <N extends Number> Tensor<N> stride(DType<N> dType, StrideLayout layout, Storage<N> storage) {
         return ofType(dType).stride(layout, storage);
     }
 
@@ -152,42 +194,82 @@ public interface TensorManager {
      * @param tensors tensors to concatenate
      * @return new tensor with concatenated data
      */
-    default <N extends Number> Tensor<N> stack(int axis, Collection<? extends Tensor<N>> tensors) {
+    public final <N extends Number> Tensor<N> stack(int axis, Collection<? extends Tensor<N>> tensors) {
         return stack(Order.defaultOrder(), axis, tensors);
     }
 
-    /**
-     * Concatenates multiple tensors along a new axis. All tensors must have the same shape.
-     * The position of the new axis is between 0 (inclusive) and the number of dimensions (inclusive).
-     * <p>
-     * The new tensor will have an additional dimension, which is the dimension created during stacking and
-     * will have size equal with the number of the stacked tensors.
-     * <p>
-     * The new tensor will be stored with specified order.
-     *
-     * @param order   storage order of the result
-     * @param axis    index of the new dimension
-     * @param tensors tensors to concatenate
-     * @return new tensor with concatenated data
-     */
-    <N extends Number> Tensor<N> stack(Order order, int axis, Collection<? extends Tensor<N>> tensors);
+    public final <N extends Number> Tensor<N> stack(Order order, int axis, Collection<? extends Tensor<N>> tensors) {
+        var tensorList = tensors.stream().toList();
+        for (int i = 1; i < tensorList.size(); i++) {
+            if (!tensorList.get(i - 1).shape().equals(tensorList.get(i).shape())) {
+                throw new IllegalArgumentException("Tensors are not valid for stack, they have to have the same dimensions.");
+            }
+        }
+        int[] newDims = new int[tensorList.getFirst().rank() + 1];
+        int i = 0;
+        for (; i < axis; i++) {
+            newDims[i] = tensorList.getFirst().shape().dim(i);
+        }
+        for (; i < tensorList.getFirst().rank(); i++) {
+            newDims[i + 1] = tensorList.getFirst().shape().dim(i);
+        }
+        newDims[axis] = tensorList.size();
+        var result = ofType(tensorList.getFirst().dtype()).zeros(Shape.of(newDims), order);
+        var slices = result.chunk(axis, true, 1);
+        i = 0;
+        for (; i < tensorList.size(); i++) {
+            var it1 = slices.get(i).squeeze(axis).ptrIterator(Order.defaultOrder());
+            var it2 = tensorList.get(i).ptrIterator(Order.defaultOrder());
+            while (it1.hasNext() && it2.hasNext()) {
+                slices.get(i).ptrSet(it1.nextInt(), tensorList.get(i).ptrGet(it2.nextInt()));
+            }
+        }
+        return result;
+    }
 
-    default <N extends Number> Tensor<N> concat(int axis, Collection<? extends Tensor<N>> tensors) {
+    public final <N extends Number> Tensor<N> concat(int axis, Collection<? extends Tensor<N>> tensors) {
         return concat(Order.defaultOrder(), axis, tensors);
     }
 
-    /**
-     * Concatenates multiple tensors along a given axis.
-     * Tensors must have compatible size, all other dimensions must be equal.
-     *
-     * @param order   storage order or the result
-     * @param axis    axis to concatenate along
-     * @param tensors tensors to concatenate
-     * @return new tensor with concatenated data
-     */
-    <N extends Number> Tensor<N> concat(Order order, int axis, Collection<? extends Tensor<N>> tensors);
+    public final <N extends Number> Tensor<N> concat(Order order, int axis, Collection<? extends Tensor<N>> tensors) {
+        var tensorList = tensors.stream().toList();
+        TensorManager.validateForConcatenation(axis, tensorList.stream().map(t -> t.shape().dims()).collect(Collectors.toList()));
 
-    abstract class OfType<N extends Number> {
+        int newDim = tensorList.stream().mapToInt(tensor -> tensor.layout().shape().dim(axis)).sum();
+        Tensor<N> first = tensorList.getFirst();
+        int[] newDims = Arrays.copyOf(first.shape().dims(), first.rank());
+        newDims[axis] = newDim;
+        var result = ofType(first.dtype()).zeros(Shape.of(newDims), order);
+
+        int start = 0;
+        for (Tensor<N> tensor : tensors) {
+            int end = start + tensor.shape().dim(axis);
+            var dst = result.narrow(axis, true, start, end);
+
+            var it1 = tensor.ptrIterator(Order.defaultOrder());
+            var it2 = dst.ptrIterator(Order.defaultOrder());
+
+            while (it1.hasNext() && it2.hasNext()) {
+                dst.ptrSet(it2.nextInt(), tensor.ptrGet(it1.nextInt()));
+            }
+            start = end;
+        }
+        return result;
+    }
+
+    protected static void validateForConcatenation(int axis, List<int[]> dims) {
+        for (int i = 1; i < dims.size(); i++) {
+            int[] dimsPrev = dims.get(i - 1);
+            int[] dimsNext = dims.get(i);
+            for (int j = 0; j < dimsPrev.length; j++) {
+                if (j != axis && dimsNext[j] != dimsPrev[j]) {
+                    throw new IllegalArgumentException("Tensors are not valid for concatenation");
+                }
+            }
+        }
+    }
+
+    public static abstract class OfType<N extends Number> {
 
         protected final DType<N> dType;
         protected TensorManager parent;
@@ -252,7 +334,7 @@ public interface TensorManager {
         }
 
         public final Tensor<N> seq(Shape shape, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, p) -> dType.castValue(i));
+            return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, _) -> dType.castValue(i));
         }
 
         public final Tensor<N> random(Shape shape, Random random) {

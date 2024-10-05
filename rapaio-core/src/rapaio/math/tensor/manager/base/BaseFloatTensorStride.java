@@ -47,16 +47,15 @@ import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.layout.StrideWrapper;
 import rapaio.math.tensor.manager.AbstractStrideTensor;
-import rapaio.math.tensor.operator.TensorAssociativeOp;
+import rapaio.math.tensor.operator.TensorReduceOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
-import rapaio.math.tensor.storage.array.FloatArrayStorage;
 import rapaio.printer.Format;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
 
-public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
+public final class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
 
     public BaseFloatTensorStride(TensorManager engine, StrideLayout layout, Storage<Float> storage) {
         super(engine, layout, storage);
@@ -159,25 +158,12 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
         return this;
     }
 
-    private void unaryOpStep(TensorUnaryOp op) {
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                storage.setFloat(p, op.applyFloat(storage.getFloat(p)));
-                p += loop.step;
-            }
-        }
-    }
-
     @Override
     public Tensor<Float> unaryOp_(TensorUnaryOp op) {
         if (op.floatingPointOnly() && !dtype().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point tensors.");
         }
-        if (storage instanceof FloatArrayStorage specStorage) {
-            op.apply(loop, specStorage.array());
-            return this;
-        }
-        unaryOpStep(op);
+        op.applyFloat(loop, storage);
         return this;
     }
 
@@ -537,7 +523,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     public int argmax(Order order) {
         int argmax = -1;
-        float argvalue = TensorOp.maxAssoc().initFloat();
+        float argvalue = TensorOp.reduceMax().initFloat();
         var i = 0;
         var loop = LoopDescriptor.of(layout, order, dtype().vectorSpecies());
         for (int p : loop.offsets) {
@@ -557,7 +543,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     @Override
     public int argmin(Order order) {
         int argmin = -1;
-        float argvalue = TensorOp.minAssoc().initFloat();
+        float argvalue = TensorOp.reduceMin().initFloat();
         var i = 0;
         var loop = LoopDescriptor.of(layout, order, dtype().vectorSpecies());
         for (int p : loop.offsets) {
@@ -603,7 +589,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     }
 
     @Override
-    protected Float associativeOp(TensorAssociativeOp op) {
+    public Float reduceOp(TensorReduceOp op) {
         float agg = op.initFloat();
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
@@ -615,7 +601,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     }
 
     @Override
-    protected Float nanAssociativeOp(TensorAssociativeOp op) {
+    public Float nanAssociativeOp(TensorReduceOp op) {
         float aggregate = op.initFloat();
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
@@ -629,7 +615,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     }
 
     @Override
-    protected Tensor<Float> associativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
+    public Tensor<Float> associativeOpNarrow(TensorReduceOp op, Order order, int axis) {
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
         int selDim = layout.dim(axis);
@@ -647,7 +633,7 @@ public class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     }
 
     @Override
-    protected Tensor<Float> nanAssociativeOpNarrow(TensorAssociativeOp op, Order order, int axis) {
+    public Tensor<Float> nanAssociativeOpNarrow(TensorReduceOp op, Order order, int axis) {
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
         int selDim = layout.dim(axis);

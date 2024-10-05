@@ -22,51 +22,50 @@
 package rapaio.experiment.math;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import rapaio.data.VarDouble;
+import rapaio.graphics.Plotter;
+import rapaio.sys.WS;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/2/19.
  */
 public class MToolsExperimental {
 
-    public static long combinations(int n, int k) {
-        long result = 1;
-        if (k > n / 2) {
-            k = n - k;
-        }
-        for (int d = 0; d < k; d++) {
-            long oldResult = result;
-            result = result * (n - d) / (d + 1);
-            // check for overflow
-            if (oldResult > result) {
-                throw new StackOverflowError("long range exceeded");
-            }
-        }
-        return result;
-    }
 
-    public static int[] computePrimes(int max) {
+    public static int[] primes(int max) {
         boolean[] flag = new boolean[max + 1];
         int[] primes = new int[max + 1];
-        int plen = 0;
-        primes[plen++] = 1;
-        for (int i = 2; i <= max; i++) {
+        int len = 0;
+        primes[len++] = 1;
+        int i = 2;
+        for (; i * i <= max && i * i > 0; i++) {
             if (!flag[i]) {
-                primes[plen++] = i;
-                for (int j = i; j <= max; j += i) {
+                primes[len++] = i;
+                int j = i * i;
+                if (j < 0) {
+                    continue;
+                }
+                for (; j <= max; j += i) {
                     flag[j] = true;
                 }
             }
         }
-        int[] p = new int[plen];
-        System.arraycopy(primes, 0, p, 0, plen);
-        return p;
+        for (; i <= max; i++) {
+            if (!flag[i]) {
+                primes[len++] = i;
+            }
+        }
+        return Arrays.copyOf(primes, len);
     }
 
     public static int[] factors(int n, int[] primes) {
         ArrayList<Integer> factors = new ArrayList<>();
         for (int i = 1; i < primes.length; i++) {
-            if (n == 1)
+            if (n == 1) {
                 break;
+            }
             while (n % primes[i] == 0) {
                 n = n / primes[i];
                 factors.add(primes[i]);
@@ -75,4 +74,17 @@ public class MToolsExperimental {
         return factors.stream().mapToInt(i -> i).toArray();
     }
 
+
+    public static void main(String[] args) {
+        int n = 1_000_000;
+        int[] primes = primes(n);
+        VarDouble x = VarDouble.empty().name("x");
+        VarDouble y = VarDouble.empty().name("y");
+        for (int i = 0; i < primes.length - 1; i++) {
+//                System.out.println(primes[i] + " " + primes[i + 1]);
+            x.addDouble(Math.log(primes[i] / (1. * i)));
+            y.addDouble(i);
+        }
+        WS.draw(Plotter.lines(y, x).hLine(Math.E));
+    }
 }

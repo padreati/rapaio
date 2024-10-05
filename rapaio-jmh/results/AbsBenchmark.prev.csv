@@ -1,10 +1,10 @@
 "Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"tensor.AbsBenchmark.fillBaseOrderC","avgt",1,3,0.001929,0.000402,"ms/op",100
-"tensor.AbsBenchmark.fillBaseOrderC","avgt",1,3,0.477448,0.071652,"ms/op",1000
-"tensor.AbsBenchmark.fillBaseOrderC","avgt",1,3,53.490664,9.039550,"ms/op",10000
-"tensor.AbsBenchmark.fillBaseOrderF","avgt",1,3,0.001867,0.000361,"ms/op",100
-"tensor.AbsBenchmark.fillBaseOrderF","avgt",1,3,0.491820,0.174234,"ms/op",1000
-"tensor.AbsBenchmark.fillBaseOrderF","avgt",1,3,52.756436,17.264914,"ms/op",10000
-"tensor.AbsBenchmark.fillJSAT","avgt",1,3,0.001573,0.003449,"ms/op",100
-"tensor.AbsBenchmark.fillJSAT","avgt",1,3,0.339706,0.034116,"ms/op",1000
-"tensor.AbsBenchmark.fillJSAT","avgt",1,3,53.284410,12.724781,"ms/op",10000
+"tensor.AbsBenchmark.fillBaseOrderC","avgt",1,3,0.001913,0.000249,"ms/op",100
+"tensor.AbsBenchmark.fillBaseOrderC","avgt",1,3,0.455218,0.102955,"ms/op",1000
+"tensor.AbsBenchmark.fillBaseOrderC","avgt",1,3,53.644033,11.988184,"ms/op",10000
+"tensor.AbsBenchmark.fillBaseOrderF","avgt",1,3,0.001899,0.000566,"ms/op",100
+"tensor.AbsBenchmark.fillBaseOrderF","avgt",1,3,0.456725,0.316287,"ms/op",1000
+"tensor.AbsBenchmark.fillBaseOrderF","avgt",1,3,54.812391,23.950690,"ms/op",10000
+"tensor.AbsBenchmark.fillJSAT","avgt",1,3,0.001531,0.002405,"ms/op",100
+"tensor.AbsBenchmark.fillJSAT","avgt",1,3,0.347535,0.168589,"ms/op",1000
+"tensor.AbsBenchmark.fillJSAT","avgt",1,3,55.329887,31.822017,"ms/op",10000

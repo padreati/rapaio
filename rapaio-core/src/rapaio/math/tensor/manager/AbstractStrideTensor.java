@@ -23,13 +23,7 @@ package rapaio.math.tensor.manager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.Function;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import rapaio.data.VarDouble;
 import rapaio.math.tensor.DType;
@@ -45,38 +39,25 @@ import rapaio.math.tensor.iterators.PointerIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.layout.StrideWrapper;
+import rapaio.math.tensor.manager.base.BaseByteTensorStride;
 import rapaio.math.tensor.manager.base.BaseDoubleTensorStride;
-import rapaio.math.tensor.operator.TensorAssociativeOp;
-import rapaio.math.tensor.operator.TensorBinaryOp;
-import rapaio.math.tensor.operator.TensorOp;
-import rapaio.math.tensor.operator.TensorUnaryOp;
+import rapaio.math.tensor.manager.base.BaseFloatTensorStride;
+import rapaio.math.tensor.manager.base.BaseIntTensorStride;
 import rapaio.math.tensor.storage.array.DoubleArrayStorage;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 
-public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N> {
+public abstract sealed class AbstractStrideTensor<N extends Number> extends Tensor<N>
+        permits BaseDoubleTensorStride, BaseFloatTensorStride, BaseIntTensorStride, BaseByteTensorStride {
 
-    protected final Storage<N> storage;
     protected final StrideLayout layout;
-    protected final TensorManager manager;
     protected final LoopDescriptor<N> loop;
 
     public AbstractStrideTensor(TensorManager manager, StrideLayout layout, Storage<N> storage) {
-        this.storage = storage;
+        super(manager, storage);
         this.layout = layout;
-        this.manager = manager;
         this.loop = LoopDescriptor.of(layout, layout.storageFastOrder(), dtype().vectorSpecies());
-    }
-
-    @Override
-    public final Storage<N> storage() {
-        return storage;
-    }
-
-    @Override
-    public final TensorManager manager() {
-        return manager;
     }
 
     @Override
@@ -179,19 +160,6 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     }
 
     @Override
-    public final Tensor<N> repeat(Order order, int axis, int repeat, boolean stack) {
-        List<Tensor<N>> copies = new ArrayList<>(repeat);
-        for (int i = 0; i < repeat; i++) {
-            copies.add(this);
-        }
-        if (stack) {
-            return manager.stack(order, axis, copies);
-        } else {
-            return manager.concat(order, axis, copies);
-        }
-    }
-
-    @Override
     public final Tensor<N> expand(int axis, int size) {
         return manager.stride(dtype(), layout.expand(axis, size), storage);
     }
@@ -207,7 +175,8 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
         }
         for (int index : indices) {
             if (index < 0 || index >= layout.dim(axis)) {
-                throw new IllegalArgumentException(String.format("Index values are invalid, must be in range [0,%d].", layout.dim(axis) - 1));
+                throw new IllegalArgumentException(
+                        String.format("Index values are invalid, must be in range [0,%d].", layout.dim(axis) - 1));
             }
         }
 
@@ -279,117 +248,6 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
     }
 
     @Override
-    public final byte getByte(int... indexes) {
-        return storage.getByte(layout().pointer(indexes));
-    }
-
-    @Override
-    public final int getInt(int... indexes) {
-        return storage.getInt(layout().pointer(indexes));
-    }
-
-    @Override
-    public final float getFloat(int... indexes) {
-        return storage.getFloat(layout().pointer(indexes));
-    }
-
-    @Override
-    public final double getDouble(int... indexes) {
-        return storage.getDouble(layout().pointer(indexes));
-    }
-
-    @Override
-    public final void setByte(byte value, int... indexes) {
-        storage.setByte(layout().pointer(indexes), value);
-    }
-
-    @Override
-    public final void setInt(int value, int... indexes) {
-        storage.setInt(layout().pointer(indexes), value);
-    }
-
-    @Override
-    public final void setFloat(float value, int... indexes) {
-        storage.setFloat(layout().pointer(indexes), value);
-    }
-
-    @Override
-    public final void setDouble(double value, int... indexes) {
-        storage.setDouble(layout().pointer(indexes), value);
-    }
-
-    @Override
-    public final void incByte(byte value, int... indexes) {
-        storage.incByte(layout().pointer(indexes), value);
-    }
-
-    @Override
-    public final void incInt(int value, int... indexes) {
-        storage.incInt(layout().pointer(indexes), value);
-    }
-
-    @Override
-    public final void incFloat(float value, int... indexes) {
-        storage.incFloat(layout().pointer(indexes), value);
-    }
-
-    @Override
-    public final void incDouble(double value, int... indexes) {
-        storage.incDouble(layout().pointer(indexes), value);
-    }
-
-    @Override
-    public final byte ptrGetByte(int ptr) {
-        return storage.getByte(ptr);
-    }
-
-    @Override
-    public final int ptrGetInt(int ptr) {
-        return storage.getInt(ptr);
-    }
-
-    @Override
-    public final float ptrGetFloat(int ptr) {
-        return storage.getFloat(ptr);
-    }
-
-    @Override
-    public final double ptrGetDouble(int ptr) {
-        return storage.getDouble(ptr);
-    }
-
-    @Override
-    public final void ptrSetByte(int ptr, byte value) {
-        storage.setByte(ptr, value);
-    }
-
-    @Override
-    public final void ptrSetInt(int ptr, int value) {
-        storage.setInt(ptr, value);
-    }
-
-    @Override
-    public final void ptrSetFloat(int ptr, float value) {
-        storage.setFloat(ptr, value);
-    }
-
-    @Override
-    public final void ptrSetDouble(int ptr, double value) {
-        storage.setDouble(ptr, value);
-    }
-
-    @Override
-    public final Iterator<N> iterator(Order askOrder) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
-                .map(storage::get).iterator();
-    }
-
-    @Override
-    public final Stream<N> stream(Order order) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(order), Spliterator.ORDERED), false);
-    }
-
-    @Override
     public final PointerIterator ptrIterator(Order askOrder) {
         if (layout.isCOrdered() && askOrder != Order.F) {
             return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(-1));
@@ -398,163 +256,6 @@ public abstract class AbstractStrideTensor<N extends Number> implements Tensor<N
             return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(0));
         }
         return new StridePointerIterator(layout, askOrder);
-    }
-
-    @Override
-    public final Tensor<N> unaryOp(TensorUnaryOp op) {
-        return unaryOp(op, Order.defaultOrder());
-    }
-
-    @Override
-    public final Tensor<N> unaryOp(TensorUnaryOp op, Order order) {
-        return copy(order).unaryOp_(op);
-    }
-
-    @Override
-    public abstract Tensor<N> unaryOp_(TensorUnaryOp op);
-
-    protected abstract N associativeOp(TensorAssociativeOp op);
-
-    protected abstract N nanAssociativeOp(TensorAssociativeOp op);
-
-    protected abstract Tensor<N> associativeOpNarrow(TensorAssociativeOp op, Order order, int axis);
-
-    protected abstract Tensor<N> nanAssociativeOpNarrow(TensorAssociativeOp op, Order order, int axis);
-
-    @Override
-    public final <M extends Number> Tensor<N> binaryOp(TensorBinaryOp op, Tensor<M> t, Order order) {
-        if (isScalar()) {
-            return t.cast(dtype(), order).binaryOp_(op, get());
-        }
-        return copy(order).binaryOp_(op, t);
-    }
-
-    @Override
-    public abstract <M extends Number> Tensor<N> binaryOp_(TensorBinaryOp op, Tensor<M> t);
-
-    @Override
-    public final <M extends Number> Tensor<N> binaryOp(TensorBinaryOp op, M value, Order order) {
-        return copy(order).binaryOp_(op, value);
-    }
-
-    @Override
-    public abstract <M extends Number> Tensor<N> binaryOp_(TensorBinaryOp op, M value);
-
-    @Override
-    public final N sum() {
-        return associativeOp(TensorOp.addAssoc());
-    }
-
-    @Override
-    public final Tensor<N> sum(Order order, int axis) {
-        return associativeOpNarrow(TensorOp.addAssoc(), order, axis);
-    }
-
-    @Override
-    public final N nanSum() {
-        return nanAssociativeOp(TensorOp.addAssoc());
-    }
-
-    @Override
-    public final Tensor<N> nanSum(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorOp.addAssoc(), order, axis);
-    }
-
-    @Override
-    public final N prod() {
-        return associativeOp(TensorOp.mulAssoc());
-    }
-
-    @Override
-    public final Tensor<N> prod(Order order, int axis) {
-        return associativeOpNarrow(TensorOp.mulAssoc(), order, axis);
-    }
-
-    @Override
-    public final N nanProd() {
-        return nanAssociativeOp(TensorOp.mulAssoc());
-    }
-
-    @Override
-    public final Tensor<N> nanProd(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorOp.mulAssoc(), order, axis);
-    }
-
-    @Override
-    public final N max() {
-        return associativeOp(TensorOp.maxAssoc());
-    }
-
-    @Override
-    public final Tensor<N> max(Order order, int axis) {
-        return associativeOpNarrow(TensorOp.maxAssoc(), order, axis);
-    }
-
-    @Override
-    public final N nanMax() {
-        return nanAssociativeOp(TensorOp.maxAssoc());
-    }
-
-    @Override
-    public final Tensor<N> nanMax(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorOp.maxAssoc(), order, axis);
-    }
-
-    @Override
-    public final N min() {
-        return associativeOp(TensorOp.minAssoc());
-    }
-
-    @Override
-    public final Tensor<N> min(Order order, int axis) {
-        return associativeOpNarrow(TensorOp.minAssoc(), order, axis);
-    }
-
-    @Override
-    public final N nanMin() {
-        return nanAssociativeOp(TensorOp.minAssoc());
-    }
-
-    @Override
-    public final Tensor<N> nanMin(Order order, int axis) {
-        return nanAssociativeOpNarrow(TensorOp.minAssoc(), order, axis);
-    }
-
-    protected abstract Tensor<N> alongAxisOperation(Order order, int axis, Function<Tensor<N>, N> op);
-
-    @Override
-    public final N std() {
-        return dtype().castValue(Math.sqrt(var().doubleValue()));
-    }
-
-    @Override
-    public final Tensor<N> mean(Order order, int axis) {
-        return alongAxisOperation(order, axis, Tensor::mean);
-    }
-
-    @Override
-    public final Tensor<N> std(Order order, int axis) {
-        return alongAxisOperation(order, axis, Tensor::std);
-    }
-
-    @Override
-    public final N stdc(int ddof) {
-        return dtype().castValue(Math.sqrt(varc(ddof).doubleValue()));
-    }
-
-    @Override
-    public final Tensor<N> stdc(Order order, int axis, int ddof) {
-        return alongAxisOperation(order, axis, __ -> stdc(ddof));
-    }
-
-    @Override
-    public final Tensor<N> var(Order order, int axis) {
-        return alongAxisOperation(order, axis, Tensor::var);
-    }
-
-    @Override
-    public final Tensor<N> varc(Order order, int axis, int ddof) {
-        return alongAxisOperation(order, axis, t -> t.varc(ddof));
     }
 
     @Override

@@ -30,16 +30,10 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.manager.AbstractTensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.storage.array.ArrayStorageFactory;
-import rapaio.util.Hardware;
 
-public class BaseTensorManager extends AbstractTensorManager {
-
-    public BaseTensorManager() {
-        this(Hardware.CORES);
-    }
+public class BaseTensorManager extends TensorManager {
 
     public BaseTensorManager(int cpuThreads) {
         super(cpuThreads, new BaseArrayOfDouble(), new BaseArrayOfFloat(), new BaseArrayOfInt(), new BaseArrayOfByte(),

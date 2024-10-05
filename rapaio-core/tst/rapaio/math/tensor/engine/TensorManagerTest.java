@@ -51,7 +51,7 @@ public class TensorManagerTest {
 
     @Test
     void mainTestLoop() {
-        testManagerSuite(new BaseTensorManager());
+        testManagerSuite(BaseTensorManager.base());
     }
 
     void testManagerSuite(TensorManager engine) {
