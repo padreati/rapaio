@@ -45,7 +45,7 @@ import rapaio.printer.opt.POpt;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class VarDTypeDoubleTest {
+public class VarDoubleTest {
 
     private static final double TOL = 1e-20;
     private static final POpt<?>[] P_OPTS = new POpt[] {textWidth(100)};

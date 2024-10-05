@@ -384,9 +384,9 @@ public interface Var extends Serializable, Printable {
 
     @SuppressWarnings("unchecked")
     default <N extends Number> Tensor<N> tensor_(DType<N> dType) {
-        return switch (dType.id()) {
-            case DOUBLE -> (Tensor<N>) Tensors.stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
-            case FLOAT -> (Tensor<N>) Tensors.ofFloat().stride(Shape.of(size()), Order.C, new VarFloatStorage(this));
+        return (Tensor<N>) switch (dType.id()) {
+            case DOUBLE -> Tensors.ofDouble().stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
+            case FLOAT -> Tensors.ofFloat().stride(Shape.of(size()), Order.C, new VarFloatStorage(this));
             default -> throw new NotImplementedException();
         };
     }
