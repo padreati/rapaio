@@ -21,6 +21,7 @@
 
 package rapaio.ml.model.svm.libsvm;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import rapaio.math.tensor.Tensor;
@@ -681,9 +682,7 @@ public class Svm {
             // calculate weighted c
 
             double[] weighted_C = new double[nr_class];
-            for (int i = 0; i < nr_class; i++) {
-                weighted_C[i] = param.c;
-            }
+            Arrays.fill(weighted_C, param.c);
             for (int i = 0; i < param.nrWeight; i++) {
                 int j;
                 for (j = 0; j < nr_class; j++) {

@@ -4,7 +4,6 @@ module rapaio.core {
     requires java.logging;
 
     requires jdk.incubator.vector;
-    requires java.base;
 
     exports rapaio.core;
     exports rapaio.core.correlation;

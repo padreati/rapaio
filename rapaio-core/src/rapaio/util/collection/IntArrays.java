@@ -83,7 +83,7 @@ public final class IntArrays {
      */
     public static int[] newSeq(final int start, final int end) {
         int[] data = new int[end - start];
-        for (int i = 0; i < end - start ; i++) {
+        for (int i = 0; i < end - start; i++) {
             data[i] = i + start;
         }
         return data;
@@ -1369,12 +1369,8 @@ public final class IntArrays {
                 }
             }
             if (m != i) {
-                int t = a[i];
-                a[i] = a[m];
-                a[m] = t;
-                t = b[i];
-                b[i] = b[m];
-                b[m] = t;
+                swap(a, i, m);
+                swap(b, i, m);
             }
         }
     }
@@ -1889,9 +1885,7 @@ public final class IntArrays {
     public static int[] shuffle(final int[] a, final Random random) {
         for (int i = a.length; i-- != 0; ) {
             final int p = random.nextInt(i + 1);
-            final int t = a[i];
-            a[i] = a[p];
-            a[p] = t;
+            swap(a, i, p);
         }
         return a;
     }

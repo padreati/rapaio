@@ -42,7 +42,7 @@ import rapaio.printer.ImageTools;
 public class IsoCurvesTest extends AbstractArtistTest {
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         ImageTools.setBestRenderingHints();
     }
 

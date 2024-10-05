@@ -91,7 +91,7 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( {"unchecked", "rawtypes"})
     public boolean hasDefaultValue() {
         if (defaultValues == null) {
             return true;

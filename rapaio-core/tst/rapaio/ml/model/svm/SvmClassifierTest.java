@@ -48,7 +48,7 @@ public class SvmClassifierTest {
     }
 
     @Test
-    void testIrisProbC() throws IOException {
+    void testIrisProbC() {
 
         SvmClassifier c = new SvmClassifier()
                 .type.set(SvmClassifier.Penalty.C)
@@ -61,7 +61,7 @@ public class SvmClassifierTest {
     }
 
     @Test
-    void testIrisClassC() throws IOException {
+    void testIrisClassC() {
 
         SvmClassifier c = new SvmClassifier()
                 .type.set(SvmClassifier.Penalty.C)
@@ -75,7 +75,7 @@ public class SvmClassifierTest {
     }
 
     @Test
-    void testIrisProbNU() throws IOException {
+    void testIrisProbNU() {
 
         SvmClassifier c = new SvmClassifier()
                 .type.set(SvmClassifier.Penalty.NU)
@@ -88,7 +88,7 @@ public class SvmClassifierTest {
     }
 
     @Test
-    void testIrisClassNu() throws IOException {
+    void testIrisClassNu() {
         SvmClassifier c = new SvmClassifier()
                 .type.set(SvmClassifier.Penalty.NU)
                 .nu.set(.1)

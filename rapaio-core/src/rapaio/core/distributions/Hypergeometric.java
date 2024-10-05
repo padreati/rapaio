@@ -192,17 +192,19 @@ public class Hypergeometric implements Distribution {
                 prod /= posDown;
                 down[posDown]--;
                 if (down[posDown] == 0) {
-                    posDown++;
-                    while (posDown < m + n + 1 && down[posDown] == 0)
+                    do {
                         posDown++;
+                    }
+                    while (posDown < m + n + 1 && down[posDown] == 0);
                 }
             } else {
                 prod *= posUp;
                 up[posUp]--;
                 if (up[posUp] == 0) {
-                    posUp++;
-                    while (posUp < m + n + 1 && up[posUp] == 0)
+                    do {
                         posUp++;
+                    }
+                    while (posUp < m + n + 1 && up[posUp] == 0);
                 }
             }
         }

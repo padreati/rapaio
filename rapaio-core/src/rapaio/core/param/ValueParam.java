@@ -70,7 +70,7 @@ public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( {"unchecked", "rawtypes"})
     public boolean hasDefaultValue() {
         if (defaultValue == null) {
             return value == null;

@@ -23,6 +23,7 @@ package rapaio.ml.eval.metric;
 
 import static rapaio.printer.Format.floatFlex;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -265,9 +266,7 @@ public final class Confusion implements Printable {
 
     private String line(int len) {
         char[] lineChars = new char[len];
-        for (int i = 0; i < len; i++) {
-            lineChars[i] = '-';
-        }
+        Arrays.fill(lineChars, '-');
         return String.valueOf(lineChars);
     }
 

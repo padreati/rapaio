@@ -21,7 +21,6 @@
 
 package rapaio.ml.model.svm;
 
-import java.io.IOException;
 import java.util.logging.Level;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +40,6 @@ public class OneClassSvmTest {
 
     private final int N = 2000;
     private final int M = N / 10;
-    private final int LEN = N + M;
     private Var x1;
     private Var x2;
     private Frame df;
@@ -68,7 +66,7 @@ public class OneClassSvmTest {
     }
 
     @Test
-    void testOneClass() throws IOException {
+    void testOneClass() {
 
         OneClassSvm ocs = OneClassSvm
                 .newModel()

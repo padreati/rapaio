@@ -119,7 +119,6 @@ public class FigurePanel extends JPanel {
                         repaint();
                     } catch (InterruptedException | ExecutionException ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage());
-                        ex.printStackTrace();
                     }
                 });
 

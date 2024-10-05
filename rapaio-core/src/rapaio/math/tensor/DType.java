@@ -30,6 +30,7 @@ import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
 
+@SuppressWarnings("StaticInitializerReferencesSubClass")
 public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, DType.DTypeFloat, DType.DTypeInteger, DType.DTypeByte {
 
     public static final DType<Byte> BYTE = new DTypeByte();
@@ -41,7 +42,7 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
         BYTE,
         INTEGER,
         FLOAT,
-        DOUBLE;
+        DOUBLE
     }
 
     private final Id id;
@@ -286,7 +287,7 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
 
         @Override
         public Integer castValue(int value) {
-            return (int) value;
+            return value;
         }
 
         @Override

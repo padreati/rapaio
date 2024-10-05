@@ -37,7 +37,7 @@ import rapaio.printer.ImageTools;
 public class FunLineTest extends AbstractArtistTest {
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         ImageTools.setBestRenderingHints();
     }
 

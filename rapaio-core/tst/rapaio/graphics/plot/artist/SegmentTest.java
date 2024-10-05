@@ -34,7 +34,7 @@ import rapaio.printer.ImageTools;
 public class SegmentTest extends AbstractArtistTest {
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp()  {
         ImageTools.setBestRenderingHints();
     }
 

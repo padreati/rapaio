@@ -44,7 +44,7 @@ public class L1RegressionResultTest {
     private Frame bigDf;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         df = Datasets.loadISLAdvertising();
         Var[] vars = new Var[30];
         for (int i = 0; i < vars.length; i++) {

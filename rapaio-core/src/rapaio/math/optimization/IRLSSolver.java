@@ -148,15 +148,15 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
         protected final IRLSSolver parent;
         protected final Tensor<Double> A;
         protected final Tensor<Double> b;
-        protected double p;
+        protected final double p;
         protected double k;
-        protected int maxIt;
+        protected final int maxIt;
         protected final double tol;
 
         // solution
         protected Tensor<Double> solution;
-        protected List<Tensor<Double>> solutions = new ArrayList<>();
-        protected VarDouble errors = VarDouble.empty().name("errors");
+        protected final List<Tensor<Double>> solutions = new ArrayList<>();
+        protected final VarDouble errors = VarDouble.empty().name("errors");
         protected boolean converged;
 
         public MethodImpl(IRLSSolver parent) {

@@ -43,7 +43,7 @@ public class MatrixTest extends AbstractArtistTest {
     private Random random;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         random = new Random(1234);
         ImageTools.setBestRenderingHints();
     }

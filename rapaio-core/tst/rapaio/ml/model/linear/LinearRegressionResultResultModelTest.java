@@ -161,7 +161,7 @@ public class LinearRegressionResultResultModelTest {
     }
 
     @Test
-    void testMultipleTargets() throws IOException {
+    void testMultipleTargets() {
         Frame df = Datasets.loadISLAdvertising().removeVars(VarRange.of("ID"));
 
         LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);

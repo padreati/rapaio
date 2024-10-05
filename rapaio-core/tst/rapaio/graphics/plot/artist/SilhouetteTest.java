@@ -41,7 +41,7 @@ import rapaio.ml.model.km.KMClusterResult;
 public class SilhouetteTest extends AbstractArtistTest {
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         ImageTools.setBestRenderingHints();
     }
 

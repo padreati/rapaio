@@ -118,6 +118,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         return instance;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         if (df.rowCount() < 2) {
