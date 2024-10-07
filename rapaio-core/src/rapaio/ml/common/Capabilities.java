@@ -52,7 +52,10 @@ public final class Capabilities {
     }
 
     public Capabilities inputs(int min, int max, boolean allowMissing, VarType...types) {
-        return minInputCount(min).maxInputCount(max).allowMissingInputValues(allowMissing).inputTypes(types);
+        return minInputCount(min)
+                .maxInputCount(max)
+                .allowMissingInputValues(allowMissing)
+                .inputTypes(types);
     }
 
     public Capabilities minInputCount(int minInputCount) {
@@ -151,6 +154,17 @@ public final class Capabilities {
         checkMissingTargetValues(df, weights, targetVars);
     }
 
+    private void checkInputCount(Frame df, Var weights, String... targetVars) {
+        List<String> inputNames = VarRange.of(targetVars).parseComplementVarNames(df);
+        int size = inputNames.size();
+        if (size < minInputCount) {
+            throw new IllegalArgumentException("Algorithm requires more than " + minInputCount + " input variables.");
+        }
+        if (size > maxInputCount) {
+            throw new IllegalArgumentException("Algorithm does not allow more than " + maxInputCount + " input variables");
+        }
+    }
+
     private void checkTargetCount(Frame df, Var weights, String... targetVarNames) {
         List<String> varList = VarRange.of(targetVarNames).parseVarNames(df);
         int size = varList.size();
@@ -188,19 +202,8 @@ public final class Capabilities {
             throw new IllegalArgumentException("Algorithm does not allow target variables with missing values; see : " + sb);
     }
 
-    private void checkInputCount(Frame df, Var weights, String... targetVars) {
-        List<String> inputNames = VarRange.of(targetVars).parseInverseVarNames(df);
-        int size = inputNames.size();
-        if (size < minInputCount) {
-            throw new IllegalArgumentException("Algorithm requires more than " + minInputCount + " input variables.");
-        }
-        if (size > maxInputCount) {
-            throw new IllegalArgumentException("Algorithm does not allow more than " + maxInputCount + " input variables");
-        }
-    }
-
     void checkInputTypes(Frame df, Var weights, String... targetVars) {
-        List<String> inputNames = VarRange.of(targetVars).parseInverseVarNames(df);
+        List<String> inputNames = VarRange.of(targetVars).parseComplementVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : inputNames) {
             if (!inputTypes.contains(df.type(inputName))) {
@@ -218,7 +221,7 @@ public final class Capabilities {
     private void checkMissingInputValues(Frame df, Var weights, String... targetVarNames) {
         if (allowMissingInputValues)
             return;
-        List<String> varList = VarRange.of(targetVarNames).parseInverseVarNames(df);
+        List<String> varList = VarRange.of(targetVarNames).parseComplementVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : varList) {
             if (df.rvar(inputName).stream().complete().count() != df.rvar(inputName).size()) {

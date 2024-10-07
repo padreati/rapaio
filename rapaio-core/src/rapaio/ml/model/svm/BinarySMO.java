@@ -135,22 +135,6 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
      */
     private double[] linear_weights;
 
-    private static final class State {
-        double bLow;
-        double bUp; // thresholds
-        int iLow;
-        int iUp; // indices for bLow and bUp
-
-        double[] fCache; // The current set of errors for all non-bound examples.
-
-        /* The five different sets used by the algorithm. */
-        BitSet I0; // i: 0 < alpha[i] < c
-        BitSet I1; // i: classes[i] = 1, alpha[i] = 0
-        BitSet I2; // i: classes[i] = -1, alpha[i] =c
-        BitSet I3; // i: classes[i] = 1, alpha[i] = c
-        BitSet I4; // i: classes[i] = -1, alpha[i] = 0
-    }
-
     private BinarySMO() {
     }
 
@@ -167,33 +151,16 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .inputs(1, 100_000, false, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE)
+                .inputs(1, 100_000, false, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.FLOAT, VarType.DOUBLE)
                 .targets(1, 1, false, VarType.NOMINAL);
-    }
-
-    private void convertWeightVector() {
-        double[] sparseWeights = new double[linear_weights.length];
-        int[] sparseIndices = new int[linear_weights.length];
-        int counter = 0;
-        for (int i = 0; i < linear_weights.length; i++) {
-            if (Math.abs(linear_weights[i]) >= eps_delta) {
-                sparseWeights[counter] = linear_weights[i];
-                sparseIndices[counter] = i;
-                counter++;
-            }
-        }
-        this.sparseWeights = new double[counter];
-        this.sparseIndices = new int[counter];
-        System.arraycopy(sparseWeights, 0, this.sparseWeights, 0, counter);
-        System.arraycopy(sparseIndices, 0, this.sparseIndices, 0, counter);
     }
 
     @Override
     protected boolean coreFit(Frame initDf, Var initWeights) {
         Random random = getRandom();
-        State s = new State();
-        prepareDataset(s, initDf, initWeights);
-        initialize(s);
+        prepareDataset(initDf, initWeights);
+
+        State state = initialize();
 
         // Loop to find all the support vectors
         int numChanged = 0;
@@ -213,7 +180,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                     if (pos >= train.dim(0)) {
                         pos -= train.dim(0);
                     }
-                    if (examineExample(s, pos)) {
+                    if (examineExample(state, pos)) {
                         numChanged++;
                     }
                 }
@@ -231,11 +198,11 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                         }
 
                         if (alpha[pos] > 0 && alpha[pos] < c.get() * weights.getDouble(pos)) {
-                            if (examineExample(s, pos)) {
+                            if (examineExample(state, pos)) {
                                 numChanged++;
                             }
                             // Is optimality on unbound vectors obtained?
-                            if (s.bUp > s.bLow - 2 * eps.get()) {
+                            if (state.bUp > state.bLow - 2 * eps.get()) {
                                 numChanged = 0;
                                 break;
                             }
@@ -244,8 +211,8 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                 } else {
                     //This is the code for Modification 2 from Keerthi et al.'s paper
                     boolean innerLoopSuccess = true;
-                    while ((s.bUp < s.bLow - 2 * eps.get()) && innerLoopSuccess) {
-                        innerLoopSuccess = takeStep(s, s.iUp, s.iLow);
+                    while ((state.bUp < state.bLow - 2 * eps.get()) && innerLoopSuccess) {
+                        innerLoopSuccess = takeStep(state, state.iUp, state.iLow);
                         if (innerLoopSuccess) {
                             numChanged++;
                         }
@@ -265,7 +232,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         }
 
         // Set threshold
-        b = (s.bLow + s.bUp) / 2.0;
+        b = (state.bLow + state.bUp) / 2.0;
 
         // Save memory
         kernelCache.clean();
@@ -289,26 +256,39 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         return true;
     }
 
-    private void prepareDataset(State s, Frame df, Var w) {
+    private static final class State {
+        double bLow, bUp; // thresholds
+        int iLow, iUp; // indices for bLow and bUp
+
+        double[] fCache; // The current set of errors for all non-bound examples.
+
+        /* The five different sets used by the algorithm. */
+        BitSet I0; // i: 0 < alpha[i] < c
+        BitSet I1; // i: classes[i] = 1, alpha[i] = 0
+        BitSet I2; // i: classes[i] = -1, alpha[i] =c
+        BitSet I3; // i: classes[i] = 1, alpha[i] = c
+        BitSet I4; // i: classes[i] = -1, alpha[i] = 0
+    }
+
+    private void prepareDataset(Frame df, Var w) {
 
         List<String> targetLevels = firstTargetLevels().subList(1, firstTargetLevels().size());
         boolean valid = false;
+
         Frame dfTrain = null;
         if (!("?".equals(firstLabel.get()) || "?".equals(secondLabel.get()))) {
-            // pre specified one vs one
+            // if both labels were specified, we select data only for those labels
             label1 = firstLabel.get();
             label2 = secondLabel.get();
             oneVsAll = false;
-
-            Mapping map = df.stream()
-                    .filter(sp -> sp.getLabel(firstTargetName()).equals(label1)
-                            || sp.getLabel(firstTargetName()).equals(label2))
+            Mapping mapping = df.stream()
+                    .filter(spot -> {
+                        String label = spot.getLabel(firstTargetName());
+                        return label.equals(label1) || label.equals(label2);
+                    })
                     .collectMapping();
-            if (map.isEmpty()) {
-                throw new IllegalArgumentException("After filtering other classes, there were no other rows remained.");
-            }
-            dfTrain = df.mapRows(map);
-            this.weights = w.mapRows(map).tensor();
+            dfTrain = df.mapRows(mapping);
+            this.weights = w.mapRows(mapping).tensor();
             valid = true;
         } else if (!"?".equals(firstLabel.get())) {
             // one vs all type of classification
@@ -327,143 +307,85 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
             valid = true;
         }
 
-        if (valid) {
-
-            this.train = dfTrain.mapVars(inputNames).tensor();
-
-            y = new double[train.dim(0)];
-            for (int i = 0; i < train.dim(0); i++) {
-                y[i] = label1.equals(dfTrain.getLabel(i, firstTargetName())) ? -1 : 1;
-            }
-        } else {
+        if (!valid) {
             throw new IllegalArgumentException("Invalid target labels specification.");
+        }
+        if (dfTrain.rowCount() == 0) {
+            throw new IllegalArgumentException("No instances in the training data.");
+        }
+        this.train = dfTrain.mapVars(inputNames).tensor();
+
+        y = new double[train.dim(0)];
+        for (int i = 0; i < train.dim(0); i++) {
+            y[i] = label1.equals(dfTrain.getLabel(i, firstTargetName())) ? -1 : 1;
         }
     }
 
-    private void initialize(State s) {
+    private State initialize() throws IllegalArgumentException {
+
+        State state = new State();
 
         final int n = train.dim(0);
 
-        s.bUp = -1;
-        s.bLow = 1;
-        b = 0;
-        alpha = null;
-        linear_weights = null;
-        sparseWeights = null;
-        sparseIndices = null;
+        state.bUp = -1;
+        state.bLow = 1;
 
         // Set class values
-        s.iUp = -1;
-        s.iLow = -1;
+        state.iUp = -1;
+        state.iLow = -1;
         for (int i = 0; i < n; i++) {
             if (y[i] == -1) {
-                s.iLow = i;
+                state.iLow = i;
             } else {
-                s.iUp = i;
+                state.iUp = i;
             }
         }
 
         // Check whether one or both classes are missing
-
-        if ((s.iUp == -1) || (s.iLow == -1)) {
-            if (s.iUp != -1) {
-                b = -1;
-            } else if (s.iLow != -1) {
-                b = 1;
+        if ((state.iUp == -1) || (state.iLow == -1)) {
+            if (state.iUp != -1) {
+                throw new IllegalArgumentException("There are no training positive examples.");
+            } else if (state.iLow != -1) {
+                throw new IllegalArgumentException("There are no training negative examples.");
             } else {
-                y = null;
-                return;
+                throw new IllegalArgumentException("There are no training examples.");
             }
-            if (kernel.get().isLinear()) {
-                sparseWeights = new double[0];
-                sparseIndices = new int[0];
-                y = null;
-            } else {
-                supportVectors = new BitSet(0);
-                alpha = new double[0];
-                y = new double[0];
-            }
-            return;
         }
 
         // If machine is linear, reserve space for weights
-
         if (kernel.get().isLinear()) {
             linear_weights = new double[inputNames().length];
-        } else {
-            linear_weights = null;
         }
 
+        b = 0;
         // Initialize alpha array to zero
         alpha = new double[n];
 
         // Initialize sets
         supportVectors = new BitSet(n);
-        s.I0 = new BitSet(n);
-        s.I1 = new BitSet(n);
-        s.I2 = new BitSet(n);
-        s.I3 = new BitSet(n);
-        s.I4 = new BitSet(n);
-
-        // Clean out some instance variables
-        sparseWeights = null;
-        sparseIndices = null;
+        state.I0 = new BitSet(n);
+        state.I1 = new BitSet(n);
+        state.I2 = new BitSet(n);
+        state.I3 = new BitSet(n);
+        state.I4 = new BitSet(n);
 
         // init kernel
         kernelCache = new KernelCache(train, kernel.get());
 
         // Initialize error cache
-        s.fCache = new double[n];
-        s.fCache[s.iLow] = 1;
-        s.fCache[s.iUp] = -1;
+        state.fCache = new double[n];
+        state.fCache[state.iLow] = 1;
+        state.fCache[state.iUp] = -1;
 
         // Build up I1 and I4
         for (int i = 0; i < n; i++) {
             if (y[i] == 1) {
-                s.I1.set(i, true);
+                state.I1.set(i, true);
             } else {
-                s.I4.set(i, true);
+                state.I4.set(i, true);
             }
         }
-    }
-
-    @Override
-    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
-        for (int i = 0; i < df.rowCount(); i++) {
-            double pred = predict(df.mapVars(inputNames).tensor(), i);
-
-            cr.firstClasses().setLabel(i, pred < 0 ? label1 : label2);
-            cr.firstDensity().setDouble(i, label1, -pred);
-            cr.firstDensity().setDouble(i, label2, pred);
-        }
-        return cr;
-    }
-
-    /**
-     * Computes SVM output for given instance.
-     */
-    protected double predict(Tensor<Double> df, int row) {
-
-        double result = -b;
-
-        if (kernel.get().isLinear()) {
-            // Is weight vector stored in sparse format?
-            if (sparseWeights == null) {
-                for (int i = 0; i < linear_weights.length; i++) {
-                    result += linear_weights[i] * df.getDouble(row, i);
-                }
-            } else {
-                for (int i = 0; i < sparseIndices.length; i++) {
-                    result += df.getDouble(row, sparseIndices[i]) * sparseWeights[i];
-                }
-            }
-        } else {
-            for (int i = supportVectors.nextSetBit(0); i != -1; i = supportVectors.nextSetBit(i + 1)) {
-                result += y[i] * alpha[i] * kernel.get().compute(train.takesq(0, i), df.takesq(0, row));
-            }
-        }
-        return result;
+        return state;
     }
 
     /**
@@ -710,6 +632,62 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
 
         // Made some progress.
         return true;
+    }
+
+    private void convertWeightVector() {
+        double[] sparseWeights = new double[linear_weights.length];
+        int[] sparseIndices = new int[linear_weights.length];
+        int counter = 0;
+        for (int i = 0; i < linear_weights.length; i++) {
+            if (Math.abs(linear_weights[i]) >= eps_delta) {
+                sparseWeights[counter] = linear_weights[i];
+                sparseIndices[counter] = i;
+                counter++;
+            }
+        }
+        this.sparseWeights = new double[counter];
+        this.sparseIndices = new int[counter];
+        System.arraycopy(sparseWeights, 0, this.sparseWeights, 0, counter);
+        System.arraycopy(sparseIndices, 0, this.sparseIndices, 0, counter);
+    }
+
+    @Override
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
+        for (int i = 0; i < df.rowCount(); i++) {
+            double pred = predict(df.mapVars(inputNames).tensor(), i);
+
+            cr.firstClasses().setLabel(i, pred < 0 ? label1 : label2);
+            cr.firstDensity().setDouble(i, label1, -pred);
+            cr.firstDensity().setDouble(i, label2, pred);
+        }
+        return cr;
+    }
+
+    /**
+     * Computes SVM output for given instance.
+     */
+    protected double predict(Tensor<Double> df, int row) {
+
+        double result = -b;
+
+        if (kernel.get().isLinear()) {
+            // Is weight vector stored in sparse format?
+            if (sparseWeights == null) {
+                for (int i = 0; i < linear_weights.length; i++) {
+                    result += linear_weights[i] * df.getDouble(row, i);
+                }
+            } else {
+                for (int i = 0; i < sparseIndices.length; i++) {
+                    result += df.getDouble(row, sparseIndices[i]) * sparseWeights[i];
+                }
+            }
+        } else {
+            for (int i = supportVectors.nextSetBit(0); i != -1; i = supportVectors.nextSetBit(i + 1)) {
+                result += y[i] * alpha[i] * kernel.get().compute(train.takesq(0, i), df.takesq(0, row));
+            }
+        }
+        return result;
     }
 
     @Override

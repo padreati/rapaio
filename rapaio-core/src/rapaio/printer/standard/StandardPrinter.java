@@ -62,6 +62,7 @@ public class StandardPrinter extends AbstractPrinter {
         frame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
 
         frame.setSize(width, height);
+//        frame.setLocationRelativeTo(null);
         do {
             try {
                 Thread.sleep(10);

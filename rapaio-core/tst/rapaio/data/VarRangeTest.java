@@ -22,10 +22,12 @@
 package rapaio.data;
 
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
@@ -34,9 +36,11 @@ import org.junit.jupiter.api.Test;
  */
 public class VarRangeTest {
 
-    @Test
-    void testSmoke() {
-        Frame df = SolidFrame.byVars(
+    private Frame df;
+
+    @BeforeEach
+    void beforeEach() {
+        df = SolidFrame.byVars(
                 VarDouble.empty().name("a"),
                 VarDouble.empty().name("b"),
                 VarDouble.empty().name("c"),
@@ -44,80 +48,78 @@ public class VarRangeTest {
                 VarNominal.empty(0, "A", "B").name("x"),
                 VarNominal.empty(0, "c", "D").name("y")
         );
+    }
 
+    @Test
+    void testSmoke() {
         test(VarRange.of(0, 2), df,
-                new int[]{0, 2},
-                new String[]{"a", "c"},
-                new String[]{"b", "d", "x", "y"});
+                new int[] {0, 2},
+                new String[] {"a", "c"},
+                new String[] {"b", "d", "x", "y"});
 
         test(VarRange.of("a", "c"), df,
-                new int[]{0, 2},
-                new String[]{"a", "c"},
-                new String[]{"b", "d", "x", "y"});
+                new int[] {0, 2},
+                new String[] {"a", "c"},
+                new String[] {"b", "d", "x", "y"});
 
         test(VarRange.of(Arrays.asList("a", "c")), df,
-                new int[]{0, 2},
-                new String[]{"a", "c"},
-                new String[]{"b", "d", "x", "y"});
+                new int[] {0, 2},
+                new String[] {"a", "c"},
+                new String[] {"b", "d", "x", "y"});
 
         test(VarRange.byName(name -> name.compareTo("x") >= 0), df,
-                new int[]{4, 5},
-                new String[]{"x", "y"},
-                new String[]{"a", "b", "c", "d"});
+                new int[] {4, 5},
+                new String[] {"x", "y"},
+                new String[] {"a", "b", "c", "d"});
 
         test(VarRange.byFilter(rvar -> rvar.name().compareTo("x") >= 0), df,
-                new int[]{4, 5},
-                new String[]{"x", "y"},
-                new String[]{"a", "b", "c", "d"});
+                new int[] {4, 5},
+                new String[] {"x", "y"},
+                new String[] {"a", "b", "c", "d"});
 
         test(VarRange.onlyTypes(VarType.DOUBLE), df,
-                new int[]{4, 5},
-                new String[]{"x", "y"},
-                new String[]{"a", "b", "c", "d"});
+                new int[] {0, 1, 2, 3},
+                new String[] {"a", "b", "c", "d"},
+                new String[] {"x", "y"});
 
         test(VarRange.all(), df,
-                new int[]{0, 1, 2, 3, 4, 5},
-                new String[]{"a", "b", "c", "d", "x", "y"},
-                new String[]{});
+                new int[] {0, 1, 2, 3, 4, 5},
+                new String[] {"a", "b", "c", "d", "x", "y"},
+                new String[] {});
 
         test(VarRange.of("all"), df,
-                new int[]{0, 1, 2, 3, 4, 5},
-                new String[]{"a", "b", "c", "d", "x", "y"},
-                new String[]{});
+                new int[] {0, 1, 2, 3, 4, 5},
+                new String[] {"a", "b", "c", "d", "x", "y"},
+                new String[] {});
 
         test(VarRange.of("a~d"), df,
-                new int[]{0, 1, 2, 3},
-                new String[]{"a", "b", "c", "d"},
-                new String[]{"x", "y"});
+                new int[] {0, 1, 2, 3},
+                new String[] {"a", "b", "c", "d"},
+                new String[] {"x", "y"});
 
         test(VarRange.of("0~3"), df,
-                new int[]{0, 1, 2, 3},
-                new String[]{"a", "b", "c", "d"},
-                new String[]{"x", "y"});
+                new int[] {0, 1, 2, 3},
+                new String[] {"a", "b", "c", "d"},
+                new String[] {"x", "y"});
     }
 
     @Test
     public void testInvalidRanges() {
-        Frame df = SolidFrame.byVars(
-                VarDouble.empty().name("a"),
-                VarDouble.empty().name("b"),
-                VarDouble.empty().name("c"),
-                VarDouble.empty().name("d"),
-                VarNominal.empty(0, "A", "B").name("x"),
-                VarNominal.empty(0, "c", "D").name("y")
-        );
-
-        test(VarRange.of("0~af,a~q,q,q~a"), df, new int[0], new String[0], new String[0]);
+        test(VarRange.of("0~af,a~q,q,q~a"), df, new int[0], new String[0], new String[] {"a", "b", "c", "d", "x", "y"});
     }
 
     @Test
     public void testNoIndexes() {
-        assertThrows(IllegalArgumentException.class, () -> VarRange.of(new int[]{}));
+        assertThrows(IllegalArgumentException.class, () -> VarRange.of(new int[0]));
     }
 
     private void test(VarRange range, Frame df, int[] indexes, String[] names, String[] reverse) {
         int[] indexesReal = range.parseVarIndexes(df).stream().mapToInt(x -> x).toArray();
         String[] namesReal = range.parseVarNames(df).toArray(new String[0]);
-        String[] reverseReal = range.parseInverseVarNames(df).toArray(new String[0]);
+        String[] reverseReal = range.parseComplementVarNames(df).toArray(new String[0]);
+
+        assertArrayEquals(indexes, indexesReal);
+        assertArrayEquals(names, namesReal);
+        assertArrayEquals(reverse, reverseReal);
     }
 }

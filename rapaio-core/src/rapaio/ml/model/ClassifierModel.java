@@ -25,13 +25,14 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import rapaio.core.param.ParamSet;
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -41,12 +42,10 @@ import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.opt.POpt;
 import rapaio.printer.TextTable;
+import rapaio.printer.opt.POpt;
 import rapaio.util.function.SConsumer;
 import rapaio.util.function.SFunction;
-import rapaio.core.param.ParamSet;
-import rapaio.core.param.ValueParam;
 
 /**
  * Abstract base class for all classifier implementations.
@@ -291,6 +290,37 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     }
 
     /**
+     * This method is preparing the learning phase. It is a generic method which works
+     * for all learners. It's task includes initialization of input and target names,
+     * check the capabilities at learning phase, etc.
+     *
+     * @param df         data frame
+     * @param weights    weights of instances
+     * @param targetVars target variable names
+     */
+    protected FitSetup prepareFit(Frame df, final Var weights, final String... targetVars) {
+        capabilities().checkAtLearnPhase(df, weights, targetVars);
+
+        VarRange parser = VarRange.of(targetVars);
+
+        List<String> targets = parser.parseVarNames(df);
+        this.targetNames = targets.toArray(new String[0]);
+        this.targetTypes = targets.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
+        this.targetLevels = new HashMap<>();
+        for (String targetName : targetNames) {
+            this.targetLevels.put(targetName, df.rvar(targetName).levels());
+        }
+
+        List<String> inputs = parser.parseComplementVarNames(df);
+        this.inputNames = inputs.toArray(new String[0]);
+        this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
+
+        return FitSetup.valueOf(df, weights, targetVars);
+    }
+
+    protected abstract boolean coreFit(Frame df, Var weights);
+
+    /**
      * Predict classes for new data set instances, with
      * default options to compute classes and densities for classes.
      *
@@ -312,47 +342,6 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
         PredSetup setup = preparePredict(df, withClasses, withDistributions);
         return corePredict(setup.df, setup.withClasses, setup.withDistributions);
     }
-
-    /**
-     * This method is preparing the learning phase. It is a generic method which works
-     * for all learners. It's task includes initialization of input and target names,
-     * check the capabilities at learning phase, etc.
-     *
-     * @param df         data frame
-     * @param weights    weights of instances
-     * @param targetVars target variable names
-     */
-    protected FitSetup prepareFit(Frame df, final Var weights, final String... targetVars) {
-        List<String> targets = VarRange.of(targetVars).parseVarNames(df);
-        if (capabilities().minTargetCount() > targets.size()) {
-            String targetVarNames = String.join(",", targetVars);
-            throw new IllegalArgumentException(
-                    "Minimum number of targets (" + capabilities().minTargetCount() + ") is not met. Targets specified: [" + targetVarNames
-                            + "]");
-        }
-        if (capabilities().maxTargetCount() < targets.size()) {
-            String targetVarNames = String.join(",", targetVars);
-            throw new IllegalArgumentException(
-                    "Maximum number of targets (" + capabilities().maxTargetCount() + ") is not met. Targets specified: [" + targetVarNames
-                            + "]");
-        }
-
-        this.targetNames = targets.toArray(new String[0]);
-        this.targetTypes = targets.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
-        this.targetLevels = new HashMap<>();
-        this.targetLevels.put(firstTargetName(), df.rvar(firstTargetName()).levels());
-
-        HashSet<String> targetSet = new HashSet<>(targets);
-
-        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).toList();
-        this.inputNames = inputs.toArray(new String[0]);
-        this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
-
-        capabilities().checkAtLearnPhase(df, weights, targetVars);
-        return FitSetup.valueOf(df, weights, targetVars);
-    }
-
-    protected abstract boolean coreFit(Frame df, Var weights);
 
     protected PredSetup preparePredict(Frame df, boolean withClasses, boolean withDistributions) {
         return PredSetup.valueOf(df, withClasses, withDistributions);

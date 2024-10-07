@@ -22,7 +22,8 @@
 package rapaio.ml.model.svm;
 
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,10 +33,15 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.SamplingTools;
+import rapaio.core.tools.Grid2D;
 import rapaio.data.Frame;
+import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.transform.StandardScaler;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.opt.GOpts;
+import rapaio.graphics.opt.Palette;
+import rapaio.graphics.plot.Plot;
 import rapaio.ml.common.kernel.CauchyKernel;
 import rapaio.ml.common.kernel.ExponentialKernel;
 import rapaio.ml.common.kernel.GeneralizedMinKernel;
@@ -56,6 +62,7 @@ import rapaio.ml.eval.ClassifierEvaluation;
 import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.eval.split.StratifiedKFold;
+import rapaio.sys.WS;
 
 /**
  * Test for binary smo
@@ -79,7 +86,35 @@ public class BinarySMOTest {
                 .splitStrategy.set(new StratifiedKFold(10, "Class"))
                 .seed.set(1L)
                 .run();
+
         assertEquals(0.8942342701103653, result.getMeanTrainScore(Accuracy.newMetric(true).getName()), 1e-7);
+    }
+
+    @Test
+    void testBasic() throws IOException {
+        Frame df = Datasets.loadIrisDataset();
+        df = df.stream().filter(s -> !s.getLabel("class").equals("virginica")).toMappedFrame().copy();
+        df = df.mapVars(VarRange.of("0~1,class")).copy();
+        df.printSummary();
+
+        BinarySMO smo1 = BinarySMO.newModel()
+                .seed.set(42L)
+                .c.set(1.)
+                .firstLabel.set("versicolor")
+                .secondLabel.set("setosa")
+                .kernel.set(new LogKernel(0.5));
+
+        smo1.fit(df, "class");
+
+        smo1.printSummary();
+
+        Plot plot = new Plot();
+        Grid2D grid = Grid2D.fromPrediction(smo1, df, "sepal-length", "sepal-width", "class", 200, 1);
+        double eps = (grid.maxValue()-grid.minValue())/20;
+        double[] layers = VarDouble.seq(grid.minValue()-eps, grid.maxValue()+eps, eps).elements();
+        plot.isoCurves(grid, layers, GOpts.palette(Palette.hue(1, 200, grid.minValue()-eps, grid.maxValue()+eps)));
+        plot.points(df.rvar(0), df.rvar(1), GOpts.color(df.rvar("class")));
+        WS.draw(plot);
     }
 
     @Test

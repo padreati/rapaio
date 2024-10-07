@@ -116,9 +116,9 @@ public class Join {
         this.dfLeft = dfLeft;
         this.dfRight = dfRight;
         this.leftVarNames = leftKeys.parseVarNames(dfLeft);
-        this.leftRemainVarNames = leftKeys.parseInverseVarNames(dfLeft);
+        this.leftRemainVarNames = leftKeys.parseComplementVarNames(dfLeft);
         this.rightVarNames = rightKeys.parseVarNames(dfRight);
-        this.rightRemainVarNames = rightKeys.parseInverseVarNames(dfRight);
+        this.rightRemainVarNames = rightKeys.parseComplementVarNames(dfRight);
         this.type = type;
 
         this.idMap = new HashMap<>();
