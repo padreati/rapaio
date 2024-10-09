@@ -23,7 +23,7 @@ package rapaio.ml.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +41,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Classification predict result.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class ClassifierResult implements Printable {
@@ -50,9 +51,9 @@ public class ClassifierResult implements Printable {
     protected final List<String> targetNames = new ArrayList<>();
     protected final boolean hasClasses;
     protected final boolean hasDensities;
-    protected final Map<String, List<String>> dictionaries = new HashMap<>();
-    protected final Map<String, Var> classes = new HashMap<>();
-    protected final Map<String, Frame> densities = new HashMap<>();
+    protected final LinkedHashMap<String, List<String>> dictionaries = new LinkedHashMap<>();
+    protected final LinkedHashMap<String, Var> classes = new LinkedHashMap<>();
+    protected final LinkedHashMap<String, Frame> densities = new LinkedHashMap<>();
 
     public static ClassifierResult build(ClassifierModel<?, ?, ?> model, Frame df, boolean withClasses, boolean withDensities) {
         return new ClassifierResult(model, df, withClasses, withDensities);
@@ -122,7 +123,7 @@ public class ClassifierResult implements Printable {
      * @return target variable names
      */
     public String firstTargetName() {
-        return targetNames.get(0);
+        return targetNames.getFirst();
     }
 
     /**
@@ -155,7 +156,7 @@ public class ClassifierResult implements Printable {
      *
      * @return map with nominal variables as predicted classes
      */
-    public Map<String, Var> classes() {
+    public LinkedHashMap<String, Var> classes() {
         return classes;
     }
 
@@ -185,7 +186,7 @@ public class ClassifierResult implements Printable {
      * @return predicted class densities (frame with one
      * column for each target class, including missing value)
      */
-    public Map<String, Frame> densities() {
+    public LinkedHashMap<String, Frame> densities() {
         return densities;
     }
 
@@ -231,11 +232,11 @@ public class ClassifierResult implements Printable {
         sb.append("> inputs: ").append(Arrays.deepToString(model.inputNames())).append("\n");
         sb.append("\n");
 
-        sb.append("Classification results:").append("\n");
-        if (Arrays.asList(df.varNames()).contains(firstTargetName())) {
-            sb.append(Confusion.from(df.rvar(model.firstTargetName()), firstClasses()).toSummary(printer, options));
-        } else {
-            sb.append("data frame does not contain target variable.");
+        for (String targetName : classes.sequencedKeySet()) {
+            if (Arrays.asList(df.varNames()).contains(targetName)) {
+                sb.append("Classification results for target: ").append(targetName).append("\n");
+                sb.append(Confusion.from(df.rvar(model.firstTargetName()), classes.get(targetName)).toSummary(printer, options));
+            }
         }
         return sb.toString();
     }

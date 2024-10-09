@@ -22,6 +22,7 @@
 package rapaio.ml.model.svm;
 
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,21 +34,23 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.SamplingTools;
-import rapaio.core.tools.Grid2D;
 import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.transform.StandardScaler;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.opt.GOpts;
-import rapaio.graphics.opt.Palette;
-import rapaio.graphics.plot.Plot;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 import rapaio.ml.common.kernel.CauchyKernel;
 import rapaio.ml.common.kernel.ExponentialKernel;
 import rapaio.ml.common.kernel.GeneralizedMinKernel;
 import rapaio.ml.common.kernel.GeneralizedStudentTKernel;
 import rapaio.ml.common.kernel.InverseMultiQuadricKernel;
 import rapaio.ml.common.kernel.Kernel;
+import rapaio.ml.common.kernel.LinearKernel;
 import rapaio.ml.common.kernel.LogKernel;
 import rapaio.ml.common.kernel.MinKernel;
 import rapaio.ml.common.kernel.MultiQuadricKernel;
@@ -62,14 +65,17 @@ import rapaio.ml.eval.ClassifierEvaluation;
 import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.eval.split.StratifiedKFold;
-import rapaio.sys.WS;
+import rapaio.ml.model.ClassifierResult;
 
 /**
  * Test for binary smo
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class BinarySMOTest {
+
+    private static final double TOL = 1e-10;
 
     @Test
     void testLinear() throws IOException {
@@ -91,30 +97,60 @@ public class BinarySMOTest {
     }
 
     @Test
-    void testBasic() throws IOException {
-        Frame df = Datasets.loadIrisDataset();
-        df = df.stream().filter(s -> !s.getLabel("class").equals("virginica")).toMappedFrame().copy();
-        df = df.mapVars(VarRange.of("0~1,class")).copy();
-        df.printSummary();
+    void artificialLinearKernelTest() {
+        Frame df = SolidFrame.byVars(
+                VarDouble.wrap(1, 2, 1, 2).name("x"),
+                VarDouble.wrap(1, 1, 2, 2).name("y"),
+                VarNominal.copy("a", "a", "b", "b").name("class")
+        );
 
         BinarySMO smo1 = BinarySMO.newModel()
                 .seed.set(42L)
                 .c.set(1.)
-                .firstLabel.set("versicolor")
-                .secondLabel.set("setosa")
-                .kernel.set(new LogKernel(0.5));
+                .kernel.set(new LinearKernel());
 
         smo1.fit(df, "class");
 
-        smo1.printSummary();
+        Tensor<Double> test = Tensors.ofDouble().stride(Shape.of(3, 2),
+                1.5, 1.5,
+                1, 1,
+                2, 2
+        );
 
-        Plot plot = new Plot();
-        Grid2D grid = Grid2D.fromPrediction(smo1, df, "sepal-length", "sepal-width", "class", 200, 1);
-        double eps = (grid.maxValue()-grid.minValue())/20;
-        double[] layers = VarDouble.seq(grid.minValue()-eps, grid.maxValue()+eps, eps).elements();
-        plot.isoCurves(grid, layers, GOpts.palette(Palette.hue(1, 200, grid.minValue()-eps, grid.maxValue()+eps)));
-        plot.points(df.rvar(0), df.rvar(1), GOpts.color(df.rvar("class")));
-        WS.draw(plot);
+        ClassifierResult result = smo1.predict(SolidFrame.matrix(test, "x", "y"));
+        assertTrue(VarNominal.copy("a", "a", "b").name("class").deepEquals(result.firstClasses()));
+        assertArrayEquals(new double[] {0, 1, -1}, result.firstDensity().rvar("a").stream().mapToDouble().toArray(), TOL);
+        assertArrayEquals(new double[] {0, -1, 1}, result.firstDensity().rvar("b").stream().mapToDouble().toArray(), TOL);
+    }
+
+    @Test
+    void artificialPolyKernelTest() {
+        Frame df = SolidFrame.byVars(
+                VarDouble.wrap(1, 2, 1, 2).name("x"),
+                VarDouble.wrap(1, 1, 2, 2).name("y"),
+                VarNominal.copy("a", "b", "b", "a").name("class")
+        );
+
+        BinarySMO smo1 = BinarySMO.newModel()
+                .seed.set(42L)
+                .c.set(1.)
+                .kernel.set(new WaveKernel(2));
+
+        smo1.fit(df, "class");
+
+        Tensor<Double> test = Tensors.ofDouble().stride(Shape.of(5, 2),
+                1.5, 1.5,
+                1, 1,
+                2, 2,
+                1, 2,
+                2, 1
+        );
+        ClassifierResult result = smo1.predict(SolidFrame.matrix(test, "x", "y"));
+        assertTrue(VarNominal.copy("a", "b", "b", "a", "a").name("class").deepEquals(result.firstClasses()));
+        assertArrayEquals(new double[] {0, -1.0762311696089155, -1.0762311696089155, 1.0762311696089155, 1.0762311696089155},
+                result.firstDensity().rvar("a").stream().mapToDouble().toArray(), TOL);
+        assertArrayEquals(new double[] {0, 1.0762311696089155, 1.0762311696089155, -1.0762311696089155, -1.0762311696089155},
+                result.firstDensity().rvar("b").stream().mapToDouble().toArray(), TOL);
     }
 
     @Test
@@ -219,15 +255,17 @@ public class BinarySMOTest {
         smo.fit(tts.trainDf(), "class");
 
         assertEquals(
-                "BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=1}, " +
-                        "fitted=true, fitted weights=4", smo.toString());
-        assertEquals("BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=1}",
+                "BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=1}, "
+                        +
+                        "fitted=true, support vectors=4", smo.toString());
+        assertEquals(
+                "BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=1}",
                 smo.fullName());
         assertEquals("""
                 BinarySMO model
                 ===============
                 BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=1}
-                fitted: true, fitted weights=4
+                fitted: true, support vectors=4
                 Decision function:
                 Linear support vector: use attribute weights folding.
                    0.0393929 * [sepal-length]
