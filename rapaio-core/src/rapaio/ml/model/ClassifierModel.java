@@ -24,11 +24,11 @@ package rapaio.ml.model;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import rapaio.core.param.ParamSet;
@@ -70,7 +70,7 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
      * no pooling and positive values means pooling with a specified
      * value.
      */
-    public final ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, 0, "poolSize", x -> true);
+    public final ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, 0, "poolSize", _ -> true);
 
     /**
      * Specifies the runs / rounds of learning.
@@ -85,7 +85,7 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     /**
      * Lambda call hook called after each subcomponent or iteration at training time.
      */
-    public final ValueParam<SConsumer<H>, M> runningHook = new ValueParam<>((M) this, h -> {}, "runningHook", Objects::nonNull);
+    public final ValueParam<SConsumer<H>, M> runningHook = new ValueParam<>((M) this, _ -> {}, "runningHook", Objects::nonNull);
 
     /**
      * Lambda call hook which can be used to implement a criteria used to stop running
@@ -93,7 +93,7 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
      * stopped, if true it continues until the algorithm stops itself.
      */
     public final ValueParam<SFunction<H, Boolean>, M> stoppingHook =
-            new ValueParam<>((M) this, h -> false, "stoppingHook", Objects::nonNull);
+            new ValueParam<>((M) this, _ -> false, "stoppingHook", Objects::nonNull);
 
     /**
      * Random seed used to fix the behavior of random utility usage. This is useful
@@ -141,7 +141,7 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
      * @return capabilities of the classification algorithm
      */
     public Capabilities capabilities() {
-        return new Capabilities();
+        return null;
     }
 
     /**
@@ -171,16 +171,6 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
      */
     public VarType[] inputTypes() {
         return inputTypes;
-    }
-
-    /**
-     * Shortcut method which returns the type of the input variable at the given position
-     *
-     * @param pos given position
-     * @return variable type
-     */
-    public VarType inputType(int pos) {
-        return inputTypes()[pos];
     }
 
     /**
@@ -221,17 +211,6 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     }
 
     /**
-     * Shortcut method which returns target variable type
-     * at the given position
-     *
-     * @param pos given position
-     * @return target variable type
-     */
-    public VarType targetType(int pos) {
-        return targetTypes()[pos];
-    }
-
-    /**
      * Returns levels used at learning times for target variables
      *
      * @return map with target variable names as key and levels as variables
@@ -247,7 +226,7 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     /**
      * Returns levels used at learning times for first target variables
      *
-     * @return map with target variable names as key and levels as variables
+     * @return list of target levels of the first target variable
      */
     public List<String> firstTargetLevels() {
         return targetLevels().get(firstTargetName());
@@ -306,10 +285,7 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
         List<String> targets = parser.parseVarNames(df);
         this.targetNames = targets.toArray(new String[0]);
         this.targetTypes = targets.stream().map(name -> df.rvar(name).type()).toArray(VarType[]::new);
-        this.targetLevels = new HashMap<>();
-        for (String targetName : targetNames) {
-            this.targetLevels.put(targetName, df.rvar(targetName).levels());
-        }
+        this.targetLevels = Arrays.stream(targetNames).collect(Collectors.toMap(tn -> tn, tn -> df.rvar(tn).levels()));
 
         List<String> inputs = parser.parseComplementVarNames(df);
         this.inputNames = inputs.toArray(new String[0]);
@@ -386,7 +362,7 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
         sb.append("target vars:\n");
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")
                 .append(targetName(i)).append(" : ")
-                .append(targetType(i))
+                .append(targetTypes()[i])
                 .append(" [").append(String.join(",", targetLevels(targetName(i)))).append("]")
                 .append("\n"));
         sb.append("\n");
