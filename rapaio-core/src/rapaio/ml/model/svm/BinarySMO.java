@@ -32,7 +32,10 @@ import java.util.Set;
 import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
+import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.VarBinary;
+import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.MathTools;
 import rapaio.math.tensor.Tensor;
@@ -43,6 +46,7 @@ import rapaio.ml.common.kernel.cache.KernelCache;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
+import rapaio.ml.model.linear.BinaryLogistic;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
@@ -105,6 +109,12 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     public final ValueParam<String, BinarySMO> solver = new ValueParam<>(this, "Keerthi2",
             "solver", x -> Set.of("Keerthi1", "Keerthi2").contains(x));
 
+    /**
+     * Output probabilities instead of SVM scores
+     */
+    public final ValueParam<Boolean, BinarySMO> prob = new ValueParam<>(this, Boolean.FALSE,
+            "probabilities");
+
     private static final double eps_delta = 1e-200;
 
     private String label1;
@@ -119,6 +129,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     private double[] _alpha;
     private double[] _y;
 
+    private BinaryLogistic logistic;
 
     private BinarySMO() {
     }
@@ -218,6 +229,21 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
 
         compactVectors(state);
         state.close();
+
+        if (prob.get() == true) {
+            logistic = BinaryLogistic.newModel();
+
+            VarDouble score = VarDouble.empty(_vectors.dim(0)).name("score");
+            VarBinary target = VarBinary.empty(_vectors.dim(0)).name("target");
+
+            for (int i = 0; i < _vectors.dim(0); i++) {
+                score.setDouble(i, predictScore(_vectors, i));
+                target.setInt(i, _y[i] == -1 ? 0 : 1);
+            }
+
+            Frame logTrain = SolidFrame.byVars(score, target);
+            logistic.fit(logTrain, "target");
+        }
         return true;
     }
 
@@ -555,15 +581,15 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         }
     }
 
-    private double predict(Kernel kernel, Tensor<Double> df, int row) {
+    private double predictScore(Tensor<Double> df, int row) {
         double result = -_b;
-        if (kernel.isLinear()) {
+        if (kernel.get().isLinear()) {
             for (int i = 0; i < _vectorsCount; i++) {
                 result += df.getDouble(row, i) * _sparseWeights[i];
             }
         } else {
             for (int i = 0; i < _vectorsCount; i++) {
-                result += _y[i] * _alpha[i] * kernel.compute(_vectors.takesq(0, i), df.takesq(0, row));
+                result += _y[i] * _alpha[i] * kernel.get().compute(_vectors.takesq(0, i), df.takesq(0, row));
             }
         }
         return result;
@@ -574,11 +600,18 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
-            double pred = predict(kernel.get(), df.mapVars(inputNames).tensor(), i);
-
-            cr.firstClasses().setLabel(i, pred <= 0 ? label1 : label2);
-            cr.firstDensity().setDouble(i, label1, -pred);
-            cr.firstDensity().setDouble(i, label2, pred);
+            double score = predictScore(df.mapVars(inputNames).tensor(), i);
+            if (prob.get()) {
+                ClassifierResult result = logistic.predict(SolidFrame.byVars(VarDouble.scalar(score).name("score")));
+                double p = result.firstDensity().getDouble(0, "true");
+                cr.firstClasses().setLabel(i, p <= 0.5 ? label1 : label2);
+                cr.firstDensity().setDouble(i, label1, 1 - p);
+                cr.firstDensity().setDouble(i, label2, p);
+            } else {
+                cr.firstClasses().setLabel(i, score <= 0 ? label1 : label2);
+                cr.firstDensity().setDouble(i, label1, -score);
+                cr.firstDensity().setDouble(i, label2, score);
+            }
         }
         return cr;
     }

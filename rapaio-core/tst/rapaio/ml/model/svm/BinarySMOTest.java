@@ -292,4 +292,24 @@ public class BinarySMOTest {
         // performance should not be very different
         assertEquals(accuracy1, accuracy2, 1e-7);
     }
+
+    @Test
+    void probabilityTest() {
+        Frame df = SolidFrame.byVars(
+                VarDouble.wrap(1, 2, 1, 2).name("x"),
+                VarDouble.wrap(1, 1, 2, 2).name("y"),
+                VarNominal.copy("a", "b", "b", "a").name("class")
+        );
+
+        BinarySMO model = BinarySMO.newModel()
+                .kernel.set(new RBFKernel(0.6))
+                .prob.set(true);
+
+        model.fit(df, "class");
+        ClassifierResult pred = model.predict(df);
+        assertTrue(pred.firstDensity().getDouble(0, "a") > 0.5);
+        assertTrue(pred.firstDensity().getDouble(1, "a") < 0.5);
+        assertTrue(pred.firstDensity().getDouble(2, "a") < 0.5);
+        assertTrue(pred.firstDensity().getDouble(3, "a") > 0.5);
+    }
 }
