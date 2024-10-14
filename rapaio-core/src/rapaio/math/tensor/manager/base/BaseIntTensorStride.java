@@ -337,24 +337,6 @@ public final class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     @Override
-    public Tensor<Integer> scatter() {
-        if (!isMatrix()) {
-            throw new IllegalArgumentException("Scatter matrix can be computed only for matrices.");
-        }
-        Tensor<Integer> scatter = manager.ofInt().zeros(Shape.of(dim(1), dim(1)));
-        Tensor<Integer> mean = mean(0);
-        for (int k = 0; k < dim(0); k++) {
-            Tensor<Integer> row = takesq(0, k).sub(mean);
-            for (int i = 0; i < row.size(); i++) {
-                for (int j = 0; j < row.size(); j++) {
-                    scatter.incInt((int) (row.getInt(i) * row.getInt(j)), i, j);
-                }
-            }
-        }
-        return scatter;
-    }
-
-    @Override
     public Integer trace() {
         if (!isMatrix()) {
             throw new OperationNotAvailableException("This operation is available only on tensor matrix.");

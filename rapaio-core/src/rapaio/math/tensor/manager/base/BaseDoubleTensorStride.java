@@ -337,24 +337,6 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
     }
 
     @Override
-    public Tensor<Double> scatter() {
-        if (!isMatrix()) {
-            throw new IllegalArgumentException("Scatter matrix can be computed only for matrices.");
-        }
-        Tensor<Double> scatter = manager.ofDouble().zeros(Shape.of(dim(1), dim(1)));
-        Tensor<Double> mean = mean(0);
-        for (int k = 0; k < dim(0); k++) {
-            Tensor<Double> row = takesq(0, k).sub(mean);
-            for (int i = 0; i < row.size(); i++) {
-                for (int j = 0; j < row.size(); j++) {
-                    scatter.incDouble((double) (row.getDouble(i) * row.getDouble(j)), i, j);
-                }
-            }
-        }
-        return scatter;
-    }
-
-    @Override
     public Double trace() {
         if (!isMatrix()) {
             throw new OperationNotAvailableException("This operation is available only on tensor matrix.");

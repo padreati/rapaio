@@ -44,6 +44,7 @@ import rapaio.ml.model.ensemble.CForest;
 /**
  * Principal component analysis decomposition test
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
  */
 public class PCATest {
@@ -146,13 +147,13 @@ public class PCATest {
                 eigen values:
                 [[ 1.6710094305325662 ] \s
                  [ 0.8383259734162228 ] \s
-                 [ 0.6819539303101686 ]]\s
-                                
+                 [ 0.6819539303101684 ]]\s
+                
                 eigen vectors:
-                [[ 0.49210222930628367 -0.6467028606590824 -0.5827613627610749 ] \s
-                 [ 0.4792790249461414  -0.35756937446327    0.8015209034657933 ] \s
-                 [ 0.726723477093221    0.673735521151516  -0.1339904301815368 ]]\s
-                                
+                [[ 0.4921022293062839  -0.6467028606590828  -0.5827613627610746  ] \s
+                 [ 0.47927902494614144 -0.35756937446326975  0.8015209034657936  ] \s
+                 [ 0.7267234770932213   0.6737355211515164  -0.13399043018153708 ]]\s
+                
                 """, pca.toSummary());
         assertEquals(pca.toSummary(), pca.toContent());
         assertEquals(pca.toSummary(), pca.toFullContent());

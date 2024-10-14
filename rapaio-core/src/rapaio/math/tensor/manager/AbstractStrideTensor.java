@@ -176,7 +176,9 @@ public abstract sealed class AbstractStrideTensor<N extends Number> extends Tens
         for (int index : indices) {
             if (index < 0 || index >= layout.dim(axis)) {
                 throw new IllegalArgumentException(
-                        String.format("Index values are invalid, must be in range [0,%d].", layout.dim(axis) - 1));
+                        String.format("Index values are invalid %s, must be in range [0,%d].",
+                                Arrays.toString(indices),
+                                layout.dim(axis) - 1));
             }
         }
 

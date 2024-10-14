@@ -42,7 +42,7 @@ import rapaio.math.tensor.TensorManager;
  * V.dot(D). The matrix V may be badly conditioned, or even singular, so the
  * validity of the equation A = V*D*inverse(V) depends upon V.cond().
  */
-public class EigenDecomposition<N extends Number> implements Serializable {
+public final class EigenDecomposition<N extends Number> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 5064091847331016868L;
@@ -66,6 +66,9 @@ public class EigenDecomposition<N extends Number> implements Serializable {
      * @param a Square matrix
      */
     public EigenDecomposition(Tensor<N> a) {
+        if (a.nanCount() > 0) {
+            throw new IllegalArgumentException("Tensors cannot have NaN values.");
+        }
         if (a.dim(0) != a.dim(1)) {
             throw new IllegalArgumentException("Only square matrices can have eigen decomposition.");
         }
@@ -262,7 +265,7 @@ public class EigenDecomposition<N extends Number> implements Serializable {
                     double dl1 = real[l + 1];
                     double h = g - real[l];
                     for (int i = l + 2; i < n; i++) {
-                        real[i] += -h;
+                        real[i] -= h;
                     }
                     f = f + h;
 
@@ -922,6 +925,21 @@ public class EigenDecomposition<N extends Number> implements Serializable {
      */
     public Tensor<N> v() {
         return vectors;
+    }
+
+    /**
+     * Clamp negative real values which are less than given tolerance
+     * to zero value. Use this with caution. It can be used when a numerical
+     * error happen and the negative value are small.
+     *
+     * @param tol given tolerance for small negative values
+     */
+    public void clampRealValues(double tol) {
+        for (int i = 0; i < real.length; i++) {
+            if (Math.abs(real[i]) < tol && real[i] < 0) {
+                real[i] = 0;
+            }
+        }
     }
 
     /**

@@ -337,24 +337,6 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
-    public Tensor<Byte> scatter() {
-        if (!isMatrix()) {
-            throw new IllegalArgumentException("Scatter matrix can be computed only for matrices.");
-        }
-        Tensor<Byte> scatter = manager.ofByte().zeros(Shape.of(dim(1), dim(1)));
-        Tensor<Byte> mean = mean(0);
-        for (int k = 0; k < dim(0); k++) {
-            Tensor<Byte> row = takesq(0, k).sub(mean);
-            for (int i = 0; i < row.size(); i++) {
-                for (int j = 0; j < row.size(); j++) {
-                    scatter.incByte((byte) (row.getByte(i) * row.getByte(j)), i, j);
-                }
-            }
-        }
-        return scatter;
-    }
-
-    @Override
     public Byte trace() {
         if (!isMatrix()) {
             throw new OperationNotAvailableException("This operation is available only on tensor matrix.");

@@ -121,7 +121,6 @@ public class TensorTest {
             testVdot();
             testMv();
             testMm();
-            testScatter();
             testTrace();
             testDiag();
             splitTest();
@@ -1001,25 +1000,6 @@ public class TensorTest {
 
         }
 
-        void testScatter() {
-            if (!g.dType().floatingPoint()) {
-                return;
-            }
-            var t = g.random(Shape.of(10, 100));
-            var s = t.t().scatter();
-
-            var mean = t.mean(1).reshape(Shape.of(10, 1));
-            var r = g.zeros(Shape.of(10, 10));
-
-            for (int i = 0; i < t.dim(1); i++) {
-                r.add_(t.take(1, i).sub(mean).mm(t.take(1, i).sub(mean).t()));
-            }
-            assertTensorEqualValues(s, r);
-
-            IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(2, 3, 4)).scatter());
-            assertEquals("Scatter matrix can be computed only for matrices.", e.getMessage());
-        }
-
         void testTrace() {
             var e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10)).trace());
             assertEquals("This operation is available only on tensor matrix.", e.getMessage());
@@ -1261,7 +1241,7 @@ public class TensorTest {
             assertEquals("Indices cannot be empty.", e.getMessage());
 
             e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 10)).take(0, 0, -1));
-            assertEquals("Index values are invalid, must be in range [0,9].", e.getMessage());
+            assertEquals("Index values are invalid [0, -1], must be in range [0,9].", e.getMessage());
         }
 
         void testNorm() {

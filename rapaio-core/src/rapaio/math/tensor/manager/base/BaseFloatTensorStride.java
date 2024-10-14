@@ -337,24 +337,6 @@ public final class BaseFloatTensorStride extends AbstractStrideTensor<Float> {
     }
 
     @Override
-    public Tensor<Float> scatter() {
-        if (!isMatrix()) {
-            throw new IllegalArgumentException("Scatter matrix can be computed only for matrices.");
-        }
-        Tensor<Float> scatter = manager.ofFloat().zeros(Shape.of(dim(1), dim(1)));
-        Tensor<Float> mean = mean(0);
-        for (int k = 0; k < dim(0); k++) {
-            Tensor<Float> row = takesq(0, k).sub(mean);
-            for (int i = 0; i < row.size(); i++) {
-                for (int j = 0; j < row.size(); j++) {
-                    scatter.incFloat((float) (row.getFloat(i) * row.getFloat(j)), i, j);
-                }
-            }
-        }
-        return scatter;
-    }
-
-    @Override
     public Float trace() {
         if (!isMatrix()) {
             throw new OperationNotAvailableException("This operation is available only on tensor matrix.");

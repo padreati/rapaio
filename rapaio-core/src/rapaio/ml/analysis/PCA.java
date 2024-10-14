@@ -117,7 +117,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
         }
 
         logger.fine("build scatter");
-        Tensor<Double> s = x.scatter();
+        Tensor<Double> s = x.t().mm(x);
 
         logger.fine("compute eigenvalues");
         var evd = s.eig();

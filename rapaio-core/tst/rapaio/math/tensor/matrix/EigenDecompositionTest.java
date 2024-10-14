@@ -67,7 +67,8 @@ public class EigenDecompositionTest {
     }
 
     <N extends Number> void testSymmetric(TensorManager.OfType<N> ofType) {
-        Tensor<N> a = ofType.random(Shape.of(5, 5), random).scatter();
+        Tensor<N> x = ofType.random(Shape.of(5, 5), random);
+        Tensor<N> a = x.bsub(0, x.mean(0)).t().mm(x.bsub(0, x.mean(0)));
         var eig = a.eig();
         Tensor<N> v = eig.v();
         Tensor<N> d = eig.d();

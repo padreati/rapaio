@@ -1645,8 +1645,6 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return new SVDecomposition<>(this, wantu, wantv);
     }
 
-    public abstract Tensor<N> scatter();
-
     public abstract N trace();
 
     public abstract Tensor<N> diag();
