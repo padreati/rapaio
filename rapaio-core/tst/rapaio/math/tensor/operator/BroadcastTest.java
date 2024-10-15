@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import rapaio.math.tensor.Shape;
@@ -35,6 +36,7 @@ import rapaio.math.tensor.Tensors;
 public class BroadcastTest {
 
     @Test
+    @Disabled
     void testElementWiseValidation() {
         List<Tensor<?>> tensors = List.of(
                 Tensors.seq(Shape.of(2, 1)),

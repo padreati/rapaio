@@ -173,7 +173,8 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
             return binaryOp_(op, b.getDouble());
         }
         if (!shape().equals(b.shape())) {
-            throw new IllegalArgumentException("Tensors does not have the same shape.");
+            throw new IllegalArgumentException(
+                    String.format("Tensors does not have the same shape: %s, %s", shape(), b.shape()));
         }
         var order = layout.storageFastOrder();
         order = order == Order.S ? Order.defaultOrder() : order;
@@ -473,29 +474,15 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
             throw new IllegalArgumentException("Operation available only for float tensors.");
         }
         int size = size();
-        // first pass compute raw mean
-        double sum = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                sum += storage.getDouble(offset + i * loop.step);
-            }
-        }
-        double mean = (double) (sum / size);
-        // second pass adjustments for mean
-        sum = 0;
-        for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                sum += (double) (storage.getDouble(offset + i * loop.step) - mean);
-            }
-        }
-        mean += (double) (sum / size);
-        // third pass compute variance
+        double mean = (double) mean();
+
         double sum2 = 0;
         double sum3 = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                sum2 += (double) ((storage.getDouble(p) - mean) * (storage.getDouble(p) - mean));
-                sum3 += (double) (storage.getDouble(p) - mean);
+                double centered = (double) (storage.getDouble(p) - mean);
+                sum2 += (double) (centered * centered);
+                sum3 += centered;
                 p += loop.step;
             }
         }

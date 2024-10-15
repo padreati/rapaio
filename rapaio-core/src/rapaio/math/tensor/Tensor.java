@@ -33,6 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import rapaio.data.OperationNotAvailableException;
 import rapaio.data.VarDouble;
 import rapaio.math.tensor.iterators.PointerIterator;
 import rapaio.math.tensor.manager.AbstractStrideTensor;
@@ -1665,15 +1666,56 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
 
     public abstract Tensor<N> normalize_(N p);
 
+    public final Tensor<N> scatter(int ddof) {
+        return scatter(Order.defaultOrder(), ddof);
+    }
+
+    public final Tensor<N> scatter(Order askOrder, int ddof) {
+        if (!isMatrix()) {
+            throw new IllegalArgumentException("Available only for matrices.");
+        }
+        if(!dtype().floatingPoint()) {
+            throw new OperationNotAvailableException("Available only for floating point tensors.");
+        }
+        return t().mm(this, askOrder).div_(dtype().castValue(dim(0) - ddof));
+    }
+
+    public final Tensor<N> cov(int ddof) {
+        return cov(Order.defaultOrder(), ddof);
+    }
+
+    public final Tensor<N> cov(Order askOrder, int ddof) {
+        if (!isMatrix()) {
+            throw new OperationNotAvailableException("Available only for matrices.");
+        }
+        if(!dtype().floatingPoint()) {
+            throw new OperationNotAvailableException("Available only for floating point tensors.");
+        }
+        Tensor<N> mean = mean(0);
+        Tensor<N> centered = bsub(0, mean);
+        return centered.t().mm(centered, askOrder).div_(dtype().castValue(dim(0) - ddof));
+    }
+
+    public final Tensor<N> corr() {
+        return corr(Order.defaultOrder());
+    }
+
+    public final Tensor<N> corr(Order askOrder) {
+        if (!isMatrix()) {
+            throw new IllegalArgumentException("Available only for matrices.");
+        }
+        if(!dtype().floatingPoint()) {
+            throw new OperationNotAvailableException("Available only for floating point tensors.");
+        }
+        Tensor<N> std = stdc(0, 0);
+        Tensor<N> scaled = bsub(0, mean(0));
+        return scaled.t().mm(scaled, askOrder).bdiv_(0, std).bdiv_(1, std).div_(dtype().castValue(dim(0)));
+    }
+
+
     //------- SUMMARY OPERATIONS ----------//
 
-
-
-
     protected abstract Tensor<N> alongAxisOperation(Order order, int axis, Function<Tensor<N>, N> op);
-
-
-
 
     public abstract N mean();
 
@@ -1708,7 +1750,7 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> stdc(Order order, int axis, int ddof) {
-        return alongAxisOperation(order, axis, _ -> stdc(ddof));
+        return alongAxisOperation(order, axis, t -> t.stdc(ddof));
     }
 
     public final N var() {
