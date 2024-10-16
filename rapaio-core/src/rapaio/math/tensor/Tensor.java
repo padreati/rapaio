@@ -1674,7 +1674,7 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         if (!isMatrix()) {
             throw new IllegalArgumentException("Available only for matrices.");
         }
-        if(!dtype().floatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new OperationNotAvailableException("Available only for floating point tensors.");
         }
         return t().mm(this, askOrder).div_(dtype().castValue(dim(0) - ddof));
@@ -1688,7 +1688,7 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         if (!isMatrix()) {
             throw new OperationNotAvailableException("Available only for matrices.");
         }
-        if(!dtype().floatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new OperationNotAvailableException("Available only for floating point tensors.");
         }
         Tensor<N> mean = mean(0);
@@ -1704,7 +1704,7 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         if (!isMatrix()) {
             throw new IllegalArgumentException("Available only for matrices.");
         }
-        if(!dtype().floatingPoint()) {
+        if (!dtype().floatingPoint()) {
             throw new OperationNotAvailableException("Available only for floating point tensors.");
         }
         Tensor<N> std = stdc(0, 0);
@@ -1807,8 +1807,9 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Creates a padded copy of a tensor along a given dimension. The padded copy will be a tensor with the same shape different from the
-     * specified dimension which will have size {@code before + dim(axis) + after}, having first and last elements padded with 0.
+     * Creates a padded copy of a tensor along a given dimension. The padded copy will be a tensor with the same shape
+     * on all axis other than the specified as parameter, the later being increased to {@code before + dim(axis) + after},
+     * having first and last elements padded with 0.
      * <p>
      *
      * @return resized padded copy of the original tensor

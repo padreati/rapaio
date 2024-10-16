@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.data.group;
+package rapaio.data;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,11 +43,6 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.data.Frame;
-import rapaio.data.Group;
-import rapaio.data.SolidFrame;
-import rapaio.data.VarNominal;
-import rapaio.data.VarRange;
 import rapaio.data.string.StringBag;
 import rapaio.datasets.Datasets;
 import rapaio.printer.opt.POpt;
@@ -78,41 +73,41 @@ public class GroupTest {
         assertEquals("""
                 group by: class, outlook
                 group count: 5
-
+                
                      class  outlook  row     temp humidity windy      class  outlook  row     temp humidity windy\s
-                 [0] noplay rain     9  ->    71     80     true  [7] play   overcast 7  ->    64     65     true\s
-                 [1] noplay rain     10  ->   65     70     true  [8] play   overcast 8  ->    81     75    false\s
-                 [2] noplay sunny    1  ->    80     90     true  [9] play   rain     11  ->   75     80    false\s
-                 [3] noplay sunny    2  ->    85     85    false [10] play   rain     12  ->   68     80    false\s
-                 [4] noplay sunny    3  ->    72     95    false [11] play   rain     13  ->   70     96    false\s
-                 [5] play   overcast 5  ->    72     90     true [12] play   sunny    0  ->    75     70     true\s
-                 [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false\s
+                 [0] noplay rain      9  ->   71     80     true  [7] play   overcast  7  ->   64     65     true\s
+                 [1] noplay rain     10  ->   65     70     true  [8] play   overcast  8  ->   81     75    false\s
+                 [2] noplay sunny     1  ->   80     90     true  [9] play   rain     11  ->   75     80    false\s
+                 [3] noplay sunny     2  ->   85     85    false [10] play   rain     12  ->   68     80    false\s
+                 [4] noplay sunny     3  ->   72     95    false [11] play   rain     13  ->   70     96    false\s
+                 [5] play   overcast  5  ->   72     90     true [12] play   sunny     0  ->   75     70     true\s
+                 [6] play   overcast  6  ->   83     78    false [13] play   sunny     4  ->   69     70    false\s
                 """, group1.toContent(P_OPTS));
         assertEquals("""
                 group by: class, outlook
                 group count: 5
-
+                
                      class  outlook  row     temp humidity windy      class  outlook  row     temp humidity windy\s
-                 [0] noplay rain     9  ->    71     80     true  [7] play   overcast 7  ->    64     65     true\s
-                 [1] noplay rain     10  ->   65     70     true  [8] play   overcast 8  ->    81     75    false\s
-                 [2] noplay sunny    1  ->    80     90     true  [9] play   rain     11  ->   75     80    false\s
-                 [3] noplay sunny    2  ->    85     85    false [10] play   rain     12  ->   68     80    false\s
-                 [4] noplay sunny    3  ->    72     95    false [11] play   rain     13  ->   70     96    false\s
-                 [5] play   overcast 5  ->    72     90     true [12] play   sunny    0  ->    75     70     true\s
-                 [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false\s
+                 [0] noplay rain      9  ->   71     80     true  [7] play   overcast  7  ->   64     65     true\s
+                 [1] noplay rain     10  ->   65     70     true  [8] play   overcast  8  ->   81     75    false\s
+                 [2] noplay sunny     1  ->   80     90     true  [9] play   rain     11  ->   75     80    false\s
+                 [3] noplay sunny     2  ->   85     85    false [10] play   rain     12  ->   68     80    false\s
+                 [4] noplay sunny     3  ->   72     95    false [11] play   rain     13  ->   70     96    false\s
+                 [5] play   overcast  5  ->   72     90     true [12] play   sunny     0  ->   75     70     true\s
+                 [6] play   overcast  6  ->   83     78    false [13] play   sunny     4  ->   69     70    false\s
                 """, group1.toFullContent(P_OPTS));
         assertEquals("""
                 group by: class, outlook
                 group count: 5
-
+                
                      class  outlook  row     temp humidity windy      class  outlook  row     temp humidity windy\s
-                 [0] noplay rain     9  ->    71     80     true  [7] play   overcast 7  ->    64     65     true\s
-                 [1] noplay rain     10  ->   65     70     true  [8] play   overcast 8  ->    81     75    false\s
-                 [2] noplay sunny    1  ->    80     90     true  [9] play   rain     11  ->   75     80    false\s
-                 [3] noplay sunny    2  ->    85     85    false [10] play   rain     12  ->   68     80    false\s
-                 [4] noplay sunny    3  ->    72     95    false [11] play   rain     13  ->   70     96    false\s
-                 [5] play   overcast 5  ->    72     90     true [12] play   sunny    0  ->    75     70     true\s
-                 [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false\s
+                 [0] noplay rain      9  ->   71     80     true  [7] play   overcast  7  ->   64     65     true\s
+                 [1] noplay rain     10  ->   65     70     true  [8] play   overcast  8  ->   81     75    false\s
+                 [2] noplay sunny     1  ->   80     90     true  [9] play   rain     11  ->   75     80    false\s
+                 [3] noplay sunny     2  ->   85     85    false [10] play   rain     12  ->   68     80    false\s
+                 [4] noplay sunny     3  ->   72     95    false [11] play   rain     13  ->   70     96    false\s
+                 [5] play   overcast  5  ->   72     90     true [12] play   sunny     0  ->   75     70     true\s
+                 [6] play   overcast  6  ->   83     78    false [13] play   sunny     4  ->   69     70    false\s
                 """, group1.toSummary(P_OPTS));
 
         assertEquals("temp,humidity,windy", String.join(",", group1.getFeatureNameList()));
@@ -121,38 +116,38 @@ public class GroupTest {
         assertEquals("""
                 group by: class
                 group count: 3
-
+                
                       class     row      sepal-length sepal-width petal-length petal-width\s
-                  [0] setosa    0  ->        5.1          3.5         1.4          0.2    \s
-                  [1] setosa    1  ->        4.9          3           1.4          0.2    \s
-                  [2] setosa    2  ->        4.7          3.2         1.3          0.2    \s
-                  [3] setosa    3  ->        4.6          3.1         1.5          0.2    \s
-                  [4] setosa    4  ->        5            3.6         1.4          0.2    \s
-                  [5] setosa    5  ->        5.4          3.9         1.7          0.4    \s
-                  [6] setosa    6  ->        4.6          3.4         1.4          0.3    \s
-                  [7] setosa    7  ->        5            3.4         1.5          0.2    \s
-                  [8] setosa    8  ->        4.4          2.9         1.4          0.2    \s
-                  [9] setosa    9  ->        4.9          3.1         1.5          0.1    \s
-                 [10] setosa    10  ->       5.4          3.7         1.5          0.2    \s
-                 [11] setosa    11  ->       4.8          3.4         1.6          0.2    \s
-                 [12] setosa    12  ->       4.8          3           1.4          0.1    \s
-                 [13] setosa    13  ->       4.3          3           1.1          0.1    \s
-                 [14] setosa    14  ->       5.8          4           1.2          0.2    \s
-                 [15] setosa    15  ->       5.7          4.4         1.5          0.4    \s
-                 [16] setosa    16  ->       5.4          3.9         1.3          0.4    \s
-                 [17] setosa    17  ->       5.1          3.5         1.4          0.3    \s
-                 [18] setosa    18  ->       5.7          3.8         1.7          0.3    \s
-                 [19] setosa    19  ->       5.1          3.8         1.5          0.3    \s
-                 [20] setosa    20  ->       5.4          3.4         1.7          0.2    \s
-                 [21] setosa    21  ->       5.1          3.7         1.5          0.4    \s
-                 [22] setosa    22  ->       4.6          3.6         1            0.2    \s
-                 [23] setosa    23  ->       5.1          3.3         1.7          0.5    \s
-                 [24] setosa    24  ->       4.8          3.4         1.9          0.2    \s
-                 [25] setosa    25  ->       5            3           1.6          0.2    \s
-                 [26] setosa    26  ->       5            3.4         1.6          0.4    \s
-                 [27] setosa    27  ->       5.2          3.5         1.5          0.2    \s
-                 [28] setosa    28  ->       5.2          3.4         1.4          0.2    \s
-                 [29] setosa    29  ->       4.7          3.2         1.6          0.2    \s
+                  [0] setosa      0  ->      5.1          3.5         1.4          0.2    \s
+                  [1] setosa      1  ->      4.9          3           1.4          0.2    \s
+                  [2] setosa      2  ->      4.7          3.2         1.3          0.2    \s
+                  [3] setosa      3  ->      4.6          3.1         1.5          0.2    \s
+                  [4] setosa      4  ->      5            3.6         1.4          0.2    \s
+                  [5] setosa      5  ->      5.4          3.9         1.7          0.4    \s
+                  [6] setosa      6  ->      4.6          3.4         1.4          0.3    \s
+                  [7] setosa      7  ->      5            3.4         1.5          0.2    \s
+                  [8] setosa      8  ->      4.4          2.9         1.4          0.2    \s
+                  [9] setosa      9  ->      4.9          3.1         1.5          0.1    \s
+                 [10] setosa     10  ->      5.4          3.7         1.5          0.2    \s
+                 [11] setosa     11  ->      4.8          3.4         1.6          0.2    \s
+                 [12] setosa     12  ->      4.8          3           1.4          0.1    \s
+                 [13] setosa     13  ->      4.3          3           1.1          0.1    \s
+                 [14] setosa     14  ->      5.8          4           1.2          0.2    \s
+                 [15] setosa     15  ->      5.7          4.4         1.5          0.4    \s
+                 [16] setosa     16  ->      5.4          3.9         1.3          0.4    \s
+                 [17] setosa     17  ->      5.1          3.5         1.4          0.3    \s
+                 [18] setosa     18  ->      5.7          3.8         1.7          0.3    \s
+                 [19] setosa     19  ->      5.1          3.8         1.5          0.3    \s
+                 [20] setosa     20  ->      5.4          3.4         1.7          0.2    \s
+                 [21] setosa     21  ->      5.1          3.7         1.5          0.4    \s
+                 [22] setosa     22  ->      4.6          3.6         1            0.2    \s
+                 [23] setosa     23  ->      5.1          3.3         1.7          0.5    \s
+                 [24] setosa     24  ->      4.8          3.4         1.9          0.2    \s
+                 [25] setosa     25  ->      5            3           1.6          0.2    \s
+                 [26] setosa     26  ->      5            3.4         1.6          0.4    \s
+                 [27] setosa     27  ->      5.2          3.5         1.5          0.2    \s
+                 [28] setosa     28  ->      5.2          3.4         1.4          0.2    \s
+                 [29] setosa     29  ->      4.7          3.2         1.6          0.2    \s
                  ...  ...                ...          ...         ...          ...        \s
                 [141] virginica 141  ->      6.9          3.1         5.1          2.3    \s
                 [142] virginica 142  ->      5.8          2.7         5.1          1.9    \s
@@ -178,29 +173,29 @@ public class GroupTest {
                 group by: class
                 group count: 3
                 group by functions: GroupByFunction{name=count,varNames=[petal-width]}
-
+                
                       class    petal-width_count\s
                 [0]     setosa                50\s
                 [1] versicolor                50\s
                 [2]  virginica                50\s
-
+                
                 """, agg1.toContent(P_OPTS));
         assertEquals("""
                 group by: class
                 group count: 3
                 group by functions: GroupByFunction{name=count,varNames=[petal-width]}
-
+                
                       class    petal-width_count\s
                 [0]     setosa                50\s
                 [1] versicolor                50\s
                 [2]  virginica                50\s
-
+                
                 """, agg1.toFullContent(P_OPTS));
         assertEquals("""
                 group by: class
                 group count: 3
                 group by functions: GroupByFunction{name=count,varNames=[petal-width]}
-
+                
                 """, agg1.toSummary(P_OPTS));
 
         assertEquals("""
@@ -210,6 +205,28 @@ public class GroupTest {
                 [2]  virginica                50\s
                 """, agg1.toFrame().toContent(P_OPTS));
 
+
+        assertEquals("""
+                group by: class, sepal-width
+                group count: 43
+                group by functions: GroupByFunction{name=count,varNames=[class]}
+                
+                       class    sepal-width class_count        class    sepal-width class_count        class    sepal-width class_count\s
+                 [0]     setosa         2.3           1 [13]     setosa         4.1           1 [26] versicolor         3.1           3\s
+                 [1]     setosa         2.9           1 [14]     setosa         4.2           1 [27] versicolor         3.2           3\s
+                 [2]     setosa         3.0           6 [15]     setosa         4.4           1 [28] versicolor         3.3           1\s
+                 [3]     setosa         3.1           4 [16] versicolor         2.0           1 [29] versicolor         3.4           1\s
+                 [4]     setosa         3.2           5 [17] versicolor         2.2           2 ...     ...         ...             ...\s
+                 [5]     setosa         3.3           2 [18] versicolor         2.3           3 [35]  virginica         2.9           2\s
+                 [6]     setosa         3.4           9 [19] versicolor         2.4           3 [36]  virginica         3.0          12\s
+                 [7]     setosa         3.5           6 [20] versicolor         2.5           4 [37]  virginica         3.1           4\s
+                 [8]     setosa         3.6           3 [21] versicolor         2.6           3 [38]  virginica         3.2           5\s
+                 [9]     setosa         3.7           3 [22] versicolor         2.7           5 [39]  virginica         3.3           3\s
+                [10]     setosa         3.8           4 [23] versicolor         2.8           6 [40]  virginica         3.4           2\s
+                [11]     setosa         3.9           2 [24] versicolor         2.9           7 [41]  virginica         3.6           1\s
+                [12]     setosa         4.0           1 [25] versicolor         3.0           8 [42]  virginica         3.8           2\s
+                
+                """, Group.from(iris, "class", "sepal-width").aggregate(Group.count("class")).toContent());
     }
 
     @Test
@@ -231,11 +248,11 @@ public class GroupTest {
                     class  temp_sum temp_sum_N1 temp_mean temp_mean_N1 windy_nunique windy_nunique_N1 temp_min temp_min_N1\s
                 [0] noplay   373     0.3621359    74.6     0.5054201               2       0.5           65     0.503876  \s
                 [1]   play   657     0.6378641    73       0.4945799               2       0.5           64     0.496124  \s
-
+                
                     temp_max temp_max_N1 temp_skewness temp_skewness_N1 temp_std  temp_std_N1 temp_kurtosis temp_kurtosis_N1\s
                 [0]    85     0.5059524    0.1894857      0.3651726     7.059745   0.5484741   -1.2885832      0.5910967    \s
                 [1]    83     0.4940476    0.3294078      0.6348274     5.8118653  0.4515259   -0.8914041      0.4089033    \s
-
+                
                 """, group.aggregate(
                 sum("temp"), sum(1, "temp"), mean("temp"), mean(1, "temp"), nunique("windy"), nunique(1, "windy"),
                 min("temp"), min(1, "temp"), max("temp"), max(1, "temp"), skewness("temp"), skewness(1, "temp"),
@@ -250,8 +267,8 @@ public class GroupTest {
         String[] groupLevels = new String[] {"alpha", "beta", "gamma", "delta", "iota", "niu", "miu"};
         String[] fieldLevels = new String[] {"x", "y", "z", "t", "a", "b", "d", "c", "f", "m", "n", "p", "q", "w", "e", "j", "k"};
 
-        VarNominal varGroup = VarNominal.from(N, row -> groupLevels[random.nextInt(groupLevels.length)], groupLevels).name("group");
-        VarNominal field = VarNominal.from(N, row -> fieldLevels[random.nextInt(fieldLevels.length)], fieldLevels).name("field");
+        VarNominal varGroup = VarNominal.from(N, _ -> groupLevels[random.nextInt(groupLevels.length)], groupLevels).name("group");
+        VarNominal field = VarNominal.from(N, _ -> fieldLevels[random.nextInt(fieldLevels.length)], fieldLevels).name("field");
 
         Frame df = SolidFrame.byVars(varGroup, field);
 

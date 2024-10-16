@@ -72,7 +72,7 @@ public class UniqueTest {
 
     @Test
     void testSortedUnsortedInt() {
-        VarInt x = VarInt.from(100, row -> random.nextInt(10000));
+        VarInt x = VarInt.from(100, _ -> random.nextInt(10000));
 
         Unique unsorted = Unique.of(x, false);
         Unique sorted = Unique.of(x, true);
@@ -88,7 +88,7 @@ public class UniqueTest {
 
     @Test
     void testSortedUnsortedBinary() {
-        Var x = VarBinary.from(100, row -> {
+        Var x = VarBinary.from(100, _ -> {
             int v = random.nextInt(3);
             if (v == 0) {
                 return null;
@@ -109,7 +109,7 @@ public class UniqueTest {
 
     @Test
     void testSortedUnsortedLabel() {
-        Var x = VarNominal.from(100, row -> {
+        Var x = VarNominal.from(100, _ -> {
             int len = random.nextInt(3);
             if (len == 0) {
                 return "?";

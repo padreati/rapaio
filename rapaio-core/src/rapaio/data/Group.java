@@ -52,9 +52,10 @@ import rapaio.util.collection.Int2IntOpenHashMap;
  * values from one or more key variables. This data structure index is used as
  * basis for aggregation operations realized with GroupByAggregate.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/18.
  */
-public class Group implements Printable {
+public final class Group implements Printable {
 
     ///// Builders //////
 
@@ -147,18 +148,13 @@ public class Group implements Printable {
         return new Aggregate(this, Arrays.asList(functions));
     }
 
-
-    /**
-     * IMPLEMENTATION
-     */
-
     // frame on which grouping is realized
     private final Frame df;
 
-    // list of primary key variable names
+    // list of index variable names
     private final List<String> pkNames;
 
-    // other than pk var names from source frame
+    // non index variable from source frame
     private final List<String> featureNames;
 
     // maps rows to group ids
@@ -363,7 +359,7 @@ public class Group implements Printable {
             List<String> groupValues = new ArrayList<>();
             IndexNode node = this;
             while (node.parent != null) {
-                groupValues.add(0, node.levelValue);
+                groupValues.addFirst(node.levelValue);
                 node = node.parent;
             }
             return groupValues;
@@ -452,7 +448,7 @@ public class Group implements Printable {
         for (int j = 0; j < groupValues.size(); j++) {
             tt.textLeft(i + 1, j + 1, groupValues.get(j));
         }
-        tt.textLeft(i + 1, groupValues.size() + 1, String.format("%d  -> ", r));
+        tt.textRight(i + 1, groupValues.size() + 1, String.format("%d  -> ", r));
         for (int j = 0; j < featureNames.size(); j++) {
             TextTableUtil.textType(tt, i + 1, j + groupValues.size() + 2, df, r, featureNames.get(j));
         }
@@ -492,7 +488,7 @@ public class Group implements Printable {
                 for (int i = 0; i < groupValues.size(); i++) {
                     tt.textLeft(pos, i + 1, groupValues.get(i));
                 }
-                tt.textLeft(pos, groupValues.size() + 1, String.format("%d  -> ", row));
+                tt.textRight(pos, groupValues.size() + 1, String.format("%d  -> ", row));
                 for (int i = 0; i < featureNames.size(); i++) {
                     TextTableUtil.textType(tt, pos, i + groupValues.size() + 2, df, row, featureNames.get(i));
                 }
@@ -512,6 +508,7 @@ public class Group implements Printable {
      * GroubBy aggregate data structure is the result of applying aggregation functions
      * on features of a GroupBy data structure.
      * <p>
+     *
      * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
      */
     public static class Aggregate implements Printable {
@@ -605,7 +602,7 @@ public class Group implements Printable {
 
             // make unstack frame
             Frame unstackedDf = result.mapRows(originalGroupRows);
-            if (groupNames.size() > 0) {
+            if (!groupNames.isEmpty()) {
                 unstackedDf = unstackedDf.mapVars(groupNames);
             }
 
@@ -721,7 +718,7 @@ public class Group implements Printable {
                 }
                 if (tailRows != 0) {
                     tt.textCenter(headRows + 1, 0, "...");
-                    for (int i = 0; i < tailRows; i++) {
+                    for (int i = 1; i < tailRows; i++) {
                         tt.textCenter(headRows + i + 1, 0, String.format("[%d]", aggregateDf.rowCount() - tailRows + i));
                     }
                 }
@@ -729,7 +726,6 @@ public class Group implements Printable {
             // populate rows
             int pos = 1;
             for (int groupId : selectedGroupIds) {
-
                 IndexNode node = group.getGroupIdToLastLevelIndex().get(groupId);
                 List<String> groupValues = node.getLevelValues();
 
@@ -740,6 +736,14 @@ public class Group implements Printable {
                 for (int i = 0; i < aggregateDf.varCount(); i++) {
                     tt.textRight(pos, i + groupValues.size() + 1, aggregateDf.getLabel(groupId, i));
                 }
+                if (!full && pos == headRows + 1) {
+                    for (int i = 0; i < groupValues.size(); i++) {
+                        tt.textCenter(pos, i + 1, "...");
+                    }
+                    for (int i = 0; i < aggregateDf.varCount(); i++) {
+                        tt.textRight(pos, i + groupValues.size() + 1, "...");
+                    }
+                }
                 pos++;
             }
             sb.append(tt.getDynamicText(printer, options)).append("\n");
@@ -748,7 +752,7 @@ public class Group implements Printable {
 
         @Override
         public String toContent(Printer printer, POpt<?>... options) {
-            return selectedContent(printer, options, 30, 10);
+            return selectedContent(printer, options, 30, 9);
         }
 
         @Override
