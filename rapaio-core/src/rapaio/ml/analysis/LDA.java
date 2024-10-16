@@ -19,15 +19,16 @@
  *
  */
 
-package rapaio.experiment.ml.analysis;
+package rapaio.ml.analysis;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
+import rapaio.core.param.ParamSet;
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -35,133 +36,97 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
-import rapaio.experiment.math.linear.DMatrix;
-import rapaio.experiment.math.linear.DVector;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
 /**
- * Linear discriminant analysis
- * <p>
- * <p>
+ * Linear discriminant analysis data transformation. This tool is similar with PCA, but it
+ * projects the features on linear directions which separates estimated Gaussians class
+ * distributions.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/5/15.
  */
-public class LDA implements Printable {
+public class LDA extends ParamSet<LDA> implements Printable {
+
+    public static LDA newModel() {
+        return new LDA();
+    }
+
     private static final Logger logger = Logger.getLogger(LDA.class.getName());
 
-    private double tol = 1e-24;
-    private int maxRuns = 10_000;
-    protected DVector eigenValues;
-    protected DMatrix eigenVectors;
+    public final ValueParam<Boolean, LDA> scaling = new ValueParam<>(this, true, "Scaling data or not");
 
     protected String[] inputNames;
-    protected DVector mean;
-    protected DVector sd;
-
-    protected final boolean scaling = true;
-
-    public DVector eigenValues() {
-        return eigenValues;
-    }
-
-    public DMatrix eigenVectors() {
-        return eigenVectors;
-    }
-
     private String targetName;
     private List<String> targetLevels;
 
-    private DVector[] classMean;
+    protected Tensor<Double> vmean;
+    protected Tensor<Double> vstd;
 
-    public LDA withMaxRuns(int maxRuns) {
-        this.maxRuns = maxRuns;
-        return this;
+    protected Tensor<Double> eigenValues;
+    protected Tensor<Double> eigenVectors;
+
+    private LDA() {
     }
 
-    public LDA withTol(double tol) {
-        this.tol = tol;
-        return this;
+    public Tensor<Double> eigenValues() {
+        return eigenValues;
     }
 
-    public void fit(Frame df, String... targetVars) {
-        validate(df, targetVars);
+    public Tensor<Double> eigenVectors() {
+        return eigenVectors;
+    }
 
-        logger.fine("start lda predict");
-        DMatrix xx = DMatrix.copy(df.removeVars(VarRange.of(targetName)));
+    public void fit(Frame df, String targetVar) {
+        validate(df, targetVar);
 
-        // compute mean and sd
+        logger.fine("start lda fit");
+        Tensor<Double> mx = df.mapVars(inputNames).tensor();
+        Tensor<Double> mxx = scaling.get() ? mx.bsub(0, mx.mean(0)).bdiv_(0, mx.std(0)) : mx;
 
-        mean = DVector.zeros(xx.cols());
-        sd = DVector.zeros(xx.cols());
-        for (int i = 0; i < xx.cols(); i++) {
-            mean.set(i, xx.mapCol(i).mean());
-            sd.set(i, Math.sqrt(xx.mapCol(i).variance()));
-        }
-
-        // scale the whole data if it is the case
-
-        if (scaling) {
-            for (int i = 0; i < xx.rows(); i++) {
-                for (int j = 0; j < xx.cols(); j++) {
-                    if (sd.get(j) != 0)
-                        xx.set(i, j, (xx.get(i, j) - mean.get(j)) / sd.get(j));
-                }
-            }
-        }
+        // compute global mean and std
+        vmean = mxx.mean(0);
+        vstd = mxx.std(0);
 
         // compute sliced data for each class
-
-        DMatrix[] x = new DMatrix[targetLevels.size()];
+        Tensor<Double>[] mxxs = new Tensor[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
             int index = i;
-            x[i] = xx.mapRows(df.stream()
+            mxxs[i] = mxx.take(0, df.stream()
                     .filter(s -> s.getLabel(targetName).equals(targetLevels.get(index)))
                     .mapToInt(FSpot::row)
                     .toArray());
         }
 
         // compute class means
-
-        classMean = new DVector[targetLevels.size()];
+        Tensor<Double>[] mcmeans = new Tensor[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
-            classMean[i] = DVector.zeros(x[i].cols());
-            for (int j = 0; j < x[i].cols(); j++) {
-                classMean[i].set(j, x[i].mapCol(j).mean());
-            }
+            mcmeans[i] = mxxs[i].mean(0);
         }
 
         // build within scatter matrix
 
-        DMatrix sw = DMatrix.empty(inputNames.length, inputNames.length);
-        for (int i = 0; i < targetLevels.size(); i++) {
-            sw.add(x[i].scatter());
-        }
+        Tensor<Double> xc = mxx.bsub(0, vmean).bdiv(0, vstd);
+        Tensor<Double> sw = xc.t().mm(xc).div_((double) (xc.dim(0)));
 
         // build between-class scatter matrix
 
-        DMatrix sb = DMatrix.empty(inputNames.length, inputNames.length);
-        for (int i = 0; i < targetLevels.size(); i++) {
-            DMatrix cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().sub(mean.asMatrix());
-            sb.add(cm.dot(cm.t()).mul(x[i].rows()));
-        }
+        Tensor<Double> mcmeansc = Tensors.stack(0, List.of(mcmeans)).bsub(0, vmean);
+        Tensor<Double> sb = mcmeansc.t().mm(mcmeansc).div_((double) (mcmeansc.dim(0)));
 
         // inverse sw
-        DMatrix swi = sw.qr().inv();
-//        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
+        Tensor<Double> swi = sw.qr().inv();
 
         // use decomp of sbe
-        var evd = sb.evd();
-        DMatrix sbplus = evd.power(0.5);
-        DMatrix sbminus = evd.power(-0.5);
-
-        evd = sbplus.dot(swi).dot(sbplus).evd();
-
+        var evd = sb.mm(swi).eig();
 
 
         logger.fine("compute eigenvalues");
         eigenValues = evd.real();
-        eigenVectors = sbminus.dot(evd.v());
+        eigenVectors = evd.v();
 
         logger.fine("sort eigen values and vectors");
 
@@ -173,43 +138,62 @@ public class LDA implements Printable {
         Arrays.sort(rows, (o1, o2) -> -Double.compare(eigenValues.get(o1), eigenValues.get(o2)));
         int[] indexes = Arrays.stream(rows).mapToInt(v -> v).toArray();
 
-        eigenValues = eigenValues.asMatrix().mapRows(indexes).mapCol(0).copy();
-        eigenVectors = eigenVectors.mapCols(indexes).copy();
+        eigenValues = eigenValues.take(0, indexes).copy();
+        eigenVectors = eigenVectors.take(1, indexes).copy();
     }
 
-    public Frame predict(Frame df, BiFunction<DVector, DMatrix, Integer> kFunction) {
-        DMatrix x = DMatrix.copy(df.mapVars(inputNames));
+    /**
+     * Transforms a given matrix into projections of the first k linear discriminant projections.
+     *
+     * @param df initial data frame
+     * @param k  number of principal components used
+     * @return transformed input
+     */
+    public Frame transform(Frame df, int k) {
+        return transform("lda_", df, k);
+    }
 
-        if (scaling) {
-            for (int i = 0; i < x.rows(); i++) {
-                for (int j = 0; j < x.cols(); j++) {
-                    x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
-                }
-            }
+    /**
+     * Transforms a given matrix into projections of the first k principal components.
+     *
+     * @param prefix prefix of the new variable names after transformation
+     * @param df     initial data frame
+     * @param k      number of principal components used
+     * @return transformed input
+     */
+    public Frame transform(String prefix, Frame df, int k) {
+        if (k <= 0 || k > targetLevels.size()) {
+            throw new IllegalArgumentException("k must be a positive number less or equal with the number of levels.");
         }
 
-        int k = kFunction.apply(eigenValues, eigenVectors);
+        Tensor<Double> x = df.mapVars(inputNames).tensor();
+        if (scaling.get()) {
+            x = x.bsub(0, x.mean(0)).bdiv_(0, x.std(0));
+        }
 
-        int[] dim = new int[k];
+        if (targetLevels.size() < k) {
+        }
+
+        int[] dims = new int[k];
         String[] names = new String[k];
-        for (int i = 0; i < dim.length; i++) {
-            dim[i] = i;
-            names[i] = "lda_" + (i + 1);
+        for (int i = 0; i < dims.length; i++) {
+            dims[i] = i;
+            names[i] = prefix + (i + 1);
         }
-        DMatrix result = x.dot(eigenVectors.mapCols(dim));
+        Tensor<Double> result = x.mm(eigenVectors.take(1, dims));
         Frame rest = df.removeVars(VarRange.of(inputNames));
         return rest.varCount() == 0 ?
-                DMatrix.matrixFrame(result, names) :
-                DMatrix.matrixFrame(result, names).bindVars(df.removeVars(VarRange.of(inputNames)));
+                SolidFrame.matrix(result, names) :
+                SolidFrame.matrix(result, names).bindVars(df.removeVars(VarRange.of(inputNames)));
     }
 
-    private void validate(Frame df, String... targetVars) {
+    private void validate(Frame df, String targetVar) {
 
-        List<String> targetNames = VarRange.of(targetVars).parseVarNames(df);
-        if (targetNames.size() > 1)
+        List<String> targetNames = VarRange.of(targetVar).parseVarNames(df);
+        if (targetNames.size() > 1) {
             throw new IllegalArgumentException("LDA needs one target var");
-        targetName = targetNames.get(0);
-
+        }
+        targetName = targetNames.getFirst();
         Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BINARY, VarType.INT, VarType.DOUBLE));
         df.varStream().forEach(var -> {
             if (targetName.equals(var.name())) {
