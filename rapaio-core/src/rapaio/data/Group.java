@@ -505,7 +505,7 @@ public final class Group implements Printable {
     }
 
     /**
-     * GroubBy aggregate data structure is the result of applying aggregation functions
+     * Groub aggregate data structure is the result of applying aggregation functions
      * on features of a GroupBy data structure.
      * <p>
      *

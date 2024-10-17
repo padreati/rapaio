@@ -21,3 +21,8 @@ It is important to understand that, while the group of rows which corresponds to
 a single row is obtained for each group of rows. There is however the possibility to generate a single row 
 with multiple variable values, but not multiple rows.
 
+TODO:
+- normalization level
+- to Frame and unstack level
+
+It would be interesting to refactor everything to allow grouping with custom code.
