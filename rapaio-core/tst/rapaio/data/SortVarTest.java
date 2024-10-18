@@ -141,8 +141,8 @@ public class SortVarTest {
 
         Frame df = Csv.instance()
                 .quotes.set(false)
-                .types.add(VarType.DOUBLE, "z")
-                .types.add(VarType.INT, "y")
+                .varTypes.add(VarType.DOUBLE, "z")
+                .varTypes.add(VarType.INT, "y")
                 .read(SortVarTest.class, "sorted-frame.csv");
 
         Var nominal = df.rvar(0);

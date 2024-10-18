@@ -257,7 +257,7 @@ public class CForestTest {
 
         for (int times = 0; times < 100; times++) {
 
-            Frame df = Csv.instance().types.add(VarType.NOMINAL, "target").read(new ByteArrayInputStream(data(times)));
+            Frame df = Csv.instance().varTypes.add(VarType.NOMINAL, "target").read(new ByteArrayInputStream(data(times)));
 
             var model = CForest.newModel().runs.set(3);
             var result = model.fit(df.removeVars("id"), "target").predict(df).firstClasses();
@@ -265,7 +265,7 @@ public class CForestTest {
 
             for (int i = 0; i < 200; i++) {
                 Frame test = Csv.instance()
-                        .types.add(VarType.NOMINAL, "target")
+                        .varTypes.add(VarType.NOMINAL, "target")
                         .read(new ByteArrayInputStream(data(times + 1 + i)));
                 var testClasses = model.predict(test).firstClasses();
                 var testFrame = SolidFrame.byVars(test.rvar("id"), testClasses.name("class"));

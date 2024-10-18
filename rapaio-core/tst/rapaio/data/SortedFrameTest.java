@@ -48,8 +48,8 @@ public class SortedFrameTest {
         random = new Random(1);
         df = Csv.instance()
                 .quotes.set(false)
-                .types.add(VarType.DOUBLE, "z")
-                .types.add(VarType.INT, "y")
+                .varTypes.add(VarType.DOUBLE, "z")
+                .varTypes.add(VarType.INT, "y")
                 .read(SortedFrameTest.class, "sorted-frame.csv");
     }
 

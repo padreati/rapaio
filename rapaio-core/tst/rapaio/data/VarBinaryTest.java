@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.core.stat.Mean;
 import rapaio.printer.opt.POpt;
+import rapaio.text.TextParserException;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -244,13 +245,13 @@ public class VarBinaryTest {
 
     @Test
     void testAddInvalidLabel() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarBinary.empty().addLabel("x"));
+        TextParserException ex = assertThrows(TextParserException.class, () -> VarBinary.empty().addLabel("x"));
         assertEquals("The value x could not be converted to a binary value", ex.getMessage());
     }
 
     @Test
     void testSetInvalidLabel() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarBinary.empty(0).setLabel(0, "x"));
+        TextParserException ex = assertThrows(TextParserException.class, () -> VarBinary.empty(0).setLabel(0, "x"));
         assertEquals("The value x could not be converted to a binary value", ex.getMessage());
     }
 

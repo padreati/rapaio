@@ -50,7 +50,7 @@ public class Datasets {
         try {
             return Csv.instance()
                     .defaultTypes.set(VarType.DOUBLE)
-                    .types.add(VarType.NOMINAL, "class")
+                    .varTypes.add(VarType.NOMINAL, "class")
                     .read(Datasets.class, "iris-r.csv");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -75,7 +75,7 @@ public class Datasets {
 
     public static Frame loadSpamBase() throws IOException {
         return Csv.instance().defaultTypes.set(VarType.DOUBLE)
-                .types.add(VarType.NOMINAL, "spam")
+                .varTypes.add(VarType.NOMINAL, "spam")
                 .read(Datasets.class, "spam-base.csv");
     }
 
@@ -97,8 +97,8 @@ public class Datasets {
                     .separatorChar.set(',')
                     .header.set(true)
                     .quotes.set(false)
-                    .types.add(VarType.DOUBLE, "temp", "humidity")
-                    .types.add(VarType.NOMINAL, "windy")
+                    .varTypes.add(VarType.DOUBLE, "temp", "humidity")
+                    .varTypes.add(VarType.NOMINAL, "windy")
                     .read(Datasets.class, "play.csv");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -116,7 +116,7 @@ public class Datasets {
         return Csv.instance()
                 .separatorChar.set(',')
                 .defaultTypes.set(VarType.DOUBLE)
-                .types.add(VarType.NOMINAL, "class")
+                .varTypes.add(VarType.NOMINAL, "class")
                 .read(Datasets.class.getResourceAsStream("life_science.csv"));
     }
 
@@ -125,7 +125,7 @@ public class Datasets {
             return Csv.instance()
                     .quotes.set(true)
                     .defaultTypes.set(VarType.DOUBLE)
-                    .types.add(VarType.NOMINAL, "ID")
+                    .varTypes.add(VarType.NOMINAL, "ID")
                     .read(Datasets.class.getResourceAsStream("advertising.csv"))
                     .removeVars("ID")
                     .copy();
@@ -154,7 +154,7 @@ public class Datasets {
     public static Frame loasSAheart() {
         try {
             return Csv.instance()
-                    .types.add(VarType.NOMINAL, "famhist", "chd")
+                    .varTypes.add(VarType.NOMINAL, "famhist", "chd")
                     .read(Datasets.class.getResourceAsStream("SAheart.csv"));
         } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage());
@@ -164,8 +164,8 @@ public class Datasets {
     public static Frame loadMyWeights() {
         try {
             return Csv.instance()
-                    .types.add(VarType.INSTANT, "time")
-                    .types.add(VarType.DOUBLE, "weight")
+                    .varTypes.add(VarType.INSTANT, "time")
+                    .varTypes.add(VarType.DOUBLE, "weight")
                     .read(Datasets.class.getResourceAsStream("myweight.csv"));
         } catch (IOException e) {
             throw new RuntimeException(e);

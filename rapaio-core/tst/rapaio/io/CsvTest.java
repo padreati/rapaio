@@ -26,7 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +37,11 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarBinary;
+import rapaio.data.VarInt;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
+import rapaio.text.TextParserException;
 import rapaio.util.IntRule;
 
 /**
@@ -56,38 +61,38 @@ public class CsvTest {
         Frame f = persistence.read(getClass(), "csv-test.csv");
         assertNotNull(f);
         assertEquals(5, f.varCount());
-        assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.varNames());
+        assertArrayEquals(new String[] {"Year", "Make", "Model", "Description", "Price"}, f.varNames());
     }
 
     @Test
     void testLineWithoutQuotas() {
         checkLine(Csv.instance().separatorChar.set(',').quotes.set(false).stripSpaces.set(false),
-                "  , ,,,", new String[]{"  ", " ", "", ""});
+                "  , ,,,", new String[] {"  ", " ", "", ""});
         checkLine(Csv.instance().separatorChar.set(',').quotes.set(false).stripSpaces.set(true),
-                "  , ,,,", new String[]{"", "", "", ""});
+                "  , ,,,", new String[] {"", "", "", ""});
 
         checkLine(Csv.instance().separatorChar.set(',').quotes.set(false).stripSpaces.set(true),
-                " ana , are , mere ", new String[]{"ana", "are", "mere"});
+                " ana , are , mere ", new String[] {"ana", "are", "mere"});
 
         checkLine(Csv.instance().separatorChar.set(',').quotes.set(false).stripSpaces.set(false),
-                " ana , are , mere ", new String[]{" ana ", " are ", " mere "});
+                " ana , are , mere ", new String[] {" ana ", " are ", " mere "});
 
         checkLine(Csv.instance().separatorChar.set(',').quotes.set(false).stripSpaces.set(false),
-                "ana,are,mere", new String[]{"ana", "are", "mere"});
+                "ana,are,mere", new String[] {"ana", "are", "mere"});
     }
 
     @Test
     void testLineWithQuotas() {
         checkLine(Csv.instance().separatorChar.set(',').quotes.set(true).stripSpaces.set(true).escapeChar.set('\\'),
-                " \"ana", new String[]{"ana"});
+                " \"ana", new String[] {"ana"});
         checkLine(Csv.instance().separatorChar.set(',').quotes.set(true).stripSpaces.set(true).escapeChar.set('\\'),
-                " \"ana\", \"ana again\"", new String[]{"ana", "ana again"});
+                " \"ana\", \"ana again\"", new String[] {"ana", "ana again"});
         checkLine(Csv.instance().separatorChar.set(',').quotes.set(true).stripSpaces.set(true).escapeChar.set('\\'),
-                " \"ana\", \"ana,again\"", new String[]{"ana", "ana,again"});
+                " \"ana\", \"ana,again\"", new String[] {"ana", "ana,again"});
         checkLine(Csv.instance().separatorChar.set(',').quotes.set(true).stripSpaces.set(true).escapeChar.set('\\'),
-                " \"ana\", \"ana\\\"again\"", new String[]{"ana", "ana\"again"});
+                " \"ana\", \"ana\\\"again\"", new String[] {"ana", "ana\"again"});
         checkLine(Csv.instance().separatorChar.set(',').quotes.set(true).stripSpaces.set(true).escapeChar.set('\"'),
-                " \"ana\", \"ana\"\"again\"", new String[]{"ana", "ana\"again"});
+                " \"ana\", \"ana\"\"again\"", new String[] {"ana", "ana\"again"});
     }
 
     @Test
@@ -96,7 +101,7 @@ public class CsvTest {
         Frame df = persistence.read(getClass(), "csv-test.csv");
         assertNotNull(df);
         assertEquals(5, df.varCount());
-        assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.varNames());
+        assertArrayEquals(new String[] {"Year", "Make", "Model", "Description", "Price"}, df.varNames());
     }
 
     private void checkLine(Csv csv, String line, String[] matches) {
@@ -220,11 +225,11 @@ public class CsvTest {
     @Test
     void testTypes() throws IOException {
         Frame t1 = Csv.instance()
-                .types.add(VarType.DOUBLE, "sepal-length")
-                .types.add(VarType.NOMINAL, "petal-width", "sepal-length")
+                .varTypes.add(VarType.DOUBLE, "sepal-length")
+                .varTypes.add(VarType.NOMINAL, "petal-width", "sepal-length")
                 .read(Datasets.class, "iris-r.csv");
 
-        VarType[] types = new VarType[]{VarType.NOMINAL, VarType.DOUBLE, VarType.DOUBLE, VarType.NOMINAL, VarType.NOMINAL};
+        VarType[] types = new VarType[] {VarType.NOMINAL, VarType.DOUBLE, VarType.DOUBLE, VarType.NOMINAL, VarType.NOMINAL};
         assertArrayEquals(types, t1.varStream().map(Var::type).toArray());
 
         Frame t2 = Csv.instance().template.set(t1).read(Datasets.class, "iris-r.csv");
@@ -241,10 +246,63 @@ public class CsvTest {
         Frame na2 = Csv.instance().naValues.set("", "xxxx").read(Datasets.class, "iris-r.csv");
         assertEquals(150, na2.stream().complete().count());
 
-        Frame na3 = Csv.instance().naValues.set("virginica").types.add(VarType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
+        Frame na3 =
+                Csv.instance().naValues.set("virginica").varTypes.add(VarType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
         assertEquals(100, na3.stream().complete().count());
 
-        Frame na4 = Csv.instance().naValues.set("virginica", "5").types.add(VarType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
+        Frame na4 = Csv.instance().naValues.set("virginica", "5").varTypes.add(VarType.NOMINAL, "sepal-length")
+                .read(Datasets.class, "iris-r.csv");
         assertEquals(89, na4.stream().complete().count());
+    }
+
+    @Test
+    void testParsers() {
+        String content = """
+                a,b,c
+                T,xx,-1
+                B,yy,2
+                T,aa,-3
+                ?,cc,4
+                """;
+        try {
+            Frame df = Csv.instance()
+                    .typeParsers.add(VarType.BINARY, value -> {
+                        if ("?".equals(value)) {
+                            return null;
+                        }
+                        return "T".equalsIgnoreCase(value);
+                    })
+                    .varTypes.add(VarType.INT, "c")
+                    .varParsers.add("c", value -> -Integer.parseInt(value))
+                    .read(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
+            assertEquals(3, df.varCount());
+            assertEquals(VarType.BINARY, df.rvar(0).type());
+            assertTrue(VarBinary.copy(1, 0, 1, -1).name("a").deepEquals(df.rvar("a")));
+            assertTrue(VarInt.copy(1, -2, 3, -4).name("c").deepEquals(df.rvar("c")));
+
+            df = Csv.instance()
+                    .varTypes.add(VarType.BINARY, "a")
+                    .varParsers.add("a", value -> {
+                        if ("?".equals(value)) {
+                            return null;
+                        }
+                        return "T".equalsIgnoreCase(value);
+                    })
+                    .typeParsers.add(VarType.INT, value -> {
+                        try {
+                            return -Integer.parseInt(value);
+                        } catch (NumberFormatException ex) {
+                            throw new TextParserException(ex.getMessage());
+                        }
+                    })
+                    .read(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
+            assertEquals(3, df.varCount());
+            assertEquals(VarType.BINARY, df.rvar(0).type());
+            assertTrue(VarBinary.copy(1, 0, 1, -1).name("a").deepEquals(df.rvar("a")));
+            assertTrue(VarInt.copy(1, -2, 3, -4).name("c").deepEquals(df.rvar("c")));
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

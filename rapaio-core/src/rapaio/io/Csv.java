@@ -33,27 +33,37 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serial;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
 import rapaio.core.param.ListParam;
 import rapaio.core.param.MultiListParam;
+import rapaio.core.param.MultiParam;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.VarBinary;
+import rapaio.data.VarDouble;
+import rapaio.data.VarFloat;
+import rapaio.data.VarInstant;
+import rapaio.data.VarInt;
+import rapaio.data.VarLong;
+import rapaio.data.VarNominal;
 import rapaio.data.VarString;
 import rapaio.data.VarType;
 import rapaio.text.Parser;
+import rapaio.text.TextParserException;
 import rapaio.util.IntRule;
 
 /**
@@ -74,9 +84,14 @@ public class Csv extends ParamSet<Csv> {
     }
 
     private static final List<VarType> DEFAULT_TYPES = new ArrayList<>(List.of(
-            VarType.BINARY, VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING));
-
-    private static final Map<VarType, Parser<?>> DEFAULT_PARSERS = Map.of();
+            VarType.BINARY,
+            VarType.INT,
+            VarType.LONG,
+//            VarType.FLOAT,
+            VarType.DOUBLE,
+            VarType.NOMINAL,
+            VarType.STRING
+    ));
 
     private Csv() {
     }
@@ -108,23 +123,33 @@ public class Csv extends ParamSet<Csv> {
      */
     public final ValueParam<Character, Csv> escapeChar = new ValueParam<>(this, '\"', "escapeChar");
 
-    /**
-     * Specific type fields which overrides the automatic type field detection
-     */
-    public final MultiListParam<VarType, String, Csv> types = new MultiListParam<>(this, new HashMap<>(), "types", Objects::nonNull);
 
     /**
      * Values used to identify a missing value placeholders.
      */
     public final ListParam<String, Csv> naValues =
-            new ListParam<>(this, Arrays.asList("?", "", " ", "na", "N/A", "NaN"), "naValues", (in, out) -> true);
+            new ListParam<>(this, Arrays.asList("?", "", " ", "na", "N/A", "NaN"), "naValues", (_, _) -> true);
 
     /**
      * List of automated field types to be tried in the given order during automatic field type detection
      */
-    public final ListParam<VarType, Csv> defaultTypes =
-            new ListParam<>(this, DEFAULT_TYPES, "defaultTypes",
-                    (in, out) -> true);
+    public final ListParam<VarType, Csv> defaultTypes = new ListParam<>(this, DEFAULT_TYPES, "defaultTypes", (_, _) -> true);
+    /**
+     * Specific type fields which overrides the automatic type field detection
+     */
+    public final MultiListParam<VarType, String, Csv> varTypes = new MultiListParam<>(this, new HashMap<>(), "varTypes", Objects::nonNull);
+
+    /**
+     * Specific parsers for each variable type which overrides default parsers for variables
+     */
+    public final MultiParam<VarType, Parser<?>, Csv> typeParsers = new MultiParam<>(this, new HashMap<>(), "typeParsers",
+            Objects::nonNull);
+
+    /**
+     * Specific parsers for variable names. The variables are identified by name.
+     */
+    public final MultiParam<String, Parser<?>, Csv> varParsers = new MultiParam<>(this, new HashMap<>(), "varParsers",
+            Objects::nonNull);
     /**
      * Specifies the first row number to be collected from csv file. By default, this value is 0,
      * which means it will collect starting from the first row. If the value is greater than 0
@@ -152,7 +177,7 @@ public class Csv extends ParamSet<Csv> {
      * Optional frame templated used to define variable names and type for reading. This overrides auto-detection of field names and
      * field types.
      */
-    public final ValueParam<Frame, Csv> template = new ValueParam<>(this, null, "template", obj -> true);
+    public final ValueParam<Frame, Csv> template = new ValueParam<>(this, null, "template", _ -> true);
 
     public Frame read(File file) {
         try {
@@ -231,7 +256,6 @@ public class Csv extends ParamSet<Csv> {
                     continue;
                 }
 
-
                 // build vectors with initial types
                 if (first) {
                     List<String> row = parseLine(line);
@@ -250,16 +274,16 @@ public class Csv extends ParamSet<Csv> {
                                 }
                             }
                             if (found) {
-                                varSlots.add(new VarSlot(this, template.get().rvar(colName), 0));
+                                varSlots.add(new VarSlot(this, colName, template.get().rvar(colName), 0));
                                 continue;
                             }
                         }
-                        VarType type = types.getReverseKey(colName);
+                        VarType type = varTypes.getReverseKey(colName);
                         if (type != null) {
-                            varSlots.add(new VarSlot(this, type, 0));
+                            varSlots.add(new VarSlot(this, colName, type, 0));
                         } else {
                             // default type
-                            varSlots.add(new VarSlot(this, 0));
+                            varSlots.add(new VarSlot(this, colName, 0));
                         }
                     }
                 }
@@ -275,10 +299,11 @@ public class Csv extends ParamSet<Csv> {
                 rows++;
                 int len = Math.max(row.size(), names.size());
                 for (int i = 0; i < len; i++) {
-                    // we have a value in row for which we did not defined a var slot
+                    // we have a value in row for which we did not define a var slot
                     if (i >= varSlots.size()) {
-                        names.add("V" + (i + 1));
-                        varSlots.add(new VarSlot(this, varSlots.get(0).var.size()));
+                        String name = "V" + (i + 1);
+                        names.add(name);
+                        varSlots.add(new VarSlot(this, name, varSlots.getFirst().var.size()));
                         continue;
                     }
                     // we have missing values at the end of the row
@@ -286,16 +311,12 @@ public class Csv extends ParamSet<Csv> {
                         varSlots.get(i).addValue("?");
                         continue;
                     }
-                    // gaussian behavior
+                    // normal behavior
                     varSlots.get(i).addValue(row.get(i));
                 }
             }
         }
-        List<Var> variables = new ArrayList<>();
-        for (int i = 0; i < varSlots.size(); i++) {
-            String name = names.size() > i ? names.get(i) : "V" + (i + 1);
-            variables.add(varSlots.get(i).var.name(name));
-        }
+        List<Var> variables = varSlots.stream().map(varSlot -> varSlot.var).toList();
         return SolidFrame.byVars(rows - startRow.get(), variables);
     }
 
@@ -448,33 +469,84 @@ public class Csv extends ParamSet<Csv> {
 
     private static class VarSlot {
 
-        private final Csv parent;
-        private final VarType type;
-        private Var var;
+        public final Csv parent;
+        public final String name;
+        public final VarType type;
+        public Var var;
         public VarString text;
 
         /**
          * Constructor for slot which does not have a predefined type, it tries the best by using default types
          */
-        public VarSlot(Csv parent, int rows) {
+        public VarSlot(Csv parent, String name, int rows) {
             this.parent = parent;
+            this.name = name;
             this.type = null;
-            this.var = parent.defaultTypes.get().getFirst().newInstance(rows);
+            this.var = parent.defaultTypes.get().getFirst().newInstance(rows).name(name);
+            configParser(name);
             this.text = VarString.empty();
         }
 
-        public VarSlot(Csv parent, VarType varType, int rows) {
+        public VarSlot(Csv parent, String name, VarType varType, int rows) {
             this.parent = parent;
+            this.name = name;
             this.type = varType;
-            this.var = varType.newInstance(rows);
+            this.var = varType.newInstance(rows).name(name);
+            configParser(name);
             this.text = null;
         }
 
-        public VarSlot(Csv parent, Var template, int rows) {
+        public VarSlot(Csv parent, String name, Var template, int rows) {
             this.parent = parent;
+            this.name = name;
             this.type = template.type();
-            this.var = template.newInstance(rows);
+            this.var = template.newInstance(rows).name(name);
+//            setParser();
             this.text = null;
+        }
+
+        private void configParser(String name) {
+            if (parent.varParsers.get().containsKey(name)) {
+                Parser<?> parser = parent.varParsers.get().get(name);
+                configParser(parser);
+                return;
+            }
+            if (parent.typeParsers.get().containsKey(var.type())) {
+                Parser<?> parser = parent.typeParsers.get().get(var.type());
+                configParser(parser);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        private void configParser(Serializable parser) {
+            switch (var.type()) {
+                case BINARY:
+                    ((VarBinary) var).withParser((Parser<Boolean>) parser);
+                    return;
+                case INT:
+                    ((VarInt) var).withParser((Parser<Integer>) parser);
+                    return;
+                case LONG:
+                    ((VarLong) var).withParser((Parser<Long>) parser);
+                    return;
+                case FLOAT:
+                    ((VarFloat) var).withParser((Parser<Float>) parser);
+                    return;
+                case DOUBLE:
+                    ((VarDouble) var).withParser((Parser<Double>) parser);
+                    return;
+                case INSTANT:
+                    ((VarInstant) var).withParser((Parser<Instant>) parser);
+                    return;
+                case NOMINAL:
+                    ((VarNominal) var).withParser((Parser<String>) parser);
+                    return;
+                case STRING:
+                    ((VarString) var).withParser((Parser<String>) parser);
+                    return;
+                case null, default:
+                    throw new IllegalArgumentException();
+            }
         }
 
         public void addValue(String value) {
@@ -494,10 +566,10 @@ public class Csv extends ParamSet<Csv> {
                             text.addLabel(value);
                         }
                         return;
-                    } catch (IllegalArgumentException th) {
+                    } catch (TextParserException|IllegalArgumentException th) {
                         // if it's the last default type, then nothing else could be done
                         if (var.type() == parent.defaultTypes.get().getLast()) {
-                            throw new IllegalArgumentException(
+                            throw new TextParserException(
                                     String.format("Could not parse value %s in type %s. Error: %s",
                                             value, var.type(), th.getMessage()));
                         }
@@ -517,7 +589,8 @@ public class Csv extends ParamSet<Csv> {
                     // try successive default type upgrades, if the last available fails also than throw an exception
                     for (int i = pos; i < parent.defaultTypes.get().size(); i++) {
                         try {
-                            var = parent.defaultTypes.get().get(i).newInstance();
+                            var = parent.defaultTypes.get().get(i).newInstance().name(name);
+                            configParser(name);
                             if (text != null && text.size() > 0) {
                                 text.stream().forEach(s -> var.addLabel(s.getLabel()));
                             }

@@ -39,8 +39,7 @@ public final class Parsers {
         if ("false".equalsIgnoreCase(value) || "0".equals(value)) {
             return false;
         }
-        throw new IllegalArgumentException(
-                String.format("The value %s could not be converted to a binary value", value));
+        throw new TextParserException(String.format("The value %s could not be converted to a binary value", value));
     };
 
     public static Parser<Integer> DEFAULT_VAR_INT_PARSER = value -> {
