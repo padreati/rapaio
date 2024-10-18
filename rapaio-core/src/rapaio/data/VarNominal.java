@@ -41,6 +41,10 @@ import java.util.stream.Collector;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
+import rapaio.text.Formatter;
+import rapaio.text.Formatters;
+import rapaio.text.Parser;
+import rapaio.text.Parsers;
 
 /**
  * Categorical variable type. The nominal variable type is represented as a string label and/or as an short
@@ -136,6 +140,8 @@ public final class VarNominal extends AbstractVar {
     private ArrayList<String> dict;
     private short[] data;
     private HashMap<String, Short> reverse;
+    private Parser<String> parser = Parsers.DEFAULT_VAR_NOMINAL_PARSER;
+    private Formatter<String> formatter = Formatters.DEFAULT_VAR_NOMINAL_FORMATTER;
 
     private VarNominal() {
         this.reverse = new HashMap<>();
@@ -144,6 +150,24 @@ public final class VarNominal extends AbstractVar {
         this.dict.add("?");
         data = new short[0];
         rows = 0;
+    }
+
+    public Parser<String> getParser() {
+        return parser;
+    }
+
+    public VarNominal withParser(Parser<String> parser) {
+        this.parser = parser;
+        return this;
+    }
+
+    public Formatter<String> getFormatter() {
+        return formatter;
+    }
+
+    public VarNominal withFormatter(Formatter<String> formatter) {
+        this.formatter = formatter;
+        return this;
     }
 
     public static Collector<String, VarNominal, VarNominal> collector() {
@@ -273,11 +297,12 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public String getLabel(int row) {
-        return dict.get(data[row]);
+        return formatter.format(dict.get(data[row]));
     }
 
     @Override
     public void setLabel(int row, String value) {
+        value = parser.parse(value);
         if (value.equals(MISSING_VALUE)) {
             data[row] = MISSING_INDEX;
             return;
@@ -293,16 +318,17 @@ public final class VarNominal extends AbstractVar {
     }
 
     @Override
-    public void addLabel(String label) {
+    public void addLabel(String value) {
         grow(rows + 1);
-        if (!reverse.containsKey(label)) {
+        value = parser.parse(value);
+        if (!reverse.containsKey(value)) {
             if (dict.size() == Short.MAX_VALUE - 1) {
                 throw new IllegalStateException("Cannot add new label since dictionary achieved it's maximum size for variable: %s.".formatted(name()));
             }
-            dict.add(label);
-            reverse.put(label, (short) reverse.size());
+            dict.add(value);
+            reverse.put(value, (short) reverse.size());
         }
-        data[rows++] = reverse.get(label);
+        data[rows++] = reverse.get(value);
     }
 
     @Override
@@ -410,10 +436,13 @@ public final class VarNominal extends AbstractVar {
         for (int i = 0; i < size(); i++) {
             out.writeShort(data[i]);
         }
+        out.writeObject(parser);
+        out.writeObject(formatter);
     }
 
+    @SuppressWarnings("unchecked")
     @Serial
-    private void readObject(ObjectInputStream in) throws IOException {
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         rows = in.readInt();
         dict = new ArrayList<>();
         reverse = new HashMap<>();
@@ -426,6 +455,8 @@ public final class VarNominal extends AbstractVar {
         for (int i = 0; i < rows; i++) {
             data[i] = in.readShort();
         }
+        parser = (Parser<String>) in.readObject();
+        formatter = (Formatter<String>) in.readObject();
     }
 
     @Override

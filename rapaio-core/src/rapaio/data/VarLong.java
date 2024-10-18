@@ -36,6 +36,10 @@ import java.util.stream.Collector;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
+import rapaio.text.Formatter;
+import rapaio.text.Formatters;
+import rapaio.text.Parser;
+import rapaio.text.Parsers;
 
 /**
  * Variable which stores long 64-bit integer values.
@@ -44,6 +48,7 @@ import rapaio.printer.opt.POpt;
  * necessary and specific usage scenarios this type of variable
  * is useful.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarLong extends AbstractVar {
@@ -264,6 +269,8 @@ public class VarLong extends AbstractVar {
     private static final long serialVersionUID = -6387573611986137666L;
     private long[] data;
     private int rows;
+    private Parser<Long> parser = Parsers.DEFAULT_VAR_LONG_PARSER;
+    private Formatter<Long> formatter = Formatters.DEFAULT_VAR_LONG_FORMATTER;
 
     private VarLong(int rows, int capacity, long fill) {
         if (rows < 0) {
@@ -274,6 +281,24 @@ public class VarLong extends AbstractVar {
         if (fill != 0) {
             Arrays.fill(data, 0, rows, fill);
         }
+    }
+
+    public Parser<Long> getParser() {
+        return parser;
+    }
+
+    public VarLong withParser(Parser<Long> parser) {
+        this.parser = parser;
+        return this;
+    }
+
+    public Formatter<Long> getFormatter() {
+        return formatter;
+    }
+
+    public VarLong withFormatter(Formatter<Long> formatter) {
+        this.formatter = formatter;
+        return this;
     }
 
     public static Collector<Long, VarLong, VarLong> collector() {
@@ -315,13 +340,15 @@ public class VarLong extends AbstractVar {
     }
 
     private void ensureCapacityInternal(int minCapacity) {
-        if (minCapacity <= data.length)
+        if (minCapacity <= data.length) {
             return;
+        }
         // overflow-conscious code
         int oldCapacity = data.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);
-        if (newCapacity - minCapacity < 0)
+        if (newCapacity - minCapacity < 0) {
             newCapacity = minCapacity;
+        }
         // minCapacity is usually close to size, so this is a win:
         data = Arrays.copyOf(data, newCapacity);
     }
@@ -402,28 +429,17 @@ public class VarLong extends AbstractVar {
 
     @Override
     public String getLabel(int row) {
-        if (isMissing(row)) {
-            return "?";
-        }
-        return String.valueOf(getLong(row));
+        return formatter.format(getLong(row));
     }
 
     @Override
     public void setLabel(int row, String value) {
-        if ("?".equals(value)) {
-            setMissing(row);
-            return;
-        }
-        setLong(row, Long.parseLong(value));
+        setLong(row, parser.parse(value));
     }
 
     @Override
     public void addLabel(String value) {
-        if ("?".equals(value)) {
-            addMissing();
-            return;
-        }
-        addLong(Long.parseLong(value));
+        addLong(parser.parse(value));
     }
 
     @Override

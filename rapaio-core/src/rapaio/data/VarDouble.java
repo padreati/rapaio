@@ -50,6 +50,10 @@ import rapaio.math.tensor.Tensors;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
+import rapaio.text.Formatter;
+import rapaio.text.Formatters;
+import rapaio.text.Parser;
+import rapaio.text.Parsers;
 
 /**
  * Builds a numeric double variable. Double variables stores data as double values
@@ -314,6 +318,8 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     public static final double MISSING_VALUE = Double.NaN;
     private double[] data;
     private int rows;
+    private Parser<Double> parser = Parsers.DEFAULT_VAR_DOUBLE_PARSER;
+    private Formatter<Double> formatter = Formatters.DEFAULT_VAR_DOUBLE_FORMATTER;
 
     /**
      * Builds a double variable.
@@ -331,6 +337,24 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         if (fill != 0) {
             Arrays.fill(data, 0, rows, fill);
         }
+    }
+
+    public Parser<Double> getParser() {
+        return parser;
+    }
+
+    public VarDouble withParser(Parser<Double> parser) {
+        this.parser = parser;
+        return this;
+    }
+
+    public Formatter<Double> getFormatter() {
+        return formatter;
+    }
+
+    public VarDouble withFormatter(Formatter<Double> formatter) {
+        this.formatter = formatter;
+        return this;
     }
 
     public static Collector<Double, VarDouble, VarDouble> collector() {
@@ -485,41 +509,17 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public String getLabel(int row) {
-        return isMissing(row) ? VarNominal.MISSING_VALUE : String.valueOf(data[row]);
+        return formatter.format(data[row]);
     }
 
     @Override
     public void setLabel(int row, String value) {
-        if (VarNominal.MISSING_VALUE.equals(value)) {
-            data[row] = Double.NaN;
-            return;
-        }
-        if ("Inf".equals(value)) {
-            data[row] = Double.POSITIVE_INFINITY;
-            return;
-        }
-        if ("-Inf".equals(value)) {
-            data[row] = Double.NEGATIVE_INFINITY;
-            return;
-        }
-        data[row] = Double.parseDouble(value);
+        data[row] = parser.parse(value);
     }
 
     @Override
     public void addLabel(String value) {
-        if (VarNominal.MISSING_VALUE.equals(value)) {
-            addMissing();
-            return;
-        }
-        if ("Inf".equals(value)) {
-            addDouble(Double.POSITIVE_INFINITY);
-            return;
-        }
-        if ("-Inf".equals(value)) {
-            addDouble(Double.NEGATIVE_INFINITY);
-            return;
-        }
-        addDouble(Double.parseDouble(value));
+        addDouble(parser.parse(value));
     }
 
     @Override

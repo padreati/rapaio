@@ -99,4 +99,6 @@ module rapaio.core {
     exports rapaio.util.hash;
     exports rapaio.util.parralel;
     exports rapaio.util.time;
+
+    exports rapaio.text;
 }

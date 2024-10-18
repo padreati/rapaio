@@ -36,9 +36,6 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.data.format.InstantFormatter;
-import rapaio.data.format.InstantParser;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/10/20.
  */
@@ -80,8 +77,6 @@ public class VarInstantTest {
     @Test
     void testParserAndFormatter() {
         var t = VarInstant.empty(10);
-        assertEquals(t.getParser(), InstantParser.ISO);
-        assertEquals(t.getFormatter(), InstantFormatter.ISO);
 
         t.setLabel(0, "?");
         t.setLabel(1, "2007-12-03T10:15:30.000Z");

@@ -43,6 +43,10 @@ import rapaio.data.stream.VSpot;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
+import rapaio.text.Formatter;
+import rapaio.text.Formatters;
+import rapaio.text.Parser;
+import rapaio.text.Parsers;
 
 /**
  * Builds a numeric float variable. Float variables stores data as float values
@@ -51,6 +55,7 @@ import rapaio.printer.opt.POpt;
  * The placeholder for missing value is Float.NaN. Any form of usage of Float.NaN
  * on set/add operation will result in a missing value.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class VarFloat extends AbstractVar implements Iterable<Float> {
@@ -286,6 +291,8 @@ public final class VarFloat extends AbstractVar implements Iterable<Float> {
     public static final float MISSING_VALUE = Float.NaN;
     private float[] data;
     private int rows;
+    private Parser<Float> parser = Parsers.DEFAULT_VAR_FLOAT_PARSER;
+    private Formatter<Float> formatter = Formatters.DEFAULT_VAR_FLOAT_FORMATTER;
 
     /**
      * Builds a double variable.
@@ -303,6 +310,24 @@ public final class VarFloat extends AbstractVar implements Iterable<Float> {
         if (fill != 0) {
             Arrays.fill(data, 0, rows, fill);
         }
+    }
+
+    public Parser<Float> getParser() {
+        return parser;
+    }
+
+    public VarFloat withParser(Parser<Float> parser) {
+        this.parser = parser;
+        return this;
+    }
+
+    public Formatter<Float> getFormatter() {
+        return formatter;
+    }
+
+    public VarFloat withFormatter(Formatter<Float> formatter) {
+        this.formatter = formatter;
+        return this;
     }
 
     public static Collector<Float, VarFloat, VarFloat> collector() {
@@ -433,7 +458,7 @@ public final class VarFloat extends AbstractVar implements Iterable<Float> {
     @Override
     public void addDouble(double value) {
         ensureCapacity(rows + 1);
-        data[rows++] = (float)value;
+        data[rows++] = (float) value;
     }
 
     @Override
@@ -454,41 +479,17 @@ public final class VarFloat extends AbstractVar implements Iterable<Float> {
 
     @Override
     public String getLabel(int row) {
-        return isMissing(row) ? VarNominal.MISSING_VALUE : String.valueOf(data[row]);
+        return formatter.format(data[row]);
     }
 
     @Override
     public void setLabel(int row, String value) {
-        if (VarNominal.MISSING_VALUE.equals(value)) {
-            data[row] = Float.NaN;
-            return;
-        }
-        if ("Inf".equals(value)) {
-            data[row] = Float.POSITIVE_INFINITY;
-            return;
-        }
-        if ("-Inf".equals(value)) {
-            data[row] = Float.NEGATIVE_INFINITY;
-            return;
-        }
-        data[row] = Float.parseFloat(value);
+        data[row] = parser.parse(value);
     }
 
     @Override
     public void addLabel(String value) {
-        if (VarNominal.MISSING_VALUE.equals(value)) {
-            addMissing();
-            return;
-        }
-        if ("Inf".equals(value)) {
-            addFloat(Float.POSITIVE_INFINITY);
-            return;
-        }
-        if ("-Inf".equals(value)) {
-            addFloat(Float.NEGATIVE_INFINITY);
-            return;
-        }
-        addFloat(Float.parseFloat(value));
+        addFloat(parser.parse(value));
     }
 
     @Override

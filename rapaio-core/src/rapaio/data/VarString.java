@@ -32,6 +32,10 @@ import java.util.stream.Collectors;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
+import rapaio.text.Formatter;
+import rapaio.text.Formatters;
+import rapaio.text.Parser;
+import rapaio.text.Parsers;
 import rapaio.util.function.SFunction;
 
 /**
@@ -86,12 +90,32 @@ public class VarString extends AbstractVar {
     @Serial
     private static final long serialVersionUID = -7130782019269889796L;
     private List<String> values;
+    private Parser<String> parser = Parsers.DEFAULT_VAR_STRING_PARSER;
+    private Formatter<String> formatter = Formatters.DEFAULT_VAR_STRING_FORMATTER;
 
     private VarString(int rows) {
         values = new ArrayList<>(rows);
         for (int i = 0; i < rows; i++) {
             values.add(null);
         }
+    }
+
+    public Parser<String> getParser() {
+        return parser;
+    }
+
+    public VarString withParser(Parser<String> parser) {
+        this.parser = parser;
+        return this;
+    }
+
+    public Formatter<String> getFormatter() {
+        return formatter;
+    }
+
+    public VarString withFormatter(Formatter<String> formatter) {
+        this.formatter = formatter;
+        return this;
     }
 
     @Override

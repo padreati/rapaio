@@ -19,16 +19,13 @@
  *
  */
 
-package rapaio.data.format;
+package rapaio.text;
 
-import java.time.Instant;
+import java.io.Serializable;
 
-/**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/30/19.
- */
-public interface InstantParser {
+@FunctionalInterface
+public interface Parser<T> extends Serializable {
 
-    Instant parse(String input);
-
-    InstantParser ISO = Instant::parse;
+    T parse(String value) throws TextParserException;
 }
+

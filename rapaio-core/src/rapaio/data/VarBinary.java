@@ -34,6 +34,10 @@ import java.util.function.Function;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
+import rapaio.text.Formatter;
+import rapaio.text.Formatters;
+import rapaio.text.Parser;
+import rapaio.text.Parsers;
 
 /**
  * Numerical variable which store only 1,0 and missing values. This is a storage-optimized version of a
@@ -92,7 +96,9 @@ public final class VarBinary extends AbstractVar {
     public static VarBinary copy(int... values) {
         final VarBinary b = new VarBinary(values.length, 0, 0);
         for (int i = 0; i < values.length; i++) {
-            if (values[i] == 0) continue;
+            if (values[i] == 0) {
+                continue;
+            }
             if (values[i] == 1) {
                 b.values.flip(i);
                 continue;
@@ -106,7 +112,9 @@ public final class VarBinary extends AbstractVar {
         VarBinary result = new VarBinary(rows, 0, 0);
         for (int i = 0; i < rows; i++) {
             int value = supplier.apply(i);
-            if (value == 0) continue;
+            if (value == 0) {
+                continue;
+            }
             if (value == 1) {
                 result.values.flip(i);
             } else {
@@ -142,6 +150,9 @@ public final class VarBinary extends AbstractVar {
     // bit set of flags for 1=true or 0=false values
     private BitSet values;
 
+    private Parser<Boolean> parser = Parsers.DEFAULT_VAR_BINARY_PARSER;
+    private Formatter<Boolean> formatter = Formatters.DEFAULT_VAR_BINARY_FORMATTER;
+
     /**
      * Private constructor to avoid instantiation from outside, other than statical builders.
      *
@@ -153,10 +164,29 @@ public final class VarBinary extends AbstractVar {
         this.rows = rows;
         this.missing = new BitSet(rows);
         this.values = new BitSet(rows);
-        if (fillMissing == 1)
+        if (fillMissing == 1) {
             this.missing.flip(0, rows);
-        else if (fillValue == 1)
+        } else if (fillValue == 1) {
             this.values.flip(0, rows);
+        }
+    }
+
+    public Parser<Boolean> getParser() {
+        return parser;
+    }
+
+    public VarBinary withParser(Parser<Boolean> parser) {
+        this.parser = parser;
+        return this;
+    }
+
+    public Formatter<Boolean> getFormatter() {
+        return formatter;
+    }
+
+    public VarBinary withFormatter(Formatter<Boolean> formatter) {
+        this.formatter = formatter;
+        return this;
     }
 
     @Override
@@ -214,7 +244,9 @@ public final class VarBinary extends AbstractVar {
 
     @Override
     public float getFloat(int row) {
-        if (isMissing(row)) return VarFloat.MISSING_VALUE;
+        if (isMissing(row)) {
+            return VarFloat.MISSING_VALUE;
+        }
         return values.get(row) ? 1.0f : 0.0f;
     }
 
@@ -246,7 +278,9 @@ public final class VarBinary extends AbstractVar {
 
     @Override
     public double getDouble(int row) {
-        if (isMissing(row)) return Double.NaN;
+        if (isMissing(row)) {
+            return Double.NaN;
+        }
         return values.get(row) ? 1.0 : 0.0;
     }
 
@@ -278,8 +312,9 @@ public final class VarBinary extends AbstractVar {
 
     @Override
     public int getInt(int row) {
-        if (missing.get(row))
+        if (missing.get(row)) {
             return VarInt.MISSING_VALUE;
+        }
         return values.get(row) ? 1 : 0;
     }
 
@@ -317,43 +352,27 @@ public final class VarBinary extends AbstractVar {
 
     @Override
     public String getLabel(int row) {
-        return isMissing(row) ? VarNominal.MISSING_VALUE : (getInt(row) == 0 ? "0" : "1");
+        return formatter.format(isMissing(row) ? null : getInt(row) != 0);
     }
 
     @Override
     public void setLabel(int row, String value) {
-        if (VarNominal.MISSING_VALUE.equals(value)) {
+        Boolean b = parser.parse(value);
+        if (b == null) {
             setMissing(row);
-            return;
+        } else {
+            setInt(row, b ? 1 : 0);
         }
-        if ("true".equalsIgnoreCase(value) || "1".equals(value)) {
-            setInt(row, 1);
-            return;
-        }
-        if ("false".equalsIgnoreCase(value) || "0".equals(value)) {
-            setInt(row, 0);
-            return;
-        }
-        throw new IllegalArgumentException(
-                String.format("The value %s could not be converted to a binary value", value));
     }
 
     @Override
     public void addLabel(String value) {
-        if (VarNominal.MISSING_VALUE.equals(value)) {
+        Boolean b = parser.parse(value);
+        if (b == null) {
             addMissing();
-            return;
+        } else {
+            addInt(b ? 1 : 0);
         }
-        if ("true".equalsIgnoreCase(value) || "1".equals(value)) {
-            addInt(1);
-            return;
-        }
-        if ("false".equalsIgnoreCase(value) || "0".equals(value)) {
-            addInt(0);
-            return;
-        }
-        throw new IllegalArgumentException(
-                String.format("The value %s could not be converted to a binary value", value));
     }
 
     @Override

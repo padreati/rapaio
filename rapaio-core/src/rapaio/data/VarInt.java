@@ -42,6 +42,10 @@ import java.util.stream.IntStream;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
+import rapaio.text.Formatter;
+import rapaio.text.Formatters;
+import rapaio.text.Parser;
+import rapaio.text.Parsers;
 import rapaio.util.function.Int2IntFunction;
 
 /**
@@ -51,6 +55,7 @@ import rapaio.util.function.Int2IntFunction;
  * <p>
  * Missing value is {@link Integer#MIN_VALUE}. Any use of this value in add/set operations will lead to missing values.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class VarInt extends AbstractVar implements Iterable<Integer> {
@@ -180,6 +185,8 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     public static final int MISSING_VALUE = Integer.MAX_VALUE;
     private int[] data;
     private int rows;
+    private Parser<Integer> parser = Parsers.DEFAULT_VAR_INT_PARSER;
+    private Formatter<Integer> formatter = Formatters.DEFAULT_VAR_INT_FORMATTER;
 
     private VarInt(int rows, int capacity, int fill) {
         if (rows < 0) {
@@ -187,8 +194,27 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
         }
         this.data = new int[capacity];
         this.rows = rows;
-        if (fill != 0)
+        if (fill != 0) {
             Arrays.fill(data, 0, rows, fill);
+        }
+    }
+
+    public Parser<Integer> getParser() {
+        return parser;
+    }
+
+    public VarInt withParser(Parser<Integer> parser) {
+        this.parser = parser;
+        return this;
+    }
+
+    public Formatter<Integer> getFormatter() {
+        return formatter;
+    }
+
+    public VarInt withFormatter(Formatter<Integer> formatter) {
+        this.formatter = formatter;
+        return this;
     }
 
     public static Collector<? super Integer, VarInt, VarInt> collector() {
@@ -229,12 +255,14 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     private void ensureCapacityInternal(int minCapacity) {
-        if (minCapacity < data.length)
+        if (minCapacity < data.length) {
             return;
+        }
         int oldCapacity = data.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);
-        if (newCapacity - minCapacity < 0)
+        if (newCapacity - minCapacity < 0) {
             newCapacity = minCapacity;
+        }
         data = Arrays.copyOf(data, newCapacity);
     }
 
@@ -302,8 +330,9 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
 
     @Override
     public float getFloat(int row) {
-        if (isMissing(row))
+        if (isMissing(row)) {
             return VarFloat.MISSING_VALUE;
+        }
         return getInt(row);
     }
 
@@ -323,8 +352,9 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
 
     @Override
     public double getDouble(int row) {
-        if (isMissing(row))
+        if (isMissing(row)) {
             return VarDouble.MISSING_VALUE;
+        }
         return getInt(row);
     }
 
@@ -344,27 +374,17 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
 
     @Override
     public String getLabel(int row) {
-        if (isMissing(row))
-            return "?";
-        return String.valueOf(getInt(row));
+        return formatter.format(getInt(row));
     }
 
     @Override
     public void setLabel(int row, String value) {
-        if ("?".equals(value)) {
-            setMissing(row);
-            return;
-        }
-        setInt(row, Integer.parseInt(value));
+        setInt(row, parser.parse(value));
     }
 
     @Override
     public void addLabel(String value) {
-        if ("?".equals(value)) {
-            addMissing();
-            return;
-        }
-        addInt(Integer.parseInt(value));
+        addInt(parser.parse(value));
     }
 
     @Override
@@ -435,8 +455,9 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
 
     @Override
     public void removeRow(int index) {
-        if (index > rows || index < 0)
+        if (index > rows || index < 0) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + rows);
+        }
         int numMoved = rows - index - 1;
         if (numMoved > 0) {
             System.arraycopy(data, index + 1, data, index, numMoved);

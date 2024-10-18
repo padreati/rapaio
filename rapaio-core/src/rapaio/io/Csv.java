@@ -40,18 +40,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
+import rapaio.core.param.ListParam;
+import rapaio.core.param.MultiListParam;
+import rapaio.core.param.ParamSet;
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarString;
 import rapaio.data.VarType;
-import rapaio.core.param.ListParam;
-import rapaio.core.param.MultiListParam;
-import rapaio.core.param.ParamSet;
-import rapaio.core.param.ValueParam;
+import rapaio.text.Parser;
 import rapaio.util.IntRule;
 
 /**
@@ -73,6 +75,8 @@ public class Csv extends ParamSet<Csv> {
 
     private static final List<VarType> DEFAULT_TYPES = new ArrayList<>(List.of(
             VarType.BINARY, VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING));
+
+    private static final Map<VarType, Parser<?>> DEFAULT_PARSERS = Map.of();
 
     private Csv() {
     }
@@ -145,7 +149,7 @@ public class Csv extends ParamSet<Csv> {
     public final ValueParam<IntRule, Csv> keepCols = new ValueParam<>(this, IntRule.all(), "skipCols");
 
     /**
-     * Optional frame templated used to define variable names and type for reading. This overrides auto detection of field names and
+     * Optional frame templated used to define variable names and type for reading. This overrides auto-detection of field names and
      * field types.
      */
     public final ValueParam<Frame, Csv> template = new ValueParam<>(this, null, "template", obj -> true);
@@ -455,7 +459,7 @@ public class Csv extends ParamSet<Csv> {
         public VarSlot(Csv parent, int rows) {
             this.parent = parent;
             this.type = null;
-            this.var = parent.defaultTypes.get().get(0).newInstance(rows);
+            this.var = parent.defaultTypes.get().getFirst().newInstance(rows);
             this.text = VarString.empty();
         }
 
@@ -491,8 +495,8 @@ public class Csv extends ParamSet<Csv> {
                         }
                         return;
                     } catch (IllegalArgumentException th) {
-                        // if it's the last default type, than nothing else could be done
-                        if (var.type() == parent.defaultTypes.get().get(parent.defaultTypes.get().size() - 1)) {
+                        // if it's the last default type, then nothing else could be done
+                        if (var.type() == parent.defaultTypes.get().getLast()) {
                             throw new IllegalArgumentException(
                                     String.format("Could not parse value %s in type %s. Error: %s",
                                             value, var.type(), th.getMessage()));

@@ -27,17 +27,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-import rapaio.data.format.InstantFormatter;
-import rapaio.data.format.InstantParser;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
+import rapaio.text.Formatter;
+import rapaio.text.Formatters;
+import rapaio.text.Parser;
+import rapaio.text.Parsers;
 
 /**
  * Variable which contains time instants truncated to milliseconds.
  * The stored data type is a long, which is actually the number of milliseconds
  * from epoch. The exposed data type is {@link java.time.Instant}.
  * <p>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/29/19.
  */
 public class VarInstant extends AbstractVar {
@@ -74,28 +77,29 @@ public class VarInstant extends AbstractVar {
 
     private int rows;
     private Instant[] data;
-    private InstantParser parser = InstantParser.ISO;
-    private InstantFormatter formatter = InstantFormatter.ISO;
+    private Parser<Instant> parser = Parsers.DEFAULT_VAR_INSTANT_PARSER;
+    private Formatter<Instant> formatter = Formatters.DEFAULT_VAR_INSTANT_FORMATTER;
+
 
     private VarInstant(int rows) {
         this.rows = rows;
         this.data = new Instant[rows];
     }
 
-    public InstantParser getParser() {
+    public Parser<Instant> getParser() {
         return parser;
     }
 
-    public VarInstant withParser(InstantParser parser) {
+    public VarInstant withParser(Parser<Instant> parser) {
         this.parser = parser;
         return this;
     }
 
-    public InstantFormatter getFormatter() {
+    public Formatter<Instant> getFormatter() {
         return formatter;
     }
 
-    public VarInstant withFormatter(InstantFormatter formatter) {
+    public VarInstant withFormatter(Formatter<Instant> formatter) {
         this.formatter = formatter;
         return this;
     }
@@ -130,8 +134,9 @@ public class VarInstant extends AbstractVar {
         if (minCapacity > data.length) {
             int oldCapacity = data.length;
             int newCapacity = oldCapacity > 0xFFFF ? oldCapacity << 1 : oldCapacity + (oldCapacity >> 1);
-            if (newCapacity - minCapacity < 0)
+            if (newCapacity - minCapacity < 0) {
                 newCapacity = minCapacity;
+            }
             data = Arrays.copyOf(data, newCapacity);
         }
     }
@@ -199,28 +204,17 @@ public class VarInstant extends AbstractVar {
 
     @Override
     public String getLabel(int row) {
-        if (isMissing(row)) {
-            return VarNominal.MISSING_VALUE;
-        }
         return formatter.format(data[row]);
     }
 
     @Override
     public void setLabel(int row, String value) {
-        if (VarNominal.MISSING_VALUE.equals(value)) {
-            setMissing(row);
-            return;
-        }
         setInstant(row, parser.parse(value));
     }
 
     @Override
     public void addLabel(String value) {
-        if (VarNominal.MISSING_VALUE.equals(value)) {
-            addMissing();
-        } else {
-            addInstant(parser.parse(value));
-        }
+        addInstant(parser.parse(value));
     }
 
     @Override

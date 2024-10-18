@@ -32,9 +32,9 @@ import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
 import rapaio.core.SamplingTools;
-import rapaio.data.transform.VarTransform;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
+import rapaio.data.transform.VarTransform;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
