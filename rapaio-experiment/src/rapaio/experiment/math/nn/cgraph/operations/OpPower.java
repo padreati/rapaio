@@ -19,16 +19,33 @@
  *
  */
 
-package rapaio.experiment.math.nn.gradient;
+package rapaio.experiment.math.nn.cgraph.operations;
 
 import java.util.List;
-import java.util.function.Function;
 
-import rapaio.experiment.math.nn.DiffTensor;
+import rapaio.experiment.math.nn.cgraph.Context;
 
-public record TapeEntry(
-        List<String> inputs,
-        List<String> outputs,
-        Function<List<DiffTensor>, List<DiffTensor>> propagate) {
+public class OpPower extends Node {
 
+    private final Node child;
+    private final double power;
+
+    public OpPower(Context c, Node child, double power) {
+        super(c, "pow");
+        this.child = child;
+        this.power = power;
+    }
+
+    @Override
+    public List<Node> children() {
+        return List.of(child);
+    }
+
+    @Override
+    public List<Runnable> compute() {
+        value.assign(child.value.tensor().pow(power));
+        return List.of(() -> child.adjoint.add_(
+                this.adjoint.tensor().mul(power).mul(child.value.tensor().pow(power - 1))));
+
+    }
 }

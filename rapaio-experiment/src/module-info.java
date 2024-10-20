@@ -12,6 +12,7 @@ module rapaio.experiment {
     requires javafx.controls;
     requires javafx.graphics;
     requires javafx.swing;
+    requires jdk.jdi;
 
     exports rapaio.experiment.fx;
     exports rapaio.experiment.math.linear;

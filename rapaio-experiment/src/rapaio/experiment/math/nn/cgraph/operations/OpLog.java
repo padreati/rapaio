@@ -19,16 +19,29 @@
  *
  */
 
-package rapaio.experiment.math.nn.gradient;
+package rapaio.experiment.math.nn.cgraph.operations;
 
 import java.util.List;
-import java.util.function.Function;
 
-import rapaio.experiment.math.nn.DiffTensor;
+import rapaio.experiment.math.nn.cgraph.Context;
 
-public record TapeEntry(
-        List<String> inputs,
-        List<String> outputs,
-        Function<List<DiffTensor>, List<DiffTensor>> propagate) {
+public class OpLog extends Node {
 
+    private final Node child;
+
+    public OpLog(Context c, Node child) {
+        super(c, "log");
+        this.child = child;
+    }
+
+    @Override
+    public List<Node> children() {
+        return List.of(child);
+    }
+
+    @Override
+    public List<Runnable> compute() {
+        value.assign(child.value.tensor().log());
+        return List.of(() -> child.adjoint.add_(this.adjoint.tensor().div(child.value.tensor())));
+    }
 }

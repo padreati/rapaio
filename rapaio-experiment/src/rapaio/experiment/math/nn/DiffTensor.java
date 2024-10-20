@@ -35,10 +35,6 @@ public interface DiffTensor {
 
     Tensor<Float> asFloat();
 
-    Tensor<Integer> asInt();
-
-    Tensor<Byte> asByte();
-
     DiffTensor add(DiffTensor t, GradientTape tape);
 
     DiffTensor mul(DiffTensor t, GradientTape tape);

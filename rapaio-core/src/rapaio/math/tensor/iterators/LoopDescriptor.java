@@ -68,7 +68,7 @@ public final class LoopDescriptor<N extends Number> {
             size = 1;
             step = 1;
             count = 1;
-            simdBound = 1;
+            simdBound = 0;
             offsets = new int[] {sl.offset()};
             simdOffsets = simdOffsets(1);
             return;

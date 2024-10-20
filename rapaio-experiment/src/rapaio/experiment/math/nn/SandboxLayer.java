@@ -21,35 +21,17 @@
 
 package rapaio.experiment.math.nn;
 
+import java.util.List;
+import java.util.Random;
+
 import rapaio.experiment.math.nn.data.DoubleDiffTensor;
 import rapaio.experiment.math.nn.gradient.GradientTape;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensors;
 
-import java.util.List;
-import java.util.Random;
-
 public class SandboxLayer {
 
     public static void main(String[] args) {
-
-//        Identity id1 = Identity.of("id1");
-//        Sequential nn1 = Sequential.of("seq1", List.of(
-//                id1,
-//                Identity.of("id2")
-//        ));
-//        System.out.println(nn1);
-
-//        Identity id1 = Identity.of("id1");
-//        Identity id2 = Identity.of("id2");
-//        Identity id3 = Identity.of("id3");
-//
-//        id2.bindTo(List.of(id1));
-//        id2.bindTo(List.of(id2));
-//        id3.bindTo(List.of(id2));
-//
-//        System.out.println(id1);
-
 
         var random = new Random(10);
         GradientTape tape = new GradientTape();

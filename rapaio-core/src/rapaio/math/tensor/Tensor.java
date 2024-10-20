@@ -1190,11 +1190,23 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return unaryOp_(TensorOp.unarySqrt());
     }
 
+    public final Tensor<N> pow(double power) {
+        return unaryOp(TensorOp.unaryPow(power));
+    }
+
+    public final Tensor<N> pow(Order order, double power) {
+        return unaryOp(TensorOp.unaryPow(power), order);
+    }
+
+    public final Tensor<N> pow_(double power) {
+        return unaryOp_(TensorOp.unaryPow(power));
+    }
+
     //--------- BINARY OPERATIONS ----------------//
 
     public final <M extends Number> Tensor<N> binaryOp(TensorBinaryOp op, Tensor<M> t, Order order) {
         if (isScalar()) {
-            return t.cast(dtype(), order).binaryOp_(op, get());
+            return manager.zeros(dtype(), t.shape(), order).fill_(get()).binaryOp_(op, t.cast(dtype(), order));
         }
         return copy(order).binaryOp_(op, t);
     }
@@ -1394,6 +1406,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> mul(N value) {
+        return binaryOp(TensorOp.binaryMul(), value, Order.defaultOrder());
+    }
+
+    public final Tensor<N> mul(double value) {
         return binaryOp(TensorOp.binaryMul(), value, Order.defaultOrder());
     }
 

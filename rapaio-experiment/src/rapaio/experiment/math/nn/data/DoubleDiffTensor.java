@@ -88,7 +88,7 @@ public final class DoubleDiffTensor extends AbstractDiffTensor {
                     DoubleDiffTensor.of(dL_dr.asDouble().mul(dr_drhs.asDouble()), tape)
             );
         };
-        // finally,we record the compute we did on the tape
+        // finally,we record the computation we did on the tape
         tape.add(inputs, outputs, propagate);
         return r;
     }

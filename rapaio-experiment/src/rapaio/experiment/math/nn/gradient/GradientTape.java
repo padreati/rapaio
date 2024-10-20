@@ -21,14 +21,18 @@
 
 package rapaio.experiment.math.nn.gradient;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+
 import rapaio.experiment.math.nn.DiffTensor;
 import rapaio.experiment.math.nn.data.DoubleDiffTensor;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.Tensors;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 public class GradientTape {
 

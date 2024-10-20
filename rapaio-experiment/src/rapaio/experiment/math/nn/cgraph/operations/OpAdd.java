@@ -19,35 +19,34 @@
  *
  */
 
-package rapaio.experiment.math.nn.layer.linear;
+package rapaio.experiment.math.nn.cgraph.operations;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.DiffTensor;
-import rapaio.experiment.math.nn.Module;
+import rapaio.experiment.math.nn.cgraph.Context;
 
-public class Identity extends Module {
+public class OpAdd extends Node {
 
-    public static Identity of(String name) {
-        return new Identity(name);
-    }
+    private final Node left;
+    private final Node right;
 
-    private Identity(String name) {
-        super(name);
-    }
-
-    @Override
-    public void bindBefore(List<Module> modules) {
-
+    public OpAdd(Context c, Node left, Node right) {
+        super(c, "add");
+        this.left = left;
+        this.right = right;
     }
 
     @Override
-    public void bindAfter(List<Module> modules) {
-
+    public List<Node> children() {
+        return List.of(left, right);
     }
 
     @Override
-    public List<? extends DiffTensor> forward(List<? extends DiffTensor> inputValues) {
-        return inputValues;
+    public List<Runnable> compute() {
+        value.assign(left.value.tensor().add(right.value.tensor()));
+        return List.of(
+                () -> left.adjoint.add_(this.adjoint.tensor()),
+                () -> right.adjoint.add_(this.adjoint.tensor())
+        );
     }
 }

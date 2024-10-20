@@ -47,6 +47,7 @@ import rapaio.math.tensor.operator.impl.BinaryOpMin;
 import rapaio.math.tensor.operator.impl.ReduceOpMul;
 import rapaio.math.tensor.operator.impl.BinaryOpMul;
 import rapaio.math.tensor.operator.impl.UnaryOpNeg;
+import rapaio.math.tensor.operator.impl.UnaryOpPow;
 import rapaio.math.tensor.operator.impl.UnaryOpRint;
 import rapaio.math.tensor.operator.impl.UnaryOpSin;
 import rapaio.math.tensor.operator.impl.UnaryOpSinh;
@@ -175,6 +176,10 @@ public final class TensorOp {
 
     public static UnaryOpSqrt unarySqrt() {
         return SQRT;
+    }
+
+    public static <N extends Number> UnaryOpPow<N> unaryPow(double pow) {
+        return new UnaryOpPow<>(pow);
     }
 
     public static <N extends Number> UnaryOpClamp<N> unaryClamp(DType<N> dtype, N min, N max) {

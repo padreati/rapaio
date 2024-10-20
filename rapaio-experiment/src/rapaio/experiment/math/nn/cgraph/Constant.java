@@ -19,16 +19,30 @@
  *
  */
 
-package rapaio.experiment.math.nn.gradient;
+package rapaio.experiment.math.nn.cgraph;
 
 import java.util.List;
-import java.util.function.Function;
 
-import rapaio.experiment.math.nn.DiffTensor;
+import rapaio.experiment.math.nn.cgraph.operations.Node;
+import rapaio.math.tensor.Tensor;
 
-public record TapeEntry(
-        List<String> inputs,
-        List<String> outputs,
-        Function<List<DiffTensor>, List<DiffTensor>> propagate) {
+public class Constant extends Node {
 
+    public Constant(Context c, String name, Tensor<?> value) {
+        super(c, name);
+        this.value = new Value(value);
+    }
+
+    public void assign(double value) {
+    }
+
+    @Override
+    public List<Node> children() {
+        return List.of();
+    }
+
+    @Override
+    public List<Runnable> compute() {
+        return List.of();
+    }
 }

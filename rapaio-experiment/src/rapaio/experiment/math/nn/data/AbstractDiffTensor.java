@@ -50,16 +50,6 @@ public abstract class AbstractDiffTensor implements DiffTensor {
     }
 
     @Override
-    public Tensor<Integer> asInt() {
-        return null;
-    }
-
-    @Override
-    public Tensor<Byte> asByte() {
-        return null;
-    }
-
-    @Override
     public DiffTensor mul(DiffTensor t, GradientTape tape) {
         throw new NotImplementedException();
     }
