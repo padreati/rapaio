@@ -168,7 +168,7 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
-    public <M extends Number> Tensor<Byte> binaryOp_(TensorBinaryOp op, Tensor<M> b) {
+    public Tensor<Byte> binaryOp_(TensorBinaryOp op, Tensor<?> b) {
         if (b.isScalar()) {
             return binaryOp_(op, b.getByte());
         }
@@ -201,7 +201,7 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
-    public <M extends Number> Tensor<Byte> fma_(Byte a, Tensor<M> t) {
+    public Tensor<Byte> fma_(Byte a, Tensor<?> t) {
         if (t.isScalar()) {
             byte tVal = t.getByte();
             return add_((byte) (a * tVal));
@@ -223,12 +223,12 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
-    public Byte vdot(Tensor<Byte> tensor) {
+    public Byte vdot(Tensor<?> tensor) {
         return vdot(tensor, 0, shape().dim(0));
     }
 
     @Override
-    public Byte vdot(Tensor<Byte> tensor, int start, int end) {
+    public Byte vdot(Tensor<?> tensor, int start, int end) {
         if (shape().rank() != 1 || tensor.shape().rank() != 1 || shape().dim(0) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(
                     "Operands are not valid for vector dot product (v = %s, v = %s)."
@@ -252,7 +252,7 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
-    public Tensor<Byte> mv(Tensor<Byte> tensor) {
+    public Tensor<Byte> mv(Tensor<?> tensor) {
         if (shape().rank() != 2 || tensor.shape().rank() != 1 || shape().dim(1) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(
                     String.format("Operands are not valid for matrix-vector multiplication (m = %s, v = %s).",
@@ -273,7 +273,7 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
-    public Tensor<Byte> mm(Tensor<Byte> t, Order askOrder) {
+    public Tensor<Byte> mm(Tensor<?> t, Order askOrder) {
         if (shape().rank() != 2 || t.shape().rank() != 2 || shape().dim(1) != t.shape().dim(0)) {
             throw new IllegalArgumentException(
                     String.format("Operands are not valid for matrix-matrix multiplication (m = %s, v = %s).", shape(), t.shape()));
@@ -289,7 +289,7 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         var ret = manager.ofByte().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
 
         List<Tensor<Byte>> rows = chunk(0, false, 1);
-        List<Tensor<Byte>> cols = t.chunk(1, false, 1);
+        List<Tensor<Byte>> cols = t.cast(dtype()).chunk(1, false, 1);
 
         int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;

@@ -35,6 +35,8 @@ import rapaio.experiment.math.nn.cgraph.operations.OpMul;
 import rapaio.experiment.math.nn.cgraph.operations.OpPower;
 import rapaio.experiment.math.nn.cgraph.operations.OpSin;
 import rapaio.experiment.math.nn.cgraph.operations.OpSub;
+import rapaio.experiment.math.nn.cgraph.operations.OpVDot;
+import rapaio.experiment.math.nn.cgraph.operations.OpVSum;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.Tensors;
 
@@ -44,7 +46,7 @@ public final class Context {
         return new Variable(this, name);
     }
 
-    public Constant newConst(String name, Tensor<Double> value) {
+    public Constant newConst(String name, Tensor<?> value) {
         return new Constant(this, name, value);
     }
 
@@ -78,6 +80,14 @@ public final class Context {
 
     public Node pow(Node child, double pow) {
         return new OpPower(this, child, pow);
+    }
+
+    public Node vsum(Node child) {
+        return new OpVSum(this, child);
+    }
+
+    public Node vdot(Node left, Node right) {
+        return new OpVDot(this, left, right);
     }
 
     private final AtomicInteger idGenerator = new AtomicInteger(-1);

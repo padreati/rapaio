@@ -34,6 +34,7 @@ import rapaio.experiment.math.nn.cgraph.operations.Node;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Plot;
+import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensors;
 import rapaio.printer.Format;
 import rapaio.sys.WS;
@@ -43,7 +44,32 @@ public class Sandbox {
     public static void main(String[] args) {
 //        main1();
 //        main2();
-        main3();
+//        main3();
+        main4();
+    }
+
+    public static void main4() {
+        Context c = new Context();
+
+        Variable x = c.newVar("x");
+        Variable w = c.newVar("w");
+        Variable b = c.newVar("b");
+
+        Node t = c.add(c.vsum(c.vdot(x, w)), b);
+
+        x.assign(Tensors.stride(Shape.of(2), 2, 3, 5));
+        w.assign(Tensors.stride(Shape.of(2), 3, 1, 1));
+        b.assign(Tensors.scalar(2.));
+
+        c.zeroGrad();
+        c.forward(t);
+        c.backward(t);
+
+        System.out.println(t);
+        System.out.println(x);
+        System.out.println(w);
+        System.out.println(b);
+
     }
 
     public static void main1() {
@@ -55,7 +81,8 @@ public class Sandbox {
 
         Node t = c.add(c.sin(x), c.cos(y));
 
-        Node loss = t;
+        Node zero = c.newConst("0", Tensors.scalar(0.));
+
         BiFunction<Double, Double, Double> biFun = (_x, _y) -> Math.sin(_x) + Math.cos(_y);
 
         x.assign(Tensors.ofDouble().scalar(0.5));
@@ -68,13 +95,13 @@ public class Sandbox {
         for (int i = 0; i < 10_000; i++) {
 
             c.zeroGrad();
-            c.forward(loss);
-            c.backward(loss);
+            c.forward(t);
+            c.backward(t);
 
             System.out.println("iter: " + (i + 1));
             System.out.println(x);
             System.out.println(y);
-            System.out.println(loss);
+            System.out.println(t);
 
             System.out.println("cos(x)=" + Format.floatFlex(Math.cos(x.value().tensor().getDouble())));
             System.out.println("sin(x)=" + Format.floatFlex(Math.sin(x.value().tensor().getDouble())));

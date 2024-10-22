@@ -383,8 +383,8 @@ public interface Var extends Serializable, Printable {
     }
 
     @SuppressWarnings("unchecked")
-    default <N extends Number> Tensor<N> tensor_(DType<N> dType) {
-        return (Tensor<N>) switch (dType.id()) {
+    default <N extends Number> Tensor<N> tensor_(DType<N> dtype) {
+        return (Tensor<N>) switch (dtype.id()) {
             case DOUBLE -> Tensors.ofDouble().stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
             case FLOAT -> Tensors.ofFloat().stride(Shape.of(size()), Order.C, new VarFloatStorage(this));
             default -> throw new NotImplementedException();
@@ -396,8 +396,8 @@ public interface Var extends Serializable, Printable {
     }
 
     @SuppressWarnings("unchecked")
-    default <N extends Number> Tensor<N> tensor(DType<N> dType) {
-        return switch (dType.id()) {
+    default <N extends Number> Tensor<N> tensor(DType<N> dtype) {
+        return switch (dtype.id()) {
             case DOUBLE -> {
                 double[] copy = new double[size()];
                 for (int i = 0; i < copy.length; i++) {

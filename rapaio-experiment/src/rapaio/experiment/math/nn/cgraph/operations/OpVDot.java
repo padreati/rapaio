@@ -24,14 +24,15 @@ package rapaio.experiment.math.nn.cgraph.operations;
 import java.util.List;
 
 import rapaio.experiment.math.nn.cgraph.Context;
+import rapaio.math.tensor.Tensors;
 
-public class OpAdd extends Node {
+public class OpVDot extends Node {
 
     private final Node left;
     private final Node right;
 
-    public OpAdd(Context c, Node left, Node right) {
-        super(c, "add");
+    public OpVDot(Context c, Node left, Node right) {
+        super(c, "vsum");
         this.left = left;
         this.right = right;
     }
@@ -43,10 +44,13 @@ public class OpAdd extends Node {
 
     @Override
     public List<Runnable> compute() {
-        value.assign(left.value.tensor().add(right.value.tensor()));
-       return List.of(
-                () -> left.adjoint.add_(this.adjoint.tensor()),
-                () -> right.adjoint.add_(this.adjoint.tensor())
+        value.assign(Tensors.ofDouble().scalar(left.value.tensor().vdot(right.value.tensor()).doubleValue()));
+        var eye = Tensors.ofDouble().eye(left.value.tensor().shape().dim(0));
+
+        return List.of(
+                () -> left.adjoint.add_(eye.dot(right.value.tensor()).dot(this.adjoint.tensor())),
+                () -> right.adjoint.add_(eye.dot(left.value.tensor()).dot(this.adjoint.tensor()))
         );
+
     }
 }

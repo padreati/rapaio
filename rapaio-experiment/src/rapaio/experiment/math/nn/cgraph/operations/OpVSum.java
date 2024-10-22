@@ -24,29 +24,29 @@ package rapaio.experiment.math.nn.cgraph.operations;
 import java.util.List;
 
 import rapaio.experiment.math.nn.cgraph.Context;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 
-public class OpAdd extends Node {
+public class OpVSum extends Node {
 
-    private final Node left;
-    private final Node right;
+    private final Node child;
 
-    public OpAdd(Context c, Node left, Node right) {
-        super(c, "add");
-        this.left = left;
-        this.right = right;
+    public OpVSum(Context c, Node child) {
+        super(c, "vsum");
+        this.child = child;
     }
 
     @Override
     public List<Node> children() {
-        return List.of(left, right);
+        return List.of(child);
     }
 
     @Override
     public List<Runnable> compute() {
-        value.assign(left.value.tensor().add(right.value.tensor()));
-       return List.of(
-                () -> left.adjoint.add_(this.adjoint.tensor()),
-                () -> right.adjoint.add_(this.adjoint.tensor())
-        );
+        value.assign(Tensors.ofDouble().scalar(child.value.tensor().sum().doubleValue()));
+        return List.of(() -> {
+            Tensor<Double> ones = Tensors.ofDouble().full(value.tensor().shape(), 1.0);
+            child.adjoint.add_(this.adjoint.tensor().dot(ones));
+        });
     }
 }

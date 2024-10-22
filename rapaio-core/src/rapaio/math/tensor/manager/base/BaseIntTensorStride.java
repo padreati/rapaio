@@ -168,7 +168,7 @@ public final class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     @Override
-    public <M extends Number> Tensor<Integer> binaryOp_(TensorBinaryOp op, Tensor<M> b) {
+    public Tensor<Integer> binaryOp_(TensorBinaryOp op, Tensor<?> b) {
         if (b.isScalar()) {
             return binaryOp_(op, b.getInt());
         }
@@ -201,7 +201,7 @@ public final class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     @Override
-    public <M extends Number> Tensor<Integer> fma_(Integer a, Tensor<M> t) {
+    public Tensor<Integer> fma_(Integer a, Tensor<?> t) {
         if (t.isScalar()) {
             int tVal = t.getInt();
             return add_((int) (a * tVal));
@@ -223,12 +223,12 @@ public final class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     @Override
-    public Integer vdot(Tensor<Integer> tensor) {
+    public Integer vdot(Tensor<?> tensor) {
         return vdot(tensor, 0, shape().dim(0));
     }
 
     @Override
-    public Integer vdot(Tensor<Integer> tensor, int start, int end) {
+    public Integer vdot(Tensor<?> tensor, int start, int end) {
         if (shape().rank() != 1 || tensor.shape().rank() != 1 || shape().dim(0) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(
                     "Operands are not valid for vector dot product (v = %s, v = %s)."
@@ -252,7 +252,7 @@ public final class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     @Override
-    public Tensor<Integer> mv(Tensor<Integer> tensor) {
+    public Tensor<Integer> mv(Tensor<?> tensor) {
         if (shape().rank() != 2 || tensor.shape().rank() != 1 || shape().dim(1) != tensor.shape().dim(0)) {
             throw new IllegalArgumentException(
                     String.format("Operands are not valid for matrix-vector multiplication (m = %s, v = %s).",
@@ -273,7 +273,7 @@ public final class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     @Override
-    public Tensor<Integer> mm(Tensor<Integer> t, Order askOrder) {
+    public Tensor<Integer> mm(Tensor<?> t, Order askOrder) {
         if (shape().rank() != 2 || t.shape().rank() != 2 || shape().dim(1) != t.shape().dim(0)) {
             throw new IllegalArgumentException(
                     String.format("Operands are not valid for matrix-matrix multiplication (m = %s, v = %s).", shape(), t.shape()));
@@ -289,7 +289,7 @@ public final class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
         var ret = manager.ofInt().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
 
         List<Tensor<Integer>> rows = chunk(0, false, 1);
-        List<Tensor<Integer>> cols = t.chunk(1, false, 1);
+        List<Tensor<Integer>> cols = t.cast(dtype()).chunk(1, false, 1);
 
         int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;

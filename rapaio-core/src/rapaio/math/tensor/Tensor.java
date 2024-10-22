@@ -1204,14 +1204,14 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
 
     //--------- BINARY OPERATIONS ----------------//
 
-    public final <M extends Number> Tensor<N> binaryOp(TensorBinaryOp op, Tensor<M> t, Order order) {
+    public final Tensor<N> binaryOp(TensorBinaryOp op, Tensor<?> t, Order order) {
         if (isScalar()) {
             return manager.zeros(dtype(), t.shape(), order).fill_(get()).binaryOp_(op, t.cast(dtype(), order));
         }
         return copy(order).binaryOp_(op, t);
     }
 
-    public abstract <M extends Number> Tensor<N> binaryOp_(TensorBinaryOp op, Tensor<M> value);
+    public abstract Tensor<N> binaryOp_(TensorBinaryOp op, Tensor<?> value);
 
     public final <M extends Number> Tensor<N> binaryOp(TensorBinaryOp op, M value, Order order) {
         return copy(order).binaryOp_(op, value);
@@ -1219,165 +1219,165 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
 
     public abstract <M extends Number> Tensor<N> binaryOp_(TensorBinaryOp op, M value);
 
-    public final <M extends Number> Tensor<N> add(Tensor<M> tensor) {
+    public final Tensor<N> add(Tensor<?> tensor) {
         return binaryOp(TensorOp.binaryAdd(), tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> add(Tensor<M> tensor, Order order) {
+    public final Tensor<N> add(Tensor<?> tensor, Order order) {
         return binaryOp(TensorOp.binaryAdd(), tensor, order);
     }
 
-    public final <M extends Number> Tensor<N> add_(Tensor<M> tensor) {
+    public final Tensor<N> add_(Tensor<?> tensor) {
         return binaryOp_(TensorOp.binaryAdd(), tensor);
     }
 
-    public final <M extends Number> Tensor<N> badd(int axis, Tensor<M> tensor) {
+    public final Tensor<N> badd(int axis, Tensor<?> tensor) {
         return badd(axis, tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> badd(int axis, Tensor<M> tensor, Order order) {
+    public final Tensor<N> badd(int axis, Tensor<?> tensor, Order order) {
         if (isScalar()) {
             return tensor.cast(dtype(), order).add_(get());
         }
         return copy(order).badd_(axis, tensor);
     }
 
-    public final <M extends Number> Tensor<N> badd_(int axis, Tensor<M> tensor) {
+    public final Tensor<N> badd_(int axis, Tensor<?> tensor) {
         return add_(tensor.strexp(axis, dim(axis)));
     }
 
-    public final <M extends Number> Tensor<N> sub(Tensor<M> tensor) {
+    public final Tensor<N> sub(Tensor<?> tensor) {
         return binaryOp(TensorOp.binarySub(), tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> sub(Tensor<M> tensor, Order order) {
+    public final Tensor<N> sub(Tensor<?> tensor, Order order) {
         return binaryOp(TensorOp.binarySub(), tensor, order);
     }
 
-    public final <M extends Number> Tensor<N> sub_(Tensor<M> tensor) {
+    public final Tensor<N> sub_(Tensor<?> tensor) {
         return binaryOp_(TensorOp.binarySub(), tensor);
     }
 
-    public final <M extends Number> Tensor<N> bsub(int axis, Tensor<M> tensor) {
+    public final Tensor<N> bsub(int axis, Tensor<?> tensor) {
         return bsub(axis, tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> bsub(int axis, Tensor<M> tensor, Order order) {
+    public final Tensor<N> bsub(int axis, Tensor<?> tensor, Order order) {
         if (isScalar()) {
             return tensor.cast(dtype(), order).sub_(get());
         }
         return copy(order).bsub_(axis, tensor);
     }
 
-    public final <M extends Number> Tensor<N> bsub_(int axis, Tensor<M> tensor) {
+    public final Tensor<N> bsub_(int axis, Tensor<?> tensor) {
         return sub_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
-    public final <M extends Number> Tensor<N> mul(Tensor<M> tensor) {
+    public final Tensor<N> mul(Tensor<?> tensor) {
         return binaryOp(TensorOp.binaryMul(), tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> mul(Tensor<M> tensor, Order order) {
+    public final Tensor<N> mul(Tensor<?> tensor, Order order) {
         return binaryOp(TensorOp.binaryMul(), tensor, order);
     }
 
-    public final <M extends Number> Tensor<N> mul_(Tensor<M> tensor) {
+    public final Tensor<N> mul_(Tensor<?> tensor) {
         return binaryOp_(TensorOp.binaryMul(), tensor);
     }
 
-    public final <M extends Number> Tensor<N> bmul(int axis, Tensor<M> tensor) {
+    public final Tensor<N> bmul(int axis, Tensor<?> tensor) {
         return bmul(axis, tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> bmul(int axis, Tensor<M> tensor, Order order) {
+    public final Tensor<N> bmul(int axis, Tensor<?> tensor, Order order) {
         if (isScalar()) {
             return tensor.cast(dtype(), order).mul_(get());
         }
         return copy(order).bmul_(axis, tensor);
     }
 
-    public final <M extends Number> Tensor<N> bmul_(int axis, Tensor<M> tensor) {
+    public final Tensor<N> bmul_(int axis, Tensor<?> tensor) {
         return mul_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
-    public final <M extends Number> Tensor<N> div(Tensor<M> tensor) {
+    public final Tensor<N> div(Tensor<?> tensor) {
         return binaryOp(TensorOp.binaryDiv(), tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> div(Tensor<M> tensor, Order order) {
+    public final Tensor<N> div(Tensor<?> tensor, Order order) {
         return binaryOp(TensorOp.binaryDiv(), tensor, order);
     }
 
-    public final <M extends Number> Tensor<N> div_(Tensor<M> tensor) {
+    public final Tensor<N> div_(Tensor<?> tensor) {
         return binaryOp_(TensorOp.binaryDiv(), tensor);
     }
 
-    public final <M extends Number> Tensor<N> bdiv(int axis, Tensor<M> tensor) {
+    public final Tensor<N> bdiv(int axis, Tensor<?> tensor) {
         return bdiv(axis, tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> bdiv(int axis, Tensor<M> tensor, Order order) {
+    public final Tensor<N> bdiv(int axis, Tensor<?> tensor, Order order) {
         if (isScalar()) {
             return tensor.cast(dtype(), order).div_(get());
         }
         return copy(order).bdiv_(axis, tensor);
     }
 
-    public final <M extends Number> Tensor<N> bdiv_(int axis, Tensor<M> tensor) {
+    public final Tensor<N> bdiv_(int axis, Tensor<?> tensor) {
         return div_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
-    public final <M extends Number> Tensor<N> min(Tensor<M> tensor) {
+    public final Tensor<N> min(Tensor<?> tensor) {
         return binaryOp(TensorOp.binaryMin(), tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> min(Tensor<M> tensor, Order order) {
+    public final Tensor<N> min(Tensor<?> tensor, Order order) {
         return binaryOp(TensorOp.binaryMin(), tensor, order);
     }
 
-    public final <M extends Number> Tensor<N> min_(Tensor<M> tensor) {
+    public final Tensor<N> min_(Tensor<?> tensor) {
         return binaryOp_(TensorOp.binaryMin(), tensor);
     }
 
-    public final <M extends Number> Tensor<N> bmin(int axis, Tensor<M> tensor) {
+    public final Tensor<N> bmin(int axis, Tensor<?> tensor) {
         return bmin(axis, tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> bmin(int axis, Tensor<M> tensor, Order order) {
+    public final Tensor<N> bmin(int axis, Tensor<?> tensor, Order order) {
         if (isScalar()) {
             return tensor.cast(dtype(), order).min_(get());
         }
         return copy(order).bmin_(axis, tensor);
     }
 
-    public final <M extends Number> Tensor<N> bmin_(int axis, Tensor<M> tensor) {
+    public final Tensor<N> bmin_(int axis, Tensor<?> tensor) {
         return min_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
-    public final <M extends Number> Tensor<N> max(Tensor<M> tensor) {
+    public final Tensor<N> max(Tensor<?> tensor) {
         return binaryOp(TensorOp.binaryMax(), tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> max(Tensor<M> tensor, Order order) {
+    public final Tensor<N> max(Tensor<?> tensor, Order order) {
         return binaryOp(TensorOp.binaryMax(), tensor, order);
     }
 
-    public final <M extends Number> Tensor<N> max_(Tensor<M> tensor) {
+    public final Tensor<N> max_(Tensor<?> tensor) {
         return binaryOp_(TensorOp.binaryMax(), tensor);
     }
 
-    public final <M extends Number> Tensor<N> bmax(int axis, Tensor<M> tensor) {
+    public final Tensor<N> bmax(int axis, Tensor<?> tensor) {
         return bmax(axis, tensor, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> bmax(int axis, Tensor<M> tensor, Order order) {
+    public final Tensor<N> bmax(int axis, Tensor<?> tensor, Order order) {
         if (isScalar()) {
             return tensor.cast(dtype(), order).max_(get());
         }
         return copy(order).bmax_(axis, tensor);
     }
 
-    public final <M extends Number> Tensor<N> bmax_(int axis, Tensor<M> tensor) {
+    public final Tensor<N> bmax_(int axis, Tensor<?> tensor) {
         return max_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
@@ -1457,11 +1457,11 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp_(TensorOp.binaryMax(), value);
     }
 
-    public final <M extends Number> Tensor<N> fma(N a, Tensor<M> t) {
+    public final Tensor<N> fma(N a, Tensor<?> t) {
         return fma(a, t, Order.defaultOrder());
     }
 
-    public final <M extends Number> Tensor<N> fma(N a, Tensor<M> t, Order order) {
+    public final Tensor<N> fma(N a, Tensor<?> t, Order order) {
         return copy(order).fma_(a, t);
     }
 
@@ -1472,7 +1472,7 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
      * @param t      tensor to be multiplied and added to the current one
      * @return same tensor with values changed
      */
-    public abstract <M extends Number> Tensor<N> fma_(N factor, Tensor<M> t);
+    public abstract Tensor<N> fma_(N factor, Tensor<?> t);
 
     //--------- REDUCE OPERATIONS ----------------//
 
@@ -1594,24 +1594,47 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
 
     //------- VECTOR MATRIX OPERATIONS ----------//
 
-    public final Tensor<N> outer(Tensor<N> t) {
+    public final Tensor<N> dot(Tensor<?> other) {
+        return dot(other, Order.defaultOrder());
+    }
+
+    public final Tensor<N> dot(Tensor<?> other, Order askOrder) {
+        if (isScalar() || other.isScalar()) {
+            return mul(other, askOrder);
+        }
+        if (isVector() && other.isVector()) {
+            return manager.scalar(dtype(), vdot(other));
+        }
+        if (isVector() && other.isMatrix()) {
+            return stretch(0).mm(other, askOrder);
+        }
+        if (isMatrix() && other.isVector()) {
+            return mv(other);
+        }
+        if (isMatrix() && other.isMatrix()) {
+            return mm(other, askOrder);
+        }
+        throw new IllegalArgumentException("Operation supported only for scalars, vectors and matrices.");
+    }
+
+    public final Tensor<N> vouter(Tensor<?> t) {
         if (!isVector() || !t.isVector()) {
             throw new IllegalArgumentException("Outer product is available only for vectors.");
         }
         return stretch(1).mm(t.stretch(0));
     }
 
-    public abstract N vdot(Tensor<N> tensor);
+    public abstract N vdot(Tensor<?> tensor);
 
-    public abstract N vdot(Tensor<N> tensor, int start, int end);
+    public abstract N vdot(Tensor<?> tensor, int start, int end);
 
-    public abstract Tensor<N> mv(Tensor<N> tensor);
+    public abstract Tensor<N> mv(Tensor<?> tensor);
 
-    public final Tensor<N> mm(Tensor<N> tensor) {
+    public final Tensor<N> mm(Tensor<?> tensor) {
         return mm(tensor, Order.defaultOrder());
     }
 
-    public abstract Tensor<N> mm(Tensor<N> tensor, Order askOrder);
+    public abstract Tensor<N> mm(Tensor<?> tensor, Order askOrder);
 
     public final boolean isSymmetric() {
         if (!isMatrix()) {
@@ -1805,8 +1828,13 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
      */
     public abstract int zeroCount();
 
-    public final <M extends Number> Tensor<M> cast(DType<M> dType) {
-        return cast(dType, Order.defaultOrder());
+    @SuppressWarnings("unchecked")
+    public final <M extends Number> Tensor<M> cast(DType<M> dtype) {
+        if ((dtype.id() == dtype().id())) {
+            return (Tensor<M>) this;
+        } else {
+            return cast(dtype, Order.defaultOrder());
+        }
     }
 
     public abstract <M extends Number> Tensor<M> cast(DType<M> dType, Order askOrder);

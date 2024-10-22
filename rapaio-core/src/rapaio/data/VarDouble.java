@@ -593,11 +593,11 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <N extends Number> Tensor<N> tensor_(DType<N> dType) {
-        if (dType == DType.DOUBLE) {
+    public <N extends Number> Tensor<N> tensor_(DType<N> dtype) {
+        if (dtype == DType.DOUBLE) {
             return (Tensor<N>) Tensors.stride(Shape.of(rows), Order.C, data);
         }
-        return super.tensor_(dType);
+        return super.tensor_(dtype);
     }
 
     @Serial

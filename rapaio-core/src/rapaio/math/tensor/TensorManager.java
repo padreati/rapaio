@@ -48,11 +48,7 @@ public abstract class TensorManager {
     protected final OfType<Byte> ofByte;
     protected final StorageFactory storageFactory;
 
-    public TensorManager(int cpuThreads,
-            OfType<Double> ofDouble,
-            OfType<Float> ofFloat,
-            OfType<Integer> ofInt,
-            OfType<Byte> ofByte,
+    protected TensorManager(int cpuThreads, OfType<Double> ofDouble, OfType<Float> ofFloat, OfType<Integer> ofInt, OfType<Byte> ofByte,
             StorageFactory storageFactory) {
         this.cpuThreads = cpuThreads;
 
@@ -85,8 +81,8 @@ public abstract class TensorManager {
     }
 
     @SuppressWarnings("unchecked")
-    public final <N extends Number> OfType<N> ofType(DType<N> dType) {
-        return (OfType<N>) switch (dType.id()) {
+    public final <N extends Number> OfType<N> ofType(DType<N> dtype) {
+        return (OfType<N>) switch (dtype.id()) {
             case DOUBLE -> ofDouble();
             case FLOAT -> ofFloat();
             case INTEGER -> ofInt();
@@ -103,6 +99,22 @@ public abstract class TensorManager {
     }
 
     public final <N extends Number> Tensor<N> scalar(DType<N> dType, N value) {
+        return ofType(dType).scalar(value);
+    }
+
+    public final <N extends Number> Tensor<N> scalar(DType<N> dType, byte value) {
+        return ofType(dType).scalar(value);
+    }
+
+    public final <N extends Number> Tensor<N> scalar(DType<N> dType, int value) {
+        return ofType(dType).scalar(value);
+    }
+
+    public final <N extends Number> Tensor<N> scalar(DType<N> dType, float value) {
+        return ofType(dType).scalar(value);
+    }
+
+    public final <N extends Number> Tensor<N> scalar(DType<N> dType, double value) {
         return ofType(dType).scalar(value);
     }
 
@@ -296,6 +308,22 @@ public abstract class TensorManager {
         }
 
         public final Tensor<N> scalar(N value) {
+            return stride(StrideLayout.of(Shape.of(), 0, new int[0]), storage().scalar(value));
+        }
+
+        public final Tensor<N> scalar(byte value) {
+            return stride(StrideLayout.of(Shape.of(), 0, new int[0]), storage().scalar(value));
+        }
+
+        public final Tensor<N> scalar(int value) {
+            return stride(StrideLayout.of(Shape.of(), 0, new int[0]), storage().scalar(value));
+        }
+
+        public final Tensor<N> scalar(float value) {
+            return stride(StrideLayout.of(Shape.of(), 0, new int[0]), storage().scalar(value));
+        }
+
+        public final Tensor<N> scalar(double value) {
             return stride(StrideLayout.of(Shape.of(), 0, new int[0]), storage().scalar(value));
         }
 
