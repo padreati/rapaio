@@ -30,10 +30,11 @@ import java.util.function.BiFunction;
 
 import rapaio.core.tools.Grid2D;
 import rapaio.data.VarDouble;
-import rapaio.experiment.math.nn.cgraph.operations.Node;
+import rapaio.experiment.math.nn.cgraph.operations.CompNode;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Plot;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensors;
 import rapaio.printer.Format;
@@ -49,17 +50,17 @@ public class Sandbox {
     }
 
     public static void main4() {
-        Context c = new Context();
+        Context c = new Context(DType.FLOAT);
 
         Variable x = c.newVar("x");
         Variable w = c.newVar("w");
         Variable b = c.newVar("b");
 
-        Node t = c.add(c.vsum(c.vdot(x, w)), b);
+        CompNode t = c.add(c.vdot(x, w), b);
 
-        x.assign(Tensors.stride(Shape.of(2), 2, 3, 5));
-        w.assign(Tensors.stride(Shape.of(2), 3, 1, 1));
-        b.assign(Tensors.scalar(2.));
+        x.assign(c.tmt().stride(Shape.of(2), 2, 3, 5));
+        w.assign(c.tmt().stride(Shape.of(2), 3, 1, 1));
+        b.assign(c.tmt().scalar(2.));
 
         c.zeroGrad();
         c.forward(t);
@@ -74,14 +75,14 @@ public class Sandbox {
 
     public static void main1() {
 
-        Context c = new Context();
+        Context c = new Context(DType.DOUBLE);
 
         Variable x = c.newVar("x");
         Variable y = c.newVar("y");
 
-        Node t = c.add(c.sin(x), c.cos(y));
+        CompNode t = c.add(c.sin(x), c.cos(y));
 
-        Node zero = c.newConst("0", Tensors.scalar(0.));
+        CompNode zero = c.newConst("0", Tensors.scalar(0.));
 
         BiFunction<Double, Double, Double> biFun = (_x, _y) -> Math.sin(_x) + Math.cos(_y);
 
@@ -140,7 +141,7 @@ public class Sandbox {
 
     public static void main2() {
 
-        Context c = new Context();
+        Context c = new Context(DType.DOUBLE);
 
         Constant zero = c.newConst("0", Tensors.ofDouble().scalar(0.));
         Variable x = c.newVar("x");
@@ -149,12 +150,12 @@ public class Sandbox {
         Constant c2 = c.newConst("c2", Tensors.ofDouble().scalar(2.25));
         Constant c3 = c.newConst("c3", Tensors.ofDouble().scalar(2.625));
 
-        Node f1 = c.pow(c.add(c.sub(c1, x), c.mul(x, y)), 2);
-        Node f2 = c.pow(c.add(c.sub(c2, x), c.mul(x, c.pow(y, 2))), 2);
-        Node f3 = c.pow(c.add(c.sub(c3, x), c.mul(x, c.pow(y, 3))), 2);
+        CompNode f1 = c.pow(c.add(c.sub(c1, x), c.mul(x, y)), 2);
+        CompNode f2 = c.pow(c.add(c.sub(c2, x), c.mul(x, c.pow(y, 2))), 2);
+        CompNode f3 = c.pow(c.add(c.sub(c3, x), c.mul(x, c.pow(y, 3))), 2);
 
-        Node t = c.add(c.add(f1, f2), f3);
-        Node loss = t;
+        CompNode t = c.add(c.add(f1, f2), f3);
+        CompNode loss = t;
 
         BiFunction<Double, Double, Double> biFun = (_x, _y) -> Math.pow(1.5 - _x + _x * _y, 2) +
                 Math.pow(2.25 - _x + _x * Math.pow(_y, 2), 2) +
@@ -209,7 +210,7 @@ public class Sandbox {
 
     public static void main3() {
 
-        Context c = new Context();
+        Context c = new Context(DType.DOUBLE);
 
         Variable x = c.newVar("x");
         Variable y = c.newVar("y");
@@ -217,11 +218,11 @@ public class Sandbox {
         Constant eleven = c.newConst("11", Tensors.scalar(11.));
         Constant seven = c.newConst("7", Tensors.scalar(7.));
 
-        Node t1 = c.pow(c.sub(c.add(c.pow(x, 2), y), eleven), 2);
-        Node t2 = c.pow(c.sub(c.add(x, c.pow(y, 2)), seven), 2);
-        Node t = c.add(t1, t2);
+        CompNode t1 = c.pow(c.sub(c.add(c.pow(x, 2), y), eleven), 2);
+        CompNode t2 = c.pow(c.sub(c.add(x, c.pow(y, 2)), seven), 2);
+        CompNode t = c.add(t1, t2);
 
-        Node loss = t;
+        CompNode loss = t;
         BiFunction<Double, Double, Double> biFun = (_x, _y) -> Math.pow(_x * _x + _y - 11, 2) + Math.pow(_x + _y * _y - 7, 2);
 
         x.assign(Tensors.ofDouble().scalar(.3719051));

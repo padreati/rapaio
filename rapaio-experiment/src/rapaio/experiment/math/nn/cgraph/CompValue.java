@@ -25,18 +25,18 @@ import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Tensor;
 import rapaio.printer.Format;
 
-public class Value {
+public class CompValue {
 
     private boolean hasValue;
     private DType<?> dType;
     private Tensor<?> tensor;
 
-    public Value() {
+    public CompValue() {
         this.hasValue = false;
         this.tensor = null;
     }
 
-    public Value(Tensor<?> tensor) {
+    public CompValue(Tensor<?> tensor) {
         this.hasValue = true;
         this.dType = tensor.dtype();
         this.tensor = tensor;

@@ -25,19 +25,19 @@ import java.util.List;
 
 import rapaio.experiment.math.nn.cgraph.Context;
 
-public class OpAdd extends Node {
+public class OpAdd extends CompNode {
 
-    private final Node left;
-    private final Node right;
+    private final CompNode left;
+    private final CompNode right;
 
-    public OpAdd(Context c, Node left, Node right) {
+    public OpAdd(Context c, CompNode left, CompNode right) {
         super(c, "add");
         this.left = left;
         this.right = right;
     }
 
     @Override
-    public List<Node> children() {
+    public List<CompNode> children() {
         return List.of(left, right);
     }
 

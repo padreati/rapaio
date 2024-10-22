@@ -21,47 +21,46 @@
 
 package rapaio.experiment.math.nn.cgraph.operations;
 
-import java.util.Collections;
 import java.util.List;
 
 import rapaio.experiment.math.nn.cgraph.Context;
-import rapaio.experiment.math.nn.cgraph.Value;
+import rapaio.experiment.math.nn.cgraph.CompValue;
 
-public abstract class Node {
+public abstract class CompNode {
 
     protected final Context c;
     protected final int id;
     protected final String name;
-    protected Value value;
-    protected Value adjoint;
+    protected CompValue value;
+    protected CompValue adjoint;
 
-    public Node(Context c, String name) {
+    public CompNode(Context c, String name) {
         this.c = c;
         this.name = name;
-        this.id = c.register(this, Collections.emptyList());
-        this.value = new Value();
-        this.adjoint = new Value();
+        this.id = c.register(this);
+        this.value = new CompValue();
+        this.adjoint = new CompValue();
     }
 
-    public abstract List<Node> children();
+    public abstract List<CompNode> children();
 
     public final int id() {
         return id;
     }
 
-    public final Value value() {
+    public final CompValue value() {
         return value;
     }
 
-    public final void value(Value value) {
+    public final void value(CompValue value) {
         this.value = value;
     }
 
-    public final Value adjoint() {
+    public final CompValue adjoint() {
         return adjoint;
     }
 
-    public final void adjoint(Value value) {
+    public final void adjoint(CompValue value) {
         adjoint = value;
     }
 
@@ -69,6 +68,6 @@ public abstract class Node {
 
     @Override
     public final String toString() {
-        return String.format("[%d] %s {val:%s, adj:%s}", id, name == null ? "" : "(" + name + ")", value, adjoint);
+        return String.format("[%d] %s {\nval:%s, adj:%s}", id, name == null ? "" : "(" + name + ")", value, adjoint);
     }
 }

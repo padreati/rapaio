@@ -22,12 +22,12 @@
 package rapaio.experiment.math.nn.cgraph;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rapaio.experiment.math.nn.cgraph.operations.Node;
+import rapaio.experiment.math.nn.cgraph.operations.CompNode;
 import rapaio.experiment.math.nn.cgraph.operations.OpAdd;
 import rapaio.experiment.math.nn.cgraph.operations.OpCos;
 import rapaio.experiment.math.nn.cgraph.operations.OpLog;
@@ -37,7 +37,9 @@ import rapaio.experiment.math.nn.cgraph.operations.OpSin;
 import rapaio.experiment.math.nn.cgraph.operations.OpSub;
 import rapaio.experiment.math.nn.cgraph.operations.OpVDot;
 import rapaio.experiment.math.nn.cgraph.operations.OpVSum;
+import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.Tensors;
 
 public final class Context {
@@ -50,71 +52,72 @@ public final class Context {
         return new Constant(this, name, value);
     }
 
-    public Node add(Node left, Node right) {
+    public CompNode add(CompNode left, CompNode right) {
         return new OpAdd(this, left, right);
     }
 
-    public Node mul(Node left, Node right) {
+    public CompNode mul(CompNode left, CompNode right) {
         return new OpMul(this, left, right);
     }
 
-    public Node sub(Node left, Node right) {
+    public CompNode sub(CompNode left, CompNode right) {
         return new OpSub(this, left, right);
     }
 
-    public Node cos(Node child) {
+    public CompNode cos(CompNode child) {
         return new OpCos(this, child);
     }
 
-    public Node sin(Node child) {
+    public CompNode sin(CompNode child) {
         return new OpSin(this, child);
     }
 
-    public Node log(Node child) {
+    public CompNode log(CompNode child) {
         return new OpLog(this, child);
     }
 
-    public Node exp(Node child) {
+    public CompNode exp(CompNode child) {
         return new OpLog(this, child);
     }
 
-    public Node pow(Node child, double pow) {
+    public CompNode pow(CompNode child, double pow) {
         return new OpPower(this, child, pow);
     }
 
-    public Node vsum(Node child) {
+    public CompNode vsum(CompNode child) {
         return new OpVSum(this, child);
     }
 
-    public Node vdot(Node left, Node right) {
+    public CompNode vdot(CompNode left, CompNode right) {
         return new OpVDot(this, left, right);
     }
 
+    private final TensorManager.OfType<?> tmt;
     private final AtomicInteger idGenerator = new AtomicInteger(-1);
-    private final ConcurrentHashMap<Node, Integer> nodeToId = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Integer, Node> idToNode = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Integer, List<Integer>> parents = new ConcurrentHashMap<>();
+    private final LinkedList<CompNode> nodes = new LinkedList<>();
+    private final ArrayList<CompNode> idToNode = new ArrayList<>();
     private final ConcurrentLinkedDeque<Runnable> tape = new ConcurrentLinkedDeque<>();
 
-    public int register(Node node, List<Node> children) {
+    public Context(DType<?> dtype) {
+        this.tmt = TensorManager.base().ofType(dtype);
+    }
+
+    public TensorManager.OfType<?> tmt() {
+        return tmt;
+    }
+
+    public int register(CompNode node) {
         int id = idGenerator.incrementAndGet();
-        nodeToId.put(node, id);
-        idToNode.put(id, node);
-        for (Node child : children) {
-            if (!parents.containsKey(child.id())) {
-                parents.put(child.id(), new ArrayList<>());
-            }
-            parents.get(child.id()).add(id);
-        }
+        idToNode.add(id, node);
         return id;
     }
 
     public void zeroGrad() {
         tape.clear();
-        nodeToId.keySet().forEach(node -> node.adjoint().reset());
+        nodes.forEach(node -> node.adjoint().reset());
     }
 
-    public void forward(Node t) {
+    public void forward(CompNode t) {
         List<Integer> ordered = topologicalCoverage(t);
         for (int index : ordered) {
             List<Runnable> backFunctions = idToNode.get(index).compute();
@@ -122,26 +125,26 @@ public final class Context {
         }
     }
 
-    public void backward(Node t) {
+    public void backward(CompNode t) {
         t.adjoint().assign(Tensors.ofDouble().scalar(1.));
         while (!tape.isEmpty()) {
             tape.pollLast().run();
         }
     }
 
-    private List<Integer> topologicalCoverage(Node t) {
+    private List<Integer> topologicalCoverage(CompNode t) {
         List<Integer> list = new ArrayList<>();
         boolean[] visited = new boolean[idToNode.size()];
         recCoverage(t, list, visited);
         return list;
     }
 
-    private void recCoverage(Node t, List<Integer> list, boolean[] visited) {
+    private void recCoverage(CompNode t, List<Integer> list, boolean[] visited) {
         if (visited[t.id()]) {
             return;
         }
         visited[t.id()] = true;
-        for (Node child : t.children()) {
+        for (CompNode child : t.children()) {
             recCoverage(child, list, visited);
         }
         list.add(t.id());

@@ -351,9 +351,49 @@ public abstract class TensorManager {
             return full(shape, value, Order.defaultOrder());
         }
 
+        public final Tensor<N> full(Shape shape, byte value) {
+            return full(shape, value, Order.defaultOrder());
+        }
+
+        public final Tensor<N> full(Shape shape, int value) {
+            return full(shape, value, Order.defaultOrder());
+        }
+
+        public final Tensor<N> full(Shape shape, float value) {
+            return full(shape, value, Order.defaultOrder());
+        }
+
+        public final Tensor<N> full(Shape shape, double value) {
+            return full(shape, value, Order.defaultOrder());
+        }
+
         public final Tensor<N> full(Shape shape, N value, Order order) {
             var storage = storage().zeros(shape.size());
             storage.fill(value, 0, shape.size());
+            return stride(shape, Order.autoFC(order), storage);
+        }
+
+        public final Tensor<N> full(Shape shape, byte value, Order order) {
+            var storage = storage().zeros(shape.size());
+            storage.fill(dtype().castValue(value), 0, shape.size());
+            return stride(shape, Order.autoFC(order), storage);
+        }
+
+        public final Tensor<N> full(Shape shape, int value, Order order) {
+            var storage = storage().zeros(shape.size());
+            storage.fill(dtype().castValue(value), 0, shape.size());
+            return stride(shape, Order.autoFC(order), storage);
+        }
+
+        public final Tensor<N> full(Shape shape, float value, Order order) {
+            var storage = storage().zeros(shape.size());
+            storage.fill(dtype().castValue(value), 0, shape.size());
+            return stride(shape, Order.autoFC(order), storage);
+        }
+
+        public final Tensor<N> full(Shape shape, double value, Order order) {
+            var storage = storage().zeros(shape.size());
+            storage.fill(dtype().castValue(value), 0, shape.size());
             return stride(shape, Order.autoFC(order), storage);
         }
 

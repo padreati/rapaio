@@ -25,17 +25,17 @@ import java.util.List;
 
 import rapaio.experiment.math.nn.cgraph.Context;
 
-public class OpExp extends Node {
+public class OpExp extends CompNode {
 
-    private final Node child;
+    private final CompNode child;
 
-    public OpExp(Context c, Node child) {
+    public OpExp(Context c, CompNode child) {
         super(c, "log");
         this.child = child;
     }
 
     @Override
-    public List<Node> children() {
+    public List<CompNode> children() {
         return List.of(child);
     }
 

@@ -23,21 +23,21 @@ package rapaio.experiment.math.nn.cgraph;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.operations.Node;
+import rapaio.experiment.math.nn.cgraph.operations.CompNode;
 import rapaio.math.tensor.Tensor;
 
-public class Constant extends Node {
+public class Constant extends CompNode {
 
     public Constant(Context c, String name, Tensor<?> value) {
         super(c, name);
-        this.value = new Value(value);
+        this.value = new CompValue(value);
     }
 
     public void assign(double value) {
     }
 
     @Override
-    public List<Node> children() {
+    public List<CompNode> children() {
         return List.of();
     }
 

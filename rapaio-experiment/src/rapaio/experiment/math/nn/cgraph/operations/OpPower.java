@@ -25,19 +25,19 @@ import java.util.List;
 
 import rapaio.experiment.math.nn.cgraph.Context;
 
-public class OpPower extends Node {
+public class OpPower extends CompNode {
 
-    private final Node child;
+    private final CompNode child;
     private final double power;
 
-    public OpPower(Context c, Node child, double power) {
+    public OpPower(Context c, CompNode child, double power) {
         super(c, "pow");
         this.child = child;
         this.power = power;
     }
 
     @Override
-    public List<Node> children() {
+    public List<CompNode> children() {
         return List.of(child);
     }
 

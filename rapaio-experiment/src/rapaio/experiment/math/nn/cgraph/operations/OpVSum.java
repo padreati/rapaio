@@ -25,27 +25,29 @@ import java.util.List;
 
 import rapaio.experiment.math.nn.cgraph.Context;
 import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
 
-public class OpVSum extends Node {
+public class OpVSum extends CompNode {
 
-    private final Node child;
+    private final CompNode child;
 
-    public OpVSum(Context c, Node child) {
+    public OpVSum(Context c, CompNode child) {
         super(c, "vsum");
         this.child = child;
     }
 
     @Override
-    public List<Node> children() {
+    public List<CompNode> children() {
         return List.of(child);
     }
 
     @Override
     public List<Runnable> compute() {
-        value.assign(Tensors.ofDouble().scalar(child.value.tensor().sum().doubleValue()));
+        if(!child.value.tensor().isVector()) {
+            throw new IllegalArgumentException("Operator can be applied only on vectors.");
+        }
+        value.assign(c.tmt().scalar(child.value.tensor().sum().doubleValue()));
         return List.of(() -> {
-            Tensor<Double> ones = Tensors.ofDouble().full(value.tensor().shape(), 1.0);
+            Tensor<?> ones = c.tmt().full(value.tensor().shape(), 1);
             child.adjoint.add_(this.adjoint.tensor().dot(ones));
         });
     }

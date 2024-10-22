@@ -25,17 +25,17 @@ import java.util.List;
 
 import rapaio.experiment.math.nn.cgraph.Context;
 
-public class OpSin extends Node {
+public class OpSin extends CompNode {
 
-    private final Node child;
+    private final CompNode child;
 
-    public OpSin(Context c, Node child) {
+    public OpSin(Context c, CompNode child) {
         super(c, "sin");
         this.child = child;
     }
 
     @Override
-    public List<Node> children() {
+    public List<CompNode> children() {
         return List.of(child);
     }
 
