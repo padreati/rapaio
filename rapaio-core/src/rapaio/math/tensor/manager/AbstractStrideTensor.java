@@ -260,6 +260,30 @@ public abstract sealed class AbstractStrideTensor<N extends Number> extends Tens
         return new StridePointerIterator(layout, askOrder);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <M extends Number> Tensor<M> cast(DType<M> dtype, Order askOrder) {
+        if (dtype.equals(dtype()) && (askOrder.equals(Order.A) ||
+                (layout.isCOrdered() && askOrder.equals(Order.C)) ||
+                (layout.isFOrdered() && askOrder.equals(Order.F)))) {
+            return (Tensor<M>) this;
+        }
+
+        askOrder = Order.autoFC(askOrder);
+        var castTensor = manager().ofType(dtype).zeros(shape(), askOrder);
+
+        Order fastOrder = Layout.storageFastTandemOrder(castTensor.layout(), layout);
+        var loopDescriptor = LoopDescriptor.of(castTensor.layout(), fastOrder, dtype.vectorSpecies());
+        var iter = ptrIterator(fastOrder);
+        for (int p : loopDescriptor.offsets) {
+            for (int i = 0; i < loopDescriptor.size; i++) {
+                castTensor.ptrSet(p, dtype.castValue(ptrGet(iter.nextInt())));
+                p += loopDescriptor.step;
+            }
+        }
+        return castTensor;
+    }
+
     @Override
     public final VarDouble dv() {
         if (layout().rank() != 1) {
@@ -402,31 +426,5 @@ public abstract sealed class AbstractStrideTensor<N extends Number> extends Tens
     @Override
     public final String toSummary(Printer printer, POpt<?>... options) {
         return toString();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <M extends Number> Tensor<M> cast(DType<M> dtype, Order askOrder) {
-        if ((dtype.id() == dtype().id()) && (
-                (layout.isCOrdered() && askOrder.equals(Order.C)) ||
-                (layout.isFOrdered() && askOrder.equals(Order.F))) ||
-                askOrder.equals(Order.A)
-        ) {
-            return (Tensor<M>) this;
-        }
-
-        askOrder = Order.autoFC(askOrder);
-        var castTensor = manager().ofType(dtype).zeros(shape(), askOrder);
-
-        Order fastOrder = Layout.storageFastTandemOrder(castTensor.layout(), layout);
-        var loopDescriptor = LoopDescriptor.of(castTensor.layout(), fastOrder, dtype.vectorSpecies());
-        var iter = ptrIterator(fastOrder);
-        for (int p : loopDescriptor.offsets) {
-            for (int i = 0; i < loopDescriptor.size; i++) {
-                castTensor.ptrSet(p, dtype.castValue(ptrGet(iter.nextInt())));
-                p += loopDescriptor.step;
-            }
-        }
-        return castTensor;
     }
 }

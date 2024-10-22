@@ -24,7 +24,7 @@ package rapaio.math.tensor.storage;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Storage;
 
-public abstract class ByteStorage implements Storage<Byte> {
+public abstract class ByteStorage extends Storage<Byte> {
 
     @Override
     public final DType<Byte> dType() {

@@ -159,56 +159,56 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
         }
     }
 
-    public static final class DTypeDouble extends DType<Double> {
+    public static final class DTypeInteger extends DType<Integer> {
 
-        private static final VectorSpecies<Double> vs = DoubleVector.SPECIES_PREFERRED;
+        private static final VectorSpecies<Integer> vs = IntVector.SPECIES_PREFERRED;
 
-        public DTypeDouble() {
-            super(Id.DOUBLE, (byte) 8, false);
+        public DTypeInteger() {
+            super(Id.INTEGER, (byte) 4, true);
         }
 
         @Override
-        public <M extends Number> Double castValue(M value) {
-            return value.doubleValue();
+        public <M extends Number> Integer castValue(M value) {
+            return value.intValue();
         }
 
         @Override
-        public Double castValue(byte value) {
-            return (double) value;
+        public Integer castValue(byte value) {
+            return (int) value;
         }
 
         @Override
-        public Double castValue(int value) {
-            return (double) value;
-        }
-
-        @Override
-        public Double castValue(float value) {
-            return (double) value;
-        }
-
-        @Override
-        public Double castValue(double value) {
+        public Integer castValue(int value) {
             return value;
         }
 
         @Override
-        public boolean isNaN(Double value) {
-            return Double.isNaN(value);
+        public Integer castValue(float value) {
+            return (int) value;
         }
 
         @Override
-        public Comparator<Double> naturalComparator() {
+        public Integer castValue(double value) {
+            return (int) value;
+        }
+
+        @Override
+        public boolean isNaN(Integer value) {
+            return false;
+        }
+
+        @Override
+        public Comparator<Integer> naturalComparator() {
             return Comparator.naturalOrder();
         }
 
         @Override
-        public Comparator<Double> reverseComparator() {
+        public Comparator<Integer> reverseComparator() {
             return Comparator.reverseOrder();
         }
 
         @Override
-        public VectorSpecies<Double> vectorSpecies() {
+        public VectorSpecies<Integer> vectorSpecies() {
             return vs;
         }
     }
@@ -267,56 +267,56 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
         }
     }
 
-    public static final class DTypeInteger extends DType<Integer> {
+    public static final class DTypeDouble extends DType<Double> {
 
-        private static final VectorSpecies<Integer> vs = IntVector.SPECIES_PREFERRED;
+        private static final VectorSpecies<Double> vs = DoubleVector.SPECIES_PREFERRED;
 
-        public DTypeInteger() {
-            super(Id.INTEGER, (byte) 4, true);
+        public DTypeDouble() {
+            super(Id.DOUBLE, (byte) 8, false);
         }
 
         @Override
-        public <M extends Number> Integer castValue(M value) {
-            return value.intValue();
+        public <M extends Number> Double castValue(M value) {
+            return value.doubleValue();
         }
 
         @Override
-        public Integer castValue(byte value) {
-            return (int) value;
+        public Double castValue(byte value) {
+            return (double) value;
         }
 
         @Override
-        public Integer castValue(int value) {
+        public Double castValue(int value) {
+            return (double) value;
+        }
+
+        @Override
+        public Double castValue(float value) {
+            return (double) value;
+        }
+
+        @Override
+        public Double castValue(double value) {
             return value;
         }
 
         @Override
-        public Integer castValue(float value) {
-            return (int) value;
+        public boolean isNaN(Double value) {
+            return Double.isNaN(value);
         }
 
         @Override
-        public Integer castValue(double value) {
-            return (int) value;
-        }
-
-        @Override
-        public boolean isNaN(Integer value) {
-            return false;
-        }
-
-        @Override
-        public Comparator<Integer> naturalComparator() {
+        public Comparator<Double> naturalComparator() {
             return Comparator.naturalOrder();
         }
 
         @Override
-        public Comparator<Integer> reverseComparator() {
+        public Comparator<Double> reverseComparator() {
             return Comparator.reverseOrder();
         }
 
         @Override
-        public VectorSpecies<Integer> vectorSpecies() {
+        public VectorSpecies<Double> vectorSpecies() {
             return vs;
         }
     }

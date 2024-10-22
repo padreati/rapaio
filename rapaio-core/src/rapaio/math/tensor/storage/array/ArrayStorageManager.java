@@ -23,14 +23,13 @@ package rapaio.math.tensor.storage.array;
 
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Storage;
-import rapaio.math.tensor.StorageFactory;
+import rapaio.math.tensor.StorageManager;
 
-public class ArrayStorageFactory implements StorageFactory {
+public class ArrayStorageManager extends StorageManager {
 
-    @Override
     @SuppressWarnings("unchecked")
-    public <N extends Number> OfType<N> ofType(DType<N> dType) {
-        return (OfType<N>) switch (dType.id()) {
+    public <N extends Number> StorageManager.OfType<N> ofType(DType<N> dType) {
+        return (StorageManager.OfType<N>) switch (dType.id()) {
             case DOUBLE -> new OfTypeDouble();
             case FLOAT -> new OfTypeFloat();
             case INTEGER -> new OfTypeInt();
@@ -39,7 +38,23 @@ public class ArrayStorageFactory implements StorageFactory {
         };
     }
 
-    private static final class OfTypeByte implements StorageFactory.OfType<Byte> {
+    public StorageManager.OfType<Byte> ofByte() {
+        return new OfTypeByte();
+    }
+
+    public StorageManager.OfType<Integer> ofInt() {
+        return new OfTypeInt();
+    }
+
+    public StorageManager.OfType<Float> ofFloat() {
+        return new OfTypeFloat();
+    }
+
+    public StorageManager.OfType<Double> ofDouble() {
+        return new OfTypeDouble();
+    }
+
+    private static final class OfTypeByte implements StorageManager.OfType<Byte> {
 
         @Override
         public <M extends Number> Storage<Byte> scalar(M value) {
@@ -84,7 +99,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public <M extends Number> Storage<Byte> from(Storage<M> source) {
+        public Storage<Byte> from(Storage<?> source) {
             byte[] copy = new byte[source.size()];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = source.getByte(i);
@@ -93,7 +108,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
     }
 
-    private static final class OfTypeInt implements StorageFactory.OfType<Integer> {
+    private static final class OfTypeInt implements StorageManager.OfType<Integer> {
 
         @Override
         public <M extends Number> Storage<Integer> scalar(M value) {
@@ -138,7 +153,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public <M extends Number> Storage<Integer> from(Storage<M> source) {
+        public Storage<Integer> from(Storage<?> source) {
             int[] copy = new int[source.size()];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = source.getInt(i);
@@ -147,7 +162,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
     }
 
-    private static final class OfTypeFloat implements StorageFactory.OfType<Float> {
+    private static final class OfTypeFloat implements StorageManager.OfType<Float> {
         @Override
         public <M extends Number> Storage<Float> scalar(M value) {
             return new FloatArrayStorage(new float[] {value.floatValue()});
@@ -191,7 +206,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public <M extends Number> Storage<Float> from(Storage<M> source) {
+        public Storage<Float> from(Storage<?> source) {
             float[] copy = new float[source.size()];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = source.getFloat(i);
@@ -200,7 +215,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
     }
 
-    private static final class OfTypeDouble implements StorageFactory.OfType<Double> {
+    private static final class OfTypeDouble implements StorageManager.OfType<Double> {
 
         @Override
         public <M extends Number> Storage<Double> scalar(M value) {
@@ -245,7 +260,7 @@ public class ArrayStorageFactory implements StorageFactory {
         }
 
         @Override
-        public <M extends Number> Storage<Double> from(Storage<M> source) {
+        public Storage<Double> from(Storage<?> source) {
             double[] copy = new double[source.size()];
             for (int i = 0; i < copy.length; i++) {
                 copy[i] = source.getDouble(i);

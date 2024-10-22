@@ -25,7 +25,7 @@ import rapaio.data.Var;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Storage;
 
-public class VarFloatStorage implements Storage<Float> {
+public class VarFloatStorage extends Storage<Float> {
 
     private final Var vd;
 

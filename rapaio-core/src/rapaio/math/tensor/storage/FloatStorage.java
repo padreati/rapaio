@@ -24,7 +24,7 @@ package rapaio.math.tensor.storage;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Storage;
 
-public abstract class FloatStorage implements Storage<Float> {
+public abstract class FloatStorage extends Storage<Float> {
 
     @Override
     public final DType<Float> dType() {

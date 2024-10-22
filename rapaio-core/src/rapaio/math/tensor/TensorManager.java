@@ -42,56 +42,56 @@ public abstract class TensorManager {
     }
 
     protected final int cpuThreads;
-    protected final OfType<Double> ofDouble;
-    protected final OfType<Float> ofFloat;
-    protected final OfType<Integer> ofInt;
     protected final OfType<Byte> ofByte;
-    protected final StorageFactory storageFactory;
+    protected final OfType<Integer> ofInt;
+    protected final OfType<Float> ofFloat;
+    protected final OfType<Double> ofDouble;
+    protected final StorageManager storageManager;
 
-    protected TensorManager(int cpuThreads, OfType<Double> ofDouble, OfType<Float> ofFloat, OfType<Integer> ofInt, OfType<Byte> ofByte,
-            StorageFactory storageFactory) {
+    protected TensorManager(int cpuThreads,
+            OfType<Byte> ofByte,
+            OfType<Integer> ofInt,
+            OfType<Float> ofFloat,
+            OfType<Double> ofDouble,
+            StorageManager storageManager) {
         this.cpuThreads = cpuThreads;
 
         this.ofDouble = ofDouble;
         this.ofFloat = ofFloat;
         this.ofInt = ofInt;
         this.ofByte = ofByte;
-        this.storageFactory = storageFactory;
+        this.storageManager = storageManager;
 
-        this.ofDouble.registerParent(this, storageFactory.ofType(DType.DOUBLE));
-        this.ofFloat.registerParent(this, storageFactory.ofType(DType.FLOAT));
-        this.ofInt.registerParent(this, storageFactory.ofType(DType.INTEGER));
-        this.ofByte.registerParent(this, storageFactory.ofType(DType.BYTE));
-    }
-
-    public final OfType<Double> ofDouble() {
-        return ofDouble;
-    }
-
-    public final OfType<Float> ofFloat() {
-        return ofFloat;
-    }
-
-    public final OfType<Integer> ofInt() {
-        return ofInt;
+        this.ofByte.registerParent(this, storageManager.ofType(DType.BYTE));
+        this.ofInt.registerParent(this, storageManager.ofType(DType.INTEGER));
+        this.ofFloat.registerParent(this, storageManager.ofType(DType.FLOAT));
+        this.ofDouble.registerParent(this, storageManager.ofType(DType.DOUBLE));
     }
 
     public final OfType<Byte> ofByte() {
         return ofByte;
     }
 
+    public final OfType<Integer> ofInt() {
+        return ofInt;
+    }
+
+    public final OfType<Float> ofFloat() {
+        return ofFloat;
+    }
+
+    public final OfType<Double> ofDouble() {
+        return ofDouble;
+    }
+
     @SuppressWarnings("unchecked")
     public final <N extends Number> OfType<N> ofType(DType<N> dtype) {
         return (OfType<N>) switch (dtype.id()) {
-            case DOUBLE -> ofDouble();
-            case FLOAT -> ofFloat();
-            case INTEGER -> ofInt();
             case BYTE -> ofByte();
+            case INTEGER -> ofInt();
+            case FLOAT -> ofFloat();
+            case DOUBLE -> ofDouble();
         };
-    }
-
-    public final StorageFactory storage() {
-        return storageFactory;
     }
 
     public final int cpuThreads() {
@@ -159,33 +159,24 @@ public abstract class TensorManager {
     }
 
 
-    public final <N extends Number, M extends Number> Tensor<N> strideCast(DType<N> dType, Shape shape, Order order, Storage<M> storage) {
-        return ofType(dType).strideCast(StrideLayout.ofDense(shape, 0, order), storage);
-    }
-
-    public final <N extends Number, M extends Number> Tensor<N> strideCast(DType<N> dType, StrideLayout layout, Storage<M> storage) {
-        return ofType(dType).strideCast(layout, storage);
-    }
-
-
     public final <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, Storage<N> storage) {
         return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage);
     }
 
     public final <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, byte[] array) {
-        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
+        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storageManager.ofType(dType).from(array));
     }
 
     public final <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, int[] array) {
-        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
+        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storageManager.ofType(dType).from(array));
     }
 
     public final <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, float[] array) {
-        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
+        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storageManager.ofType(dType).from(array));
     }
 
     public final <N extends Number> Tensor<N> stride(DType<N> dType, Shape shape, Order order, double[] array) {
-        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storage().ofType(dType).from(array));
+        return ofType(dType).stride(StrideLayout.ofDense(shape, 0, order), storageManager.ofType(dType).from(array));
     }
 
     public final <N extends Number> Tensor<N> stride(DType<N> dType, StrideLayout layout, Storage<N> storage) {
@@ -285,13 +276,13 @@ public abstract class TensorManager {
 
         protected final DType<N> dType;
         protected TensorManager parent;
-        protected StorageFactory.OfType<N> storageOfType;
+        protected StorageManager.OfType<N> storageOfType;
 
         public OfType(DType<N> dType) {
             this.dType = dType;
         }
 
-        public final void registerParent(TensorManager parent, StorageFactory.OfType<N> storageOfType) {
+        public final void registerParent(TensorManager parent, StorageManager.OfType<N> storageOfType) {
             if (this.parent != null) {
                 throw new IllegalArgumentException("AbstractEngineOfType has already a registered parent.");
             }
@@ -303,7 +294,7 @@ public abstract class TensorManager {
             return dType;
         }
 
-        public final StorageFactory.OfType<N> storage() {
+        public final StorageManager.OfType<N> storage() {
             return storageOfType;
         }
 
@@ -341,8 +332,9 @@ public abstract class TensorManager {
 
         public final Tensor<N> eye(int n, Order order) {
             var eye = zeros(Shape.of(n, n), order);
+            var v = dType.castValue(1);
             for (int i = 0; i < n; i++) {
-                eye.set(dType.castValue(1), i, i);
+                eye.set(v, i, i);
             }
             return eye;
         }
@@ -410,15 +402,6 @@ public abstract class TensorManager {
         }
 
         public abstract Tensor<N> random(Shape shape, Random random, Order order);
-
-
-        public <M extends Number> Tensor<N> strideCast(Shape shape, Order order, Storage<M> storage) {
-            return strideCast(StrideLayout.ofDense(shape, 0, order), storage);
-        }
-
-        public final <M extends Number> Tensor<N> strideCast(StrideLayout layout, Storage<M> storage) {
-            return stride(layout, storage().from(storage));
-        }
 
         public final Tensor<N> stride(Shape shape, Order order, Storage<N> storage) {
             return stride(StrideLayout.ofDense(shape, 0, order), storage);

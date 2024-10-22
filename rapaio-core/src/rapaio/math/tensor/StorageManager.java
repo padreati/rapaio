@@ -21,9 +21,15 @@
 
 package rapaio.math.tensor;
 
-public interface StorageFactory {
+import rapaio.math.tensor.storage.array.ArrayStorageManager;
 
-    interface OfType<N extends Number> {
+public abstract class StorageManager {
+
+    public static StorageManager array() {
+        return new ArrayStorageManager();
+    }
+
+    public interface OfType<N extends Number> {
 
         <M extends Number> Storage<N> scalar(M value);
 
@@ -37,24 +43,8 @@ public interface StorageFactory {
 
         Storage<N> from(double... array);
 
-        <M extends Number> Storage<N> from(Storage<M> source);
+        Storage<N> from(Storage<?> source);
     }
 
-    <N extends Number> StorageFactory.OfType<N> ofType(DType<N> dType);
-
-    default StorageFactory.OfType<Byte> ofByte() {
-        return ofType(DType.BYTE);
-    }
-
-    default StorageFactory.OfType<Integer> ofInt() {
-        return ofType(DType.INTEGER);
-    }
-
-    default StorageFactory.OfType<Float> ofFloat() {
-        return ofType(DType.FLOAT);
-    }
-
-    default StorageFactory.OfType<Double> ofDouble() {
-        return ofType(DType.DOUBLE);
-    }
+    public abstract <M extends Number> OfType<M> ofType(DType<M> dType);
 }

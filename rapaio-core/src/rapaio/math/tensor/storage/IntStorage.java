@@ -24,7 +24,7 @@ package rapaio.math.tensor.storage;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Storage;
 
-public abstract class IntStorage implements Storage<Integer> {
+public abstract class IntStorage extends Storage<Integer> {
 
     @Override
     public final DType<Integer> dType() {

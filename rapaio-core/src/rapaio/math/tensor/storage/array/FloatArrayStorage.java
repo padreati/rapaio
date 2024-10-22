@@ -23,9 +23,6 @@ package rapaio.math.tensor.storage.array;
 
 import java.util.Arrays;
 
-import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.VectorMask;
-import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.storage.FloatStorage;
 
 public final class FloatArrayStorage extends FloatStorage {
@@ -57,46 +54,6 @@ public final class FloatArrayStorage extends FloatStorage {
     @Override
     public void fillFloat(float value, int start, int len) {
         Arrays.fill(array, start, start + len, value);
-    }
-
-    @Override
-    public FloatVector loadFloat(VectorSpecies<Float> species, int offset) {
-        return FloatVector.fromArray(species, array, offset);
-    }
-
-    @Override
-    public FloatVector loadFloat(VectorSpecies<Float> species, int offset, VectorMask<Float> mask) {
-        return FloatVector.fromArray(species, array, offset, mask);
-    }
-
-    @Override
-    public FloatVector loadFloat(VectorSpecies<Float> species, int offset, int[] index, int indexOffset) {
-        return FloatVector.fromArray(species, array, offset, index, indexOffset);
-    }
-
-    @Override
-    public FloatVector loadFloat(VectorSpecies<Float> species, int offset, int[] index, int indexOffset, VectorMask<Float> mask) {
-        return FloatVector.fromArray(species, array, offset, index, indexOffset, mask);
-    }
-
-    @Override
-    public void saveFloat(FloatVector a, int offset) {
-        a.intoArray(array, offset);
-    }
-
-    @Override
-    public void saveFloat(FloatVector a, int offset, VectorMask<Float> mask) {
-        a.intoArray(array, offset, mask);
-    }
-
-    @Override
-    public void saveFloat(FloatVector a, int offset, int[] index, int indexOffset) {
-        a.intoArray(array, offset, index, indexOffset);
-    }
-
-    @Override
-    public void saveFloat(FloatVector a, int offset, int[] index, int indexOffset, VectorMask<Float> mask) {
-        a.intoArray(array, offset, index, indexOffset, mask);
     }
 
     public float[] array() {

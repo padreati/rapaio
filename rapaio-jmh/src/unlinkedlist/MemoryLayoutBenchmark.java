@@ -57,7 +57,7 @@ import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
 import rapaio.math.tensor.Storage;
-import rapaio.math.tensor.storage.array.ArrayStorageFactory;
+import rapaio.math.tensor.storage.array.ArrayStorageManager;
 import rapaio.sys.WS;
 import rapaio.util.collection.DoubleArrays;
 
@@ -83,7 +83,7 @@ public class MemoryLayoutBenchmark {
             Random random = new Random(42);
             array = DoubleArrays.newFrom(0, n, _ -> random.nextDouble());
             msArray = MemorySegment.ofArray(array);
-            storage = new ArrayStorageFactory().ofDouble().from(array);
+            storage = new ArrayStorageManager().ofDouble().from(array);
             msExternal = Arena.ofAuto().allocate(n * 8, 8);
         }
     }

@@ -28,16 +28,20 @@ import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
+import rapaio.math.tensor.StorageManager;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.layout.StrideLayout;
-import rapaio.math.tensor.storage.array.ArrayStorageFactory;
 
 public class BaseTensorManager extends TensorManager {
 
     public BaseTensorManager(int cpuThreads) {
-        super(cpuThreads, new BaseArrayOfDouble(), new BaseArrayOfFloat(), new BaseArrayOfInt(), new BaseArrayOfByte(),
-                new ArrayStorageFactory());
+        super(cpuThreads,
+                new BaseArrayOfByte(),
+                new BaseArrayOfInt(),
+                new BaseArrayOfFloat(),
+                new BaseArrayOfDouble(),
+                StorageManager.array());
     }
 
     protected static class BaseArrayOfDouble extends TensorManager.OfType<Double> {

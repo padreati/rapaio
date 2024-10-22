@@ -1833,7 +1833,7 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         if ((dtype.id() == dtype().id())) {
             return (Tensor<M>) this;
         } else {
-            return cast(dtype, Order.defaultOrder());
+            return cast(dtype, Order.A);
         }
     }
 

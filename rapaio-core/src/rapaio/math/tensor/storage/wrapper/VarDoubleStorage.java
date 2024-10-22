@@ -25,7 +25,7 @@ import rapaio.data.Var;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Storage;
 
-public final class VarDoubleStorage implements Storage<Double> {
+public final class VarDoubleStorage extends Storage<Double> {
 
     private final Var vd;
 
