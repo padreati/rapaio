@@ -19,37 +19,30 @@
  *
  */
 
-package rapaio.experiment.math.nn.cgraph.operations;
+package rapaio.experiment.math.nn.cgraph;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.CompContext;
+import rapaio.experiment.math.nn.cgraph.operations.CompNode;
+import rapaio.math.tensor.Tensor;
 
-public class OpVDot extends CompNode {
+public class CompVariable extends CompNode {
 
-    private final CompNode left;
-    private final CompNode right;
+    public CompVariable(CompContext c, String name) {
+        super(c, name);
+    }
 
-    public OpVDot(CompContext c, CompNode left, CompNode right) {
-        super(c, "vsum");
-        this.left = left;
-        this.right = right;
+    public void assign(Tensor<?> value) {
+        this.value = new CompValue(value);
     }
 
     @Override
     public List<CompNode> children() {
-        return List.of(left, right);
+        return List.of();
     }
 
     @Override
     public List<Runnable> compute() {
-        value.assign(c.tmt().scalar(left.value.tensor().vdot(right.value.tensor()).doubleValue()));
-        var eye = c.tmt().eye(left.value.tensor().shape().dim(0));
-
-        return List.of(
-                () -> left.adjoint.add_(eye.dot(right.value.tensor()).dot(this.adjoint.tensor())),
-                () -> right.adjoint.add_(eye.dot(left.value.tensor()).dot(this.adjoint.tensor()))
-        );
-
+        return List.of();
     }
 }

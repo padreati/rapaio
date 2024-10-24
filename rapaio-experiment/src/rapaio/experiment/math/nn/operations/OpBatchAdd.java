@@ -19,37 +19,44 @@
  *
  */
 
-package rapaio.experiment.math.nn.cgraph.operations;
+package rapaio.experiment.math.nn.operations;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.CompContext;
+import rapaio.experiment.math.nn.Context;
+import rapaio.experiment.math.nn.Node;
+import rapaio.math.tensor.DType;
 
-public class OpVDot extends CompNode {
+public class OpBatchAdd extends OpNode {
 
-    private final CompNode left;
-    private final CompNode right;
+    private final Node left;
+    private final Node right;
 
-    public OpVDot(CompContext c, CompNode left, CompNode right) {
-        super(c, "vsum");
+    public OpBatchAdd(Context c, Node left, Node right) {
+        super(c, left.dtype(), "batchAdd");
         this.left = left;
         this.right = right;
     }
 
+    private DType<?> promote(DType<?> ...dtypes){
+        for(DType<?> dtype : dtypes){
+            if(DType.DOUBLE.equals(dtype)) {
+                return DType.DOUBLE;
+            }
+        }
+        return DType.FLOAT;
+    }
+
     @Override
-    public List<CompNode> children() {
+    public List<Node> children() {
         return List.of(left, right);
     }
 
     @Override
-    public List<Runnable> compute() {
-        value.assign(c.tmt().scalar(left.value.tensor().vdot(right.value.tensor()).doubleValue()));
-        var eye = c.tmt().eye(left.value.tensor().shape().dim(0));
-
+    public List<Runnable> forward() {
+        this.value(left.value().badd(0, right.value()));
         return List.of(
-                () -> left.adjoint.add_(eye.dot(right.value.tensor()).dot(this.adjoint.tensor())),
-                () -> right.adjoint.add_(eye.dot(left.value.tensor()).dot(this.adjoint.tensor()))
+                // todo
         );
-
     }
 }

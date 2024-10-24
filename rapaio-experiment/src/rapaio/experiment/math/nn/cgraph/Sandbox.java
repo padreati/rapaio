@@ -50,11 +50,11 @@ public class Sandbox {
     }
 
     public static void main4() {
-        Context c = new Context(DType.FLOAT);
+        CompContext c = new CompContext(DType.FLOAT);
 
-        Variable x = c.newVar("x");
-        Variable w = c.newVar("w");
-        Variable b = c.newVar("b");
+        CompVariable x = c.newVar("x");
+        CompVariable w = c.newVar("w");
+        CompVariable b = c.newVar("b");
 
         CompNode t = c.add(c.vdot(x, w), b);
 
@@ -75,10 +75,10 @@ public class Sandbox {
 
     public static void main1() {
 
-        Context c = new Context(DType.DOUBLE);
+        CompContext c = new CompContext(DType.DOUBLE);
 
-        Variable x = c.newVar("x");
-        Variable y = c.newVar("y");
+        CompVariable x = c.newVar("x");
+        CompVariable y = c.newVar("y");
 
         CompNode t = c.add(c.sin(x), c.cos(y));
 
@@ -141,14 +141,14 @@ public class Sandbox {
 
     public static void main2() {
 
-        Context c = new Context(DType.DOUBLE);
+        CompContext c = new CompContext(DType.DOUBLE);
 
-        Constant zero = c.newConst("0", Tensors.ofDouble().scalar(0.));
-        Variable x = c.newVar("x");
-        Variable y = c.newVar("y");
-        Constant c1 = c.newConst("c1", Tensors.ofDouble().scalar(1.5));
-        Constant c2 = c.newConst("c2", Tensors.ofDouble().scalar(2.25));
-        Constant c3 = c.newConst("c3", Tensors.ofDouble().scalar(2.625));
+        CompConstant zero = c.newConst("0", Tensors.ofDouble().scalar(0.));
+        CompVariable x = c.newVar("x");
+        CompVariable y = c.newVar("y");
+        CompConstant c1 = c.newConst("c1", Tensors.ofDouble().scalar(1.5));
+        CompConstant c2 = c.newConst("c2", Tensors.ofDouble().scalar(2.25));
+        CompConstant c3 = c.newConst("c3", Tensors.ofDouble().scalar(2.625));
 
         CompNode f1 = c.pow(c.add(c.sub(c1, x), c.mul(x, y)), 2);
         CompNode f2 = c.pow(c.add(c.sub(c2, x), c.mul(x, c.pow(y, 2))), 2);
@@ -210,13 +210,13 @@ public class Sandbox {
 
     public static void main3() {
 
-        Context c = new Context(DType.DOUBLE);
+        CompContext c = new CompContext(DType.DOUBLE);
 
-        Variable x = c.newVar("x");
-        Variable y = c.newVar("y");
+        CompVariable x = c.newVar("x");
+        CompVariable y = c.newVar("y");
 
-        Constant eleven = c.newConst("11", Tensors.scalar(11.));
-        Constant seven = c.newConst("7", Tensors.scalar(7.));
+        CompConstant eleven = c.newConst("11", Tensors.scalar(11.));
+        CompConstant seven = c.newConst("7", Tensors.scalar(7.));
 
         CompNode t1 = c.pow(c.sub(c.add(c.pow(x, 2), y), eleven), 2);
         CompNode t2 = c.pow(c.sub(c.add(x, c.pow(y, 2)), seven), 2);

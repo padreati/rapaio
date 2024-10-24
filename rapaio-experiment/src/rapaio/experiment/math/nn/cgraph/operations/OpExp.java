@@ -23,13 +23,13 @@ package rapaio.experiment.math.nn.cgraph.operations;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.Context;
+import rapaio.experiment.math.nn.cgraph.CompContext;
 
 public class OpExp extends CompNode {
 
     private final CompNode child;
 
-    public OpExp(Context c, CompNode child) {
+    public OpExp(CompContext c, CompNode child) {
         super(c, "log");
         this.child = child;
     }

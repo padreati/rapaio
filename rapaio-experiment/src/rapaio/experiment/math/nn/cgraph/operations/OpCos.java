@@ -23,13 +23,13 @@ package rapaio.experiment.math.nn.cgraph.operations;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.Context;
+import rapaio.experiment.math.nn.cgraph.CompContext;
 
 public class OpCos extends CompNode {
 
     private final CompNode child;
 
-    public OpCos(Context c, CompNode child) {
+    public OpCos(CompContext c, CompNode child) {
         super(c, "cos");
         this.child = child;
     }

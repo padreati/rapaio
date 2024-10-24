@@ -23,14 +23,14 @@ package rapaio.experiment.math.nn.cgraph.operations;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.Context;
+import rapaio.experiment.math.nn.cgraph.CompContext;
 
 public class OpSub extends CompNode {
 
     private final CompNode left;
     private final CompNode right;
 
-    public OpSub(Context c, CompNode left, CompNode right) {
+    public OpSub(CompContext c, CompNode left, CompNode right) {
         super(c, "sub");
         this.left = left;
         this.right = right;

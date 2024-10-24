@@ -23,18 +23,18 @@ package rapaio.experiment.math.nn.cgraph.operations;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.Context;
+import rapaio.experiment.math.nn.cgraph.CompContext;
 import rapaio.experiment.math.nn.cgraph.CompValue;
 
 public abstract class CompNode {
 
-    protected final Context c;
+    protected final CompContext c;
     protected final int id;
     protected final String name;
     protected CompValue value;
     protected CompValue adjoint;
 
-    public CompNode(Context c, String name) {
+    public CompNode(CompContext c, String name) {
         this.c = c;
         this.name = name;
         this.id = c.register(this);

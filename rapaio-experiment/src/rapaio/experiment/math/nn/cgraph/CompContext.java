@@ -24,6 +24,7 @@ package rapaio.experiment.math.nn.cgraph;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,14 +43,24 @@ import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.Tensors;
 
-public final class Context {
+public final class CompContext {
 
-    public Variable newVar(String name) {
-        return new Variable(this, name);
+    private final Random random = new Random();
+
+    public void seed(long seed) {
+        random.setSeed(seed);
     }
 
-    public Constant newConst(String name, Tensor<?> value) {
-        return new Constant(this, name, value);
+    public Random random() {
+        return random;
+    }
+
+    public CompVariable newVar(String name) {
+        return new CompVariable(this, name);
+    }
+
+    public CompConstant newConst(String name, Tensor<?> value) {
+        return new CompConstant(this, name, value);
     }
 
     public CompNode add(CompNode left, CompNode right) {
@@ -98,7 +109,7 @@ public final class Context {
     private final ArrayList<CompNode> idToNode = new ArrayList<>();
     private final ConcurrentLinkedDeque<Runnable> tape = new ConcurrentLinkedDeque<>();
 
-    public Context(DType<?> dtype) {
+    public CompContext(DType<?> dtype) {
         this.tmt = TensorManager.base().ofType(dtype);
     }
 

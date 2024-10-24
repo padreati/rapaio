@@ -19,34 +19,28 @@
  *
  */
 
-package rapaio.experiment.math.nn.cgraph.operations;
+package rapaio.experiment.math.nn;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.CompContext;
+import rapaio.math.tensor.Shape;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 
-public class OpAdd extends CompNode {
+public class Sandbox {
 
-    private final CompNode left;
-    private final CompNode right;
+    public static void main(String[] args) {
 
-    public OpAdd(CompContext c, CompNode left, CompNode right) {
-        super(c, "add");
-        this.left = left;
-        this.right = right;
-    }
 
-    @Override
-    public List<CompNode> children() {
-        return List.of(left, right);
-    }
+        Context c = new SGD();
+        Module nn = new Sequential(List.of(
+                new DenseLayer(2, 4, true),
+                new DenseLayer(4, 16, true)
+        ));
+        nn.bind(c);
 
-    @Override
-    public List<Runnable> compute() {
-        value.assign(left.value.tensor().add(right.value.tensor()));
-        return List.of(
-                () -> left.adjoint.add_(this.adjoint.tensor()),
-                () -> right.adjoint.add_(this.adjoint.tensor())
-        );
+        Tensor<?> x = Tensors.ofDouble().seq(Shape.of(3, 2));
+        Tensor<?> output = nn.forward(x);
+        output.printString();
     }
 }

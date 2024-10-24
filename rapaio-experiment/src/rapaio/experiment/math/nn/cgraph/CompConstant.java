@@ -26,14 +26,14 @@ import java.util.List;
 import rapaio.experiment.math.nn.cgraph.operations.CompNode;
 import rapaio.math.tensor.Tensor;
 
-public class Variable extends CompNode {
+public class CompConstant extends CompNode {
 
-    public Variable(Context c, String name) {
+    public CompConstant(CompContext c, String name, Tensor<?> value) {
         super(c, name);
+        this.value = new CompValue(value);
     }
 
-    public void assign(Tensor<?> value) {
-        this.value = new CompValue(value);
+    public void assign(double value) {
     }
 
     @Override

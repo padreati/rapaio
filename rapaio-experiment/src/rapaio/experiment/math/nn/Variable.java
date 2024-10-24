@@ -19,34 +19,29 @@
  *
  */
 
-package rapaio.experiment.math.nn.cgraph.operations;
+package rapaio.experiment.math.nn;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.CompContext;
+import rapaio.math.tensor.Tensor;
 
-public class OpAdd extends CompNode {
+public class Variable extends Node{
 
-    private final CompNode left;
-    private final CompNode right;
+    private final Context c;
 
-    public OpAdd(CompContext c, CompNode left, CompNode right) {
-        super(c, "add");
-        this.left = left;
-        this.right = right;
+    protected Variable(Context c, Tensor<?> value) {
+        super(value.dtype(), "");
+        this.c = c;
+        this.value(value);
     }
 
     @Override
-    public List<CompNode> children() {
-        return List.of(left, right);
+    public List<Node> children() {
+        return List.of();
     }
 
     @Override
-    public List<Runnable> compute() {
-        value.assign(left.value.tensor().add(right.value.tensor()));
-        return List.of(
-                () -> left.adjoint.add_(this.adjoint.tensor()),
-                () -> right.adjoint.add_(this.adjoint.tensor())
-        );
+    public List<Runnable> forward() {
+        return List.of();
     }
 }

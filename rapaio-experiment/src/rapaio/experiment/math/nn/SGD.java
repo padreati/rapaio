@@ -19,30 +19,11 @@
  *
  */
 
-package rapaio.experiment.math.nn.cgraph;
+package rapaio.experiment.math.nn;
 
-import java.util.List;
+import java.util.Collection;
 
-import rapaio.experiment.math.nn.cgraph.operations.CompNode;
-import rapaio.math.tensor.Tensor;
-
-public class Constant extends CompNode {
-
-    public Constant(Context c, String name, Tensor<?> value) {
-        super(c, name);
-        this.value = new CompValue(value);
-    }
-
-    public void assign(double value) {
-    }
-
-    @Override
-    public List<CompNode> children() {
-        return List.of();
-    }
-
-    @Override
-    public List<Runnable> compute() {
-        return List.of();
+public class SGD extends Context {
+    public SGD() {
     }
 }

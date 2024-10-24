@@ -23,14 +23,14 @@ package rapaio.experiment.math.nn.cgraph.operations;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.Context;
+import rapaio.experiment.math.nn.cgraph.CompContext;
 import rapaio.math.tensor.Tensor;
 
 public class OpVSum extends CompNode {
 
     private final CompNode child;
 
-    public OpVSum(Context c, CompNode child) {
+    public OpVSum(CompContext c, CompNode child) {
         super(c, "vsum");
         this.child = child;
     }

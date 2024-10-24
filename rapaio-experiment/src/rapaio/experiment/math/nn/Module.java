@@ -19,34 +19,37 @@
  *
  */
 
-package rapaio.experiment.math.nn.cgraph.operations;
+package rapaio.experiment.math.nn;
 
 import java.util.List;
+import java.util.Random;
 
-import rapaio.experiment.math.nn.cgraph.CompContext;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.TensorManager;
 
-public class OpAdd extends CompNode {
+public abstract class Module {
 
-    private final CompNode left;
-    private final CompNode right;
+    protected Context c;
+    protected Random random = new Random();
+    protected final TensorManager.OfType<?> tmt;
 
-    public OpAdd(CompContext c, CompNode left, CompNode right) {
-        super(c, "add");
-        this.left = left;
-        this.right = right;
+    public Module(TensorManager.OfType<?> tmt) {
+        this.tmt = tmt;
     }
 
-    @Override
-    public List<CompNode> children() {
-        return List.of(left, right);
+    public final Random getRandom() {
+        return random;
     }
 
-    @Override
-    public List<Runnable> compute() {
-        value.assign(left.value.tensor().add(right.value.tensor()));
-        return List.of(
-                () -> left.adjoint.add_(this.adjoint.tensor()),
-                () -> right.adjoint.add_(this.adjoint.tensor())
-        );
+    public final void seed(long seed) {
+        random = new Random(seed);
+    }
+
+    public abstract List<Parameter> parameters();
+
+    public abstract Tensor<?> forward(Tensor<?> x);
+
+    public void bind(Context c) {
+        this.c = c;
     }
 }

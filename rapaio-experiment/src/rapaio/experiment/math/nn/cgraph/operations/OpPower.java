@@ -23,14 +23,14 @@ package rapaio.experiment.math.nn.cgraph.operations;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.Context;
+import rapaio.experiment.math.nn.cgraph.CompContext;
 
 public class OpPower extends CompNode {
 
     private final CompNode child;
     private final double power;
 
-    public OpPower(Context c, CompNode child, double power) {
+    public OpPower(CompContext c, CompNode child, double power) {
         super(c, "pow");
         this.child = child;
         this.power = power;

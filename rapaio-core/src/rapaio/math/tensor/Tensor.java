@@ -1405,6 +1405,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp_(TensorOp.binarySub(), value);
     }
 
+    public final Tensor<N> sub_(double value) {
+        return binaryOp_(TensorOp.binarySub(), value);
+    }
+
     public final Tensor<N> mul(N value) {
         return binaryOp(TensorOp.binaryMul(), value, Order.defaultOrder());
     }
@@ -1418,6 +1422,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> mul_(N value) {
+        return binaryOp_(TensorOp.binaryMul(), value);
+    }
+
+    public final Tensor<N> mul_(double value) {
         return binaryOp_(TensorOp.binaryMul(), value);
     }
 

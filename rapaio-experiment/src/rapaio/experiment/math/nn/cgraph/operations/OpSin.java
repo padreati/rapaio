@@ -23,13 +23,13 @@ package rapaio.experiment.math.nn.cgraph.operations;
 
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.Context;
+import rapaio.experiment.math.nn.cgraph.CompContext;
 
 public class OpSin extends CompNode {
 
     private final CompNode child;
 
-    public OpSin(Context c, CompNode child) {
+    public OpSin(CompContext c, CompNode child) {
         super(c, "sin");
         this.child = child;
     }

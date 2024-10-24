@@ -19,37 +19,40 @@
  *
  */
 
-package rapaio.experiment.math.nn.cgraph.operations;
+package rapaio.experiment.math.nn.operations;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import rapaio.experiment.math.nn.cgraph.CompContext;
+import rapaio.experiment.math.nn.Context;
+import rapaio.experiment.math.nn.Node;
+import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 
-public class OpVDot extends CompNode {
+public class OpBatchVDot extends OpNode {
 
-    private final CompNode left;
-    private final CompNode right;
+    private final Node left;
+    private final Node right;
 
-    public OpVDot(CompContext c, CompNode left, CompNode right) {
-        super(c, "vsum");
+    public OpBatchVDot(Context c, Node left, Node right) {
+        super(c, null, "batchVDot");
         this.left = left;
         this.right = right;
     }
 
     @Override
-    public List<CompNode> children() {
+    public List<Node> children() {
         return List.of(left, right);
     }
 
     @Override
-    public List<Runnable> compute() {
-        value.assign(c.tmt().scalar(left.value.tensor().vdot(right.value.tensor()).doubleValue()));
-        var eye = c.tmt().eye(left.value.tensor().shape().dim(0));
-
-        return List.of(
-                () -> left.adjoint.add_(eye.dot(right.value.tensor()).dot(this.adjoint.tensor())),
-                () -> right.adjoint.add_(eye.dot(left.value.tensor()).dot(this.adjoint.tensor()))
-        );
-
+    public List<Runnable> forward() {
+        List<Tensor<Double>> prods = new ArrayList<>();
+        for (int i = 0; i < left.value().dim(0); i++) {
+            Tensor<?> vec = left.value().takesq(0, i);
+            prods.add((Tensor<Double>) vec.stretch(0).mm(right.value()).squeeze(0));
+        }
+        this.value(Tensors.stack(0, prods));
+        return List.of();
     }
 }
