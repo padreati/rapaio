@@ -58,7 +58,7 @@ public class MatrixTest extends AbstractArtistTest {
         var mean = randomm.mean(0);
         var sd = randomm.stdc(0, 1);
 
-        randomm.bsub(0, mean).bdiv(0, sd);
+        randomm.sub(mean).div(sd);
 
         var cov = randomm.t().mm(randomm);//.round(15);
 

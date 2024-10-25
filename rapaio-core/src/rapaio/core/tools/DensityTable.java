@@ -245,13 +245,13 @@ public final class DensityTable<U, V> implements Printable, Serializable {
 
     public DensityTable<U, V> normalizeOnRows() {
         var norm = copy();
-        norm.values.bdiv_(1, norm.values.sum(1));
+        norm.values.div_(norm.values.sum(1).stretch(1));
         return norm;
     }
 
     public DensityTable<U, V> normalizeOnCols() {
         var norm = copy();
-        norm.values.bdiv_(0, norm.values.sum(0));
+        norm.values.div_(norm.values.sum(0));
         return norm;
     }
 

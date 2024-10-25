@@ -910,6 +910,42 @@ public class TensorTest {
 
     @ParameterizedTest
     @MethodSource("dataFactorySource")
+    <N extends Number> void testBinaryBroadcast(DataFactory<N> g) {
+
+        Tensor<?> v = g.zeros(Shape.of(3)).fill_(g.value(1));
+        Tensor<?> m = g.zeros(Shape.of(3, 2, 3)).fill_(g.value(2));
+
+        Tensor<?> a1 = v.add(m);
+        Tensor<?> a2 = m.add(v);
+
+        assertTensorEqualValues(a1, a2);
+        assertEquals(Shape.of(3,2,3), a1.shape());
+
+        for(var value : a1) {
+            assertEquals(3.0, value.doubleValue());
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBinaryBroadcastOrientation(DataFactory<N> g) {
+
+        Tensor<?> v = g.seq(Shape.of(3));
+        Tensor<?> m = g.zeros(Shape.of(3, 3));
+
+        Tensor<?> arows = m.add(v);
+        Tensor<?> acols = m.add(v.stretch(1));
+
+        assertTensorEqualValues(arows.t(), acols);
+        for (int i = 0; i < 3; i++) {
+            assertTensorEqualValues(v, arows.takesq(0, i));
+            assertTensorEqualValues(v, acols.takesq(1, i));
+        }
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
     <N extends Number> void testVdot(DataFactory<N> g) {
 
         int vLen = 23;
@@ -1037,7 +1073,7 @@ public class TensorTest {
 
         var cov1 = m1.cov(1);
         var mean = m1.mean(0);
-        var c1 = m1.bsub(0, mean);
+        var c1 = m1.sub(mean);
         assertEquals(Shape.of(3,3), cov1.shape());
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -1431,7 +1467,7 @@ public class TensorTest {
         return sum;
     }
 
-    private static <N extends Number> void assertTensorEqualValues(Tensor<N> t, Tensor<N> f) {
+    private static void assertTensorEqualValues(Tensor<?> t, Tensor<?> f) {
         if (t.size() != f.size()) {
             throw new AssertionFailedError(String.format("Error at tensor: %s, flatten: %s", t, f));
         }

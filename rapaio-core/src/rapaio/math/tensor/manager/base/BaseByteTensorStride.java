@@ -47,6 +47,7 @@ import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.layout.StrideWrapper;
 import rapaio.math.tensor.manager.AbstractStrideTensor;
+import rapaio.math.tensor.operator.Broadcast;
 import rapaio.math.tensor.operator.TensorReduceOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorOp;
@@ -168,22 +169,27 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
     }
 
     @Override
-    public Tensor<Byte> binaryOp_(TensorBinaryOp op, Tensor<?> b) {
-        if (b.isScalar()) {
-            return binaryOp_(op, b.getByte());
+    public Tensor<Byte> binaryOp_(TensorBinaryOp op, Tensor<?> other) {
+        if (other.isScalar()) {
+            return binaryOp_(op, other.getByte());
         }
-        if (!shape().equals(b.shape())) {
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this, other));
+        if (!broadcast.valid()) {
             throw new IllegalArgumentException(
-                    String.format("Tensors does not have the same shape: %s, %s", shape(), b.shape()));
+                    String.format("Operation could not be applied on tensors with shape: %s, %s", shape(), other.shape()));
         }
+        if(!broadcast.hasShape(this)) {
+            throw new IllegalArgumentException("Broadcast cannot be applied for inplace operations.");
+        }
+        other = broadcast.transform(other);
         var order = layout.storageFastOrder();
         order = order == Order.S ? Order.defaultOrder() : order;
 
         var it = ptrIterator(order);
-        var refIt = b.ptrIterator(order);
+        var refIt = other.ptrIterator(order);
         while (it.hasNext()) {
             int next = it.nextInt();
-            storage.setByte(next, op.applyByte(storage.getByte(next), b.ptrGetByte(refIt.nextInt())));
+            storage.setByte(next, op.applyByte(storage.getByte(next), other.ptrGetByte(refIt.nextInt())));
         }
         return this;
     }

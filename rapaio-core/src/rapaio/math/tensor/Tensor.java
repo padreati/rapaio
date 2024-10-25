@@ -42,6 +42,7 @@ import rapaio.math.tensor.matrix.EigenDecomposition;
 import rapaio.math.tensor.matrix.LUDecomposition;
 import rapaio.math.tensor.matrix.QRDecomposition;
 import rapaio.math.tensor.matrix.SVDecomposition;
+import rapaio.math.tensor.operator.Broadcast;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorOp;
 import rapaio.math.tensor.operator.TensorReduceOp;
@@ -1205,10 +1206,13 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     //--------- BINARY OPERATIONS ----------------//
 
     public final Tensor<N> binaryOp(TensorBinaryOp op, Tensor<?> t, Order order) {
-        if (isScalar()) {
-            return manager.zeros(dtype(), t.shape(), order).fill_(get()).binaryOp_(op, t.cast(dtype(), order));
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this, t));
+        if (!broadcast.valid()) {
+            throw new IllegalArgumentException(
+                    String.format("Operation could not be applied on tensors with shape: %s, %s", shape(), t.shape()));
         }
-        return copy(order).binaryOp_(op, t);
+        Tensor<N> copy = broadcast.transform(this).copy(order);
+        return copy.binaryOp_(op, broadcast.transform(t));
     }
 
     public abstract Tensor<N> binaryOp_(TensorBinaryOp op, Tensor<?> value);
@@ -1231,21 +1235,6 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp_(TensorOp.binaryAdd(), tensor);
     }
 
-    public final Tensor<N> badd(int axis, Tensor<?> tensor) {
-        return badd(axis, tensor, Order.defaultOrder());
-    }
-
-    public final Tensor<N> badd(int axis, Tensor<?> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).add_(get());
-        }
-        return copy(order).badd_(axis, tensor);
-    }
-
-    public final Tensor<N> badd_(int axis, Tensor<?> tensor) {
-        return add_(tensor.strexp(axis, dim(axis)));
-    }
-
     public final Tensor<N> sub(Tensor<?> tensor) {
         return binaryOp(TensorOp.binarySub(), tensor, Order.defaultOrder());
     }
@@ -1256,21 +1245,6 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
 
     public final Tensor<N> sub_(Tensor<?> tensor) {
         return binaryOp_(TensorOp.binarySub(), tensor);
-    }
-
-    public final Tensor<N> bsub(int axis, Tensor<?> tensor) {
-        return bsub(axis, tensor, Order.defaultOrder());
-    }
-
-    public final Tensor<N> bsub(int axis, Tensor<?> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).sub_(get());
-        }
-        return copy(order).bsub_(axis, tensor);
-    }
-
-    public final Tensor<N> bsub_(int axis, Tensor<?> tensor) {
-        return sub_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
     public final Tensor<N> mul(Tensor<?> tensor) {
@@ -1285,21 +1259,6 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp_(TensorOp.binaryMul(), tensor);
     }
 
-    public final Tensor<N> bmul(int axis, Tensor<?> tensor) {
-        return bmul(axis, tensor, Order.defaultOrder());
-    }
-
-    public final Tensor<N> bmul(int axis, Tensor<?> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).mul_(get());
-        }
-        return copy(order).bmul_(axis, tensor);
-    }
-
-    public final Tensor<N> bmul_(int axis, Tensor<?> tensor) {
-        return mul_(tensor.stretch(axis).expand(axis, dim(axis)));
-    }
-
     public final Tensor<N> div(Tensor<?> tensor) {
         return binaryOp(TensorOp.binaryDiv(), tensor, Order.defaultOrder());
     }
@@ -1310,21 +1269,6 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
 
     public final Tensor<N> div_(Tensor<?> tensor) {
         return binaryOp_(TensorOp.binaryDiv(), tensor);
-    }
-
-    public final Tensor<N> bdiv(int axis, Tensor<?> tensor) {
-        return bdiv(axis, tensor, Order.defaultOrder());
-    }
-
-    public final Tensor<N> bdiv(int axis, Tensor<?> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).div_(get());
-        }
-        return copy(order).bdiv_(axis, tensor);
-    }
-
-    public final Tensor<N> bdiv_(int axis, Tensor<?> tensor) {
-        return div_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
     public final Tensor<N> min(Tensor<?> tensor) {
@@ -1339,21 +1283,6 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp_(TensorOp.binaryMin(), tensor);
     }
 
-    public final Tensor<N> bmin(int axis, Tensor<?> tensor) {
-        return bmin(axis, tensor, Order.defaultOrder());
-    }
-
-    public final Tensor<N> bmin(int axis, Tensor<?> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).min_(get());
-        }
-        return copy(order).bmin_(axis, tensor);
-    }
-
-    public final Tensor<N> bmin_(int axis, Tensor<?> tensor) {
-        return min_(tensor.stretch(axis).expand(axis, dim(axis)));
-    }
-
     public final Tensor<N> max(Tensor<?> tensor) {
         return binaryOp(TensorOp.binaryMax(), tensor, Order.defaultOrder());
     }
@@ -1364,21 +1293,6 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
 
     public final Tensor<N> max_(Tensor<?> tensor) {
         return binaryOp_(TensorOp.binaryMax(), tensor);
-    }
-
-    public final Tensor<N> bmax(int axis, Tensor<?> tensor) {
-        return bmax(axis, tensor, Order.defaultOrder());
-    }
-
-    public final Tensor<N> bmax(int axis, Tensor<?> tensor, Order order) {
-        if (isScalar()) {
-            return tensor.cast(dtype(), order).max_(get());
-        }
-        return copy(order).bmax_(axis, tensor);
-    }
-
-    public final Tensor<N> bmax_(int axis, Tensor<?> tensor) {
-        return max_(tensor.stretch(axis).expand(axis, dim(axis)));
     }
 
     public final Tensor<N> add(N value) {
@@ -1739,7 +1653,7 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
             throw new OperationNotAvailableException("Available only for floating point tensors.");
         }
         Tensor<N> mean = mean(0);
-        Tensor<N> centered = bsub(0, mean);
+        Tensor<N> centered = sub(mean);
         return centered.t().mm(centered, askOrder).div_(dtype().castValue(dim(0) - ddof));
     }
 
@@ -1755,8 +1669,8 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
             throw new OperationNotAvailableException("Available only for floating point tensors.");
         }
         Tensor<N> std = stdc(0, 0);
-        Tensor<N> scaled = bsub(0, mean(0));
-        return scaled.t().mm(scaled, askOrder).bdiv_(0, std).bdiv_(1, std).div_(dtype().castValue(dim(0)));
+        Tensor<N> scaled = sub(mean(0));
+        return scaled.t().mm(scaled, askOrder).div_(std).div_(std.stretch(1)).div_(dtype().castValue(dim(0)));
     }
 
 

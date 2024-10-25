@@ -85,7 +85,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
 
         logger.fine("start lda fit");
         Tensor<Double> mx = df.mapVars(inputNames).tensor();
-        Tensor<Double> mxx = scaling.get() ? mx.bsub(0, mx.mean(0)).bdiv_(0, mx.std(0)) : mx;
+        Tensor<Double> mxx = scaling.get() ? mx.sub(mx.mean(0)).div_(mx.std(0)) : mx;
 
         // compute global mean and std
         vmean = mxx.mean(0);
@@ -109,12 +109,12 @@ public class LDA extends ParamSet<LDA> implements Printable {
 
         // build within scatter matrix
 
-        Tensor<Double> xc = mxx.bsub(0, vmean).bdiv(0, vstd);
+        Tensor<Double> xc = mxx.sub(vmean).div(vstd);
         Tensor<Double> sw = xc.t().mm(xc).div_((double) (xc.dim(0)));
 
         // build between-class scatter matrix
 
-        Tensor<Double> mcmeansc = Tensors.stack(0, List.of(mcmeans)).bsub(0, vmean);
+        Tensor<Double> mcmeansc = Tensors.stack(0, List.of(mcmeans)).sub(vmean);
         Tensor<Double> sb = mcmeansc.t().mm(mcmeansc).div_((double) (mcmeansc.dim(0)));
 
         // inverse sw
@@ -168,10 +168,11 @@ public class LDA extends ParamSet<LDA> implements Printable {
 
         Tensor<Double> x = df.mapVars(inputNames).tensor();
         if (scaling.get()) {
-            x = x.bsub(0, x.mean(0)).bdiv_(0, x.std(0));
+            x.sub_(x.mean(0)).div_(x.std(0));
         }
 
         if (targetLevels.size() < k) {
+            // TODO
         }
 
         int[] dims = new int[k];

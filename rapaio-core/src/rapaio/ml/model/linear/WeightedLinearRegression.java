@@ -68,8 +68,8 @@ public class WeightedLinearRegression extends BaseLinearRegressionModel<Weighted
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         var w = weights.tensor().apply_(Math::sqrt);
-        Tensor<Double> X = df.mapVars(inputNames()).tensor().bmul(1, w);
-        Tensor<Double> Y = df.mapVars(targetNames()).tensor().bmul(1, w);
+        Tensor<Double> X = df.mapVars(inputNames()).tensor().mul(w.stretch(1));
+        Tensor<Double> Y = df.mapVars(targetNames()).tensor().mul(w.stretch(1));
         beta = X.qr().solve(Y);
         return true;
     }

@@ -21,12 +21,12 @@
 
 package rapaio.math.tensor.operator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import rapaio.math.tensor.Shape;
@@ -36,26 +36,49 @@ import rapaio.math.tensor.Tensors;
 public class BroadcastTest {
 
     @Test
-    @Disabled
-    void testElementWiseValidation() {
+    void testElementWiseValidCase() {
         List<Tensor<?>> tensors = List.of(
                 Tensors.seq(Shape.of(2, 1)),
                 Tensors.seq(Shape.of(3, 2, 3)),
                 Tensors.seq(Shape.of(3))
         );
 
-        Broadcast.ElementWise result = Broadcast.elementWise(tensors);
-        assertTrue(result.valid());
-        assertFalse(result.unchanged());
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(tensors);
+        assertTrue(broadcast.valid());
+        assertFalse(broadcast.unchanged());
+        for (var t : tensors) {
+            assertEquals(broadcast.shape(), broadcast.transform(t).shape());
+        }
+    }
 
-        System.out.println("init");
-        for (var t : tensors) {
-            System.out.print(t);
-        }
-        System.out.println(result);
-        System.out.println("after");
-        for (var t : tensors) {
-            System.out.print(result.transform(t));
-        }
+    @Test
+    void testElementWiseEmpty() {
+        List<Tensor<?>> tensors = List.of();
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(tensors);
+        assertTrue(broadcast.valid());
+        assertTrue(broadcast.unchanged());
+        assertEquals(Shape.of(), broadcast.shape());
+    }
+
+    @Test
+    void testSingleEmelent() {
+        List<Tensor<?>> tensors = List.of(
+                Tensors.seq(Shape.of(2,1,4)));
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(tensors);
+        assertTrue(broadcast.valid());
+        assertTrue(broadcast.unchanged());
+        assertEquals(tensors.getFirst().shape(), broadcast.shape());
+    }
+
+    @Test
+    void testElementWiseInvalidCase() {
+        List<Tensor<?>> tensors = List.of(
+                Tensors.seq(Shape.of(2, 1)),
+                Tensors.seq(Shape.of(2,3,1))
+        );
+
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(tensors);
+        assertFalse(broadcast.valid());
+        assertTrue(broadcast.unchanged());
     }
 }

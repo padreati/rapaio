@@ -54,7 +54,7 @@ public class OpBatchAdd extends OpNode {
 
     @Override
     public List<Runnable> forward() {
-        this.value(left.value().badd(0, right.value()));
+        this.value(left.value().add(right.value()));
         return List.of(
                 // todo
         );

@@ -21,9 +21,9 @@
 
 package rapaio.math.tensor.operator;
 
-import java.util.Arrays;
 import java.util.List;
 
+import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
 import rapaio.util.collection.IntArrays;
 
@@ -65,40 +65,35 @@ public final class Broadcast {
                 return new ElementWise(false, true);
             }
         }
-        return new ElementWise(true, unchanged, dims);
+        return new ElementWise(true, unchanged, Shape.of(dims));
     }
 
-    public record ElementWise(boolean valid, boolean unchanged, int[] dims) {
+    public record ElementWise(boolean valid, boolean unchanged, Shape shape) {
 
         public ElementWise(boolean valid, boolean unchanged) {
-            this(valid, unchanged, new int[0]);
+            this(valid, unchanged, Shape.of());
         }
 
-        public <N extends Number> boolean hasShape(Tensor<N> t) {
-            if (t.rank() != dims.length) {
-                return false;
-            }
-            for (int i = 0; i < dims.length; i++) {
-                if (dims[i] != t.dim(i)) {
-                    return false;
-                }
-            }
-            return true;
+        public boolean hasShape(Tensor<?> t) {
+            return shape.equals(t.shape());
         }
 
         public <N extends Number> Tensor<N> transform(Tensor<N> t) {
-            for (int i = 1; i <= dims.length; i++) {
+            if(hasShape(t)) {
+                return t;
+            }
+            for (int i = 1; i <= shape.rank(); i++) {
                 int index = t.rank() - i;
                 if (index < 0) {
-                    t = t.stretch(0).expand(0, dims[dims.length - i]);
+                    t = t.strexp(0, shape.dim(-i));
                     continue;
                 }
                 int dim = t.dim(index);
-                if (dim == dims[dims.length - i]) {
+                if (dim == shape.dim(-i)) {
                     continue;
                 }
                 if (dim == 1) {
-                    t = t.expand(index, dims[dims.length - i]);
+                    t = t.expand(index, shape.dim(-i));
                     continue;
                 }
                 throw new IllegalArgumentException("Tensor not compatible for broadcasting.");
@@ -108,7 +103,7 @@ public final class Broadcast {
 
         @Override
         public String toString() {
-            return String.format("ElementWise[valid=%b, unchanged=%b, dims=%s]", valid, unchanged, Arrays.toString(dims));
+            return String.format("ElementWise[valid=%b, unchanged=%b, shape=%s]", valid, unchanged, shape.toString());
         }
     }
 }

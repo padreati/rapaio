@@ -213,7 +213,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                 w.mul(w);
                 // weighted L2 solution
 
-                Tensor<Double> w2a = A.bmul(1, w);
+                Tensor<Double> w2a = A.mul(w.stretch(1));
                 Tensor<Double> A1 = w2a.t().mm(A);
                 Tensor<Double> b1 = w2a.t().mv(b);
 
@@ -267,7 +267,7 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
                 // normalize weight vector
                 w.div(w.sum());
                 // weighted L2 solution
-                Tensor<Double> w2a = A.bmul(1, w);
+                Tensor<Double> w2a = A.mul(w.stretch(1));
                 Tensor<Double> A1 = w2a.t().mm(A);
                 Tensor<Double> b1 = w2a.t().mv(b);
                 Tensor<Double> x1 = A1.qr().solve(b1);

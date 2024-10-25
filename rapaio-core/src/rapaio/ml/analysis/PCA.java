@@ -109,11 +109,11 @@ public class PCA extends ParamSet<PCA> implements Printable {
         logger.fine("compute mean, sd and do scaling");
         if (center.get()) {
             mean = x.mean(0);
-            x.bsub_(0, mean);
+            x.sub_(mean);
         }
         if (standardize.get()) {
             sd = x.std(0);
-            x.bdiv_(0, sd);
+            x.div_(sd);
         }
 
         logger.fine("build scatter");
@@ -170,10 +170,10 @@ public class PCA extends ParamSet<PCA> implements Printable {
         Tensor<Double> x = df.mapVars(inputNames).tensor();
 
         if (center.get()) {
-            x.bsub_(0, mean);
+            x.sub_(mean);
         }
         if (standardize.get()) {
-            x.bdiv_(0, sd);
+            x.div_(sd);
         }
 
         String[] names = new String[k];
