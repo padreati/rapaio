@@ -139,8 +139,8 @@ public class HistogramTableTest {
         VarDouble v = t.dv();
         HistogramTable ht = new HistogramTable(v, Double.NaN, Double.NaN, 0);
         assertEquals(27, ht.bins());
-        assertEquals(t.min(), ht.min());
-        assertEquals(t.max(), ht.max());
+        assertEquals(t.amin(), ht.min());
+        assertEquals(t.amax(), ht.max());
     }
 
 }

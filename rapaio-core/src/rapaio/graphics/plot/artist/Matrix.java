@@ -50,7 +50,7 @@ public class Matrix extends Artist {
     public Matrix(Tensor<?> m, GOpt<?>... opts) {
         this.m = m;
         this.options = new GOpts()
-                .apply(color(-1), palette(Palette.hue(0, 240, m.min().doubleValue(), m.max().doubleValue())))
+                .apply(color(-1), palette(Palette.hue(0, 240, m.amin().doubleValue(), m.amax().doubleValue())))
                 .apply(opts);
     }
 

@@ -943,7 +943,6 @@ public class TensorTest {
         }
     }
 
-
     @ParameterizedTest
     @MethodSource("dataFactorySource")
     <N extends Number> void testVdot(DataFactory<N> g) {
@@ -1378,29 +1377,29 @@ public class TensorTest {
         var t1 = g.seq(Shape.of(1, 100, 10));
         assertEquals(sequenceSum(g, t1.size()), t1.sum());
         if (g.dType() == DType.BYTE) {
-            assertEquals(g.value(127), t1.max());
+            assertEquals(g.value(127), t1.amax());
             assertEquals(g.value(127), t1.nanMax());
-            assertEquals(g.value(-128), t1.min());
+            assertEquals(g.value(-128), t1.amin());
             assertEquals(g.value(-128), t1.nanMin());
         } else {
-            assertEquals(g.value(0), t1.min());
+            assertEquals(g.value(0), t1.amin());
             assertEquals(g.value(0), t1.nanMin());
-            assertEquals(g.value(999), t1.max());
+            assertEquals(g.value(999), t1.amax());
             assertEquals(g.value(999), t1.nanMax());
         }
 
         var t2 = g.seq(Shape.of(79));
         assertEquals(sequenceSum(g, 79), t2.sum());
-        assertEquals(g.value(78), t2.max());
+        assertEquals(g.value(78), t2.amax());
         assertEquals(g.value(78), t2.nanMax());
-        assertEquals(g.value(0), t2.min());
+        assertEquals(g.value(0), t2.amin());
         assertEquals(g.value(0), t2.nanMin());
 
         var t3 = g.seq(Shape.of(6)).narrow(0, true, 1, 6);
         assertEquals(g.value(120), t3.prod());
-        assertEquals(g.value(5), t3.max());
+        assertEquals(g.value(5), t3.amax());
         assertEquals(g.value(5), t3.nanMax());
-        assertEquals(g.value(1), t3.min());
+        assertEquals(g.value(1), t3.amin());
         assertEquals(g.value(1), t3.nanMin());
 
         var t4 = g.seq(Shape.of(101));
@@ -1410,13 +1409,13 @@ public class TensorTest {
         if (g.dType().floatingPoint()) {
             assertEquals(2, t4.nanCount());
             assertEquals(1, t4.zeroCount());
-            assertEquals(g.value(Double.NaN), t4.max());
-            assertEquals(g.value(Double.NaN), t4.min());
+            assertEquals(g.value(Double.NaN), t4.amax());
+            assertEquals(g.value(Double.NaN), t4.amin());
         } else {
             assertEquals(0, t4.nanCount());
             assertEquals(3, t4.zeroCount());
-            assertEquals(99., t4.max().doubleValue());
-            assertEquals(0., t4.min().doubleValue());
+            assertEquals(99., t4.amax().doubleValue());
+            assertEquals(0., t4.amin().doubleValue());
         }
         assertEquals(g.value(99), t4.nanMax());
         assertEquals(g.value(0), t4.nanMin());
@@ -1429,15 +1428,15 @@ public class TensorTest {
             assertEquals(2, t5.nanCount());
             assertEquals(0, t5.zeroCount());
             assertEquals(g.value(120), t5.nanProd());
-            assertEquals(g.value(Double.NaN), t5.max());
-            assertEquals(g.value(Double.NaN), t5.min());
+            assertEquals(g.value(Double.NaN), t5.amax());
+            assertEquals(g.value(Double.NaN), t5.amin());
             assertEquals(g.value(1), t5.nanMin());
         } else {
             assertEquals(0, t5.nanCount());
             assertEquals(2, t5.zeroCount());
             assertEquals(g.value(0), t5.nanProd());
-            assertEquals(g.value(5), t5.max());
-            assertEquals(g.value(0), t5.min());
+            assertEquals(g.value(5), t5.amax());
+            assertEquals(g.value(0), t5.amin());
             assertEquals(g.value(0), t5.nanMin());
         }
         assertEquals(g.value(5), t5.nanMax());
@@ -1459,7 +1458,18 @@ public class TensorTest {
         assertEquals(t1.sub(g.value(mean)).sqr().sum().doubleValue() / t1.size(), t1.var().doubleValue());
     }
 
-    private <N extends Number> N sequenceSum(DataFactory<N> g, int len) {
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void permuteTest(DataFactory<N> g) {
+        Tensor<?> t1 = g.seq(Shape.of(2, 3, 4));
+        Tensor<?> t2 = t1.permute(2, 1, 0);
+        assertEquals(t1.sum().doubleValue(), t2.sum().doubleValue());
+
+        Tensor<?> t3 = t2.permute(2, 1, 0);
+        assertTensorEqualValues(t1, t3);
+    }
+
+        private <N extends Number> N sequenceSum(DataFactory<N> g, int len) {
         N sum = g.value(0);
         for (int i = 1; i < len; i++) {
             sum = g.sum(sum, g.value(i));

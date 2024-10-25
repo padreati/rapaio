@@ -176,7 +176,7 @@ public class Grid2D implements Serializable {
      * @return minimum value
      */
     public double minValue() {
-        return values.min();
+        return values.amin();
     }
 
     /**
@@ -185,7 +185,7 @@ public class Grid2D implements Serializable {
      * @return maximum value
      */
     public double maxValue() {
-        return values.max();
+        return values.amax();
     }
 
     /**

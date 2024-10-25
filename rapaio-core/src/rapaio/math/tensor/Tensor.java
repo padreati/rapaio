@@ -681,7 +681,7 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
      * Tensor must have a single dimension with size greater than the biggest index value.
      *
      * @param indices indices which will be sorted
-     * @param asc     if true, than sort ascending, descending otherwise
+     * @param asc     sort ascending if true, descending otherwise
      */
     public abstract void argSort(int[] indices, boolean asc);
 
@@ -741,18 +741,6 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
      * @param indexes indexed position
      */
     public abstract void inc(N value, int... indexes);
-
-    public final void incByte(byte value, int... indexes) {
-        storage.incByte(layout().pointer(indexes), value);
-    }
-
-    public final void incInt(int value, int... indexes) {
-        storage.incInt(layout().pointer(indexes), value);
-    }
-
-    public final void incFloat(float value, int... indexes) {
-        storage.incFloat(layout().pointer(indexes), value);
-    }
 
     public final void incDouble(double value, int... indexes) {
         storage.incDouble(layout().pointer(indexes), value);
@@ -935,7 +923,23 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return unaryOp_(TensorOp.unaryFill(value));
     }
 
+    public final Tensor<N> fill_(int value) {
+        return unaryOp_(TensorOp.unaryFill(value));
+    }
+
+    public final Tensor<N> fill_(double value) {
+        return unaryOp_(TensorOp.unaryFill(value));
+    }
+
     public final Tensor<N> fillNan_(N value) {
+        return unaryOp_(TensorOp.unaryFillNan(value));
+    }
+
+    public final Tensor<N> fillNan_(int value) {
+        return unaryOp_(TensorOp.unaryFillNan(value));
+    }
+
+    public final Tensor<N> fillNan_(double value) {
         return unaryOp_(TensorOp.unaryFillNan(value));
     }
 
@@ -943,8 +947,24 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return unaryOp(TensorOp.unaryClamp(dtype(), min, max));
     }
 
+    public final Tensor<N> clamp(int min, int max) {
+        return unaryOp(TensorOp.unaryClamp(dtype(), dtype().castValue(min), dtype().castValue(max)));
+    }
+
+    public final Tensor<N> clamp(double min, double max) {
+        return unaryOp(TensorOp.unaryClamp(dtype(), dtype().castValue(min), dtype().castValue(max)));
+    }
+
     public final Tensor<N> clamp(Order order, N min, N max) {
         return unaryOp(TensorOp.unaryClamp(dtype(), min, max), order);
+    }
+
+    public final Tensor<N> clamp(Order order, int min, int max) {
+        return unaryOp(TensorOp.unaryClamp(dtype(), dtype().castValue(min), dtype().castValue(max)), order);
+    }
+
+    public final Tensor<N> clamp(Order order, double min, double max) {
+        return unaryOp(TensorOp.unaryClamp(dtype(), dtype().castValue(min), dtype().castValue(max)), order);
     }
 
     public final Tensor<N> clamp_(N min, N max) {
@@ -1299,7 +1319,23 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp(TensorOp.binaryAdd(), value, Order.defaultOrder());
     }
 
+    public final Tensor<N> add(int value) {
+        return binaryOp(TensorOp.binaryAdd(), value, Order.defaultOrder());
+    }
+
+    public final Tensor<N> add(double value) {
+        return binaryOp(TensorOp.binaryAdd(), value, Order.defaultOrder());
+    }
+
     public final Tensor<N> add(N value, Order order) {
+        return binaryOp(TensorOp.binaryAdd(), value, order);
+    }
+
+    public final Tensor<N> add(int value, Order order) {
+        return binaryOp(TensorOp.binaryAdd(), value, order);
+    }
+
+    public final Tensor<N> add(double value, Order order) {
         return binaryOp(TensorOp.binaryAdd(), value, order);
     }
 
@@ -1307,7 +1343,23 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp_(TensorOp.binaryAdd(), value);
     }
 
+    public final Tensor<N> add_(int value) {
+        return binaryOp_(TensorOp.binaryAdd(), value);
+    }
+
+    public final Tensor<N> add_(double value) {
+        return binaryOp_(TensorOp.binaryAdd(), value);
+    }
+
     public final Tensor<N> sub(N value) {
+        return binaryOp(TensorOp.binarySub(), value, Order.defaultOrder());
+    }
+
+    public final Tensor<N> sub(int value) {
+        return binaryOp(TensorOp.binarySub(), value, Order.defaultOrder());
+    }
+
+    public final Tensor<N> sub(double value) {
         return binaryOp(TensorOp.binarySub(), value, Order.defaultOrder());
     }
 
@@ -1315,7 +1367,19 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp(TensorOp.binarySub(), value, order);
     }
 
+    public final Tensor<N> sub(int value, Order order) {
+        return binaryOp(TensorOp.binarySub(), value, order);
+    }
+
+    public final Tensor<N> sub(double value, Order order) {
+        return binaryOp(TensorOp.binarySub(), value, order);
+    }
+
     public final Tensor<N> sub_(N value) {
+        return binaryOp_(TensorOp.binarySub(), value);
+    }
+
+    public final Tensor<N> sub_(int value) {
         return binaryOp_(TensorOp.binarySub(), value);
     }
 
@@ -1327,6 +1391,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp(TensorOp.binaryMul(), value, Order.defaultOrder());
     }
 
+    public final Tensor<N> mul(int value) {
+        return binaryOp(TensorOp.binaryMul(), value, Order.defaultOrder());
+    }
+
     public final Tensor<N> mul(double value) {
         return binaryOp(TensorOp.binaryMul(), value, Order.defaultOrder());
     }
@@ -1335,7 +1403,19 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp(TensorOp.binaryMul(), value, order);
     }
 
+    public final Tensor<N> mul(int value, Order order) {
+        return binaryOp(TensorOp.binaryMul(), value, order);
+    }
+
+    public final Tensor<N> mul(double value, Order order) {
+        return binaryOp(TensorOp.binaryMul(), value, order);
+    }
+
     public final Tensor<N> mul_(N value) {
+        return binaryOp_(TensorOp.binaryMul(), value);
+    }
+
+    public final Tensor<N> mul_(int value) {
         return binaryOp_(TensorOp.binaryMul(), value);
     }
 
@@ -1347,7 +1427,23 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp(TensorOp.binaryDiv(), value, Order.defaultOrder());
     }
 
+    public final Tensor<N> div(int value) {
+        return binaryOp(TensorOp.binaryDiv(), value, Order.defaultOrder());
+    }
+
+    public final Tensor<N> div(double value) {
+        return binaryOp(TensorOp.binaryDiv(), value, Order.defaultOrder());
+    }
+
     public final Tensor<N> div(N value, Order order) {
+        return binaryOp(TensorOp.binaryDiv(), value, order);
+    }
+
+    public final Tensor<N> div(int value, Order order) {
+        return binaryOp(TensorOp.binaryDiv(), value, order);
+    }
+
+    public final Tensor<N> div(double value, Order order) {
         return binaryOp(TensorOp.binaryDiv(), value, order);
     }
 
@@ -1355,7 +1451,23 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp_(TensorOp.binaryDiv(), value);
     }
 
+    public final Tensor<N> div_(int value) {
+        return binaryOp_(TensorOp.binaryDiv(), value);
+    }
+
+    public final Tensor<N> div_(double value) {
+        return binaryOp_(TensorOp.binaryDiv(), value);
+    }
+
     public final Tensor<N> min(N value) {
+        return binaryOp(TensorOp.binaryMin(), value, Order.defaultOrder());
+    }
+
+    public final Tensor<N> min(int value) {
+        return binaryOp(TensorOp.binaryMin(), value, Order.defaultOrder());
+    }
+
+    public final Tensor<N> min(double value) {
         return binaryOp(TensorOp.binaryMin(), value, Order.defaultOrder());
     }
 
@@ -1363,7 +1475,23 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp(TensorOp.binaryMin(), value, order);
     }
 
+    public final Tensor<N> min(int value, Order order) {
+        return binaryOp(TensorOp.binaryMin(), value, order);
+    }
+
+    public final Tensor<N> min(double value, Order order) {
+        return binaryOp(TensorOp.binaryMin(), value, order);
+    }
+
     public final Tensor<N> min_(N value) {
+        return binaryOp_(TensorOp.binaryMin(), value);
+    }
+
+    public final Tensor<N> min_(int value) {
+        return binaryOp_(TensorOp.binaryMin(), value);
+    }
+
+    public final Tensor<N> min_(double value) {
         return binaryOp_(TensorOp.binaryMin(), value);
     }
 
@@ -1371,7 +1499,23 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp(TensorOp.binaryMax(), value, Order.defaultOrder());
     }
 
+    public final Tensor<N> max(int value) {
+        return binaryOp(TensorOp.binaryMax(), value, Order.defaultOrder());
+    }
+
+    public final Tensor<N> max(double value) {
+        return binaryOp(TensorOp.binaryMax(), value, Order.defaultOrder());
+    }
+
     public final Tensor<N> max(N value, Order order) {
+        return binaryOp(TensorOp.binaryMax(), value, order);
+    }
+
+    public final Tensor<N> max(int value, Order order) {
+        return binaryOp(TensorOp.binaryMax(), value, order);
+    }
+
+    public final Tensor<N> max(double value, Order order) {
         return binaryOp(TensorOp.binaryMax(), value, order);
     }
 
@@ -1379,11 +1523,35 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return binaryOp_(TensorOp.binaryMax(), value);
     }
 
+    public final Tensor<N> max_(int value) {
+        return binaryOp_(TensorOp.binaryMax(), value);
+    }
+
+    public final Tensor<N> max_(double value) {
+        return binaryOp_(TensorOp.binaryMax(), value);
+    }
+
     public final Tensor<N> fma(N a, Tensor<?> t) {
         return fma(a, t, Order.defaultOrder());
     }
 
+    public final Tensor<N> fma(int a, Tensor<?> t) {
+        return fma(a, t, Order.defaultOrder());
+    }
+
+    public final Tensor<N> fma(double a, Tensor<?> t) {
+        return fma(a, t, Order.defaultOrder());
+    }
+
     public final Tensor<N> fma(N a, Tensor<?> t, Order order) {
+        return copy(order).fma_(a, t);
+    }
+
+    public final Tensor<N> fma(int a, Tensor<?> t, Order order) {
+        return copy(order).fma_(a, t);
+    }
+
+    public final Tensor<N> fma(double a, Tensor<?> t, Order order) {
         return copy(order).fma_(a, t);
     }
 
@@ -1395,6 +1563,14 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
      * @return same tensor with values changed
      */
     public abstract Tensor<N> fma_(N factor, Tensor<?> t);
+
+    public final Tensor<N> fma_(int factor, Tensor<?> t) {
+        return fma_(dtype().castValue(factor), t);
+    }
+
+    public final Tensor<N> fma_(double factor, Tensor<?> t) {
+        return fma_(dtype().castValue(factor), t);
+    }
 
     //--------- REDUCE OPERATIONS ----------------//
 
@@ -1460,15 +1636,15 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
 
     public abstract int argmax(Order order);
 
-    public final N max() {
+    public final N amax() {
         return reduceOp(TensorOp.reduceMax());
     }
 
-    public final Tensor<N> max(int axis) {
-        return max(Order.defaultOrder(), axis);
+    public final Tensor<N> amax(int axis) {
+        return amax(Order.defaultOrder(), axis);
     }
 
-    public final Tensor<N> max(Order order, int axis) {
+    public final Tensor<N> amax(Order order, int axis) {
         return associativeOpNarrow(TensorOp.reduceMax(), order, axis);
     }
 
@@ -1490,15 +1666,15 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
 
     public abstract int argmin(Order order);
 
-    public final N min() {
+    public final N amin() {
         return reduceOp(TensorOp.reduceMin());
     }
 
-    public final Tensor<N> min(int axis) {
-        return min(Order.defaultOrder(), axis);
+    public final Tensor<N> amin(int axis) {
+        return amin(Order.defaultOrder(), axis);
     }
 
-    public final Tensor<N> min(Order order, int axis) {
+    public final Tensor<N> amin(Order order, int axis) {
         return associativeOpNarrow(TensorOp.reduceMin(), order, axis);
     }
 
@@ -1621,11 +1797,35 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return copy(Order.defaultOrder()).normalize_(p);
     }
 
+    public final Tensor<N> normalize(int p) {
+        return copy(Order.defaultOrder()).normalize_(p);
+    }
+
+    public final Tensor<N> normalize(double p) {
+        return copy(Order.defaultOrder()).normalize_(p);
+    }
+
     public final Tensor<N> normalize(Order order, N p) {
         return copy(order).normalize_(p);
     }
 
+    public final Tensor<N> normalize(Order order, int p) {
+        return copy(order).normalize_(p);
+    }
+
+    public final Tensor<N> normalize(Order order, double p) {
+        return copy(order).normalize_(p);
+    }
+
     public abstract Tensor<N> normalize_(N p);
+
+    public final Tensor<N> normalize_(int p) {
+        return normalize_(dtype().castValue(p));
+    }
+
+    public final Tensor<N> normalize_(double p) {
+        return normalize_(dtype().castValue(p));
+    }
 
     public final Tensor<N> scatter(int ddof) {
         return scatter(Order.defaultOrder(), ddof);

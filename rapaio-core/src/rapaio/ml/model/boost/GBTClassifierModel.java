@@ -140,7 +140,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
         // a) Set p_k(x)
 
-        Tensor<Double> max = f.t().max(1);
+        Tensor<Double> max = f.t().amax(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
@@ -192,7 +192,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
         // make probabilities
 
-        Tensor<Double> max = p_f.t().max(1);
+        Tensor<Double> max = p_f.t().amax(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double t = 0.0;
