@@ -373,12 +373,14 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         if (askOrder == Order.S) {
             throw new IllegalArgumentException("Illegal askOrder value, must be Order.C or Order.F");
         }
+        var ret = manager.ofByte().zeros(Shape.of(shape().dim(0), other.shape().dim(1)), askOrder);
+        return mmInternal(other, ret);
+    }
+
+    private Tensor<Byte> mmInternal(Tensor<?> other, Tensor<Byte> to) {
         int m = shape().dim(0);
         int n = shape().dim(1);
         int p = other.shape().dim(1);
-
-        var result = manager.ofByte().storage().zeros(m * p);
-        var ret = manager.ofByte().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
 
         List<Tensor<Byte>> rows = chunk(0, false, 1);
         List<Tensor<Byte>> cols = other.cast(dtype()).chunk(1, false, 1);
@@ -389,8 +391,9 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
         int innerChunk = chunk > 64 ? (int) Math.ceil(Math.sqrt(chunk / 4.)) : (int) Math.ceil(Math.sqrt(chunk));
 
-        int iStride = ((StrideLayout) ret.layout()).stride(0);
-        int jStride = ((StrideLayout) ret.layout()).stride(1);
+        int off = ((StrideLayout) to.layout()).offset();
+        int iStride = ((StrideLayout) to.layout()).stride(0);
+        int jStride = ((StrideLayout) to.layout()).stride(1);
 
         List<Future<?>> futures = new ArrayList<>();
         try (ExecutorService service = Executors.newFixedThreadPool(manager.cpuThreads())) {
@@ -407,7 +410,8 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
                             for (int i = rs; i < re; i++) {
                                 var krow = (BaseByteTensorStride) rows.get(i);
                                 for (int j = c; j < ce; j++) {
-                                    result.incByte(i * iStride + j * jStride, krow.inner(cols.get(j), k, end));
+                                    byte value = to.ptrGetByte(off + i * iStride + j * jStride);
+                                    to.ptrSetByte(off + i * iStride + j * jStride, (byte) (value + krow.inner(cols.get(j), k, end)));
                                 }
                             }
                         }
@@ -426,7 +430,33 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
                 throw new RuntimeException(e);
             }
         }
-        return ret;
+        return to;
+    }
+
+    @Override
+    public Tensor<Byte> bmm(Tensor<?> other, Order askOrder) {
+        if (rank() == 2 && other.rank() == 2 && dim(1) == other.dim(0)) {
+            return ((BaseByteTensorStride) stretch(0)).bmmInternal(other.stretch(0), askOrder);
+        }
+        if (rank() == 3 && other.rank() == 2 && dim(2) == other.dim(0)) {
+            return bmmInternal(other.strexp(0, dim(0)), askOrder);
+        }
+        if (rank() == 2 && other.rank() == 3 && dim(1) == other.dim(1)) {
+            return ((BaseByteTensorStride) strexp(0, other.dim(0))).bmmInternal(other, askOrder);
+        }
+        if (rank() == 3 && other.rank() == 3 && dim(0) == other.dim(0) && dim(2) == other.dim(1)) {
+            return bmmInternal(other, askOrder);
+        }
+        throw new IllegalArgumentException(String.format(
+                "Tensors are not valid for batch matrix-matrix multiplication (bm1: %s, bm2: %s)", shape(), other.shape()));
+    }
+
+    private Tensor<Byte> bmmInternal(Tensor<?> other, Order askOrder) {
+        Tensor<Byte> res = manager.ofByte().zeros(Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
+        for (int b = 0; b < dim(0); b++) {
+            ((BaseByteTensorStride) takesq(0, b)).mmInternal(other.takesq(0, b), res.takesq(0, b));
+        }
+        return res;
     }
 
     @Override

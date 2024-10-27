@@ -44,7 +44,7 @@ There are present only two implementations. The base implementation uses natural
 The second available implementation abstracts storage for data frames and data variables. This implementation was built in order 
 to allow using data manipulation operations implemented for tensors directly over data frames and variables, avoiding code 
 duplication and API. For example a `VarDouble` has a method called `dt()` which creates a `Tensor<Double>` over the same data
-as the variable and inplace operations will have operate directly on the data stored in the `VarDouble` variable. 
+as the variable and inplace operations will operate directly on the data stored in the `VarDouble` variable. 
 
 Example:
 
@@ -83,7 +83,4 @@ The matrix input is added to the final result.
 The vector input is added to the final result.
 * `torch.addr(input, vec1, vec2, *, beta=1, alpha=1, out=None)` Performs the outer-product of vectors vec1 and vec2 and adds it to the matrix input.
 * `torch.baddbmm(input, batch1, batch2, *, beta=1, alpha=1, out=None)` Performs a batch matrix-matrix product of matrices in batch1 and batch2. input is added to the final result.
-* `torch.bmm(input, mat2, *, out=None)` Performs a batch matrix-matrix product of matrices stored in input and mat2.
 * `torch.chain_matmul(*matrices, out=None)` 
-* `torch.dot(input, tensor, *, out=None)` Computes the dot product of two 1D tensors.
-* 

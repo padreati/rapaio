@@ -1223,6 +1223,84 @@ public class TensorTest {
 
     }
 
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBmmInvalidInput(DataFactory<N> g) {
+        var e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of()).bmm(g.zeros(Shape.of())));
+        assertEquals("Tensors are not valid for batch matrix-matrix multiplication (bm1: Shape: [], bm2: Shape: [])", e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of(2, 3)).bmm(g.zeros(Shape.of(1))));
+        assertEquals("Tensors are not valid for batch matrix-matrix multiplication (bm1: Shape: [2,3], bm2: Shape: [1])", e.getMessage());
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBmmMM(DataFactory<N> g) {
+        var bm1 = g.seq(Shape.of(2, 2)).add_(1);
+        var bm2 = g.seq(Shape.of(2, 2)).add_(1);
+
+        var r = bm1.bmm(bm2);
+        assertEquals(Shape.of(1, 2, 2), r.shape());
+        assertEquals(g.value(7), r.get(0, 0, 0));
+        assertEquals(g.value(10), r.get(0, 0, 1));
+        assertEquals(g.value(15), r.get(0, 1, 0));
+        assertEquals(g.value(22), r.get(0, 1, 1));
+
+        assertTensorEqualValues(bm1.mm(bm2), bm1.bmm(bm2).squeeze(0));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBmmBMM(DataFactory<N> g) {
+        var bm1 = g.seq(Shape.of(3, 2, 2)).add_(1);
+        var bm2 = g.seq(Shape.of(2, 2)).add_(1);
+        var r = bm1.bmm(bm2);
+        assertEquals(Shape.of(3, 2, 2), r.shape());
+        assertEquals(g.value(7), r.get(0, 0, 0));
+        assertEquals(g.value(10), r.get(0, 0, 1));
+        assertEquals(g.value(15), r.get(0, 1, 0));
+        assertEquals(g.value(22), r.get(0, 1, 1));
+        assertEquals(g.value(39), r.get(2, 0, 0));
+        assertEquals(g.value(58), r.get(2, 0, 1));
+        assertEquals(g.value(47), r.get(2, 1, 0));
+        assertEquals(g.value(70), r.get(2, 1, 1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBmmMBM(DataFactory<N> g) {
+        var bm1 = g.seq(Shape.of(2, 2)).add_(1);
+        var bm2 = g.seq(Shape.of(3, 2, 2)).add_(1);
+        var r = bm1.bmm(bm2);
+        assertEquals(Shape.of(3, 2, 2), r.shape());
+        assertEquals(g.value(7), r.get(0, 0, 0));
+        assertEquals(g.value(10), r.get(0, 0, 1));
+        assertEquals(g.value(15), r.get(0, 1, 0));
+        assertEquals(g.value(22), r.get(0, 1, 1));
+        assertEquals(g.value(31), r.get(2, 0, 0));
+        assertEquals(g.value(34), r.get(2, 0, 1));
+        assertEquals(g.value(71), r.get(2, 1, 0));
+        assertEquals(g.value(78), r.get(2, 1, 1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBmmBMBM(DataFactory<N> g) {
+        var bm1 = g.seq(Shape.of(3, 2, 2)).add_(1);
+        var bm2 = g.seq(Shape.of(3, 2, 2)).add_(1);
+        var r = bm1.bmm(bm2);
+        assertEquals(Shape.of(3, 2, 2), r.shape());
+        assertEquals(g.value(7), r.get(0, 0, 0));
+        assertEquals(g.value(10), r.get(0, 0, 1));
+        assertEquals(g.value(15), r.get(0, 1, 0));
+        assertEquals(g.value(22), r.get(0, 1, 1));
+        assertEquals(g.value(191), r.get(2, 0, 0));
+        assertEquals(g.value(210), r.get(2, 0, 1));
+        assertEquals(g.value(231), r.get(2, 1, 0));
+        assertEquals(g.value(254), r.get(2, 1, 1));
+    }
+
     @ParameterizedTest
     @MethodSource("dataFactorySource")
     <N extends Number> void testTrace(DataFactory<N> g) {

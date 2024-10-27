@@ -1870,7 +1870,7 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
      * <p>
      * The storage order of the result is the default order.
      *
-     * @param other    the batch of vectors
+     * @param other the batch of vectors
      * @return the batch with results
      */
     public final Tensor<?> bvtm(Tensor<?> other) {
@@ -1936,6 +1936,65 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     public abstract Tensor<N> mm(Tensor<?> other, Order askOrder);
 
     /**
+     * Performs batch matrix-matrix multiplication. Batch index is the first parameter, if exists.
+     * If self is a tensor of shape {@code (b,n,m)} and {@code other} has shape {@code (b,m,p)}
+     * the result will have shape {@code (b,n,p)}. If the batch axis is missing than it will be appended
+     * from the other operator, if both batch axis are missing a batch axis of size 1 added.
+     * <p>
+     * If self is a matrix {@code (m,n)} and {@code other} is a matrix {@code (n,p)}, the result will
+     * have shape {@code (1,n,p)}.
+     * <p>
+     * If self is a batch of shape {@code (b,n,m)} and {@code other} is a matrix of shape {@code (n,p)},
+     * each of matrices from the batch will be multiplied with the same matrix {@code other}.
+     * <p>
+     * If self is a matrix of shape {@code (m,n)} and {@code other} is a batch of matrices of shape {@code (b,n,p)},
+     * the first matrix will be multiplied with each of the matrices from the batch.
+     * <p>
+     * If self is a batch matrix of shape {@code (b,m,n} and {@code other} is a batch of shape {@code (b,n,p)},
+     * each matrix from the first batch will be multiplied with its correspondent matrix from the second batch and
+     * the result will have shape {@code (b,n,p)}.
+     * <p>
+     * All other configurations are invalid.
+     * <p>
+     * The storage order for the result is the default order.
+     *
+     * @param other batch of matrices
+     * @return batch of results from matrix multiplication
+     */
+    public final Tensor<N> bmm(Tensor<?> other) {
+        return bmm(other, Order.defaultOrder());
+    }
+
+    /**
+     * Performs batch matrix-matrix multiplication. Batch index is the first parameter, if exists.
+     * If self is a tensor of shape {@code (b,n,m)} and {@code other} has shape {@code (b,m,p)}
+     * the result will have shape {@code (b,n,p)}. If the batch axis is missing than it will be appended
+     * from the other operator, if both batch axis are missing a batch axis of size 1 added.
+     * <p>
+     * If self is a matrix {@code (m,n)} and {@code other} is a matrix {@code (n,p)}, the result will
+     * have shape {@code (1,n,p)}.
+     * <p>
+     * If self is a batch of shape {@code (b,n,m)} and {@code other} is a matrix of shape {@code (n,p)},
+     * each of matrices from the batch will be multiplied with the same matrix {@code other}.
+     * <p>
+     * If self is a matrix of shape {@code (m,n)} and {@code other} is a batch of matrices of shape {@code (b,n,p)},
+     * the first matrix will be multiplied with each of the matrices from the batch.
+     * <p>
+     * If self is a batch matrix of shape {@code (b,m,n} and {@code other} is a batch of shape {@code (b,n,p)},
+     * each matrix from the first batch will be multiplied with its correspondent matrix from the second batch and
+     * the result will have shape {@code (b,n,p)}.
+     * <p>
+     * All other configurations are invalid.
+     * <p>
+     * The storage order for the result is specified by parameter {@code askOrder}.
+     *
+     * @param other    batch of matrices
+     * @param askOrder storage order of the result
+     * @return batch of results from matrix multiplication
+     */
+    public abstract Tensor<N> bmm(Tensor<?> other, Order askOrder);
+
+    /**
      * Adds the current tensor with the batch matrix multiplications scaled by factors.
      * The operation can be described as: {@code out = beta * self + alpha * sum_b left_b x right_b}
      *
@@ -1993,10 +2052,6 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
 
     public final Tensor<?> baddbmm(Tensor<?> left, Tensor<?> right, N beta, N alpha) {
         throw new NotImplementedException();
-    }
-
-    public final Tensor<?> bmm(Tensor<?> other) {
-        throw new IllegalArgumentException();
     }
 
     /**
