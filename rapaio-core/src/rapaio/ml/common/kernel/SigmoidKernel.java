@@ -65,7 +65,7 @@ public class SigmoidKernel extends AbstractKernel {
 
     @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
-        return Math.atan(alpha * u.vdot(v) + c);
+        return Math.atan(alpha * u.inner(v) + c);
     }
 
     @Override

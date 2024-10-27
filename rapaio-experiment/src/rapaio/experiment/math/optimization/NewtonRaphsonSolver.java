@@ -93,7 +93,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
             CholeskyDecomposition<Double> chol = modifiedCholesky(d2f_x);
             delta_x = chol.solve(d1f_x_n);
 
-            double error = d1f_x.copy().vdot(delta_x);
+            double error = d1f_x.copy().inner(delta_x);
             if (pow(error, 2) / 2 < tol.get()) {
                 converged = true;
                 break;

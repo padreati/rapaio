@@ -42,15 +42,15 @@ import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.iterators.LoopDescriptor;
+import rapaio.math.tensor.iterators.StrideLoopDescriptor;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.layout.StrideWrapper;
 import rapaio.math.tensor.manager.AbstractStrideTensor;
 import rapaio.math.tensor.operator.Broadcast;
-import rapaio.math.tensor.operator.TensorReduceOp;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorOp;
+import rapaio.math.tensor.operator.TensorReduceOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 import rapaio.printer.Format;
 import rapaio.util.collection.IntArrays;
@@ -103,7 +103,7 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
         var result = manager.ofDouble().zeros(Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
-        var loop = LoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 out.setDouble(ptr++, storage.getDouble(p));
@@ -178,7 +178,7 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
             throw new IllegalArgumentException(
                     String.format("Operation could not be applied on tensors with shape: %s, %s", shape(), other.shape()));
         }
-        if(!broadcast.hasShape(this)) {
+        if (!broadcast.hasShape(this)) {
             throw new IllegalArgumentException("Broadcast cannot be applied for inplace operations.");
         }
         other = broadcast.transform(other);
@@ -228,22 +228,24 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
         return this;
     }
 
+    // LINEAR ALGEBRA OPERATIONS
+
     @Override
-    public Double vdot(Tensor<?> tensor) {
-        return vdot(tensor, 0, shape().dim(0));
+    public Double inner(Tensor<?> other) {
+        return inner(other, 0, shape().dim(0));
     }
 
     @Override
-    public Double vdot(Tensor<?> tensor, int start, int end) {
-        if (shape().rank() != 1 || tensor.shape().rank() != 1 || shape().dim(0) != tensor.shape().dim(0)) {
+    public Double inner(Tensor<?> other, int start, int end) {
+        if (shape().rank() != 1 || other.shape().rank() != 1 || shape().dim(0) != other.shape().dim(0)) {
             throw new IllegalArgumentException(
                     "Operands are not valid for vector dot product (v = %s, v = %s)."
-                            .formatted(shape().toString(), tensor.shape().toString()));
+                            .formatted(shape().toString(), other.shape().toString()));
         }
-        if (start >= end || start < 0 || end > tensor.shape().dim(0)) {
+        if (start >= end || start < 0 || end > other.shape().dim(0)) {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
-        BaseDoubleTensorStride dts = (BaseDoubleTensorStride) tensor;
+        BaseDoubleTensorStride dts = (BaseDoubleTensorStride) other;
 
         int offset1 = layout.offset();
         int offset2 = dts.layout.offset();
@@ -258,44 +260,128 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
     }
 
     @Override
-    public Tensor<Double> mv(Tensor<?> tensor) {
-        if (shape().rank() != 2 || tensor.shape().rank() != 1 || shape().dim(1) != tensor.shape().dim(0)) {
+    public Tensor<Double> mv(Tensor<?> other, Order askOrder) {
+        if (shape().rank() != 2 || other.shape().rank() != 1 || shape().dim(1) != other.shape().dim(0)) {
             throw new IllegalArgumentException(
                     String.format("Operands are not valid for matrix-vector multiplication (m = %s, v = %s).",
-                            shape(), tensor.shape()));
+                            shape(), other.shape()));
         }
-        var result = manager.ofDouble().storage().zeros(shape().dim(0));
-        var it = ptrIterator(Order.C);
+        var result = manager.ofDouble().zeros(Shape.of(shape().dim(0)), askOrder);
         for (int i = 0; i < shape().dim(0); i++) {
-            var innerIt = tensor.ptrIterator(Order.C);
-            double sum = 0;
-            for (int j = 0; j < shape().dim(1); j++) {
-                sum += (double) (ptrGetDouble(it.nextInt()) * tensor.ptrGetDouble(innerIt.nextInt()));
-            }
-            result.setDouble(i, sum);
+            result.ptrSetDouble(i, takesq(0, i).inner(other));
         }
-        StrideLayout layout = StrideLayout.ofDense(Shape.of(shape().dim(0)), 0, Order.C);
-        return manager.ofDouble().stride(layout, result);
+        return result;
     }
 
     @Override
-    public Tensor<Double> mm(Tensor<?> t, Order askOrder) {
-        if (shape().rank() != 2 || t.shape().rank() != 2 || shape().dim(1) != t.shape().dim(0)) {
+    public Tensor<Double> bmv(Tensor<?> other, Order askOrder) {
+        BaseDoubleTensorStride a = this;
+        Tensor<?> b = other;
+        if (a.isScalar()) {
+            a = (BaseDoubleTensorStride) a.strexp(0, 1).strexp(1, 1);
+        }
+        if (other.isScalar()) {
+            b = b.strexp(0, 1);
+        }
+        if (a.rank() == 2 && b.rank() == 1 && a.dim(1) == b.dim(0)) {
+            // simple case, create a batch of 1 for each element
+            return ((BaseDoubleTensorStride) a.stretch(0)).bmvInternal(b.stretch(0), askOrder);
+        }
+        if (a.rank() == 3 && b.rank() == 1 && a.dim(2) == b.dim(0)) {
+            // batch on matrix, add batch to vector
+            return a.bmvInternal(b.strexp(0, a.dim(0)), askOrder);
+        }
+        if (a.rank() == 2 && b.rank() == 2 && a.dim(1) == b.dim(1)) {
+            // batch on vector, add batch to matrix
+            return ((BaseDoubleTensorStride) a.strexp(0, b.dim(0))).bmvInternal(b, askOrder);
+        }
+        if (a.rank() == 3 && b.rank() == 2 && a.dim(2) == b.dim(1) && a.dim(0) == b.dim(0)) {
+            // no need of batching
+            return a.bmvInternal(b, askOrder);
+        }
+        throw new IllegalArgumentException(String.format(
+                "Tensors are not valid for batch matrix vector multiplication (bm : %s, bv = %s)", shape(), other.shape()));
+    }
+
+    private Tensor<Double> bmvInternal(Tensor<?> other, Order askOrder) {
+        Tensor<Double> res = manager.ofDouble().zeros(Shape.of(dim(0), dim(1)), askOrder);
+        for (int b = 0; b < dim(0); b++) {
+            takesq(0, b).mv(other.takesq(0, b)).copyTo(res.takesq(0, b));
+        }
+        return res;
+    }
+
+    @Override
+    public Tensor<Double> vtm(Tensor<?> other, Order askOrder) {
+        if (shape().rank() != 1 || other.rank() != 2 || shape().dim(0) != other.dim(0)) {
             throw new IllegalArgumentException(
-                    String.format("Operands are not valid for matrix-matrix multiplication (m = %s, v = %s).", shape(), t.shape()));
+                    String.format("Operands are not valid for vector transpose matrix multiplication (v = %s, m = %s).",
+                            shape(), other.shape())
+            );
+        }
+        var result = manager.ofDouble().zeros(Shape.of(other.dim(1)), askOrder);
+        for (int i = 0; i < other.dim(1); i++) {
+            result.ptrSetDouble(i, this.inner(other.takesq(1, i)));
+        }
+        return result;
+    }
+
+    @Override
+    public Tensor<?> bvtm(Tensor<?> other, Order askOrder) {
+        BaseDoubleTensorStride a = this;
+        Tensor<?> b = other;
+        if (a.isScalar()) {
+            a = (BaseDoubleTensorStride) a.stretch(0);
+        }
+        if (other.isScalar()) {
+            b = b.stretch(0, 1);
+        }
+        if (a.rank() == 1 && b.rank() == 2 && a.dim(0) == b.dim(0)) {
+            // simple case, create a batch of 1 for each element
+            return ((BaseDoubleTensorStride) a.stretch(0)).bvtmInternal(b.stretch(0), askOrder);
+        }
+        if (a.rank() == 2 && b.rank() == 2 && a.dim(1) == b.dim(0)) {
+            // batch on vector, add batch to matrix
+            return a.bvtmInternal(b.strexp(0, a.dim(0)), askOrder);
+        }
+        if (a.rank() == 1 && b.rank() == 3 && a.dim(0) == b.dim(1)) {
+            // batch on matrix, add batch to vector
+            return ((BaseDoubleTensorStride) a.strexp(0, b.dim(0))).bvtmInternal(b, askOrder);
+        }
+        if (a.rank() == 2 && b.rank() == 3 && a.dim(1) == b.dim(1) && a.dim(0) == b.dim(0)) {
+            // no need of batching
+            return a.bvtmInternal(b, askOrder);
+        }
+        throw new IllegalArgumentException(String.format(
+                "Tensors are not valid for batch vector transpose matrix multiplication (bv : %s, bm = %s)", shape(), other.shape()));
+    }
+
+    private Tensor<Double> bvtmInternal(Tensor<?> other, Order askOrder) {
+        Tensor<Double> res = manager.ofDouble().zeros(Shape.of(dim(0), other.dim(2)), askOrder);
+        for (int b = 0; b < dim(0); b++) {
+            takesq(0, b).vtm(other.takesq(0, b)).copyTo(res.takesq(0, b));
+        }
+        return res;
+    }
+
+    @Override
+    public Tensor<Double> mm(Tensor<?> other, Order askOrder) {
+        if (shape().rank() != 2 || other.shape().rank() != 2 || shape().dim(1) != other.shape().dim(0)) {
+            throw new IllegalArgumentException(
+                    String.format("Operands are not valid for matrix-matrix multiplication (m = %s, v = %s).", shape(), other.shape()));
         }
         if (askOrder == Order.S) {
             throw new IllegalArgumentException("Illegal askOrder value, must be Order.C or Order.F");
         }
         int m = shape().dim(0);
         int n = shape().dim(1);
-        int p = t.shape().dim(1);
+        int p = other.shape().dim(1);
 
         var result = manager.ofDouble().storage().zeros(m * p);
         var ret = manager.ofDouble().stride(StrideLayout.ofDense(Shape.of(m, p), 0, askOrder), result);
 
         List<Tensor<Double>> rows = chunk(0, false, 1);
-        List<Tensor<Double>> cols = t.cast(dtype()).chunk(1, false, 1);
+        List<Tensor<Double>> cols = other.cast(dtype()).chunk(1, false, 1);
 
         int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
@@ -321,7 +407,7 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
                             for (int i = rs; i < re; i++) {
                                 var krow = (BaseDoubleTensorStride) rows.get(i);
                                 for (int j = c; j < ce; j++) {
-                                    result.incDouble(i * iStride + j * jStride, krow.vdot(cols.get(j), k, end));
+                                    result.incDouble(i * iStride + j * jStride, krow.inner(cols.get(j), k, end));
                                 }
                             }
                         }
@@ -359,19 +445,31 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
     }
 
     @Override
-    public Tensor<Double> diag() {
-        if (!isMatrix()) {
-            throw new OperationNotAvailableException("This operation is available only on tensor matrix.");
+    public Tensor<Double> diag(int diagonal) {
+        if (isScalar() && diagonal == 0) {
+            return this;
         }
-        if (dim(0) != dim(1)) {
-            throw new OperationNotAvailableException("This operation is avaiable only on a square matrix.");
+        if (isVector()) {
+            int n = dim(0) + Math.abs(diagonal);
+            Tensor<Double> m = manager.ofDouble().zeros(Shape.of(n, n));
+            for (int i = 0; i < dim(0); i++) {
+                m.setDouble(getDouble(i), i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
+            }
+            return m;
         }
-        int n = dim(0);
-        double[] diag = new double[n];
-        for (int i = 0; i < n; i++) {
-            diag[i] = getDouble(i, i);
+        if (isMatrix()) {
+            int d = diagonal >= 0 ? dim(1) : dim(0);
+            int len = diagonal >= 0 ? d - diagonal : d + diagonal;
+            if (len <= 0) {
+                throw new IllegalArgumentException("Diagonal " + diagonal + " does not exists for shape " + shape() + ".");
+            }
+            double[] diag = new double[len];
+            for (int i = 0; i < len; i++) {
+                diag[i] = getDouble(i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
+            }
+            return manager().ofDouble().stride(Shape.of(len), diag);
         }
-        return manager().ofDouble().stride(Shape.of(n), diag);
+        throw new OperationNotAvailableException("This operation is available for tensors with shape " + shape() + ".");
     }
 
     @Override
@@ -380,7 +478,10 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
             throw new OperationNotAvailableException("This operation is only available on floating point data types.");
         }
         if (pow < 0) {
-            throw new IllegalArgumentException(String.format("Norm power p=%s must have a value greater than 0.", Format.floatFlex(pow)));
+            throw new IllegalArgumentException(String.format("Norm power p=%s must be greater or equal with 0.", Format.floatFlex(pow)));
+        }
+        if (dtype().castValue(0).equals(pow)) {
+            return (double) shape().size();
         }
         if (dtype().castValue(1).equals(pow)) {
             return abs().sum();
@@ -388,9 +489,8 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
         if (dtype().castValue(2).equals(pow)) {
             return (double) Math.sqrt(sqr().sum());
         }
-
         double sum = (double) 0;
-        var loop = LoopDescriptor.of(layout, Order.S, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, Order.S, dtype().vectorSpecies());
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 double value = (double) Math.abs(storage.getDouble(p));
@@ -500,7 +600,7 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
         int argmax = -1;
         double argvalue = TensorOp.reduceMax().initDouble();
         var i = 0;
-        var loop = LoopDescriptor.of(layout, order, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, order, dtype().vectorSpecies());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 double value = storage.getDouble(p);
@@ -520,7 +620,7 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
         int argmin = -1;
         double argvalue = TensorOp.reduceMin().initDouble();
         var i = 0;
-        var loop = LoopDescriptor.of(layout, order, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, order, dtype().vectorSpecies());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 double value = storage.getDouble(p);
@@ -641,7 +741,7 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
     }
 
     private void sameLayoutCopy(Storage<Double> copy, Order askOrder) {
-        var loop = LoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
         var last = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
@@ -729,7 +829,7 @@ public final class BaseDoubleTensorStride extends AbstractStrideTensor<Double> {
     }
 
     private void directCopyTo(BaseDoubleTensorStride src, BaseDoubleTensorStride dst, Order askOrder) {
-        var loop = LoopDescriptor.of(src.layout, askOrder, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(src.layout, askOrder, dtype().vectorSpecies());
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {

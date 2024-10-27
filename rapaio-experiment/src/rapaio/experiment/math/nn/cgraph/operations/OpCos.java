@@ -42,6 +42,6 @@ public class OpCos extends CompNode {
     @Override
     public List<Runnable> compute() {
         value.assign(child.value.tensor().cos());
-        return List.of(() -> child.adjoint.add_(this.adjoint.tensor().mul(child.value.tensor().sin().negate())));
+        return List.of(() -> child.adjoint.add_(this.adjoint.tensor().mul(child.value.tensor().sin().neg())));
     }
 }

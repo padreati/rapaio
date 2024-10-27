@@ -130,7 +130,7 @@ public class BinaryLogisticNewton extends ParamSet<BinaryLogisticNewton> {
         Tensor<Double> logp = p.clamp(1e-6, Double.NaN).apply_(StrictMath::log);
         Tensor<Double> lognp = np.clamp(1e-6, Double.NaN).apply(StrictMath::log);
 
-        return -logp.vdot(y) - lognp.vdot(ny) + lambda * w.norm(2.) / 2;
+        return -logp.inner(y) - lognp.inner(ny) + lambda * w.norm(2.) / 2;
     }
 
     private Tensor<Double> iterate(Tensor<Double> vw, Tensor<Double> mx, Tensor<Double> vy, Tensor<Double> vny, double lambda,

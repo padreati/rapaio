@@ -79,7 +79,7 @@ public abstract class Node {
 
     public void adjointSub_(Tensor<?> other) {
         if (adjoint==null) {
-            adjoint = other.negate();
+            adjoint = other.neg();
         } else {
             adjoint.sub_(other);
         }

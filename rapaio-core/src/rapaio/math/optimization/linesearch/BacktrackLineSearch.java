@@ -65,7 +65,7 @@ public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implement
     @Override
     public double search(RFunction f, RDerivative g, Tensor<Double> x, Tensor<Double> p, double t0) {
         double fx = f.apply(x);
-        double gxp = g.apply(x).vdot(p);
+        double gxp = g.apply(x).inner(p);
 
         double xalpha = alpha.get();
         double xbeta = beta.get();

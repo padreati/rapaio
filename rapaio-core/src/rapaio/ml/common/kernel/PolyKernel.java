@@ -88,8 +88,8 @@ public class PolyKernel extends AbstractKernel {
     @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
         if (isLinear()) {
-            return slope * v.vdot(u) + bias;
+            return slope * v.inner(u) + bias;
         }
-        return Math.pow(slope * v.vdot(u) + bias, exponent);
+        return Math.pow(slope * v.inner(u) + bias, exponent);
     }
 }

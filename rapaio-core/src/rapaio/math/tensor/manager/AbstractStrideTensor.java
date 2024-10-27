@@ -34,7 +34,7 @@ import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.iterators.DensePointerIterator;
-import rapaio.math.tensor.iterators.LoopDescriptor;
+import rapaio.math.tensor.iterators.StrideLoopDescriptor;
 import rapaio.math.tensor.iterators.PointerIterator;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
@@ -52,12 +52,12 @@ public abstract sealed class AbstractStrideTensor<N extends Number> extends Tens
         permits BaseDoubleTensorStride, BaseFloatTensorStride, BaseIntTensorStride, BaseByteTensorStride {
 
     protected final StrideLayout layout;
-    protected final LoopDescriptor<N> loop;
+    protected final StrideLoopDescriptor<N> loop;
 
     public AbstractStrideTensor(TensorManager manager, StrideLayout layout, Storage<N> storage) {
         super(manager, storage);
         this.layout = layout;
-        this.loop = LoopDescriptor.of(layout, layout.storageFastOrder(), dtype().vectorSpecies());
+        this.loop = StrideLoopDescriptor.of(layout, layout.storageFastOrder(), dtype().vectorSpecies());
     }
 
     @Override
@@ -273,7 +273,7 @@ public abstract sealed class AbstractStrideTensor<N extends Number> extends Tens
         var castTensor = manager().ofType(dtype).zeros(shape(), askOrder);
 
         Order fastOrder = Layout.storageFastTandemOrder(castTensor.layout(), layout);
-        var loopDescriptor = LoopDescriptor.of(castTensor.layout(), fastOrder, dtype.vectorSpecies());
+        var loopDescriptor = StrideLoopDescriptor.of((StrideLayout) castTensor.layout(), fastOrder, dtype.vectorSpecies());
         var iter = ptrIterator(fastOrder);
         for (int p : loopDescriptor.offsets) {
             for (int i = 0; i < loopDescriptor.size; i++) {
@@ -306,7 +306,7 @@ public abstract sealed class AbstractStrideTensor<N extends Number> extends Tens
     public double[] toDoubleArray(Order askOrder) {
         double[] copy = new double[size()];
         int pos = 0;
-        var loop = LoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;

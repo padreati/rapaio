@@ -23,7 +23,7 @@ package rapaio.math.tensor.operator;
 
 import rapaio.data.OperationNotAvailableException;
 import rapaio.math.tensor.Storage;
-import rapaio.math.tensor.iterators.LoopDescriptor;
+import rapaio.math.tensor.iterators.StrideLoopDescriptor;
 import rapaio.math.tensor.storage.array.ByteArrayStorage;
 import rapaio.math.tensor.storage.array.DoubleArrayStorage;
 import rapaio.math.tensor.storage.array.FloatArrayStorage;
@@ -41,7 +41,7 @@ public abstract class TensorUnaryOp {
 
     public abstract float applyFloat(float v);
 
-    public final void applyByte(LoopDescriptor<Byte> loop, Storage<Byte> storage) {
+    public final void applyByte(StrideLoopDescriptor<Byte> loop, Storage<Byte> storage) {
         if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
@@ -56,7 +56,7 @@ public abstract class TensorUnaryOp {
         }
     }
 
-    private void applyGenericByte(LoopDescriptor<Byte> loop, Storage<Byte> storage) {
+    private void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage<Byte> storage) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 storage.setByte(p, applyByte(storage.getByte(p)));
@@ -65,11 +65,11 @@ public abstract class TensorUnaryOp {
         }
     }
 
-    protected abstract void applyUnitByte(LoopDescriptor<Byte> loop, byte[] array);
+    protected abstract void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array);
 
-    protected abstract void applyStepByte(LoopDescriptor<Byte> loop, byte[] array);
+    protected abstract void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array);
 
-    public final void applyInt(LoopDescriptor<Integer> loop, Storage<Integer> storage) {
+    public final void applyInt(StrideLoopDescriptor<Integer> loop, Storage<Integer> storage) {
         if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
@@ -84,7 +84,7 @@ public abstract class TensorUnaryOp {
         }
     }
 
-    private void applyGenericInt(LoopDescriptor<Integer> loop, Storage<Integer> storage) {
+    private void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage<Integer> storage) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 storage.setInt(p, applyInt(storage.getInt(p)));
@@ -93,11 +93,11 @@ public abstract class TensorUnaryOp {
         }
     }
 
-    protected abstract void applyUnitInt(LoopDescriptor<Integer> loop, int[] array);
+    protected abstract void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array);
 
-    protected abstract void applyStepInt(LoopDescriptor<Integer> loop, int[] array);
+    protected abstract void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array);
 
-    public final void applyFloat(LoopDescriptor<Float> loop, Storage<Float> storage) {
+    public final void applyFloat(StrideLoopDescriptor<Float> loop, Storage<Float> storage) {
         if (storage instanceof FloatArrayStorage as) {
             if (loop.step == 1) {
                 applyUnitFloat(loop, as.array());
@@ -109,7 +109,7 @@ public abstract class TensorUnaryOp {
         }
     }
 
-    private void applyGenericFloat(LoopDescriptor<Float> loop, Storage<Float> storage) {
+    private void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage<Float> storage) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 storage.setFloat(p, applyFloat(storage.getFloat(p)));
@@ -118,11 +118,11 @@ public abstract class TensorUnaryOp {
         }
     }
 
-    protected abstract void applyUnitFloat(LoopDescriptor<Float> loop, float[] array);
+    protected abstract void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array);
 
-    protected abstract void applyStepFloat(LoopDescriptor<Float> loop, float[] array);
+    protected abstract void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array);
 
-    public final void applyDouble(LoopDescriptor<Double> loop, Storage<Double> storage) {
+    public final void applyDouble(StrideLoopDescriptor<Double> loop, Storage<Double> storage) {
         if (storage instanceof DoubleArrayStorage as) {
             if (loop.step == 1) {
                 applyUnitDouble(loop, as.array());
@@ -134,7 +134,7 @@ public abstract class TensorUnaryOp {
         }
     }
 
-    private void applyGenericDouble(LoopDescriptor<Double> loop, Storage<Double> storage) {
+    private void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage<Double> storage) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 storage.setDouble(p, applyDouble(storage.getDouble(p)));
@@ -143,8 +143,8 @@ public abstract class TensorUnaryOp {
         }
     }
 
-    protected abstract void applyUnitDouble(LoopDescriptor<Double> loop, double[] array);
+    protected abstract void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array);
 
-    protected abstract void applyStepDouble(LoopDescriptor<Double> loop, double[] array);
+    protected abstract void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array);
 }
 

@@ -25,7 +25,7 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import rapaio.math.tensor.iterators.LoopDescriptor;
+import rapaio.math.tensor.iterators.StrideLoopDescriptor;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
 public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
@@ -68,7 +68,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyUnitByte(LoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
         var a = ByteVector.broadcast(loop.vs, fillByte);
         for (int p : loop.offsets) {
             int i = 0;
@@ -84,7 +84,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyStepByte(LoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
         var a = ByteVector.broadcast(loop.vs, fillByte);
         for (int p : loop.offsets) {
             int i = 0;
@@ -100,7 +100,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyUnitInt(LoopDescriptor<Integer> loop, int[] array) {
+    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array) {
         var a = IntVector.broadcast(loop.vs, fillInt);
         for (int p : loop.offsets) {
             int i = 0;
@@ -116,7 +116,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyStepInt(LoopDescriptor<Integer> loop, int[] array) {
+    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array) {
         var a = IntVector.broadcast(loop.vs, fillInt);
         for (int p : loop.offsets) {
             int i = 0;
@@ -132,7 +132,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyUnitFloat(LoopDescriptor<Float> loop, float[] array) {
+    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array) {
         var a = FloatVector.broadcast(loop.vs, fillFloat);
         for (int p : loop.offsets) {
             int i = 0;
@@ -148,7 +148,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyStepFloat(LoopDescriptor<Float> loop, float[] array) {
+    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array) {
         var a = FloatVector.broadcast(loop.vs, fillFloat);
         for (int p : loop.offsets) {
             int i = 0;
@@ -164,7 +164,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyUnitDouble(LoopDescriptor<Double> loop, double[] array) {
+    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array) {
         var a = DoubleVector.broadcast(loop.vs, fillDouble);
         for (int p : loop.offsets) {
             int i = 0;
@@ -180,7 +180,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyStepDouble(LoopDescriptor<Double> loop, double[] array) {
+    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array) {
         var a = DoubleVector.broadcast(loop.vs, fillDouble);
         for (int p : loop.offsets) {
             int i = 0;

@@ -22,7 +22,7 @@
 package rapaio.math.tensor.operator.impl;
 
 import rapaio.data.OperationNotAvailableException;
-import rapaio.math.tensor.iterators.LoopDescriptor;
+import rapaio.math.tensor.iterators.StrideLoopDescriptor;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 
 public class UnaryOpPow<N extends Number> extends TensorUnaryOp {
@@ -58,27 +58,27 @@ public class UnaryOpPow<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyUnitByte(LoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyStepByte(LoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyUnitInt(LoopDescriptor<Integer> loop, int[] array) {
+    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyStepInt(LoopDescriptor<Integer> loop, int[] array) {
+    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyUnitFloat(LoopDescriptor<Float> loop, float[] array) {
+    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.size; i++) {
@@ -89,7 +89,7 @@ public class UnaryOpPow<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyStepFloat(LoopDescriptor<Float> loop, float[] array) {
+    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.size; i++) {
@@ -100,7 +100,7 @@ public class UnaryOpPow<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyUnitDouble(LoopDescriptor<Double> loop, double[] array) {
+    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.size; i++) {
@@ -111,7 +111,7 @@ public class UnaryOpPow<N extends Number> extends TensorUnaryOp {
     }
 
     @Override
-    protected void applyStepDouble(LoopDescriptor<Double> loop, double[] array) {
+    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.size; i++) {

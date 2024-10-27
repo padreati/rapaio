@@ -48,7 +48,7 @@ public class OpVSum extends CompNode {
         value.assign(c.tmt().scalar(child.value.tensor().sum().doubleValue()));
         return List.of(() -> {
             Tensor<?> ones = c.tmt().full(value.tensor().shape(), 1);
-            child.adjoint.add_(this.adjoint.tensor().dot(ones));
+//            child.adjoint.add_(this.adjoint.tensor().dot(ones));
         });
     }
 }

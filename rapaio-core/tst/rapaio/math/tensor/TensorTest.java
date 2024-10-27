@@ -704,10 +704,10 @@ public class TensorTest {
         assertTrue(t1.copy(Order.F).abs_().deepEquals(t1.abs(Order.C)));
 
         t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
-        assertTrue(t1.negate().deepEquals(t1.negate_()));
+        assertTrue(t1.neg().deepEquals(t1.neg_()));
         t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
-        assertTrue(t1.copy(Order.C).negate_().deepEquals(t1.negate(Order.F)));
-        assertTrue(t1.copy(Order.F).negate_().deepEquals(t1.negate(Order.C)));
+        assertTrue(t1.copy(Order.C).neg_().deepEquals(t1.neg(Order.F)));
+        assertTrue(t1.copy(Order.F).neg_().deepEquals(t1.neg(Order.C)));
 
         if (g.dType().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -919,9 +919,9 @@ public class TensorTest {
         Tensor<?> a2 = m.add(v);
 
         assertTensorEqualValues(a1, a2);
-        assertEquals(Shape.of(3,2,3), a1.shape());
+        assertEquals(Shape.of(3, 2, 3), a1.shape());
 
-        for(var value : a1) {
+        for (var value : a1) {
             assertEquals(3.0, value.doubleValue());
         }
     }
@@ -953,7 +953,7 @@ public class TensorTest {
 
         var vdots = new ArrayList<N>();
         for (var t : t1.chunk(0, false, 1)) {
-            vdots.add(t.vdot(t));
+            vdots.add(t.inner(t));
         }
 
         for (int i = 0; i < vdots.size(); i++) {
@@ -964,15 +964,15 @@ public class TensorTest {
             assertEquals(sum, vdots.get(i), "i: " + i);
         }
 
-        var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10)).vdot(g.seq(Shape.of(20))));
+        var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10)).inner(g.seq(Shape.of(20))));
         assertEquals("Operands are not valid for vector dot product (v = Shape: [10], v = Shape: [20]).", e.getMessage());
 
-        e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10)).vdot(g.seq(Shape.of(10)), -1, 10));
+        e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10)).inner(g.seq(Shape.of(10)), -1, 10));
         assertEquals("Start and end indexes are invalid (start: -1, end: 10).", e.getMessage());
 
         var t2 = g.seq(Shape.of(50));
-        assertEquals(g.value(40425), t2.vdot(t2));
-        assertEquals(g.value(4 * 4 + 5 * 5 + 6 * 6), t2.vdot(t2, 4, 7));
+        assertEquals(g.value(40425), t2.inner(t2));
+        assertEquals(g.value(4 * 4 + 5 * 5 + 6 * 6), t2.inner(t2, 4, 7));
     }
 
     @ParameterizedTest
@@ -988,12 +988,193 @@ public class TensorTest {
         assertEquals(Shape.of(100), r1.shape());
 
         for (int i = 0; i < 100; i++) {
-            assertEquals(v1.add(g.value(i * 31)).vdot(v1), r1.get(i));
+            assertEquals(v1.add(g.value(i * 31)).inner(v1), r1.get(i));
         }
 
         var r2 = v1.stretch(0).mv(v1);
         assertEquals(Shape.of(1), r2.shape());
-        assertEquals(v1.vdot(v1), r2.get(0));
+        assertEquals(v1.inner(v1), r2.get(0));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBmvInvalid(DataFactory<N> g) {
+        var e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of(3, 2, 1)).bmv(g.zeros(Shape.of(2))));
+        assertEquals("Tensors are not valid for batch matrix vector multiplication (bm : Shape: [3,2,1], bv = Shape: [2])", e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of(3, 4)).bmv(g.zeros(Shape.of(2, 2))));
+        assertEquals("Tensors are not valid for batch matrix vector multiplication (bm : Shape: [3,4], bv = Shape: [2,2])", e.getMessage());
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBmvScalars(DataFactory<N> g) {
+        var m = g.scalar(g.value(2));
+        var v = g.scalar(g.value(3));
+
+        var r = m.bmv(v);
+        assertEquals(Shape.of(1, 1), r.shape());
+        assertEquals(g.value(6), r.get());
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBmvMV(DataFactory<N> g) {
+        var m = g.seq(Shape.of(3, 2));
+        var v = g.seq(Shape.of(2)).add_(1);
+
+        var r = m.bmv(v);
+        assertEquals(Shape.of(1, 3), r.shape());
+        assertEquals(g.value(2), r.get(0, 0));
+        assertEquals(g.value(8), r.get(0, 1));
+        assertEquals(g.value(14), r.get(0, 2));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBmvBMV(DataFactory<N> g) {
+        var m = g.seq(Shape.of(3, 3, 2));
+        var v = g.seq(Shape.of(2)).add_(1);
+
+        var r = m.bmv(v);
+        assertEquals(Shape.of(3, 3), r.shape());
+        assertEquals(g.value(2), r.get(0, 0));
+        assertEquals(g.value(8), r.get(0, 1));
+        assertEquals(g.value(14), r.get(0, 2));
+        assertEquals(g.value(38), r.get(2, 0));
+        assertEquals(g.value(44), r.get(2, 1));
+        assertEquals(g.value(50), r.get(2, 2));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBmvMBV(DataFactory<N> g) {
+        var m = g.seq(Shape.of(3, 2));
+        var v = g.seq(Shape.of(3, 2)).add_(1);
+        var r = m.bmv(v);
+        assertEquals(Shape.of(3, 3), r.shape());
+        assertEquals(g.value(2), r.get(0, 0));
+        assertEquals(g.value(8), r.get(0, 1));
+        assertEquals(g.value(14), r.get(0, 2));
+        assertEquals(g.value(6), r.get(2, 0));
+        assertEquals(g.value(28), r.get(2, 1));
+        assertEquals(g.value(50), r.get(2, 2));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBmvBMBV(DataFactory<N> g) {
+        var m = g.seq(Shape.of(3, 3, 2));
+        var v = g.seq(Shape.of(3, 2)).add_(1);
+        var r = m.bmv(v);
+        assertEquals(Shape.of(3, 3), r.shape());
+        assertEquals(g.value(2), r.get(0, 0));
+        assertEquals(g.value(8), r.get(0, 1));
+        assertEquals(g.value(14), r.get(0, 2));
+        assertEquals(g.value(138), r.get(2, 0));
+        assertEquals(g.value(160), r.get(2, 1));
+        assertEquals(g.value(182), r.get(2, 2));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testVtm(DataFactory<N> g) {
+        var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 1)).vtm(g.seq(Shape.of(2, 2))));
+        assertEquals("Operands are not valid for vector transpose matrix multiplication (v = Shape: [10,1], m = Shape: [2,2]).",
+                e.getMessage());
+
+        var v1 = g.seq(Shape.of(31));
+        var m1 = g.seq(Shape.of(31, 100));
+
+        var r1 = v1.vtm(m1);
+        assertEquals(Shape.of(100), r1.shape());
+        for (int i = 0; i < 100; i++) {
+            var value = g.value(0);
+            for (int j = 0; j < 31; j++) {
+                value = g.sum(value, g.value(v1.get(j).doubleValue() * g.value(j * 100 + i).doubleValue()));
+            }
+            assertEquals(value, r1.get(i));
+        }
+
+        var r2 = m1.t().mv(v1);
+        assertTensorEqualValues(r1, r2);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBvtmInvalid(DataFactory<N> g) {
+        var e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of(3, 2, 1)).bvtm(g.zeros(Shape.of(2))));
+        assertEquals("Tensors are not valid for batch vector transpose matrix multiplication (bv : Shape: [3,2,1], bm = Shape: [2])",
+                e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of(3, 4)).bvtm(g.zeros(Shape.of(2, 2))));
+        assertEquals("Tensors are not valid for batch vector transpose matrix multiplication (bv : Shape: [3,4], bm = Shape: [2,2])",
+                e.getMessage());
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBvtmScalars(DataFactory<N> g) {
+        var m = g.scalar(g.value(2));
+        var v = g.scalar(g.value(3));
+
+        var r = v.bvtm(m);
+        assertEquals(Shape.of(1, 1), r.shape());
+        assertEquals(g.value(6), r.get());
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBvtMV(DataFactory<N> g) {
+        var v = g.seq(Shape.of(2));
+        var m = g.seq(Shape.of(2, 3)).add_(1);
+        var r = v.bvtm(m);
+        assertEquals(Shape.of(1, 3), r.shape());
+        assertEquals(g.value(4), r.get(0, 0));
+        assertEquals(g.value(5), r.get(0, 1));
+        assertEquals(g.value(6), r.get(0, 2));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBvtmBMV(DataFactory<N> g) {
+        var v = g.seq(Shape.of(2)).add_(1);
+        var m = g.seq(Shape.of(3, 2, 3));
+        var r = v.bvtm(m);
+        assertEquals(Shape.of(3, 3), r.shape());
+        assertEquals(g.value(6), r.get(0, 0));
+        assertEquals(g.value(9), r.get(0, 1));
+        assertEquals(g.value(12), r.get(0, 2));
+        assertEquals(g.value(42), r.get(2, 0));
+        assertEquals(g.value(45), r.get(2, 1));
+        assertEquals(g.value(48), r.get(2, 2));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBvtmMBV(DataFactory<N> g) {
+        var v = g.seq(Shape.of(2, 3)).add_(1);
+        var m = g.seq(Shape.of(3, 2));
+        var r = v.bvtm(m);
+        assertEquals(Shape.of(2, 2), r.shape());
+        assertEquals(g.value(16), r.get(0, 0));
+        assertEquals(g.value(22), r.get(0, 1));
+        assertEquals(g.value(34), r.get(1, 0));
+        assertEquals(g.value(49), r.get(1, 1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testBvtmBMBV(DataFactory<N> g) {
+        var v = g.seq(Shape.of(2, 3)).add_(1);
+        var m = g.seq(Shape.of(2, 3, 2));
+        var r = v.bvtm(m);
+        assertEquals(Shape.of(2, 2), r.shape());
+        assertEquals(g.value(16), r.get(0, 0));
+        assertEquals(g.value(22), r.get(0, 1));
+        assertEquals(g.value(124), r.get(1, 0));
+        assertEquals(g.value(139), r.get(1, 1));
     }
 
     @ParameterizedTest
@@ -1025,7 +1206,7 @@ public class TensorTest {
         var cols = t4.chunk(1, false, 1);
         for (int i = 0; i < t3.shape().dim(0); i++) {
             for (int j = 0; j < t4.shape().dim(1); j++) {
-                N expected = rows.get(i).vdot(cols.get(j));
+                N expected = rows.get(i).inner(cols.get(j));
                 N realized = r3.get(i, j);
                 assertEquals(expected, realized, "i: %d, j: %d".formatted(i, j));
             }
@@ -1036,7 +1217,7 @@ public class TensorTest {
         cols = t4.chunk(1, false, 1);
         for (int i = 0; i < t3.shape().dim(0); i++) {
             for (int j = 0; j < t4.shape().dim(1); j++) {
-                assertEquals(r3.get(i, j), rows.get(i).vdot(cols.get(j)));
+                assertEquals(r3.get(i, j), rows.get(i).inner(cols.get(j)));
             }
         }
 
@@ -1066,22 +1247,22 @@ public class TensorTest {
         assertEquals(Shape.of(3, 3), scatter1.shape());
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                assertEquals(m1.takesq(1, i).vdot(m1.takesq(1, j)).doubleValue() / m1.dim(0), scatter1.get(i, j).doubleValue());
+                assertEquals(m1.takesq(1, i).inner(m1.takesq(1, j)).doubleValue() / m1.dim(0), scatter1.get(i, j).doubleValue());
             }
         }
 
         var cov1 = m1.cov(1);
         var mean = m1.mean(0);
         var c1 = m1.sub(mean);
-        assertEquals(Shape.of(3,3), cov1.shape());
+        assertEquals(Shape.of(3, 3), cov1.shape());
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                assertEquals(c1.takesq(1, i).vdot(c1.takesq(1, j)).doubleValue() / (c1.dim(0) - 1), cov1.get(i, j).doubleValue(), 1e-6);
+                assertEquals(c1.takesq(1, i).inner(c1.takesq(1, j)).doubleValue() / (c1.dim(0) - 1), cov1.get(i, j).doubleValue(), 1e-6);
             }
         }
 
         var corr1 = m1.corr();
-        assertEquals(Shape.of(3,3), corr1.shape());
+        assertEquals(Shape.of(3, 3), corr1.shape());
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 assertEquals(1., corr1.get(i, j).doubleValue(), 1e-6);
@@ -1092,11 +1273,11 @@ public class TensorTest {
     @ParameterizedTest
     @MethodSource("dataFactorySource")
     <N extends Number> void testDiag(DataFactory<N> g) {
-        var e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10)).diag());
-        assertEquals("This operation is available only on tensor matrix.", e.getMessage());
+        var e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10, 10)).diag(10));
+        assertEquals("Diagonal 10 does not exists for shape Shape: [10,10].", e.getMessage());
 
-        e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10, 20)).diag());
-        assertEquals("This operation is avaiable only on a square matrix.", e.getMessage());
+        e = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(3, 3)).diag(-3));
+        assertEquals("Diagonal -3 does not exists for shape Shape: [3,3].", e.getMessage());
 
         var expected = g.zeros(Shape.of(3));
         expected.set(g.value(0), 0);
@@ -1105,6 +1286,23 @@ public class TensorTest {
         assertTensorEqualValues(expected, g.seq(Shape.of(3, 3)).diag());
 
         assertTensorEqualValues(g.scalar(g.value(10)).stretch(0, 1), g.scalar(g.value(10)).stretch(0, 1).diag());
+
+        var t = g.seq(Shape.of(3, 3));
+
+        List<Tensor<?>> diags = new ArrayList<>();
+        Tensor<?> sum = g.zeros(Shape.of(3, 3));
+
+        for (int i = -2; i < 3; i++) {
+            var d = t.diag(i);
+            diags.add(d);
+            sum.add_(d.diag(i));
+        }
+        for (int i = 0; i < diags.size(); i++) {
+            var v = diags.get(i);
+            assertTrue(v.isVector());
+            assertEquals(3 - Math.abs(2 - i), v.dim(0));
+        }
+        assertTensorEqualValues(t, sum);
     }
 
     @ParameterizedTest
@@ -1366,7 +1564,7 @@ public class TensorTest {
 
         if (g.dType().floatingPoint()) {
             var e = assertThrows(IllegalArgumentException.class, () -> t1.norm(g.value(-1)));
-            assertEquals("Norm power p=-1 must have a value greater than 0.", e.getMessage());
+            assertEquals("Norm power p=-1 must be greater or equal with 0.", e.getMessage());
         }
     }
 
@@ -1469,7 +1667,7 @@ public class TensorTest {
         assertTensorEqualValues(t1, t3);
     }
 
-        private <N extends Number> N sequenceSum(DataFactory<N> g, int len) {
+    private <N extends Number> N sequenceSum(DataFactory<N> g, int len) {
         N sum = g.value(0);
         for (int i = 1; i < len; i++) {
             sum = g.sum(sum, g.value(i));

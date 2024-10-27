@@ -48,6 +48,7 @@ import rapaio.math.tensor.operator.TensorOp;
 import rapaio.math.tensor.operator.TensorReduceOp;
 import rapaio.math.tensor.operator.TensorUnaryOp;
 import rapaio.printer.Printable;
+import rapaio.util.NotImplementedException;
 import rapaio.util.function.IntIntBiFunction;
 
 /**
@@ -1019,15 +1020,15 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return unaryOp_(TensorOp.unaryAbs());
     }
 
-    public final Tensor<N> negate() {
+    public final Tensor<N> neg() {
         return unaryOp(TensorOp.unaryNeg());
     }
 
-    public final Tensor<N> negate(Order order) {
+    public final Tensor<N> neg(Order order) {
         return unaryOp(TensorOp.unaryNeg(), order);
     }
 
-    public final Tensor<N> negate_() {
+    public final Tensor<N> neg_() {
         return unaryOp_(TensorOp.unaryNeg());
     }
 
@@ -1692,47 +1693,340 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
 
     //------- VECTOR MATRIX OPERATIONS ----------//
 
-    public final Tensor<N> dot(Tensor<?> other) {
-        return dot(other, Order.defaultOrder());
-    }
+    /**
+     * Computes the dot product between vectors. This operation is available only if the
+     * two operands are vectors. Vectors have to have the same size.
+     *
+     * @param other the other vector
+     * @return scalar result
+     */
+    public abstract N inner(Tensor<?> other);
 
-    public final Tensor<N> dot(Tensor<?> other, Order askOrder) {
-        if (isScalar() || other.isScalar()) {
-            return mul(other, askOrder);
-        }
-        if (isVector() && other.isVector()) {
-            return manager.scalar(dtype(), vdot(other));
-        }
-        if (isVector() && other.isMatrix()) {
-            return stretch(0).mm(other, askOrder);
-        }
-        if (isMatrix() && other.isVector()) {
-            return mv(other);
-        }
-        if (isMatrix() && other.isMatrix()) {
-            return mm(other, askOrder);
-        }
-        throw new IllegalArgumentException("Operation supported only for scalars, vectors and matrices.");
-    }
+    /**
+     * Computes the dot product between the two vectors on an index range. This operation is
+     * available only if the two operands are vectors. Vectors does not have to have the same
+     * size, but their size must include the selected range.
+     * <p>
+     * This operation does not perform broadcast.
+     *
+     * @param other the other vector
+     * @param start start index of the range (inclusive)
+     * @param end   end index of the range (exclusive)
+     * @return scalar result
+     */
+    public abstract N inner(Tensor<?> other, int start, int end);
 
-    public final Tensor<N> vouter(Tensor<?> t) {
-        if (!isVector() || !t.isVector()) {
+    /**
+     * Computes the outer product between two vectors. This operation is available only if the two
+     * tensors are vectors. The result is a matrix of shape {@code (n,m)}, where {@code n} is the
+     * size of the first vector and {@code m} is the size of the second vector.
+     * <p>
+     * This operation does not perform broadcast.
+     *
+     * @param other the other vector
+     * @return matrix containing the outer vector
+     */
+    public final Tensor<N> outer(Tensor<?> other) {
+        if (!isVector() || !other.isVector()) {
             throw new IllegalArgumentException("Outer product is available only for vectors.");
         }
-        return stretch(1).mm(t.stretch(0));
+        return stretch(1).mm(other.stretch(0));
     }
 
-    public abstract N vdot(Tensor<?> tensor);
-
-    public abstract N vdot(Tensor<?> tensor, int start, int end);
-
-    public abstract Tensor<N> mv(Tensor<?> tensor);
-
-    public final Tensor<N> mm(Tensor<?> tensor) {
-        return mm(tensor, Order.defaultOrder());
+    /**
+     * Performs matrix vector dot product. The first tensor must be a matrix and the second tensor must be a vector.
+     * Also, the second dimension of the matrix must have the same size as the dimension of the vector.
+     * <p>
+     * The result is a vector of the size equal with the first dimension of the matrix.
+     * <p>
+     * This operation does not perform broadcast and the storage order is the default order
+     *
+     * @param other the second operand, which must be a vector.
+     * @return a vector containing the result of the matrix vector dot product
+     */
+    public final Tensor<N> mv(Tensor<?> other) {
+        return mv(other, Order.defaultOrder());
     }
 
-    public abstract Tensor<N> mm(Tensor<?> tensor, Order askOrder);
+    /**
+     * Performs matrix vector dot product. The first tensor must be a matrix and the second tensor must be a vector.
+     * Also, the second dimension of the matrix must have the same size as the dimension of the vector.
+     * <p>
+     * The result is a vector of the size equal with the first dimension of the matrix.
+     * <p>
+     * This operation does not perform broadcast and the storage order is specified by {@code askOrder} parameter.
+     *
+     * @param other the second operand, which must be a vector.
+     * @return a vector containing the result of the matrix vector dot product
+     */
+    public abstract Tensor<N> mv(Tensor<?> other, Order askOrder);
+
+    /**
+     * Performs a batched matrix vector multiplication. Self tensor plays the role of matrix batch, the {@code other} tensor
+     * is the vector batch.
+     * <p>
+     * If both arguments are scalars the result is a unit length batch of a scalar shape {@code (1,1)}.
+     * <p>
+     * If self tensor is matrix {@code (n,m)} and other tensor is a vector shape {code (m)}, the result is a unit batch
+     * of shape {@code (1,n)}.
+     * <p>
+     * If self is a batch matrix tensor of shape {@code (b,n,m)} and second is a vector shape {@code (m)}, the vectors is multiplied with
+     * all the matrices in the batch and the result will have shape {@code (b,n)}.
+     * <p>
+     * If self is a matrix tensor of shape {@code (n,m)} and the other is a batch of vectors with shape {@code (b,m)}, the matrix will
+     * be multiplied with every vector in the batch and the result will have shape {@code (b,n)}.
+     * <p>
+     * If self tensor is a batch of matrices with shape {@code (b,n,m)} and {code other} is a batch of vectors with shape {@code (b,m)},
+     * each matrix from the batch will be multiplied with its corresponding vector from the batch and the result will have shape {@code (b,m)}.
+     * <p>
+     * All other configurations are invalid and an {@link IllegalArgumentException} exception will be thrown.
+     * <p>
+     * The storage order of the result is the default order.
+     *
+     * @param other the batch of vectors
+     * @return the batch with results
+     */
+    public final Tensor<N> bmv(Tensor<?> other) {
+        return bmv(other, Order.defaultOrder());
+    }
+
+    /**
+     * Performs a batched matrix vector multiplication. Self tensor plays the role of matrix batch, the {@code other} tensor
+     * is the vector batch.
+     * <p>
+     * If both arguments are scalars the result is a unit length batch of a scalar shape {@code (1,1)}.
+     * <p>
+     * If self tensor is matrix {@code (n,m)} and other tensor is a vector shape {code (m)}, the result is a unit batch
+     * of shape {@code (1,n)}.
+     * <p>
+     * If self is a batch matrix tensor of shape {@code (b,n,m)} and second is a vector shape {@code (m)}, the vectors is multiplied with
+     * all the matrices in the batch and the result will have shape {@code (b,n)}.
+     * <p>
+     * If self is a matrix tensor of shape {@code (n,m)} and the other is a batch of vectors with shape {@code (b,m)}, the matrix will
+     * be multiplied with every vector in the batch and the result will have shape {@code (b,n)}.
+     * <p>
+     * If self tensor is a batch of matrices with shape {@code (b,n,m)} and {code other} is a batch of vectors with shape {@code (b,m)},
+     * each matrix from the batch will be multiplied with its corresponding vector from the batch and the result will have shape {@code (b,m)}.
+     * <p>
+     * All other configurations are invalid and an {@link IllegalArgumentException} exception will be thrown.
+     * <p>
+     * The storage order of the result is specified by {@code askedOrder} parameter.
+     *
+     * @param other    the batch of vectors
+     * @param askOrder the asked storage order of the result
+     * @return the batch with results
+     */
+    public abstract Tensor<N> bmv(Tensor<?> other, Order askOrder);
+
+    /**
+     * Performs the dot product between this object transposed, which must be a vector, and the other
+     * tensor which must be a matrix. The size of the vector must be equal with the size of the first dimesion of the matrix.
+     * <p>
+     * The result is a vector with size equal with the size of the second dimension of the matrix.
+     * This operation is equivalent with calling {@link #mv(Tensor)}, but with transposed matrix.
+     * <p>
+     * This operation does not perform broadcasting and the storage order of the result is the default order.
+     *
+     * @param other the other tensor which must be a matrix.
+     * @return the result of the vector transpose matrix dot product
+     */
+    public final Tensor<N> vtm(Tensor<?> other) {
+        return vtm(other, Order.defaultOrder());
+    }
+
+    /**
+     * Performs the dot product between this object transposed, which must be a vector, and the other
+     * tensor which must be a matrix. The size of the vector must be equal with the size of the first dimesion of the matrix.
+     * <p>
+     * The result is a vector with size equal with the size of the second dimension of the matrix.
+     * This operation is equivalent with calling {@link #mv(Tensor)}, but with transposed matrix.
+     * <p>
+     * This operation does not perform broadcasting and the storage order of the result is specified by {@code askOrder} parameter.
+     *
+     * @param other the other tensor which must be a matrix.
+     * @return the result of the vector transpose matrix dot product
+     */
+    public abstract Tensor<N> vtm(Tensor<?> other, Order askOrder);
+
+    /**
+     * Performs a batched vector transposed matrix multiplication. Self tensor plays the role of vector batch, the {@code other} tensor
+     * is the matrix batch.
+     * <p>
+     * If both arguments are scalars the result is a unit length batch of a scalar shape {@code (1,1)}.
+     * <p>
+     * If self is vector {@code (n)} and other tensor is a matrix {code (n,m)}, the result is a unit batch
+     * of shape {@code (1,m)}.
+     * <p>
+     * If self is a batch vector tensor of shape {@code (b,n)} and second is a matrix shape {@code (n,m)}, the vector are multiplied with
+     * all the same matrix and the result will have shape {@code (b,n)}.
+     * <p>
+     * If self is a vector tensor of shape {@code (n)} and the other is a batch of matrices with shape {@code (b,n,m)}, the vector will
+     * be multiplied with every matrix in the batch and the result will have shape {@code (b,m)}.
+     * <p>
+     * If self tensor is a batch of vectors with shape {@code (b,n)} and {code other} is a batch of matrices with shape {@code (b,n,m)},
+     * each vector from the batch will be multiplied with its corresponding matrix from the batch and the result will have shape {@code (b,m)}.
+     * <p>
+     * All other configurations are invalid and an {@link IllegalArgumentException} exception will be thrown.
+     * <p>
+     * The storage order of the result is the default order.
+     *
+     * @param other    the batch of vectors
+     * @return the batch with results
+     */
+    public final Tensor<?> bvtm(Tensor<?> other) {
+        return bvtm(other, Order.defaultOrder());
+    }
+
+    /**
+     * Performs a batched vector transposed matrix multiplication. Self tensor plays the role of vector batch, the {@code other} tensor
+     * is the matrix batch.
+     * <p>
+     * If both arguments are scalars the result is a unit length batch of a scalar shape {@code (1,1)}.
+     * <p>
+     * If self is vector {@code (n)} and other tensor is a matrix {code (n,m)}, the result is a unit batch
+     * of shape {@code (1,m)}.
+     * <p>
+     * If self is a batch vector tensor of shape {@code (b,n)} and second is a matrix shape {@code (n,m)}, the vector are multiplied with
+     * all the same matrix and the result will have shape {@code (b,n)}.
+     * <p>
+     * If self is a vector tensor of shape {@code (n)} and the other is a batch of matrices with shape {@code (b,n,m)}, the vector will
+     * be multiplied with every matrix in the batch and the result will have shape {@code (b,m)}.
+     * <p>
+     * If self tensor is a batch of vectors with shape {@code (b,n)} and {code other} is a batch of matrices with shape {@code (b,n,m)},
+     * each vector from the batch will be multiplied with its corresponding matrix from the batch and the result will have shape {@code (b,m)}.
+     * <p>
+     * All other configurations are invalid and an {@link IllegalArgumentException} exception will be thrown.
+     * <p>
+     * The storage order of the result is specified by {@code askedOrder} parameter.
+     *
+     * @param other    the batch of vectors
+     * @param askOrder the asked storage order of the result
+     * @return the batch with results
+     */
+    public abstract Tensor<?> bvtm(Tensor<?> other, Order askOrder);
+
+    /**
+     * Performs matrix multiplication between two tensors. The two tensors must both be matrices.
+     * <p>
+     * This operation does not perform broadcast. The matrices must have compatible dimension sizes.
+     * The second dimension of the first matrix must be equal with the first dimension of the first matrix.
+     * The result of {@code m x n} matrix multiplied with a {@code n x p} matrix will have shape {@code n x p}.
+     * <p>
+     * The storage order is the default order (specified by {@link Order#defaultOrder()}
+     *
+     * @param other the other matrix
+     * @return result of matrix multiplication.
+     */
+    public final Tensor<N> mm(Tensor<?> other) {
+        return mm(other, Order.defaultOrder());
+    }
+
+    /**
+     * Performs matrix multiplication between two tensors. The two tensors must both be matrices.
+     * <p>
+     * This operation does not perform broadcast. The matrices must have compatible dimension sizes.
+     * The second dimension of the first matrix must be equal with the first dimension of the first matrix.
+     * The result of {@code m x n} matrix multiplied with a {@code n x p} matrix will have shape {@code n x p}.
+     * <p>
+     * The storage order is specified by parameter {@code askOrder}.
+     *
+     * @param other the other matrix
+     * @return result of matrix multiplication.
+     */
+    public abstract Tensor<N> mm(Tensor<?> other, Order askOrder);
+
+    /**
+     * Adds the current tensor with the batch matrix multiplications scaled by factors.
+     * The operation can be described as: {@code out = beta * self + alpha * sum_b left_b x right_b}
+     *
+     * @param left
+     * @param right
+     * @param beta
+     * @param alpha
+     * @return self updated tensor
+     */
+    public final Tensor<N> addbmm(Tensor<?> left, Tensor<?> right, N beta, N alpha) {
+        throw new NotImplementedException();
+    }
+
+    /**
+     * Adds the current tensor to the batch of matrix multiplications scaled by factors to self.
+     * The operation can be described as: {@code self = beta * self + alpha * sum_b left_b x right_b}
+     *
+     * @param left
+     * @param right
+     * @param beta
+     * @param alpha
+     * @return
+     */
+    public final Tensor<N> addbmm_(Tensor<?> left, Tensor<?> right, N beta, N alpha) {
+        throw new NotImplementedException();
+    }
+
+    /**
+     * Adds the current tensor to the batch matrix multiplications scaled by factors.
+     * The operation can be described as: {@code out = beta * self + alpha * left x right}
+     *
+     * @param left
+     * @param right
+     * @param beta
+     * @param alpha
+     * @return self updated tensor
+     */
+    public final Tensor<N> addmm(Tensor<?> left, Tensor<?> right, N beta, N alpha) {
+        throw new NotImplementedException();
+    }
+
+    /**
+     * Adds the current tensor to the matrix multiplications scaled by factors to self.
+     * The operation can be described as: {@code self = beta * self + alpha * left x right}
+     *
+     * @param left
+     * @param right
+     * @param beta
+     * @param alpha
+     * @return
+     */
+    public final Tensor<N> addmm_(Tensor<?> left, Tensor<?> right, N beta, N alpha) {
+        throw new NotImplementedException();
+    }
+
+    public final Tensor<?> baddbmm(Tensor<?> left, Tensor<?> right, N beta, N alpha) {
+        throw new NotImplementedException();
+    }
+
+    public final Tensor<?> bmm(Tensor<?> other) {
+        throw new IllegalArgumentException();
+    }
+
+    /**
+     * Shortcut method for {@link #diag(int)} with parameter {@code 0}.
+     *
+     * @return matrix if input is a vector, vector if input is a matrix
+     */
+    public final Tensor<N> diag() {
+        return diag(0);
+    }
+
+    /**
+     * Handles diagonal elements. The {@code diagonal} parameter indicates the diagonal. If the value is
+     * {code 0}, then the main diagonal is specified. If the {code diagonal} is a positive number, then
+     * the {code diagonal}-th diagonal above the main diagonal is specified. If the {code diagonal}
+     * is a negative number, then the {code diagonal-th} diagonal below the main diagonal is specified.
+     * <p>
+     * If the input tensor is a vector, it creates a matrix with elements on the specified diagonal.
+     * The resulting matrix is a square matrix with dimension size to accommodate all the elements
+     * from the vector.
+     * <p>
+     * If the input tensor is a matrix, then the result is a vector which contains the elements from that
+     * diagonal and has the size equal with the number of elements from that diagonal.
+     *
+     * @param diagonal number which specifies the diagonal, 0 for main one
+     * @return vector or matrix, depending on input
+     */
+    public abstract Tensor<N> diag(int diagonal);
+
+    public abstract N trace();
 
     public final boolean isSymmetric() {
         if (!isMatrix()) {
@@ -1783,15 +2077,11 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return new SVDecomposition<>(this, wantu, wantv);
     }
 
-    public abstract N trace();
-
-    public abstract Tensor<N> diag();
-
     public final N norm() {
         return norm(dtype().castValue(2));
     }
 
-    public abstract N norm(N p);
+    public abstract N norm(N pow);
 
     public final Tensor<N> normalize(N p) {
         return copy(Order.defaultOrder()).normalize_(p);

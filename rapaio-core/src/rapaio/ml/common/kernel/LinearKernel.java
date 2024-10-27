@@ -60,6 +60,6 @@ public class LinearKernel extends AbstractKernel {
 
     @Override
     public double compute(Tensor<Double> v, Tensor<Double> u) {
-        return v.vdot(u) + c;
+        return v.inner(u) + c;
     }
 }

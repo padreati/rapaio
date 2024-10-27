@@ -126,15 +126,15 @@ public class SVDecompositionTest {
     <N extends Number> void testProjectors(TensorManager.OfType<N> tmt) {
         for (int i = 0; i < ROUNDS; i++) {
             var v = tmt.random(Shape.of(3), random);
-            var p = v.vouter(v);
+            var p = v.outer(v);
             assertEquals(1, p.svd().rank());
         }
 
         for (int i = 0; i < ROUNDS; i++) {
             var v = tmt.random(Shape.of(3), random);
-            var p = v.vouter(v);
+            var p = v.outer(v);
             v = tmt.random(Shape.of(3), random);
-            p.add_(v.vouter(v));
+            p.add_(v.outer(v));
             var svd = p.svd();
             assertEquals(2, svd.rank());
         }

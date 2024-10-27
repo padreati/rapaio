@@ -76,7 +76,7 @@ public class CompValue {
 
     public void sub_(Tensor<?> other) {
         if (!hasValue) {
-            assign(other.negate());
+            assign(other.neg());
         } else {
             tensor.sub_(other);
         }

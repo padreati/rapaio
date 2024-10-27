@@ -43,12 +43,12 @@ public class OpVDot extends CompNode {
 
     @Override
     public List<Runnable> compute() {
-        value.assign(c.tmt().scalar(left.value.tensor().vdot(right.value.tensor()).doubleValue()));
+        value.assign(c.tmt().scalar(left.value.tensor().inner(right.value.tensor()).doubleValue()));
         var eye = c.tmt().eye(left.value.tensor().shape().dim(0));
 
         return List.of(
-                () -> left.adjoint.add_(eye.dot(right.value.tensor()).dot(this.adjoint.tensor())),
-                () -> right.adjoint.add_(eye.dot(left.value.tensor()).dot(this.adjoint.tensor()))
+//                () -> left.adjoint.add_(eye.dot(right.value.tensor()).dot(this.adjoint.tensor())),
+//                () -> right.adjoint.add_(eye.dot(left.value.tensor()).dot(this.adjoint.tensor()))
         );
 
     }

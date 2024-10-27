@@ -40,7 +40,7 @@ A storage is a container for data which offers simple low-level API for data man
 This is an abstraction over the real data buffers which allows implementations of different data storages like Java arrays, 
 memory segments on heap or off heap or any other type of storage. Data storage laso abstracts idea of dense or sparse arrays.
 
-Currently there are present only two implementations. The base implementation uses natural language arrays for dense data. 
+There are present only two implementations. The base implementation uses natural language arrays for dense data. 
 The second available implementation abstracts storage for data frames and data variables. This implementation was built in order 
 to allow using data manipulation operations implemented for tensors directly over data frames and variables, avoiding code 
 duplication and API. For example a `VarDouble` has a method called `dt()` which creates a `Tensor<Double>` over the same data
@@ -68,3 +68,22 @@ uses an interface for a specific type. For example a double tensor with a sequen
 Which method is used depends entirely on the user preference or context. 
 
 **TODO: plenty of work** 
+
+Methods from pytorch which are good candidates for implementation:
+
+* `torch.diff(input, n=1, dim=-1, prepend=None, append=None)` Computes the n-th forward difference along the given dimension.
+* `range`
+* `arange`
+* `kron`
+* `torch.addbmm(input, batch1, batch2, *, beta=1, alpha=1, out=None)` Performs a batch matrix-matrix product of matrices stored in batch1 
+and batch2, with a reduced add step (all matrix multiplications get accumulated along the first dimension). input is added to the final result.
+* `torch.addmm(input, mat1, mat2, *, beta=1, alpha=1, out=None)` Performs a matrix multiplication of the matrices mat1 and mat2. 
+The matrix input is added to the final result.
+* `torch.addmv(input, mat, vec, *, beta=1, alpha=1, out=None)` Performs a matrix-vector product of the matrix mat and the vector vec. 
+The vector input is added to the final result.
+* `torch.addr(input, vec1, vec2, *, beta=1, alpha=1, out=None)` Performs the outer-product of vectors vec1 and vec2 and adds it to the matrix input.
+* `torch.baddbmm(input, batch1, batch2, *, beta=1, alpha=1, out=None)` Performs a batch matrix-matrix product of matrices in batch1 and batch2. input is added to the final result.
+* `torch.bmm(input, mat2, *, out=None)` Performs a batch matrix-matrix product of matrices stored in input and mat2.
+* `torch.chain_matmul(*matrices, out=None)` 
+* `torch.dot(input, tensor, *, out=None)` Computes the dot product of two 1D tensors.
+* 
