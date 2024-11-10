@@ -27,18 +27,18 @@ import rapaio.math.nn.Autograd;
 import rapaio.math.nn.Node;
 import rapaio.math.tensor.Tensors;
 
-public class MSELoss extends AbstractLoss<MSELoss> {
+public class NegativeLogLikelihoodLoss extends AbstractLoss<NegativeLogLikelihoodLoss> {
 
-    public final Param<Reduce, MSELoss> reduce = new ValueParam<>(this, Reduce.MEAN, "Reduce type");
+    public final Param<Reduce, NegativeLogLikelihoodLoss> reduce = new ValueParam<>(this, Reduce.MEAN, "reduce operation");
 
     @Override
     public void forward(Node pred, Node y) {
         // TODO: treat extra dimension with more care
-        if (pred.value().isMatrix()) {
+        if (pred.value().isMatrix() && y.value().isVector()) {
             y.setValue(y.value().stretch(1));
         }
         batch = y.value().dim(0);
-        last = pred.sub(y).sqr().sum();
+        last = pred.log().neg().mul(y).sum();
         if (reduce.get().equals(Reduce.MEAN)) {
             last = last.div(Autograd.var(Tensors.ofType(last.dtype()).scalar(pred.value().size())));
         }

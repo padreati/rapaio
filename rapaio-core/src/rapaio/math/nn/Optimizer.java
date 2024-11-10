@@ -29,8 +29,8 @@ import rapaio.math.nn.optimizer.SGD;
 
 public interface Optimizer {
 
-    static SGD SGD(Collection<Node> params, double lr) {
-        return new SGD(params, lr);
+    static SGD SGD(Collection<Node> params) {
+        return new SGD(params);
     }
 
     static Adam Adam(Collection<Node> params) {

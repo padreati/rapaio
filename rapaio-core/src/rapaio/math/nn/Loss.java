@@ -22,25 +22,18 @@
 package rapaio.math.nn;
 
 
-public abstract class Loss {
+public interface Loss {
 
-    protected int batch;
-    protected Node last;
-
-    public abstract void forward(Node pred, Node y);
-
-    public final void backward() {
-        Grad.backward(this);
+    enum Reduce {
+        MEAN,
+        SUM
     }
 
-    public double loss() {
-        if (last.value().get() == null) {
-            return Double.NaN;
-        }
-        return last.value().get().doubleValue() / batch;
-    }
+    void forward(Node pred, Node y);
 
-    public Node last() {
-        return last;
-    }
+    void backward();
+
+    double loss();
+
+    Node last();
 }

@@ -21,20 +21,28 @@
 
 package rapaio.math.nn.loss;
 
+import rapaio.core.param.ParamSet;
+import rapaio.math.nn.Autograd;
 import rapaio.math.nn.Loss;
 import rapaio.math.nn.Node;
-import rapaio.math.tensor.Tensors;
 
-public class NLLoss extends Loss {
+public abstract class AbstractLoss<L extends AbstractLoss<L>> extends ParamSet<L> implements Loss {
 
-    @Override
-    public void forward(Node pred, Node y) {
-        // TODO: treat extra dimension with more care
-        if (pred.value().isMatrix() && y.value().isVector()) {
-            y.setValue(y.value().stretch(1));
+    protected int batch;
+    protected Node last;
+
+    public final void backward() {
+        Autograd.backward(this);
+    }
+
+    public final double loss() {
+        if (last.value().get() == null) {
+            return Double.NaN;
         }
-        batch = y.value().dim(0);
-        last = pred.neg().mul(y).sum();
-        last.setGrad(Tensors.ofType(pred.dtype()).scalar(1));
+        return last.value().get().doubleValue();
+    }
+
+    public Node last() {
+        return last;
     }
 }

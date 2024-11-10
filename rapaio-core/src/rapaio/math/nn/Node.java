@@ -28,6 +28,7 @@ import java.util.Random;
 import rapaio.math.nn.operations.OpAdd;
 import rapaio.math.nn.operations.OpAxisSum;
 import rapaio.math.nn.operations.OpBatchVtm;
+import rapaio.math.nn.operations.OpDiv;
 import rapaio.math.nn.operations.OpDropout;
 import rapaio.math.nn.operations.OpIdentity;
 import rapaio.math.nn.operations.OpLog;
@@ -51,7 +52,7 @@ public abstract class Node {
     private Tensor<?> value;
     private Tensor<?> grad;
     protected boolean requiresGrad;
-    private final List<BackFun> backFuns = new ArrayList<>();
+    private final List<BackFun> backfuns = new ArrayList<>();
 
     public final String name() {
         return name;
@@ -106,20 +107,21 @@ public abstract class Node {
         return requiresGrad;
     }
 
-    public final void setRequiresGrad(boolean requiresGrad) {
+    public final Node requiresGrad(boolean requiresGrad) {
         this.requiresGrad = requiresGrad;
+        return this;
     }
 
-    public final List<BackFun> backFuns() {
-        return backFuns;
+    public final List<BackFun> backfuns() {
+        return backfuns;
     }
 
     protected void backEdge(Node ref, Runnable backFun) {
-        backFuns.add(BackFun.of(ref, backFun));
+        backfuns.add(BackFun.of(ref, backFun));
     }
 
     public final void backward() {
-        Grad.backward(this);
+        Autograd.backward(this);
     }
 
     @Override
@@ -144,6 +146,10 @@ public abstract class Node {
 
     public Node mul(Node other) {
         return new OpMul(this, other);
+    }
+
+    public Node div(Node other) {
+        return new OpDiv(this, other);
     }
 
     public Node sum() {

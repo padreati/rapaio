@@ -24,7 +24,7 @@ package rapaio.math.nn.layer;
 import java.util.List;
 
 import rapaio.core.distributions.Uniform;
-import rapaio.math.nn.Grad;
+import rapaio.math.nn.Autograd;
 import rapaio.math.nn.Net;
 import rapaio.math.nn.Node;
 import rapaio.math.tensor.DType;
@@ -52,9 +52,9 @@ public class Linear extends Net {
         this.outFeatures = outFeatures;
         this.bias = bias;
 
-        this.w = Grad.var(tmt.dtype(), "weights");
+        this.w = Autograd.var(tmt.dtype()).name("weights");
         if (this.bias) {
-            this.b = Grad.var(tmt.dtype(), "bias");
+            this.b = Autograd.var(tmt.dtype()).name("bias");
         } else {
             this.b = null;
         }

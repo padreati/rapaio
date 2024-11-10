@@ -21,6 +21,7 @@
 
 package rapaio.math.nn;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -29,33 +30,42 @@ import java.util.Set;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Tensor;
 
-public final class Grad {
+public final class Autograd {
 
     public static Variable var(Tensor<?> value) {
-        return new Variable("var", value);
+        return new Variable(value);
     }
 
-    public static Variable var(DType<?> dtype, String name) {
-        return new Variable(name, dtype);
-    }
-
-    public static Variable var(Tensor<?> value, String name) {
-        return new Variable(name, value);
+    public static Variable var(DType<?> dtype) {
+        return new Variable(dtype);
     }
 
     public static void backward(Loss loss) {
-        backward(loss.last);
+        backward(loss, false);
+    }
+
+    public static void backward(Loss loss, boolean retainGrad) {
+        backward(loss.last(), retainGrad);
     }
 
     public static void backward(Node node) {
+        backward(node, false);
+    }
+
+    public static void backward(Node node, boolean retainGrad) {
         if (node.value().size() != 1) {
             throw new IllegalArgumentException(
                     "Backward cannot compute gradients on non scalar variables, variable shape: " + node.value().shape());
         }
-        runBackwardGraph(node);
+        runBackwardGraph(node, retainGrad);
     }
 
-    private static void runBackwardGraph(Node node) {
+    private static void runBackwardGraph(Node node, boolean retainGrad) {
+
+        HashMap<Node, Integer> nodeIndex = buildIndex(node);
+
+//        List<Node>
+
         Queue<Node> queue = new LinkedList<>();
         Set<Node> visited = new HashSet<>();
         queue.add(node);
@@ -63,14 +73,32 @@ public final class Grad {
 
         while (!queue.isEmpty()) {
             Node last = queue.poll();
-            for (BackFun edge : last.backFuns()) {
+            for (BackFun edge : last.backfuns()) {
                 if (!visited.contains(edge.ref())) {
                     visited.add(edge.ref());
                     queue.add(edge.ref());
                 }
                 edge.fun().run();
             }
-            last.backFuns().clear();
+            if (!retainGrad) {
+                last.backfuns().clear();
+            }
         }
+    }
+
+    private static HashMap<Node, Integer> buildIndex(Node node) {
+        HashMap<Node, Integer> nodeIndex = new HashMap<>();
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            Node last = queue.poll();
+            if (!nodeIndex.containsKey(last)) {
+                nodeIndex.put(last, nodeIndex.size());
+                for (BackFun edge : last.backfuns()) {
+                    queue.add(edge.ref());
+                }
+            }
+        }
+        return nodeIndex;
     }
 }

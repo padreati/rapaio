@@ -25,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.nn.Grad;
+import rapaio.math.nn.Autograd;
 import rapaio.math.nn.Loss;
 import rapaio.math.nn.Node;
-import rapaio.math.nn.loss.NLLoss;
+import rapaio.math.nn.loss.NegativeLikelihoodLoss;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorManager;
 
@@ -39,10 +39,10 @@ public class OpLogSoftmaxTest {
     @Test
     void stabilityTest() {
 
-        Node t = Grad.var(tmt.stride(Shape.of(2,3), 1, 2, 3, 4, 5, 6).mul_(-10_000)).name("t");
-        Node y = Grad.var(tmt.stride(Shape.of(2, 3), 0, 1, 0, 1, 0, 0));
+        Node t = Autograd.var(tmt.stride(Shape.of(2,3), 1, 2, 3, 4, 5, 6).mul_(-10_000)).name("t");
+        Node y = Autograd.var(tmt.stride(Shape.of(2, 3), 0, 1, 0, 1, 0, 0));
 
-        Loss loss = new NLLoss();
+        Loss loss = new NegativeLikelihoodLoss();
         loss.forward(t, y);
         loss.backward();
 

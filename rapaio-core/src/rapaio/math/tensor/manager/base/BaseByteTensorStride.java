@@ -342,7 +342,7 @@ public final class BaseByteTensorStride extends AbstractStrideTensor<Byte> {
         }
         if (a.rank() == 2 && b.rank() == 2 && a.dim(1) == b.dim(0)) {
             // batch on vector, add batch to matrix
-            return a.bvtmInternal(b.strexp(0, a.dim(0)), askOrder);
+            return a.mm(b, askOrder);
         }
         if (a.rank() == 1 && b.rank() == 3 && a.dim(0) == b.dim(1)) {
             // batch on matrix, add batch to vector

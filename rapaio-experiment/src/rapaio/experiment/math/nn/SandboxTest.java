@@ -26,7 +26,6 @@ import static rapaio.graphics.opt.GOpts.color;
 import static rapaio.graphics.opt.GOpts.lwd;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import rapaio.core.SamplingTools;
@@ -35,18 +34,17 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.transform.OneHotEncoding;
 import rapaio.datasets.Datasets;
-import rapaio.math.nn.Grad;
+import rapaio.math.nn.Autograd;
 import rapaio.math.nn.Loss;
 import rapaio.math.nn.Net;
 import rapaio.math.nn.Node;
 import rapaio.math.nn.Optimizer;
-import rapaio.math.nn.layer.Dropout;
 import rapaio.math.nn.layer.Linear;
 import rapaio.math.nn.layer.LogSoftmax;
 import rapaio.math.nn.layer.ReLU;
 import rapaio.math.nn.layer.Sequential;
 import rapaio.math.nn.loss.MSELoss;
-import rapaio.math.nn.loss.NLLoss;
+import rapaio.math.nn.loss.NegativeLikelihoodLoss;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.Tensor;
@@ -59,8 +57,12 @@ public class SandboxTest {
 
     private static final TensorManager.OfType<?> tmd = TensorManager.base().ofDouble();
 
-    void sandboxTest() {
-        DType<?> dtype = DType.DOUBLE;
+    public static void main(String[] args) {
+        sandboxTest();
+    }
+
+    static void sandboxTest() {
+        DType<?> dtype = DType.FLOAT;
         Random random = new Random(42);
 
         Tensor<?> xtrain = Tensors.ofType(dtype).random(Shape.of(10_000, 4), random);
@@ -77,19 +79,20 @@ public class SandboxTest {
         }
 
         Net nn = new Sequential(
-                new Linear(dtype, 4, 12, true),
-                new Dropout(0.1),
-                new Linear(dtype, 12, 1, true)
-//                new Dropout(0.9)
+                new Linear(dtype, 4, 1000, true),
+                new ReLU(),
+                new Linear(dtype, 1000, 1, true),
+                new ReLU()
         );
         nn.seed(42);
 
 
-        int EPOCHS = 100;
-        int BATCH_SIZE = 64;
-        double LR = 1e-5;
+        int EPOCHS = 1_000;
+        int BATCH_SIZE = 100;
+        double LR = 1e-3;
 
-        Optimizer c = Optimizer.SGD(nn.parameters(), LR);
+        Optimizer c = Optimizer.Adam(nn.parameters())
+                .lr.set(LR);
         Loss loss = new MSELoss();
 
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
@@ -108,9 +111,9 @@ public class SandboxTest {
                 int[] batchIndexes = Arrays.copyOfRange(sample, j, Math.min(sample.length, j + BATCH_SIZE));
                 Tensor<?> xx = xtrain.take(0, batchIndexes);
                 Tensor<?> yy = ytrain.take(0, batchIndexes);
-                Node[] outputs = nn.forward(Grad.var(xx));
+                Node[] outputs = nn.forward(Autograd.var(xx));
 
-                loss.forward(outputs[0], Grad.var(yy));
+                loss.forward(outputs[0], Autograd.var(yy));
                 loss.backward();
 
                 trainLoss.addDouble(loss.loss());
@@ -120,8 +123,8 @@ public class SandboxTest {
             }
 
             nn.eval();
-            Node[] outputs = nn.forward(Grad.var(xtest));
-            loss.forward(outputs[0], Grad.var(ytest));
+            Node[] outputs = nn.forward(Autograd.var(xtest));
+            loss.forward(outputs[0], Autograd.var(ytest));
             testLoss.addDouble(loss.loss());
             teLoss += loss.loss();
 
@@ -132,76 +135,11 @@ public class SandboxTest {
 
         WS.draw(lines(trainLoss, color(1), lwd(1)).lines(testLoss, color(2), lwd(1)));
 
-        nn.forward(Grad.var(Tensors.ofType(dtype).random(Shape.of(2, 4), random), "x"))[0].value().printString();
+        nn.forward(Autograd.var(Tensors.ofType(dtype).random(Shape.of(2, 4), random)).name("x"))[0].value().printString();
     }
 
     public static double fun(double x1, double x2, double x3, double x4) {
         return Math.sin(x1) * Math.cos(x2) + x3 + x4 * x4 + Math.sqrt(Math.abs(x1 + x3));
-    }
-
-    public static void main(String[] args) {
-//        testSoftmax();
-//        testLogSoftmax();
-
-        testIris();
-    }
-
-    static void testSoftmax() {
-        var x = Grad.var(tmd.stride(Shape.of(3, 2), 1, 1.2, 1.3, 1.2, 1.3, 1.4), "x");
-        Optimizer optimizer = Optimizer.Adam(List.of(x))
-                .lr.set(1e-2);
-        for (int i = 0; i < 30; i++) {
-            optimizer.zeroGrad();
-            int dim = 1;
-
-            var y = x.softmax(dim).name("y");
-            var t = Grad.var(tmd.stride(Shape.of(3, 2), 0, 1, 1, 0, 0, 1), "t");
-
-            var yl = y.log();
-            var ll = yl.mul(t);
-            var nll = ll.neg();
-            var loss = nll.sum();
-            loss.setGrad(Tensors.ofDouble().scalar(1));
-            loss.backward();
-
-//            System.out.println(t);
-//            System.out.println(x);
-//            System.out.println(y);
-//            System.out.println(yl);
-//            System.out.println(ll);
-//            System.out.println(nll);
-//            System.out.println(loss);
-            System.out.println("Epoch: " + (i + 1) + ", loss: " + loss.value().get());
-            optimizer.step();
-        }
-    }
-
-    static void testLogSoftmax() {
-        var x = Grad.var(tmd.stride(Shape.of(3, 2), 1, 1.2, 1.3, 1.2, 1.3, 1.4), "x");
-        Optimizer optimizer = Optimizer.Adam(List.of(x))
-                .lr.set(1e-2);
-        for (int i = 0; i < 30; i++) {
-            optimizer.zeroGrad();
-            int dim = 1;
-
-            var y = x.logsoftmax(dim).name("y");
-            var t = Grad.var(tmd.stride(Shape.of(3, 2), 0, 1, 1, 0, 0, 1), "t");
-
-            var ll = y.mul(t);
-            var nll = ll.neg();
-            var loss = nll.sum();
-            loss.setGrad(Tensors.ofDouble().scalar(1));
-            loss.backward();
-
-//            System.out.println(t);
-//            System.out.println(x);
-//            System.out.println(y);
-//            System.out.println(ll);
-//            System.out.println(nll);
-//            System.out.println(loss);
-            System.out.println("Epoch: " + (i + 1) + ", loss: " + loss.value().get());
-            optimizer.step();
-        }
     }
 
     static void testIris() {
@@ -225,9 +163,9 @@ public class SandboxTest {
         var y_test = y.take(0, test_sample);
 
         Net nn = new Sequential(
-                new Linear(dtype, 4, 128, true),
+                new Linear(dtype, 4, 10_000, true),
                 new ReLU(),
-                new Linear(dtype, 128, 64, true),
+                new Linear(dtype, 10_000, 64, true),
                 new ReLU(),
                 new Linear(dtype, 64, 3, true),
                 new LogSoftmax(1)
@@ -235,7 +173,7 @@ public class SandboxTest {
         nn.seed(423);
 
         Optimizer optimizer = Optimizer.Adam(nn.parameters())
-                .lr.set(1e-5)
+                .lr.set(1e-6)
                 .amsgrad.set(false);
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
         VarDouble testLoss = VarDouble.empty().name("trainLoss");
@@ -249,14 +187,14 @@ public class SandboxTest {
             IntArrays.shuffle(idx, random);
 
             double trainLossValue = 0;
-            Loss loss = new NLLoss();
+            Loss loss = new NegativeLikelihoodLoss();
 
             for (int j = 0; j < idx.length; j += batch) {
                 int[] idx_batch = Arrays.copyOfRange(idx, j, Math.min(idx.length, j + batch));
                 var x_batch = x_train.take(0, idx_batch);
                 var y_batch = y_train.take(0, idx_batch);
 
-                loss.forward(nn.forward(Grad.var(x_batch))[0], Grad.var(y_batch));
+                loss.forward(nn.forward(Autograd.var(x_batch))[0], Autograd.var(y_batch));
 
                 trainLossValue += loss.loss();
 
@@ -264,7 +202,7 @@ public class SandboxTest {
                 optimizer.step();
             }
 
-            loss.forward(nn.forward(Grad.var(x_test))[0], Grad.var(y_test));
+            loss.forward(nn.forward(Autograd.var(x_test))[0], Autograd.var(y_test));
             double testLossValue = loss.loss();
 
             trainLoss.addDouble(trainLossValue * batch / (idx.length));

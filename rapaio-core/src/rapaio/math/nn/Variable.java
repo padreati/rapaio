@@ -26,13 +26,11 @@ import rapaio.math.tensor.Tensor;
 
 public final class Variable extends Node {
 
-    public Variable(String name, DType<?> dtype) {
-        this.name = name;
+    public Variable(DType<?> dtype) {
         this.dtype = dtype;
     }
 
-    public Variable(String name, Tensor<?> value) {
-        this.name = name;
+    public Variable(Tensor<?> value) {
         this.dtype = value.dtype();
         setValue(value);
     }
