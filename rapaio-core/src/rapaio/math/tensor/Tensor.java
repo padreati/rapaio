@@ -43,6 +43,7 @@ import rapaio.math.tensor.matrix.LUDecomposition;
 import rapaio.math.tensor.matrix.QRDecomposition;
 import rapaio.math.tensor.matrix.SVDecomposition;
 import rapaio.math.tensor.operator.Broadcast;
+import rapaio.math.tensor.operator.Compare;
 import rapaio.math.tensor.operator.TensorBinaryOp;
 import rapaio.math.tensor.operator.TensorOp;
 import rapaio.math.tensor.operator.TensorReduceOp;
@@ -944,6 +945,43 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return unaryOp_(TensorOp.unaryFillNan(value));
     }
 
+    public final Tensor<N> nanToNum_(N fill) {
+        return unaryOp_(TensorOp.unaryNanToNum(fill, fill, fill));
+    }
+
+    public final Tensor<N> nanToNum_(int fill) {
+        return unaryOp_(TensorOp.unaryNanToNum(fill, fill, fill));
+    }
+
+    public final Tensor<N> nanToNum_(double fill) {
+        return unaryOp_(TensorOp.unaryNanToNum(fill, fill, fill));
+    }
+
+    public final Tensor<N> nanToNum_(N nan, N negInf, N posInf) {
+        return unaryOp_(TensorOp.unaryNanToNum(nan, negInf, posInf));
+    }
+
+    public final Tensor<N> nanToNum_(int nan, int negInf, int posInf) {
+        return unaryOp_(TensorOp.unaryNanToNum(nan, negInf, posInf));
+    }
+
+    public final Tensor<N> nanToNum_(double nan, double ninf, double pinf) {
+        return unaryOp_(TensorOp.unaryNanToNum(nan, ninf, pinf));
+    }
+
+    public final Tensor<N> compareMask_(Compare cmp, N value) {
+        return unaryOp_(TensorOp.unaryOpCompareMask(cmp, value));
+    }
+
+    public final Tensor<N> compareMask_(Compare cmp, int value) {
+        return unaryOp_(TensorOp.unaryOpCompareMask(cmp, value));
+    }
+
+    public final Tensor<N> compareMask_(Compare cmp, double value) {
+        return unaryOp_(TensorOp.unaryOpCompareMask(cmp, value));
+    }
+
+
     public final Tensor<N> clamp(N min, N max) {
         return unaryOp(TensorOp.unaryClamp(dtype(), min, max));
     }
@@ -1224,10 +1262,22 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
         return unaryOp_(TensorOp.unaryPow(power));
     }
 
+    public final Tensor<N> sigmoid() {
+        return unaryOp(TensorOp.unarySigmoid());
+    }
+
+    public final Tensor<N> sigmoid(Order order) {
+        return unaryOp(TensorOp.unarySigmoid(), order);
+    }
+
+    public final Tensor<N> sigmoid_() {
+        return unaryOp_(TensorOp.unarySigmoid());
+    }
+
     //--------- BINARY OPERATIONS ----------------//
 
     public final Tensor<N> binaryOp(TensorBinaryOp op, Tensor<?> t, Order order) {
-        Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this, t));
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this.shape(), t.shape()));
         if (!broadcast.valid()) {
             throw new IllegalArgumentException(
                     String.format("Operation could not be applied on tensors with shape: %s, %s", shape(), t.shape()));
@@ -1588,10 +1638,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> sum(int axis) {
-        return sum(Order.defaultOrder(), axis);
+        return sum(axis, Order.defaultOrder());
     }
 
-    public final Tensor<N> sum(Order order, int axis) {
+    public final Tensor<N> sum(int axis, Order order) {
         return associativeOpNarrow(TensorOp.reduceAdd(), order, axis);
     }
 
@@ -1600,10 +1650,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> nanSum(int axis) {
-        return nanSum(Order.defaultOrder(), axis);
+        return nanSum(axis, Order.defaultOrder());
     }
 
-    public final Tensor<N> nanSum(Order order, int axis) {
+    public final Tensor<N> nanSum(int axis, Order order) {
         return nanAssociativeOpNarrow(TensorOp.reduceAdd(), order, axis);
     }
 
@@ -1612,10 +1662,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> prod(int axis) {
-        return prod(Order.defaultOrder(), axis);
+        return prod(axis, Order.defaultOrder());
     }
 
-    public final Tensor<N> prod(Order order, int axis) {
+    public final Tensor<N> prod(int axis, Order order) {
         return associativeOpNarrow(TensorOp.reduceMul(), order, axis);
     }
 
@@ -1624,10 +1674,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> nanProd(int axis) {
-        return nanProd(Order.defaultOrder(), axis);
+        return nanProd(axis, Order.defaultOrder());
     }
 
-    public final Tensor<N> nanProd(Order order, int axis) {
+    public final Tensor<N> nanProd(int axis, Order order) {
         return nanAssociativeOpNarrow(TensorOp.reduceMul(), order, axis);
     }
 
@@ -1642,10 +1692,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> amax(int axis) {
-        return amax(Order.defaultOrder(), axis);
+        return amax(axis, Order.defaultOrder());
     }
 
-    public final Tensor<N> amax(Order order, int axis) {
+    public final Tensor<N> amax(int axis, Order order) {
         return associativeOpNarrow(TensorOp.reduceMax(), order, axis);
     }
 
@@ -1654,10 +1704,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> nanMax(int axis) {
-        return nanMax(Order.defaultOrder(), axis);
+        return nanMax(axis, Order.defaultOrder());
     }
 
-    public final Tensor<N> nanMax(Order order, int axis) {
+    public final Tensor<N> nanMax(int axis, Order order) {
         return nanAssociativeOpNarrow(TensorOp.reduceMax(), order, axis);
     }
 
@@ -1672,10 +1722,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> amin(int axis) {
-        return amin(Order.defaultOrder(), axis);
+        return amin(axis, Order.defaultOrder());
     }
 
-    public final Tensor<N> amin(Order order, int axis) {
+    public final Tensor<N> amin(int axis, Order order) {
         return associativeOpNarrow(TensorOp.reduceMin(), order, axis);
     }
 
@@ -1684,11 +1734,65 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> nanMin(int axis) {
-        return nanMin(Order.defaultOrder(), axis);
+        return nanMin(axis, Order.defaultOrder());
     }
 
-    public final Tensor<N> nanMin(Order order, int axis) {
+    public final Tensor<N> nanMin(int axis, Order order) {
         return nanAssociativeOpNarrow(TensorOp.reduceMin(), order, axis);
+    }
+
+    public final Tensor<N> reduceSum(Shape targetShape) {
+        return reduceSum(targetShape, Order.defaultOrder());
+    }
+
+    public final Tensor<N> reduceSum(Shape targetShape, Order askOrder) {
+        var ewb = Broadcast.elementWise(shape(), targetShape);
+        if (ewb.valid() && ewb.shape().equals(shape())) {
+            // first dimensions which does not exist in target dimensions are reduced
+            Tensor<N> result = this;
+            while (result.rank() > targetShape.rank()) {
+                result = result.sum(0, askOrder);
+            }
+            // the other dimensions are reduced to 1 and keep, if needed
+            for (int i = 0; i < targetShape.rank(); i++) {
+                if ((targetShape.dim(i) != result.dim(i))) {
+                    // this should not happen
+                    if (targetShape.dim(i) != 1) {
+                        throw new IllegalStateException("Reducing shape has a non unit reducing dimension.");
+                    }
+                    result = result.sum(i, askOrder).stretch(i);
+                }
+            }
+            return result;
+        }
+        throw new IllegalArgumentException("Current shape " + shape() + " cannot be reduced into target shape " + targetShape);
+    }
+
+    public final Tensor<N> reduceMean(Shape targetShape) {
+        return reduceMean(targetShape, Order.defaultOrder());
+    }
+
+    public final Tensor<N> reduceMean(Shape targetShape, Order askOrder) {
+        var ewb = Broadcast.elementWise(shape(), targetShape);
+        if (ewb.valid() && ewb.shape().equals(shape())) {
+            // first dimensions which does not exist in target dimensions are reduced
+            Tensor<N> result = this;
+            while (result.rank() > targetShape.rank()) {
+                result = result.mean(0, askOrder);
+            }
+            // the other dimensions are reduced to 1 and keep, if needed
+            for (int i = 0; i < targetShape.rank(); i++) {
+                if ((targetShape.dim(i) != result.dim(i))) {
+                    // this should not happen
+                    if (targetShape.dim(i) != 1) {
+                        throw new IllegalStateException("Reducing shape has a non unit reducing dimension.");
+                    }
+                    result = result.mean(i, askOrder).stretch(i);
+                }
+            }
+            return result;
+        }
+        throw new IllegalArgumentException("Current shape " + shape() + " cannot be reduced into target shape " + targetShape);
     }
 
     //------- VECTOR MATRIX OPERATIONS ----------//
@@ -2226,10 +2330,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     public abstract N mean();
 
     public final Tensor<N> mean(int axis) {
-        return mean(Order.defaultOrder(), axis);
+        return mean(axis, Order.defaultOrder());
     }
 
-    public final Tensor<N> mean(Order order, int axis) {
+    public final Tensor<N> mean(int axis, Order order) {
         return alongAxisOperation(order, axis, Tensor::mean);
     }
 
@@ -2240,10 +2344,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> std(int axis) {
-        return std(Order.defaultOrder(), axis);
+        return std(axis, Order.defaultOrder());
     }
 
-    public final Tensor<N> std(Order order, int axis) {
+    public final Tensor<N> std(int axis, Order order) {
         return alongAxisOperation(order, axis, Tensor::std);
     }
 
@@ -2252,10 +2356,10 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> stdc(int axis, int ddof) {
-        return stdc(Order.defaultOrder(), axis, ddof);
+        return stdc(axis, ddof, Order.defaultOrder());
     }
 
-    public final Tensor<N> stdc(Order order, int axis, int ddof) {
+    public final Tensor<N> stdc(int axis, int ddof, Order order) {
         return alongAxisOperation(order, axis, t -> t.stdc(ddof));
     }
 
@@ -2264,22 +2368,44 @@ public abstract sealed class Tensor<N extends Number> implements Printable, Iter
     }
 
     public final Tensor<N> var(int axis) {
-        return var(Order.defaultOrder(), axis);
+        return var(axis, Order.defaultOrder());
     }
 
-    public final Tensor<N> var(Order order, int axis) {
-        return varc(order, axis, 0);
+    public final Tensor<N> var(int axis, Order order) {
+        return varc(axis, 0, order);
     }
 
     public abstract N varc(int ddof);
 
     public final Tensor<N> varc(int axis, int ddof) {
-        return varc(Order.defaultOrder(), axis, ddof);
+        return varc(axis, ddof, Order.defaultOrder());
     }
 
-    public final Tensor<N> varc(Order order, int axis, int ddof) {
+    public final Tensor<N> varc(int axis, int ddof, Order order) {
         return alongAxisOperation(order, axis, t -> t.varc(ddof));
     }
+
+    public final Tensor<N> softmax(int axis) {
+        return softmax(axis, Order.defaultOrder());
+    }
+
+    public final Tensor<N> softmax(int axis, Order askOrder) {
+        return copy(askOrder).softmax_(axis);
+    }
+
+    public abstract Tensor<N> softmax_(int axis);
+
+
+    public final Tensor<N> logsoftmax(int axis) {
+        return logsoftmax(axis, Order.defaultOrder());
+    }
+
+    public final Tensor<N> logsoftmax(int axis, Order askOrder) {
+        return copy(askOrder).logsoftmax_(axis);
+    }
+
+    public abstract Tensor<N> logsoftmax_(int axis);
+
 
     /**
      * Computes the number of NaN values. For integer value types this operation returns 0.

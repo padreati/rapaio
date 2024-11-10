@@ -30,16 +30,10 @@ import rapaio.math.tensor.operator.TensorUnaryOp;
 
 public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
 
-    private final byte fillByte;
-    private final int fillInt;
-    private final float fillFloat;
-    private final double fillDouble;
+    private final N fill;
 
     public UnaryOpFill(N fill) {
-        fillByte = fill.byteValue();
-        fillInt = fill.intValue();
-        fillFloat = fill.floatValue();
-        fillDouble = fill.doubleValue();
+        this.fill = fill;
     }
 
     @Override
@@ -49,27 +43,27 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
 
     @Override
     public byte applyByte(byte v) {
-        return fillByte;
+        return fill.byteValue();
     }
 
     @Override
     public int applyInt(int v) {
-        return fillInt;
-    }
-
-    @Override
-    public double applyDouble(double v) {
-        return fillDouble;
+        return fill.intValue();
     }
 
     @Override
     public float applyFloat(float v) {
-        return fillFloat;
+        return fill.floatValue();
+    }
+
+    @Override
+    public double applyDouble(double v) {
+        return fill.doubleValue();
     }
 
     @Override
     protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
-        var a = ByteVector.broadcast(loop.vs, fillByte);
+        var a = ByteVector.broadcast(loop.vs, fill.byteValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -77,7 +71,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = fillByte;
+                array[p] = fill.byteValue();
                 p++;
             }
         }
@@ -85,7 +79,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
 
     @Override
     protected void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
-        var a = ByteVector.broadcast(loop.vs, fillByte);
+        var a = ByteVector.broadcast(loop.vs, fill.byteValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -93,7 +87,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = fillByte;
+                array[p] = fill.byteValue();
                 p += loop.step;
             }
         }
@@ -101,7 +95,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
 
     @Override
     protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array) {
-        var a = IntVector.broadcast(loop.vs, fillInt);
+        var a = IntVector.broadcast(loop.vs, fill.intValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -109,7 +103,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = fillInt;
+                array[p] = fill.intValue();
                 p++;
             }
         }
@@ -117,7 +111,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
 
     @Override
     protected void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array) {
-        var a = IntVector.broadcast(loop.vs, fillInt);
+        var a = IntVector.broadcast(loop.vs, fill.intValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -125,7 +119,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = fillInt;
+                array[p] = fill.intValue();
                 p += loop.step;
             }
         }
@@ -133,7 +127,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
 
     @Override
     protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array) {
-        var a = FloatVector.broadcast(loop.vs, fillFloat);
+        var a = FloatVector.broadcast(loop.vs, fill.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -141,7 +135,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = fillFloat;
+                array[p] = fill.floatValue();
                 p++;
             }
         }
@@ -149,7 +143,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
 
     @Override
     protected void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array) {
-        var a = FloatVector.broadcast(loop.vs, fillFloat);
+        var a = FloatVector.broadcast(loop.vs, fill.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -157,7 +151,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = fillFloat;
+                array[p] = fill.floatValue();
                 p += loop.step;
             }
         }
@@ -165,7 +159,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
 
     @Override
     protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array) {
-        var a = DoubleVector.broadcast(loop.vs, fillDouble);
+        var a = DoubleVector.broadcast(loop.vs, fill.doubleValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -173,7 +167,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = fillDouble;
+                array[p] = fill.doubleValue();
                 p++;
             }
         }
@@ -181,7 +175,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
 
     @Override
     protected void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array) {
-        var a = DoubleVector.broadcast(loop.vs, fillDouble);
+        var a = DoubleVector.broadcast(loop.vs, fill.doubleValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -189,7 +183,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = fillDouble;
+                array[p] = fill.doubleValue();
                 p += loop.step;
             }
         }

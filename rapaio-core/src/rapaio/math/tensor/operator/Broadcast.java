@@ -29,32 +29,36 @@ import rapaio.util.collection.IntArrays;
 
 public final class Broadcast {
 
-    public static ElementWise elementWise(List<Tensor<?>> tensors) {
-        if (tensors.isEmpty()) {
+    public static ElementWise elementWise(Shape... shapes) {
+        return elementWise(List.of(shapes));
+    }
+
+    public static ElementWise elementWise(List<Shape> shapes) {
+        if (shapes.isEmpty()) {
             return new ElementWise(true, true);
         }
         int len = 0;
-        int[] ranks = new int[tensors.size()];
-        for (int i = 0; i < tensors.size(); i++) {
-            int rank = tensors.get(i).rank();
+        int[] ranks = new int[shapes.size()];
+        for (int i = 0; i < shapes.size(); i++) {
+            int rank = shapes.get(i).rank();
             ranks[i] = rank;
             len = Math.max(rank, len);
         }
         int[] dims = IntArrays.newFill(len, 1);
         boolean unchanged = true;
         for (int i = 1; i <= len; i++) {
-            int max = ranks[0] - i < 0 ? 0 : tensors.getFirst().dim(ranks[0] - i);
-            for (int j = 1; j < tensors.size(); j++) {
-                max = Math.max(max, ranks[j] - i < 0 ? 0 : tensors.get(j).dim(ranks[j] - i));
+            int max = ranks[0] - i < 0 ? 0 : shapes.getFirst().dim(ranks[0] - i);
+            for (int j = 1; j < shapes.size(); j++) {
+                max = Math.max(max, ranks[j] - i < 0 ? 0 : shapes.get(j).dim(ranks[j] - i));
             }
             dims[len - i] = max;
-            for (int j = 0; j < tensors.size(); j++) {
+            for (int j = 0; j < shapes.size(); j++) {
                 int index = ranks[j] - i;
                 if (index < 0) {
                     unchanged = false;
                     continue;
                 }
-                int size = tensors.get(j).dim(index);
+                int size = shapes.get(j).dim(index);
                 if (size == max) {
                     continue;
                 }
@@ -79,7 +83,7 @@ public final class Broadcast {
         }
 
         public <N extends Number> Tensor<N> transform(Tensor<N> t) {
-            if(hasShape(t)) {
+            if (hasShape(t)) {
                 return t;
             }
             for (int i = 1; i <= shape.rank(); i++) {

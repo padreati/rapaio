@@ -42,8 +42,9 @@ public class BroadcastTest {
                 Tensors.seq(Shape.of(3, 2, 3)),
                 Tensors.seq(Shape.of(3))
         );
+        List<Shape> shapes = tensors.stream().map(Tensor::shape).toList();
 
-        Broadcast.ElementWise broadcast = Broadcast.elementWise(tensors);
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(shapes);
         assertTrue(broadcast.valid());
         assertFalse(broadcast.unchanged());
         for (var t : tensors) {
@@ -53,8 +54,7 @@ public class BroadcastTest {
 
     @Test
     void testElementWiseEmpty() {
-        List<Tensor<?>> tensors = List.of();
-        Broadcast.ElementWise broadcast = Broadcast.elementWise(tensors);
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of());
         assertTrue(broadcast.valid());
         assertTrue(broadcast.unchanged());
         assertEquals(Shape.of(), broadcast.shape());
@@ -62,9 +62,9 @@ public class BroadcastTest {
 
     @Test
     void testSingleEmelent() {
-        List<Tensor<?>> tensors = List.of(
-                Tensors.seq(Shape.of(2,1,4)));
-        Broadcast.ElementWise broadcast = Broadcast.elementWise(tensors);
+        List<Tensor<?>> tensors = List.of(Tensors.seq(Shape.of(2, 1, 4)));
+        List<Shape> shapes = tensors.stream().map(Tensor::shape).toList();
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(shapes);
         assertTrue(broadcast.valid());
         assertTrue(broadcast.unchanged());
         assertEquals(tensors.getFirst().shape(), broadcast.shape());
@@ -74,10 +74,11 @@ public class BroadcastTest {
     void testElementWiseInvalidCase() {
         List<Tensor<?>> tensors = List.of(
                 Tensors.seq(Shape.of(2, 1)),
-                Tensors.seq(Shape.of(2,3,1))
+                Tensors.seq(Shape.of(2, 3, 1))
         );
+        List<Shape> shapes = tensors.stream().map(Tensor::shape).toList();
 
-        Broadcast.ElementWise broadcast = Broadcast.elementWise(tensors);
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(shapes);
         assertFalse(broadcast.valid());
         assertTrue(broadcast.unchanged());
     }

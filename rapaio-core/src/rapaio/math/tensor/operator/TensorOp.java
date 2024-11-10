@@ -22,38 +22,41 @@
 package rapaio.math.tensor.operator;
 
 import rapaio.math.tensor.DType;
+import rapaio.math.tensor.operator.impl.BinaryOpAdd;
+import rapaio.math.tensor.operator.impl.BinaryOpDiv;
+import rapaio.math.tensor.operator.impl.BinaryOpMax;
+import rapaio.math.tensor.operator.impl.BinaryOpMin;
+import rapaio.math.tensor.operator.impl.BinaryOpMul;
+import rapaio.math.tensor.operator.impl.BinaryOpSub;
+import rapaio.math.tensor.operator.impl.ReduceOpAdd;
+import rapaio.math.tensor.operator.impl.ReduceOpMax;
+import rapaio.math.tensor.operator.impl.ReduceOpMin;
+import rapaio.math.tensor.operator.impl.ReduceOpMul;
 import rapaio.math.tensor.operator.impl.UnaryOpAbs;
 import rapaio.math.tensor.operator.impl.UnaryOpAcos;
-import rapaio.math.tensor.operator.impl.ReduceOpAdd;
-import rapaio.math.tensor.operator.impl.BinaryOpAdd;
 import rapaio.math.tensor.operator.impl.UnaryOpAsin;
 import rapaio.math.tensor.operator.impl.UnaryOpAtan;
 import rapaio.math.tensor.operator.impl.UnaryOpCeil;
 import rapaio.math.tensor.operator.impl.UnaryOpClamp;
+import rapaio.math.tensor.operator.impl.UnaryOpCompareMask;
 import rapaio.math.tensor.operator.impl.UnaryOpCos;
 import rapaio.math.tensor.operator.impl.UnaryOpCosh;
-import rapaio.math.tensor.operator.impl.BinaryOpDiv;
 import rapaio.math.tensor.operator.impl.UnaryOpExp;
 import rapaio.math.tensor.operator.impl.UnaryOpExpm1;
-import rapaio.math.tensor.operator.impl.UnaryOpFillNan;
 import rapaio.math.tensor.operator.impl.UnaryOpFill;
+import rapaio.math.tensor.operator.impl.UnaryOpFillNan;
 import rapaio.math.tensor.operator.impl.UnaryOpFloor;
 import rapaio.math.tensor.operator.impl.UnaryOpLog;
 import rapaio.math.tensor.operator.impl.UnaryOpLog1p;
-import rapaio.math.tensor.operator.impl.ReduceOpMax;
-import rapaio.math.tensor.operator.impl.BinaryOpMax;
-import rapaio.math.tensor.operator.impl.ReduceOpMin;
-import rapaio.math.tensor.operator.impl.BinaryOpMin;
-import rapaio.math.tensor.operator.impl.ReduceOpMul;
-import rapaio.math.tensor.operator.impl.BinaryOpMul;
+import rapaio.math.tensor.operator.impl.UnaryOpNanToNum;
 import rapaio.math.tensor.operator.impl.UnaryOpNeg;
 import rapaio.math.tensor.operator.impl.UnaryOpPow;
 import rapaio.math.tensor.operator.impl.UnaryOpRint;
+import rapaio.math.tensor.operator.impl.UnaryOpSigmoid;
 import rapaio.math.tensor.operator.impl.UnaryOpSin;
 import rapaio.math.tensor.operator.impl.UnaryOpSinh;
 import rapaio.math.tensor.operator.impl.UnaryOpSqr;
 import rapaio.math.tensor.operator.impl.UnaryOpSqrt;
-import rapaio.math.tensor.operator.impl.BinaryOpSub;
 import rapaio.math.tensor.operator.impl.UnaryOpTan;
 import rapaio.math.tensor.operator.impl.UnaryOpTanh;
 
@@ -83,6 +86,8 @@ public final class TensorOp {
 
     private static final UnaryOpSqr SQR = new UnaryOpSqr();
     private static final UnaryOpSqrt SQRT = new UnaryOpSqrt();
+
+    private static final UnaryOpSigmoid SIGMOID = new UnaryOpSigmoid();
 
     private static final BinaryOpAdd ADD = new BinaryOpAdd();
     private static final BinaryOpSub SUB = new BinaryOpSub();
@@ -194,6 +199,17 @@ public final class TensorOp {
         return new UnaryOpFillNan<>(fill);
     }
 
+    public static <N extends Number> UnaryOpNanToNum<N> unaryNanToNum(N nan, N ninf, N pinf) {
+        return new UnaryOpNanToNum<>(nan, ninf, pinf);
+    }
+
+    public static <N extends Number> UnaryOpCompareMask<N> unaryOpCompareMask(Compare cmp, N value) {
+        return new UnaryOpCompareMask<>(cmp, value);
+    }
+
+    public static UnaryOpSigmoid unarySigmoid() {
+        return SIGMOID;
+    }
 
     public static BinaryOpAdd binaryAdd() {
         return ADD;

@@ -23,6 +23,7 @@ package rapaio.math.tensor.manager.base;
 
 import java.util.Random;
 
+import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Order;
@@ -57,6 +58,11 @@ public class BaseTensorManager extends TensorManager {
         }
 
         @Override
+        public Tensor<Double> random(Shape shape, Distribution dist, Random random, Order order) {
+            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> dist.sampleNext(random));
+        }
+
+        @Override
         public Tensor<Double> stride(StrideLayout layout, Storage<Double> storage) {
             return new BaseDoubleTensorStride(parent, layout, storage);
         }
@@ -72,6 +78,11 @@ public class BaseTensorManager extends TensorManager {
         public final Tensor<Float> random(Shape shape, Random random, Order order) {
             Normal normal = Normal.std();
             return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> (float) normal.sampleNext(random));
+        }
+
+        @Override
+        public Tensor<Float> random(Shape shape, Distribution dist, Random random, Order order) {
+            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> (float) dist.sampleNext(random));
         }
 
         @Override
@@ -92,6 +103,11 @@ public class BaseTensorManager extends TensorManager {
         }
 
         @Override
+        public Tensor<Integer> random(Shape shape, Distribution dist, Random random, Order order) {
+            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> (int) dist.sampleNext(random));
+        }
+
+        @Override
         public Tensor<Integer> stride(StrideLayout layout, Storage<Integer> storage) {
             return new BaseIntTensorStride(parent, layout, storage);
         }
@@ -108,6 +124,11 @@ public class BaseTensorManager extends TensorManager {
             byte[] buff = new byte[shape.size()];
             random.nextBytes(buff);
             return zeros(shape, Order.autoFC(order)).apply_(order, (i, _) -> buff[i]);
+        }
+
+        @Override
+        public Tensor<Byte> random(Shape shape, Distribution dist, Random random, Order order) {
+            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> (byte) dist.sampleNext(random));
         }
 
         @Override

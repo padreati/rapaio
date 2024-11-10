@@ -1303,6 +1303,65 @@ public class TensorTest {
 
     @ParameterizedTest
     @MethodSource("dataFactorySource")
+    <N extends Number> void testReduceSum(DataFactory<N> g) {
+        var t = g.seq(Shape.of(2, 3)).add_(1);
+
+        var e1 = t.strexp(0, 3).strexp(0, 2);
+        var r1 = e1.reduceSum(t.shape());
+        assertTensorEqualValues(t.mul(6), r1);
+
+        e1 = t.strexp(0, 3).strexp(0, 2).copy();
+        r1 = e1.reduceSum(t.shape());
+        assertTensorEqualValues(t.mul(6), r1);
+
+        t = g.seq(Shape.of(2, 1, 2)).add_(1);
+        e1 = t.expand(1, 2).strexp(0, 5);
+        r1 = e1.reduceSum(t.shape());
+        assertTensorEqualValues(t.mul(10), r1);
+
+        t = g.seq(Shape.of(2, 1, 2)).add_(1);
+        e1 = t.expand(1, 2).strexp(0, 5).copy();
+        r1 = e1.reduceSum(t.shape());
+        assertTensorEqualValues(t.mul(10), r1);
+
+        t = g.seq(Shape.of(5, 1, 2)).add_(1);
+        r1 = t.reduceSum(Shape.of());
+        assertEquals(t.sum(), r1.get());
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void testReduceMean(DataFactory<N> g) {
+        if(!g.dType().floatingPoint()) {
+            return;
+        }
+        var t = g.seq(Shape.of(2, 3)).add_(1);
+
+        var e1 = t.strexp(0, 3).strexp(0, 2);
+        var r1 = e1.reduceMean(t.shape());
+        assertTensorEqualValues(t, r1);
+
+        e1 = t.strexp(0, 3).strexp(0, 2).copy();
+        r1 = e1.reduceMean(t.shape());
+        assertTensorEqualValues(t, r1);
+
+        t = g.seq(Shape.of(2, 1, 2)).add_(1);
+        e1 = t.expand(1, 2).strexp(0, 5);
+        r1 = e1.reduceMean(t.shape());
+        assertTensorEqualValues(t, r1);
+
+        t = g.seq(Shape.of(2, 1, 2)).add_(1);
+        e1 = t.expand(1, 2).strexp(0, 5).copy();
+        r1 = e1.reduceMean(t.shape());
+        assertTensorEqualValues(t, r1);
+
+        t = g.seq(Shape.of(5, 1, 2)).add_(1);
+        r1 = t.reduceMean(Shape.of());
+        assertEquals(t.mean(), r1.get());
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
     <N extends Number> void testTrace(DataFactory<N> g) {
         var e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10)).trace());
         assertEquals("This operation is available only on tensor matrix.", e.getMessage());

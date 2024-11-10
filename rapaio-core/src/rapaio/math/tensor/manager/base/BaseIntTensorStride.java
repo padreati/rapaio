@@ -173,7 +173,7 @@ public final class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
         if (other.isScalar()) {
             return binaryOp_(op, other.getInt());
         }
-        Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this, other));
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this.shape(), other.shape()));
         if (!broadcast.valid()) {
             throw new IllegalArgumentException(
                     String.format("Operation could not be applied on tensors with shape: %s, %s", shape(), other.shape()));
@@ -537,6 +537,28 @@ public final class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
     }
 
     @Override
+    public Tensor<Integer> softmax_(int axis) {
+        if (!dtype().floatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        // TODO: this can be improved perhaps a lot
+        sub_(amax(axis).strexp(axis, dim(axis))).exp_();
+        div_(sum(axis).strexp(axis, dim(axis)));
+        return this;
+    }
+
+    @Override
+    public Tensor<Integer> logsoftmax_(int axis) {
+        if (!dtype().floatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        // TODO: this can be improved perhaps a lot
+        var max = amax(axis).strexp(axis, dim(axis));
+        sub_(this.sub(max).exp().sum(axis).log_().strexp(axis, dim(axis))).sub_(max);
+        return this;
+    }
+
+    @Override
     protected Tensor<Integer> alongAxisOperation(Order order, int axis, Function<Tensor<Integer>, Integer> op) {
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
@@ -721,6 +743,9 @@ public final class BaseIntTensorStride extends AbstractStrideTensor<Integer> {
 
     @Override
     public Tensor<Integer> associativeOpNarrow(TensorReduceOp op, Order order, int axis) {
+        if (axis < 0) {
+            axis += shape().rank();
+        }
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
         int selDim = layout.dim(axis);

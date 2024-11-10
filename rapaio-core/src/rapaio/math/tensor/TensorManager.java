@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import rapaio.core.distributions.Distribution;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.manager.base.BaseTensorManager;
 import rapaio.util.Hardware;
@@ -396,6 +397,12 @@ public abstract class TensorManager {
         public final Tensor<N> seq(Shape shape, Order order) {
             return zeros(shape, Order.autoFC(order)).apply_(Order.C, (i, _) -> dType.castValue(i));
         }
+
+        public final Tensor<N> random(Shape shape, Distribution dist, Random random) {
+            return random(shape, dist, random, Order.defaultOrder());
+        }
+
+        public abstract Tensor<N> random(Shape shape, Distribution dist, Random random, Order order);
 
         public final Tensor<N> random(Shape shape, Random random) {
             return random(shape, random, Order.defaultOrder());

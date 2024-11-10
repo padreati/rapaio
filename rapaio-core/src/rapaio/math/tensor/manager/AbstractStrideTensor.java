@@ -34,8 +34,8 @@ import rapaio.math.tensor.Storage;
 import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.iterators.DensePointerIterator;
-import rapaio.math.tensor.iterators.StrideLoopDescriptor;
 import rapaio.math.tensor.iterators.PointerIterator;
+import rapaio.math.tensor.iterators.StrideLoopDescriptor;
 import rapaio.math.tensor.iterators.StridePointerIterator;
 import rapaio.math.tensor.layout.StrideLayout;
 import rapaio.math.tensor.layout.StrideWrapper;
@@ -81,7 +81,13 @@ public abstract sealed class AbstractStrideTensor<N extends Number> extends Tens
 
     @Override
     public final Tensor<N> squeeze(int... axes) {
-        var newLayout = layout.squeeze(axes);
+        int[] copy = Arrays.copyOf(axes, axes.length);
+        for (int i = 0; i < copy.length; i++) {
+            if (copy[i] < 0) {
+                copy[i] += rank();
+            }
+        }
+        var newLayout = layout.squeeze(copy);
         if (newLayout == layout) {
             return this;
         }
@@ -269,6 +275,7 @@ public abstract sealed class AbstractStrideTensor<N extends Number> extends Tens
             return (Tensor<M>) this;
         }
 
+        askOrder = askOrder == Order.A ? Order.defaultOrder() : askOrder;
         askOrder = Order.autoFC(askOrder);
         var castTensor = manager().ofType(dtype).zeros(shape(), askOrder);
 

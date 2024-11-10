@@ -53,6 +53,12 @@ module rapaio.core {
     exports rapaio.math.tensor.storage;
     exports rapaio.math.tensor.storage.array;
 
+    exports rapaio.math.nn;
+    exports rapaio.math.nn.loss;
+    exports rapaio.math.nn.optimizer;
+    exports rapaio.math.nn.layer;
+    exports rapaio.math.nn.operations;
+
     exports rapaio.ml.common;
     exports rapaio.ml.common.distance;
     exports rapaio.ml.common.kernel;

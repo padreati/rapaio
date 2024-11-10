@@ -158,19 +158,17 @@ public final class StrideWrapper<N extends Number> extends AbstractList<N> {
     }
 
     public N aggregate(N startValue, BiFunction<N, N, N> fun) {
-        int limit = offset + len * stride;
         N v = startValue;
-        for (int i = offset; i < limit; i += stride) {
-            v = fun.apply(v, getter.apply(i));
+        for (int i = 0; i < len; i++) {
+            v = fun.apply(v, getter.apply(offset + i * stride));
         }
         return v;
     }
 
     public N nanAggregate(DType<N> dType, N startValue, BiFunction<N, N, N> fun) {
-        int limit = offset + len * stride;
         N v = startValue;
-        for (int i = offset; i < limit; i += stride) {
-            N next = getter.apply(i);
+        for (int i = 0; i < len; i++) {
+            N next = getter.apply(offset + i * stride);
             if (dType.isNaN(next)) {
                 continue;
             }
