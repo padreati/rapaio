@@ -102,9 +102,9 @@ public class UnaryOpFillNan<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector b = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                FloatVector b = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
-                b.intoArray(array, p, loop.simdOffsets, 0);
+                b.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
@@ -138,9 +138,9 @@ public class UnaryOpFillNan<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector b = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                DoubleVector b = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
-                b.intoArray(array, p, loop.simdOffsets, 0);
+                b.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {

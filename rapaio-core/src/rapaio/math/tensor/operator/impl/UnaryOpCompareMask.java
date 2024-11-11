@@ -89,11 +89,11 @@ public class UnaryOpCompareMask<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                ByteVector a = ByteVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                ByteVector a = ByteVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 VectorMask<Byte> mask = a.compare(compare.vectorComparison(), value.byteValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
@@ -127,11 +127,11 @@ public class UnaryOpCompareMask<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector a = IntVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                IntVector a = IntVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 VectorMask<Integer> mask = a.compare(compare.vectorComparison(), value.intValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
@@ -165,11 +165,11 @@ public class UnaryOpCompareMask<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                FloatVector a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 VectorMask<Float> mask = a.compare(compare.vectorComparison(), value.floatValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
@@ -203,11 +203,11 @@ public class UnaryOpCompareMask<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 VectorMask<Double> mask = a.compare(compare.vectorComparison(), value.doubleValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {

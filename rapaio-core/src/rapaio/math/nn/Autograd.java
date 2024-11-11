@@ -21,15 +21,32 @@
 
 package rapaio.math.nn;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Tensor;
 
+/**
+ * Central place of automatic differentiation in reverse mode.
+ * <p>
+ * Object which allows differentiation must implement {@link Node}.
+ * <p>
+ * The forward operations are performed when the computation is called using various operations
+ * on {@link Node} or when new node are created with {@link #var(Tensor)} or {@link #var(DType)}.
+ * <p>
+ * In order to compute gradients one has to call {@link #backward(Node)}. The methods can be called on nodes
+ * or on loss functions {@link Loss}. In all cases the node on which {@code backward} method is called must
+ * have a computed gradient and that has to be a scalar.
+ * <p>
+ * To maximize the performance not all the gradients are computed. The one which are computed are for
+ * the variables which has {@link Node#requiresGrad()} equals with {@code true}, all on all the objects
+ * in the upper computational graph to the root node (the node on which {@code backward} method was called.
+ */
 public final class Autograd {
 
     public static Variable var(Tensor<?> value) {
@@ -61,44 +78,98 @@ public final class Autograd {
     }
 
     private static void runBackwardGraph(Node node, boolean retainGrad) {
-
-        HashMap<Node, Integer> nodeIndex = buildIndex(node);
-
-//        List<Node>
-
-        Queue<Node> queue = new LinkedList<>();
-        Set<Node> visited = new HashSet<>();
-        queue.add(node);
-        visited.add(node);
-
-        while (!queue.isEmpty()) {
-            Node last = queue.poll();
-            for (BackFun edge : last.backfuns()) {
-                if (!visited.contains(edge.ref())) {
-                    visited.add(edge.ref());
-                    queue.add(edge.ref());
-                }
-                edge.fun().run();
-            }
-            if (!retainGrad) {
-                last.backfuns().clear();
-            }
-        }
+        new ComputeGraph(node, retainGrad);
     }
 
-    private static HashMap<Node, Integer> buildIndex(Node node) {
-        HashMap<Node, Integer> nodeIndex = new HashMap<>();
-        Queue<Node> queue = new LinkedList<>();
-        queue.add(node);
-        while (!queue.isEmpty()) {
-            Node last = queue.poll();
-            if (!nodeIndex.containsKey(last)) {
-                nodeIndex.put(last, nodeIndex.size());
-                for (BackFun edge : last.backfuns()) {
-                    queue.add(edge.ref());
+    static class ComputeGraph {
+
+        final Node root;
+        final boolean retainGrad;
+
+        List<Node> reverse;
+        Set<Node> computeGrad;
+
+        public ComputeGraph(Node root, boolean retainGrad) {
+            this.root = root;
+            this.retainGrad = retainGrad;
+        }
+
+        public void run() {
+            buildDeps();
+            for (Node node : reverse) {
+                for (BackFun backFun : node.backfuns()) {
+                    if (computeGrad.contains(backFun.ref())) {
+                        backFun.fun().run();
+                    }
+                }
+                if (!retainGrad) {
+                    node.backfuns().clear();
                 }
             }
         }
-        return nodeIndex;
+
+        private void buildDeps() {
+            // build coverage
+            Set<Node> coverage = new HashSet<>();
+            coverage(coverage, root);
+
+            // build parents
+            HashMap<Node, List<Node>> parents = new HashMap<>();
+            coverage.forEach(node -> parents.put(node, new ArrayList<>()));
+            for (Node node : coverage) {
+                for (BackFun edge : node.backfuns()) {
+                    parents.get(edge.ref()).add(node);
+                }
+            }
+
+            // build parent counters
+            HashMap<Node, Integer> counters = new HashMap<>();
+            coverage.forEach(node -> counters.put(node, parents.get(node).size()));
+
+            // build topological sort
+            reverse = new ArrayList<>();
+            HashSet<Node> frontier = new HashSet<>();
+            frontier.add(root);
+
+            while (!frontier.isEmpty()) {
+                Optional<Node> opNext = frontier.stream().filter(node -> counters.get(node) == 0).findFirst();
+                if (opNext.isEmpty()) {
+                    throw new IllegalArgumentException("Graph contains cycles.");
+                }
+                Node next = opNext.get();
+                frontier.remove(next);
+                for (BackFun bf : next.backfuns()) {
+                    counters.put(bf.ref(), counters.get(bf.ref()) - 1);
+                    frontier.add(bf.ref());
+                }
+                reverse.add(next);
+            }
+
+            // compute topological sort and compute gradient
+
+            List<Node> sorted = reverse.reversed();
+            this.computeGrad = new HashSet<>();
+            for (Node node : sorted) {
+                if (node.requiresGrad() || computeGrad.contains(node)) {
+                    computeGrad.add(node);
+                    computeGrad.addAll(parents.get(node));
+                }
+            }
+
+            // help gc
+            parents.clear();
+            coverage.clear();
+            counters.clear();
+        }
+
+        private void coverage(Set<Node> visited, Node node) {
+            if (visited.contains(node)) {
+                return;
+            }
+            visited.add(node);
+            for (var edge : node.backfuns()) {
+                coverage(visited, edge.ref());
+            }
+        }
     }
 }

@@ -23,6 +23,7 @@ package rapaio.math.tensor.iterators;
 
 import java.util.Arrays;
 
+import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.tensor.Order;
 import rapaio.math.tensor.Shape;
@@ -35,7 +36,8 @@ import rapaio.util.collection.IntArrays;
  */
 public final class StrideLoopDescriptor<N extends Number> {
 
-    public static <N extends Number> StrideLoopDescriptor<N> of(Shape shape, int offset, int[] strides, Order askOrder, VectorSpecies<N> vs) {
+    public static <N extends Number> StrideLoopDescriptor<N> of(Shape shape, int offset, int[] strides, Order askOrder,
+            VectorSpecies<N> vs) {
         return new StrideLoopDescriptor<>(shape, offset, strides, askOrder, vs);
     }
 
@@ -50,7 +52,7 @@ public final class StrideLoopDescriptor<N extends Number> {
     public final VectorSpecies<N> vs;
     public final int simdLen;
     public final int simdBound;
-    public final int[] simdOffsets;
+    private int[] simdOffsets;
 
     private StrideLoopDescriptor(Shape shape, int offset, int[] strides, Order askOrder, VectorSpecies<N> vs) {
         this(StrideLayout.of(shape, offset, strides), askOrder, vs);
@@ -66,7 +68,6 @@ public final class StrideLoopDescriptor<N extends Number> {
             count = 1;
             simdBound = 0;
             offsets = new int[] {layout.offset()};
-            simdOffsets = simdOffsets(1);
             return;
         }
 
@@ -74,7 +75,6 @@ public final class StrideLoopDescriptor<N extends Number> {
         size = compact.dim(0);
         step = compact.stride(0);
         simdBound = vs.loopBound(size);
-        simdOffsets = simdOffsets(vs.length());
 
         if (compact.rank() == 1) {
             count = 1;
@@ -107,11 +107,22 @@ public final class StrideLoopDescriptor<N extends Number> {
         }
     }
 
-    private int[] simdOffsets(int len) {
-        int[] offsetMap = new int[len];
-        for (int i = 0; i < len; i++) {
-            offsetMap[i] = i * step;
+    public int[] simdOffsets() {
+        if (simdOffsets == null) {
+            simdOffsets = new int[vs.length()];
+            int i = 0;
+            VectorSpecies<Integer> vsi = IntVector.SPECIES_PREFERRED;
+            if (vsi.length() <= vs.length()) {
+                IntVector a = IntVector.zero(vsi);
+                for (; i < vs.length(); i += vsi.length()) {
+                    a = a.addIndex(step);
+                    a.intoArray(simdOffsets, i);
+                }
+            }
+            for (; i < vs.length(); i++) {
+                simdOffsets[i] = i * step;
+            }
         }
-        return offsetMap;
+        return simdOffsets;
     }
 }

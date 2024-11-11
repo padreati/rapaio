@@ -116,12 +116,12 @@ public class UnaryOpNanToNum<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector b = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                FloatVector b = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Float.POSITIVE_INFINITY));
                     b = b.blend(vninf, b.compare(VectorOperators.EQ, Float.NEGATIVE_INFINITY));
-                    b.intoArray(array, p, loop.simdOffsets, 0);
+                    b.intoArray(array, p, loop.simdOffsets(), 0);
                 }
                 p += loop.step * loop.simdLen;
             }
@@ -164,12 +164,12 @@ public class UnaryOpNanToNum<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector b = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                DoubleVector b = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Double.POSITIVE_INFINITY));
                     b = b.blend(vninf, b.compare(VectorOperators.EQ, Double.NEGATIVE_INFINITY));
-                    b.intoArray(array, p, loop.simdOffsets, 0);
+                    b.intoArray(array, p, loop.simdOffsets(), 0);
                 }
                 p += loop.step * loop.simdLen;
             }

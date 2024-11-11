@@ -83,7 +83,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
@@ -115,7 +115,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
@@ -147,7 +147,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
@@ -179,7 +179,7 @@ public class UnaryOpFill<N extends Number> extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {

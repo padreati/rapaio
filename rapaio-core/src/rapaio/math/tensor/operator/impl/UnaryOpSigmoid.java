@@ -95,9 +95,9 @@ public final class UnaryOpSigmoid extends TensorUnaryOp {
             int i = 0;
             FloatVector one = FloatVector.broadcast(loop.vs, 1f);
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                var a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 a = one.div(one.add(a.neg().lanewise(VectorOperators.EXP)));
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
@@ -131,9 +131,9 @@ public final class UnaryOpSigmoid extends TensorUnaryOp {
             int i = 0;
             DoubleVector one = DoubleVector.broadcast(loop.vs, 1);
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 a = one.div(one.add(a.neg().lanewise(VectorOperators.EXP)));
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {

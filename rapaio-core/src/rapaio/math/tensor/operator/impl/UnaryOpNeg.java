@@ -77,9 +77,9 @@ public final class UnaryOpNeg extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = ByteVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                var a = ByteVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 a = a.neg();
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
@@ -111,9 +111,9 @@ public final class UnaryOpNeg extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = IntVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                var a = IntVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 a = a.neg();
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
@@ -145,9 +145,9 @@ public final class UnaryOpNeg extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                var a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 a = a.neg();
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
@@ -179,9 +179,9 @@ public final class UnaryOpNeg extends TensorUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets, 0);
+                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
                 a = a.neg();
-                a.intoArray(array, p, loop.simdOffsets, 0);
+                a.intoArray(array, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {

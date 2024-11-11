@@ -59,6 +59,7 @@ public class SandboxTest {
 
     public static void main(String[] args) {
         sandboxTest();
+//        testIris();
     }
 
     static void sandboxTest() {
@@ -92,7 +93,9 @@ public class SandboxTest {
         double LR = 1e-3;
 
         Optimizer c = Optimizer.Adam(nn.parameters())
-                .lr.set(LR);
+                .lr.set(LR)
+//                .weightDecay.set(0.1)
+                .amsgrad.set(true);
         Loss loss = new MSELoss();
 
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
@@ -133,7 +136,7 @@ public class SandboxTest {
 
         }
 
-        WS.draw(lines(trainLoss, color(1), lwd(1)).lines(testLoss, color(2), lwd(1)));
+//        WS.draw(lines(trainLoss, color(1), lwd(1)).lines(testLoss, color(2), lwd(1)));
 
         nn.forward(Autograd.var(Tensors.ofType(dtype).random(Shape.of(2, 4), random)).name("x"))[0].value().printString();
     }
@@ -163,9 +166,9 @@ public class SandboxTest {
         var y_test = y.take(0, test_sample);
 
         Net nn = new Sequential(
-                new Linear(dtype, 4, 10_000, true),
+                new Linear(dtype, 4, 1_000, true),
                 new ReLU(),
-                new Linear(dtype, 10_000, 64, true),
+                new Linear(dtype, 1_000, 64, true),
                 new ReLU(),
                 new Linear(dtype, 64, 3, true),
                 new LogSoftmax(1)
@@ -173,7 +176,7 @@ public class SandboxTest {
         nn.seed(423);
 
         Optimizer optimizer = Optimizer.Adam(nn.parameters())
-                .lr.set(1e-6)
+                .lr.set(1e-5)
                 .amsgrad.set(false);
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
         VarDouble testLoss = VarDouble.empty().name("trainLoss");

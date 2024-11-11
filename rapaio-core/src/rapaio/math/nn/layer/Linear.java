@@ -52,9 +52,9 @@ public class Linear extends Net {
         this.outFeatures = outFeatures;
         this.bias = bias;
 
-        this.w = Autograd.var(tmt.dtype()).name("weights");
+        this.w = Autograd.var(tmt.dtype()).requiresGrad(true).name("weights");
         if (this.bias) {
-            this.b = Autograd.var(tmt.dtype()).name("bias");
+            this.b = Autograd.var(tmt.dtype()).requiresGrad(true).name("bias");
         } else {
             this.b = null;
         }
