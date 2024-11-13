@@ -21,23 +21,47 @@
 
 package rapaio.math.nn.layer;
 
-import java.util.List;
+import java.util.Random;
 
+import rapaio.math.nn.Net;
 import rapaio.math.nn.Node;
+import rapaio.math.tensor.TensorManager;
+import rapaio.util.NotImplementedException;
 
-public class ReLU extends BaseNet {
+public abstract class BaseNet implements Net {
 
-    public ReLU() {
-        super(null);
+    protected final Random random = new Random();
+    protected final TensorManager.OfType<?> tmt;
+    protected boolean train = false;
+
+    public BaseNet(TensorManager.OfType<?> tmt) {
+        this.tmt = tmt;
     }
 
     @Override
-    public List<Node> parameters() {
-        return List.of();
+    public void seed(long seed) {
+        random.setSeed(seed);
     }
 
     @Override
+    public void train() {
+        train = true;
+    }
+
+    @Override
+    public void eval() {
+        train = false;
+    }
+
+    @Override
+    public Node[] forward(Node... xs) {
+        if (xs.length != 1) {
+            throw new IllegalArgumentException("xs.length != 1");
+        }
+        return new Node[] {forward11(xs[0])};
+    }
+
     protected Node forward11(Node x) {
-        return x.max(0);
+        throw new NotImplementedException();
     }
 }

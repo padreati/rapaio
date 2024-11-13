@@ -39,7 +39,7 @@ public class OpLog extends BaseOpNode {
         backEdge(child, () -> {
             Tensor<?> childGrad = this.grad().manager().ofType(dtype).full(this.grad().shape(), 1);
             childGrad.div_(this.grad()).nanToNum_(Double.MIN_VALUE);
-            child.addGrad(childGrad);
+            return childGrad;
         });
     }
 }

@@ -31,7 +31,7 @@ import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
 
 @SuppressWarnings("StaticInitializerReferencesSubClass")
-public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, DType.DTypeFloat, DType.DTypeInteger, DType.DTypeByte {
+public abstract class DType<N extends Number> {
 
     public static final DType<Byte> BYTE = new DTypeByte();
     public static final DType<Integer> INTEGER = new DTypeInteger();
@@ -105,7 +105,7 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
         return Objects.hash(id);
     }
 
-    public static final class DTypeByte extends DType<Byte> {
+    private static final class DTypeByte extends DType<Byte> {
 
         private static final VectorSpecies<Byte> vs = ByteVector.SPECIES_PREFERRED;
 
@@ -159,7 +159,7 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
         }
     }
 
-    public static final class DTypeInteger extends DType<Integer> {
+    private static final class DTypeInteger extends DType<Integer> {
 
         private static final VectorSpecies<Integer> vs = IntVector.SPECIES_PREFERRED;
 
@@ -213,7 +213,7 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
         }
     }
 
-    public static final class DTypeFloat extends DType<Float> {
+    private static final class DTypeFloat extends DType<Float> {
 
         private static final VectorSpecies<Float> vs = FloatVector.SPECIES_PREFERRED;
 
@@ -267,7 +267,7 @@ public abstract sealed class DType<N extends Number> permits DType.DTypeDouble, 
         }
     }
 
-    public static final class DTypeDouble extends DType<Double> {
+    private static final class DTypeDouble extends DType<Double> {
 
         private static final VectorSpecies<Double> vs = DoubleVector.SPECIES_PREFERRED;
 

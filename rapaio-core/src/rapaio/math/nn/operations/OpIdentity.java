@@ -35,6 +35,6 @@ public class OpIdentity extends BaseOpNode {
 
     private void forward() {
         this.setValue(child.value().copy());
-        backEdge(child, () -> child.addGrad(this.grad()));
+        backEdge(child, this::grad);
     }
 }

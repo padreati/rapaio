@@ -22,47 +22,16 @@
 package rapaio.math.nn;
 
 import java.util.List;
-import java.util.Random;
 
-import rapaio.math.tensor.TensorManager;
-import rapaio.util.NotImplementedException;
+public interface Net {
 
-public abstract class Net {
+    void seed(long seed);
 
-    protected final Random random = new Random();
-    protected final TensorManager.OfType<?> tmt;
-    protected boolean train = false;
+    List<Node> parameters();
 
-    public Net(TensorManager.OfType<?> tmt) {
-        this.tmt = tmt;
-    }
+    void train();
 
-    public final Random getRandom() {
-        return random;
-    }
+    void eval();
 
-    public void seed(long seed) {
-        random.setSeed(seed);
-    }
-
-    public abstract List<Node> parameters();
-
-    public void train() {
-        train = true;
-    }
-
-    public void eval() {
-        train = false;
-    }
-
-    public Node[] forward(Node... xs) {
-        if (xs.length != 1) {
-            throw new IllegalArgumentException("xs.length != 1");
-        }
-        return new Node[] {forward11(xs[0])};
-    }
-
-    protected Node forward11(Node x) {
-        throw new NotImplementedException();
-    }
+    Node[] forward(Node... xs);
 }

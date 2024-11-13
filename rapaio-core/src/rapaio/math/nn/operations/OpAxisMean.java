@@ -23,18 +23,23 @@ package rapaio.math.nn.operations;
 
 import rapaio.math.nn.Node;
 
-public class OpNeg extends BaseOpNode {
+public final class OpAxisMean extends BaseOpNode {
 
-    private final Node child;
+    private final int axis;
+    private final Node x;
 
-    public OpNeg(Node child) {
-        super(child.dtype(), "neg");
-        this.child = child;
+    public OpAxisMean(Node x, int axis) {
+        super(x.dtype(), "axisMean");
+        this.axis = axis;
+        this.x = x;
         forward();
     }
 
     private void forward() {
-        this.setValue(child.value().neg());
-        backEdge(child, () -> this.grad().neg());
+        if (x.value().rank() == 0) {
+            throw new IllegalArgumentException("Input node must have at least one dimension.");
+        }
+        this.setValue(x.value().mean(axis));
+        backEdge(x, () -> this.grad().div(x.value().dim(axis)).strexp(axis, x.value().dim(axis)));
     }
 }

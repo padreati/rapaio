@@ -22,7 +22,6 @@
 package rapaio.math.nn.operations;
 
 import rapaio.math.nn.Node;
-import rapaio.math.tensor.Tensor;
 
 public class OpSqr extends BaseOpNode {
 
@@ -36,9 +35,6 @@ public class OpSqr extends BaseOpNode {
 
     private void forward() {
         this.setValue(child.value().sqr());
-        backEdge(child, () -> {
-            Tensor<?> childGrad = this.grad().mul(child.value()).mul_(2.);
-            child.addGrad(childGrad);
-        });
+        backEdge(child, () -> this.grad().mul(child.value()).mul_(2.));
     }
 }

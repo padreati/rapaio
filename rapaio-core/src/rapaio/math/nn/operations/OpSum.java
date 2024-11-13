@@ -45,7 +45,7 @@ public class OpSum extends BaseOpNode {
                     grad = grad.strexp(i, child.value().dim(i));
                 }
             }
-            child.addGrad(grad);
+            return grad;
         });
     }
 }

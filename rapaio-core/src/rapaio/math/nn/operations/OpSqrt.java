@@ -23,18 +23,18 @@ package rapaio.math.nn.operations;
 
 import rapaio.math.nn.Node;
 
-public class OpNeg extends BaseOpNode {
+public class OpSqrt extends BaseOpNode {
 
     private final Node child;
 
-    public OpNeg(Node child) {
-        super(child.dtype(), "neg");
+    public OpSqrt(Node child) {
+        super(child.dtype(), "sqrt");
         this.child = child;
         forward();
     }
 
     private void forward() {
-        this.setValue(child.value().neg());
-        backEdge(child, () -> this.grad().neg());
+        this.setValue(child.value().sqrt());
+        backEdge(child, () -> this.grad().mul(child.value().pow(-1.5)).mul_(-.5));
     }
 }

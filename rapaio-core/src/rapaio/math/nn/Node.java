@@ -24,8 +24,11 @@ package rapaio.math.nn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import rapaio.math.nn.operations.OpAdd;
+import rapaio.math.nn.operations.OpAxisMean;
+import rapaio.math.nn.operations.OpAxisStd;
 import rapaio.math.nn.operations.OpAxisSum;
 import rapaio.math.nn.operations.OpBatchVtm;
 import rapaio.math.nn.operations.OpDiv;
@@ -39,6 +42,7 @@ import rapaio.math.nn.operations.OpNeg;
 import rapaio.math.nn.operations.OpSigmoid;
 import rapaio.math.nn.operations.OpSoftmax;
 import rapaio.math.nn.operations.OpSqr;
+import rapaio.math.nn.operations.OpSqrt;
 import rapaio.math.nn.operations.OpSub;
 import rapaio.math.nn.operations.OpSum;
 import rapaio.math.nn.operations.OpTanh;
@@ -99,7 +103,7 @@ public abstract class Node {
         }
     }
 
-    public final void resetGrad() {
+    public final void zeroGrad() {
         this.grad = null;
     }
 
@@ -116,56 +120,85 @@ public abstract class Node {
         return backfuns;
     }
 
-    protected void backEdge(Node ref, Runnable backFun) {
+    protected void backEdge(Node ref, Supplier<Tensor<?>> backFun) {
         backfuns.add(BackFun.of(ref, backFun));
-    }
-
-    public final void backward() {
-        Autograd.backward(this);
     }
 
     @Override
     public final String toString() {
-        return String.format("%s {\nval:%s, grad:%s}", name == null ? "" : "(" + name + ")", value, grad);
+        return String.format("name:%s\nval:%sgrad:%s", name == null ? "null" : "(" + name + ")", value != null ? value.toString() : "\n",
+                grad);
     }
 
     /// OPERATIONS
 
 
-    public Node identity() {
+    public OpIdentity identity() {
         return new OpIdentity(this);
     }
 
-    public Node add(Node other) {
+    public OpAdd add(Node other) {
         return new OpAdd(this, other);
     }
 
-    public Node sub(Node other) {
+    public OpAdd add(double value) {
+        return new OpAdd(this, Autograd.scalar(dtype, value));
+    }
+
+    public OpSub sub(Node other) {
         return new OpSub(this, other);
     }
 
-    public Node mul(Node other) {
+    public OpSub sub(double value) {
+        return new OpSub(this, Autograd.scalar(dtype, value));
+    }
+
+    public OpMul mul(Node other) {
         return new OpMul(this, other);
+    }
+
+    public OpMul mul(double value) {
+        return new OpMul(this, Autograd.scalar(dtype, value));
     }
 
     public Node div(Node other) {
         return new OpDiv(this, other);
     }
 
+    public Node div(double value) {
+        return new OpDiv(this, Autograd.scalar(dtype, value));
+    }
+
     public Node sum() {
         return new OpSum(this);
     }
 
-    public Node axisSum() {
-        return new OpAxisSum(this);
+    public Node axisSum(int axis) {
+        return new OpAxisSum(this, axis);
     }
 
-    public Node axisSum(int dim) {
-        return new OpAxisSum(this, dim);
+    public Node axisMean(int axis) {
+        return new OpAxisMean(this, axis);
+    }
+
+    public OpAxisStd axisStd(int axis) {
+        return new OpAxisStd(this, axis, 0, null);
+    }
+
+    public OpAxisStd axisStd(int axis, int ddof) {
+        return new OpAxisStd(this, axis, ddof, null);
+    }
+
+    public OpAxisStd axisStd(int axis, int ddof, Node mean) {
+        return new OpAxisStd(this, axis, ddof, mean);
     }
 
     public Node sqr() {
         return new OpSqr(this);
+    }
+
+    public OpSqrt sqrt() {
+        return new OpSqrt(this);
     }
 
     public Node bvtm(Node other) {

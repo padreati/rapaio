@@ -41,7 +41,7 @@ public class OpSoftmax extends BaseOpNode {
             var s = this.value();
             var p = s.mul(this.grad());
             var ws = s.mul(p.sum(axis).strexp(axis, p.dim(axis)));
-            x.addGrad(p.sub_(ws));
+            return p.sub_(ws);
         });
     }
 }

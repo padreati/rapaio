@@ -24,7 +24,6 @@ package rapaio.math.nn.operations;
 import java.util.List;
 
 import rapaio.math.nn.Node;
-import rapaio.math.tensor.Tensor;
 import rapaio.math.tensor.operator.Broadcast;
 
 public final class OpAdd extends BaseOpNode {
@@ -40,23 +39,11 @@ public final class OpAdd extends BaseOpNode {
     }
 
     private void forward() {
-        if(!Broadcast.elementWise(List.of(left.value().shape(), right.value().shape())).valid()) {
+        if (!Broadcast.elementWise(List.of(left.value().shape(), right.value().shape())).valid()) {
             throw new IllegalArgumentException("Nodes not valid for elementwise broadcast");
         }
         this.setValue(left.value().add(right.value()));
-        backEdge(left, () -> {
-            Tensor<?> selfGrad = this.grad().reduceMean(left.value().shape());
-            if (!left.value().shape().equals(selfGrad.shape())) {
-                throw new IllegalStateException("Mismatched shape, current: " + this.grad().shape() + ", input: " + left.value().shape());
-            }
-            left.addGrad(selfGrad);
-        });
-        backEdge(right, () -> {
-            Tensor<?> selfGrad = this.grad().reduceMean(right.value().shape());
-            if (!right.value().shape().equals(selfGrad.shape())) {
-                throw new IllegalStateException("Mismatched shape, current: " + this.grad().shape() + ", input: " + right.value().shape());
-            }
-            right.addGrad(selfGrad);
-        });
+        backEdge(left, () -> this.grad().reduceSum(left.value().shape()));
+        backEdge(right, () -> this.grad().reduceSum(right.value().shape()));
     }
 }

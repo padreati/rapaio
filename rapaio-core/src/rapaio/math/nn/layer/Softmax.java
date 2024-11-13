@@ -23,10 +23,9 @@ package rapaio.math.nn.layer;
 
 import java.util.List;
 
-import rapaio.math.nn.Net;
 import rapaio.math.nn.Node;
 
-public class Softmax extends Net {
+public class Softmax extends BaseNet {
 
     private final int dim;
 

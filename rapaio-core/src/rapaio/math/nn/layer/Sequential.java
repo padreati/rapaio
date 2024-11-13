@@ -29,7 +29,7 @@ import rapaio.math.nn.Node;
 import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.Tensors;
 
-public class Sequential extends Net {
+public class Sequential extends BaseNet {
 
     private final Net[] nets;
 

@@ -58,7 +58,7 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
     @Override
     public void zeroGrad() {
         for (var parameter : parameters) {
-            parameter.resetGrad();
+            parameter.zeroGrad();
         }
     }
 

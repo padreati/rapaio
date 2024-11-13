@@ -30,6 +30,7 @@ import java.util.Set;
 
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Tensor;
+import rapaio.math.tensor.Tensors;
 
 /**
  * Central place of automatic differentiation in reverse mode.
@@ -57,31 +58,39 @@ public final class Autograd {
         return new Variable(dtype);
     }
 
-    public static void backward(Loss loss) {
-        backward(loss, false);
+    public static Variable scalar(DType<?> dtype, double value) {
+        return (Variable) new Variable(Tensors.ofType(dtype).scalar(value)).name("scalar");
     }
 
-    public static void backward(Loss loss, boolean retainGrad) {
-        backward(loss.last(), retainGrad);
+    public static ComputeGraph backward(Loss loss) {
+        return backward(loss, false);
     }
 
-    public static void backward(Node node) {
-        backward(node, false);
+    public static ComputeGraph backward(Loss loss, boolean retainGrad) {
+        return backward(loss.last(), retainGrad);
     }
 
-    public static void backward(Node node, boolean retainGrad) {
-        if (node.value().size() != 1) {
-            throw new IllegalArgumentException(
-                    "Backward cannot compute gradients on non scalar variables, variable shape: " + node.value().shape());
+    public static ComputeGraph backward(Node node) {
+        return backward(node, false);
+    }
+
+    public static ComputeGraph backward(Node node, boolean retainGrad) {
+        if(node.grad()==null) {
+            throw new IllegalArgumentException("Cannot propagate gradients if the root node has none.");
         }
-        runBackwardGraph(node, retainGrad);
+        if(!node.grad().shape().equals(node.value().shape())) {
+            throw new IllegalArgumentException("Gradient shape must match value's shape.");
+        }
+        return runBackwardGraph(node, retainGrad);
     }
 
-    private static void runBackwardGraph(Node node, boolean retainGrad) {
-        new ComputeGraph(node, retainGrad);
+    private static ComputeGraph runBackwardGraph(Node node, boolean retainGrad) {
+        ComputeGraph graph = new ComputeGraph(node, retainGrad);
+        graph.run();
+        return graph;
     }
 
-    static class ComputeGraph {
+    public static class ComputeGraph {
 
         final Node root;
         final boolean retainGrad;
@@ -94,12 +103,25 @@ public final class Autograd {
             this.retainGrad = retainGrad;
         }
 
+        public List<Node> coveredNodes() {
+            return reverse;
+        }
+
+        public void printNodes() {
+            reverse.forEach(System.out::println);
+        }
+
+        public void resetGrad() {
+            reverse.forEach(Node::zeroGrad);
+            reverse.forEach(node -> node.backfuns().clear());
+        }
+
         public void run() {
             buildDeps();
             for (Node node : reverse) {
                 for (BackFun backFun : node.backfuns()) {
                     if (computeGrad.contains(backFun.ref())) {
-                        backFun.fun().run();
+                        backFun.ref().addGrad(backFun.fun().get());
                     }
                 }
                 if (!retainGrad) {

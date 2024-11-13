@@ -21,9 +21,13 @@
 
 package rapaio.math.nn;
 
-public record BackFun(Node ref, Runnable fun) {
+import java.util.function.Supplier;
 
-    public static BackFun of(Node ref, Runnable backFun) {
+import rapaio.math.tensor.Tensor;
+
+public record BackFun(Node ref, Supplier<Tensor<?>> fun) {
+
+    public static BackFun of(Node ref, Supplier<Tensor<?>> backFun) {
         return new BackFun(ref, backFun);
     }
 }

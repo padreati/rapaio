@@ -23,18 +23,27 @@ package rapaio.math.nn.operations;
 
 import rapaio.math.nn.Node;
 
-public class OpNeg extends BaseOpNode {
+@Deprecated
+public final class OpAxisStd extends BaseOpNode {
 
-    private final Node child;
+    private final int axis;
+    private final int ddof;
+    private final Node x;
+    private final Node mean;
 
-    public OpNeg(Node child) {
-        super(child.dtype(), "neg");
-        this.child = child;
+    public OpAxisStd(Node x, int axis, int ddof, Node mean) {
+        super(x.dtype(), "axisMean");
+        this.axis = axis;
+        this.ddof = ddof;
+        this.x = x;
+        this.mean = mean;
         forward();
     }
 
     private void forward() {
-        this.setValue(child.value().neg());
-        backEdge(child, () -> this.grad().neg());
+        this.setValue(x.value().stdc(axis, ddof));
+        var mu = mean != null ? mean : x.axisMean(axis);
+        backEdge(x, () -> this.grad().mul(x.value().sub(mu.value()).div(this.value()).div(x.value().dim(axis) - ddof)));
+//        backEdge(mu, () -> this.grad().mul(x.value().sub(mu.value()).div(x.value().dim(axis) - ddof)));
     }
 }

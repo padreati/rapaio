@@ -23,10 +23,9 @@ package rapaio.math.nn.layer;
 
 import java.util.List;
 
-import rapaio.math.nn.Net;
 import rapaio.math.nn.Node;
 
-public class Dropout extends Net {
+public class Dropout extends BaseNet {
 
     private final double p;
     private final boolean inplace;

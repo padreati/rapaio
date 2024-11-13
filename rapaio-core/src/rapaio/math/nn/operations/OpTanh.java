@@ -38,7 +38,7 @@ public final class OpTanh extends BaseOpNode {
         this.setValue(child.value().tanh());
         backEdge(child, () -> {
             Tensor<?> sg = this.value().sqr().neg_().add_(1);
-            child.addGrad(this.grad().mul(sg));
+            return this.grad().mul(sg);
         });
     }
 }

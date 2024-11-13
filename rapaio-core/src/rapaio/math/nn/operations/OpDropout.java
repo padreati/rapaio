@@ -61,6 +61,6 @@ public class OpDropout extends BaseOpNode {
         } else {
             this.setValue(child.value().mul(mask).div_(1 - p));
         }
-        backEdge(child, () -> child.addGrad(this.grad().mul(mask)));
+        backEdge(child, () -> this.grad().mul(mask));
     }
 }

@@ -19,35 +19,35 @@
  *
  */
 
-package rapaio.math.nn.operations;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Test;
+package rapaio.experiment.math.nn;
 
 import rapaio.math.nn.Autograd;
-import rapaio.math.nn.Loss;
 import rapaio.math.nn.Node;
-import rapaio.math.nn.loss.NegativeLikelihoodLoss;
 import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.tensor.Tensors;
 
-public class OpLogSoftmaxTest {
+public class SanboxExpr {
 
-    private static final TensorManager.OfType<?> tmt = TensorManager.base().ofFloat();
+    public static void main(String[] args) {
 
-    @Test
-    void stabilityTest() {
+        Node a = Autograd.var(Tensors.stride(Shape.of(2, 2), 2., 1, 1.3, 5)).requiresGrad(true).name("a");
+        Node f = Autograd.var(Tensors.scalar(1.)).name("f");
 
-        Node t = Autograd.var(tmt.stride(Shape.of(2,3), 1, 2, 3, 4, 5, 6).mul_(-10_000)).name("t").requiresGrad(true);
-        Node y = Autograd.var(tmt.stride(Shape.of(2, 3), 0, 1, 0, 1, 0, 0));
+        Node c = a.sqr().name("c");
+        Node b = a.add(c).name("b");
+        Node d = b.log().name("d");
+        Node e1 = c.add(d).requiresGrad(true).name("e1");
+        Node e2 = e1.add(f).name("e2");
+        Node g = e2.add(d).name("g");
+        Node h = f.add(g).name("h");
+        Node l = h.sum().name("l");
 
-        Loss loss = new NegativeLikelihoodLoss();
-        loss.forward(t, y);
-        loss.backward();
+        l.setGrad(Tensors.scalar(1.));
 
-        for(double value : t.grad().asDoubleArray()) {
-            assertTrue(Double.isFinite(value));
-        }
+        Autograd.ComputeGraph graph = new Autograd.ComputeGraph(l, true);
+        graph.run();
+
+        graph.printNodes();
+
     }
 }

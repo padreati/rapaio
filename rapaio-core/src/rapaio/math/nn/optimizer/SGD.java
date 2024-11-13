@@ -51,7 +51,7 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
 
     @Override
     public final void zeroGrad() {
-        params.forEach(Node::resetGrad);
+        params.forEach(Node::zeroGrad);
     }
 
     @Override

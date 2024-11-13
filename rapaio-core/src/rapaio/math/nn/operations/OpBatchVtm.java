@@ -37,7 +37,7 @@ public class OpBatchVtm extends BaseOpNode {
 
     public void forward() {
         this.setValue(left.value().bvtm(right.value()));
-        backEdge(left, () -> left.addGrad(this.grad().bmm(right.value().t()).mean(0)));
-        backEdge(right, () -> right.addGrad(left.value().t().bmm(this.grad()).mean(0)));
+        backEdge(left, () -> this.grad().bmm(right.value().t()).mean(0));
+        backEdge(right, () -> left.value().t().bmm(this.grad()).mean(0));
     }
 }

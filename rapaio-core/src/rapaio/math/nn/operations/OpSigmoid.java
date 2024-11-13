@@ -22,7 +22,6 @@
 package rapaio.math.nn.operations;
 
 import rapaio.math.nn.Node;
-import rapaio.math.tensor.Tensor;
 
 public final class OpSigmoid extends BaseOpNode {
 
@@ -36,9 +35,6 @@ public final class OpSigmoid extends BaseOpNode {
 
     private void forward() {
         this.setValue(child.value().sigmoid());
-        backEdge(child, () -> {
-            Tensor<?> sg = this.value().mul(this.value().neg().add_(1));
-            child.addGrad(this.grad().mul(sg));
-        });
+        backEdge(child, () -> this.grad().mul(this.value().mul(this.value().neg().add_(1))));
     }
 }

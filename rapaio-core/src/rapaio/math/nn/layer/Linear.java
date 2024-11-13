@@ -25,14 +25,13 @@ import java.util.List;
 
 import rapaio.core.distributions.Uniform;
 import rapaio.math.nn.Autograd;
-import rapaio.math.nn.Net;
 import rapaio.math.nn.Node;
 import rapaio.math.tensor.DType;
 import rapaio.math.tensor.Shape;
 import rapaio.math.tensor.TensorManager;
 import rapaio.math.tensor.Tensors;
 
-public class Linear extends Net {
+public class Linear extends BaseNet {
 
     private final int inFeatures;
     private final int outFeatures;

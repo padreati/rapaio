@@ -39,8 +39,7 @@ public class OpLogSoftmax extends BaseOpNode {
         this.setValue(x.value().logsoftmax(axis));
         backEdge(x, () -> {
             var s = x.value().softmax(axis);
-            var grad = this.grad().sub(s.mul(this.grad()).sum(axis).strexp(axis, x.value().dim(axis)));
-            x.addGrad(grad);
+            return this.grad().sub(s.mul(this.grad()).sum(axis).strexp(axis, x.value().dim(axis)));
         });
     }
 }

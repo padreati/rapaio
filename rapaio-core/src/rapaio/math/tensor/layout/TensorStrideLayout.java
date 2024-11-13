@@ -309,7 +309,7 @@ public class TensorStrideLayout extends AbstractStrideLayout {
             return this;
         }
         for (int axis : axes) {
-            if (axis < 0 || axis >= axes.length + 2) {
+            if (axis < 0 || axis > rank() + 1) {
                 throw new IndexOutOfBoundsException();
             }
         }

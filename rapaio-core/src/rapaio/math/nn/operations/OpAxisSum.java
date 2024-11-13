@@ -22,42 +22,21 @@
 package rapaio.math.nn.operations;
 
 import rapaio.math.nn.Node;
-import rapaio.util.NotImplementedException;
 
 public final class OpAxisSum extends BaseOpNode {
 
-    private static final int DEFAULT_AXIS = -1;
-
-    private final int dim;
+    private final int axis;
     private final Node child;
 
-    public OpAxisSum(Node child) {
-        this(child, DEFAULT_AXIS);
-    }
-
-    public OpAxisSum(Node child, int dim) {
+    public OpAxisSum(Node child, int axis) {
         super(child.dtype(), "axisSum");
-        this.dim = dim;
+        this.axis = axis;
         this.child = child;
         forward();
     }
 
     private void forward() {
-        switch (child.value().rank()) {
-            case 0:
-                this.setValue(child.value());
-                backEdge(child, () -> child.addGrad(this.grad()));
-                break;
-            case 1:
-                this.setValue(child.value().sum(0));
-                backEdge(child, () -> child.addGrad(this.grad().strexp(0, child.value().dim(0))));
-                break;
-            case 2:
-                this.setValue(child.value().sum(1));
-                backEdge(child, () -> child.addGrad(this.grad().strexp(1, child.value().dim(1))));
-                break;
-            default:
-                throw new NotImplementedException();
-        }
+        this.setValue(child.value().sum(axis));
+        backEdge(child, () -> this.grad().strexp(axis, child.value().dim(axis)));
     }
 }

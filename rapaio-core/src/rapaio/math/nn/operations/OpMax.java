@@ -38,6 +38,6 @@ public class OpMax extends BaseOpNode {
 
     private void forward() {
         this.setValue(x.value().max(threshold));
-        backEdge(x, () -> x.addGrad(this.value().copy().compareMask_(Compare.GT, threshold).mul_(this.grad())));
+        backEdge(x, () -> this.value().copy().compareMask_(Compare.GT, threshold).mul_(this.grad()));
     }
 }
