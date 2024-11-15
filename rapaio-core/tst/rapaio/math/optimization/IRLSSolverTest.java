@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/21.
@@ -41,8 +41,8 @@ public class IRLSSolverTest {
 
     private static final double eps = 1e-10;
 
-    private Tensor<Double> A;
-    private Tensor<Double> b;
+    private NArray<Double> A;
+    private NArray<Double> b;
 
     @BeforeEach
     public void beforeEach() {
@@ -50,7 +50,7 @@ public class IRLSSolverTest {
         VarDouble intercept = VarDouble.fill(df.rowCount(), 1).name("(Intercept)");
         Frame dfa = SolidFrame.byVars(intercept).bindVars(df.removeVars("chd"));
         A = dfa.tensor();
-        b = df.rvar("chd").tensor();
+        b = df.rvar("chd").narray();
     }
 
     @Test
@@ -74,11 +74,11 @@ public class IRLSSolverTest {
     @Test
     void testLeastSquares() {
         Solver irls = IRLSSolver.newMinimizer().m.set(A).b.set(b).p.set(2.0).maxIt.set(10_000).eps.set(1e-20);
-        Tensor<Double> irlsSolution = irls.compute().solution();
+        NArray<Double> irlsSolution = irls.compute().solution();
 
-        Tensor<Double> ata = A.t().mm(A);
-        Tensor<Double> ab = A.t().mv(b);
-        Tensor<Double> sol = ata.qr().solve(ab);
+        NArray<Double> ata = A.t().mm(A);
+        NArray<Double> ab = A.t().mv(b);
+        NArray<Double> sol = ata.qr().solve(ab);
         assertTrue(irlsSolution.deepEquals(sol, eps));
     }
 

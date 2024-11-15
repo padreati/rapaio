@@ -36,8 +36,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -63,20 +63,20 @@ public class LDA extends ParamSet<LDA> implements Printable {
     private String targetName;
     private List<String> targetLevels;
 
-    protected Tensor<Double> vmean;
-    protected Tensor<Double> vstd;
+    protected NArray<Double> vmean;
+    protected NArray<Double> vstd;
 
-    protected Tensor<Double> eigenValues;
-    protected Tensor<Double> eigenVectors;
+    protected NArray<Double> eigenValues;
+    protected NArray<Double> eigenVectors;
 
     private LDA() {
     }
 
-    public Tensor<Double> eigenValues() {
+    public NArray<Double> eigenValues() {
         return eigenValues;
     }
 
-    public Tensor<Double> eigenVectors() {
+    public NArray<Double> eigenVectors() {
         return eigenVectors;
     }
 
@@ -84,15 +84,15 @@ public class LDA extends ParamSet<LDA> implements Printable {
         validate(df, targetVar);
 
         logger.fine("start lda fit");
-        Tensor<Double> mx = df.mapVars(inputNames).tensor();
-        Tensor<Double> mxx = scaling.get() ? mx.sub(mx.mean(0)).div_(mx.std(0)) : mx;
+        NArray<Double> mx = df.mapVars(inputNames).tensor();
+        NArray<Double> mxx = scaling.get() ? mx.sub(mx.mean(0)).div_(mx.std(0)) : mx;
 
         // compute global mean and std
         vmean = mxx.mean(0);
         vstd = mxx.std(0);
 
         // compute sliced data for each class
-        Tensor<Double>[] mxxs = new Tensor[targetLevels.size()];
+        NArray<Double>[] mxxs = new NArray[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
             int index = i;
             mxxs[i] = mxx.take(0, df.stream()
@@ -102,23 +102,23 @@ public class LDA extends ParamSet<LDA> implements Printable {
         }
 
         // compute class means
-        Tensor<Double>[] mcmeans = new Tensor[targetLevels.size()];
+        NArray<Double>[] mcmeans = new NArray[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
             mcmeans[i] = mxxs[i].mean(0);
         }
 
         // build within scatter matrix
 
-        Tensor<Double> xc = mxx.sub(vmean).div(vstd);
-        Tensor<Double> sw = xc.t().mm(xc).div_((double) (xc.dim(0)));
+        NArray<Double> xc = mxx.sub(vmean).div(vstd);
+        NArray<Double> sw = xc.t().mm(xc).div_((double) (xc.dim(0)));
 
         // build between-class scatter matrix
 
-        Tensor<Double> mcmeansc = Tensors.stack(0, List.of(mcmeans)).sub(vmean);
-        Tensor<Double> sb = mcmeansc.t().mm(mcmeansc).div_((double) (mcmeansc.dim(0)));
+        NArray<Double> mcmeansc = NArrays.stack(0, List.of(mcmeans)).sub(vmean);
+        NArray<Double> sb = mcmeansc.t().mm(mcmeansc).div_((double) (mcmeansc.dim(0)));
 
         // inverse sw
-        Tensor<Double> swi = sw.qr().inv();
+        NArray<Double> swi = sw.qr().inv();
 
         // use decomp of sbe
         var evd = sb.mm(swi).eig();
@@ -166,7 +166,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
             throw new IllegalArgumentException("k must be a positive number less or equal with the number of levels.");
         }
 
-        Tensor<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).tensor();
         if (scaling.get()) {
             x.sub_(x.mean(0)).div_(x.std(0));
         }
@@ -181,7 +181,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
             dims[i] = i;
             names[i] = prefix + (i + 1);
         }
-        Tensor<Double> result = x.mm(eigenVectors.take(1, dims));
+        NArray<Double> result = x.mm(eigenVectors.take(1, dims));
         Frame rest = df.removeVars(VarRange.of(inputNames));
         return rest.varCount() == 0 ?
                 SolidFrame.matrix(result, names) :

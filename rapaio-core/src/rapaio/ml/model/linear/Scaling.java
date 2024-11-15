@@ -43,7 +43,7 @@ public enum Scaling {
     NORM {
         @Override
         public double compute(Var x) {
-            return Math.sqrt(x.tensor().sqr_().nanSum());
+            return Math.sqrt(x.narray().sqr_().nanSum());
         }
     };
 

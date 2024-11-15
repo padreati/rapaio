@@ -33,9 +33,9 @@ import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
 
 /**
  * Steepest descent for L1 norm
@@ -53,11 +53,11 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
             new ValueParam<>(this, BacktrackLineSearch.newSearch(), "lineSearch");
     public final ValueParam<RFunction, CoordinateDescentSolver> f = new ValueParam<>(this, null, "f");
     public final ValueParam<RDerivative, CoordinateDescentSolver> d1f = new ValueParam<>(this, null, "d1f");
-    public final ValueParam<Tensor<Double>, CoordinateDescentSolver> x0 = new ValueParam<>(this, null, "x0");
+    public final ValueParam<NArray<Double>, CoordinateDescentSolver> x0 = new ValueParam<>(this, null, "x0");
 
-    private Tensor<Double> sol;
+    private NArray<Double> sol;
 
-    private final List<Tensor<Double>> solutions = new ArrayList<>();
+    private final List<NArray<Double>> solutions = new ArrayList<>();
     private VarDouble errors;
     private boolean converged = false;
 
@@ -73,7 +73,7 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
         sol = x0.get().copy();
         for (int i = 0; i < maxIt.get(); i++) {
             solutions.add(sol.copy());
-            Tensor<Double> d1fx = d1f.get().apply(sol);
+            NArray<Double> d1fx = d1f.get().apply(sol);
             double max = Math.abs(d1fx.get(0));
             int index = 0;
             for (int j = 1; j < d1fx.size(); j++) {
@@ -82,7 +82,7 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
                     index = j;
                 }
             }
-            Tensor<Double> deltaX = Tensors.zeros(Shape.of(d1fx.size()));
+            NArray<Double> deltaX = NArrays.zeros(Shape.of(d1fx.size()));
             deltaX.setDouble(-Math.signum(d1fx.get(index)), index);
 
             if (Math.abs(deltaX.norm(2.)) < tol.get()) {
@@ -100,11 +100,11 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
         return "solution: " + sol.toString() + "\n";
     }
 
-    public List<Tensor<Double>> solutions() {
+    public List<NArray<Double>> solutions() {
         return solutions;
     }
 
-    public Tensor<Double> solution() {
+    public NArray<Double> solution() {
         return sol;
     }
 

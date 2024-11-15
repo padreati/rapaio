@@ -26,7 +26,7 @@ import java.io.Serial;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.transform.AddIntercept;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -68,8 +68,8 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        Tensor<Double> X = df.mapVars(inputNames()).tensor();
-        Tensor<Double> Y = df.mapVars(targetNames()).tensor();
+        NArray<Double> X = df.mapVars(inputNames()).tensor();
+        NArray<Double> Y = df.mapVars(targetNames()).tensor();
         beta = X.qr().solve(Y);
         return true;
     }

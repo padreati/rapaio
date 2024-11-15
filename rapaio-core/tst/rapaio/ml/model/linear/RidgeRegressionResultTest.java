@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArrays;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
@@ -90,7 +90,7 @@ public class RidgeRegressionResultTest {
         for (int i = 0; i < lambdas.length; i++) {
             RidgeRegressionModel rr = RidgeRegressionModel.newModel(lambdas[i]);
             var beta_hat = rr.fit(df, "Sales").firstCoefficients();
-            assertTrue(Tensors.stride(coeff[i]).deepEquals(beta_hat, 1e9));
+            assertTrue(NArrays.stride(coeff[i]).deepEquals(beta_hat, 1e9));
         }
     }
 

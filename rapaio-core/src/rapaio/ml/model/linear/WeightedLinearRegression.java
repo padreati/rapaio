@@ -26,7 +26,7 @@ import java.io.Serial;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.transform.AddIntercept;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -67,9 +67,9 @@ public class WeightedLinearRegression extends BaseLinearRegressionModel<Weighted
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        var w = weights.tensor().apply_(Math::sqrt);
-        Tensor<Double> X = df.mapVars(inputNames()).tensor().mul(w.stretch(1));
-        Tensor<Double> Y = df.mapVars(targetNames()).tensor().mul(w.stretch(1));
+        var w = weights.narray().apply_(Math::sqrt);
+        NArray<Double> X = df.mapVars(inputNames()).tensor().mul(w.stretch(1));
+        NArray<Double> Y = df.mapVars(targetNames()).tensor().mul(w.stretch(1));
         beta = X.qr().solve(Y);
         return true;
     }

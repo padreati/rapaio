@@ -23,18 +23,18 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.Arrays;
 
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.util.collection.TArrays;
 
 public abstract class AbstractKernelMatrix {
 
-    protected final Tensor<Double>[] xs;
+    protected final NArray<Double>[] xs;
     protected final Kernel kernel;
     protected final Cache cache;
     protected final double[] qd;
 
-    AbstractKernelMatrix(Tensor<Double>[] xs, Kernel kernel, Cache cache, double[] qd) {
+    AbstractKernelMatrix(NArray<Double>[] xs, Kernel kernel, Cache cache, double[] qd) {
         this.kernel = kernel;
         this.xs = Arrays.copyOf(xs, xs.length);
         this.cache = cache;
@@ -43,7 +43,7 @@ public abstract class AbstractKernelMatrix {
 
     abstract double[] getQD();
 
-    abstract Tensor<Double> getQ(int column, int len);
+    abstract NArray<Double> getQ(int column, int len);
 
     void swapIndex(int i, int j) {
         TArrays.swap(xs, i, j);

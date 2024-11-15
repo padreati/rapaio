@@ -43,21 +43,21 @@ module rapaio.core {
     exports rapaio.math.optimization.scalar;
 
     exports rapaio.math;
-    exports rapaio.math.tensor;
-    exports rapaio.math.tensor.manager;
-    exports rapaio.math.tensor.iterators;
-    exports rapaio.math.tensor.layout;
-    exports rapaio.math.tensor.operator;
-    exports rapaio.math.tensor.operator.impl;
-    exports rapaio.math.tensor.matrix;
-    exports rapaio.math.tensor.storage;
-    exports rapaio.math.tensor.storage.array;
+    exports rapaio.math.narrays;
+    exports rapaio.math.narrays.manager;
+    exports rapaio.math.narrays.iterators;
+    exports rapaio.math.narrays.layout;
+    exports rapaio.math.narrays.operator;
+    exports rapaio.math.narrays.operator.impl;
+    exports rapaio.math.narrays.matrix;
+    exports rapaio.math.narrays.storage;
+    exports rapaio.math.narrays.storage.array;
 
     exports rapaio.math.nn;
     exports rapaio.math.nn.loss;
     exports rapaio.math.nn.optimizer;
     exports rapaio.math.nn.layer;
-    exports rapaio.math.nn.operations;
+    exports rapaio.math.nn.tensors;
 
     exports rapaio.ml.common;
     exports rapaio.ml.common.distance;

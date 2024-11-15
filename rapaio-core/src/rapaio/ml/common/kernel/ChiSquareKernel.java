@@ -23,7 +23,7 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * The Chi-Square kernel comes from the Chi-Square distribution.
@@ -39,7 +39,7 @@ public class ChiSquareKernel extends AbstractKernel {
     private static final long serialVersionUID = -3301596992870913061L;
 
     @Override
-    public double compute(Tensor<Double> v, Tensor<Double> u) {
+    public double compute(NArray<Double> v, NArray<Double> u) {
         var sum = v.add(u);
         var delta = v.sub(u);
         return 1 - 2 * delta.sqr().div(sum).sum();

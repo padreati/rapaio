@@ -64,7 +64,7 @@ public class KnnRegressionTest {
     @Test
     void overfitTest() {
         VarDouble x = Normal.std().sample(100).name("x");
-        x.tensor_().sort_(0, true);
+        x.narray_().sort_(0, true);
         VarDouble y = VarDouble.from(x, v -> v * 10 + Normal.std().sampleNext()).name("y");
 
         for (KnnRegression.Kernel kernel : KnnRegression.Kernel.values()) {

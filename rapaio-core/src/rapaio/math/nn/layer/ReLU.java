@@ -23,7 +23,7 @@ package rapaio.math.nn.layer;
 
 import java.util.List;
 
-import rapaio.math.nn.Node;
+import rapaio.math.nn.Tensor;
 
 public class ReLU extends BaseNet {
 
@@ -32,12 +32,12 @@ public class ReLU extends BaseNet {
     }
 
     @Override
-    public List<Node> parameters() {
+    public List<Tensor> parameters() {
         return List.of();
     }
 
     @Override
-    protected Node forward11(Node x) {
+    protected Tensor forward11(Tensor x) {
         return x.max(0);
     }
 }

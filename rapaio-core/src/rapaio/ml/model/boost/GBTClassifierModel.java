@@ -33,9 +33,9 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArrays;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.loss.KDevianceLoss;
 import rapaio.ml.loss.L2Loss;
@@ -76,9 +76,9 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
             RTree.newCART().maxDepth.set(2).minCount.set(5).loss.set(new L2Loss()), "model");
 
     private int K;
-    private Tensor<Double> f;
-    private Tensor<Double> p;
-    private Tensor<Double> residual;
+    private NArray<Double> f;
+    private NArray<Double> p;
+    private NArray<Double> residual;
 
     private List<List<RTree>> trees;
 
@@ -114,15 +114,15 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         // algorithm described by ESTL pag. 387
 
         K = firstTargetLevels().size() - 1;
-        f = Tensors.zeros(Shape.of(K, df.rowCount()));
-        p = Tensors.zeros(Shape.of(K, df.rowCount()));
-        residual = Tensors.zeros(Shape.of(K, df.rowCount()));
+        f = NArrays.zeros(Shape.of(K, df.rowCount()));
+        p = NArrays.zeros(Shape.of(K, df.rowCount()));
+        residual = NArrays.zeros(Shape.of(K, df.rowCount()));
 
         trees = IntStream.range(0, K).mapToObj(i -> new ArrayList<RTree>()).collect(Collectors.toList());
 
         // build individual regression targets for each class
 
-        final Tensor<Double> yk = Tensors.zeros(Shape.of(K, df.rowCount()));
+        final NArray<Double> yk = NArrays.zeros(Shape.of(K, df.rowCount()));
         for (int i = 0; i < df.rowCount(); i++) {
             yk.setDouble(1, df.getInt(i, firstTargetName()) - 1, i);
         }
@@ -136,11 +136,11 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         return true;
     }
 
-    private void buildAdditionalTree(Random random, Frame df, Var w, Tensor<Double> yk) {
+    private void buildAdditionalTree(Random random, Frame df, Var w, NArray<Double> yk) {
 
         // a) Set p_k(x)
 
-        Tensor<Double> max = f.t().amax(1);
+        NArray<Double> max = f.t().amax(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
@@ -179,7 +179,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
     public ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
 
-        Tensor<Double> p_f = Tensors.zeros(Shape.of(K, df.rowCount()));
+        NArray<Double> p_f = NArrays.zeros(Shape.of(K, df.rowCount()));
 
         for (int k = 0; k < K; k++) {
             for (RegressionModel<?, ?, ?> tree : trees.get(k)) {
@@ -192,7 +192,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
         // make probabilities
 
-        Tensor<Double> max = p_f.t().amax(1);
+        NArray<Double> max = p_f.t().amax(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double t = 0.0;

@@ -23,7 +23,7 @@ package rapaio.math.nn.layer;
 
 import java.util.List;
 
-import rapaio.math.nn.Node;
+import rapaio.math.nn.Tensor;
 
 public class Dropout extends BaseNet {
 
@@ -41,12 +41,12 @@ public class Dropout extends BaseNet {
     }
 
     @Override
-    public List<Node> parameters() {
+    public List<Tensor> parameters() {
         return List.of();
     }
 
     @Override
-    protected Node forward11(Node x) {
+    protected Tensor forward11(Tensor x) {
         if (train) {
             return x.dropout(p, random, inplace);
         }

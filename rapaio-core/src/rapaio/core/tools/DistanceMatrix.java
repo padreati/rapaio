@@ -25,9 +25,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.stream.IntStream;
 
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArrays;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
 /**
@@ -109,8 +109,8 @@ public class DistanceMatrix implements Serializable {
         return this;
     }
 
-    public Tensor<Double> toDMatrix() {
-        Tensor<Double> matrix = Tensors.zeros(Shape.of(length(), length()));
+    public NArray<Double> toDMatrix() {
+        NArray<Double> matrix = NArrays.zeros(Shape.of(length(), length()));
         for (int i = 0; i < length(); i++) {
             for (int j = 0; j < length(); j++) {
                 matrix.setDouble(get(i, j), i, j);

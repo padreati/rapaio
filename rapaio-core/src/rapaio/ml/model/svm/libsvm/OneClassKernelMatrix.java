@@ -21,7 +21,7 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
 
@@ -34,8 +34,8 @@ class OneClassKernelMatrix extends AbstractKernelMatrix {
         }
     }
 
-    Tensor<Double> getQ(int i, int len) {
-        Reference<Tensor<Double>> data = new Reference<>();
+    NArray<Double> getQ(int i, int len) {
+        Reference<NArray<Double>> data = new Reference<>();
         int start = cache.getData(i, data, len);
         if (start < len) {
             for (int j = start; j < len; j++) {

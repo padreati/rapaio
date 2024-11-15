@@ -27,11 +27,11 @@ public interface Net {
 
     void seed(long seed);
 
-    List<Node> parameters();
+    List<Tensor> parameters();
 
     void train();
 
     void eval();
 
-    Node[] forward(Node... xs);
+    Tensor[] forward(Tensor... xs);
 }

@@ -25,9 +25,9 @@ import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -82,8 +82,8 @@ public final class HistogramTable implements Printable {
         return bins;
     }
 
-    public Tensor<Double> freq() {
-        return Tensors.stride(Shape.of(bins), freq);
+    public NArray<Double> freq() {
+        return NArrays.stride(Shape.of(bins), freq);
     }
 
     @Override

@@ -48,9 +48,9 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.transform.RefSort;
 import rapaio.data.sample.RowSampler;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Shape;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ClassWeights;
 import rapaio.ml.common.VarSelector;
@@ -117,7 +117,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
     // learning artifacts
     private List<ClassifierModel<?, ?, ?>> predictors = new ArrayList<>();
     private double oobError = Double.NaN;
-    private Tensor<Double> oobDensities;
+    private NArray<Double> oobDensities;
     private Var oobPredictedClasses;
     private Var oobTrueClass;
 
@@ -137,7 +137,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
         return oobError;
     }
 
-    public Tensor<Double> oobDensities() {
+    public NArray<Double> oobDensities() {
         return oobDensities;
     }
 
@@ -217,7 +217,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
     protected boolean coreFit(Frame df, Var weights) {
 
         if (oob.get()) {
-            oobDensities = Tensors.zeros(Shape.of(df.rowCount(), firstTargetLevels().size() - 1));
+            oobDensities = NArrays.zeros(Shape.of(df.rowCount(), firstTargetLevels().size() - 1));
             oobTrueClass = df.rvar(firstTargetName()).copy();
             oobPredictedClasses = VarNominal.empty(df.rowCount(), firstTargetLevels());
         }

@@ -31,7 +31,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.model.ClusteringResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
@@ -52,8 +52,8 @@ public class MWKMeansResult extends ClusteringResult<MWKMeans> {
     private MWKMeansResult(MWKMeans model, Frame df, VarInt assignment) {
         super(model, df, assignment);
 
-        Tensor<Double> c = model.getCentroidsMatrix();
-        Tensor<Double> m = df.tensor();
+        NArray<Double> c = model.getCentroidsMatrix();
+        NArray<Double> m = df.tensor();
         int ccount = c.dim(0);
 
         Var count = VarInt.fill(ccount, 0).name("count");
@@ -67,7 +67,7 @@ public class MWKMeansResult extends ClusteringResult<MWKMeans> {
         Map<Integer, VarDouble> errors = new HashMap<>();
 
         for (int i = 0; i < m.dim(0); i++) {
-            Tensor<Double> w = model.getWeightsMatrix().takesq(0, model.subspace.get() ? assignment.getInt(i) : 0);
+            NArray<Double> w = model.getWeightsMatrix().takesq(0, model.subspace.get() ? assignment.getInt(i) : 0);
             double d = model.distance(m.takesq(0, i), c.takesq(0, assignment.getInt(i)), w, model.p.get());
             errors.computeIfAbsent(assignment.getInt(i), row -> VarDouble.empty()).addDouble(d * d);
             distances.addDouble(d * d);

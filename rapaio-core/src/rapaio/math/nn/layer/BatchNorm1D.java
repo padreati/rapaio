@@ -24,25 +24,25 @@ package rapaio.math.nn.layer;
 import java.util.List;
 
 import rapaio.math.nn.Autograd;
-import rapaio.math.nn.Node;
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.nn.Tensor;
+import rapaio.math.narrays.DType;
+import rapaio.math.narrays.NArrayManager;
+import rapaio.math.narrays.Shape;
 
 public class BatchNorm1D extends BaseNet {
 
     private final int numFeatures;
     private final double epsValue;
 
-    private final Node gamma;
-    private final Node beta;
+    private final Tensor gamma;
+    private final Tensor beta;
 
     public BatchNorm1D(DType<?> dtype, int numFeatures) {
         this(dtype, numFeatures, 1e-3);
     }
 
     public BatchNorm1D(DType<?> dtype, int numFeatures, double eps) {
-        super(TensorManager.base().ofType(dtype));
+        super(NArrayManager.base().ofType(dtype));
         this.numFeatures = numFeatures;
         this.epsValue = eps;
 
@@ -51,16 +51,16 @@ public class BatchNorm1D extends BaseNet {
     }
 
     @Override
-    public List<Node> parameters() {
+    public List<Tensor> parameters() {
         return List.of(gamma, beta);
     }
 
     @Override
-    protected Node forward11(Node x) {
+    protected Tensor forward11(Tensor x) {
         if (x.value().rank() != 2 || x.value().dim(1) != numFeatures) {
             throw new IllegalArgumentException("Input has an invalid shape: " + x.value().shape());
         }
-        var mean = x.axisMean(0);
+        var mean = x.mean1d(0);
         var centered = x.sub(mean);
         var std = centered.sqr().sum().add(epsValue).div(x.value().dim(0)).sqrt();
         var standardized = centered.div(std);

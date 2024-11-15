@@ -23,8 +23,8 @@ package rapaio.math.optimization.functions;
 
 import java.io.Serializable;
 
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
 
 /**
  * Interface which describes an n-dimensional real valued function.
@@ -35,8 +35,8 @@ import rapaio.math.tensor.Tensors;
 public interface RFunction extends Serializable {
 
     default double apply(double... x) {
-        return apply(Tensors.stride(x));
+        return apply(NArrays.stride(x));
     }
 
-    double apply(Tensor<Double> x);
+    double apply(NArray<Double> x);
 }

@@ -21,16 +21,16 @@
 
 package rapaio.math.nn;
 
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.DType;
+import rapaio.math.narrays.NArray;
 
-public final class Variable extends Node {
+public final class Variable extends Tensor {
 
     public Variable(DType<?> dtype) {
         this.dtype = dtype;
     }
 
-    public Variable(Tensor<?> value) {
+    public Variable(NArray<?> value) {
         this.dtype = value.dtype();
         setValue(value);
     }

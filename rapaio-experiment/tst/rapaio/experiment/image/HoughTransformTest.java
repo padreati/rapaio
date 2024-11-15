@@ -35,7 +35,7 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.printer.ImageTools;
 
 /**
@@ -94,7 +94,7 @@ public class HoughTransformTest {
                 .fit(100, 100, bs);
 
 
-        Tensor<Double> htm = ht.getHsMatrix();
+        NArray<Double> htm = ht.getHsMatrix();
 
 //        ImageTools.setSpeedRenderingHints();
 //        WS.draw(gridLayer(1, 2)

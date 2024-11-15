@@ -29,10 +29,10 @@ import java.util.List;
 import rapaio.core.param.Param;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
-import rapaio.math.nn.Node;
+import rapaio.math.nn.Tensor;
 import rapaio.math.nn.Optimizer;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
 
 public class Adam extends ParamSet<Adam> implements Optimizer {
 
@@ -45,13 +45,13 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
     public final Param<Boolean, Adam> maximize = new ValueParam<>(this, false, "maximize the optimization algorithm");
 
 
-    private final List<Node> parameters;
+    private final List<Tensor> parameters;
     private double t = 1;
-    private final HashMap<Node, Tensor<?>> mts = new HashMap<>();
-    private final HashMap<Node, Tensor<?>> vts = new HashMap<>();
-    private final HashMap<Node, Tensor<?>> vtmaxs = new HashMap<>();
+    private final HashMap<Tensor, NArray<?>> mts = new HashMap<>();
+    private final HashMap<Tensor, NArray<?>> vts = new HashMap<>();
+    private final HashMap<Tensor, NArray<?>> vtmaxs = new HashMap<>();
 
-    public Adam(Collection<Node> parameters) {
+    public Adam(Collection<Tensor> parameters) {
         this.parameters = new ArrayList<>(parameters);
     }
 
@@ -70,7 +70,7 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
         t++;
     }
 
-    private void step(Node param) {
+    private void step(Tensor param) {
 
         var gt = param.grad();
         if (maximize.get()) {
@@ -99,27 +99,27 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
         }
     }
 
-    private Tensor<?> getMt(Node node) {
-        if (mts.containsKey(node)) {
-            return mts.get(node);
+    private NArray<?> getMt(Tensor tensor) {
+        if (mts.containsKey(tensor)) {
+            return mts.get(tensor);
         } else {
-            return Tensors.ofType(node.value().dtype()).zeros(node.value().shape());
+            return NArrays.ofType(tensor.value().dtype()).zeros(tensor.value().shape());
         }
     }
 
-    private Tensor<?> getVt(Node node) {
-        if (vts.containsKey(node)) {
-            return vts.get(node);
+    private NArray<?> getVt(Tensor tensor) {
+        if (vts.containsKey(tensor)) {
+            return vts.get(tensor);
         } else {
-            return Tensors.ofType(node.value().dtype()).zeros(node.value().shape());
+            return NArrays.ofType(tensor.value().dtype()).zeros(tensor.value().shape());
         }
     }
 
-    private Tensor<?> getVtMax(Node node) {
-        if (vtmaxs.containsKey(node)) {
-            return vtmaxs.get(node);
+    private NArray<?> getVtMax(Tensor tensor) {
+        if (vtmaxs.containsKey(tensor)) {
+            return vtmaxs.get(tensor);
         } else {
-            return Tensors.ofType(node.value().dtype()).zeros(node.value().shape());
+            return NArrays.ofType(tensor.value().dtype()).zeros(tensor.value().shape());
         }
     }
 }

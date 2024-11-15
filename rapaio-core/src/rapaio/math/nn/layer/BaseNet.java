@@ -24,17 +24,17 @@ package rapaio.math.nn.layer;
 import java.util.Random;
 
 import rapaio.math.nn.Net;
-import rapaio.math.nn.Node;
-import rapaio.math.tensor.TensorManager;
+import rapaio.math.nn.Tensor;
+import rapaio.math.narrays.NArrayManager;
 import rapaio.util.NotImplementedException;
 
 public abstract class BaseNet implements Net {
 
     protected final Random random = new Random();
-    protected final TensorManager.OfType<?> tmt;
+    protected final NArrayManager.OfType<?> tmt;
     protected boolean train = false;
 
-    public BaseNet(TensorManager.OfType<?> tmt) {
+    public BaseNet(NArrayManager.OfType<?> tmt) {
         this.tmt = tmt;
     }
 
@@ -54,14 +54,14 @@ public abstract class BaseNet implements Net {
     }
 
     @Override
-    public Node[] forward(Node... xs) {
+    public Tensor[] forward(Tensor... xs) {
         if (xs.length != 1) {
             throw new IllegalArgumentException("xs.length != 1");
         }
-        return new Node[] {forward11(xs[0])};
+        return new Tensor[] {forward11(xs[0])};
     }
 
-    protected Node forward11(Node x) {
+    protected Tensor forward11(Tensor x) {
         throw new NotImplementedException();
     }
 }

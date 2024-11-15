@@ -29,9 +29,9 @@ import java.util.Set;
 
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Shape;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -55,8 +55,8 @@ public final class Confusion implements Printable {
     private final Var actual;
     private final Var predict;
     private final List<String> factors;
-    private final Tensor<Double> cmFrequency;
-    private final Tensor<Double> cmProbability;
+    private final NArray<Double> cmFrequency;
+    private final NArray<Double> cmProbability;
     private final boolean binary;
 
     // true positive - predicted true and actual true
@@ -83,8 +83,8 @@ public final class Confusion implements Printable {
         this.predict = predict;
         validate();
         this.factors = actual.levels();
-        this.cmFrequency = Tensors.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
-        this.cmProbability = Tensors.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
+        this.cmFrequency = NArrays.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
+        this.cmProbability = NArrays.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
         this.binary = actual.levels().size() == 3;
         compute();
     }
@@ -420,7 +420,7 @@ public final class Confusion implements Printable {
      *
      * @return frequency confusion matrix
      */
-    public Tensor<Double> frequencyMatrix() {
+    public NArray<Double> frequencyMatrix() {
         return cmFrequency;
     }
 
@@ -431,7 +431,7 @@ public final class Confusion implements Printable {
      *
      * @return probability confusion matrix
      */
-    public Tensor<Double> probabilityMatrix() {
+    public NArray<Double> probabilityMatrix() {
         return cmProbability;
     }
 }

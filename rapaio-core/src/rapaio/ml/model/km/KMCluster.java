@@ -38,7 +38,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarType;
 import rapaio.data.transform.VarSort;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.EuclideanDistance;
@@ -68,7 +68,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
 
         Distance distance();
 
-        void recomputeCentroids(int k, Tensor<Double> c, Tensor<Double> instances, int[] assignment);
+        void recomputeCentroids(int k, NArray<Double> c, NArray<Double> instances, int[] assignment);
     }
 
     public static final Method KMeans = new Method() {
@@ -78,7 +78,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
             return new EuclideanDistance();
         }
 
-        public void recomputeCentroids(int k, Tensor<Double> c, Tensor<Double> instances, int[] assignment) {
+        public void recomputeCentroids(int k, NArray<Double> c, NArray<Double> instances, int[] assignment) {
 
             // we compute mean for each feature separately
             for (int j = 0; j < instances.dim(1); j++) {
@@ -106,7 +106,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
             return new Manhattan();
         }
 
-        public void recomputeCentroids(int k, Tensor<Double> c, Tensor<Double> instances, int[] assignment) {
+        public void recomputeCentroids(int k, NArray<Double> c, NArray<Double> instances, int[] assignment) {
 
             // we compute mean for each feature separately
             for (int j = 0; j < instances.dim(1); j++) {
@@ -158,7 +158,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
 
     // clustering artifacts
 
-    private Tensor<Double> c;
+    private NArray<Double> c;
     private Frame centroids;
     private VarDouble errors;
 
@@ -184,7 +184,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         return errors.size() == 0 ? Double.NaN : errors.getDouble(errors.size() - 1);
     }
 
-    public Tensor<Double> getCentroidsMatrix() {
+    public NArray<Double> getCentroidsMatrix() {
         return c;
     }
 
@@ -199,7 +199,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
     public KMCluster coreFit(Frame initialDf, Var weights) {
 
         Random random = getRandom();
-        Tensor<Double> m = initialDf.tensor();
+        NArray<Double> m = initialDf.tensor();
         c = initializeClusters(random, m);
 
         int[] assignment = IntArrays.newFill(m.dim(0), -1);
@@ -229,15 +229,15 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         return this;
     }
 
-    private Tensor<Double> initializeClusters(Random random, Tensor<Double> m) {
-        Tensor<Double> bestCentroids = init.get().init(random, method.get().distance(), m, k.get());
+    private NArray<Double> initializeClusters(Random random, NArray<Double> m) {
+        NArray<Double> bestCentroids = init.get().init(random, method.get().distance(), m, k.get());
         double bestError = computeInitError(m, bestCentroids);
 
         // compute initial restarts if nstart is greater than 1
         // the best restart is kept as initial centroids
 
         for (int i = 1; i < nstart.get(); i++) {
-            Tensor<Double> nextCentroids = init.get().init(random, method.get().distance(), m, k.get());
+            NArray<Double> nextCentroids = init.get().init(random, method.get().distance(), m, k.get());
             double nextError = computeInitError(m, nextCentroids);
             if (nextError < bestError) {
                 bestCentroids = nextCentroids;
@@ -247,20 +247,20 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         return bestCentroids;
     }
 
-    private double computeInitError(Tensor<Double> m, Tensor<Double> centroids) {
+    private double computeInitError(NArray<Double> m, NArray<Double> centroids) {
         double sum = 0;
         for (int i = 0; i < m.dim(0); i++) {
-            Tensor<Double> mrow = m.takesq(0, i);
+            NArray<Double> mrow = m.takesq(0, i);
             int cluster = findClosestCentroid(mrow, centroids);
             sum += method.get().distance().reduced(centroids.takesq(0, cluster), mrow);
         }
         return sum;
     }
 
-    private void assignToCentroids(Tensor<Double> m, int[] assignment, boolean withErrors) {
+    private void assignToCentroids(NArray<Double> m, int[] assignment, boolean withErrors) {
         double totalError = 0.0;
         for (int i = 0; i < m.dim(0); i++) {
-            Tensor<Double> row = m.takesq(0, i);
+            NArray<Double> row = m.takesq(0, i);
             int cluster = findClosestCentroid(row, c);
             if (withErrors) {
                 totalError += method.get().distance().reduced(c.takesq(0, cluster), row);
@@ -272,7 +272,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         }
     }
 
-    private int findClosestCentroid(Tensor<Double> mrow, Tensor<Double> centroids) {
+    private int findClosestCentroid(NArray<Double> mrow, NArray<Double> centroids) {
         int cluster = 0;
         double d = method.get().distance().compute(mrow, centroids.takesq(0, 0));
         for (int j = 1; j < centroids.dim(0); j++) {
@@ -285,7 +285,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         return cluster;
     }
 
-    private void repairEmptyClusters(Random random, Tensor<Double> df, int[] assignment) {
+    private void repairEmptyClusters(Random random, NArray<Double> df, int[] assignment) {
         // check for empty clusters, if any is found then
         // select random points to be new clusters, different than
         // existing clusters
@@ -347,7 +347,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         method.get().recomputeCentroids(k.get(), c, df, assignment);
     }
 
-    private boolean checkIfEqual(Tensor<Double> centroids, int c, Tensor<Double> df, int i) {
+    private boolean checkIfEqual(NArray<Double> centroids, int c, NArray<Double> df, int i) {
         int count = 0;
         for (int j = 0; j < centroids.dim(1); j++) {
             if (centroids.getDouble(c, j) == df.getDouble(i, j)) {
@@ -360,7 +360,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
     @Override
     public KMClusterResult corePredict(Frame df, boolean withScores) {
         int[] assignment = IntArrays.newFill(df.rowCount(), -1);
-        Tensor<Double> m = df.tensor();
+        NArray<Double> m = df.tensor();
         assignToCentroids(m, assignment, false);
         return KMClusterResult.valueOf(this, df, VarInt.wrap(assignment));
     }

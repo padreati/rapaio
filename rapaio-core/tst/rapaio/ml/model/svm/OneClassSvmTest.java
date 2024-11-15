@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 
@@ -44,7 +44,7 @@ public class OneClassSvmTest {
     private Var x2;
     private Frame df;
 
-    private Tensor<Double> xs;
+    private NArray<Double> xs;
 
     @BeforeEach
     void beforeEach() {

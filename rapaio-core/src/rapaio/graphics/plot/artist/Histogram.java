@@ -38,7 +38,7 @@ import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * Plot component which allows one to add a histogram to a plot.
@@ -104,7 +104,7 @@ public class Histogram extends Artist {
         }
     }
 
-    private Tensor<Double> freqTable;
+    private NArray<Double> freqTable;
 
     private void buildData() {
         freqTable = hist.freq().copy();

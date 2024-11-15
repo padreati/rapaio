@@ -41,9 +41,9 @@ import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.transform.StandardScaler;
 import rapaio.datasets.Datasets;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.common.kernel.CauchyKernel;
 import rapaio.ml.common.kernel.ExponentialKernel;
 import rapaio.ml.common.kernel.GeneralizedMinKernel;
@@ -111,7 +111,7 @@ public class BinarySMOTest {
 
         smo1.fit(df, "class");
 
-        Tensor<Double> test = Tensors.ofDouble().stride(Shape.of(3, 2),
+        NArray<Double> test = NArrays.ofDouble().stride(Shape.of(3, 2),
                 1.5, 1.5,
                 1, 1,
                 2, 2
@@ -138,7 +138,7 @@ public class BinarySMOTest {
 
         smo1.fit(df, "class");
 
-        Tensor<Double> test = Tensors.ofDouble().stride(Shape.of(5, 2),
+        NArray<Double> test = NArrays.ofDouble().stride(Shape.of(5, 2),
                 1.5, 1.5,
                 1, 1,
                 2, 2,

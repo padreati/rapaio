@@ -25,19 +25,19 @@ import java.util.Arrays;
 import java.util.List;
 
 import rapaio.math.nn.Net;
-import rapaio.math.nn.Node;
-import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.nn.Tensor;
+import rapaio.math.narrays.NArrayManager;
+import rapaio.math.narrays.NArrays;
 
 public class Sequential extends BaseNet {
 
     private final Net[] nets;
 
     public Sequential(Net... nets) {
-        this(Tensors.ofDouble(), nets);
+        this(NArrays.ofDouble(), nets);
     }
 
-    public Sequential(TensorManager.OfType<?> tmt, Net... nets) {
+    public Sequential(NArrayManager.OfType<?> tmt, Net... nets) {
         super(tmt);
         this.nets = nets;
     }
@@ -51,7 +51,7 @@ public class Sequential extends BaseNet {
     }
 
     @Override
-    public List<Node> parameters() {
+    public List<Tensor> parameters() {
         return Arrays.stream(nets).flatMap(module -> module.parameters().stream()).toList();
     }
 
@@ -72,11 +72,11 @@ public class Sequential extends BaseNet {
     }
 
     @Override
-    public Node[] forward(Node... inputs) {
+    public Tensor[] forward(Tensor... inputs) {
         if (nets == null || nets.length == 0) {
             return null;
         }
-        Node[] outputs = null;
+        Tensor[] outputs = null;
         for (Net net : nets) {
             if (outputs == null) {
                 outputs = net.forward(inputs);

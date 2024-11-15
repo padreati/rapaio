@@ -32,9 +32,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArray;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -198,7 +198,7 @@ public class SolidFrameTest {
 
     @Test
     void testMatrixBuilders() {
-        Tensor<Double> rm = Tensors.stride(Shape.of(3, 3),
+        NArray<Double> rm = NArrays.stride(Shape.of(3, 3),
                 1, 2, 3,
                 2, 3, 4,
                 3, 4, 5
@@ -231,7 +231,7 @@ public class SolidFrameTest {
 
     @Test
     void testAddClearRows() {
-        Tensor<Double> rm = Tensors.stride(Shape.of(3, 3),
+        NArray<Double> rm = NArrays.stride(Shape.of(3, 3),
                 1, 2, 3,
                 2, 3, 4,
                 3, 4, 5

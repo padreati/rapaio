@@ -27,7 +27,7 @@ import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * Backtracking strategy for line search.
@@ -63,7 +63,7 @@ public class BacktrackLineSearch extends ParamSet<BacktrackLineSearch> implement
     }
 
     @Override
-    public double search(RFunction f, RDerivative g, Tensor<Double> x, Tensor<Double> p, double t0) {
+    public double search(RFunction f, RDerivative g, NArray<Double> x, NArray<Double> p, double t0) {
         double fx = f.apply(x);
         double gxp = g.apply(x).inner(p);
 

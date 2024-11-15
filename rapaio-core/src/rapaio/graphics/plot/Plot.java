@@ -61,7 +61,7 @@ import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment;
 import rapaio.graphics.plot.artist.Silhouette;
 import rapaio.graphics.plot.artist.Text;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.printer.Figure;
@@ -541,7 +541,7 @@ public class Plot implements Figure {
         return this;
     }
 
-    public Plot matrix(Tensor<?> m, GOpt<?>... opts) {
+    public Plot matrix(NArray<?> m, GOpt<?>... opts) {
         add(new Matrix(m, opts));
         return this;
     }

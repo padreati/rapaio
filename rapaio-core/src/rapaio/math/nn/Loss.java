@@ -29,11 +29,11 @@ public interface Loss {
         SUM
     }
 
-    void forward(Node pred, Node y);
+    void forward(Tensor pred, Tensor y);
 
     void backward();
 
     double loss();
 
-    Node last();
+    Tensor last();
 }

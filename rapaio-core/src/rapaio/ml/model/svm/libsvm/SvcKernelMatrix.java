@@ -23,7 +23,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.Arrays;
 
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
@@ -34,7 +34,7 @@ import rapaio.util.collection.TArrays;
 class SvcKernelMatrix extends AbstractKernelMatrix {
     private final byte[] y;
 
-    public SvcKernelMatrix(int l, Tensor<Double>[] xs, Kernel kernel, long cacheSize, byte[] y) {
+    public SvcKernelMatrix(int l, NArray<Double>[] xs, Kernel kernel, long cacheSize, byte[] y) {
         super(xs, kernel, new Cache(l, cacheSize * (1 << 20)), new double[l]);
         this.y = Arrays.copyOf(y, y.length);
         for (int i = 0; i < l; i++) {
@@ -42,8 +42,8 @@ class SvcKernelMatrix extends AbstractKernelMatrix {
         }
     }
 
-    Tensor<Double> getQ(int i, int len) {
-        Reference<Tensor<Double>> data = new Reference<>();
+    NArray<Double> getQ(int i, int len) {
+        Reference<NArray<Double>> data = new Reference<>();
         int start = cache.getData(i, data, len);
         if (start < len) {
             for (int j = start; j < len; j++) {

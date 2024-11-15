@@ -43,7 +43,7 @@ import rapaio.math.nn.layer.LogSoftmax;
 import rapaio.math.nn.layer.Sequential;
 import rapaio.math.nn.layer.Sigmoid;
 import rapaio.math.nn.loss.NegativeLikelihoodLoss;
-import rapaio.math.tensor.DType;
+import rapaio.math.narrays.DType;
 import rapaio.sys.WS;
 import rapaio.util.collection.IntArrays;
 
@@ -69,23 +69,23 @@ public class SandboxIris {
         var y_test = y.take(0, test_sample);
 
         Net nn = new Sequential(
-                new Linear(dtype, 4, 32, true),
+                new Linear(dtype, 4, 64, true),
                 new Sigmoid(),
-                new BatchNorm1D(dtype, 32),
-                new Linear(dtype, 32, 3, true),
+                new BatchNorm1D(dtype, 64),
+                new Linear(dtype, 64, 3, true),
                 new LogSoftmax(1)
         );
         nn.seed(423);
 
         Optimizer optimizer = Optimizer.Adam(nn.parameters())
                 .lr.set(1e-4)
-                .amsgrad.set(false);
+                .amsgrad.set(true);
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
         VarDouble testLoss = VarDouble.empty().name("trainLoss");
 
-        int batch = 16;
+        int batch = 10;
 
-        for (int i = 0; i < 2_000; i++) {
+        for (int i = 0; i < 1_000; i++) {
             optimizer.zeroGrad();
 
             int[] idx = IntArrays.newSeq(x_train.dim(0));

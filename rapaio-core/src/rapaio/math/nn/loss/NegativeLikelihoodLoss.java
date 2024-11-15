@@ -24,15 +24,15 @@ package rapaio.math.nn.loss;
 import rapaio.core.param.Param;
 import rapaio.core.param.ValueParam;
 import rapaio.math.nn.Autograd;
-import rapaio.math.nn.Node;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.nn.Tensor;
+import rapaio.math.narrays.NArrays;
 
 public class NegativeLikelihoodLoss extends AbstractLoss<NegativeLikelihoodLoss> {
 
     public final Param<Reduce, NegativeLikelihoodLoss> reduce = new ValueParam<>(this, Reduce.MEAN, "reduce operation");
 
     @Override
-    public void forward(Node pred, Node y) {
+    public void forward(Tensor pred, Tensor y) {
         // TODO: treat extra dimension with more care
         if (pred.value().isMatrix() && y.value().isVector()) {
             y.setValue(y.value().stretch(1));
@@ -40,8 +40,8 @@ public class NegativeLikelihoodLoss extends AbstractLoss<NegativeLikelihoodLoss>
         batch = y.value().dim(0);
         last = pred.neg().mul(y).sum();
         if (reduce.get().equals(Reduce.MEAN)) {
-            last = last.div(Autograd.var(Tensors.ofType(last.dtype()).scalar(pred.value().size())));
+            last = last.div(Autograd.var(NArrays.ofType(last.dtype()).scalar(pred.value().size())));
         }
-        last.setGrad(Tensors.ofType(pred.dtype()).scalar(1));
+        last.setGrad(NArrays.ofType(pred.dtype()).scalar(1));
     }
 }

@@ -35,7 +35,7 @@ import java.util.stream.DoubleStream;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArrays;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -218,11 +218,11 @@ public class DensityVector<T> implements Printable, Serializable {
      * @return index of the greatest value
      */
     public int findBestIndex() {
-        return Tensors.stride(values).argmax();
+        return NArrays.stride(values).argmax();
     }
 
     public String findBestLabel() {
-        return index.getValueString(Tensors.stride(values).argmax());
+        return index.getValueString(NArrays.stride(values).argmax());
     }
 
     /**
@@ -237,7 +237,7 @@ public class DensityVector<T> implements Printable, Serializable {
      * Normalize values from density vector to sum of powers.
      */
     public DensityVector<T> normalize(double pow) {
-        Tensors.stride(values).normalize_(pow);
+        NArrays.stride(values).normalize_(pow);
         return this;
     }
 

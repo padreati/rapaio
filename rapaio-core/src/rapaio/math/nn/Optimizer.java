@@ -24,21 +24,16 @@ package rapaio.math.nn;
 import java.util.Collection;
 
 import rapaio.math.nn.optimizer.Adam;
-import rapaio.math.nn.optimizer.NoGrad;
 import rapaio.math.nn.optimizer.SGD;
 
 public interface Optimizer {
 
-    static SGD SGD(Collection<Node> params) {
+    static SGD SGD(Collection<Tensor> params) {
         return new SGD(params);
     }
 
-    static Adam Adam(Collection<Node> params) {
+    static Adam Adam(Collection<Tensor> params) {
         return new Adam(params);
-    }
-
-    static NoGrad NoGrad() {
-        return new NoGrad();
     }
 
     void zeroGrad();

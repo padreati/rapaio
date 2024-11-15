@@ -23,7 +23,7 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * The Spline kernel is given as a piece-wise cubic polynomial, as derived in the works by Gunn (1998).
@@ -36,7 +36,7 @@ public class SplineKernel extends AbstractKernel {
     private static final long serialVersionUID = -4985948375658836441L;
 
     @Override
-    public double compute(Tensor<Double> v, Tensor<Double> u) {
+    public double compute(NArray<Double> v, NArray<Double> u) {
         double value = 1;
         for (int i = 0; i < u.size(); i++) {
             double xi = v.getDouble(i);

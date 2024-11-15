@@ -28,29 +28,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.DType;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
 
 /**
  * Central place of automatic differentiation in reverse mode.
  * <p>
- * Object which allows differentiation must implement {@link Node}.
+ * Object which allows differentiation must implement {@link Tensor}.
  * <p>
  * The forward operations are performed when the computation is called using various operations
- * on {@link Node} or when new node are created with {@link #var(Tensor)} or {@link #var(DType)}.
+ * on {@link Tensor} or when new node are created with {@link #var(NArray)} or {@link #var(DType)}.
  * <p>
- * In order to compute gradients one has to call {@link #backward(Node)}. The methods can be called on nodes
+ * In order to compute gradients one has to call {@link #backward(Tensor)}. The methods can be called on nodes
  * or on loss functions {@link Loss}. In all cases the node on which {@code backward} method is called must
  * have a computed gradient and that has to be a scalar.
  * <p>
  * To maximize the performance not all the gradients are computed. The one which are computed are for
- * the variables which has {@link Node#requiresGrad()} equals with {@code true}, all on all the objects
+ * the variables which has {@link Tensor#requiresGrad()} equals with {@code true}, all on all the objects
  * in the upper computational graph to the root node (the node on which {@code backward} method was called.
  */
 public final class Autograd {
 
-    public static Variable var(Tensor<?> value) {
+    public static Variable var(NArray<?> value) {
         return new Variable(value);
     }
 
@@ -59,7 +59,7 @@ public final class Autograd {
     }
 
     public static Variable scalar(DType<?> dtype, double value) {
-        return (Variable) new Variable(Tensors.ofType(dtype).scalar(value)).name("scalar");
+        return (Variable) new Variable(NArrays.ofType(dtype).scalar(value)).name("scalar");
     }
 
     public static ComputeGraph backward(Loss loss) {
@@ -70,40 +70,40 @@ public final class Autograd {
         return backward(loss.last(), retainGrad);
     }
 
-    public static ComputeGraph backward(Node node) {
-        return backward(node, false);
+    public static ComputeGraph backward(Tensor tensor) {
+        return backward(tensor, false);
     }
 
-    public static ComputeGraph backward(Node node, boolean retainGrad) {
-        if(node.grad()==null) {
-            throw new IllegalArgumentException("Cannot propagate gradients if the root node has none.");
+    public static ComputeGraph backward(Tensor tensor, boolean retainGrad) {
+        if(tensor.grad()==null) {
+            throw new IllegalArgumentException("Cannot back propagate if the root has no gradient.");
         }
-        if(!node.grad().shape().equals(node.value().shape())) {
+        if(!tensor.grad().shape().equals(tensor.value().shape())) {
             throw new IllegalArgumentException("Gradient shape must match value's shape.");
         }
-        return runBackwardGraph(node, retainGrad);
+        return runBackwardGraph(tensor, retainGrad);
     }
 
-    private static ComputeGraph runBackwardGraph(Node node, boolean retainGrad) {
-        ComputeGraph graph = new ComputeGraph(node, retainGrad);
+    private static ComputeGraph runBackwardGraph(Tensor tensor, boolean retainGrad) {
+        ComputeGraph graph = new ComputeGraph(tensor, retainGrad);
         graph.run();
         return graph;
     }
 
     public static class ComputeGraph {
 
-        final Node root;
+        final Tensor root;
         final boolean retainGrad;
 
-        List<Node> reverse;
-        Set<Node> computeGrad;
+        List<Tensor> reverse;
+        Set<Tensor> computeGrad;
 
-        public ComputeGraph(Node root, boolean retainGrad) {
+        public ComputeGraph(Tensor root, boolean retainGrad) {
             this.root = root;
             this.retainGrad = retainGrad;
         }
 
-        public List<Node> coveredNodes() {
+        public List<Tensor> coveredNodes() {
             return reverse;
         }
 
@@ -112,53 +112,53 @@ public final class Autograd {
         }
 
         public void resetGrad() {
-            reverse.forEach(Node::zeroGrad);
+            reverse.forEach(Tensor::zeroGrad);
             reverse.forEach(node -> node.backfuns().clear());
         }
 
         public void run() {
             buildDeps();
-            for (Node node : reverse) {
-                for (BackFun backFun : node.backfuns()) {
+            for (Tensor tensor : reverse) {
+                for (BackFun backFun : tensor.backfuns()) {
                     if (computeGrad.contains(backFun.ref())) {
                         backFun.ref().addGrad(backFun.fun().get());
                     }
                 }
                 if (!retainGrad) {
-                    node.backfuns().clear();
+                    tensor.backfuns().clear();
                 }
             }
         }
 
         private void buildDeps() {
             // build coverage
-            Set<Node> coverage = new HashSet<>();
+            Set<Tensor> coverage = new HashSet<>();
             coverage(coverage, root);
 
             // build parents
-            HashMap<Node, List<Node>> parents = new HashMap<>();
+            HashMap<Tensor, List<Tensor>> parents = new HashMap<>();
             coverage.forEach(node -> parents.put(node, new ArrayList<>()));
-            for (Node node : coverage) {
-                for (BackFun edge : node.backfuns()) {
-                    parents.get(edge.ref()).add(node);
+            for (Tensor tensor : coverage) {
+                for (BackFun edge : tensor.backfuns()) {
+                    parents.get(edge.ref()).add(tensor);
                 }
             }
 
             // build parent counters
-            HashMap<Node, Integer> counters = new HashMap<>();
+            HashMap<Tensor, Integer> counters = new HashMap<>();
             coverage.forEach(node -> counters.put(node, parents.get(node).size()));
 
             // build topological sort
             reverse = new ArrayList<>();
-            HashSet<Node> frontier = new HashSet<>();
+            HashSet<Tensor> frontier = new HashSet<>();
             frontier.add(root);
 
             while (!frontier.isEmpty()) {
-                Optional<Node> opNext = frontier.stream().filter(node -> counters.get(node) == 0).findFirst();
+                Optional<Tensor> opNext = frontier.stream().filter(node -> counters.get(node) == 0).findFirst();
                 if (opNext.isEmpty()) {
                     throw new IllegalArgumentException("Graph contains cycles.");
                 }
-                Node next = opNext.get();
+                Tensor next = opNext.get();
                 frontier.remove(next);
                 for (BackFun bf : next.backfuns()) {
                     counters.put(bf.ref(), counters.get(bf.ref()) - 1);
@@ -169,12 +169,12 @@ public final class Autograd {
 
             // compute topological sort and compute gradient
 
-            List<Node> sorted = reverse.reversed();
+            List<Tensor> sorted = reverse.reversed();
             this.computeGrad = new HashSet<>();
-            for (Node node : sorted) {
-                if (node.requiresGrad() || computeGrad.contains(node)) {
-                    computeGrad.add(node);
-                    computeGrad.addAll(parents.get(node));
+            for (Tensor tensor : sorted) {
+                if (tensor.requiresGrad() || computeGrad.contains(tensor)) {
+                    computeGrad.add(tensor);
+                    computeGrad.addAll(parents.get(tensor));
                 }
             }
 
@@ -184,12 +184,12 @@ public final class Autograd {
             counters.clear();
         }
 
-        private void coverage(Set<Node> visited, Node node) {
-            if (visited.contains(node)) {
+        private void coverage(Set<Tensor> visited, Tensor tensor) {
+            if (visited.contains(tensor)) {
                 return;
             }
-            visited.add(node);
-            for (var edge : node.backfuns()) {
+            visited.add(tensor);
+            for (var edge : tensor.backfuns()) {
                 coverage(visited, edge.ref());
             }
         }

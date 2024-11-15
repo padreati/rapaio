@@ -39,7 +39,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.transform.Jitter;
 import rapaio.datasets.Datasets;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArrays;
 import rapaio.ml.eval.RandIndex;
 import rapaio.util.collection.DoubleArrays;
 
@@ -59,7 +59,7 @@ public class MWKMeansTest {
 
             var dist = Gamma.of(1, 0.5);
             var array = DoubleArrays.newFrom(0, 1_000, i -> dist.sampleNext(random));
-            var y = Tensors.stride(array).mul_(10.).sort_(0, true);
+            var y = NArrays.stride(array).mul_(10.).sort_(0, true);
             double beta = random.nextDouble() * 10 + 1;
 
             double c = mwk.findMinimum(y, beta);

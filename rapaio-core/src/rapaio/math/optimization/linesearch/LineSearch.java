@@ -23,7 +23,7 @@ package rapaio.math.optimization.linesearch;
 
 import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
@@ -42,7 +42,7 @@ public interface LineSearch {
      * @param p  search direction
      * @return computed step size {@code alpha}
      */
-    default double search(RFunction f, RDerivative df, Tensor<Double> x, Tensor<Double> p) {
+    default double search(RFunction f, RDerivative df, NArray<Double> x, NArray<Double> p) {
         return search(f, df, x, p, 1.0);
     }
 
@@ -58,5 +58,5 @@ public interface LineSearch {
      * @param t0 initial step size value
      * @return computed step size {@code alpha}
      */
-    double search(RFunction f, RDerivative df, Tensor<Double> x, Tensor<Double> p, double t0);
+    double search(RFunction f, RDerivative df, NArray<Double> x, NArray<Double> p, double t0);
 }

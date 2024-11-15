@@ -23,7 +23,7 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
@@ -38,7 +38,7 @@ public abstract class AbstractKernel implements Kernel {
         return false;
     }
 
-    protected double deltaSumSquares(Tensor<Double> u, Tensor<Double> v) {
+    protected double deltaSumSquares(NArray<Double> u, NArray<Double> v) {
         return u.sub(v).sqr().sum();
     }
 

@@ -33,48 +33,47 @@ import rapaio.data.VarDouble;
 import rapaio.math.nn.Autograd;
 import rapaio.math.nn.Loss;
 import rapaio.math.nn.Net;
-import rapaio.math.nn.Node;
+import rapaio.math.nn.Tensor;
 import rapaio.math.nn.Optimizer;
 import rapaio.math.nn.layer.BatchNorm1D;
 import rapaio.math.nn.layer.Linear;
 import rapaio.math.nn.layer.ReLU;
 import rapaio.math.nn.layer.Sequential;
-import rapaio.math.nn.layer.Sigmoid;
 import rapaio.math.nn.loss.MSELoss;
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.DType;
+import rapaio.math.narrays.NArrayManager;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArray;
 import rapaio.sys.WS;
 
 public class Sandbox2DFunctionRegression {
 
-    private static final TensorManager.OfType<?> tmd = TensorManager.base().ofDouble();
+    private static final NArrayManager.OfType<?> tmd = NArrayManager.base().ofDouble();
 
     public static void main(String[] args) {
         DType<?> dtype = DType.FLOAT;
         Random random = new Random(42);
 
-        Tensor<?> xtrain = Tensors.ofType(dtype).random(Shape.of(10_000, 4), random);
-        Tensor<?> ytrain = Tensors.ofType(dtype).zeros(Shape.of(10_000));
+        NArray<?> xtrain = NArrays.ofType(dtype).random(Shape.of(10_000, 4), random);
+        NArray<?> ytrain = NArrays.ofType(dtype).zeros(Shape.of(10_000));
         for (int i = 0; i < ytrain.dim(0); i++) {
-            Tensor<?> row = xtrain.takesq(0, i);
+            NArray<?> row = xtrain.takesq(0, i);
             ytrain.setDouble(random.nextDouble() / 100 + fun(row.getDouble(0), row.getDouble(1), row.getDouble(2), row.getDouble(3)), i);
         }
-        Tensor<?> xtest = Tensors.ofType(dtype).random(Shape.of(200, 4), random);
-        Tensor<?> ytest = Tensors.ofType(dtype).zeros(Shape.of(200));
+        NArray<?> xtest = NArrays.ofType(dtype).random(Shape.of(200, 4), random);
+        NArray<?> ytest = NArrays.ofType(dtype).zeros(Shape.of(200));
         for (int i = 0; i < ytest.dim(0); i++) {
-            Tensor<?> row = xtest.takesq(0, i);
+            NArray<?> row = xtest.takesq(0, i);
             ytest.setDouble(random.nextDouble() / 100 + fun(row.getDouble(0), row.getDouble(1), row.getDouble(2), row.getDouble(3)), i);
         }
 
         Net nn = new Sequential(
-                new Linear(dtype, 4, 10, true),
-                new Sigmoid(),
-                new BatchNorm1D(dtype, 10, 1e-5),
-//                new ReLU(),
-                new Linear(dtype, 10, 1, true),
+                new Linear(dtype, 4, 100, true),
+//                new Sigmoid(),
+                new ReLU(),
+                new BatchNorm1D(dtype, 100, 1e-5),
+                new Linear(dtype, 100, 1, true),
                 new ReLU()
         );
         nn.seed(42);
@@ -104,9 +103,9 @@ public class Sandbox2DFunctionRegression {
 
             for (int j = 0; j < sample.length; j += BATCH_SIZE) {
                 int[] batchIndexes = Arrays.copyOfRange(sample, j, Math.min(sample.length, j + BATCH_SIZE));
-                Tensor<?> xx = xtrain.take(0, batchIndexes);
-                Tensor<?> yy = ytrain.take(0, batchIndexes);
-                Node[] outputs = nn.forward(Autograd.var(xx));
+                NArray<?> xx = xtrain.take(0, batchIndexes);
+                NArray<?> yy = ytrain.take(0, batchIndexes);
+                Tensor[] outputs = nn.forward(Autograd.var(xx));
 
                 loss.forward(outputs[0], Autograd.var(yy));
                 loss.backward();
@@ -118,7 +117,7 @@ public class Sandbox2DFunctionRegression {
             }
 
             nn.eval();
-            Node[] outputs = nn.forward(Autograd.var(xtest));
+            Tensor[] outputs = nn.forward(Autograd.var(xtest));
             loss.forward(outputs[0], Autograd.var(ytest));
             testLoss.addDouble(loss.loss());
             teLoss += loss.loss();
@@ -130,7 +129,7 @@ public class Sandbox2DFunctionRegression {
 
         WS.draw(lines(trainLoss, color(1), lwd(1)).lines(testLoss, color(2), lwd(1)));
 
-        nn.forward(Autograd.var(Tensors.ofType(dtype).random(Shape.of(2, 4), random)).name("x"))[0].value().printString();
+        nn.forward(Autograd.var(NArrays.ofType(dtype).random(Shape.of(2, 4), random)).name("x"))[0].value().printString();
     }
 
     public static double fun(double x1, double x2, double x3, double x4) {

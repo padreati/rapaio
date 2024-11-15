@@ -34,7 +34,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.datasets.Datasets;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/1/20.
@@ -82,7 +82,7 @@ public class KMClusterTest {
 
         Frame c = clustering.getCentroids().refSort("x");
         assertTrue(c.deepEquals(SolidFrame.byVars(VarDouble.copy(0, 1).name("x"))));
-        Tensor<Double> cc = clustering.getCentroidsMatrix();
+        NArray<Double> cc = clustering.getCentroidsMatrix();
         assertEquals(0, cc.takesq(1, 0).prod());
         assertEquals(1, cc.takesq(1, 0).sum());
 
@@ -98,7 +98,7 @@ public class KMClusterTest {
 
         Frame c = clustering.getCentroids().refSort("x");
         assertTrue(c.deepEquals(SolidFrame.byVars(VarDouble.copy(0, 1).name("x"))));
-        Tensor<Double> cc = clustering.getCentroidsMatrix();
+        NArray<Double> cc = clustering.getCentroidsMatrix();
         assertEquals(0, cc.takesq(1, 0).prod());
         assertEquals(1, cc.takesq(1, 0).sum());
 
@@ -166,9 +166,9 @@ public class KMClusterTest {
         var kmeansC = kmeans.getCentroidsMatrix();
         var kmediansC = kmedians.getCentroidsMatrix();
 
-        Tensor<Double> instances = df.tensor();
+        NArray<Double> instances = df.tensor();
 
-        BiFunction<Tensor<Double>, Tensor<Double>, Double> dist = (u, v) -> u.copy().sub_(v).apply_(x -> x * x).sum();
+        BiFunction<NArray<Double>, NArray<Double>, Double> dist = (u, v) -> u.copy().sub_(v).apply_(x -> x * x).sum();
 
         double kmeansErr = 0.0;
         double kmediansErr = 0.0;

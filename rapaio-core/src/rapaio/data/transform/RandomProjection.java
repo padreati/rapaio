@@ -30,9 +30,9 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarRange;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArrays;
 
 /**
  * Builds a random projection of some give numeric features.
@@ -59,7 +59,7 @@ public class RandomProjection extends AbstractTransform {
     private final int k;
     private final Method method;
     private final Random random;
-    private Tensor<Double> rp;
+    private NArray<Double> rp;
 
     private RandomProjection(Random random, int k, Method method, VarRange varRange) {
         super(varRange);
@@ -77,9 +77,9 @@ public class RandomProjection extends AbstractTransform {
     public void coreFit(Frame df) {
         // build k random projections
 
-        rp = Tensors.zeros(Shape.of(varNames.length, k));
+        rp = NArrays.zeros(Shape.of(varNames.length, k));
         for (int i = 0; i < k; i++) {
-            Tensor<Double> v = method.projection(random, varNames.length);
+            NArray<Double> v = method.projection(random, varNames.length);
             for (int j = 0; j < varNames.length; j++) {
                 rp.setDouble(v.getDouble(j), j, i);
             }
@@ -89,8 +89,8 @@ public class RandomProjection extends AbstractTransform {
     @Override
     public Frame coreApply(Frame df) {
 
-        Tensor<Double> X = df.mapVars(varNames).tensor();
-        Tensor<Double> p = X.mm(rp);
+        NArray<Double> X = df.mapVars(varNames).tensor();
+        NArray<Double> p = X.mm(rp);
 
         Frame non = df.removeVars(VarRange.of(varNames));
         Frame trans = SolidFrame.matrix(p, IntStream.range(1, k + 1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
@@ -98,13 +98,13 @@ public class RandomProjection extends AbstractTransform {
     }
 
     public interface Method {
-        Tensor<Double> projection(Random random, int rowCount);
+        NArray<Double> projection(Random random, int rowCount);
     }
 
     private static Method gaussian(int k) {
         return (random, rowCount) -> {
             Normal norm = Normal.std();
-            Tensor<Double> v = Tensors.zeros(Shape.of(rowCount));
+            NArray<Double> v = NArrays.zeros(Shape.of(rowCount));
             for (int i = 0; i < v.size(); i++) {
                 v.setDouble(norm.sampleNext(random) / Math.sqrt(k), i);
             }
@@ -123,7 +123,7 @@ public class RandomProjection extends AbstractTransform {
 
         return (random, rowCount) -> {
             int[] sample = SamplingTools.sampleWeightedWR(random, rowCount, p);
-            Tensor<Double> v = Tensors.zeros(Shape.of(rowCount));
+            NArray<Double> v = NArrays.zeros(Shape.of(rowCount));
             for (int i = 0; i < sample.length; i++) {
                 if (sample[i] == 0) {
                     v.setDouble(-sqrt, i);

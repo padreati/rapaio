@@ -21,28 +21,29 @@
 
 package rapaio.experiment.math.nn;
 
+import rapaio.math.narrays.DType;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Shape;
 import rapaio.math.nn.Autograd;
-import rapaio.math.nn.Node;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.nn.Tensor;
 
 public class SanboxExpr {
 
     public static void main(String[] args) {
 
-        Node a = Autograd.var(Tensors.stride(Shape.of(2, 2), 2., 1, 1.3, 5)).requiresGrad(true).name("a");
-        Node f = Autograd.var(Tensors.scalar(1.)).name("f");
+        Tensor a = Autograd.var(NArrays.stride(Shape.of(2, 2), 2., 1, 1.3, 5)).requiresGrad(true).name("a");
+        Tensor f = Autograd.scalar(DType.DOUBLE, 1).name("f");
 
-        Node c = a.sqr().name("c");
-        Node b = a.add(c).name("b");
-        Node d = b.log().name("d");
-        Node e1 = c.add(d).requiresGrad(true).name("e1");
-        Node e2 = e1.add(f).name("e2");
-        Node g = e2.add(d).name("g");
-        Node h = f.add(g).name("h");
-        Node l = h.sum().name("l");
+        Tensor c = a.sqr().name("c");
+        Tensor b = a.add(c).name("b");
+        Tensor d = b.log().name("d");
+        Tensor e1 = c.add(d).requiresGrad(true).name("e1");
+        Tensor e2 = e1.add(f).name("e2");
+        Tensor g = e2.add(d).name("g");
+        Tensor h = f.add(g).name("h");
+        Tensor l = h.sum().name("l");
 
-        l.setGrad(Tensors.scalar(1.));
+        l.setGrad(NArrays.scalar(1.));
 
         Autograd.ComputeGraph graph = new Autograd.ComputeGraph(l, true);
         graph.run();

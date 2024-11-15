@@ -30,8 +30,8 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Shape;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
@@ -50,30 +50,30 @@ public class BinaryLogisticIRLSTest {
     @Test
     void testDefaults() {
         var optimizer = new BinaryLogisticIRLS()
-                .xp.set(Tensors.eye(1))
-                .yp.set(Tensors.zeros(Shape.of(1)))
-                .w0.set(Tensors.full(Shape.of(1), 1.));
+                .xp.set(NArrays.eye(1))
+                .yp.set(NArrays.zeros(Shape.of(1)))
+                .w0.set(NArrays.full(Shape.of(1), 1.));
         assertEquals(1e-20, optimizer.eps.get());
         assertEquals(10, optimizer.maxIter.get());
         assertEquals(0, optimizer.lambdap.get());
-        assertTrue(Tensors.eye(1).deepEquals(optimizer.xp.get()));
-        assertTrue(Tensors.zeros(Shape.of(1)).deepEquals(optimizer.yp.get()));
-        assertTrue(Tensors.full(Shape.of(1), 1.).deepEquals(optimizer.w0.get()));
+        assertTrue(NArrays.eye(1).deepEquals(optimizer.xp.get()));
+        assertTrue(NArrays.zeros(Shape.of(1)).deepEquals(optimizer.yp.get()));
+        assertTrue(NArrays.full(Shape.of(1), 1.).deepEquals(optimizer.w0.get()));
     }
 
     @Test
     void testResult() {
         BinaryLogisticIRLS.Result result = new BinaryLogisticIRLS.Result(Collections.emptyList(), Collections.emptyList(), false);
-        assertTrue(Tensors.scalar(Double.NaN).deepEquals(result.w()));
+        assertTrue(NArrays.scalar(Double.NaN).deepEquals(result.w()));
         assertEquals(Double.NaN, result.nll());
     }
 
     @Test
     void testSymmetricAroundZeroSeparable() {
 
-        var x = Tensors.stride(Shape.of(10, 1), -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
-        var y = Tensors.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-        var w0 = Tensors.zeros(Shape.of(1));
+        var x = NArrays.stride(Shape.of(10, 1), -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
+        var y = NArrays.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+        var w0 = NArrays.zeros(Shape.of(1));
 
         var result = new BinaryLogisticIRLS()
                 .xp.set(x)
@@ -90,9 +90,9 @@ public class BinaryLogisticIRLSTest {
     @Test
     void testSymmetricAroundZeroNotSeparable() {
 
-        var x = Tensors.stride(Shape.of(10, 1), -5, -4, -3, 2, -1, 1, -2, 3, 4, 5);
-        var y = Tensors.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-        var w0 = Tensors.zeros(Shape.of(1));
+        var x = NArrays.stride(Shape.of(10, 1), -5, -4, -3, 2, -1, 1, -2, 3, 4, 5);
+        var y = NArrays.stride(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+        var w0 = NArrays.zeros(Shape.of(1));
 
         var result = new BinaryLogisticIRLS()
                 .xp.set(x)

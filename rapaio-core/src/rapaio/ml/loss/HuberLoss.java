@@ -60,7 +60,7 @@ public class HuberLoss implements Loss {
 
         double r_bar = Quantiles.of(y, 0.5).values()[0];
         var abs = y.copy();
-        abs.tensor_().apply_(Math::abs);
+        abs.narray_().apply_(Math::abs);
 
         // compute rho as an alpha-quantile of absolute residuals
 
@@ -157,7 +157,7 @@ public class HuberLoss implements Loss {
 
     @Override
     public double errorScore(Var y, Var y_hat) {
-        return error(y, y_hat).tensor_().nanSum();
+        return error(y, y_hat).narray_().nanSum();
     }
 
     @Override

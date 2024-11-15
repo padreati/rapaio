@@ -38,7 +38,7 @@ import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.MathTools;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.PolyKernel;
@@ -122,7 +122,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     private boolean oneVsAll;
 
     private int _vectorsCount;
-    private Tensor<Double> _vectors;
+    private NArray<Double> _vectors;
     private double[] _sparseWeights;
     private int[] _sparseIndices;
     private double _b;
@@ -265,7 +265,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                     })
                     .collectMapping();
             dfTrain = df.mapRows(mapping);
-            state.weights = w.mapRows(mapping).tensor();
+            state.weights = w.mapRows(mapping).narray();
             valid = true;
         } else if (!"?".equals(firstLabel.get())) {
             // one vs all type of classification
@@ -273,14 +273,14 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
             label2 = "~" + firstLabel.get();
             oneVsAll = true;
             dfTrain = df;
-            state.weights = w.tensor();
+            state.weights = w.narray();
             valid = true;
         } else if (targetLevels.size() == 2) {
             label1 = targetLevels.get(0);
             label2 = targetLevels.get(1);
             oneVsAll = false;
             dfTrain = df;
-            state.weights = w.tensor();
+            state.weights = w.narray();
             valid = true;
         }
 
@@ -391,8 +391,8 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         }
 
         // Compute second derivative of objective function
-        Tensor<Double> row1 = state.train.takesq(0, i1);
-        Tensor<Double> row2 = state.train.takesq(0, i2);
+        NArray<Double> row1 = state.train.takesq(0, i1);
+        NArray<Double> row2 = state.train.takesq(0, i2);
         double k11 = state.kernelCache.cachedCompute(i1, i1, row1, row1);
         double k12 = state.kernelCache.cachedCompute(i1, i2, row1, row2);
         double k22 = state.kernelCache.cachedCompute(i2, i2, row2, row2);
@@ -480,7 +480,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         // Update error cache using new Lagrange multipliers
         for (int j = state.I0.nextSetBit(0); j != -1; j = state.I0.nextSetBit(j + 1)) {
             if ((j != i1) && (j != i2)) {
-                Tensor<Double> rowj = state.train.takesq(0, j);
+                NArray<Double> rowj = state.train.takesq(0, j);
                 state.fCache[j] +=
                         y1 * (a1 - alpha1) * state.kernelCache.cachedCompute(i1, j, row1, rowj) +
                                 y2 * (a2 - alpha2) * state.kernelCache.cachedCompute(i2, j, row2, rowj);
@@ -581,7 +581,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         }
     }
 
-    private double predictScore(Tensor<Double> df, int row) {
+    private double predictScore(NArray<Double> df, int row) {
         double result = -_b;
         if (kernel.get().isLinear()) {
             for (int i = 0; i < _vectorsCount; i++) {
@@ -723,8 +723,8 @@ final class State {
     // linear machine
     double[] linear_weights;
 
-    Tensor<Double> train;
-    Tensor<Double> weights;
+    NArray<Double> train;
+    NArray<Double> weights;
     double[] y;
 
     KernelCache kernelCache;
@@ -792,7 +792,7 @@ final class State {
         }
     }
 
-    public double predict(Kernel kernel, Tensor<Double> df, int row, Tensor<Double> train, double[] y) {
+    public double predict(Kernel kernel, NArray<Double> df, int row, NArray<Double> train, double[] y) {
         double result = -b;
         if (kernel.isLinear()) {
             // Is weight vector stored in sparse format?

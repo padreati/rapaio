@@ -139,8 +139,8 @@ public class BinaryLogisticTest {
         Frame df = iris.removeVars("petal-length", "sepal-length", "class").bindVars(clazz).copy();
 
         Normal normal = Normal.of(0, 0.5);
-        df.rvar(0).tensor_().apply_(v -> v + normal.sampleNext(random));
-        df.rvar(1).tensor_().apply_(v -> v + normal.sampleNext(random));
+        df.rvar(0).narray_().apply_(v -> v + normal.sampleNext(random));
+        df.rvar(1).narray_().apply_(v -> v + normal.sampleNext(random));
 
         var result = BinaryLogistic.newModel()
                 .solver.set(BinaryLogistic.Method.IRLS)
@@ -153,8 +153,8 @@ public class BinaryLogisticTest {
         int n = 20;
 
         VarDouble x = VarDouble.fill(2 * n, 0).name("x");
-        x.tensor_().narrow(0, 0, n).add_(VarDouble.sample(Normal.of(0, 0.5), random, n).tensor_());
-        x.tensor_().narrow(0, n, 2 * n).add_(VarDouble.sample(Normal.of(0.75, 0.5), random, n).tensor_());
+        x.narray_().narrow(0, 0, n).add_(VarDouble.sample(Normal.of(0, 0.5), random, n).narray_());
+        x.narray_().narrow(0, n, 2 * n).add_(VarDouble.sample(Normal.of(0.75, 0.5), random, n).narray_());
 
         VarNominal y = VarNominal.from(2 * n, i -> i < n ? "1" : "0").name("y");
 
@@ -176,8 +176,8 @@ public class BinaryLogisticTest {
         Frame df = iris.removeVars("petal-length", "sepal-length", "class").bindVars(clazz).copy();
 
         Normal normal = Normal.of(0, 0.5);
-        df.rvar(0).tensor_().apply_(v -> v + normal.sampleNext(random));
-        df.rvar(1).tensor_().apply_(v -> v + normal.sampleNext(random));
+        df.rvar(0).narray_().apply_(v -> v + normal.sampleNext(random));
+        df.rvar(1).narray_().apply_(v -> v + normal.sampleNext(random));
 
 
         var irls = BinaryLogistic.newModel()
@@ -274,8 +274,8 @@ public class BinaryLogisticTest {
 
         int n = 100;
         VarDouble x = VarDouble.fill(2 * n, 0).name("x");
-        x.tensor_().narrow(0, 0, n).add_(VarDouble.sample(Normal.of(0, 0.5), random, n).tensor_());
-        x.tensor_().narrow(0, n, 2 * n).add_(VarDouble.sample(Normal.of(0.75, 0.5), random, n).tensor_());
+        x.narray_().narrow(0, 0, n).add_(VarDouble.sample(Normal.of(0, 0.5), random, n).narray_());
+        x.narray_().narrow(0, n, 2 * n).add_(VarDouble.sample(Normal.of(0.75, 0.5), random, n).narray_());
 
         VarNominal ynom = VarNominal.from(2 * n, i -> i < n ? "1" : "2").name("y");
         VarBinary ybin = VarBinary.from(2 * n, i -> i < n).name("y");
@@ -288,18 +288,18 @@ public class BinaryLogisticTest {
         var predNom = resultNom.firstClasses();
         var predBin = resultBin.firstClasses();
 
-        assertTrue(predNom.tensor_().apply_(v -> v == 2 ? 0. : 1).deepEquals(predBin.tensor_()));
+        assertTrue(predNom.narray_().apply_(v -> v == 2 ? 0. : 1).deepEquals(predBin.narray_()));
 
         assertTrue(resultNom.firstDensity().rvar(0).deepEquals(resultBin.firstDensity().rvar(0)));
-        assertTrue(resultNom.firstDensity().rvar(1).tensor_().deepEquals(resultBin.firstDensity().rvar(1).tensor_()));
+        assertTrue(resultNom.firstDensity().rvar(1).narray_().deepEquals(resultBin.firstDensity().rvar(1).narray_()));
     }
 
     @Test
     void testLearningArtifacts() {
         int n = 100;
         VarDouble x = VarDouble.fill(2 * n, 0).name("x");
-        x.tensor_().narrow(0, 0, n).add_(VarDouble.sample(Normal.of(0, 1), random, n).tensor_());
-        x.tensor_().narrow(0, n, 2 * n).add_(VarDouble.sample(Normal.of(2, 1), random, n).tensor_());
+        x.narray_().narrow(0, 0, n).add_(VarDouble.sample(Normal.of(0, 1), random, n).narray_());
+        x.narray_().narrow(0, n, 2 * n).add_(VarDouble.sample(Normal.of(2, 1), random, n).narray_());
 
         VarNominal y = VarNominal.from(2 * n, i -> i < n ? "1" : "2").name("y");
 

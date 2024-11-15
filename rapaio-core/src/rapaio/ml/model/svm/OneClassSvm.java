@@ -28,7 +28,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.model.ClusteringModel;
@@ -92,7 +92,7 @@ public class OneClassSvm extends ClusteringModel<OneClassSvm, ClusteringResult<O
 
     @Override
     protected OneClassSvm coreFit(Frame df, Var weights) {
-        Tensor<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).tensor();
         ProblemInfo pi = ProblemInfo.from(x, VarDouble.empty(df.rowCount()), this);
         pi.checkValidProblem();
         model = Svm.svm_train(pi.computeProblem(), pi.computeParameters());
@@ -104,7 +104,7 @@ public class OneClassSvm extends ClusteringModel<OneClassSvm, ClusteringResult<O
 
     @Override
     protected ClusteringResult<OneClassSvm> corePredict(Frame df, boolean withScores) {
-        Tensor<Double> xs = df.mapVars(inputNames).tensor();
+        NArray<Double> xs = df.mapVars(inputNames).tensor();
 
         VarInt assign = VarInt.empty(df.rowCount()).name("clusters");
         VarDouble scores = VarDouble.empty(df.rowCount()).name("scores");

@@ -30,23 +30,23 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArrays;
 
 public class AutogradTest {
 
     @Test
     void testOrder() {
 
-        Node a = Autograd.var(Tensors.scalar(-1.)).name("a");
-        Node f = Autograd.var(Tensors.scalar(1.)).name("f");
-        Node c = a.log().name("c");
-        Node b = a.add(c).name("b");
-        Node d = b.log().name("d");
-        Node e1 = c.add(d).name("e1");
-        Node e2 = e1.add(f).name("e2");
-        Node g = e2.add(d).name("g");
-        Node h = f.add(g).name("h");
-        h.setGrad(Tensors.scalar(1.));
+        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
+        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor c = a.log().name("c");
+        Tensor b = a.add(c).name("b");
+        Tensor d = b.log().name("d");
+        Tensor e1 = c.add(d).name("e1");
+        Tensor e2 = e1.add(f).name("e2");
+        Tensor g = e2.add(d).name("g");
+        Tensor h = f.add(g).name("h");
+        h.setGrad(NArrays.scalar(1.));
 
         Autograd.ComputeGraph graph = new Autograd.ComputeGraph(h, true);
         graph.run();
@@ -71,16 +71,16 @@ public class AutogradTest {
     @Test
     void testRequiresGradDefault() {
 
-        Node a = Autograd.var(Tensors.scalar(-1.)).name("a");
-        Node f = Autograd.var(Tensors.scalar(1.)).name("f");
-        Node c = a.log().name("c");
-        Node b = a.add(c).name("b");
-        Node d = b.log().name("d");
-        Node e1 = c.add(d).name("e1");
-        Node e2 = e1.add(f).name("e2");
-        Node g = e2.add(d).name("g");
-        Node h = f.add(g).name("h");
-        h.setGrad(Tensors.scalar(1.));
+        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
+        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor c = a.log().name("c");
+        Tensor b = a.add(c).name("b");
+        Tensor d = b.log().name("d");
+        Tensor e1 = c.add(d).name("e1");
+        Tensor e2 = e1.add(f).name("e2");
+        Tensor g = e2.add(d).name("g");
+        Tensor h = f.add(g).name("h");
+        h.setGrad(NArrays.scalar(1.));
 
         Autograd.ComputeGraph graph = new Autograd.ComputeGraph(h, true);
         graph.run();
@@ -100,16 +100,16 @@ public class AutogradTest {
     @Test
     void testRequiresGradVariant1() {
 
-        Node a = Autograd.var(Tensors.scalar(-1.)).name("a");
-        Node f = Autograd.var(Tensors.scalar(1.)).name("f");
-        Node c = a.log().name("c");
-        Node b = a.add(c).name("b");
-        Node d = b.log().name("d");
-        Node e1 = c.add(d).name("e1");
-        Node e2 = e1.add(f).name("e2");
-        Node g = e2.add(d).name("g");
-        Node h = f.add(g).name("h");
-        h.setGrad(Tensors.scalar(1.));
+        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
+        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor c = a.log().name("c");
+        Tensor b = a.add(c).name("b");
+        Tensor d = b.log().name("d");
+        Tensor e1 = c.add(d).name("e1");
+        Tensor e2 = e1.add(f).name("e2");
+        Tensor g = e2.add(d).name("g");
+        Tensor h = f.add(g).name("h");
+        h.setGrad(NArrays.scalar(1.));
 
         a.requiresGrad(true);
 
@@ -130,16 +130,16 @@ public class AutogradTest {
     @Test
     void testRequiredGradVariant2() {
 
-        Node a = Autograd.var(Tensors.scalar(-1.)).name("a");
-        Node f = Autograd.var(Tensors.scalar(1.)).name("f");
-        Node c = a.log().name("c");
-        Node b = a.add(c).name("b");
-        Node d = b.log().name("d");
-        Node e1 = c.add(d).name("e1");
-        Node e2 = e1.add(f).name("e2");
-        Node g = e2.add(d).name("g");
-        Node h = f.add(g).name("h");
-        h.setGrad(Tensors.scalar(1.));
+        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
+        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor c = a.log().name("c");
+        Tensor b = a.add(c).name("b");
+        Tensor d = b.log().name("d");
+        Tensor e1 = c.add(d).name("e1");
+        Tensor e2 = e1.add(f).name("e2");
+        Tensor g = e2.add(d).name("g");
+        Tensor h = f.add(g).name("h");
+        h.setGrad(NArrays.scalar(1.));
 
         b.requiresGrad(true);
 
@@ -161,16 +161,16 @@ public class AutogradTest {
     @Test
     void testRetainGradTrue() {
 
-        Node a = Autograd.var(Tensors.scalar(-1.)).name("a");
-        Node f = Autograd.var(Tensors.scalar(1.)).name("f");
-        Node c = a.log().name("c");
-        Node b = a.add(c).name("b");
-        Node d = b.log().name("d");
-        Node e1 = c.add(d).name("e1");
-        Node e2 = e1.add(f).name("e2");
-        Node g = e2.add(d).name("g");
-        Node h = f.add(g).name("h");
-        h.setGrad(Tensors.scalar(1.));
+        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
+        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor c = a.log().name("c");
+        Tensor b = a.add(c).name("b");
+        Tensor d = b.log().name("d");
+        Tensor e1 = c.add(d).name("e1");
+        Tensor e2 = e1.add(f).name("e2");
+        Tensor g = e2.add(d).name("g");
+        Tensor h = f.add(g).name("h");
+        h.setGrad(NArrays.scalar(1.));
 
         a.requiresGrad(true);
         f.requiresGrad(true);
@@ -202,16 +202,16 @@ public class AutogradTest {
     @Test
     void testRetainGradFalse() {
 
-        Node a = Autograd.var(Tensors.scalar(-1.)).name("a");
-        Node f = Autograd.var(Tensors.scalar(1.)).name("f");
-        Node c = a.log().name("c");
-        Node b = a.add(c).name("b");
-        Node d = b.log().name("d");
-        Node e1 = c.add(d).name("e1");
-        Node e2 = e1.add(f).name("e2");
-        Node g = e2.add(d).name("g");
-        Node h = f.add(g).name("h");
-        h.setGrad(Tensors.scalar(1.));
+        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
+        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor c = a.log().name("c");
+        Tensor b = a.add(c).name("b");
+        Tensor d = b.log().name("d");
+        Tensor e1 = c.add(d).name("e1");
+        Tensor e2 = e1.add(f).name("e2");
+        Tensor g = e2.add(d).name("g");
+        Tensor h = f.add(g).name("h");
+        h.setGrad(NArrays.scalar(1.));
 
         a.requiresGrad(true);
         f.requiresGrad(true);
@@ -240,7 +240,7 @@ public class AutogradTest {
         assertEquals(0, h.backfuns().size());
     }
 
-    private void testBefore(List<Node> sorted, String after, String before) {
+    private void testBefore(List<Tensor> sorted, String after, String before) {
         int beforeIndex = -1;
         int afterIndex = -1;
         for (int i = 0; i < sorted.size(); i++) {

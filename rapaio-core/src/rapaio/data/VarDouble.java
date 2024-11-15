@@ -42,11 +42,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import rapaio.core.distributions.Distribution;
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.Order;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.DType;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Order;
+import rapaio.math.narrays.Shape;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
@@ -587,17 +587,17 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    public Tensor<Double> tensor_() {
-        return Tensors.stride(Shape.of(rows), Order.C, data);
+    public NArray<Double> narray_() {
+        return NArrays.stride(Shape.of(rows), Order.C, data);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <N extends Number> Tensor<N> tensor_(DType<N> dtype) {
+    public <N extends Number> NArray<N> narray_(DType<N> dtype) {
         if (dtype == DType.DOUBLE) {
-            return (Tensor<N>) Tensors.stride(Shape.of(rows), Order.C, data);
+            return (NArray<N>) NArrays.stride(Shape.of(rows), Order.C, data);
         }
-        return super.tensor_(dtype);
+        return super.narray_(dtype);
     }
 
     @Serial

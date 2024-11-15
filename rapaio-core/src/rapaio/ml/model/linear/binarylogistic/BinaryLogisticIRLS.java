@@ -30,10 +30,10 @@ import java.util.List;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.math.MathTools;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
-import rapaio.math.tensor.matrix.CholeskyDecomposition;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.matrix.CholeskyDecomposition;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.
@@ -58,22 +58,22 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
      */
     public final ValueParam<Double, BinaryLogisticIRLS> lambdap = new ValueParam<>(this, 0.0, "lambda");
 
-    public final ValueParam<Tensor<Double>, BinaryLogisticIRLS> xp = new ValueParam<>(this, null, "x");
+    public final ValueParam<NArray<Double>, BinaryLogisticIRLS> xp = new ValueParam<>(this, null, "x");
 
-    public final ValueParam<Tensor<Double>, BinaryLogisticIRLS> yp = new ValueParam<>(this, null, "y");
+    public final ValueParam<NArray<Double>, BinaryLogisticIRLS> yp = new ValueParam<>(this, null, "y");
 
     /**
      * Initial weights
      */
-    public final ValueParam<Tensor<Double>, BinaryLogisticIRLS> w0 = new ValueParam<>(this, null, "w0");
+    public final ValueParam<NArray<Double>, BinaryLogisticIRLS> w0 = new ValueParam<>(this, null, "w0");
 
-    public record Result(List<Double> nlls, List<Tensor<Double>> ws, boolean converged) {
+    public record Result(List<Double> nlls, List<NArray<Double>> ws, boolean converged) {
 
-        public Tensor<Double> w() {
+        public NArray<Double> w() {
             if (!ws.isEmpty()) {
                 return ws.getLast();
             }
-            return Tensors.scalar(Double.NaN);
+            return NArrays.scalar(Double.NaN);
         }
 
         public double nll() {
@@ -86,24 +86,24 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
 
     public BinaryLogisticIRLS.Result fit() {
 
-        Tensor<Double> x = xp.get();
-        Tensor<Double> y = yp.get();
-        Tensor<Double> ny = Tensors.full(Shape.of(y.size()), 1.).sub_(y);
-        Tensor<Double> w = w0.get();
+        NArray<Double> x = xp.get();
+        NArray<Double> y = yp.get();
+        NArray<Double> ny = NArrays.full(Shape.of(y.size()), 1.).sub_(y);
+        NArray<Double> w = w0.get();
         double lambda = lambdap.get();
-        Tensor<Double> p = x.mv(w).apply_(MathTools::logistic);
-        Tensor<Double> np = p.apply(v -> 1 - v);
+        NArray<Double> p = x.mv(w).apply_(MathTools::logistic);
+        NArray<Double> np = p.apply(v -> 1 - v);
 
         int it = 0;
         // current solution
-        ArrayList<Tensor<Double>> ws = new ArrayList<>();
+        ArrayList<NArray<Double>> ws = new ArrayList<>();
         ws.add(w);
         List<Double> nlls = new ArrayList<>();
         nlls.add(negativeLogLikelihood(y, ny, w, lambda, p, np));
 
         while (it++ < maxIter.get()) {
 
-            Tensor<Double> wnew = iterate(w, x, y, lambda, p, np);
+            NArray<Double> wnew = iterate(w, x, y, lambda, p, np);
 
             p = x.mv(wnew).apply(MathTools::logistic);
             np = p.apply(v -> 1 - v);
@@ -120,21 +120,23 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
         return new BinaryLogisticIRLS.Result(nlls, ws, false);
     }
 
-    private double negativeLogLikelihood(Tensor<Double> y, Tensor<Double> ny, Tensor<Double> w, double lambda, Tensor<Double> p, Tensor<Double> np) {
-        Tensor<Double> logp = p.clamp(1e-6, Double.NaN).log();
-        Tensor<Double> lognp = np.clamp(1e-6, Double.NaN).log();
+    private double negativeLogLikelihood(
+            NArray<Double> y, NArray<Double> ny, NArray<Double> w, double lambda, NArray<Double> p, NArray<Double> np) {
+        NArray<Double> logp = p.clamp(1e-6, Double.NaN).log();
+        NArray<Double> lognp = np.clamp(1e-6, Double.NaN).log();
 
         return -logp.inner(y) - lognp.inner(ny) + lambda * w.norm(2.) / 2;
     }
 
-    private Tensor<Double> iterate(Tensor<Double> vw, Tensor<Double> mx, Tensor<Double> vy, double lambda, Tensor<Double> vp, Tensor<Double> vnp) {
+    private NArray<Double> iterate(
+            NArray<Double> vw, NArray<Double> mx, NArray<Double> vy, double lambda, NArray<Double> vp, NArray<Double> vnp) {
 
         // p(1-p) diag from p diag
-        Tensor<Double> pvar = vp.mul(vnp).clamp(1e-6, Double.NaN);
+        NArray<Double> pvar = vp.mul(vnp).clamp(1e-6, Double.NaN);
 
         // H = X^t * I{p(1-p)} * X + I_lambda
-        Tensor<Double> xta = mx.t().mul(pvar.stretch(0).expand(0, mx.t().dim(0)));
-        Tensor<Double> h = xta.mm(mx);
+        NArray<Double> xta = mx.t().mul(pvar.stretch(0).expand(0, mx.t().dim(0)));
+        NArray<Double> h = xta.mm(mx);
         if (lambda > 0) {
             for (int i = 0; i < h.dim(0); i++) {
                 h.incDouble(lambda, i, i);
@@ -142,8 +144,8 @@ public class BinaryLogisticIRLS extends ParamSet<BinaryLogisticIRLS> {
         }
 
         // z = Xw + I{p(1-p)}^{-1} (y-p)
-        Tensor<Double> z = mx.mv(vw).add(vy.sub(vp).div_(pvar));
-        Tensor<Double> right = xta.mv(z);
+        NArray<Double> z = mx.mv(vw).add(vy.sub(vp).div_(pvar));
+        NArray<Double> right = xta.mv(z);
 
         // solve IRLS
         CholeskyDecomposition<Double> chol = h.cholesky();

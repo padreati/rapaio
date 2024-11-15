@@ -33,9 +33,9 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArrays;
 
 /**
  * Tests for pearson correlation
@@ -107,7 +107,7 @@ public class CorrPearsonTest {
         VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext(random)).name("z");
 
 
-        Tensor<Double> exp = Tensors.stride(Shape.of(3, 3),
+        NArray<Double> exp = NArrays.stride(Shape.of(3, 3),
                 1.0, 0.8356446312071465, 0.7997143292750087,
                 0.8356446312071465, 1.0, 0.9938073109055182,
                 0.7997143292750087, 0.9938073109055182, 1.0);

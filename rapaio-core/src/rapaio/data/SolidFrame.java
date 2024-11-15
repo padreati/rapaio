@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * A frame which is not mapped, its values are contained in vectors.
@@ -106,11 +106,11 @@ public class SolidFrame extends AbstractFrame {
         return SolidFrame.byVars(rows, vars);
     }
 
-    public static Frame matrix(Tensor<Double> m, String... varNames) {
+    public static Frame matrix(NArray<Double> m, String... varNames) {
         return matrix(m, Arrays.asList(varNames));
     }
 
-    public static Frame matrix(Tensor<Double> m, List<String> varNames) {
+    public static Frame matrix(NArray<Double> m, List<String> varNames) {
         int cols = m.dim(1);
         if (varNames.size() < cols) {
             varNames = new ArrayList<>(varNames);

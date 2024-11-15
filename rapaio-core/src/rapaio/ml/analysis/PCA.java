@@ -34,7 +34,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -80,24 +80,24 @@ public class PCA extends ParamSet<PCA> implements Printable {
     private PCA() {
     }
 
-    protected Tensor<Double> eigenValues;
-    protected Tensor<Double> eigenVectors;
-    protected Tensor<Double> mean;
-    protected Tensor<Double> sd;
+    protected NArray<Double> eigenValues;
+    protected NArray<Double> eigenVectors;
+    protected NArray<Double> mean;
+    protected NArray<Double> sd;
 
-    public Tensor<Double> getValues() {
+    public NArray<Double> getValues() {
         return eigenValues;
     }
 
-    public Tensor<Double> getVectors() {
+    public NArray<Double> getVectors() {
         return eigenVectors;
     }
 
-    public Tensor<Double> getMean() {
+    public NArray<Double> getMean() {
         return mean;
     }
 
-    public Tensor<Double> getStd() {
+    public NArray<Double> getStd() {
         return sd;
     }
 
@@ -105,7 +105,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
         preFit(df);
 
         logger.fine("start pca predict");
-        Tensor<Double> x = df.tensor();
+        NArray<Double> x = df.tensor();
         logger.fine("compute mean, sd and do scaling");
         if (center.get()) {
             mean = x.mean(0);
@@ -117,7 +117,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
         }
 
         logger.fine("build scatter");
-        Tensor<Double> s = x.t().mm(x);
+        NArray<Double> s = x.t().mm(x);
 
         logger.fine("compute eigenvalues");
         var evd = s.eig();
@@ -167,7 +167,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
      */
     public Frame transform(String prefix, Frame df, int k) {
 
-        Tensor<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).tensor();
 
         if (center.get()) {
             x.sub_(mean);
@@ -181,7 +181,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
             names[i] = prefix + (i + 1);
         }
 
-        Tensor<Double> result = x.mm(eigenVectors.narrow(1, true, 0, k));
+        NArray<Double> result = x.mm(eigenVectors.narrow(1, true, 0, k));
 
         Frame rest = df.removeVars(VarRange.of(inputNames));
         Frame prediction = SolidFrame.matrix(result, names);

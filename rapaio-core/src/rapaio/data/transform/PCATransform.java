@@ -26,7 +26,7 @@ import java.util.function.BiFunction;
 
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.analysis.PCA;
 
 /**
@@ -80,10 +80,10 @@ public class PCATransform extends AbstractTransform {
     private static final long serialVersionUID = 2797285371357486124L;
 
     final String prefix;
-    final BiFunction<Tensor<Double>, Tensor<Double>, Integer> kFun;
+    final BiFunction<NArray<Double>, NArray<Double>, Integer> kFun;
     private PCA pca;
 
-    private PCATransform(String prefix, BiFunction<Tensor<Double>, Tensor<Double>, Integer> kFun, VarRange varRange) {
+    private PCATransform(String prefix, BiFunction<NArray<Double>, NArray<Double>, Integer> kFun, VarRange varRange) {
         super(varRange);
         this.prefix = prefix;
         this.kFun = kFun;

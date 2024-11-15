@@ -24,12 +24,12 @@ package rapaio.math.nn.loss;
 import rapaio.core.param.ParamSet;
 import rapaio.math.nn.Autograd;
 import rapaio.math.nn.Loss;
-import rapaio.math.nn.Node;
+import rapaio.math.nn.Tensor;
 
 public abstract class AbstractLoss<L extends AbstractLoss<L>> extends ParamSet<L> implements Loss {
 
     protected int batch;
-    protected Node last;
+    protected Tensor last;
 
     public final void backward() {
         Autograd.backward(this);
@@ -42,7 +42,7 @@ public abstract class AbstractLoss<L extends AbstractLoss<L>> extends ParamSet<L
         return last.value().get().doubleValue();
     }
 
-    public Node last() {
+    public Tensor last() {
         return last;
     }
 }

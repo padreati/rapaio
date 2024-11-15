@@ -35,9 +35,9 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.MathTools;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Shape;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
@@ -117,7 +117,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
     private VarDouble w;
 
     // List of coefficients computed at each iteration.
-    private List<Tensor<Double>> iterationWeights;
+    private List<NArray<Double>> iterationWeights;
 
     // List of loss function values evaluated after each iteration.
     private List<Double> iterationLoss;
@@ -139,7 +139,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         return converged;
     }
 
-    public List<Tensor<Double>> iterationWeights() {
+    public List<NArray<Double>> iterationWeights() {
         return iterationWeights;
     }
 
@@ -159,7 +159,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
         var x = computeInputMatrix(df, firstTargetName());
         var y = computeTargetVector(df.rvar(firstTargetName()));
-        var w0 = Tensors.full(Shape.of(x.dim(1)), init.get().getFunction().apply(y));
+        var w0 = NArrays.full(Shape.of(x.dim(1)), init.get().getFunction().apply(y));
 
         switch (solver.get()) {
             case IRLS -> {
@@ -194,15 +194,15 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         return true;
     }
 
-    private Tensor<Double> computeTargetVector(Var target) {
+    private NArray<Double> computeTargetVector(Var target) {
         switch (target.type()) {
             case BINARY -> {
                 positiveLabel = "1";
                 negativeLabel = "0";
-                return target.tensor_();
+                return target.narray_();
             }
             case NOMINAL -> {
-                var result = Tensors.zeros(Shape.of(target.size()));
+                var result = NArrays.zeros(Shape.of(target.size()));
                 positiveLabel = !Objects.equals(nominalLevel.get(), "") ? nominalLevel.get() : targetLevels.get(firstTargetName()).get(1);
                 negativeLabel = firstTargetLevels().stream()
                         .filter(label -> !label.equals(positiveLabel))
@@ -219,7 +219,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         return null;
     }
 
-    private Tensor<Double> computeInputMatrix(Frame df, String targetName) {
+    private NArray<Double> computeInputMatrix(Frame df, String targetName) {
         List<Var> variables = new ArrayList<>();
         if (intercept.get() != 0) {
             hasIntercept = true;
@@ -243,9 +243,9 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
         int offset = hasIntercept ? 1 : 0;
 
-        var p = Tensors.full(Shape.of(df.rowCount()), hasIntercept ? intercept.get() * w.getDouble(0) : 0);
+        var p = NArrays.full(Shape.of(df.rowCount()), hasIntercept ? intercept.get() * w.getDouble(0) : 0);
         for (int i = 0; i < inputNames.length; i++) {
-            p.fma_(w.getDouble(i + offset), df.rvar(inputName(i)).tensor_());
+            p.fma_(w.getDouble(i + offset), df.rvar(inputName(i)).narray_());
         }
         p.apply_(MathTools::logistic);
 
@@ -273,13 +273,13 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         EXPECTED_LOG_VAR(v -> Math.log(Math.min(1e-12, v.mean() * (1 - v.mean()))));
 
         private static final long serialVersionUID = 8945270404852488614L;
-        private final Function<Tensor<Double>, Double> function;
+        private final Function<NArray<Double>, Double> function;
 
-        Initialize(Function<Tensor<Double>, Double> function) {
+        Initialize(Function<NArray<Double>, Double> function) {
             this.function = function;
         }
 
-        public Function<Tensor<Double>, Double> getFunction() {
+        public Function<NArray<Double>, Double> getFunction() {
             return function;
         }
     }

@@ -32,9 +32,9 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.transform.AddIntercept;
 import rapaio.math.MathTools;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Shape;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 import rapaio.printer.Format;
@@ -48,10 +48,10 @@ import rapaio.printer.opt.POpt;
 public class LinearRegressionResult extends RegressionResult {
 
     protected final BaseLinearRegressionModel<?> lm;
-    protected Tensor<Double> beta_hat;
-    protected Tensor<Double> beta_std_error;
-    protected Tensor<Double> beta_t_value;
-    protected Tensor<Double> beta_p_value;
+    protected NArray<Double> beta_hat;
+    protected NArray<Double> beta_std_error;
+    protected NArray<Double> beta_t_value;
+    protected NArray<Double> beta_p_value;
     protected String[][] beta_significance;
 
     public LinearRegressionResult(BaseLinearRegressionModel<?> model, Frame df, boolean withResiduals, double[] quantiles) {
@@ -59,19 +59,19 @@ public class LinearRegressionResult extends RegressionResult {
         this.lm = model;
     }
 
-    public Tensor<Double> getBetaHat() {
+    public NArray<Double> getBetaHat() {
         return beta_hat;
     }
 
-    public Tensor<Double> getBetaStdError() {
+    public NArray<Double> getBetaStdError() {
         return beta_std_error;
     }
 
-    public Tensor<Double> getBetaTValue() {
+    public NArray<Double> getBetaTValue() {
         return beta_t_value;
     }
 
-    public Tensor<Double> getBetaPValue() {
+    public NArray<Double> getBetaPValue() {
         return beta_p_value;
     }
 
@@ -89,9 +89,9 @@ public class LinearRegressionResult extends RegressionResult {
         String[] targets = lm.targetNames();
 
         beta_hat = lm.getAllCoefficients().copy();
-        beta_std_error = Tensors.zeros(Shape.of(inputs.length, targets.length));
-        beta_t_value = Tensors.zeros(Shape.of(inputs.length, targets.length));
-        beta_p_value = Tensors.zeros(Shape.of(inputs.length, targets.length));
+        beta_std_error = NArrays.zeros(Shape.of(inputs.length, targets.length));
+        beta_t_value = NArrays.zeros(Shape.of(inputs.length, targets.length));
+        beta_p_value = NArrays.zeros(Shape.of(inputs.length, targets.length));
         beta_significance = new String[inputs.length][targets.length];
 
         if (withResiduals) {
@@ -112,8 +112,8 @@ public class LinearRegressionResult extends RegressionResult {
                         features = df.bindVars(VarDouble.fill(df.rowCount(), 1).name(AddIntercept.INTERCEPT)).copy();
                     }
                 }
-                Tensor<Double> X = features.mapVars(model.inputNames()).tensor();
-                Tensor<Double> m_beta_hat = X.t().mm(X).qr().inv();
+                NArray<Double> X = features.mapVars(model.inputNames()).tensor();
+                NArray<Double> m_beta_hat = X.t().mm(X).qr().inv();
 
                 for (int j = 0; j < model.inputNames().length; j++) {
                     beta_std_error.setDouble(Math.sqrt(m_beta_hat.getDouble(j, j) * var), j, i);

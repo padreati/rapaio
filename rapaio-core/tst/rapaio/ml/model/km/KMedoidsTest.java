@@ -44,8 +44,8 @@ import rapaio.data.VarInt;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
 import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.common.distance.MinkowskiDistance;
 import rapaio.ml.eval.RandIndex;
@@ -118,7 +118,7 @@ public class KMedoidsTest {
 
     @Test
     void testErrorWithinCluster() {
-        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(10)).tensor();
+        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(10)).tensor();
 
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
@@ -128,7 +128,7 @@ public class KMedoidsTest {
 
     @Test
     void computeAssignmentTest() {
-        Tensor<Double> x = SolidFrame.byVars(VarDouble.from(100, () -> Normal.std().sampleNext(random))).tensor();
+        NArray<Double> x = SolidFrame.byVars(VarDouble.from(100, () -> Normal.std().sampleNext(random))).tensor();
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
 
@@ -146,7 +146,7 @@ public class KMedoidsTest {
 
     @Test
     void computeErrorTest() {
-        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(10)).tensor();
+        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(10)).tensor();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
@@ -159,7 +159,7 @@ public class KMedoidsTest {
 
     @Test
     void updateNewClosestTest() {
-        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(21)).tensor();
+        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(21)).tensor();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
@@ -168,7 +168,7 @@ public class KMedoidsTest {
 
         km.updateNewClosest(x, 0, dv, ev, cache);
 
-        Tensor<Double> exp1 = x.takesq(1, 0).copy().sub_(x.get(0, 0)).abs_();
+        NArray<Double> exp1 = x.takesq(1, 0).copy().sub_(x.get(0, 0)).abs_();
         for (int i = 0; i < x.dim(0); i++) {
             assertEquals(exp1.get(i), dv[i]);
             assertTrue(Double.isNaN(ev[i]));
@@ -202,7 +202,7 @@ public class KMedoidsTest {
 
     @Test
     void updateAllClosestTest() {
-        Tensor<Double> x = SolidFrame.byVars(VarDouble.seq(21)).tensor();
+        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(21)).tensor();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
@@ -225,7 +225,7 @@ public class KMedoidsTest {
     @Test
     void alternateSwapTest() {
 
-        Tensor<Double> x = Tensors.stride(
+        NArray<Double> x = NArrays.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
         ).stretch(1);
@@ -238,7 +238,7 @@ public class KMedoidsTest {
 
     @Test
     void initializePAMTest() {
-        Tensor<Double> x = Tensors.stride(
+        NArray<Double> x = NArrays.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
         ).stretch(1);
@@ -253,7 +253,7 @@ public class KMedoidsTest {
 
     @Test
     void peekFirstCentroidTest() {
-        Tensor<Double> x = Tensors.stride(
+        NArray<Double> x = NArrays.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
         ).stretch(1);
@@ -265,7 +265,7 @@ public class KMedoidsTest {
 
     @Test
     void peekNextCentroidTest() {
-        Tensor<Double> x = Tensors.stride(
+        NArray<Double> x = NArrays.stride(
                 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0
         ).stretch(1);

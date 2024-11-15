@@ -16,7 +16,7 @@
 /rapaio-core/target/
 /rapaio-code-gen/target/
 /rapaio-demo/target/
-/rapaio-tensor/target/
+/rapaio-array/target/
 /rapaio-commons/target/
 /rapaio-experiment/target/
 /rapaio-statml/target/

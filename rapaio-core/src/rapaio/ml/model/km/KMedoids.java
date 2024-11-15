@@ -40,7 +40,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.model.ClusteringModel;
@@ -85,7 +85,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
     public final ValueParam<Distance, KMedoids> distance = new ValueParam<>(this, new Manhattan(), "distance");
     public final ValueParam<Integer, KMedoids> maxIt = new ValueParam<>(this, 1000, "maxIt");
 
-    private Tensor<Double> c;
+    private NArray<Double> c;
     private VarDouble errors;
 
     private KMedoids() {
@@ -101,13 +101,13 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         return "KMedoids";
     }
 
-    public Tensor<Double> getCentroidsMatrix() {
+    public NArray<Double> getCentroidsMatrix() {
         return c;
     }
 
     @Override
     public KMedoids coreFit(Frame df, Var weights) {
-        Tensor<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).tensor();
         if (k.get() > x.dim(0)) {
             throw new IllegalArgumentException(
                     "Number of clusters %d bigger than number of instances %d.".formatted(k.get(), x.dim(0)));
@@ -121,7 +121,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         return this;
     }
 
-    void coreFitAlternate(Tensor<Double> x) {
+    void coreFitAlternate(NArray<Double> x) {
         LOGGER.fine("Starting core fit for alternate method.");
         LOGGER.finest("Initialize centroids as random instances.");
         int[] centroidIndexes = SamplingTools.sampleWOR(new Random(seed.get()), x.dim(0), k.get());
@@ -175,7 +175,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
      * @param assign current assignment
      * @return new indexes for medoids
      */
-    int[] alternateSwap(Tensor<Double> x, int[] cint, int[] assign, DistanceCache cache) {
+    int[] alternateSwap(NArray<Double> x, int[] cint, int[] assign, DistanceCache cache) {
         // each candidate for medoid will search only inside it's cluster
 
         HashMap<Integer, List<Integer>> clusters = new HashMap<>();
@@ -213,12 +213,12 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         return newClusters;
     }
 
-    double errorWithinCluster(Tensor<Double> x, int c, List<Integer> cluster, DistanceCache cache) {
+    double errorWithinCluster(NArray<Double> x, int c, List<Integer> cluster, DistanceCache cache) {
         if (cluster == null) {
             return 0.0;
         }
         double error = 0.0;
-        Tensor<Double> cv = x.takesq(0, c);
+        NArray<Double> cv = x.takesq(0, c);
         for (int i : cluster) {
             error += cache.get(c, i, cv, x.takesq(0, i));
         }
@@ -234,7 +234,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
      * @param cache cache used to speed up distance computations
      * @return vector of assignments which contains for each instance identified by it's index the index of the closest medoid
      */
-    int[] computeAssignment(Tensor<Double> x, int[] cint, DistanceCache cache) {
+    int[] computeAssignment(NArray<Double> x, int[] cint, DistanceCache cache) {
         int[] assign = new int[x.dim(0)];
         for (int i = 0; i < assign.length; i++) {
             int min = 0;
@@ -260,7 +260,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
      * @param cache  distance cache used to speed up computation
      * @return error for the given assignment and centroid configuration
      */
-    double computeError(Tensor<Double> x, int[] assign, int[] cint, DistanceCache cache) {
+    double computeError(NArray<Double> x, int[] assign, int[] cint, DistanceCache cache) {
         double error = 0;
         for (int i = 0; i < assign.length; i++) {
             error += cache.get(i, cint[assign[i]], x.takesq(0, i), x.takesq(0, cint[assign[i]]));
@@ -268,7 +268,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         return error;
     }
 
-    void coreFitPAM(Tensor<Double> x) {
+    void coreFitPAM(NArray<Double> x) {
         LOGGER.fine("Starting core fit for PAM method.");
 
         LOGGER.finest("Initialize a cache for training purposes");
@@ -338,7 +338,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         }
     }
 
-    int[] initializePAM(Tensor<Double> x, double[] dv, double[] ev, DistanceCache cache) {
+    int[] initializePAM(NArray<Double> x, double[] dv, double[] ev, DistanceCache cache) {
         Set<Integer> centroidSet = new HashSet<>();
         int[] centroidIndexes = new int[k.get()];
 
@@ -359,7 +359,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         return centroidIndexes;
     }
 
-    void updateNewClosest(Tensor<Double> x, int next, double[] dv, double[] ev, DistanceCache cache) {
+    void updateNewClosest(NArray<Double> x, int next, double[] dv, double[] ev, DistanceCache cache) {
         for (int i = 0; i < x.dim(0); i++) {
             double d = cache.get(i, next, x.takesq(0, i), x.takesq(0, next));
             if (Double.isNaN(dv[i]) || d < dv[i]) {
@@ -373,7 +373,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         }
     }
 
-    void updateAllClosest(Tensor<Double> x, int[] centroidIndexes, double[] dv, double[] ev, DistanceCache cache) {
+    void updateAllClosest(NArray<Double> x, int[] centroidIndexes, double[] dv, double[] ev, DistanceCache cache) {
         Arrays.fill(dv, Double.NaN);
         Arrays.fill(ev, Double.NaN);
         for (int i = 0; i < x.dim(0); i++) {
@@ -400,7 +400,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
      * @param cache       cache of computed values
      * @return best centroid
      */
-    int peekNextCentroid(Tensor<Double> x, Set<Integer> centroidSet, double[] dv, DistanceCache cache) {
+    int peekNextCentroid(NArray<Double> x, Set<Integer> centroidSet, double[] dv, DistanceCache cache) {
         int next = -1;
         double nextG = Double.NaN;
         for (int i = 0; i < x.dim(0); i++) {
@@ -429,7 +429,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
      * @param cache cache of distances
      * @return best centroid candidate
      */
-    int peekFirstCentroid(Tensor<Double> x, DistanceCache cache) {
+    int peekFirstCentroid(NArray<Double> x, DistanceCache cache) {
         int i = 0;
         double error = distanceFromCluster(x, i, cache);
         for (int j = 0; j < x.dim(0); j++) {
@@ -442,7 +442,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         return i;
     }
 
-    double distanceFromCluster(Tensor<Double> x, int c, DistanceCache cache) {
+    double distanceFromCluster(NArray<Double> x, int c, DistanceCache cache) {
         double total = 0;
         for (int i = 0; i < x.dim(0); i++) {
             total += cache.get(i, c, x.takesq(0, i), x.takesq(0, c));
@@ -450,7 +450,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         return total;
     }
 
-    int[] pamSwap(Tensor<Double> x, int[] centroidIndexes, double[] dv, double[] ev, int[] assign, DistanceCache cache) {
+    int[] pamSwap(NArray<Double> x, int[] centroidIndexes, double[] dv, double[] ev, int[] assign, DistanceCache cache) {
 
         int bestAfter = -1;
         int bestBefore = -1;
@@ -486,11 +486,11 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
 
     @Override
     public ClusteringResult<KMedoids> corePredict(Frame df, boolean withScores) {
-        Tensor<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).tensor();
         int[] assign = new int[x.dim(0)];
         for (int i = 0; i < assign.length; i++) {
             int min = 0;
-            Tensor<Double> xi = x.takesq(0, i);
+            NArray<Double> xi = x.takesq(0, i);
             double dj = distance.get().compute(xi, c.takesq(0, 0));
             for (int j = 1; j < c.dim(0); j++) {
                 double d = distance.get().compute(xi, c.takesq(0, j));
@@ -523,7 +523,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
             this.values = DoubleArrays.newFill(len * len, Double.NaN);
         }
 
-        public double get(int i, int j, Tensor<Double> vi, Tensor<Double> vj) {
+        public double get(int i, int j, NArray<Double> vi, NArray<Double> vj) {
             double cached = getCache(i, j);
             if (!Double.isNaN(cached)) {
                 return cached;

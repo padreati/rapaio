@@ -23,8 +23,7 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.data.Frame;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * The Histogram Intersection Kernel is also known as the Min Kernel
@@ -40,7 +39,7 @@ public class MinKernel extends AbstractKernel {
     private static final long serialVersionUID = -2388704255494979581L;
 
     @Override
-    public double compute(Tensor<Double> v, Tensor<Double> u) {
+    public double compute(NArray<Double> v, NArray<Double> u) {
         double sum = 0;
         for (int i = 0; i < v.size(); i++) {
             sum += Math.min(v.getDouble(i), u.getDouble(i));

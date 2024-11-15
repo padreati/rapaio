@@ -36,7 +36,7 @@ import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.Palette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/19.
@@ -45,9 +45,9 @@ public class Matrix extends Artist {
 
     @Serial
     private static final long serialVersionUID = -642370269224702175L;
-    private final Tensor<?> m;
+    private final NArray<?> m;
 
-    public Matrix(Tensor<?> m, GOpt<?>... opts) {
+    public Matrix(NArray<?> m, GOpt<?>... opts) {
         this.m = m;
         this.options = new GOpts()
                 .apply(color(-1), palette(Palette.hue(0, 240, m.amin().doubleValue(), m.amax().doubleValue())))

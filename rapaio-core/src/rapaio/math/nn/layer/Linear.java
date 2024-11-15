@@ -25,11 +25,11 @@ import java.util.List;
 
 import rapaio.core.distributions.Uniform;
 import rapaio.math.nn.Autograd;
-import rapaio.math.nn.Node;
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.TensorManager;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.nn.Tensor;
+import rapaio.math.narrays.DType;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArrayManager;
+import rapaio.math.narrays.NArrays;
 
 public class Linear extends BaseNet {
 
@@ -37,14 +37,14 @@ public class Linear extends BaseNet {
     private final int outFeatures;
     private final boolean bias;
 
-    private final Node w;
-    private final Node b;
+    private final Tensor w;
+    private final Tensor b;
 
     public Linear(DType<?> dtype, int inFeatures, int outFeatures, boolean bias) {
-        this(Tensors.ofType(dtype), inFeatures, outFeatures, bias);
+        this(NArrays.ofType(dtype), inFeatures, outFeatures, bias);
     }
 
-    public Linear(TensorManager.OfType<?> tmt, int inFeatures, int outFeatures, boolean bias) {
+    public Linear(NArrayManager.OfType<?> tmt, int inFeatures, int outFeatures, boolean bias) {
         super(tmt);
 
         this.inFeatures = inFeatures;
@@ -69,12 +69,12 @@ public class Linear extends BaseNet {
     }
 
     @Override
-    public List<Node> parameters() {
+    public List<Tensor> parameters() {
         return (bias) ? List.of(w, b) : List.of(w);
     }
 
     @Override
-    public Node forward11(Node x) {
+    public Tensor forward11(Tensor x) {
         var result = x.bvtm(w);
         if (bias) {
             result = result.add(b);

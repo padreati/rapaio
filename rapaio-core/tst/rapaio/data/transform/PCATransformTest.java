@@ -31,13 +31,13 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArrays;
 
 public class PCATransformTest {
 
     private static final int n = 10;
     private static final Frame df =
-            SolidFrame.matrix(Tensors.eye(n), IntStream.range(1, n + 1).boxed().map(i -> "v" + i).collect(Collectors.toList()));
+            SolidFrame.matrix(NArrays.eye(n), IntStream.range(1, n + 1).boxed().map(i -> "v" + i).collect(Collectors.toList()));
 
     @Test
     void percentageTest() {

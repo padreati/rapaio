@@ -38,10 +38,10 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.math.tensor.Order;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.Order;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArrays;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.EuclideanDistance;
@@ -90,8 +90,8 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
      */
     public final ValueParam<Double, KnnRegression> eps = new ValueParam<>(this, 1e-6, "eps");
 
-    private Tensor<Double>[] instances;
-    private Tensor<Double> target;
+    private NArray<Double>[] instances;
+    private NArray<Double> target;
 
     @Override
     public KnnRegression newInstance() {
@@ -110,8 +110,8 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
                 .targets(1, 1, false, VarType.DOUBLE, VarType.INT, VarType.LONG, VarType.BINARY);
     }
 
-    private Tensor<Double> buildInstance(Frame df, int row) {
-        Tensor<Double> instance = Tensors.zeros(Shape.of(inputNames.length));
+    private NArray<Double> buildInstance(Frame df, int row) {
+        NArray<Double> instance = NArrays.zeros(Shape.of(inputNames.length));
         for (int j = 0; j < inputNames.length; j++) {
             instance.setDouble(df.getDouble(row, inputNames[j]), j);
         }
@@ -124,15 +124,15 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         if (df.rowCount() < 2) {
             throw new IllegalArgumentException("Not enough data for regression.");
         }
-        this.instances = new Tensor[df.rowCount()];
+        this.instances = new NArray[df.rowCount()];
         for (int i = 0; i < df.rowCount(); i++) {
             instances[i] = buildInstance(df, i);
         }
-        this.target = df.rvar(targetNames[0]).tensor_();
+        this.target = df.rvar(targetNames[0]).narray_();
         return true;
     }
 
-    private int[] computeTop(Tensor<Double>[] instances, Tensor<Double> x, int k) {
+    private int[] computeTop(NArray<Double>[] instances, NArray<Double> x, int k) {
         TreeSet<Integer> top = new TreeSet<>((o1, o2) -> {
             double d1 = distance.get().compute(instances[o1], x);
             double d2 = distance.get().compute(instances[o2], x);
@@ -152,10 +152,10 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         return indexes;
     }
 
-    private Tensor<Double> computeWeights(int[] top, int ref, Tensor<Double> x) {
+    private NArray<Double> computeWeights(int[] top, int ref, NArray<Double> x) {
 
         var d = distance.get();
-        Tensor<Double> w = Tensors.zeros(Shape.of(top.length));
+        NArray<Double> w = NArrays.zeros(Shape.of(top.length));
         w.apply_(Order.C, (i, p) -> d.compute(x, instances[top[i]]));
 
         double wref = d.compute(x, instances[ref]);
@@ -174,12 +174,12 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
 
         VarDouble prediction = result.firstPrediction();
         for (int i = 0; i < prediction.size(); i++) {
-            Tensor<Double> x = buildInstance(df, i);
+            NArray<Double> x = buildInstance(df, i);
 
             int[] topIndexesEx = computeTop(instances, x, k.get() + 1);
             int[] topIndexes = Arrays.copyOf(topIndexesEx, topIndexesEx.length - 1);
             int ref = topIndexesEx[topIndexesEx.length - 1];
-            Tensor<Double> weights = computeWeights(topIndexes, ref, x);
+            NArray<Double> weights = computeWeights(topIndexes, ref, x);
             prediction.setDouble(i, target.take(0, topIndexes).mul(weights).sum() / weights.sum());
         }
         result.buildComplete();
@@ -191,43 +191,43 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
     public enum Kernel {
         INV {
             @Override
-            public Tensor<Double> transform(Tensor<Double> d, int k) {
+            public NArray<Double> transform(NArray<Double> d, int k) {
                 return d.apply(v -> 1 / v);
             }
         },
         RECTANGULAR {
             @Override
-            public Tensor<Double> transform(Tensor<Double> d, int k) {
+            public NArray<Double> transform(NArray<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? 0.5 : 0);
             }
         },
         TRIANGLUAR {
             @Override
-            public Tensor<Double> transform(Tensor<Double> d, int k) {
+            public NArray<Double> transform(NArray<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? 1 - v : 0);
             }
         },
         COS {
             @Override
-            public Tensor<Double> transform(Tensor<Double> d, int k) {
+            public NArray<Double> transform(NArray<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? PI * cos(v * HALF_PI) / 4 : 0);
             }
         },
         EPANECHNIKOV {
             @Override
-            public Tensor<Double> transform(Tensor<Double> d, int k) {
+            public NArray<Double> transform(NArray<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? 0.75 * (1 - v * v) : 0);
             }
         },
         BIWEIGHT {
             @Override
-            public Tensor<Double> transform(Tensor<Double> d, int k) {
+            public NArray<Double> transform(NArray<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? 15 * pow(1 - v * v, 2) / 16 : 0);
             }
         },
         TRIWEIGHT {
             @Override
-            public Tensor<Double> transform(Tensor<Double> d, int k) {
+            public NArray<Double> transform(NArray<Double> d, int k) {
                 return d.apply(v -> abs(v) <= 1 ? 35 * pow(1 - v * v, 3) / 32 : 0);
             }
         },
@@ -236,13 +236,13 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
             private static final Normal normal = Normal.std();
 
             @Override
-            public Tensor<Double> transform(Tensor<Double> d, int k) {
+            public NArray<Double> transform(NArray<Double> d, int k) {
                 double alpha = 1.0 / (2 * (k + 1));
                 double qua = abs(normal.quantile(alpha));
                 return d.apply(v -> normal.pdf(v * qua));
             }
         };
 
-        public abstract Tensor<Double> transform(Tensor<Double> d, int k);
+        public abstract NArray<Double> transform(NArray<Double> d, int k);
     }
 }

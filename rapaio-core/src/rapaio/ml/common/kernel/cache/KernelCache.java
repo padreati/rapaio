@@ -24,7 +24,7 @@ package rapaio.ml.common.kernel.cache;
 import java.util.HashMap;
 import java.util.Map;
 
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.common.kernel.Kernel;
 
 /**
@@ -40,7 +40,7 @@ public class KernelCache {
     private final Cache cache;
     private final Kernel kernel;
 
-    public KernelCache(Tensor<Double> df, Kernel kernel) {
+    public KernelCache(NArray<Double> df, Kernel kernel) {
         if (df.dim(0) <= 10_000) {
             cache = new SolidCache(df.dim(0));
         } else {
@@ -49,7 +49,7 @@ public class KernelCache {
         this.kernel = kernel;
     }
 
-    public double cachedCompute(int row1, int row2, Tensor<Double> r1, Tensor<Double> r2) {
+    public double cachedCompute(int row1, int row2, NArray<Double> r1, NArray<Double> r2) {
         Double value = cache.retrieve(row1, row2);
         if (value == null) {
             value = kernel.compute(r1, r2);

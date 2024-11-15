@@ -27,9 +27,9 @@ import java.util.HashMap;
 import rapaio.core.param.Param;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
-import rapaio.math.nn.Node;
+import rapaio.math.nn.Tensor;
 import rapaio.math.nn.Optimizer;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 public class SGD extends ParamSet<SGD> implements Optimizer {
 
@@ -41,17 +41,17 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
     public final Param<Boolean, SGD> maximize = new ValueParam<>(this, false, "maximize");
 
 
-    private final Collection<Node> params;
+    private final Collection<Tensor> params;
 
-    private final HashMap<Node, Tensor<?>> mus = new HashMap<>();
+    private final HashMap<Tensor, NArray<?>> mus = new HashMap<>();
 
-    public SGD(Collection<Node> params) {
+    public SGD(Collection<Tensor> params) {
         this.params = params;
     }
 
     @Override
     public final void zeroGrad() {
-        params.forEach(Node::zeroGrad);
+        params.forEach(Tensor::zeroGrad);
     }
 
     @Override
@@ -61,15 +61,15 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
         }
     }
 
-    private void stepParam(Node node) {
-        Tensor<?> gt = node.grad();
+    private void stepParam(Tensor tensor) {
+        NArray<?> gt = tensor.grad();
         if (weightDecay.get() != 0) {
-            gt = gt.add(node.value().mul(weightDecay.get()));
+            gt = gt.add(tensor.value().mul(weightDecay.get()));
         }
         if (momentum.get() != 0) {
-            var mu = mus.get(node);
+            var mu = mus.get(tensor);
             mu = (mu == null) ? gt : mu.mul(momentum.get()).add(gt.mul(1 - dampening.get()));
-            mus.put(node, mu);
+            mus.put(tensor, mu);
 
             if (nesterov.get()) {
                 gt = gt.add(mu.mul(momentum.get()));
@@ -78,9 +78,9 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
             }
         }
         if (maximize.get()) {
-            node.value().add_(gt.mul(lr.get()));
+            tensor.value().add_(gt.mul(lr.get()));
         } else {
-            node.value().sub_(gt.mul(lr.get()));
+            tensor.value().sub_(gt.mul(lr.get()));
         }
     }
 }

@@ -34,7 +34,7 @@ import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * Implements the gradient descend optimization algorithm. Gradient descent is an optimization
@@ -83,11 +83,11 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
     /**
      * Initial value
      */
-    public final ValueParam<Tensor<Double>, SteepestDescentSolver> x0 = new ValueParam<>(this, null, "x0");
+    public final ValueParam<NArray<Double>, SteepestDescentSolver> x0 = new ValueParam<>(this, null, "x0");
 
-    private Tensor<Double> sol;
+    private NArray<Double> sol;
 
-    private List<Tensor<Double>> solutions;
+    private List<NArray<Double>> solutions;
     private VarDouble errors;
     private boolean converged = false;
 
@@ -99,7 +99,7 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
         sol = x0.get().copy();
         solutions.add(sol.copy());
         for (int i = 0; i < maxIt.get(); i++) {
-            Tensor<Double> p = d1f.get().apply(sol).mul(-1.);
+            NArray<Double> p = d1f.get().apply(sol).mul(-1.);
             double error = p.norm(2.);
             errors.addDouble(error);
             if (abs(error) < tol.get()) {
@@ -119,12 +119,12 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
     }
 
     @Override
-    public List<Tensor<Double>> solutions() {
+    public List<NArray<Double>> solutions() {
         return solutions;
     }
 
     @Override
-    public Tensor<Double> solution() {
+    public NArray<Double> solution() {
         return sol;
     }
 

@@ -28,7 +28,7 @@ import java.util.Random;
 import java.util.Set;
 
 import rapaio.core.SamplingTools;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 import rapaio.ml.common.distance.Distance;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
@@ -42,13 +42,13 @@ import rapaio.util.collection.IntArrays;
 public enum KMClusterInit implements Serializable {
 
     Forgy {
-        public Tensor<Double> init(Random random, Distance distance, Tensor<Double> m, int k) {
+        public NArray<Double> init(Random random, Distance distance, NArray<Double> m, int k) {
             return m.take(0, SamplingTools.sampleWOR(random, m.dim(0), k));
         }
     },
     PlusPlus {
         @Override
-        public Tensor<Double> init(final Random random, Distance distance, Tensor<Double> m, int k) {
+        public NArray<Double> init(final Random random, Distance distance, NArray<Double> m, int k) {
 
             int[] centroids = IntArrays.newFill(k, -1);
 
@@ -83,5 +83,5 @@ public enum KMClusterInit implements Serializable {
         }
     };
 
-    public abstract Tensor<Double> init(Random random, Distance distance, Tensor<Double> m, int k);
+    public abstract NArray<Double> init(Random random, Distance distance, NArray<Double> m, int k);
 }

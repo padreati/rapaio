@@ -32,7 +32,7 @@ import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
-import rapaio.math.tensor.Tensor;
+import rapaio.math.narrays.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/17.
@@ -81,12 +81,12 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
     /**
      * Design matrix
      */
-    public final ValueParam<Tensor<Double>, IRLSSolver> m = new ValueParam<>(this, null, "m");
+    public final ValueParam<NArray<Double>, IRLSSolver> m = new ValueParam<>(this, null, "m");
 
     /**
      * Output vector
      */
-    public final ValueParam<Tensor<Double>, IRLSSolver> b = new ValueParam<>(this, null, "b");
+    public final ValueParam<NArray<Double>, IRLSSolver> b = new ValueParam<>(this, null, "b");
 
     /**
      * Maximum number of iterations
@@ -105,8 +105,8 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
      */
     public final ValueParam<Double, IRLSSolver> k = new ValueParam<>(this, 1.5, "k");
 
-    private Tensor<Double> solution;
-    private List<Tensor<Double>> solutions;
+    private NArray<Double> solution;
+    private List<NArray<Double>> solutions;
     private VarDouble errors;
     private boolean converged;
 
@@ -114,12 +114,12 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
     }
 
     @Override
-    public Tensor<Double> solution() {
+    public NArray<Double> solution() {
         return solution;
     }
 
     @Override
-    public List<Tensor<Double>> solutions() {
+    public List<NArray<Double>> solutions() {
         return solutions;
     }
 
@@ -146,16 +146,16 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
 
         // parameters
         protected final IRLSSolver parent;
-        protected final Tensor<Double> A;
-        protected final Tensor<Double> b;
+        protected final NArray<Double> A;
+        protected final NArray<Double> b;
         protected final double p;
         protected double k;
         protected final int maxIt;
         protected final double tol;
 
         // solution
-        protected Tensor<Double> solution;
-        protected final List<Tensor<Double>> solutions = new ArrayList<>();
+        protected NArray<Double> solution;
+        protected final List<NArray<Double>> solutions = new ArrayList<>();
         protected final VarDouble errors = VarDouble.empty().name("errors");
         protected boolean converged;
 
@@ -199,23 +199,23 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
         public MethodImpl compute() {
             converged = false;
             // initial L2 solution
-            Tensor<Double> x = A.qr().solve(b);
+            NArray<Double> x = A.qr().solve(b);
             for (int it = 0; it < maxIt; it++) {
                 // error vector
-                Tensor<Double> e = A.mv(x).sub_(b);
+                NArray<Double> e = A.mv(x).sub_(b);
                 errors.addDouble(e.norm(p));
 
                 // error weights for IRLS
-                Tensor<Double> w = e.apply(v -> (p == 1) ? 1 / Math.max(tol, abs(v)) : pow(abs(v), (p - 2) / 2));
+                NArray<Double> w = e.apply(v -> (p == 1) ? 1 / Math.max(tol, abs(v)) : pow(abs(v), (p - 2) / 2));
                 // normalize weight vector
                 w.div(w.sum());
                 // square w
                 w.mul(w);
                 // weighted L2 solution
 
-                Tensor<Double> w2a = A.mul(w.stretch(1));
-                Tensor<Double> A1 = w2a.t().mm(A);
-                Tensor<Double> b1 = w2a.t().mv(b);
+                NArray<Double> w2a = A.mul(w.stretch(1));
+                NArray<Double> A1 = w2a.t().mm(A);
+                NArray<Double> b1 = w2a.t().mv(b);
 
                 try {
                     x = A1.qr().solve(b1);
@@ -256,21 +256,21 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
             double pk = 2;
             // initial L2 solution
 
-            Tensor<Double> x = A.qr().solve(b);
+            NArray<Double> x = A.qr().solve(b);
             for (int it = 0; it < maxIt; it++) {
                 pk = (p >= 2) ? Math.min(p, k * pk) : Math.max(p, k * pk);
                 // error vector
-                Tensor<Double> e = A.mv(x).sub_(b);
+                NArray<Double> e = A.mv(x).sub_(b);
                 // error weights for IRLS
                 double pkk = pk;
-                Tensor<Double> w = e.apply(v -> (pkk == 1) ? 1 / Math.max(1e-10, abs(v)) : pow(abs(v), (pkk - 2)));
+                NArray<Double> w = e.apply(v -> (pkk == 1) ? 1 / Math.max(1e-10, abs(v)) : pow(abs(v), (pkk - 2)));
                 // normalize weight vector
                 w.div(w.sum());
                 // weighted L2 solution
-                Tensor<Double> w2a = A.mul(w.stretch(1));
-                Tensor<Double> A1 = w2a.t().mm(A);
-                Tensor<Double> b1 = w2a.t().mv(b);
-                Tensor<Double> x1 = A1.qr().solve(b1);
+                NArray<Double> w2a = A.mul(w.stretch(1));
+                NArray<Double> A1 = w2a.t().mm(A);
+                NArray<Double> b1 = w2a.t().mv(b);
+                NArray<Double> x1 = A1.qr().solve(b1);
                 // Newton's parameter
                 double q = 1.0 / (pk - 1);
                 double nn;

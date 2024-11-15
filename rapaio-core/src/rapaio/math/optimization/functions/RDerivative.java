@@ -23,8 +23,8 @@ package rapaio.math.optimization.functions;
 
 import java.io.Serializable;
 
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
@@ -32,9 +32,9 @@ import rapaio.math.tensor.Tensors;
 @FunctionalInterface
 public interface RDerivative extends Serializable {
 
-    default Tensor<Double> apply(double... x) {
-        return apply(Tensors.stride(x));
+    default NArray<Double> apply(double... x) {
+        return apply(NArrays.stride(x));
     }
 
-    Tensor<Double> apply(Tensor<Double> x);
+    NArray<Double> apply(NArray<Double> x);
 }

@@ -35,11 +35,11 @@ public class CodeGenApp {
         Replace[] floatReplaces = new Replace[] {
                 Replace.of("double", "float"),
                 Replace.of("Double", "Float"),
-                Replace.of("DoubleTensor", "FloatTensor"),
                 Replace.of("DOUBLE", "FLOAT")
         };
 
         Replace[] intReplaces = new Replace[] {
+                Replace.of("BaseDoubleNArrayStride", "BaseIntNArrayStride"),
                 Replace.of("DoubleVector", "IntVector"),
                 Replace.of("ofDouble", "ofInt"),
                 Replace.of("setDouble", "setInt"),
@@ -69,7 +69,6 @@ public class CodeGenApp {
         Replace[] byteReplaces = new Replace[] {
                 Replace.of("double", "byte"),
                 Replace.of("Double", "Byte"),
-                Replace.of("DoubleTensor", "ByteTensor"),
                 Replace.of("DOUBLE", "BYTE")
         };
 
@@ -79,8 +78,8 @@ public class CodeGenApp {
                 .replaces.set(floatReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/base/BaseDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/manager/base/BaseFloatTensorStride.java")
+                .src.set("rapaio/math/tensor/manager/base/BaseDoubleNArrayStride.java")
+                .dst.set("rapaio/math/tensor/manager/base/BaseFloatNArrayStride.java")
                 .replaces.set(floatReplaces)
         );
 
@@ -90,8 +89,8 @@ public class CodeGenApp {
                 .replaces.set(intReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/base/BaseDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/manager/base/BaseIntTensorStride.java")
+                .src.set("rapaio/math/tensor/manager/base/BaseDoubleNArrayStride.java")
+                .dst.set("rapaio/math/tensor/manager/base/BaseIntNArrayStride.java")
                 .replaces.set(intReplaces)
         );
 
@@ -101,8 +100,8 @@ public class CodeGenApp {
                 .replaces.set(byteReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/base/BaseDoubleTensorStride.java")
-                .dst.set("rapaio/math/tensor/manager/base/BaseByteTensorStride.java")
+                .src.set("rapaio/math/tensor/manager/base/BaseDoubleNArrayStride.java")
+                .dst.set("rapaio/math/tensor/manager/base/BaseByteNArrayStride.java")
                 .replaces.set(byteReplaces)
         );
 

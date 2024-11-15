@@ -34,8 +34,8 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Shape;
 import rapaio.printer.ImageTools;
 
 public class MatrixTest extends AbstractArtistTest {
@@ -54,7 +54,7 @@ public class MatrixTest extends AbstractArtistTest {
 
         int n = 6;
 
-        var randomm = Tensors.random(Shape.of(n, n), random);
+        var randomm = NArrays.random(Shape.of(n, n), random);
         var mean = randomm.mean(0);
         var sd = randomm.stdc(0, 1);
 
@@ -67,7 +67,7 @@ public class MatrixTest extends AbstractArtistTest {
         grid.add(corrGram(dm));
 
         grid.add(matrix(cov, color(NColor.black)));
-        grid.add(matrix(Tensors.random(Shape.of(60, 80), random)));
+        grid.add(matrix(NArrays.random(Shape.of(60, 80), random)));
 
         assertTest(grid, "matrix-test");
     }

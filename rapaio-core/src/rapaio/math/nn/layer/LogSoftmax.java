@@ -23,7 +23,7 @@ package rapaio.math.nn.layer;
 
 import java.util.List;
 
-import rapaio.math.nn.Node;
+import rapaio.math.nn.Tensor;
 
 public class LogSoftmax extends BaseNet {
 
@@ -35,12 +35,12 @@ public class LogSoftmax extends BaseNet {
     }
 
     @Override
-    public List<Node> parameters() {
+    public List<Tensor> parameters() {
         return List.of();
     }
 
     @Override
-    public Node forward11(Node x) {
+    public Tensor forward11(Tensor x) {
         return x.logsoftmax(dim);
     }
 }

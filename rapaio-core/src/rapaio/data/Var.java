@@ -35,13 +35,13 @@ import rapaio.core.SamplingTools;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.data.transform.VarTransform;
-import rapaio.math.tensor.DType;
-import rapaio.math.tensor.Order;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
-import rapaio.math.tensor.storage.wrapper.VarDoubleStorage;
-import rapaio.math.tensor.storage.wrapper.VarFloatStorage;
+import rapaio.math.narrays.DType;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
+import rapaio.math.narrays.Order;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.storage.wrapper.VarDoubleStorage;
+import rapaio.math.narrays.storage.wrapper.VarFloatStorage;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 import rapaio.util.NotImplementedException;
@@ -378,39 +378,39 @@ public interface Var extends Serializable, Printable {
      */
     Var copy();
 
-    default Tensor<Double> tensor_() {
-        return tensor_(DType.DOUBLE);
+    default NArray<Double> narray_() {
+        return narray_(DType.DOUBLE);
     }
 
     @SuppressWarnings("unchecked")
-    default <N extends Number> Tensor<N> tensor_(DType<N> dtype) {
-        return (Tensor<N>) switch (dtype.id()) {
-            case DOUBLE -> Tensors.ofDouble().stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
-            case FLOAT -> Tensors.ofFloat().stride(Shape.of(size()), Order.C, new VarFloatStorage(this));
+    default <N extends Number> NArray<N> narray_(DType<N> dtype) {
+        return (NArray<N>) switch (dtype.id()) {
+            case DOUBLE -> NArrays.ofDouble().stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
+            case FLOAT -> NArrays.ofFloat().stride(Shape.of(size()), Order.C, new VarFloatStorage(this));
             default -> throw new NotImplementedException();
         };
     }
 
-    default Tensor<Double> tensor() {
-        return tensor(DType.DOUBLE);
+    default NArray<Double> narray() {
+        return narray(DType.DOUBLE);
     }
 
     @SuppressWarnings("unchecked")
-    default <N extends Number> Tensor<N> tensor(DType<N> dtype) {
+    default <N extends Number> NArray<N> narray(DType<N> dtype) {
         return switch (dtype.id()) {
             case DOUBLE -> {
                 double[] copy = new double[size()];
                 for (int i = 0; i < copy.length; i++) {
                     copy[i] = getDouble(i);
                 }
-                yield (Tensor<N>) Tensors.stride(Shape.of(size()), Order.C, copy);
+                yield (NArray<N>) NArrays.stride(Shape.of(size()), Order.C, copy);
             }
             case FLOAT -> {
                 float[] copy = new float[size()];
                 for (int i = 0; i < copy.length; i++) {
                     copy[i] = getFloat(i);
                 }
-                yield (Tensor<N>) Tensors.ofFloat().stride(Shape.of(size()), Order.C, copy);
+                yield (NArray<N>) NArrays.ofFloat().stride(Shape.of(size()), Order.C, copy);
             }
             default -> throw new NotImplementedException();
         };

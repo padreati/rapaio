@@ -36,9 +36,9 @@ import rapaio.data.transform.RefSort;
 import rapaio.data.transform.Transform;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
-import rapaio.math.tensor.Shape;
-import rapaio.math.tensor.Tensor;
-import rapaio.math.tensor.Tensors;
+import rapaio.math.narrays.Shape;
+import rapaio.math.narrays.NArray;
+import rapaio.math.narrays.NArrays;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 
@@ -558,14 +558,14 @@ public interface Frame extends Serializable, Printable {
         return this.fapply(RefSort.by(comparators));
     }
 
-    default Tensor<Double> tensor() {
-        Tensor<Double> tensor = Tensors.zeros(Shape.of(rowCount(), varCount()));
+    default NArray<Double> tensor() {
+        NArray<Double> array = NArrays.zeros(Shape.of(rowCount(), varCount()));
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < varCount(); j++) {
-                tensor.setDouble(getDouble(i, j), i, j);
+                array.setDouble(getDouble(i, j), i, j);
             }
         }
-        return tensor;
+        return array;
     }
 
     String head();
