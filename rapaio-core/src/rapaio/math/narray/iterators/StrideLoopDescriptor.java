@@ -36,11 +36,6 @@ import rapaio.util.collection.IntArrays;
  */
 public final class StrideLoopDescriptor<N extends Number> {
 
-    public static <N extends Number> StrideLoopDescriptor<N> of(Shape shape, int offset, int[] strides, Order askOrder,
-            VectorSpecies<N> vs) {
-        return new StrideLoopDescriptor<>(shape, offset, strides, askOrder, vs);
-    }
-
     public static <N extends Number> StrideLoopDescriptor<N> of(StrideLayout layout, Order askOrder, VectorSpecies<N> vs) {
         return new StrideLoopDescriptor<>(layout, askOrder, vs);
     }

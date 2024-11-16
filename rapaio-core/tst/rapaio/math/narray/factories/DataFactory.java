@@ -33,7 +33,7 @@ public abstract class DataFactory<N extends Number> {
     final NArrayManager engine;
     final NArrayManager.OfType<N> ofType;
     final DType<N> dType;
-    final Random random = new Random(42);
+    final Random random = new Random(7654);
 
 
     public DataFactory(NArrayManager arrayManager, NArrayManager.OfType<N> ofType, DType<N> dType) {

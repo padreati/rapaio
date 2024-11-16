@@ -40,8 +40,6 @@ import rapaio.nn.Loss;
 import rapaio.nn.Net;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
-import rapaio.nn.layer.BatchNorm1D;
-import rapaio.nn.layer.ELU;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.ReLU;
 import rapaio.nn.layer.Sequential;
@@ -70,11 +68,11 @@ public class Sandbox2DFunctionRegression {
         }
 
         Net nn = new Sequential(
-                new BatchNorm1D(dtype, 4),
+//                new BatchNorm1D(dtype, 4),
                 new Linear(dtype, 4, 1000, true),
-                new ELU(dtype, 0.1),
-//                new ReLU(),
-                new BatchNorm1D(dtype, 1000),
+//                new ELU(dtype, 0.1),
+                new ReLU(),
+//                new BatchNorm1D(dtype, 1000),
                 new Linear(dtype, 1000, 1, true),
                 new ReLU()
         );
@@ -82,8 +80,8 @@ public class Sandbox2DFunctionRegression {
 
 
         int EPOCHS = 1_000;
-        int BATCH_SIZE = 100;
-        double LR = 1e-5;
+        int BATCH_SIZE = 400;
+        double LR = 1e-2;
 
         Optimizer c = Optimizer.Adam(nn.parameters())
                 .lr.set(LR)
