@@ -40,7 +40,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.model.ClusteringModel;

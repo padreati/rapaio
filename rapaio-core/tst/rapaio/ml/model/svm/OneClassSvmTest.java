@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 

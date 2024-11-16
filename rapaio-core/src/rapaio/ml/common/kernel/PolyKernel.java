@@ -26,7 +26,7 @@ import static rapaio.printer.Format.floatFlex;
 import java.io.Serial;
 
 import rapaio.math.MathTools;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 /**
  * The Polynomial kernel is a non-stationary kernel. Polynomial kernels

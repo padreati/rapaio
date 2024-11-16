@@ -35,7 +35,7 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.printer.ImageTools;
 
 /**

@@ -24,7 +24,7 @@ package rapaio.ml.common.kernel;
 import java.io.Serial;
 import java.util.function.Function;
 
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.printer.Format;
 
 /**

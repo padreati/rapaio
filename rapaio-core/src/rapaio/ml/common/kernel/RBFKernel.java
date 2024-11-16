@@ -25,7 +25,7 @@ import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 /**
  * The GaussianPdf kernel is an example of radial basis function kernel.

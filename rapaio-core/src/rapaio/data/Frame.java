@@ -36,9 +36,9 @@ import rapaio.data.transform.RefSort;
 import rapaio.data.transform.Transform;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
-import rapaio.math.narrays.Shape;
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.NArrays;
+import rapaio.math.narray.Shape;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.NArrays;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 

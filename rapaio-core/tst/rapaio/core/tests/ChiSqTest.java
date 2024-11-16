@@ -28,8 +28,8 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.math.narrays.NArrays;
-import rapaio.math.narrays.Shape;
+import rapaio.math.narray.NArrays;
+import rapaio.math.narray.Shape;
 
 public class ChiSqTest {
 

@@ -36,9 +36,9 @@ import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.Shape;
-import rapaio.math.narrays.NArrays;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.Shape;
+import rapaio.math.narray.NArrays;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -221,11 +221,11 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     public double[] rowTotals() {
-        return values.sum(1).asDoubleArray();
+        return values.sum1d(1).asDoubleArray();
     }
 
     public double[] colTotals() {
-        return values.sum(0).asDoubleArray();
+        return values.sum1d(0).asDoubleArray();
     }
 
     private DensityTable<U, V> copy() {
@@ -245,13 +245,13 @@ public final class DensityTable<U, V> implements Printable, Serializable {
 
     public DensityTable<U, V> normalizeOnRows() {
         var norm = copy();
-        norm.values.div_(norm.values.sum(1).stretch(1));
+        norm.values.div_(norm.values.sum1d(1).stretch(1));
         return norm;
     }
 
     public DensityTable<U, V> normalizeOnCols() {
         var norm = copy();
-        norm.values.div_(norm.values.sum(0));
+        norm.values.div_(norm.values.sum1d(0));
         return norm;
     }
 
@@ -342,8 +342,8 @@ public final class DensityTable<U, V> implements Printable, Serializable {
             return 1;
         }
 
-        var rowTotals = values.sum(1);
-        var colTotals = values.sum(0);
+        var rowTotals = values.sum1d(1);
+        var colTotals = values.sum1d(0);
 
         var splitByTotals = splitByRows ? rowTotals : colTotals;
         var straightTotals = splitByRows ? colTotals : rowTotals;

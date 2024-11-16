@@ -73,35 +73,35 @@ public class CodeGenApp {
         };
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/storage/array/DoubleArrayStorage.java")
-                .dst.set("rapaio/math/tensor/storage/array/FloatArrayStorage.java")
+                .src.set("rapaio/math/narray/storage/array/DoubleArrayStorage.java")
+                .dst.set("rapaio/math/narray/storage/array/FloatArrayStorage.java")
                 .replaces.set(floatReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/base/BaseDoubleNArrayStride.java")
-                .dst.set("rapaio/math/tensor/manager/base/BaseFloatNArrayStride.java")
+                .src.set("rapaio/math/narray/manager/base/BaseDoubleNArrayStride.java")
+                .dst.set("rapaio/math/narray/manager/base/BaseFloatNArrayStride.java")
                 .replaces.set(floatReplaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/storage/array/DoubleArrayStorage.java")
-                .dst.set("rapaio/math/tensor/storage/array/IntArrayStorage.java")
+                .src.set("rapaio/math/narray/storage/array/DoubleArrayStorage.java")
+                .dst.set("rapaio/math/narray/storage/array/IntArrayStorage.java")
                 .replaces.set(intReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/base/BaseDoubleNArrayStride.java")
-                .dst.set("rapaio/math/tensor/manager/base/BaseIntNArrayStride.java")
+                .src.set("rapaio/math/narray/manager/base/BaseDoubleNArrayStride.java")
+                .dst.set("rapaio/math/narray/manager/base/BaseIntNArrayStride.java")
                 .replaces.set(intReplaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/storage/array/DoubleArrayStorage.java")
-                .dst.set("rapaio/math/tensor/storage/array/ByteArrayStorage.java")
+                .src.set("rapaio/math/narray/storage/array/DoubleArrayStorage.java")
+                .dst.set("rapaio/math/narray/storage/array/ByteArrayStorage.java")
                 .replaces.set(byteReplaces)
         );
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/math/tensor/manager/base/BaseDoubleNArrayStride.java")
-                .dst.set("rapaio/math/tensor/manager/base/BaseByteNArrayStride.java")
+                .src.set("rapaio/math/narray/manager/base/BaseDoubleNArrayStride.java")
+                .dst.set("rapaio/math/narray/manager/base/BaseByteNArrayStride.java")
                 .replaces.set(byteReplaces)
         );
 

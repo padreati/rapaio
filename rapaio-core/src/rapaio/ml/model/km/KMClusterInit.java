@@ -28,7 +28,7 @@ import java.util.Random;
 import java.util.Set;
 
 import rapaio.core.SamplingTools;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.ml.common.distance.Distance;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;

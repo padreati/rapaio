@@ -34,7 +34,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -108,11 +108,11 @@ public class PCA extends ParamSet<PCA> implements Printable {
         NArray<Double> x = df.tensor();
         logger.fine("compute mean, sd and do scaling");
         if (center.get()) {
-            mean = x.mean(0);
+            mean = x.mean1d(0);
             x.sub_(mean);
         }
         if (standardize.get()) {
-            sd = x.std(0);
+            sd = x.std1d(0);
             x.div_(sd);
         }
 

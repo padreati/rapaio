@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.math.narrays.NArrays;
+import rapaio.math.narray.NArrays;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.

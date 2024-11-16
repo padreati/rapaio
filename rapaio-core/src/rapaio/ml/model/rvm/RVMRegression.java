@@ -43,9 +43,9 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.NArrays;
-import rapaio.math.narrays.Shape;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.NArrays;
+import rapaio.math.narray.Shape;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
@@ -138,7 +138,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         @Override
         public Feature[] generateFeatures(Random random, NArray<Double> x) {
-            return new Feature[] {new Feature("intercept", -1, x.mean(0), () -> NArrays.full(Shape.of(x.dim(0)), 1.0), v -> 1.0)};
+            return new Feature[] {new Feature("intercept", -1, x.mean1d(0), () -> NArrays.full(Shape.of(x.dim(0)), 1.0), v -> 1.0)};
         }
     }
 

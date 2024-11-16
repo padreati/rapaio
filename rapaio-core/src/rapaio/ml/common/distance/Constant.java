@@ -24,7 +24,7 @@ package rapaio.ml.common.distance;
 import static rapaio.printer.Format.floatFlex;
 
 import rapaio.data.Frame;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 public class Constant implements Distance {
 

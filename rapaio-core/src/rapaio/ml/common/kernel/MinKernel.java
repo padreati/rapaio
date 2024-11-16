@@ -23,7 +23,7 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 /**
  * The Histogram Intersection Kernel is also known as the Min Kernel

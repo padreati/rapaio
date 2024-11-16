@@ -23,7 +23,7 @@ package rapaio.ml.common.distance;
 
 import rapaio.core.param.ParametricEquals;
 import rapaio.data.Frame;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 /**
  * Interface which describes ways to compute metric distances. The API allows

@@ -23,7 +23,7 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.

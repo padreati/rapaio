@@ -42,9 +42,9 @@ import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.VarDouble;
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.Shape;
-import rapaio.math.narrays.NArrays;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.Shape;
+import rapaio.math.narray.NArrays;
 import rapaio.util.DoubleComparators;
 import rapaio.util.function.Double2DoubleFunction;
 

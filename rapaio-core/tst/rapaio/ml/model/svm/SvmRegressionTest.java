@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 

@@ -23,7 +23,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.logging.Logger;
 
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.util.collection.TArrays;
 
 /**

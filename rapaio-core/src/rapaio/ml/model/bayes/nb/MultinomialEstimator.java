@@ -39,9 +39,9 @@ import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.NArrays;
-import rapaio.math.narrays.Shape;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.NArrays;
+import rapaio.math.narray.Shape;
 import rapaio.printer.Format;
 
 /**

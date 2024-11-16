@@ -24,7 +24,7 @@ package rapaio.ml.common.distance;
 import static java.lang.StrictMath.sqrt;
 
 import rapaio.data.Frame;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 public class EuclideanDistance implements Distance {
 

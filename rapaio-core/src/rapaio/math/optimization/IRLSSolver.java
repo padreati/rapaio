@@ -32,7 +32,7 @@ import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/17.

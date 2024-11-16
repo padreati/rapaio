@@ -33,9 +33,9 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.Shape;
-import rapaio.math.narrays.NArrays;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.Shape;
+import rapaio.math.narray.NArrays;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.loss.KDevianceLoss;
 import rapaio.ml.loss.L2Loss;
@@ -140,7 +140,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
         // a) Set p_k(x)
 
-        NArray<Double> max = f.t().amax(1);
+        NArray<Double> max = f.t().amax1d(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
@@ -192,7 +192,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
         // make probabilities
 
-        NArray<Double> max = p_f.t().amax(1);
+        NArray<Double> max = p_f.t().amax1d(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double t = 0.0;

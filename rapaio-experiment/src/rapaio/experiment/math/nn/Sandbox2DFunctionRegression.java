@@ -30,21 +30,22 @@ import java.util.Random;
 
 import rapaio.core.SamplingTools;
 import rapaio.data.VarDouble;
-import rapaio.math.nn.Autograd;
-import rapaio.math.nn.Loss;
-import rapaio.math.nn.Net;
-import rapaio.math.nn.Tensor;
-import rapaio.math.nn.Optimizer;
-import rapaio.math.nn.layer.BatchNorm1D;
-import rapaio.math.nn.layer.Linear;
-import rapaio.math.nn.layer.ReLU;
-import rapaio.math.nn.layer.Sequential;
-import rapaio.math.nn.loss.MSELoss;
-import rapaio.math.narrays.DType;
-import rapaio.math.narrays.NArrayManager;
-import rapaio.math.narrays.NArrays;
-import rapaio.math.narrays.Shape;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.DType;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.NArrayManager;
+import rapaio.math.narray.NArrays;
+import rapaio.math.narray.Shape;
+import rapaio.nn.Autograd;
+import rapaio.nn.Loss;
+import rapaio.nn.Net;
+import rapaio.nn.Optimizer;
+import rapaio.nn.Tensor;
+import rapaio.nn.layer.BatchNorm1D;
+import rapaio.nn.layer.ELU;
+import rapaio.nn.layer.Linear;
+import rapaio.nn.layer.ReLU;
+import rapaio.nn.layer.Sequential;
+import rapaio.nn.loss.MSELoss;
 import rapaio.sys.WS;
 
 public class Sandbox2DFunctionRegression {
@@ -69,11 +70,12 @@ public class Sandbox2DFunctionRegression {
         }
 
         Net nn = new Sequential(
-                new Linear(dtype, 4, 100, true),
-//                new Sigmoid(),
-                new ReLU(),
-                new BatchNorm1D(dtype, 100, 1e-5),
-                new Linear(dtype, 100, 1, true),
+                new BatchNorm1D(dtype, 4),
+                new Linear(dtype, 4, 1000, true),
+                new ELU(dtype, 0.1),
+//                new ReLU(),
+                new BatchNorm1D(dtype, 1000),
+                new Linear(dtype, 1000, 1, true),
                 new ReLU()
         );
         nn.seed(42);
@@ -81,7 +83,7 @@ public class Sandbox2DFunctionRegression {
 
         int EPOCHS = 1_000;
         int BATCH_SIZE = 100;
-        double LR = 1e-1;
+        double LR = 1e-5;
 
         Optimizer c = Optimizer.Adam(nn.parameters())
                 .lr.set(LR)

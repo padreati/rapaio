@@ -26,7 +26,7 @@ import java.io.Serial;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.transform.AddIntercept;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**

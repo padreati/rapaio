@@ -38,7 +38,7 @@ import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 /**
  * Plot component which allows one to add a histogram to a plot.

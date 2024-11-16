@@ -21,34 +21,24 @@
 
 package rapaio.experiment.math.nn;
 
-import rapaio.math.narrays.DType;
-import rapaio.math.narrays.NArrays;
-import rapaio.math.narrays.Shape;
-import rapaio.math.nn.Autograd;
-import rapaio.math.nn.Tensor;
+import rapaio.math.narray.NArrayManager;
+import rapaio.math.narray.Shape;
+import rapaio.nn.Autograd;
+import rapaio.nn.Net;
+import rapaio.nn.Tensor;
+import rapaio.nn.layer.ELU;
 
 public class SanboxExpr {
 
     public static void main(String[] args) {
 
-        Tensor a = Autograd.var(NArrays.stride(Shape.of(2, 2), 2., 1, 1.3, 5)).requiresGrad(true).name("a");
-        Tensor f = Autograd.scalar(DType.DOUBLE, 1).name("f");
-
-        Tensor c = a.sqr().name("c");
-        Tensor b = a.add(c).name("b");
-        Tensor d = b.log().name("d");
-        Tensor e1 = c.add(d).requiresGrad(true).name("e1");
-        Tensor e2 = e1.add(f).name("e2");
-        Tensor g = e2.add(d).name("g");
-        Tensor h = f.add(g).name("h");
-        Tensor l = h.sum().name("l");
-
-        l.setGrad(NArrays.scalar(1.));
-
-        Autograd.ComputeGraph graph = new Autograd.ComputeGraph(l, true);
-        graph.run();
-
-        graph.printNodes();
-
+        NArrayManager.OfType<?> man = NArrayManager.base().ofFloat();
+        Tensor x = Autograd.var(man.seq(Shape.of(167)).mul_(0.12).sub_(10)).requiresGrad(true).name("x");
+        Net elu = new ELU(man.dtype());
+        Tensor el = elu.forward11(x);
+        Tensor exp = el.exp();
+        Tensor sum = exp.sum();
+        sum.setGrad(man.scalar(1));
+        Autograd.backward(sum).printTensors();
     }
 }

@@ -34,7 +34,7 @@ import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 /**
  * Implements the gradient descend optimization algorithm. Gradient descent is an optimization

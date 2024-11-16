@@ -36,8 +36,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.NArrays;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.NArrays;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -85,11 +85,11 @@ public class LDA extends ParamSet<LDA> implements Printable {
 
         logger.fine("start lda fit");
         NArray<Double> mx = df.mapVars(inputNames).tensor();
-        NArray<Double> mxx = scaling.get() ? mx.sub(mx.mean(0)).div_(mx.std(0)) : mx;
+        NArray<Double> mxx = scaling.get() ? mx.sub(mx.mean1d(0)).div_(mx.std1d(0)) : mx;
 
         // compute global mean and std
-        vmean = mxx.mean(0);
-        vstd = mxx.std(0);
+        vmean = mxx.mean1d(0);
+        vstd = mxx.std1d(0);
 
         // compute sliced data for each class
         NArray<Double>[] mxxs = new NArray[targetLevels.size()];
@@ -104,7 +104,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
         // compute class means
         NArray<Double>[] mcmeans = new NArray[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
-            mcmeans[i] = mxxs[i].mean(0);
+            mcmeans[i] = mxxs[i].mean1d(0);
         }
 
         // build within scatter matrix
@@ -168,7 +168,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
 
         NArray<Double> x = df.mapVars(inputNames).tensor();
         if (scaling.get()) {
-            x.sub_(x.mean(0)).div_(x.std(0));
+            x.sub_(x.mean1d(0)).div_(x.std1d(0));
         }
 
         if (targetLevels.size() < k) {

@@ -61,7 +61,7 @@ import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment;
 import rapaio.graphics.plot.artist.Silhouette;
 import rapaio.graphics.plot.artist.Text;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.printer.Figure;

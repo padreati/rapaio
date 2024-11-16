@@ -33,9 +33,9 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.Shape;
-import rapaio.math.narrays.NArrays;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.Shape;
+import rapaio.math.narray.NArrays;
 
 /**
  * Tests for pearson correlation

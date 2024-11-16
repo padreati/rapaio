@@ -21,9 +21,9 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.math.narrays.NArrays;
-import rapaio.math.narrays.Shape;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArrays;
+import rapaio.math.narray.Shape;
+import rapaio.math.narray.NArray;
 import rapaio.util.Reference;
 
 /**

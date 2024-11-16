@@ -38,7 +38,7 @@ import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.MathTools;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.PolyKernel;

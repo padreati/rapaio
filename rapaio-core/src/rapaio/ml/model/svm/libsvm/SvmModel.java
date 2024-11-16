@@ -23,7 +23,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.io.Serializable;
 
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 public class SvmModel implements Serializable {
 

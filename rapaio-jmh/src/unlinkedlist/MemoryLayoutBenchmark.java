@@ -56,8 +56,8 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
-import rapaio.math.narrays.Storage;
-import rapaio.math.narrays.storage.array.ArrayStorageManager;
+import rapaio.math.narray.Storage;
+import rapaio.math.narray.storage.array.ArrayStorageManager;
 import rapaio.sys.WS;
 import rapaio.util.collection.DoubleArrays;
 

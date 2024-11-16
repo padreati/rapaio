@@ -38,7 +38,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarType;
 import rapaio.data.transform.VarSort;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.EuclideanDistance;

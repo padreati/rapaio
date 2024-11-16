@@ -27,7 +27,7 @@ import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;

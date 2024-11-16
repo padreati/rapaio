@@ -23,8 +23,8 @@ package rapaio.math.optimization.functions;
 
 import java.io.Serializable;
 
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.NArrays;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.NArrays;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.

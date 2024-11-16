@@ -36,8 +36,8 @@ import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.NArrays;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.NArrays;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.model.ensemble.CForest;
 
@@ -105,8 +105,8 @@ public class PCATest {
         }
 
         NArray<Double> xx = df.tensor();
-        assertTrue(xx.mean(0).deepEquals(pca1.getMean()));
-        assertTrue(xx.std(0).deepEquals(pca1.getStd()));
+        assertTrue(xx.mean1d(0).deepEquals(pca1.getMean()));
+        assertTrue(xx.std1d(0).deepEquals(pca1.getStd()));
     }
 
     @Test

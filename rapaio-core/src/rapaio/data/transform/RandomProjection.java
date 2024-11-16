@@ -30,9 +30,9 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarRange;
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.Shape;
-import rapaio.math.narrays.NArrays;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.Shape;
+import rapaio.math.narray.NArrays;
 
 /**
  * Builds a random projection of some give numeric features.

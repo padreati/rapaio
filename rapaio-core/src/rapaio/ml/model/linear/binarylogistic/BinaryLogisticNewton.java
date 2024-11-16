@@ -30,10 +30,10 @@ import java.util.List;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.math.MathTools;
-import rapaio.math.narrays.NArray;
-import rapaio.math.narrays.NArrays;
-import rapaio.math.narrays.Shape;
-import rapaio.math.narrays.matrix.CholeskyDecomposition;
+import rapaio.math.narray.NArray;
+import rapaio.math.narray.NArrays;
+import rapaio.math.narray.Shape;
+import rapaio.math.narray.matrix.CholeskyDecomposition;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.

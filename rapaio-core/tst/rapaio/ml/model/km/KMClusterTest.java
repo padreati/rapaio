@@ -34,7 +34,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.datasets.Datasets;
-import rapaio.math.narrays.NArray;
+import rapaio.math.narray.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/1/20.

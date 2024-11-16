@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.math.narrays.NArrays;
+import rapaio.math.narray.NArrays;
 
 public class PCATransformTest {
 

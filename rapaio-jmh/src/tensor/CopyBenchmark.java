@@ -54,10 +54,10 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
-import rapaio.math.narrays.Order;
-import rapaio.math.narrays.Shape;
-import rapaio.math.narrays.Tensor;
-import rapaio.math.narrays.TensorManager;
+import rapaio.math.narray.Order;
+import rapaio.math.narray.Shape;
+import rapaio.math.narray.Tensor;
+import rapaio.math.narray.TensorManager;
 import rapaio.sys.WS;
 import rapaio.util.collection.DoubleArrays;
 
