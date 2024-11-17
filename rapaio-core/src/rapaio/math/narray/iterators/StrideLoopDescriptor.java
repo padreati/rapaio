@@ -104,7 +104,7 @@ public final class StrideLoopDescriptor<N extends Number> {
     public int[] simdOffsets() {
         if (simdOffsets == null) {
             simdOffsets = new int[vs.length()];
-            for (int i = 0; i < vs.length(); i++) {
+            for (int i = 0; i < simdOffsets.length; i++) {
                 simdOffsets[i] = i * step;
             }
         }
