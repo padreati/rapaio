@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.nn.operations;
+package rapaio.nn.tensors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,10 +28,10 @@ import org.junit.jupiter.api.Test;
 import rapaio.nn.Autograd;
 import rapaio.nn.Tensor;
 import rapaio.math.narray.DType;
-import rapaio.math.narray.Shape;
 import rapaio.math.narray.NArrayManager;
+import rapaio.math.narray.Shape;
 
-public class LogOpTest {
+public class IdentityOpTest {
 
     private final NArrayManager.OfType<?> tm = NArrayManager.base().ofDouble();
 
@@ -40,7 +40,7 @@ public class LogOpTest {
 
         Tensor a = Autograd.scalar(DType.DOUBLE, 1).requiresGrad(true).name("a");
 
-        Tensor sum = a.log().sum();
+        Tensor sum = a.identity().sum();
         sum.setGrad(tm.scalar(1));
 
         var graph = Autograd.backward(sum);
@@ -52,11 +52,11 @@ public class LogOpTest {
     void test1D() {
         Tensor a = Autograd.var(tm.seq(Shape.of(4))).requiresGrad(true).name("a");
 
-        Tensor s1 = a.log().sum();
+        Tensor s1 = a.identity().sum();
         s1.setGrad(tm.scalar(1));
 
         var graph = Autograd.backward(s1);
-        assertTrue(a.grad().deepEquals(tm.full(Shape.of(4), 1).div(a.value()).nanToNum_(-1)));
+        assertTrue(a.grad().deepEquals(tm.full(Shape.of(4), 1)));
         graph.resetGrad();
     }
 
@@ -64,11 +64,11 @@ public class LogOpTest {
     void test2D() {
         Tensor a = Autograd.var(tm.seq(Shape.of(4, 3)).sub_(6)).requiresGrad(true).name("a");
 
-        Tensor s1 = a.log().sum();
+        Tensor s1 = a.identity().sum();
         s1.setGrad(tm.full(s1.shape(), 1));
 
         Autograd.ComputeGraph graph = Autograd.backward(s1);
-        assertTrue(a.grad().deepEquals(tm.full(a.shape(), 1).div_(a.value()).nanToNum_(-1)));
+        assertTrue(a.grad().deepEquals(tm.full(a.shape(), 1)));
         graph.resetGrad();
     }
 
@@ -76,11 +76,11 @@ public class LogOpTest {
     void test4D() {
         Tensor a = Autograd.var(tm.seq(Shape.of(4, 3, 4, 3))).requiresGrad(true).name("a");
 
-        Tensor s1 = a.log().sum();
+        Tensor s1 = a.identity().sum();
         s1.setGrad(tm.full(s1.shape(), 1));
 
         Autograd.ComputeGraph graph = Autograd.backward(s1);
-        assertTrue(a.grad().deepEquals(tm.full(a.shape(), 1).div_(a.value()).nanToNum_(-1)));
+        assertTrue(a.grad().deepEquals(tm.full(a.shape(), 1)));
         graph.resetGrad();
     }
 }

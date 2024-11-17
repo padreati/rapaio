@@ -66,7 +66,7 @@ public final class UnaryOpAbs extends NArrayUnaryOp {
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (byte) Math.abs(array[p]);
+                array[p] = applyByte(array[p]);
                 p++;
             }
         }
@@ -83,7 +83,7 @@ public final class UnaryOpAbs extends NArrayUnaryOp {
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (byte) Math.abs(array[p]);
+                array[p] = applyByte(array[p]);
                 p += loop.step;
             }
         }
@@ -100,7 +100,7 @@ public final class UnaryOpAbs extends NArrayUnaryOp {
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.abs(array[p]);
+                array[p] = applyInt(array[p]);
                 p++;
             }
         }
@@ -117,7 +117,7 @@ public final class UnaryOpAbs extends NArrayUnaryOp {
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.abs(array[p]);
+                array[p] = applyInt(array[p]);
                 p += loop.step;
             }
         }
@@ -134,7 +134,7 @@ public final class UnaryOpAbs extends NArrayUnaryOp {
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.abs(array[p]);
+                array[p] = applyFloat(array[p]);
                 p++;
             }
         }
@@ -151,7 +151,7 @@ public final class UnaryOpAbs extends NArrayUnaryOp {
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.abs(array[p]);
+                array[p] = applyFloat(array[p]);
                 p += loop.step;
             }
         }
@@ -168,7 +168,7 @@ public final class UnaryOpAbs extends NArrayUnaryOp {
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.abs(array[p]);
+                array[p] = applyDouble(array[p]);
                 p++;
             }
         }
@@ -185,7 +185,7 @@ public final class UnaryOpAbs extends NArrayUnaryOp {
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.abs(array[p]);
+                array[p] = applyDouble(array[p]);
                 p += loop.step;
             }
         }

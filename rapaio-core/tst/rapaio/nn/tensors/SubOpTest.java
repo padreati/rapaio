@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.nn.operations;
+package rapaio.nn.tensors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.narray.DType;
-import rapaio.math.narray.NArrayManager;
-import rapaio.math.narray.Shape;
 import rapaio.nn.Autograd;
 import rapaio.nn.Tensor;
+import rapaio.math.narray.DType;
+import rapaio.math.narray.Shape;
+import rapaio.math.narray.NArrayManager;
 
-public class DivOpTest {
+public class SubOpTest {
 
     private final NArrayManager.OfType<?> tm = NArrayManager.base().ofDouble();
 
@@ -43,19 +43,19 @@ public class DivOpTest {
         Tensor a = Autograd.scalar(DType.DOUBLE, 1).requiresGrad(true).name("a");
         Tensor b = Autograd.scalar(DType.DOUBLE, 3).requiresGrad(true).name("b");
 
-        Tensor sum = a.div(b);
+        Tensor sum = a.sub(b);
         sum.setGrad(tm.scalar(1));
 
         var graph = Autograd.backward(sum);
-        assertTrue(a.grad().deepEquals(tm.scalar(1. / 3)));
-        assertTrue(b.grad().deepEquals(tm.scalar(-1. / 9)));
+        assertTrue(a.grad().deepEquals(tm.scalar(1.)));
+        assertTrue(b.grad().deepEquals(tm.scalar(-1.)));
         graph.resetGrad();
 
-        Tensor s = a.div(2);
+        Tensor s = a.sub(2);
         s.setGrad(tm.scalar(2));
 
         graph = Autograd.backward(s);
-        assertTrue(a.grad().deepEquals(tm.scalar(2 * 0.5)));
+        assertTrue(a.grad().deepEquals(tm.scalar(2.)));
         graph.resetGrad();
     }
 
@@ -64,62 +64,62 @@ public class DivOpTest {
         Tensor a = Autograd.var(tm.seq(Shape.of(4))).requiresGrad(true).name("a");
         Tensor b = Autograd.var(tm.scalar(1)).requiresGrad(true).name("b");
 
-        Tensor s1 = a.div(b).sum();
+        Tensor s1 = a.sub(b).sum();
         s1.setGrad(tm.scalar(1));
 
         var graph = Autograd.backward(s1);
         assertTrue(a.grad().deepEquals(tm.stride(Shape.of(4), 1, 1, 1, 1)));
-        assertTrue(b.grad().deepEquals(tm.scalar(-6)));
+        assertTrue(b.grad().deepEquals(tm.scalar(-4)));
         graph.resetGrad();
 
-        Tensor s2 = b.div(a).sum();
+        Tensor s2 = b.sub(a).sum();
         s2.setGrad(tm.scalar(1));
         graph = Autograd.backward(s2);
-        assertTrue(a.grad().deepEquals(tm.stride(Shape.of(4), Double.NEGATIVE_INFINITY, -1, -1. / 4, -1. / 9)));
-        assertTrue(b.grad().deepEquals(tm.scalar(Double.POSITIVE_INFINITY)));
+        assertTrue(a.grad().deepEquals(tm.stride(Shape.of(4), -1, -1, -1, -1)));
+        assertTrue(b.grad().deepEquals(tm.scalar(4)));
         graph.resetGrad();
     }
 
     @Test
     void test2D() {
-        Tensor a = Autograd.var(tm.seq(Shape.of(4, 3)).add_(1)).requiresGrad(true).name("a");
+        Tensor a = Autograd.var(tm.seq(Shape.of(4, 3))).requiresGrad(true).name("a");
         Tensor b = Autograd.var(tm.scalar(1)).requiresGrad(true).name("b");
 
-        Tensor s1 = a.div(b).sum();
+        Tensor s1 = a.sub(b).sum();
         s1.setGrad(tm.full(s1.shape(), 1));
 
         Autograd.ComputeGraph graph = Autograd.backward(s1);
         assertTrue(a.grad().deepEquals(tm.full(a.shape(), b.size())));
-        assertTrue(b.grad().deepEquals(tm.full(b.shape(), -78)));
+        assertTrue(b.grad().deepEquals(tm.full(b.shape(), -a.size())));
         graph.resetGrad();
 
-        Tensor s2 = b.div(a).sum();
+        Tensor s2 = b.sub(a).sum();
         s2.setGrad(tm.full(s2.shape(), 1));
 
         graph = Autograd.backward(s2);
-        assertTrue(a.grad().deepEquals(tm.scalar(1).div(a.value().sqr()).neg_()));
-        assertTrue(b.grad().deepEquals(tm.scalar(tm.scalar(1).div(a.value()).sum().doubleValue()), 1e-12));
+        assertTrue(a.grad().deepEquals(tm.full(a.shape(), -b.size())));
+        assertTrue(b.grad().deepEquals(tm.full(b.shape(), a.size())));
         graph.resetGrad();
 
-        Tensor c = Autograd.var(tm.seq(Shape.of(4, 1)).add_(1)).requiresGrad(true).name("c");
-        Tensor s3 = a.div(c).sum();
+        Tensor c = Autograd.var(tm.seq(Shape.of(4, 1))).requiresGrad(true).name("c");
+        Tensor s3 = a.sub(c).sum();
         s3.setGrad(tm.full(s3.shape(), 1));
 
         graph = Autograd.backward(s3);
-        assertTrue(a.grad().deepEquals(tm.scalar(1).div(tm.seq(Shape.of(4)).add_(1)).strexp(1, 3)));
-        assertTrue(c.grad().deepEquals(tm.stride(Shape.of(4, 1), -6, -3.75, -2.6666666666666665, -2.0625), 1e-12));
+        assertTrue(a.grad().deepEquals(tm.full(a.shape(), 1)));
+        assertTrue(c.grad().deepEquals(tm.full(c.shape(), -a.size() / c.size())));
         graph.resetGrad();
 
-        Tensor s4 = c.div(a).sum();
+        Tensor s4 = c.sub(a).sum();
         s4.setGrad(tm.full(s4.shape(), 1));
 
         graph = Autograd.backward(s4);
-        assertTrue(a.grad().deepEquals(c.value().neg().div(a.value().sqr())));
-        assertTrue(c.grad().deepEquals(tm.scalar(1).div(a.value()).sum1d(1).stretch(1)));
+        assertTrue(a.grad().deepEquals(tm.full(a.shape(), -1)));
+        assertTrue(c.grad().deepEquals(tm.full(c.shape(), a.size() / c.size())));
         graph.resetGrad();
 
         Tensor d = Autograd.var(tm.seq(Shape.of(4)));
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> d.div(a));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> d.sub(a));
         assertEquals("Nodes are not valid for elementwise broadcast.", ex.getMessage());
     }
 
@@ -128,41 +128,41 @@ public class DivOpTest {
         Tensor a = Autograd.var(tm.seq(Shape.of(4, 3, 4, 3))).requiresGrad(true).name("a");
         Tensor b = Autograd.var(tm.scalar(1)).requiresGrad(true).name("b");
 
-        Tensor s1 = a.div(b).sum();
+        Tensor s1 = a.sub(b).sum();
         s1.setGrad(tm.full(s1.shape(), 1));
 
         Autograd.ComputeGraph graph = Autograd.backward(s1);
         assertTrue(a.grad().deepEquals(tm.full(a.shape(), b.size())));
-        assertTrue(b.grad().deepEquals(tm.scalar(a.value().neg().div(b.value().sqr()).sum().doubleValue())));
+        assertTrue(b.grad().deepEquals(tm.full(b.shape(), -a.size())));
         graph.resetGrad();
 
-        Tensor s2 = b.div(a).sum();
+        Tensor s2 = b.sub(a).sum();
         s2.setGrad(tm.full(s2.shape(), 1));
 
         graph = Autograd.backward(s2);
-        assertTrue(a.grad().deepEquals(tm.scalar(1).div(a.value().sqr()).neg_()));
-        assertTrue(b.grad().deepEquals(tm.scalar(tm.scalar(1).div(a.value()).sum().doubleValue())));
+        assertTrue(a.grad().deepEquals(tm.full(a.shape(), -b.size())));
+        assertTrue(b.grad().deepEquals(tm.full(b.shape(), a.size())));
         graph.resetGrad();
 
         Tensor c = Autograd.var(tm.seq(Shape.of(4, 1))).requiresGrad(true).name("c");
-        Tensor s3 = a.div(c).sum();
+        Tensor s3 = a.sub(c).sum();
         s3.setGrad(tm.full(s3.shape(), 1));
 
         graph = Autograd.backward(s3);
-        assertTrue(a.grad().deepEquals(tm.scalar(1).div(c.value()).expand(1, 3).strexp(0, 3).strexp(0, 4)));
-        assertTrue(c.grad().deepEquals(tm.stride(Shape.of(4, 1), Double.NaN, -2520, -657, -304)));
+        assertTrue(a.grad().deepEquals(tm.full(a.shape(), 1)));
+        assertTrue(c.grad().deepEquals(tm.full(c.shape(), -a.size() / c.size())));
         graph.resetGrad();
 
-        Tensor s4 = c.div(a).sum();
+        Tensor s4 = c.sub(a).sum();
         s4.setGrad(tm.full(s4.shape(), 1));
 
         graph = Autograd.backward(s4);
-        assertTrue(a.grad().deepEquals(c.value().neg().div(a.value().sqr())));
-        assertTrue(c.grad().deepEquals(tm.stride(Shape.of(4, 1), Double.POSITIVE_INFINITY,1.4347934880782072,1.0300564484939163,0.8531336948688647)));
+        assertTrue(a.grad().deepEquals(tm.full(a.shape(), -1)));
+        assertTrue(c.grad().deepEquals(tm.full(c.shape(), a.size() / c.size())));
         graph.resetGrad();
 
         Tensor d = Autograd.var(tm.seq(Shape.of(4)));
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> d.div(a));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> d.sub(a));
         assertEquals("Nodes are not valid for elementwise broadcast.", ex.getMessage());
     }
 }

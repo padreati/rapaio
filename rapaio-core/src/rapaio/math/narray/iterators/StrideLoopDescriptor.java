@@ -23,7 +23,6 @@ package rapaio.math.narray.iterators;
 
 import java.util.Arrays;
 
-import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.math.narray.Order;
 import rapaio.math.narray.Shape;
@@ -105,16 +104,7 @@ public final class StrideLoopDescriptor<N extends Number> {
     public int[] simdOffsets() {
         if (simdOffsets == null) {
             simdOffsets = new int[vs.length()];
-            int i = 0;
-            VectorSpecies<Integer> vsi = IntVector.SPECIES_PREFERRED;
-            if (vsi.length() <= vs.length()) {
-                IntVector a = IntVector.zero(vsi);
-                for (; i < vs.length(); i += vsi.length()) {
-                    a = a.addIndex(step);
-                    a.intoArray(simdOffsets, i);
-                }
-            }
-            for (; i < vs.length(); i++) {
+            for (int i = 0; i < vs.length(); i++) {
                 simdOffsets[i] = i * step;
             }
         }

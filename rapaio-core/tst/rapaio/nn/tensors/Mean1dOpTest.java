@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.nn.operations;
+package rapaio.nn.tensors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
