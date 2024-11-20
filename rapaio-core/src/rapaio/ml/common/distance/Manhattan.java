@@ -24,7 +24,7 @@ package rapaio.ml.common.distance;
 import static java.lang.StrictMath.abs;
 
 import rapaio.data.Frame;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 public class Manhattan implements Distance {
 

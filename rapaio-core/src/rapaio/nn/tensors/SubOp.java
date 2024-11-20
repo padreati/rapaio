@@ -24,7 +24,7 @@ package rapaio.nn.tensors;
 import java.util.List;
 
 import rapaio.nn.Tensor;
-import rapaio.math.narray.operator.Broadcast;
+import rapaio.narray.operator.Broadcast;
 
 public class SubOp extends AbstractTensor {
 
@@ -32,7 +32,7 @@ public class SubOp extends AbstractTensor {
     private final Tensor right;
 
     public SubOp(Tensor left, Tensor right) {
-        super(left.dtype(), "sub");
+        super(left.tm(), "sub");
         this.left = left;
         this.right = right;
         forward();

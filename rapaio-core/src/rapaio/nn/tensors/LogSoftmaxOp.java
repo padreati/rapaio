@@ -29,7 +29,7 @@ public class LogSoftmaxOp extends AbstractTensor {
     private final Tensor x;
 
     public LogSoftmaxOp(Tensor x, int axis) {
-        super(x.dtype(), "logsoftmax");
+        super(x.tm(), "logsoftmax");
         this.x = x;
         this.axis = axis;
         forward();

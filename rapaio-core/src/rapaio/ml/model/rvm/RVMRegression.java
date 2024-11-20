@@ -43,9 +43,9 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
+import rapaio.narray.Shape;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
@@ -424,7 +424,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
      * @return matrix of features
      */
     private NArray<Double> buildInput(Frame df) {
-        return df.mapVars(inputNames).tensor();
+        return df.mapVars(inputNames).narray();
     }
 
     protected NArray<Double> buildTarget(Frame df) {

@@ -36,8 +36,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -84,7 +84,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
         validate(df, targetVar);
 
         logger.fine("start lda fit");
-        NArray<Double> mx = df.mapVars(inputNames).tensor();
+        NArray<Double> mx = df.mapVars(inputNames).narray();
         NArray<Double> mxx = scaling.get() ? mx.sub(mx.mean1d(0)).div_(mx.std1d(0)) : mx;
 
         // compute global mean and std
@@ -166,7 +166,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
             throw new IllegalArgumentException("k must be a positive number less or equal with the number of levels.");
         }
 
-        NArray<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).narray();
         if (scaling.get()) {
             x.sub_(x.mean1d(0)).div_(x.std1d(0));
         }

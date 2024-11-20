@@ -38,7 +38,7 @@ import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.MathTools;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.PolyKernel;
@@ -290,7 +290,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         if (dfTrain.rowCount() == 0) {
             throw new IllegalArgumentException("No instances in the training data.");
         }
-        state.train = dfTrain.mapVars(inputNames).tensor();
+        state.train = dfTrain.mapVars(inputNames).narray();
 
         state.y = new double[state.train.dim(0)];
         for (int i = 0; i < state.train.dim(0); i++) {
@@ -600,7 +600,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
-            double score = predictScore(df.mapVars(inputNames).tensor(), i);
+            double score = predictScore(df.mapVars(inputNames).narray(), i);
             if (prob.get()) {
                 ClassifierResult result = logistic.predict(SolidFrame.byVars(VarDouble.scalar(score).name("score")));
                 double p = result.firstDensity().getDouble(0, "true");

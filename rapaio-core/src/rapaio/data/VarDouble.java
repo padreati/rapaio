@@ -42,11 +42,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import rapaio.core.distributions.Distribution;
-import rapaio.math.narray.DType;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Order;
-import rapaio.math.narray.Shape;
+import rapaio.narray.DType;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
+import rapaio.narray.Order;
+import rapaio.narray.Shape;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;

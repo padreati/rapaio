@@ -23,8 +23,8 @@ package rapaio.math.optimization.functions;
 
 import java.io.Serializable;
 
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
 
 /**
  * Interface which describes an n-dimensional real valued function.

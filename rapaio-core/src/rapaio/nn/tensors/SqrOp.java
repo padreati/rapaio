@@ -28,7 +28,7 @@ public class SqrOp extends AbstractTensor {
     private final Tensor x;
 
     public SqrOp(Tensor x) {
-        super(x.dtype(), "sqr");
+        super(x.tm(), "sqr");
         this.x = x;
         forward();
     }

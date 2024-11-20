@@ -31,7 +31,7 @@ import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
@@ -130,7 +130,7 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
-        NArray<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).narray();
         Var target = df.rvar(firstTargetName());
 
         ProblemInfo pi = ProblemInfo.from(x, target, this);
@@ -149,7 +149,7 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
 
         ClassifierResult result = ClassifierResult.build(this, df, withClasses, withDistributions);
-        NArray<Double> xs = df.mapVars(inputNames).tensor();
+        NArray<Double> xs = df.mapVars(inputNames).narray();
         for (int i = 0; i < xs.dim(0); i++) {
             int k = problemInfo.levels().size();
 

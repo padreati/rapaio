@@ -23,7 +23,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.Arrays;
 
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;

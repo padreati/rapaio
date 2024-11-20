@@ -23,24 +23,23 @@ package rapaio.nn.tensors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import rapaio.nn.Autograd;
+import rapaio.narray.Shape;
 import rapaio.nn.Loss;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 import rapaio.nn.loss.NegativeLikelihoodLoss;
-import rapaio.math.narray.NArrayManager;
-import rapaio.math.narray.Shape;
 
-public class LogOpSoftmaxOpTest {
+public class LogOpSoftmaxOpTest extends AbstractTensorTest{
 
-    private static final NArrayManager.OfType<?> tmt = NArrayManager.base().ofFloat();
+    @ParameterizedTest
+    @MethodSource("managers")
+    void stabilityTest(TensorManager tm) {
 
-    @Test
-    void stabilityTest() {
-
-        Tensor t = Autograd.var(tmt.stride(Shape.of(2,3), 1, 2, 3, 4, 5, 6).mul_(-10_000)).name("t").requiresGrad(true);
-        Tensor y = Autograd.var(tmt.stride(Shape.of(2, 3), 0, 1, 0, 1, 0, 0));
+        Tensor t = tm.var(tm.strideArray(Shape.of(2,3), 1, 2, 3, 4, 5, 6).mul_(-10_000)).name("t").requiresGrad(true);
+        Tensor y = tm.strideTensor(Shape.of(2, 3), 0, 1, 0, 1, 0, 0);
 
         Loss loss = new NegativeLikelihoodLoss();
         loss.forward(t, y);

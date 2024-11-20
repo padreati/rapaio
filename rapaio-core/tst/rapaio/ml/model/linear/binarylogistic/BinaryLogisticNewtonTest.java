@@ -36,10 +36,10 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Order;
-import rapaio.math.narray.Shape;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
+import rapaio.narray.Order;
+import rapaio.narray.Shape;
 
 public class BinaryLogisticNewtonTest {
 
@@ -170,7 +170,7 @@ public class BinaryLogisticNewtonTest {
 
         VarDouble y1 = VarDouble.from(100, row -> row > 50 ? 1. : 0);
 
-        NArray<Double> x = SolidFrame.byVars(x1, x2).tensor();
+        NArray<Double> x = SolidFrame.byVars(x1, x2).narray();
         NArray<Double> y = y1.narray_();
         NArray<Double> w0 = NArrays.stride(0, 0);
 

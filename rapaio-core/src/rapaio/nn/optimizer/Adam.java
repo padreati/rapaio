@@ -23,16 +23,20 @@ package rapaio.nn.optimizer;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import rapaio.core.param.Param;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
-import rapaio.nn.Tensor;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrayManager;
+import rapaio.narray.NArrays;
 import rapaio.nn.Optimizer;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
+import rapaio.nn.Tensor;
 
 public class Adam extends ParamSet<Adam> implements Optimizer {
 
@@ -47,9 +51,9 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
 
     private final List<Tensor> parameters;
     private double t = 1;
-    private final HashMap<Tensor, NArray<?>> mts = new HashMap<>();
-    private final HashMap<Tensor, NArray<?>> vts = new HashMap<>();
-    private final HashMap<Tensor, NArray<?>> vtmaxs = new HashMap<>();
+    private final ConcurrentHashMap<Tensor, NArray<?>> mts = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Tensor, NArray<?>> vts = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Tensor, NArray<?>> vtmaxs = new ConcurrentHashMap<>();
 
     public Adam(Collection<Tensor> parameters) {
         this.parameters = new ArrayList<>(parameters);
@@ -64,14 +68,22 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
 
     @Override
     public void step() {
-        for (var parameter : parameters) {
-            step(parameter);
+        CountDownLatch latch = new CountDownLatch(parameters.size());
+        try (ExecutorService executor = Executors.newFixedThreadPool(NArrayManager.base().cpuThreads())) {
+            for (var parameter : parameters) {
+                executor.submit(() -> {
+                    step(parameter);
+                    latch.countDown();
+                });
+            }
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         t++;
     }
 
     private void step(Tensor param) {
-
         var gt = param.grad();
         if (maximize.get()) {
             gt = gt.mul(-1);

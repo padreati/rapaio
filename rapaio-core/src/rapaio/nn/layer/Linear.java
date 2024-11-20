@@ -24,12 +24,10 @@ package rapaio.nn.layer;
 import java.util.List;
 
 import rapaio.core.distributions.Uniform;
-import rapaio.math.narray.DType;
-import rapaio.math.narray.NArrayManager;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
-import rapaio.nn.Autograd;
+import rapaio.narray.Order;
+import rapaio.narray.Shape;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class Linear extends AbstractNet {
 
@@ -40,20 +38,16 @@ public class Linear extends AbstractNet {
     private final Tensor w;
     private final Tensor b;
 
-    public Linear(DType<?> dtype, int inFeatures, int outFeatures, boolean bias) {
-        this(NArrays.ofType(dtype), inFeatures, outFeatures, bias);
-    }
-
-    public Linear(NArrayManager.OfType<?> tmt, int inFeatures, int outFeatures, boolean bias) {
-        super(tmt);
+    public Linear(TensorManager tm, int inFeatures, int outFeatures, boolean bias) {
+        super(tm);
 
         this.inFeatures = inFeatures;
         this.outFeatures = outFeatures;
         this.bias = bias;
 
-        this.w = Autograd.var(tmt.dtype()).requiresGrad(true).name("weights");
+        this.w = tm.var().requiresGrad(true).name("weights");
         if (this.bias) {
-            this.b = Autograd.var(tmt.dtype()).requiresGrad(true).name("bias");
+            this.b = tm.var().requiresGrad(true).name("bias");
         } else {
             this.b = null;
         }
@@ -62,9 +56,9 @@ public class Linear extends AbstractNet {
 
     private void reset() {
         double range = 1. / Math.sqrt(inFeatures);
-        w.setValue(tmt.random(Shape.of(inFeatures, outFeatures), Uniform.of(-range, range), random));
+        w.setValue(tm.randomArray(Shape.of(inFeatures, outFeatures), Uniform.of(-range, range), random, Order.F));
         if (bias) {
-            b.setValue(tmt.random(Shape.of(outFeatures), Uniform.of(-range, range), random));
+            b.setValue(tm.randomArray(Shape.of(outFeatures), Uniform.of(-range, range), random, Order.F));
         }
     }
 

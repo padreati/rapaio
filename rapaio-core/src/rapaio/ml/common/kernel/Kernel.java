@@ -23,7 +23,7 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serializable;
 
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 /**
  * Kernel function interface

@@ -22,7 +22,7 @@
 package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
-import rapaio.math.narray.Compare;
+import rapaio.narray.Compare;
 
 public class Max extends AbstractTensor {
 
@@ -30,7 +30,7 @@ public class Max extends AbstractTensor {
     private final double threshold;
 
     public Max(Tensor x, double threshold) {
-        super(x.dtype(), "max");
+        super(x.tm(), "max");
         this.threshold = threshold;
         this.x = x;
         forward();

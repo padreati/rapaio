@@ -29,6 +29,7 @@ import rapaio.nn.Tensor;
 public abstract class AbstractLoss<L extends AbstractLoss<L>> extends ParamSet<L> implements Loss {
 
     protected int batch;
+    protected String name;
     protected Tensor last;
 
     public final void backward() {

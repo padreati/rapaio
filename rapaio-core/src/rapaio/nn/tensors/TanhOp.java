@@ -21,15 +21,15 @@
 
 package rapaio.nn.tensors;
 
+import rapaio.narray.NArray;
 import rapaio.nn.Tensor;
-import rapaio.math.narray.NArray;
 
 public final class TanhOp extends AbstractTensor {
 
     private final Tensor child;
 
     public TanhOp(Tensor child) {
-        super(child.dtype(), "sigmoid");
+        super(child.tm(), "sigmoid");
         this.child = child;
         forward();
     }

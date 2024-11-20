@@ -28,17 +28,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.narray.NArrays;
+import rapaio.narray.NArrays;
 
 public class AutogradTest {
 
+    private TensorManager tm;
+
+    @BeforeEach
+    void beforeEach() {
+        tm = TensorManager.ofFloat();
+    }
+
+
     @Test
     void testOrder() {
-
-        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
-        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor a = tm.scalarTensor(-1.).name("a");
+        Tensor f = tm.scalarTensor(1.).name("f");
         Tensor c = a.log().name("c");
         Tensor b = a.add(c).name("b");
         Tensor d = b.log().name("d");
@@ -71,8 +79,8 @@ public class AutogradTest {
     @Test
     void testRequiresGradDefault() {
 
-        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
-        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor a = tm.scalarTensor(-1.).name("a");
+        Tensor f = tm.scalarTensor(1.).name("f");
         Tensor c = a.log().name("c");
         Tensor b = a.add(c).name("b");
         Tensor d = b.log().name("d");
@@ -100,8 +108,8 @@ public class AutogradTest {
     @Test
     void testRequiresGradVariant1() {
 
-        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
-        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor a = tm.scalarTensor(-1.).name("a");
+        Tensor f = tm.scalarTensor(1.).name("f");
         Tensor c = a.log().name("c");
         Tensor b = a.add(c).name("b");
         Tensor d = b.log().name("d");
@@ -130,8 +138,8 @@ public class AutogradTest {
     @Test
     void testRequiredGradVariant2() {
 
-        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
-        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor a = tm.scalarTensor(-1.).name("a");
+        Tensor f = tm.scalarTensor(1.).name("f");
         Tensor c = a.log().name("c");
         Tensor b = a.add(c).name("b");
         Tensor d = b.log().name("d");
@@ -161,8 +169,8 @@ public class AutogradTest {
     @Test
     void testRetainGradTrue() {
 
-        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
-        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor a = tm.scalarTensor(-1.).name("a");
+        Tensor f = tm.scalarTensor(1.).name("f");
         Tensor c = a.log().name("c");
         Tensor b = a.add(c).name("b");
         Tensor d = b.log().name("d");
@@ -202,8 +210,8 @@ public class AutogradTest {
     @Test
     void testRetainGradFalse() {
 
-        Tensor a = Autograd.var(NArrays.scalar(-1.)).name("a");
-        Tensor f = Autograd.var(NArrays.scalar(1.)).name("f");
+        Tensor a = tm.scalarTensor(-1.).name("a");
+        Tensor f = tm.scalarTensor(1.).name("f");
         Tensor c = a.log().name("c");
         Tensor b = a.add(c).name("b");
         Tensor d = b.log().name("d");

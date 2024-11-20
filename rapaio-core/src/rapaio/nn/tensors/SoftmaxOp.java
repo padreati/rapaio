@@ -29,7 +29,7 @@ public class SoftmaxOp extends AbstractTensor {
     private final Tensor x;
 
     public SoftmaxOp(Tensor x, int axis) {
-        super(x.dtype(), "softmax");
+        super(x.tm(), "softmax");
         this.axis = axis;
         this.x = x;
         forward();

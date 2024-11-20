@@ -33,9 +33,9 @@ import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
+import rapaio.narray.Shape;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

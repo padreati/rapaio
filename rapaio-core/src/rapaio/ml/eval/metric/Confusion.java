@@ -29,9 +29,9 @@ import java.util.Set;
 
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
+import rapaio.narray.Shape;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;

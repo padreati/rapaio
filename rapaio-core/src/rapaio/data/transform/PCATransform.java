@@ -26,7 +26,7 @@ import java.util.function.BiFunction;
 
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.analysis.PCA;
 
 /**

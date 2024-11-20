@@ -28,7 +28,7 @@ import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
 import rapaio.data.transform.AddIntercept;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RunInfo;

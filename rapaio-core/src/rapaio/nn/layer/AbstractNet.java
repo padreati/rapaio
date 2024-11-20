@@ -23,22 +23,32 @@ package rapaio.nn.layer;
 
 import java.util.Random;
 
-import rapaio.math.narray.NArrayManager;
 import rapaio.nn.Net;
+import rapaio.nn.TensorManager;
 
 public abstract class AbstractNet implements Net {
 
     protected final Random random = new Random();
-    protected final NArrayManager.OfType<?> tmt;
+    protected final TensorManager tm;
     protected boolean train = false;
 
-    public AbstractNet(NArrayManager.OfType<?> tmt) {
-        this.tmt = tmt;
+    public AbstractNet(TensorManager tm) {
+        this.tm = tm;
+    }
+
+    @Override
+    public TensorManager tm() {
+        return tm;
     }
 
     @Override
     public void seed(long seed) {
         random.setSeed(seed);
+    }
+
+    @Override
+    public Random random() {
+        return random;
     }
 
     @Override

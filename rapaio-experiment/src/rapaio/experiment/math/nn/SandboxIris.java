@@ -26,18 +26,19 @@ import static rapaio.graphics.opt.GOpts.color;
 import static rapaio.graphics.opt.GOpts.lwd;
 
 import java.awt.Color;
-import java.util.Arrays;
 
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.transform.OneHotEncoding;
 import rapaio.datasets.Datasets;
-import rapaio.math.narray.DType;
+import rapaio.narray.DType;
 import rapaio.nn.Autograd;
 import rapaio.nn.Loss;
 import rapaio.nn.Net;
 import rapaio.nn.Optimizer;
+import rapaio.nn.TensorManager;
+import rapaio.nn.data.ArrayDataset;
 import rapaio.nn.layer.BatchNorm1D;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.LogSoftmax;
@@ -45,55 +46,52 @@ import rapaio.nn.layer.ReLU;
 import rapaio.nn.layer.Sequential;
 import rapaio.nn.loss.NegativeLikelihoodLoss;
 import rapaio.sys.WS;
-import rapaio.util.collection.IntArrays;
 
 public class SandboxIris {
     public static void main() {
         Frame iris = Datasets.loadIrisDataset();
 
-        DType<?> dt = DType.FLOAT;
+        TensorManager tm = TensorManager.ofFloat();
 
-        var x = iris.mapVars(VarRange.of("0~3")).tensor().cast(dt);
-        var y = iris.fapply(OneHotEncoding.on(false, false, VarRange.of("class"))).mapVars("4~6").tensor().cast(dt);
+        var x = iris.mapVars(VarRange.of("0~3")).narray().cast(DType.FLOAT);
+        var y = iris.fapply(OneHotEncoding.on(false, false, VarRange.of("class"))).mapVars("4~6").narray().cast(DType.FLOAT);
 
-        int[] indexes = IntArrays.newSeq(x.dim(0));
-        int[] train_sample = Arrays.stream(indexes).filter(v -> v % 4 != 0).toArray();
-        int[] test_sample = Arrays.stream(indexes).filter(v -> v % 4 == 0).toArray();
+        ArrayDataset[] split = new ArrayDataset(x, y).trainTestSplit(0.2);
+        ArrayDataset train = split[0];
+        ArrayDataset test = split[1];
 
-        var x_train = x.take(0, train_sample);
-        var x_test = x.take(0, test_sample);
-        var y_train = y.take(0, train_sample);
-        var y_test = y.take(0, test_sample);
-
-        Net nn = new Sequential(
-                new BatchNorm1D(dt, 4),
-                new Linear(dt, 4, 100, true),
+        Net nn = new Sequential(tm,
+                new BatchNorm1D(tm, 4),
+                new Linear(tm, 4, 1000, true),
                 new ReLU(),
-                new Linear(dt, 100, 64, true),
+                new BatchNorm1D(tm, 1000),
+                new Linear(tm, 1000, 3, true),
                 new ReLU(),
-                new Linear(dt, 64, 3, true),
-                new ReLU(),
+                new BatchNorm1D(tm, 3),
                 new LogSoftmax(1)
         );
 
         Optimizer optimizer = Optimizer.Adam(nn.parameters())
-                .lr.set(1e-3);
+                .lr.set(1e-2);
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
         VarDouble testLoss = VarDouble.empty().name("trainLoss");
 
         for (int epoch = 0; epoch < 1_000; epoch++) {
+
             optimizer.zeroGrad();
+            nn.train();
 
-            Loss loss = new NegativeLikelihoodLoss();
+            var batchOutput = nn.batchForward(100, train.tensor(tm, 0));
 
-            var outputTrain = nn.forward11(Autograd.var(x_train));
-            loss.forward(outputTrain, Autograd.var(y_train));
+            var result = batchOutput.applyLoss(new NegativeLikelihoodLoss(), train.tensor(tm, 1));
+            double trainLossValue = result.lossValue();
+            Autograd.backward(result.generalLoss());
 
-            loss.backward();
-            double trainLossValue = loss.loss();
             optimizer.step();
 
-            loss.forward(nn.forward(Autograd.var(x_test))[0], Autograd.var(y_test));
+            nn.eval();
+            Loss loss = new NegativeLikelihoodLoss();
+            loss.forward(nn.forward11(tm.var(test.array(0))), tm.var(test.array(1)));
             double testLossValue = loss.loss();
 
             trainLoss.addDouble(trainLossValue);

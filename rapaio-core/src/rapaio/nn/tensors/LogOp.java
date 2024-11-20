@@ -29,7 +29,7 @@ public class LogOp extends AbstractTensor {
     private final Tensor child;
 
     public LogOp(Tensor child, double eps) {
-        super(child.dtype(), "log");
+        super(child.tm(), "log");
         this.eps = eps;
         this.child = child;
         forward();
@@ -37,6 +37,6 @@ public class LogOp extends AbstractTensor {
 
     private void forward() {
         this.setValue(child.value().log());
-        backEdge(child, () -> this.grad().mul(this.grad().manager().ofType(dtype).full(this.shape(), 1).div_(child.value()).nanToNum_(eps)));
+        backEdge(child, () -> this.grad().mul(tm.fullTensor(this.shape(), 1).value().div_(child.value()).nanToNum_(eps)));
     }
 }

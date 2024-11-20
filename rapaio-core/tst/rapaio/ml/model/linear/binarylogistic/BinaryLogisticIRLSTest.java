@@ -30,8 +30,8 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
+import rapaio.narray.NArrays;
+import rapaio.narray.Shape;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/21/20.

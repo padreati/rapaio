@@ -25,21 +25,22 @@ import static rapaio.graphics.Plotter.lines;
 import static rapaio.graphics.opt.GOpts.color;
 import static rapaio.graphics.opt.GOpts.lwd;
 
-import java.util.Arrays;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Random;
 
-import rapaio.core.SamplingTools;
 import rapaio.data.VarDouble;
-import rapaio.math.narray.DType;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrayManager;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
+import rapaio.narray.NArray;
+import rapaio.narray.Shape;
 import rapaio.nn.Autograd;
 import rapaio.nn.Loss;
 import rapaio.nn.Net;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
+import rapaio.nn.data.ArrayDataset;
+import rapaio.nn.layer.BatchNorm1D;
+import rapaio.nn.layer.ELU;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.ReLU;
 import rapaio.nn.layer.Sequential;
@@ -48,88 +49,80 @@ import rapaio.sys.WS;
 
 public class Sandbox2DFunctionRegression {
 
-    private static final NArrayManager.OfType<?> tmd = NArrayManager.base().ofDouble();
-
-    public static void main(String[] args) {
-        DType<?> dtype = DType.FLOAT;
+    public static void main() {
+        TensorManager tm = TensorManager.ofFloat();
         Random random = new Random(42);
 
-        NArray<?> xtrain = NArrays.ofType(dtype).random(Shape.of(10_000, 4), random);
-        NArray<?> ytrain = NArrays.ofType(dtype).zeros(Shape.of(10_000));
-        for (int i = 0; i < ytrain.dim(0); i++) {
-            NArray<?> row = xtrain.takesq(0, i);
-            ytrain.setDouble(random.nextDouble() / 100 + fun(row.getDouble(0), row.getDouble(1), row.getDouble(2), row.getDouble(3)), i);
-        }
-        NArray<?> xtest = NArrays.ofType(dtype).random(Shape.of(200, 4), random);
-        NArray<?> ytest = NArrays.ofType(dtype).zeros(Shape.of(200));
-        for (int i = 0; i < ytest.dim(0); i++) {
-            NArray<?> row = xtest.takesq(0, i);
-            ytest.setDouble(random.nextDouble() / 100 + fun(row.getDouble(0), row.getDouble(1), row.getDouble(2), row.getDouble(3)), i);
+        final int N = 1_000;
+        Tensor x = tm.randomTensor(Shape.of(N, 4), random);
+        Tensor y = tm.zerosTensor(Shape.of(N));
+        for (int i = 0; i < N; i++) {
+            NArray<?> row = x.value().takesq(0, i);
+            y.value().setDouble(random.nextDouble() / 100 + fun(row.getDouble(0), row.getDouble(1), row.getDouble(2), row.getDouble(3)), i);
         }
 
-        Net nn = new Sequential(
-//                new BatchNorm1D(dtype, 4),
-                new Linear(dtype, 4, 1000, true),
-//                new ELU(dtype, 0.1),
-                new ReLU(),
-//                new BatchNorm1D(dtype, 1000),
-                new Linear(dtype, 1000, 1, true),
+
+        ArrayDataset[] split = new ArrayDataset(x, y).trainTestSplit(0.2);
+        ArrayDataset train = split[0];
+        ArrayDataset test = split[1];
+
+        Net nn = new Sequential(tm,
+                new BatchNorm1D(tm, 4),
+                new Linear(tm, 4, 1_000, true),
+                new ELU(tm),
+                new Linear(tm, 1_000, 1, true),
                 new ReLU()
         );
         nn.seed(42);
 
 
-        int EPOCHS = 1_000;
-        int BATCH_SIZE = 400;
-        double LR = 1e-2;
+        int EPOCHS = 100;
+        int BATCH_SIZE = 100;
+        double LR = 1e-3;
 
         Optimizer c = Optimizer.Adam(nn.parameters())
                 .lr.set(LR)
-//                .weightDecay.set(0.1)
+                .weightDecay.set(0.1)
                 .amsgrad.set(true);
-        Loss loss = new MSELoss();
 
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
         VarDouble testLoss = VarDouble.empty().name("testLoss");
 
-        for (int i = 0; i < EPOCHS; i++) {
-            int[] sample = SamplingTools.sampleWOR(random, 10_000, BATCH_SIZE);
+        Loss loss = new MSELoss();
 
-            double trLoss = 0;
-            double teLoss = 0;
+        long start = System.currentTimeMillis();
+        for (int epoch = 1; epoch <= EPOCHS; epoch++) {
 
             nn.train();
             c.zeroGrad();
 
-            for (int j = 0; j < sample.length; j += BATCH_SIZE) {
-                int[] batchIndexes = Arrays.copyOfRange(sample, j, Math.min(sample.length, j + BATCH_SIZE));
-                NArray<?> xx = xtrain.take(0, batchIndexes);
-                NArray<?> yy = ytrain.take(0, batchIndexes);
-                Tensor[] outputs = nn.forward(Autograd.var(xx));
+            var batchOutput = nn.batchForward(BATCH_SIZE, train.tensor(tm, 0));
+            var result = batchOutput.applyLoss(loss, train.tensor(tm, 1));
 
-                loss.forward(outputs[0], Autograd.var(yy));
-                loss.backward();
+            double trainLossValue = result.lossValue();
+            trainLoss.addDouble(trainLossValue);
 
-                trainLoss.addDouble(loss.loss());
-                trLoss += loss.loss() * batchIndexes.length / sample.length;
-
-                c.step();
-            }
+            Autograd.backward(result.generalLoss()).covered();
+            c.step();
 
             nn.eval();
-            Tensor[] outputs = nn.forward(Autograd.var(xtest));
-            loss.forward(outputs[0], Autograd.var(ytest));
-            testLoss.addDouble(loss.loss());
-            teLoss += loss.loss();
+            Tensor outputs = nn.forward11(tm.var(test.array(0)));
+            loss.forward(outputs, tm.var(test.array(1)));
+            double teLoss = loss.loss();
+            testLoss.addDouble(teLoss);
 
-            System.out.printf("Epoch: %d, Train loss: %.6f, test loss: %.6f\n", i + 1, trLoss, teLoss);
+            if (epoch == 1 || epoch % 1 == 0) {
+                System.out.printf("Epoch: %d, Train loss: %.6f, test loss: %.6f\n", epoch, trainLossValue, teLoss);
+            }
 
 
         }
+        long end = System.currentTimeMillis();
+        System.out.println(Duration.of(end - start, ChronoUnit.MILLIS));
 
         WS.draw(lines(trainLoss, color(1), lwd(1)).lines(testLoss, color(2), lwd(1)));
 
-        nn.forward(Autograd.var(NArrays.ofType(dtype).random(Shape.of(2, 4), random)).name("x"))[0].value().printString();
+        nn.forward(tm.randomTensor(Shape.of(2, 4), random).name("x"))[0].value().printString();
     }
 
     public static double fun(double x1, double x2, double x3, double x4) {

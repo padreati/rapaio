@@ -34,7 +34,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.datasets.Datasets;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/1/20.
@@ -166,7 +166,7 @@ public class KMClusterTest {
         var kmeansC = kmeans.getCentroidsMatrix();
         var kmediansC = kmedians.getCentroidsMatrix();
 
-        NArray<Double> instances = df.tensor();
+        NArray<Double> instances = df.narray();
 
         BiFunction<NArray<Double>, NArray<Double>, Double> dist = (u, v) -> u.copy().sub_(v).apply_(x -> x * x).sum();
 

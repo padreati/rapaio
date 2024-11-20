@@ -27,7 +27,7 @@ import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 /**
  * Backtracking strategy for line search.

@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 public class ModelInfo {
 

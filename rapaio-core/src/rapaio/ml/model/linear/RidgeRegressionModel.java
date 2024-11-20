@@ -30,8 +30,8 @@ import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.transform.AddIntercept;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
+import rapaio.narray.NArrays;
+import rapaio.narray.Shape;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**

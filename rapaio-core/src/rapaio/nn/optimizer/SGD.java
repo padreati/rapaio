@@ -23,13 +23,17 @@ package rapaio.nn.optimizer;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import rapaio.core.param.Param;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
-import rapaio.nn.Tensor;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrayManager;
 import rapaio.nn.Optimizer;
-import rapaio.math.narray.NArray;
+import rapaio.nn.Tensor;
 
 public class SGD extends ParamSet<SGD> implements Optimizer {
 
@@ -56,8 +60,17 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
 
     @Override
     public void step() {
-        for (var param : params) {
-            stepParam(param);
+        CountDownLatch latch = new CountDownLatch(params.size());
+        try (ExecutorService executor = Executors.newFixedThreadPool(NArrayManager.base().cpuThreads())) {
+            for (var parameter : params) {
+                executor.submit(() -> {
+                    stepParam(parameter);
+                    latch.countDown();
+                });
+            }
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

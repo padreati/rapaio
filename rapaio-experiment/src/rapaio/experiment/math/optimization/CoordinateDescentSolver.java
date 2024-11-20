@@ -33,9 +33,9 @@ import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.math.narray.Shape;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.Shape;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
 
 /**
  * Steepest descent for L1 norm

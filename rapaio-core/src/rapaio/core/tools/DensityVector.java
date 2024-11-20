@@ -35,7 +35,7 @@ import java.util.stream.DoubleStream;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.NArrays;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;

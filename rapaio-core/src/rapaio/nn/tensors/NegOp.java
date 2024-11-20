@@ -28,7 +28,7 @@ public class NegOp extends AbstractTensor {
     private final Tensor child;
 
     public NegOp(Tensor child) {
-        super(child.dtype(), "neg");
+        super(child.tm(), "neg");
         this.child = child;
         forward();
     }

@@ -23,7 +23,7 @@ package rapaio.nn;
 
 import java.util.function.Supplier;
 
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 public record BackFun(Tensor ref, Supplier<NArray<?>> fun) {
 

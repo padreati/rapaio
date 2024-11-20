@@ -25,19 +25,22 @@ import rapaio.nn.Tensor;
 
 public class BatchVtmOp extends AbstractTensor {
 
-    private final Tensor left;
-    private final Tensor right;
+    private final Tensor bv;
+    private final Tensor bm;
 
-    public BatchVtmOp(Tensor left, Tensor right) {
-        super(left.dtype(), "BatchVtm");
-        this.left = left;
-        this.right = right;
+    public BatchVtmOp(Tensor bv, Tensor bm) {
+        super(bv.tm(), "BatchVtm");
+        this.bv = bv;
+        this.bm = bm;
         forward();
     }
 
     public void forward() {
-        this.setValue(left.value().bvtm(right.value()));
-        backEdge(left, () -> this.grad().bmm(right.value().t()).mean1d(0));
-        backEdge(right, () -> left.value().t().bmm(this.grad()).mean1d(0));
+        this.setValue(bv.value().bvtm(bm.value()));
+        backEdge(bv, () -> {
+            var g = this.grad().bvtm(bm.value().t());
+            return (bv.rank() == 1) ? g.mean1d(0) : g;
+        });
+        backEdge(bm, () -> bv.value().t().mm(this.grad()));
     }
 }

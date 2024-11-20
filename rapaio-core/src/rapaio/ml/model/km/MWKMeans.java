@@ -35,9 +35,9 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarType;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
+import rapaio.narray.Shape;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.MinkowskiDistance;
@@ -161,7 +161,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         errors = VarDouble.empty().name("errors");
 
         // initialize design matrix
-        NArray<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).narray();
 
         Random random = getRandom();
 
@@ -200,7 +200,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     @Override
     public MWKMeansResult corePredict(Frame df, boolean withScores) {
 
-        NArray<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).narray();
         int[] assign = computeAssignmentAndError(x, false);
 
         return MWKMeansResult.valueOf(this, df, VarInt.wrap(assign));

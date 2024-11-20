@@ -25,9 +25,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.stream.IntStream;
 
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.Shape;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.NArray;
+import rapaio.narray.Shape;
+import rapaio.narray.NArrays;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
 /**

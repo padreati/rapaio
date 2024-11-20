@@ -28,7 +28,7 @@ public final class SigmoidOp extends AbstractTensor {
     private final Tensor child;
 
     public SigmoidOp(Tensor child) {
-        super(child.dtype(), "sigmoid");
+        super(child.tm(), "sigmoid");
         this.child = child;
         forward();
     }

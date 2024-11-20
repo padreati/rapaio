@@ -24,7 +24,7 @@ package rapaio.ml.common.kernel.cache;
 import java.util.HashMap;
 import java.util.Map;
 
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.common.kernel.Kernel;
 
 /**

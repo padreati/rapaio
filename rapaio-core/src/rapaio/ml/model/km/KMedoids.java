@@ -40,7 +40,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.model.ClusteringModel;
@@ -107,7 +107,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
 
     @Override
     public KMedoids coreFit(Frame df, Var weights) {
-        NArray<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).narray();
         if (k.get() > x.dim(0)) {
             throw new IllegalArgumentException(
                     "Number of clusters %d bigger than number of instances %d.".formatted(k.get(), x.dim(0)));
@@ -486,7 +486,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
 
     @Override
     public ClusteringResult<KMedoids> corePredict(Frame df, boolean withScores) {
-        NArray<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).narray();
         int[] assign = new int[x.dim(0)];
         for (int i = 0; i < assign.length; i++) {
             int min = 0;

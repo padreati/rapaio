@@ -24,10 +24,10 @@ package rapaio.nn;
 import java.util.List;
 import java.util.Random;
 
-import rapaio.math.narray.Compare;
-import rapaio.math.narray.DType;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.Shape;
+import rapaio.narray.Compare;
+import rapaio.narray.DType;
+import rapaio.narray.NArray;
+import rapaio.narray.Shape;
 import rapaio.nn.tensors.AddOp;
 import rapaio.nn.tensors.BatchVtmOp;
 import rapaio.nn.tensors.CompareFalseOp;
@@ -59,6 +59,8 @@ public interface Tensor {
     Tensor name(String name);
 
     DType<?> dtype();
+
+    TensorManager tm();
 
     Shape shape();
 
@@ -97,7 +99,7 @@ public interface Tensor {
     }
 
     default AddOp add(double value) {
-        return new AddOp(this, Autograd.scalar(dtype(), value));
+        return new AddOp(this, tm().scalarTensor(value));
     }
 
     default SubOp sub(Tensor other) {
@@ -105,7 +107,7 @@ public interface Tensor {
     }
 
     default SubOp sub(double value) {
-        return new SubOp(this, Autograd.scalar(dtype(), value));
+        return new SubOp(this, tm().scalarTensor(value));
     }
 
     default MulOp mul(Tensor other) {
@@ -113,7 +115,7 @@ public interface Tensor {
     }
 
     default MulOp mul(double value) {
-        return new MulOp(this, Autograd.scalar(dtype(), value));
+        return new MulOp(this, tm().scalarTensor(value));
     }
 
     default DivOp div(Tensor other) {
@@ -121,7 +123,7 @@ public interface Tensor {
     }
 
     default DivOp div(double value) {
-        return new DivOp(this, Autograd.scalar(dtype(), value));
+        return new DivOp(this, tm().scalarTensor(value));
     }
 
     default SumOp sum() {

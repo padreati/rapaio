@@ -35,9 +35,9 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.MathTools;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
+import rapaio.narray.Shape;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
@@ -230,7 +230,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
         df.varStream()
                 .filter(v -> !targetName.equals(v.name()))
                 .forEach(variables::add);
-        return SolidFrame.byVars(variables).tensor();
+        return SolidFrame.byVars(variables).narray();
     }
 
     @Override

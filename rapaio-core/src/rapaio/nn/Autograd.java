@@ -28,9 +28,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import rapaio.math.narray.DType;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.DType;
+import rapaio.narray.NArray;
 
 /**
  * Central place of automatic differentiation in reverse mode.
@@ -49,18 +48,6 @@ import rapaio.math.narray.NArrays;
  * in the upper computational graph to the root node (the node on which {@code backward} method was called.
  */
 public final class Autograd {
-
-    public static Variable var(NArray<?> value) {
-        return new Variable(value);
-    }
-
-    public static Variable var(DType<?> dtype) {
-        return new Variable(dtype);
-    }
-
-    public static Variable scalar(DType<?> dtype, double value) {
-        return (Variable) new Variable(NArrays.ofType(dtype).scalar(value)).name("scalar");
-    }
 
     public static ComputeGraph backward(Loss loss) {
         return backward(loss, false);

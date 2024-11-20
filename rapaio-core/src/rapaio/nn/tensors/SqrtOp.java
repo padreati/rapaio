@@ -28,7 +28,7 @@ public class SqrtOp extends AbstractTensor {
     private final Tensor child;
 
     public SqrtOp(Tensor child) {
-        super(child.dtype(), "sqrt");
+        super(child.tm(), "sqrt");
         this.child = child;
         forward();
     }

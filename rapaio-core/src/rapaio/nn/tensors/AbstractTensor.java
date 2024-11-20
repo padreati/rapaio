@@ -25,23 +25,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import rapaio.math.narray.DType;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.Shape;
+import rapaio.narray.DType;
+import rapaio.narray.NArray;
+import rapaio.narray.Shape;
 import rapaio.nn.BackFun;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public abstract class AbstractTensor implements Tensor {
 
     protected String name;
-    protected DType<?> dtype;
+    protected TensorManager tm;
     private NArray<?> value;
     private NArray<?> grad;
     protected boolean requiresGrad;
     private final List<BackFun> backfuns = new ArrayList<>();
 
-    protected AbstractTensor(DType<?> dtype, String name) {
-        this.dtype = dtype;
+    protected AbstractTensor(TensorManager tm, String name) {
+        this.tm = tm;
         this.name = name;
     }
 
@@ -58,7 +59,12 @@ public abstract class AbstractTensor implements Tensor {
 
     @Override
     public final DType<?> dtype() {
-        return dtype;
+        return tm.dtype();
+    }
+
+    @Override
+    public TensorManager tm() {
+        return tm;
     }
 
     @Override

@@ -23,10 +23,9 @@ package rapaio.nn.layer;
 
 import java.util.List;
 
-import rapaio.math.narray.DType;
-import rapaio.math.narray.NArrayManager;
-import rapaio.math.narray.Compare;
+import rapaio.narray.Compare;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class ELU extends AbstractNet {
 
@@ -34,12 +33,12 @@ public class ELU extends AbstractNet {
 
     private final double alpha;
 
-    public ELU(DType<?> dtype) {
-        this(dtype, DEFAULT_ALPHA);
+    public ELU(TensorManager tm) {
+        this(tm, DEFAULT_ALPHA);
     }
 
-    public ELU(DType<?> dtype, double alpha) {
-        super(NArrayManager.base().ofType(dtype));
+    public ELU(TensorManager tm, double alpha) {
+        super(tm);
         this.alpha = alpha;
     }
 

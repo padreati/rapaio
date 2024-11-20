@@ -25,9 +25,9 @@ import java.util.Random;
 
 import rapaio.core.distributions.Bernoulli;
 import rapaio.nn.Tensor;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.iterators.PointerIterator;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
+import rapaio.narray.iterators.PointerIterator;
 
 public class DropoutOp extends AbstractTensor {
 
@@ -38,7 +38,7 @@ public class DropoutOp extends AbstractTensor {
     private final boolean inplace;
 
     public DropoutOp(Tensor child, double p, Random random, boolean inplace) {
-        super(child.dtype(), "identity");
+        super(child.tm(), "identity");
         this.child = child;
         this.p = p;
         this.random = random;

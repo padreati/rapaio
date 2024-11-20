@@ -37,8 +37,8 @@ import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.optimization.functions.RHessian;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.matrix.CholeskyDecomposition;
+import rapaio.narray.NArray;
+import rapaio.narray.matrix.CholeskyDecomposition;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.

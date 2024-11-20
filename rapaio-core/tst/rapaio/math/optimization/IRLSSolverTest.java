@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/21.
@@ -49,7 +49,7 @@ public class IRLSSolverTest {
         Frame df = Datasets.loasSAheart().removeVars(0).removeVars("typea,adiposity");
         VarDouble intercept = VarDouble.fill(df.rowCount(), 1).name("(Intercept)");
         Frame dfa = SolidFrame.byVars(intercept).bindVars(df.removeVars("chd"));
-        A = dfa.tensor();
+        A = dfa.narray();
         b = df.rvar("chd").narray();
     }
 

@@ -29,7 +29,7 @@ public final class Sum1dOp extends AbstractTensor {
     private final Tensor child;
 
     public Sum1dOp(Tensor child, int axis) {
-        super(child.dtype(), "sum1d");
+        super(child.tm(), "sum1d");
         this.axis = axis;
         this.child = child;
         forward();

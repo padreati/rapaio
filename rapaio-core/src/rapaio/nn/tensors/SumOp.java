@@ -22,15 +22,15 @@
 package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
 
 public class SumOp extends AbstractTensor {
 
     private final Tensor child;
 
     public SumOp(Tensor child) {
-        super(child.dtype(), "sum");
+        super(child.tm(), "sum");
         this.child = child;
         forward();
     }

@@ -23,7 +23,7 @@ package rapaio.math.optimization.linesearch;
 
 import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 /**
  * Fixed rate line search strategy. This strategy actually does not compute a step size,

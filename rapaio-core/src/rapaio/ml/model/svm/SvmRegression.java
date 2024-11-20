@@ -27,7 +27,7 @@ import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
@@ -116,7 +116,7 @@ public class SvmRegression extends RegressionModel<SvmRegression, RegressionResu
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        NArray<Double> x = df.mapVars(inputNames).tensor();
+        NArray<Double> x = df.mapVars(inputNames).narray();
         Var target = df.rvar(firstTargetName());
 
         ProblemInfo pi = ProblemInfo.from(x, target, this);
@@ -134,7 +134,7 @@ public class SvmRegression extends RegressionModel<SvmRegression, RegressionResu
     @Override
     protected RegressionResult corePredict(Frame df, boolean withResiduals, double[] quantiles) {
         RegressionResult result = RegressionResult.build(this, df, withResiduals, quantiles);
-        NArray<Double> xs = df.mapVars(inputNames).tensor();
+        NArray<Double> xs = df.mapVars(inputNames).narray();
         for (int i = 0; i < xs.dim(0); i++) {
             double score = Svm.svm_predict(svm_model, xs.takesq(0, i));
             LOGGER.finest("i:%d, score:%f".formatted(i, score));

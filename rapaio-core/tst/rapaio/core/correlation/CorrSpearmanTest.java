@@ -36,9 +36,9 @@ import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.Shape;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.NArray;
+import rapaio.narray.Shape;
+import rapaio.narray.NArrays;
 import rapaio.printer.opt.POpt;
 
 /**

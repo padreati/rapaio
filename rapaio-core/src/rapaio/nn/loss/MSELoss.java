@@ -23,13 +23,18 @@ package rapaio.nn.loss;
 
 import rapaio.core.param.Param;
 import rapaio.core.param.ValueParam;
-import rapaio.nn.Autograd;
+import rapaio.narray.NArrays;
+import rapaio.nn.Loss;
 import rapaio.nn.Tensor;
-import rapaio.math.narray.NArrays;
 
 public class MSELoss extends AbstractLoss<MSELoss> {
 
     public final Param<Reduce, MSELoss> reduce = new ValueParam<>(this, Reduce.MEAN, "Reduce type");
+
+    @Override
+    public Loss newInstance() {
+        return new MSELoss();
+    }
 
     @Override
     public void forward(Tensor pred, Tensor y) {
@@ -38,10 +43,7 @@ public class MSELoss extends AbstractLoss<MSELoss> {
             y.setValue(y.value().stretch(1));
         }
         batch = y.value().dim(0);
-        last = pred.sub(y).sqr().sum();
-        if (reduce.get().equals(Reduce.MEAN)) {
-            last = last.div(Autograd.var(NArrays.ofType(last.dtype()).scalar(pred.value().size())));
-        }
+        last = (reduce.get().equals(Reduce.MEAN)) ? pred.sub(y).sqr().sum().div(pred.value().size()) : pred.sub(y).sqr().sum();
         last.setGrad(NArrays.ofType(pred.dtype()).scalar(1));
     }
 }

@@ -28,7 +28,7 @@ import java.util.List;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Var;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;

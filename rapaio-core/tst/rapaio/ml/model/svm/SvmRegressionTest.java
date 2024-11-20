@@ -30,13 +30,11 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 
 public class SvmRegressionTest {
-
-    private static final double TOL = 1e-16;
 
     private Frame df;
     private NArray<Double> xs;
@@ -47,7 +45,7 @@ public class SvmRegressionTest {
         WS.initLog(Level.SEVERE);
         df = Datasets.loadISLAdvertising();
 
-        xs = df.mapVars("TV,Radio").tensor();
+        xs = df.mapVars("TV,Radio").narray();
         ys = df.rvar("Sales").narray_();
     }
 

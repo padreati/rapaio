@@ -24,7 +24,7 @@ package rapaio.ml.common.distance;
 import static java.lang.StrictMath.pow;
 
 import rapaio.data.Frame;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 public class MinkowskiDistance implements Distance {
 

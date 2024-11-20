@@ -53,7 +53,7 @@ import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.PolyPath;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Text;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;

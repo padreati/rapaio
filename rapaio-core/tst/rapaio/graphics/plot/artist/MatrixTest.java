@@ -34,8 +34,8 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.graphics.opt.NColor;
 import rapaio.graphics.plot.GridLayer;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
+import rapaio.narray.NArrays;
+import rapaio.narray.Shape;
 import rapaio.printer.ImageTools;
 
 public class MatrixTest extends AbstractArtistTest {

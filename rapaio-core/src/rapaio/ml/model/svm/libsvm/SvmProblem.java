@@ -23,7 +23,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.Random;
 
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 public class SvmProblem implements java.io.Serializable {
     public Random random;

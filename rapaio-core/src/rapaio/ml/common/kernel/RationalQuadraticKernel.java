@@ -23,7 +23,7 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.printer.Format;
 
 /**

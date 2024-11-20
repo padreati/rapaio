@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 /**
  * A frame which is not mapped, its values are contained in vectors.

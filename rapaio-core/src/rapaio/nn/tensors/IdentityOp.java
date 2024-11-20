@@ -28,7 +28,7 @@ public class IdentityOp extends AbstractTensor {
     private final Tensor child;
 
     public IdentityOp(Tensor child) {
-        super(child.dtype(), "identity");
+        super(child.tm(), "identity");
         this.child = child;
         forward();
     }

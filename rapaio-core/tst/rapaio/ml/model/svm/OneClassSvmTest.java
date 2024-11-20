@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 
@@ -62,7 +62,7 @@ public class OneClassSvmTest {
             x2.addDouble(uniform.sampleNext());
         }
         df = SolidFrame.byVars(x1, x2);
-        xs = df.tensor();
+        xs = df.narray();
     }
 
     @Test

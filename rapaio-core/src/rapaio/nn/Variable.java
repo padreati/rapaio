@@ -21,18 +21,17 @@
 
 package rapaio.nn;
 
-import rapaio.math.narray.DType;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.nn.tensors.AbstractTensor;
 
 public final class Variable extends AbstractTensor {
 
-    public Variable(DType<?> dtype) {
-        super(dtype, "variable");
+    public Variable(TensorManager tm) {
+        super(tm, "variable");
     }
 
-    public Variable(NArray<?> value) {
-        super(value.dtype(), "variable");
+    public Variable(TensorManager tm, NArray<?> value) {
+        super(tm, "variable");
         setValue(value);
     }
 }

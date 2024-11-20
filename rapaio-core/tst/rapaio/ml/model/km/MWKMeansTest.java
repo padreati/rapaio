@@ -39,7 +39,7 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.transform.Jitter;
 import rapaio.datasets.Datasets;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.NArrays;
 import rapaio.ml.eval.RandIndex;
 import rapaio.util.collection.DoubleArrays;
 

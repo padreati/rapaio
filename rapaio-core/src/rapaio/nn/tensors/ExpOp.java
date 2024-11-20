@@ -28,7 +28,7 @@ public class ExpOp extends AbstractTensor{
     private final Tensor x;
 
     public ExpOp(Tensor x) {
-        super(x.dtype(), "exp");
+        super(x.tm(), "exp");
         this.x = x;
 
         forward();

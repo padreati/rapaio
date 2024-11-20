@@ -25,70 +25,72 @@ import static java.lang.Math.sqrt;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import rapaio.math.narray.DType;
-import rapaio.math.narray.NArrayManager;
-import rapaio.math.narray.Shape;
+import rapaio.narray.Shape;
 import rapaio.nn.Autograd;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
-public class SqrtOpTest {
+public class SqrtOpTest extends AbstractTensorTest{
 
-    private final NArrayManager.OfType<?> tm = NArrayManager.base().ofDouble();
+    @ParameterizedTest
+    @MethodSource("managers")
+    void testScalar(TensorManager tm) {
 
-    @Test
-    void testScalar() {
-
-        Tensor a = Autograd.scalar(DType.DOUBLE, 1).requiresGrad(true).name("a");
+        Tensor a = tm.scalarTensor(1).requiresGrad(true).name("a");
 
         Tensor sum = a.sqrt().sum();
-        sum.setGrad(tm.scalar(1));
+        sum.setGrad(tm.scalarArray(1));
 
         var graph = Autograd.backward(sum);
-        assertTrue(a.grad().deepEquals(tm.scalar(0.5)));
+        assertTrue(a.grad().deepEquals(tm.scalarArray(0.5)));
         graph.resetGrad();
     }
 
-    @Test
-    void test1D() {
-        Tensor a = Autograd.var(tm.seq(Shape.of(4))).requiresGrad(true).name("a");
+    @ParameterizedTest
+    @MethodSource("managers")
+    void test1D(TensorManager tm) {
+        Tensor a = tm.seqTensor(Shape.of(4)).requiresGrad(true).name("a");
         Tensor sqrt = a.sqrt();
 
         Tensor s1 = sqrt.sum();
-        s1.setGrad(tm.scalar(1));
+        s1.setGrad(tm.scalarArray(1));
 
         var graph = Autograd.backward(s1);
-        assertTrue(sqrt.value().deepEquals(tm.stride(Shape.of(4), 0, 1, sqrt(2), sqrt(3))));
-        assertTrue(a.grad().deepEquals(tm.stride(Shape.of(4), Double.POSITIVE_INFINITY, 0.5, 0.5 / sqrt(2), 0.5 / sqrt(3)), 1e-12));
+        assertTrue(sqrt.value().deepEquals(tm.strideArray(Shape.of(4), 0, 1, sqrt(2), sqrt(3))));
+        assertTrue(a.grad().deepEquals(tm.strideArray(Shape.of(4), Double.POSITIVE_INFINITY, 0.5, 0.5 / sqrt(2), 0.5 / sqrt(3)), 1e-12));
         graph.resetGrad();
     }
 
-    @Test
-    void test2D() {
-        Tensor a = Autograd.var(tm.seq(Shape.of(4, 3))).requiresGrad(true).name("a");
+    @ParameterizedTest
+    @MethodSource("managers")
+    void test2D(TensorManager tm) {
+        Tensor a = tm.seqTensor(Shape.of(4, 3)).requiresGrad(true).name("a");
         Tensor sqrt = a.sqrt();
 
         Tensor s1 = sqrt.sum();
-        s1.setGrad(tm.full(s1.shape(), 1));
+        s1.setGrad(tm.fullArray(s1.shape(), 1));
 
         Autograd.ComputeGraph graph = Autograd.backward(s1);
         assertTrue(sqrt.value().deepEquals(a.value().sqrt(), 1e-9));
-        assertTrue(a.grad().deepEquals(tm.full(a.shape(), 0.5).div(a.value().sqrt()), 1e-9));
+        assertTrue(a.grad().deepEquals(tm.fullArray(a.shape(), 0.5).div(a.value().sqrt()), 1e-9));
         graph.resetGrad();
     }
 
-    @Test
-    void test4D() {
-        Tensor a = Autograd.var(tm.seq(Shape.of(2, 3, 2, 3))).requiresGrad(true).name("a");
+    @ParameterizedTest
+    @MethodSource("managers")
+    void test4D(TensorManager tm) {
+        Tensor a = tm.seqTensor(Shape.of(2, 3, 2, 3)).requiresGrad(true).name("a");
         Tensor sqrt = a.sqrt();
 
         Tensor s1 = sqrt.sum();
-        s1.setGrad(tm.full(s1.shape(), 1));
+        s1.setGrad(tm.fullArray(s1.shape(), 1));
 
         Autograd.ComputeGraph graph = Autograd.backward(s1);
-        assertTrue(sqrt.value().deepEquals(tm.seq(Shape.of(2, 3, 2, 3)).sqrt(), 1e-9));
-        assertTrue(a.grad().deepEquals(tm.full(a.shape(), 0.5).div(a.value().sqrt()), 1e-9));
+        assertTrue(sqrt.value().deepEquals(tm.seqArray(Shape.of(2, 3, 2, 3)).sqrt(), 1e-9));
+        assertTrue(a.grad().deepEquals(tm.fullArray(a.shape(), 0.5).div(a.value().sqrt()), 1e-9));
         graph.resetGrad();
     }
 }

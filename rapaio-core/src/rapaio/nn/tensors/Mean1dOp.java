@@ -29,7 +29,7 @@ public final class Mean1dOp extends AbstractTensor {
     private final Tensor x;
 
     public Mean1dOp(Tensor x, int axis) {
-        super(x.dtype(), "mean1d");
+        super(x.tm(), "mean1d");
         this.axis = axis;
         this.x = x;
         forward();

@@ -31,7 +31,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.model.ClusteringResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
@@ -53,7 +53,7 @@ public class KMClusterResult extends ClusteringResult<KMCluster> {
         super(model, df, assignment);
 
         NArray<Double> c = model.getCentroidsMatrix();
-        NArray<Double> m = df.tensor();
+        NArray<Double> m = df.narray();
         int ccount = c.dim(0);
 
         Var id = VarInt.seq(1, ccount).name("ID");

@@ -30,9 +30,9 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarRange;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.Shape;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.NArray;
+import rapaio.narray.Shape;
+import rapaio.narray.NArrays;
 
 /**
  * Builds a random projection of some give numeric features.
@@ -89,7 +89,7 @@ public class RandomProjection extends AbstractTransform {
     @Override
     public Frame coreApply(Frame df) {
 
-        NArray<Double> X = df.mapVars(varNames).tensor();
+        NArray<Double> X = df.mapVars(varNames).narray();
         NArray<Double> p = X.mm(rp);
 
         Frame non = df.removeVars(VarRange.of(varNames));

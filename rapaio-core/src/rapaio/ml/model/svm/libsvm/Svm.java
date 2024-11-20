@@ -24,8 +24,8 @@ package rapaio.ml.model.svm.libsvm;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.TArrays;
 

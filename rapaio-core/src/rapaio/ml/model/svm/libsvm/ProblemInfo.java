@@ -30,7 +30,7 @@ import java.util.Random;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.mapping.ArrayMapping;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.model.svm.OneClassSvm;
 import rapaio.ml.model.svm.SvmClassifier;

@@ -44,8 +44,8 @@ import rapaio.data.VarInt;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
 import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.common.distance.MinkowskiDistance;
 import rapaio.ml.eval.RandIndex;
@@ -118,7 +118,7 @@ public class KMedoidsTest {
 
     @Test
     void testErrorWithinCluster() {
-        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(10)).tensor();
+        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(10)).narray();
 
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
@@ -128,7 +128,7 @@ public class KMedoidsTest {
 
     @Test
     void computeAssignmentTest() {
-        NArray<Double> x = SolidFrame.byVars(VarDouble.from(100, () -> Normal.std().sampleNext(random))).tensor();
+        NArray<Double> x = SolidFrame.byVars(VarDouble.from(100, () -> Normal.std().sampleNext(random))).narray();
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
 
@@ -146,7 +146,7 @@ public class KMedoidsTest {
 
     @Test
     void computeErrorTest() {
-        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(10)).tensor();
+        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(10)).narray();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
@@ -159,7 +159,7 @@ public class KMedoidsTest {
 
     @Test
     void updateNewClosestTest() {
-        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(21)).tensor();
+        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(21)).narray();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
@@ -202,7 +202,7 @@ public class KMedoidsTest {
 
     @Test
     void updateAllClosestTest() {
-        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(21)).tensor();
+        NArray<Double> x = SolidFrame.byVars(VarDouble.seq(21)).narray();
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 

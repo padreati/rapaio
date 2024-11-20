@@ -24,21 +24,16 @@ package rapaio.nn.layer;
 import java.util.Arrays;
 import java.util.List;
 
-import rapaio.math.narray.NArrayManager;
-import rapaio.math.narray.NArrays;
 import rapaio.nn.Net;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class Sequential extends AbstractNet {
 
     private final Net[] nets;
 
-    public Sequential(Net... nets) {
-        this(NArrays.ofDouble(), nets);
-    }
-
-    public Sequential(NArrayManager.OfType<?> tmt, Net... nets) {
-        super(tmt);
+    public Sequential(TensorManager tm, Net... nets) {
+        super(tm);
         this.nets = nets;
     }
 

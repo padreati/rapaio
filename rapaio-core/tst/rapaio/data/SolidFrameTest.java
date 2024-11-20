@@ -32,9 +32,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArrays;
+import rapaio.narray.Shape;
+import rapaio.narray.NArray;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

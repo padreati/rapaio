@@ -23,13 +23,18 @@ package rapaio.nn.loss;
 
 import rapaio.core.param.Param;
 import rapaio.core.param.ValueParam;
-import rapaio.nn.Autograd;
+import rapaio.narray.NArrays;
+import rapaio.nn.Loss;
 import rapaio.nn.Tensor;
-import rapaio.math.narray.NArrays;
 
 public class NegativeLogLikelihoodLoss extends AbstractLoss<NegativeLogLikelihoodLoss> {
 
     public final Param<Reduce, NegativeLogLikelihoodLoss> reduce = new ValueParam<>(this, Reduce.MEAN, "reduce operation");
+
+    @Override
+    public Loss newInstance() {
+        return new NegativeLogLikelihoodLoss();
+    }
 
     @Override
     public void forward(Tensor pred, Tensor y) {
@@ -40,7 +45,7 @@ public class NegativeLogLikelihoodLoss extends AbstractLoss<NegativeLogLikelihoo
         batch = y.value().dim(0);
         last = pred.log().neg().mul(y).sum();
         if (reduce.get().equals(Reduce.MEAN)) {
-            last = last.div(Autograd.var(NArrays.ofType(last.dtype()).scalar(pred.value().size())));
+            last = last.div(last.tm().var(NArrays.ofType(last.dtype()).scalar(pred.value().size())));
         }
         last.setGrad(NArrays.ofType(pred.dtype()).scalar(1));
     }

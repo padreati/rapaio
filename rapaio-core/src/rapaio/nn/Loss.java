@@ -29,6 +29,8 @@ public interface Loss {
         SUM
     }
 
+    Loss newInstance();
+
     void forward(Tensor pred, Tensor y);
 
     void backward();

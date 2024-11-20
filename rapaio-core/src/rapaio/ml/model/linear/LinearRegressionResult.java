@@ -32,9 +32,9 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.transform.AddIntercept;
 import rapaio.math.MathTools;
-import rapaio.math.narray.NArray;
-import rapaio.math.narray.NArrays;
-import rapaio.math.narray.Shape;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
+import rapaio.narray.Shape;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 import rapaio.printer.Format;
@@ -112,7 +112,7 @@ public class LinearRegressionResult extends RegressionResult {
                         features = df.bindVars(VarDouble.fill(df.rowCount(), 1).name(AddIntercept.INTERCEPT)).copy();
                     }
                 }
-                NArray<Double> X = features.mapVars(model.inputNames()).tensor();
+                NArray<Double> X = features.mapVars(model.inputNames()).narray();
                 NArray<Double> m_beta_hat = X.t().mm(X).qr().inv();
 
                 for (int j = 0; j < model.inputNames().length; j++) {

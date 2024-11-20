@@ -21,7 +21,7 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.math.narray.NArray;
+import rapaio.narray.NArray;
 
 /**
  * Solver for nu-svm classification and regression.
