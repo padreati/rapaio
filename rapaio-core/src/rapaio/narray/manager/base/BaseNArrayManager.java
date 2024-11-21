@@ -23,7 +23,6 @@ package rapaio.narray.manager.base;
 
 import java.util.Random;
 
-import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.narray.DType;
 import rapaio.narray.NArray;
@@ -37,103 +36,36 @@ import rapaio.narray.layout.StrideLayout;
 public class BaseNArrayManager extends NArrayManager {
 
     public BaseNArrayManager(int cpuThreads) {
-        super(cpuThreads,
-                new BaseArrayOfByte(),
-                new BaseArrayOfInt(),
-                new BaseArrayOfFloat(),
-                new BaseArrayOfDouble(),
-                StorageManager.array());
+        super(cpuThreads, StorageManager.array());
     }
 
-    protected static class BaseArrayOfDouble extends NArrayManager.OfType<Double> {
-
-        public BaseArrayOfDouble() {
-            super(DType.DOUBLE);
-        }
-
-        @Override
-        public final NArray<Double> random(Shape shape, Random random, Order order) {
-            Normal normal = Normal.std();
-            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> normal.sampleNext(random));
-        }
-
-        @Override
-        public NArray<Double> random(Shape shape, Distribution dist, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> dist.sampleNext(random));
-        }
-
-        @Override
-        public NArray<Double> stride(StrideLayout layout, Storage<Double> storage) {
-            return new BaseDoubleNArrayStride(parent, layout, storage);
-        }
+    @Override
+    @SuppressWarnings("unchecked")
+    public <N extends Number> NArray<N> stride(DType<N> dt, StrideLayout layout, Storage<N> storage) {
+        return (NArray<N>) switch (dt.id()) {
+            case DOUBLE -> new BaseDoubleNArrayStride(this, layout, (Storage<Double>) storage);
+            case FLOAT -> new BaseFloatNArrayStride(this, layout, (Storage<Float>) storage);
+            case INTEGER -> new BaseIntNArrayStride(this, layout, (Storage<Integer>) storage);
+            case BYTE -> new BaseByteNArrayStride(this, layout, (Storage<Byte>) storage);
+        };
     }
 
-    protected static class BaseArrayOfFloat extends NArrayManager.OfType<Float> {
-
-        public BaseArrayOfFloat() {
-            super(DType.FLOAT);
+    @Override
+    public <N extends Number> NArray<N> random(DType<N> dt, Shape shape, Random random, Order order) {
+        switch (dt.id()) {
+            case DOUBLE, FLOAT -> {
+                Normal normal = Normal.std();
+                return zeros(dt, shape, Order.autoFC(order)).apply_(order, (_, _) -> dt.cast(normal.sampleNext(random)));
+            }
+            case INTEGER -> {
+                return zeros(dt, shape, Order.autoFC(order)).apply_(order, (_, _) -> dt.cast(random.nextInt()));
+            }
+            case BYTE -> {
+                byte[] buff = new byte[shape.size()];
+                random.nextBytes(buff);
+                return zeros(dt, shape, Order.autoFC(order)).apply_(order, (i, _) -> dt.cast(buff[i]));
+            }
         }
-
-        @Override
-        public final NArray<Float> random(Shape shape, Random random, Order order) {
-            Normal normal = Normal.std();
-            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> (float) normal.sampleNext(random));
-        }
-
-        @Override
-        public NArray<Float> random(Shape shape, Distribution dist, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> (float) dist.sampleNext(random));
-        }
-
-        @Override
-        public NArray<Float> stride(StrideLayout layout, Storage<Float> storage) {
-            return new BaseFloatNArrayStride(parent, layout, storage);
-        }
-    }
-
-    protected static class BaseArrayOfInt extends NArrayManager.OfType<Integer> {
-
-        public BaseArrayOfInt() {
-            super(DType.INTEGER);
-        }
-
-        @Override
-        public final NArray<Integer> random(Shape shape, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> random.nextInt());
-        }
-
-        @Override
-        public NArray<Integer> random(Shape shape, Distribution dist, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> (int) dist.sampleNext(random));
-        }
-
-        @Override
-        public NArray<Integer> stride(StrideLayout layout, Storage<Integer> storage) {
-            return new BaseIntNArrayStride(parent, layout, storage);
-        }
-    }
-
-    protected static class BaseArrayOfByte extends NArrayManager.OfType<Byte> {
-
-        public BaseArrayOfByte() {
-            super(DType.BYTE);
-        }
-
-        @Override
-        public final NArray<Byte> random(Shape shape, Random random, Order order) {
-            byte[] buff = new byte[shape.size()];
-            random.nextBytes(buff);
-            return zeros(shape, Order.autoFC(order)).apply_(order, (i, _) -> buff[i]);
-        }
-
-        @Override
-        public NArray<Byte> random(Shape shape, Distribution dist, Random random, Order order) {
-            return zeros(shape, Order.autoFC(order)).apply_(order, (_, _) -> (byte) dist.sampleNext(random));
-        }
-
-        @Override
-        public NArray<Byte> stride(StrideLayout layout, Storage<Byte> storage) {
-            return new BaseByteNArrayStride(parent, layout, storage);
-        }
+        return null;
     }
 }

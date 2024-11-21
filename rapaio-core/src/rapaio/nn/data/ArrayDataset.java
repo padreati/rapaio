@@ -87,6 +87,10 @@ public class ArrayDataset {
         };
     }
 
+    public Iterator<int[]> batchIndexIterator(int batchSize) {
+        return new BatchIndexIterator(batchSize, true, false, random, arrays);
+    }
+
     public Iterator<int[]> batchIndexIterator(int batchSize, boolean shuffle, boolean skipLast) {
         return new BatchIndexIterator(batchSize, shuffle, skipLast, random, arrays);
     }
@@ -95,6 +99,7 @@ public class ArrayDataset {
 
         private final int[] index;
         private final int batchSize;
+        private int[] batchIndices;
 
         int len;
         int pos = 0;
@@ -105,7 +110,7 @@ public class ArrayDataset {
                 IntArrays.shuffle(this.index, random);
             }
             this.batchSize = batchSize;
-            this.len = Math.ceilDiv(index.length, batchSize);
+            this.len = Math.floorDiv(index.length, batchSize);
             if (!skipLast && index.length % batchSize != 0) {
                 this.len++;
             }
@@ -113,12 +118,12 @@ public class ArrayDataset {
 
         @Override
         public boolean hasNext() {
-            return pos*batchSize < index.length;
+            return pos < len;
         }
 
         @Override
         public int[] next() {
-            int[] batchIndices = Arrays.copyOfRange(index, pos * batchSize, Math.min((pos + 1) * batchSize, index.length));
+            this.batchIndices = Arrays.copyOfRange(index, pos * batchSize, Math.min((pos + 1) * batchSize, index.length));
             pos++;
             return batchIndices;
         }

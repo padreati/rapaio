@@ -24,6 +24,7 @@ package rapaio.narray.matrix;
 import java.io.Serial;
 import java.io.Serializable;
 
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
 import rapaio.narray.Order;
 import rapaio.narray.Shape;
@@ -57,7 +58,8 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
     // Array for internal storage of eigenvectors.
     private final NArray<N> vectors;
 
-    private final NArrayManager.OfType<N> tmt;
+    private final DType<N> dt;
+    private final NArrayManager tm;
 
     /**
      * Check for symmetry, then construct the eigenvalue decomposition
@@ -72,7 +74,8 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
         if (a.dim(0) != a.dim(1)) {
             throw new IllegalArgumentException("Only square matrices can have eigen decomposition.");
         }
-        tmt = a.manager().ofType(a.dtype());
+        dt = a.dtype();
+        tm = a.manager();
         n = a.dim(1);
         real = new double[n];
         imag = new double[n];
@@ -82,7 +85,7 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
             tridiagonalize();
             diagonalize();
         } else {
-            vectors = tmt.zeros(Shape.of(n, n));
+            vectors = tm.zeros(dt, Shape.of(n, n));
             //Array for internal storage of non-symmetric Hessenberg form.
             double[][] nonSymHess = new double[n][n];
 
@@ -948,7 +951,7 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
      * @return real(diag ( D))
      */
     public NArray<N> real() {
-        return tmt.stride(Shape.of(real.length), Order.C, real);
+        return tm.stride(dt, Shape.of(real.length), Order.C, real);
     }
 
     /**
@@ -957,7 +960,7 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
      * @return {@code imag(diag(D))}
      */
     public NArray<N> imag() {
-        return tmt.stride(Shape.of(imag.length), Order.C, imag);
+        return tm.stride(dt, Shape.of(imag.length), Order.C, imag);
     }
 
     public NArray<N> power(double power) {
@@ -974,7 +977,7 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
      * @return D the block diagonal eigenvalue matrix
      */
     public NArray<N> d() {
-        NArray<N> d = tmt.zeros(Shape.of(n, n));
+        NArray<N> d = tm.zeros(dt, Shape.of(n, n));
         for (int i = 0; i < n; i++) {
             d.setDouble(real[i], i, i);
         }

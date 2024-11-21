@@ -31,6 +31,7 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
 import rapaio.narray.NArrayManager;
 import rapaio.narray.Order;
@@ -50,24 +51,24 @@ public class EigenDecompositionTest {
 
     @Test
     void testAll() {
-        testSuite(NArrayManager.base().ofDouble());
+        testSuite(NArrayManager.base(), DType.DOUBLE);
     }
 
-    <N extends Number> void testSuite(NArrayManager.OfType<N> tmt) {
-        testInvalidShape(tmt);
-        testSymmetric(tmt);
-        testNonSymmetric(tmt);
-        testRealImaginary(tmt);
-        testPowerOfMatrix(tmt);
+    <N extends Number> void testSuite(NArrayManager tm, DType<Double> dt) {
+        testInvalidShape(tm, dt);
+        testSymmetric(tm, dt);
+        testNonSymmetric(tm, dt);
+        testRealImaginary(tm, dt);
+        testPowerOfMatrix(tm, dt);
     }
 
-    <N extends Number> void testInvalidShape(NArrayManager.OfType<N> tmt) {
-        var ex = assertThrows(IllegalArgumentException.class, () -> tmt.random(Shape.of(3, 4), random).eig());
+    <N extends Number> void testInvalidShape(NArrayManager tm, DType<N> dt) {
+        var ex = assertThrows(IllegalArgumentException.class, () -> tm.random(dt, Shape.of(3, 4), random).eig());
         assertEquals("Only square matrices can have eigen decomposition.", ex.getMessage());
     }
 
-    <N extends Number> void testSymmetric(NArrayManager.OfType<N> ofType) {
-        NArray<N> x = ofType.random(Shape.of(5, 5), random);
+    <N extends Number> void testSymmetric(NArrayManager tm, DType<N> dt) {
+        NArray<N> x = tm.random(dt, Shape.of(5, 5), random);
         NArray<N> a = x.sub(x.mean1d(0)).t().mm(x.sub(x.mean1d(0)));
         var eig = a.eig();
         NArray<N> v = eig.v();
@@ -77,9 +78,9 @@ public class EigenDecompositionTest {
         assertTrue(a.deepEquals(v.mm(d).mm(vt), 1e-1));
     }
 
-    <N extends Number> void testNonSymmetric(NArrayManager.OfType<N> tmt) {
+    <N extends Number> void testNonSymmetric(NArrayManager tm, DType<N> dt) {
         for (int i = 0; i < TIMES; i++) {
-            NArray<N> a = tmt.random(Shape.of(10, 10), random);
+            NArray<N> a = tm.random(dt, Shape.of(10, 10), random);
 
             EigenDecomposition<N> eig = a.eig();
 
@@ -90,21 +91,21 @@ public class EigenDecompositionTest {
         }
     }
 
-    <N extends Number> void testRealImaginary(NArrayManager.OfType<N> tmt) {
-        NArray<N> m = tmt.stride(Shape.of(2, 2), Order.C, 1, -1,1, 1);
+    <N extends Number> void testRealImaginary(NArrayManager tm, DType<N> dt) {
+        NArray<N> m = tm.stride(dt, Shape.of(2, 2), Order.C, 1, -1,1, 1);
         var eig = m.eig();
         NArray<N> real = eig.real();
         NArray<N> imag = eig.imag();
 
-        assertTrue(tmt.stride(1, 1).deepEquals(real));
-        assertTrue(tmt.stride(-1, 1).deepEquals(imag));
+        assertTrue(tm.stride(dt, 1, 1).deepEquals(real));
+        assertTrue(tm.stride(dt, -1, 1).deepEquals(imag));
 
         // diagonal contains imaginary coefficients also since we have multiple eigen values
-        assertTrue(tmt.stride(Shape.of(2, 2), Order.C, 1, -1, 1, 1).deepEquals(eig.d()));
+        assertTrue(tm.stride(dt, Shape.of(2, 2), Order.C, 1, -1, 1, 1).deepEquals(eig.d()));
     }
 
-    <N extends Number> void testPowerOfMatrix(NArrayManager.OfType<N> tmt) {
-        NArray<N> a = tmt.random(Shape.of(3, 3), random);
+    <N extends Number> void testPowerOfMatrix(NArrayManager tm, DType<N> dt) {
+        NArray<N> a = tm.random(dt, Shape.of(3, 3), random);
         NArray<N> ata = a.t().mm(a);
 
         var eig = ata.eig();

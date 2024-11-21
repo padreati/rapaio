@@ -111,7 +111,7 @@ public class BinarySMOTest {
 
         smo1.fit(df, "class");
 
-        NArray<Double> test = NArrays.ofDouble().stride(Shape.of(3, 2),
+        NArray<Double> test = NArrays.stride(Shape.of(3, 2),
                 1.5, 1.5,
                 1, 1,
                 2, 2
@@ -138,7 +138,7 @@ public class BinarySMOTest {
 
         smo1.fit(df, "class");
 
-        NArray<Double> test = NArrays.ofDouble().stride(Shape.of(5, 2),
+        NArray<Double> test = NArrays.stride(Shape.of(5, 2),
                 1.5, 1.5,
                 1, 1,
                 2, 2,

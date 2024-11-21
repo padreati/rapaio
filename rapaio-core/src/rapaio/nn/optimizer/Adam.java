@@ -34,9 +34,9 @@ import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.narray.NArray;
 import rapaio.narray.NArrayManager;
-import rapaio.narray.NArrays;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class Adam extends ParamSet<Adam> implements Optimizer {
 
@@ -49,13 +49,15 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
     public final Param<Boolean, Adam> maximize = new ValueParam<>(this, false, "maximize the optimization algorithm");
 
 
+    private final TensorManager tm;
     private final List<Tensor> parameters;
     private double t = 1;
     private final ConcurrentHashMap<Tensor, NArray<?>> mts = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Tensor, NArray<?>> vts = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Tensor, NArray<?>> vtmaxs = new ConcurrentHashMap<>();
 
-    public Adam(Collection<Tensor> parameters) {
+    public Adam(TensorManager tm, Collection<Tensor> parameters) {
+        this.tm = tm;
         this.parameters = new ArrayList<>(parameters);
     }
 
@@ -115,7 +117,7 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
         if (mts.containsKey(tensor)) {
             return mts.get(tensor);
         } else {
-            return NArrays.ofType(tensor.value().dtype()).zeros(tensor.value().shape());
+            return tm.zerosArray(tensor.value().shape());
         }
     }
 
@@ -123,7 +125,7 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
         if (vts.containsKey(tensor)) {
             return vts.get(tensor);
         } else {
-            return NArrays.ofType(tensor.value().dtype()).zeros(tensor.value().shape());
+            return tm.zerosArray(tensor.value().shape());
         }
     }
 
@@ -131,7 +133,7 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
         if (vtmaxs.containsKey(tensor)) {
             return vtmaxs.get(tensor);
         } else {
-            return NArrays.ofType(tensor.value().dtype()).zeros(tensor.value().shape());
+            return tm.zerosArray(tensor.value().shape());
         }
     }
 }

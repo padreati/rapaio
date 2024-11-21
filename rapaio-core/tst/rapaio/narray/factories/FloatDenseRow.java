@@ -34,16 +34,16 @@ public final class FloatDenseRow extends FloatDense {
 
     @Override
     public NArray<Float> seq(Shape shape) {
-        return ofType.seq(shape, Order.C);
+        return manager.seq(dt, shape, Order.C);
     }
 
     @Override
     public NArray<Float> zeros(Shape shape) {
-        return ofType.zeros(shape, Order.F);
+        return manager.zeros(dt, shape, Order.F);
     }
 
     @Override
     public NArray<Float> random(Shape shape) {
-        return ofType.random(shape, random, Order.C);
+        return manager.random(dt, shape, random, Order.C);
     }
 }

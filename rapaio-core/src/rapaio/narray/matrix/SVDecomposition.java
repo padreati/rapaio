@@ -28,6 +28,7 @@ import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 
 import rapaio.math.MathTools;
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
 import rapaio.narray.Shape;
 import rapaio.narray.NArrayManager;
@@ -84,14 +85,16 @@ public class SVDecomposition<N extends Number> implements java.io.Serializable {
      * V matrix from the resulted decomposition
      */
     private final NArray<N> v;
-    private final NArrayManager.OfType<N> tmt;
+    private final DType<N> dt;
+    private final NArrayManager tm;
 
     public SVDecomposition(NArray<N> Arg, boolean wantu, boolean wantv) {
 
         // Derived from LINPACK code.
         // Initialize.
         NArray<N> A = Arg.copy();
-        this.tmt = Arg.manager().ofType(Arg.dtype());
+        this.dt = Arg.dtype();
+        this.tm = Arg.manager();
         m = Arg.dim(0);
         n = Arg.dim(1);
 
@@ -99,9 +102,9 @@ public class SVDecomposition<N extends Number> implements java.io.Serializable {
             throw new IllegalArgumentException("This SVD implementation only works for m >= n");
         }
 
-        s = tmt.zeros(Shape.of(n));
-        u = tmt.zeros(Shape.of(m, n));
-        v = tmt.zeros(Shape.of(n, n));
+        s = tm.zeros(dt, Shape.of(n));
+        u = tm.zeros(dt, Shape.of(m, n));
+        v = tm.zeros(dt, Shape.of(n, n));
         double[] e = new double[n];
         double[] work = new double[m];
 
@@ -513,7 +516,7 @@ public class SVDecomposition<N extends Number> implements java.io.Serializable {
      * @return S
      */
     public NArray<N> s() {
-        NArray<N> diagonal = tmt.zeros(Shape.of(s.dim(0), s.dim(0)));
+        NArray<N> diagonal = tm.zeros(dt, Shape.of(s.dim(0), s.dim(0)));
         for (int i = 0; i < s.dim(0); i++) {
             diagonal.setDouble(s.getDouble(i), i, i);
         }

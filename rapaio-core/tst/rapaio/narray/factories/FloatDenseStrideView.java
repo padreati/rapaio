@@ -59,7 +59,7 @@ public final class FloatDenseStrideView extends FloatDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return engine.ofFloat().stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(len));
+        return manager.stride(dt, StrideLayout.of(shape, offset, strides), manager.storageManager().zeros(dt, len));
     }
 
     @Override

@@ -184,8 +184,8 @@ public final class NArrayOp {
         return SQRT;
     }
 
-    public static <N extends Number> UnaryOpPow<N> unaryPow(double pow) {
-        return new UnaryOpPow<>(pow);
+    public static UnaryOpPow unaryPow(double pow) {
+        return new UnaryOpPow(pow);
     }
 
     public static <N extends Number> UnaryOpClamp<N> unaryClamp(DType<N> dtype, N min, N max) {

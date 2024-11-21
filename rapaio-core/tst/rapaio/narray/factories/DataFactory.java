@@ -30,24 +30,22 @@ import rapaio.narray.Shape;
 
 public abstract class DataFactory<N extends Number> {
 
-    final NArrayManager engine;
-    final NArrayManager.OfType<N> ofType;
-    final DType<N> dType;
+    final DType<N> dt;
+    final NArrayManager manager;
     final Random random = new Random(7654);
 
 
-    public DataFactory(NArrayManager arrayManager, NArrayManager.OfType<N> ofType, DType<N> dType) {
-        this.engine = arrayManager;
-        this.ofType = ofType;
-        this.dType = dType;
+    public DataFactory(NArrayManager manager, DType<N> dt) {
+        this.manager = manager;
+        this.dt = dt;
     }
 
     public NArrayManager engine() {
-        return engine;
+        return manager;
     }
 
-    public DType<N> dType() {
-        return dType;
+    public DType<N> dt() {
+        return dt;
     }
 
     public abstract N value(double x);
@@ -57,7 +55,7 @@ public abstract class DataFactory<N extends Number> {
     public abstract N sum(N x, N y);
 
     public NArray<N> scalar(N value) {
-        return ofType.scalar(value);
+        return manager.scalar(dt, value);
     }
 
     public abstract NArray<N> seq(Shape shape);

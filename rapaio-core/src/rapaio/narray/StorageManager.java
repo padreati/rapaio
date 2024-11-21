@@ -29,22 +29,18 @@ public abstract class StorageManager {
         return new ArrayStorageManager();
     }
 
-    public interface OfType<N extends Number> {
+    public abstract <N extends Number, M extends Number> Storage<N> scalar(DType<N> dt, M value);
 
-        <M extends Number> Storage<N> scalar(M value);
+    public abstract <N extends Number> Storage<N> zeros(DType<N> dt, int len);
 
-        Storage<N> zeros(int len);
+    public abstract <N extends Number> Storage<N> from(DType<N> dt, byte... array);
 
-        Storage<N> from(byte... array);
+    public abstract <N extends Number> Storage<N> from(DType<N> dt, int... array);
 
-        Storage<N> from(int... array);
+    public abstract <N extends Number> Storage<N> from(DType<N> dt, float... array);
 
-        Storage<N> from(float... array);
+    public abstract <N extends Number> Storage<N> from(DType<N> dt, double... array);
 
-        Storage<N> from(double... array);
+    public abstract<N extends Number>  Storage<N> from(DType<N> dt, Storage<?> source);
 
-        Storage<N> from(Storage<?> source);
-    }
-
-    public abstract <M extends Number> OfType<M> ofType(DType<M> dType);
 }

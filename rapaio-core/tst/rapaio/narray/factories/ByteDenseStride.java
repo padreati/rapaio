@@ -60,7 +60,7 @@ public final class ByteDenseStride extends ByteDense {
         }
 
         int offset = 10;
-        var t = ofType.stride(StrideLayout.of(shape, offset, strides), engine.ofByte().storage().zeros(offset + shape.size()));
+        var t = manager.stride(dt, StrideLayout.of(shape, offset, strides), manager.storageManager().zeros(dt, offset + shape.size()));
 
         t.apply_(Order.C, (i, p) -> (byte) i);
 
@@ -92,7 +92,7 @@ public final class ByteDenseStride extends ByteDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        return ofType.stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(offset + shape.size()));
+        return manager.stride(dt, StrideLayout.of(shape, offset, strides), manager.storageManager().zeros(dt, offset + shape.size()));
     }
 
     @Override
@@ -120,12 +120,12 @@ public final class ByteDenseStride extends ByteDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        var array = engine.ofByte().storage().zeros(offset + shape.size());
+        var array = manager.storageManager().zeros(dt, offset + shape.size());
         byte[] buff = new byte[shape.size()];
         random.nextBytes(buff);
         for (int i = 0; i < shape.size(); i++) {
             array.set(i, buff[i]);
         }
-        return ofType.stride(StrideLayout.of(shape, offset, strides), array);
+        return manager.stride(dt, StrideLayout.of(shape, offset, strides), array);
     }
 }

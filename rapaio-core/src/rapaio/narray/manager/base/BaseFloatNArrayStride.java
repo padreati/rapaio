@@ -59,13 +59,15 @@ import rapaio.util.function.IntIntBiFunction;
 
 public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
 
+    private static final DType<Float> dt = DType.FLOAT;
+
     public BaseFloatNArrayStride(NArrayManager engine, StrideLayout layout, Storage<Float> storage) {
         super(engine, layout, storage);
     }
 
     @Override
     public DType<Float> dtype() {
-        return DType.FLOAT;
+        return dt;
     }
 
     @Override
@@ -87,10 +89,10 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
         }
         StrideLayout newLayout = layout.attemptReshape(askShape, askOrder);
         if (newLayout != null) {
-            return manager.ofFloat().stride(newLayout, storage);
+            return manager.stride(dt, newLayout, storage);
         }
         var it = new StridePointerIterator(layout, askOrder);
-        NArray<Float> copy = manager.ofFloat().zeros(askShape, askOrder);
+        NArray<Float> copy = manager.zeros(dt, askShape, askOrder);
         var copyIt = copy.ptrIterator(askOrder);
         while (it.hasNext()) {
             copy.ptrSetFloat(copyIt.nextInt(), storage.getFloat(it.nextInt()));
@@ -101,7 +103,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
     @Override
     public NArray<Float> flatten(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
-        var result = manager.ofFloat().zeros(Shape.of(layout.size()), askOrder);
+        var result = manager.zeros(dt, Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
         var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
@@ -267,7 +269,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
                     String.format("Operands are not valid for matrix-vector multiplication (m = %s, v = %s).",
                             shape(), other.shape()));
         }
-        var result = manager.ofFloat().zeros(Shape.of(shape().dim(0)), askOrder);
+        var result = manager.zeros(dt, Shape.of(shape().dim(0)), askOrder);
         for (int i = 0; i < shape().dim(0); i++) {
             result.ptrSetFloat(i, takesq(0, i).inner(other));
         }
@@ -305,7 +307,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
     }
 
     private NArray<Float> bmvInternal(NArray<?> other, Order askOrder) {
-        NArray<Float> res = manager.ofFloat().zeros(Shape.of(dim(0), dim(1)), askOrder);
+        NArray<Float> res = manager.zeros(dt, Shape.of(dim(0), dim(1)), askOrder);
         for (int b = 0; b < dim(0); b++) {
             takesq(0, b).mv(other.takesq(0, b)).copyTo(res.takesq(0, b));
         }
@@ -320,7 +322,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
                             shape(), other.shape())
             );
         }
-        var result = manager.ofFloat().zeros(Shape.of(other.dim(1)), askOrder);
+        var result = manager.zeros(dt, Shape.of(other.dim(1)), askOrder);
         for (int i = 0; i < other.dim(1); i++) {
             result.ptrSetFloat(i, this.inner(other.takesq(1, i)));
         }
@@ -358,7 +360,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
     }
 
     private NArray<Float> bvtmInternal(NArray<?> other, Order askOrder) {
-        NArray<Float> res = manager.ofFloat().zeros(Shape.of(dim(0), other.dim(2)), askOrder);
+        NArray<Float> res = manager.zeros(dt, Shape.of(dim(0), other.dim(2)), askOrder);
         for (int b = 0; b < dim(0); b++) {
             takesq(0, b).vtm(other.takesq(0, b)).copyTo(res.takesq(0, b));
         }
@@ -374,7 +376,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
         if (askOrder == Order.S) {
             throw new IllegalArgumentException("Illegal askOrder value, must be Order.C or Order.F");
         }
-        var ret = manager.ofFloat().zeros(Shape.of(shape().dim(0), other.shape().dim(1)), askOrder);
+        var ret = manager.zeros(dt, Shape.of(shape().dim(0), other.shape().dim(1)), askOrder);
         return mmInternalParallel(other, ret);
     }
 
@@ -492,7 +494,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
     }
 
     private NArray<Float> bmmInternal(NArray<?> other, Order askOrder) {
-        NArray<Float> res = manager.ofFloat().zeros(Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
+        NArray<Float> res = manager.zeros(dt, Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
         for (int b = 0; b < dim(0); b++) {
             ((BaseFloatNArrayStride) takesq(0, b)).mmInternal(other.takesq(0, b), res.takesq(0, b));
         }
@@ -521,7 +523,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
         }
         if (isVector()) {
             int n = dim(0) + Math.abs(diagonal);
-            NArray<Float> m = manager.ofFloat().zeros(Shape.of(n, n));
+            NArray<Float> m = manager.zeros(dt, Shape.of(n, n));
             for (int i = 0; i < dim(0); i++) {
                 m.setFloat(getFloat(i), i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
             }
@@ -537,7 +539,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
             for (int i = 0; i < len; i++) {
                 diag[i] = getFloat(i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
             }
-            return manager().ofFloat().stride(Shape.of(len), diag);
+            return manager.stride(dt, Shape.of(len), Order.defaultOrder(), diag);
         }
         throw new OperationNotAvailableException("This operation is available for tensors with shape " + shape() + ".");
     }
@@ -550,13 +552,13 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
         if (pow < 0) {
             throw new IllegalArgumentException(String.format("Norm power p=%s must be greater or equal with 0.", Format.floatFlex(pow)));
         }
-        if (dtype().castValue(0).equals(pow)) {
+        if (dtype().cast(0).equals(pow)) {
             return (float) shape().size();
         }
-        if (dtype().castValue(1).equals(pow)) {
+        if (dtype().cast(1).equals(pow)) {
             return abs().sum();
         }
-        if (dtype().castValue(2).equals(pow)) {
+        if (dtype().cast(2).equals(pow)) {
             return (float) Math.sqrt(sqr().sum());
         }
         float sum = (float) 0;
@@ -605,7 +607,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        NArray<Float> res = manager.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
+        NArray<Float> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
         var resIt = res.ptrIterator(Order.C);
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         int size = it.size();
@@ -620,7 +622,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
                     int ptr = it.nextInt();
                     int resPtr = resIt.next();
                     taskList.add(() -> {
-                        var stride = manager.ofFloat().stride(StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
+                        var stride = manager.stride(dt, StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
                         res.ptrSet(resPtr, op.apply(stride));
                     });
                 }
@@ -810,7 +812,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        NArray<Float> res = manager.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
+        NArray<Float> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
@@ -828,7 +830,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        NArray<Float> res = manager.ofFloat().zeros(Shape.of(newDims), Order.autoFC(order));
+        NArray<Float> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
@@ -843,8 +845,8 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
     public NArray<Float> copy(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
 
-        var copy = manager.ofFloat().storage().zeros(size());
-        var dst = manager.ofFloat().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
+        var copy = manager.storageManager().zeros(dt, size());
+        var dst = manager.stride(dt, StrideLayout.ofDense(shape(), 0, askOrder), copy);
 
         if (layout.storageFastOrder() == askOrder) {
             sameLayoutCopy(copy, askOrder);

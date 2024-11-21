@@ -27,7 +27,7 @@ import rapaio.narray.NArrayManager;
 public abstract class FloatDense extends DataFactory<Float> {
 
     public FloatDense(NArrayManager arrayManager) {
-        super(arrayManager, arrayManager.ofFloat(), DType.FLOAT);
+        super(arrayManager, DType.FLOAT);
     }
 
     @Override

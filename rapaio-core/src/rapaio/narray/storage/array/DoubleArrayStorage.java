@@ -29,6 +29,27 @@ public final class DoubleArrayStorage extends DoubleStorage {
 
     private final double[] array;
 
+    public DoubleArrayStorage(byte[] array) {
+        this.array = new double[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = array[i];
+        }
+    }
+
+    public DoubleArrayStorage(int[] array) {
+        this.array = new double[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = array[i];
+        }
+    }
+
+    public DoubleArrayStorage(float[] array) {
+        this.array = new double[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = array[i];
+        }
+    }
+
     public DoubleArrayStorage(double[] array) {
         this.array = array;
     }

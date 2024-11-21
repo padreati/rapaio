@@ -27,7 +27,7 @@ import rapaio.narray.NArrayManager;
 public abstract class IntegerDense extends DataFactory<Integer> {
 
     public IntegerDense(NArrayManager arrayManager) {
-        super(arrayManager, arrayManager.ofInt(), DType.INTEGER);
+        super(arrayManager, DType.INTEGER);
     }
 
     @Override

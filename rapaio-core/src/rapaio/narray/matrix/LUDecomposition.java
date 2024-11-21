@@ -27,6 +27,7 @@ import static java.lang.StrictMath.min;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
 import rapaio.narray.NArrayManager;
 import rapaio.narray.Shape;
@@ -56,7 +57,8 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
         GAUSSIAN_ELIMINATION
     }
 
-    private final NArrayManager.OfType<N> tmt;
+    private final DType<N> dt;
+    private final NArrayManager tm;
     protected final NArray<N> ref;
     protected final Method method;
 
@@ -71,7 +73,8 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
         if (ref.dim(0) < ref.dim(1)) {
             throw new IllegalArgumentException("For LU decomposition, number of rows must be greater or equal with number of columns.");
         }
-        this.tmt = ref.manager().ofType(ref.dtype());
+        this.dt = ref.dtype();
+        this.tm = ref.manager();
         this.ref = ref;
         this.method = method;
         switch (method) {
@@ -194,7 +197,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
     }
 
     public NArray<N> l() {
-        NArray<N> x = tmt.zeros(Shape.of(ref.dim(0), ref.dim(1)));
+        NArray<N> x = tm.zeros(dt, Shape.of(ref.dim(0), ref.dim(1)));
         int i = 0;
         for (; i < ref.dim(1); i++) {
             for (int j = 0; j < i; j++) {
@@ -211,7 +214,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
     }
 
     public NArray<N> u() {
-        NArray<N> U = tmt.zeros(Shape.of(ref.dim(1), ref.dim(1)));
+        NArray<N> U = tm.zeros(dt, Shape.of(ref.dim(1), ref.dim(1)));
         for (int i = 0; i < ref.dim(1); i++) {
             for (int j = i; j < ref.dim(1); j++) {
                 U.setDouble(LU.getDouble(i, j), i, j);
@@ -245,7 +248,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
 
         boolean isVector = B.isVector();
 
-        if(isVector) {
+        if (isVector) {
             B = B.stretch(1);
         }
 
@@ -280,7 +283,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
 
 
     public NArray<N> inv() {
-        return solve(tmt.eye(ref.dim(0)));
+        return solve(tm.eye(dt, ref.dim(0)));
     }
 
     @Override

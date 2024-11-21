@@ -28,31 +28,27 @@ import org.junit.jupiter.api.Test;
 
 public class NArrayScalarTest {
 
-    private NArrayManager.OfType<Byte> tmb;
-    private NArrayManager.OfType<Integer> tmi;
-    private NArrayManager.OfType<Double> tmd;
+    private NArrayManager tm;
 
     @BeforeEach
     void beforeEach() {
-        tmb = NArrays.ofByte();
-        tmi = NArrays.ofInt();
-        tmd = NArrays.ofDouble();
+        tm = NArrayManager.base();
     }
 
     @Test
     void binaryScalarTest() {
 
-        NArray<?> v1 = tmd.seq(Shape.of(3)).add(10);
+        NArray<?> v1 = tm.seq(DType.DOUBLE, Shape.of(3)).add(10);
         for (int i = 0; i < 3; i++) {
             assertEquals(10 + i, v1.get(i).doubleValue());
         }
 
-        NArray<?> v2 = tmi.seq(Shape.of(3)).add(10.);
+        NArray<?> v2 = tm.seq(DType.INTEGER, Shape.of(3)).add(10.);
         for (int i = 0; i < 3; i++) {
             assertEquals(10 + i, v2.get(i).intValue());
         }
 
-        NArray<?> v3 = tmb.seq(Shape.of(3)).add(10.);
+        NArray<?> v3 = tm.seq(DType.BYTE, Shape.of(3)).add(10.);
         for (int i = 0; i < 3; i++) {
             assertEquals(10 + i, v3.get(i).byteValue());
         }

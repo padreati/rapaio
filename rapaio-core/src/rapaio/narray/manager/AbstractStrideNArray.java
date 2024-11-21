@@ -268,8 +268,8 @@ public abstract sealed class AbstractStrideNArray<N extends Number> extends NArr
 
     @SuppressWarnings("unchecked")
     @Override
-    public <M extends Number> NArray<M> cast(DType<M> dtype, Order askOrder) {
-        if (dtype.equals(dtype()) && (askOrder.equals(Order.A) ||
+    public <M extends Number> NArray<M> cast(DType<M> dt, Order askOrder) {
+        if (dt.equals(dtype()) && (askOrder.equals(Order.A) ||
                 (layout.isCOrdered() && askOrder.equals(Order.C)) ||
                 (layout.isFOrdered() && askOrder.equals(Order.F)))) {
             return (NArray<M>) this;
@@ -277,14 +277,14 @@ public abstract sealed class AbstractStrideNArray<N extends Number> extends NArr
 
         askOrder = askOrder == Order.A ? Order.defaultOrder() : askOrder;
         askOrder = Order.autoFC(askOrder);
-        var castTensor = manager().ofType(dtype).zeros(shape(), askOrder);
+        var castTensor = manager().zeros(dt, shape(), askOrder);
 
         Order fastOrder = Layout.storageFastTandemOrder(castTensor.layout(), layout);
-        var loopDescriptor = StrideLoopDescriptor.of((StrideLayout) castTensor.layout(), fastOrder, dtype.vectorSpecies());
+        var loopDescriptor = StrideLoopDescriptor.of((StrideLayout) castTensor.layout(), fastOrder, dt.vectorSpecies());
         var iter = ptrIterator(fastOrder);
         for (int p : loopDescriptor.offsets) {
             for (int i = 0; i < loopDescriptor.size; i++) {
-                castTensor.ptrSet(p, dtype.castValue(ptrGet(iter.nextInt())));
+                castTensor.ptrSet(p, dt.cast(ptrGet(iter.nextInt())));
                 p += loopDescriptor.step;
             }
         }

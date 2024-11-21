@@ -34,16 +34,16 @@ public final class DoubleDenseCol extends DoubleDense {
 
     @Override
     public NArray<Double> seq(Shape shape) {
-        return ofType.seq(shape, Order.F);
+        return manager.seq(dt, shape, Order.F);
     }
 
     @Override
     public NArray<Double> zeros(Shape shape) {
-        return ofType.zeros(shape, Order.F);
+        return manager.zeros(dt, shape, Order.F);
     }
 
     @Override
     public NArray<Double> random(Shape shape) {
-        return ofType.random(shape, random, Order.F);
+        return manager.random(dt, shape, random, Order.F);
     }
 }

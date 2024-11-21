@@ -28,12 +28,12 @@ import rapaio.nn.optimizer.SGD;
 
 public interface Optimizer {
 
-    static SGD SGD(Collection<Tensor> params) {
-        return new SGD(params);
+    static SGD SGD(TensorManager tm, Collection<Tensor> params) {
+        return new SGD(tm, params);
     }
 
-    static Adam Adam(Collection<Tensor> params) {
-        return new Adam(params);
+    static Adam Adam(TensorManager tm, Collection<Tensor> params) {
+        return new Adam(tm, params);
     }
 
     void zeroGrad();

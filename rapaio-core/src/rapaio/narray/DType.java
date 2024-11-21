@@ -70,15 +70,15 @@ public abstract class DType<N extends Number> {
         return byteCount;
     }
 
-    public abstract <M extends Number> N castValue(M value);
+    public abstract <M extends Number> N cast(M value);
 
-    public abstract N castValue(byte value);
+    public abstract N cast(byte value);
 
-    public abstract N castValue(int value);
+    public abstract N cast(int value);
 
-    public abstract N castValue(float value);
+    public abstract N cast(float value);
 
-    public abstract N castValue(double value);
+    public abstract N cast(double value);
 
     public abstract boolean isNaN(N value);
 
@@ -113,27 +113,27 @@ public abstract class DType<N extends Number> {
         }
 
         @Override
-        public <M extends Number> Byte castValue(M value) {
+        public <M extends Number> Byte cast(M value) {
             return value.byteValue();
         }
 
         @Override
-        public Byte castValue(byte value) {
+        public Byte cast(byte value) {
             return value;
         }
 
         @Override
-        public Byte castValue(int value) {
+        public Byte cast(int value) {
             return (byte) value;
         }
 
         @Override
-        public Byte castValue(float value) {
+        public Byte cast(float value) {
             return (byte) value;
         }
 
         @Override
-        public Byte castValue(double value) {
+        public Byte cast(double value) {
             return (byte) value;
         }
 
@@ -167,27 +167,27 @@ public abstract class DType<N extends Number> {
         }
 
         @Override
-        public <M extends Number> Integer castValue(M value) {
+        public <M extends Number> Integer cast(M value) {
             return value.intValue();
         }
 
         @Override
-        public Integer castValue(byte value) {
+        public Integer cast(byte value) {
             return (int) value;
         }
 
         @Override
-        public Integer castValue(int value) {
+        public Integer cast(int value) {
             return value;
         }
 
         @Override
-        public Integer castValue(float value) {
+        public Integer cast(float value) {
             return (int) value;
         }
 
         @Override
-        public Integer castValue(double value) {
+        public Integer cast(double value) {
             return (int) value;
         }
 
@@ -221,27 +221,27 @@ public abstract class DType<N extends Number> {
         }
 
         @Override
-        public <M extends Number> Float castValue(M value) {
+        public <M extends Number> Float cast(M value) {
             return value.floatValue();
         }
 
         @Override
-        public Float castValue(byte value) {
+        public Float cast(byte value) {
             return (float) value;
         }
 
         @Override
-        public Float castValue(int value) {
+        public Float cast(int value) {
             return (float) value;
         }
 
         @Override
-        public Float castValue(float value) {
+        public Float cast(float value) {
             return value;
         }
 
         @Override
-        public Float castValue(double value) {
+        public Float cast(double value) {
             return (float) value;
         }
 
@@ -275,27 +275,27 @@ public abstract class DType<N extends Number> {
         }
 
         @Override
-        public <M extends Number> Double castValue(M value) {
+        public <M extends Number> Double cast(M value) {
             return value.doubleValue();
         }
 
         @Override
-        public Double castValue(byte value) {
+        public Double cast(byte value) {
             return (double) value;
         }
 
         @Override
-        public Double castValue(int value) {
+        public Double cast(int value) {
             return (double) value;
         }
 
         @Override
-        public Double castValue(float value) {
+        public Double cast(float value) {
             return (double) value;
         }
 
         @Override
-        public Double castValue(double value) {
+        public Double cast(double value) {
             return value;
         }
 

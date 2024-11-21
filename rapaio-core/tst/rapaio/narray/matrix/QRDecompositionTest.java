@@ -33,9 +33,9 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
 import rapaio.narray.NArrayManager;
-import rapaio.narray.NArrays;
 import rapaio.narray.Shape;
 
 public class QRDecompositionTest {
@@ -52,31 +52,31 @@ public class QRDecompositionTest {
 
     @Test
     void testAll() {
-        testSuite(NArrays.ofDouble());
+        testSuite(NArrayManager.base(), DType.DOUBLE);
     }
 
-    <N extends Number> void testSuite(NArrayManager.OfType<N> tmt) {
-        testBasic(tmt);
-        testHouseholderProperties(tmt);
-        testLMS(tmt);
-        testIncompatible(tmt);
-        testSingular(tmt);
-        testInv(tmt);
+    <N extends Number> void testSuite(NArrayManager tm, DType<N> dt) {
+        testBasic(tm, dt);
+        testHouseholderProperties(tm, dt);
+        testLMS(tm, dt);
+        testIncompatible(tm, dt);
+        testSingular(tm, dt);
+        testInv(tm, dt);
     }
 
-    <N extends Number> void testBasic(NArrayManager.OfType<N> tmt) {
+    <N extends Number> void testBasic(NArrayManager tm, DType<N> dt) {
         for (int round = 0; round < 100; round++) {
             // generate a random matrix
             int off = random.nextInt(n);
 
-            NArray<N> a = tmt.random(Shape.of(n + off, n), random);
+            NArray<N> a = tm.random(dt, Shape.of(n + off, n), random);
             QRDecomposition<N> qr = a.qr();
 
             NArray<N> q = qr.q();
             NArray<N> r = qr.r();
 
             // test various properties of the decomposition
-            NArray<N> I = tmt.eye(n);
+            NArray<N> I = tm.eye(dt, n);
             assertTrue(I.deepEquals(q.t().mm(q), TOL));
 
             for (int i = 0; i < n; i++) {
@@ -95,15 +95,15 @@ public class QRDecompositionTest {
     /**
      * Test is done using householder reflections described <a href="https://en.wikipedia.org/wiki/Householder_transformation">here</a>.
      */
-    <N extends Number> void testHouseholderProperties(NArrayManager.OfType<N> tmt) {
+    <N extends Number> void testHouseholderProperties(NArrayManager tm, DType<N> dt) {
 
         for (int round = 0; round < 100; round++) {
             // generate a random matrix
-            NArray<N> a = tmt.random(Shape.of(n, n), random);
+            NArray<N> a = tm.random(dt, Shape.of(n, n), random);
             QRDecomposition<N> qr = a.qr();
 
             NArray<N> h = qr.h();
-            NArray<N> p = tmt.eye(10).sub(h.mul(tmt.dtype().castValue(2)).mm(h.t()));
+            NArray<N> p = tm.eye(dt, 10).sub(h.mul(dt.cast(2)).mm(h.t()));
 
             // p is hermitian
             assertTrue(p.deepEquals(p.t(), TOL));
@@ -113,7 +113,7 @@ public class QRDecompositionTest {
     /**
      * Tests least mean squares solutions using qr decomposition
      */
-    <N extends Number> void testLMS(NArrayManager.OfType<N> tmt) {
+    <N extends Number> void testLMS(NArrayManager tm, DType<N> dt) {
 
         Normal normal = Normal.std();
         Uniform unif = Uniform.of(0, 100);
@@ -125,8 +125,8 @@ public class QRDecompositionTest {
             // and take some samples
 
             int rows = 8_000;
-            NArray<N> a = tmt.zeros(Shape.of(rows, 3));
-            NArray<N> b = tmt.zeros(Shape.of(rows, 1));
+            NArray<N> a = tm.zeros(dt, Shape.of(rows, 3));
+            NArray<N> b = tm.zeros(dt, Shape.of(rows, 1));
 
             for (int i = 0; i < rows; i++) {
                 double x1 = unif.sampleNext(random);
@@ -153,22 +153,22 @@ public class QRDecompositionTest {
         }
     }
 
-    <N extends Number> void testIncompatible(NArrayManager.OfType<N> tmt) {
+    <N extends Number> void testIncompatible(NArrayManager tm, DType<N> dt) {
         assertThrows(IllegalArgumentException.class,
-                () -> tmt.random(Shape.of(10, 10), random).qr().solve(tmt.random(Shape.of(12, 1), random)));
+                () -> tm.random(dt, Shape.of(10, 10), random).qr().solve(tm.random(dt, Shape.of(12, 1), random)));
     }
 
-    <N extends Number> void testSingular(NArrayManager.OfType<N> ofType) {
-        assertThrows(RuntimeException.class, () -> ofType.full(Shape.of(10, 10), ofType.dtype().castValue(2))
-                .qr().solve(ofType.random(Shape.of(10, 1), random)));
+    <N extends Number> void testSingular(NArrayManager tm, DType<N> dt) {
+        assertThrows(RuntimeException.class, () -> tm.full(dt, Shape.of(10, 10), dt.cast(2))
+                .qr().solve(tm.random(dt, Shape.of(10, 1), random)));
     }
 
-    <N extends Number> void testInv(NArrayManager.OfType<N> tmt) {
-        NArray<N> m = tmt.random(Shape.of(4, 4), random);
+    <N extends Number> void testInv(NArrayManager tm, DType<N> dt) {
+        NArray<N> m = tm.random(dt, Shape.of(4, 4), random);
         NArray<N> inv = m.qr().inv();
-        assertTrue(inv.deepEquals(m.qr().solve(tmt.eye(4))));
+        assertTrue(inv.deepEquals(m.qr().solve(tm.eye(dt, 4))));
 
-        NArray<N> v = tmt.stride(1, 2, 3, 4);
+        NArray<N> v = tm.stride(dt, 1, 2, 3, 4);
         NArray<N> x = m.qr().solve(v);
 
         assertTrue(v.deepEquals(m.mv(x), TOL));

@@ -33,88 +33,67 @@ import java.util.Random;
  */
 public final class NArrays {
 
-
+    private static final DType<Double> dt = DType.DOUBLE;
     private static final NArrayManager tm = NArrayManager.base();
-    private static final NArrayManager.OfType<Double> tmd = tm.ofDouble();
-
-    public static <N extends Number> NArrayManager.OfType<N> ofType(DType<N> dtype) {
-        return tm.ofType(dtype);
-    }
-
-    public static NArrayManager.OfType<Double> ofDouble() {
-        return tm.ofDouble();
-    }
-
-    public static NArrayManager.OfType<Float> ofFloat() {
-        return tm.ofFloat();
-    }
-
-    public static NArrayManager.OfType<Integer> ofInt() {
-        return tm.ofInt();
-    }
-
-    public static NArrayManager.OfType<Byte> ofByte() {
-        return tm.ofByte();
-    }
 
     public static NArray<Double> scalar(Double value) {
-        return tmd.scalar(value);
+        return tm.scalar(dt, value);
     }
 
     public static NArray<Double> zeros(Shape shape) {
-        return tmd.zeros(shape, Order.defaultOrder());
+        return tm.zeros(dt, shape, Order.defaultOrder());
     }
 
     public static NArray<Double> full(Shape shape, Double value) {
-        return tmd.full(shape, value);
+        return tm.full(dt, shape, value);
     }
 
     public static NArray<Double> full(Shape shape, Double value, Order order) {
-        return tmd.full(shape, value, order);
+        return tm.full(dt, shape, value, order);
     }
 
     public static NArray<Double> zeros(Shape shape, Order order) {
-        return tmd.zeros(shape, order);
+        return tm.zeros(dt, shape, order);
     }
 
     public static NArray<Double> eye(int n) {
-        return tmd.eye(n);
+        return tm.eye(dt, n);
     }
 
     public static NArray<Double> eye(int n, Order order) {
-        return tmd.eye(n, order);
+        return tm.eye(dt, n, order);
     }
 
     public static NArray<Double> seq(Shape shape) {
-        return tmd.seq(shape);
+        return tm.seq(dt, shape);
     }
 
     public static NArray<Double> seq(Shape shape, Order order) {
-        return tmd.seq(shape, order);
+        return tm.seq(dt, shape, order);
     }
 
     public static NArray<Double> random(Shape shape, Random random) {
-        return tmd.random(shape, random);
+        return tm.random(dt, shape, random);
     }
 
     public static NArray<Double> random(Shape shape, Random random, Order order) {
-        return tmd.random(shape, random, order);
+        return tm.random(dt, shape, random, order);
     }
 
     public static NArray<Double> stride(double... array) {
-        return tmd.stride(array);
+        return tm.stride(dt, Shape.of(array.length), Order.defaultOrder(), array);
     }
 
     public static NArray<Double> stride(Shape shape, double... array) {
-        return tmd.stride(shape, array);
+        return tm.stride(dt, shape, Order.defaultOrder(), array);
     }
 
     public static NArray<Double> stride(Shape shape, Order order, double... array) {
-        return tmd.stride(shape, order, array);
+        return tm.stride(dt, shape, order, array);
     }
 
     public static NArray<Double> stride(Shape shape, Order order, Storage<Double> storage) {
-        return tmd.stride(shape, order, storage);
+        return tm.stride(dt, shape, order, storage);
     }
 
     public static <N extends Number> NArray<N> stack(int axis, Collection<? extends NArray<N>> nArrays) {

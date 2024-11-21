@@ -33,6 +33,27 @@ public final class ByteArrayStorage extends ByteStorage {
         this.array = array;
     }
 
+    public ByteArrayStorage(int[] array) {
+        this.array = new byte[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = (byte) array[i];
+        }
+    }
+
+    public ByteArrayStorage(float[] array) {
+        this.array = new byte[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = (byte) array[i];
+        }
+    }
+
+    public ByteArrayStorage(double[] array) {
+        this.array = new byte[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = (byte) array[i];
+        }
+    }
+
     @Override
     public int size() {
         return array.length;

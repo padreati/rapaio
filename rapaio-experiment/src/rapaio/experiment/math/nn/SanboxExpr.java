@@ -32,13 +32,14 @@ public class SanboxExpr {
 
     public static void main() {
 
-        TensorManager tm = TensorManager.ofFloat();
-        Tensor x = tm.var(tm.seqArray(Shape.of(167)).mul_(0.12).sub_(10)).requiresGrad(true).name("x");
-        Net elu = new ELU(tm);
-        Tensor el = elu.forward11(x);
-        Tensor exp = el.exp();
-        Tensor sum = exp.sum();
-        sum.setGrad(tm.scalarArray(1));
-        Autograd.backward(sum).printTensors();
+        try (TensorManager tm = TensorManager.ofFloat()) {
+            Tensor x = tm.var(tm.seqArray(Shape.of(167)).mul_(0.12).sub_(10)).requiresGrad(true).name("x");
+            Net elu = new ELU(tm);
+            Tensor el = elu.forward11(x);
+            Tensor exp = el.exp();
+            Tensor sum = exp.sum();
+            sum.setGrad(tm.scalarArray(1));
+            Autograd.backward(sum).printTensors();
+        }
     }
 }

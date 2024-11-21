@@ -31,9 +31,9 @@ import rapaio.core.param.Param;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.narray.NArray;
-import rapaio.narray.NArrayManager;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class SGD extends ParamSet<SGD> implements Optimizer {
 
@@ -45,11 +45,13 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
     public final Param<Boolean, SGD> maximize = new ValueParam<>(this, false, "maximize");
 
 
+    private final TensorManager tm;
     private final Collection<Tensor> params;
 
     private final HashMap<Tensor, NArray<?>> mus = new HashMap<>();
 
-    public SGD(Collection<Tensor> params) {
+    public SGD(TensorManager tm, Collection<Tensor> params) {
+        this.tm = tm;
         this.params = params;
     }
 
@@ -61,7 +63,7 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
     @Override
     public void step() {
         CountDownLatch latch = new CountDownLatch(params.size());
-        try (ExecutorService executor = Executors.newFixedThreadPool(NArrayManager.base().cpuThreads())) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(tm.outerThreads())) {
             for (var parameter : params) {
                 executor.submit(() -> {
                     stepParam(parameter);

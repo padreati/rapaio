@@ -27,7 +27,7 @@ import rapaio.narray.NArrayManager;
 public abstract class DoubleDense extends DataFactory<Double> {
 
     public DoubleDense(NArrayManager arrayManager) {
-        super(arrayManager, arrayManager.ofDouble(), DType.DOUBLE);
+        super(arrayManager, DType.DOUBLE);
     }
 
     @Override

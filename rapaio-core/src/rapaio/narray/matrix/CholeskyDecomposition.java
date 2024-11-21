@@ -23,6 +23,7 @@ package rapaio.narray.matrix;
 
 import java.io.Serializable;
 
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
 import rapaio.narray.Order;
 import rapaio.narray.Shape;
@@ -38,7 +39,8 @@ import rapaio.narray.NArrayManager;
  */
 public class CholeskyDecomposition<N extends Number> implements Serializable {
 
-    protected final NArrayManager.OfType<N> tmt;
+    protected final DType<N> dt;
+    protected final NArrayManager tm;
     protected final NArray<N> ref;
     protected final boolean rightFlag;
     protected boolean spd = false;
@@ -61,7 +63,8 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
         if(ref.dtype().isInteger()) {
             throw new IllegalArgumentException("Cannot compute decomposition for integer types (dtype: "+ref.dtype().id()+")");
         }
-        this.tmt = ref.manager().ofType(ref.dtype());
+        this.dt = ref.dtype();
+        this.tm = ref.manager();
         this.ref = ref;
         this.rightFlag = rightFlag;
 
@@ -99,7 +102,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
      */
     protected void leftCholesky() {
         int n = ref.dim(0);
-        l = ref.manager().ofType(ref.dtype()).zeros(Shape.of(n, n), Order.C);
+        l = ref.manager().zeros(ref.dtype(), Shape.of(n, n), Order.C);
         spd = (ref.dim(1) == n);
         for (int i = 0; i < n; i++) {
             double d = 0.0;
@@ -129,7 +132,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
      */
     protected void rightCholesky() {
         int n = ref.dim(1);
-        r = tmt.zeros(Shape.of(n, n));
+        r = tm.zeros(dt, Shape.of(n, n));
         spd = (ref.dim(0) == n);
         for (int j = 0; j < n; j++) {
             double d = 0.0;
@@ -182,7 +185,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
         }
 
         // Copy right-hand side.
-        NArray<N> x = tmt.eye(ref.dim(0), Order.C);
+        NArray<N> x = tm.eye(dt, ref.dim(0), Order.C);
         NArray<N> triangle = rightFlag ? r.t() : l;
 
         forwardSubstitution(x, triangle);

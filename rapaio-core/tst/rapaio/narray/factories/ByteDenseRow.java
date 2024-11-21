@@ -34,16 +34,16 @@ public final class ByteDenseRow extends ByteDense {
 
     @Override
     public NArray<Byte> seq(Shape shape) {
-        return ofType.seq(shape, Order.C);
+        return manager.seq(dt, shape, Order.C);
     }
 
     @Override
     public NArray<Byte> zeros(Shape shape) {
-        return ofType.zeros(shape, Order.C);
+        return manager.zeros(dt, shape, Order.C);
     }
 
     @Override
     public NArray<Byte> random(Shape shape) {
-        return ofType.random(shape, random, Order.C);
+        return manager.random(dt, shape, random, Order.C);
     }
 }

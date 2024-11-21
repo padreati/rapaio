@@ -215,7 +215,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
      * <ul>
      *     <li>Order.C</li> indexes are read in C order, last dimension is the fastest dimension
      *     <li>Order.F</li> first dimension is the fastest dimension
-     *     <li>Order.A</li> if data is stored in C format, than follows C order, if data is stored in F format it follows F order, otherwise
+     *     <li>Order.A</li> if data is stored in C format, then follows C order, if data is stored in F format it follows F order, otherwise
      *     it is the default order {@link Order#defaultOrder()}.
      *     <li>Order.S</li> storage order is not allowed
      * </ul>
@@ -987,11 +987,11 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     }
 
     public final NArray<N> clamp(int min, int max) {
-        return unaryOp(NArrayOp.unaryClamp(dtype(), dtype().castValue(min), dtype().castValue(max)));
+        return unaryOp(NArrayOp.unaryClamp(dtype(), dtype().cast(min), dtype().cast(max)));
     }
 
     public final NArray<N> clamp(double min, double max) {
-        return unaryOp(NArrayOp.unaryClamp(dtype(), dtype().castValue(min), dtype().castValue(max)));
+        return unaryOp(NArrayOp.unaryClamp(dtype(), dtype().cast(min), dtype().cast(max)));
     }
 
     public final NArray<N> clamp(Order order, N min, N max) {
@@ -999,11 +999,11 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     }
 
     public final NArray<N> clamp(Order order, int min, int max) {
-        return unaryOp(NArrayOp.unaryClamp(dtype(), dtype().castValue(min), dtype().castValue(max)), order);
+        return unaryOp(NArrayOp.unaryClamp(dtype(), dtype().cast(min), dtype().cast(max)), order);
     }
 
     public final NArray<N> clamp(Order order, double min, double max) {
-        return unaryOp(NArrayOp.unaryClamp(dtype(), dtype().castValue(min), dtype().castValue(max)), order);
+        return unaryOp(NArrayOp.unaryClamp(dtype(), dtype().cast(min), dtype().cast(max)), order);
     }
 
     public final NArray<N> clamp_(N min, N max) {
@@ -1616,11 +1616,11 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     public abstract NArray<N> fma_(N factor, NArray<?> t);
 
     public final NArray<N> fma_(int factor, NArray<?> t) {
-        return fma_(dtype().castValue(factor), t);
+        return fma_(dtype().cast(factor), t);
     }
 
     public final NArray<N> fma_(double factor, NArray<?> t) {
-        return fma_(dtype().castValue(factor), t);
+        return fma_(dtype().cast(factor), t);
     }
 
     //--------- REDUCE OPERATIONS ----------------//
@@ -2237,7 +2237,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     }
 
     public final N norm() {
-        return norm(dtype().castValue(2));
+        return norm(dtype().cast(2));
     }
 
     public abstract N norm(N pow);
@@ -2269,11 +2269,11 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     public abstract NArray<N> normalize_(N p);
 
     public final NArray<N> normalize_(int p) {
-        return normalize_(dtype().castValue(p));
+        return normalize_(dtype().cast(p));
     }
 
     public final NArray<N> normalize_(double p) {
-        return normalize_(dtype().castValue(p));
+        return normalize_(dtype().cast(p));
     }
 
     public final NArray<N> scatter(int ddof) {
@@ -2287,7 +2287,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         if (!dtype().floatingPoint()) {
             throw new OperationNotAvailableException("Available only for floating point NArrays.");
         }
-        return t().mm(this, askOrder).div_(dtype().castValue(dim(0) - ddof));
+        return t().mm(this, askOrder).div_(dtype().cast(dim(0) - ddof));
     }
 
     public final NArray<N> cov(int ddof) {
@@ -2303,7 +2303,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         }
         NArray<N> mean = mean1d(0);
         NArray<N> centered = sub(mean);
-        return centered.t().mm(centered, askOrder).div_(dtype().castValue(dim(0) - ddof));
+        return centered.t().mm(centered, askOrder).div_(dtype().cast(dim(0) - ddof));
     }
 
     public final NArray<N> corr() {
@@ -2319,7 +2319,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         }
         NArray<N> std = stdc1d(0, 0);
         NArray<N> scaled = sub(mean1d(0));
-        return scaled.t().mm(scaled, askOrder).div_(std).div_(std.stretch(1)).div_(dtype().castValue(dim(0)));
+        return scaled.t().mm(scaled, askOrder).div_(std).div_(std.stretch(1)).div_(dtype().cast(dim(0)));
     }
 
 
@@ -2340,7 +2340,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     public abstract N nanMean();
 
     public final N std() {
-        return dtype().castValue(Math.sqrt(var().doubleValue()));
+        return dtype().cast(Math.sqrt(var().doubleValue()));
     }
 
     public final NArray<N> std1d(int axis) {
@@ -2352,7 +2352,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     }
 
     public final N stdc(int ddof) {
-        return dtype().castValue(Math.sqrt(varc(ddof).doubleValue()));
+        return dtype().cast(Math.sqrt(varc(ddof).doubleValue()));
     }
 
     public final NArray<N> stdc1d(int axis, int ddof) {
@@ -2454,7 +2454,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     public final NArray<N> pad(int axis, int before, int after) {
         int[] newDims = Arrays.copyOf(dims(), rank());
         newDims[axis] += before + after;
-        NArray<N> copy = manager().ofType(dtype()).zeros(Shape.of(newDims), Order.defaultOrder());
+        NArray<N> copy = manager().zeros(dtype(), Shape.of(newDims), Order.defaultOrder());
         copyTo(copy.narrow(axis, true, before, before + dim(axis)));
         return copy;
     }

@@ -61,7 +61,7 @@ public final class DoubleDenseStride extends DoubleDense {
         }
 
         int offset = 10;
-        var t = ofType.stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(offset + shape.size()));
+        var t = manager.stride(dt, StrideLayout.of(shape, offset, strides), manager.storageManager().zeros(dt, offset + shape.size()));
 
         t.apply_(Order.C, (i, p) -> (double) i);
 
@@ -93,7 +93,7 @@ public final class DoubleDenseStride extends DoubleDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        return ofType.stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(offset + shape.size()));
+        return manager.stride(dt, StrideLayout.of(shape, offset, strides), manager.storageManager().zeros(dt, offset + shape.size()));
     }
 
     @Override
@@ -121,11 +121,11 @@ public final class DoubleDenseStride extends DoubleDense {
             strides[next] = strides[prev] * shape.dim(prev);
         }
 
-        var array = ofType.storage().zeros(offset + shape.size());
+        var array = manager.storageManager().zeros(dt, offset + shape.size());
         Normal normal = Normal.std();
         for (int i = 0; i < array.size(); i++) {
             array.setDouble(i, normal.sampleNext(random));
         }
-        return ofType.stride(StrideLayout.of(shape, offset, strides), array);
+        return manager.stride(dt, StrideLayout.of(shape, offset, strides), array);
     }
 }

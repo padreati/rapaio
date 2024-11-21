@@ -24,16 +24,16 @@ package rapaio.nn.tensors;
 import java.util.Random;
 
 import rapaio.core.distributions.Bernoulli;
-import rapaio.nn.Tensor;
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
 import rapaio.narray.iterators.PointerIterator;
+import rapaio.nn.Tensor;
 
 public class DropoutOp extends AbstractTensor {
 
     private final Tensor child;
     private final double p;
-    private NArray<Byte> mask;
+    private NArray<?> mask;
     private final Random random;
     private final boolean inplace;
 
@@ -47,7 +47,7 @@ public class DropoutOp extends AbstractTensor {
     }
 
     public void forward() {
-        this.mask = NArrays.ofByte().zeros(child.value().shape());
+        this.mask = tm.zerosArray(DType.BYTE, child.value().shape());
         Bernoulli ber = Bernoulli.of(p);
         PointerIterator ptrIt = mask.ptrIterator();
         while (ptrIt.hasNext()) {

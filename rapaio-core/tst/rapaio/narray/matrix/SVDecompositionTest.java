@@ -31,11 +31,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
 import rapaio.narray.NArrayManager;
-import rapaio.narray.matrix.SVDecomposition;
+import rapaio.narray.Shape;
 
 public class SVDecompositionTest {
 
@@ -51,24 +50,24 @@ public class SVDecompositionTest {
 
     @Test
     void testAll() {
-        testSuite(NArrays.ofDouble());
+        testSuite(NArrayManager.base(), DType.DOUBLE);
     }
 
-    <N extends Number> void testSuite(NArrayManager.OfType<N> tmt) {
-        testBuilder(tmt);
-        testDimension(tmt);
-        testConditionNumber(tmt);
-        testProjectors(tmt);
+    <N extends Number> void testSuite(NArrayManager tm, DType<N> dt) {
+        testBuilder(tm, dt);
+        testDimension(tm, dt);
+        testConditionNumber(tm, dt);
+        testProjectors(tm, dt);
     }
 
-    <N extends Number> void testBuilder(NArrayManager.OfType<N> tmt) {
+    <N extends Number> void testBuilder(NArrayManager tm, DType<N> dt) {
 
         for (int round = 0; round < ROUNDS; round++) {
 
             int n = random.nextInt(5) + 1;
             int m = random.nextInt(5) + n;
 
-            NArray<N> a = tmt.random(Shape.of(m, n), random);
+            NArray<N> a = tm.random(dt, Shape.of(m, n), random);
 
             SVDecomposition<N> svd = a.svd();
 
@@ -89,17 +88,17 @@ public class SVDecompositionTest {
         }
     }
 
-    <N extends Number> void testDimension(NArrayManager.OfType<N> tmt) {
-        var e = assertThrows(IllegalArgumentException.class, () -> tmt.random(Shape.of(10, 50), random).svd());
+    <N extends Number> void testDimension(NArrayManager tm, DType<N> dt) {
+        var e = assertThrows(IllegalArgumentException.class, () -> tm.random(dt, Shape.of(10, 50), random).svd());
         assertEquals("This SVD implementation only works for m >= n", e.getMessage());
     }
 
-    <N extends Number> void testConditionNumber(NArrayManager.OfType<N> tmt) {
+    <N extends Number> void testConditionNumber(NArrayManager tm, DType<N> dt) {
 
         // for random matrices we expect a low condition number
 
         for (int i = 0; i < ROUNDS; i++) {
-            var svd = tmt.random(Shape.of(10, 10), random).svd();
+            var svd = tm.random(dt, Shape.of(10, 10), random).svd();
             double c = svd.conditionNumber();
             assertTrue(Math.log10(c) < 4);
             assertEquals(1 / c, svd.inverseConditionNumber(), 1e-12);
@@ -110,7 +109,7 @@ public class SVDecompositionTest {
         Normal norm = Normal.of(0, 0.000001);
 
         for (int i = 0; i < ROUNDS; i++) {
-            var a = tmt.random(Shape.of(10, 10), random);
+            var a = tm.random(dt, Shape.of(10, 10), random);
 
             // we create the first column as a slightly modified
             // version of the second column, thus we have linearity
@@ -124,17 +123,17 @@ public class SVDecompositionTest {
         }
     }
 
-    <N extends Number> void testProjectors(NArrayManager.OfType<N> tmt) {
+    <N extends Number> void testProjectors(NArrayManager tm, DType<N> dt) {
         for (int i = 0; i < ROUNDS; i++) {
-            var v = tmt.random(Shape.of(3), random);
+            var v = tm.random(dt, Shape.of(3), random);
             var p = v.outer(v);
             assertEquals(1, p.svd().rank());
         }
 
         for (int i = 0; i < ROUNDS; i++) {
-            var v = tmt.random(Shape.of(3), random);
+            var v = tm.random(dt, Shape.of(3), random);
             var p = v.outer(v);
-            v = tmt.random(Shape.of(3), random);
+            v = tm.random(dt, Shape.of(3), random);
             p.add_(v.outer(v));
             var svd = p.svd();
             assertEquals(2, svd.rank());

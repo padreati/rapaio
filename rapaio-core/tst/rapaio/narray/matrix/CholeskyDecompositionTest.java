@@ -33,9 +33,9 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
 import rapaio.narray.NArrayManager;
-import rapaio.narray.NArrays;
 import rapaio.narray.Order;
 import rapaio.narray.Shape;
 
@@ -52,18 +52,18 @@ public class CholeskyDecompositionTest {
 
     @Test
     void symmetricPositiveDefiniteTest() {
-        testType(NArrays.ofDouble(), true, 1e-8);
-        testType(NArrays.ofFloat(), true, 1e-0);
+        testType(NArrayManager.base(), DType.DOUBLE, true, 1e-8);
+        testType(NArrayManager.base(), DType.FLOAT, true, 1e-0);
     }
 
-    private <N extends Number> void testType(NArrayManager.OfType<N> tmt, boolean rightFlag, double TOL) {
+    private <N extends Number> void testType(NArrayManager tm, DType<N> dt, boolean rightFlag, double TOL) {
         for (int i = 0; i < TIMES; i++) {
-            var m = tmt.random(Shape.of(10, 10), random, Order.C);
+            var m = tm.random(dt, Shape.of(10, 10), random, Order.C);
 
-            testSolve(m.t().mm(m), tmt.full(Shape.of(10, 1), tmt.dtype().castValue(1d)), rightFlag, TOL);
-            testSolve(tmt.eye(100, Order.C), tmt.full(Shape.of(100), tmt.dtype().castValue(1d)), rightFlag, TOL);
+            testSolve(m.t().mm(m), tm.full(dt, Shape.of(10, 1), 1d), rightFlag, TOL);
+            testSolve(tm.eye(dt, 100, Order.C), tm.full(dt, Shape.of(100), 1d), rightFlag, TOL);
 
-            testNonSPD(tmt.random(Shape.of(10, 10), random), tmt.random(Shape.of(10, 3), random));
+            testNonSPD(tm.random(dt, Shape.of(10, 10), random), tm.random(dt, Shape.of(10, 3), random));
         }
     }
 
@@ -87,11 +87,11 @@ public class CholeskyDecompositionTest {
 
     @Test
     void testIntegerTypes() {
-        var ti = NArrays.ofInt().eye(10);
+        var ti = NArrayManager.base().eye(DType.INTEGER, 10);
         var ei = assertThrows(IllegalArgumentException.class, ti::cholesky);
         assertEquals("Cannot compute decomposition for integer types (dtype: INTEGER)", ei.getMessage());
 
-        var tb = NArrays.ofByte().eye(10);
+        var tb = NArrayManager.base().eye(DType.BYTE, 10);
         var eb = assertThrows(IllegalArgumentException.class, tb::cholesky);
         assertEquals("Cannot compute decomposition for integer types (dtype: BYTE)", eb.getMessage());
     }

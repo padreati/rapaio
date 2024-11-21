@@ -23,7 +23,6 @@ package rapaio.nn.loss;
 
 import rapaio.core.param.Param;
 import rapaio.core.param.ValueParam;
-import rapaio.narray.NArrays;
 import rapaio.nn.Loss;
 import rapaio.nn.Tensor;
 
@@ -44,6 +43,6 @@ public class MSELoss extends AbstractLoss<MSELoss> {
         }
         batch = y.value().dim(0);
         last = (reduce.get().equals(Reduce.MEAN)) ? pred.sub(y).sqr().sum().div(pred.value().size()) : pred.sub(y).sqr().sum();
-        last.setGrad(NArrays.ofType(pred.dtype()).scalar(1));
+        last.setGrad(pred.tm().scalarArray(1));
     }
 }

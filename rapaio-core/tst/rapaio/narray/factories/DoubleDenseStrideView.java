@@ -59,7 +59,7 @@ public final class DoubleDenseStrideView extends DoubleDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return engine.ofDouble().stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(len));
+        return manager.stride(dt, StrideLayout.of(shape, offset, strides), manager.storageManager().zeros(dt, len));
     }
 
     @Override

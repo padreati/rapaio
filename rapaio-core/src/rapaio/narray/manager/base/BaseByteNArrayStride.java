@@ -59,13 +59,15 @@ import rapaio.util.function.IntIntBiFunction;
 
 public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
 
+    private static final DType<Byte> dt = DType.BYTE;
+
     public BaseByteNArrayStride(NArrayManager engine, StrideLayout layout, Storage<Byte> storage) {
         super(engine, layout, storage);
     }
 
     @Override
     public DType<Byte> dtype() {
-        return DType.BYTE;
+        return dt;
     }
 
     @Override
@@ -87,10 +89,10 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
         }
         StrideLayout newLayout = layout.attemptReshape(askShape, askOrder);
         if (newLayout != null) {
-            return manager.ofByte().stride(newLayout, storage);
+            return manager.stride(dt, newLayout, storage);
         }
         var it = new StridePointerIterator(layout, askOrder);
-        NArray<Byte> copy = manager.ofByte().zeros(askShape, askOrder);
+        NArray<Byte> copy = manager.zeros(dt, askShape, askOrder);
         var copyIt = copy.ptrIterator(askOrder);
         while (it.hasNext()) {
             copy.ptrSetByte(copyIt.nextInt(), storage.getByte(it.nextInt()));
@@ -101,7 +103,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
     @Override
     public NArray<Byte> flatten(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
-        var result = manager.ofByte().zeros(Shape.of(layout.size()), askOrder);
+        var result = manager.zeros(dt, Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
         var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
@@ -267,7 +269,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
                     String.format("Operands are not valid for matrix-vector multiplication (m = %s, v = %s).",
                             shape(), other.shape()));
         }
-        var result = manager.ofByte().zeros(Shape.of(shape().dim(0)), askOrder);
+        var result = manager.zeros(dt, Shape.of(shape().dim(0)), askOrder);
         for (int i = 0; i < shape().dim(0); i++) {
             result.ptrSetByte(i, takesq(0, i).inner(other));
         }
@@ -305,7 +307,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
     }
 
     private NArray<Byte> bmvInternal(NArray<?> other, Order askOrder) {
-        NArray<Byte> res = manager.ofByte().zeros(Shape.of(dim(0), dim(1)), askOrder);
+        NArray<Byte> res = manager.zeros(dt, Shape.of(dim(0), dim(1)), askOrder);
         for (int b = 0; b < dim(0); b++) {
             takesq(0, b).mv(other.takesq(0, b)).copyTo(res.takesq(0, b));
         }
@@ -320,7 +322,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
                             shape(), other.shape())
             );
         }
-        var result = manager.ofByte().zeros(Shape.of(other.dim(1)), askOrder);
+        var result = manager.zeros(dt, Shape.of(other.dim(1)), askOrder);
         for (int i = 0; i < other.dim(1); i++) {
             result.ptrSetByte(i, this.inner(other.takesq(1, i)));
         }
@@ -358,7 +360,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
     }
 
     private NArray<Byte> bvtmInternal(NArray<?> other, Order askOrder) {
-        NArray<Byte> res = manager.ofByte().zeros(Shape.of(dim(0), other.dim(2)), askOrder);
+        NArray<Byte> res = manager.zeros(dt, Shape.of(dim(0), other.dim(2)), askOrder);
         for (int b = 0; b < dim(0); b++) {
             takesq(0, b).vtm(other.takesq(0, b)).copyTo(res.takesq(0, b));
         }
@@ -374,7 +376,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
         if (askOrder == Order.S) {
             throw new IllegalArgumentException("Illegal askOrder value, must be Order.C or Order.F");
         }
-        var ret = manager.ofByte().zeros(Shape.of(shape().dim(0), other.shape().dim(1)), askOrder);
+        var ret = manager.zeros(dt, Shape.of(shape().dim(0), other.shape().dim(1)), askOrder);
         return mmInternalParallel(other, ret);
     }
 
@@ -492,7 +494,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
     }
 
     private NArray<Byte> bmmInternal(NArray<?> other, Order askOrder) {
-        NArray<Byte> res = manager.ofByte().zeros(Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
+        NArray<Byte> res = manager.zeros(dt, Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
         for (int b = 0; b < dim(0); b++) {
             ((BaseByteNArrayStride) takesq(0, b)).mmInternal(other.takesq(0, b), res.takesq(0, b));
         }
@@ -521,7 +523,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
         }
         if (isVector()) {
             int n = dim(0) + Math.abs(diagonal);
-            NArray<Byte> m = manager.ofByte().zeros(Shape.of(n, n));
+            NArray<Byte> m = manager.zeros(dt, Shape.of(n, n));
             for (int i = 0; i < dim(0); i++) {
                 m.setByte(getByte(i), i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
             }
@@ -537,7 +539,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
             for (int i = 0; i < len; i++) {
                 diag[i] = getByte(i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
             }
-            return manager().ofByte().stride(Shape.of(len), diag);
+            return manager.stride(dt, Shape.of(len), Order.defaultOrder(), diag);
         }
         throw new OperationNotAvailableException("This operation is available for tensors with shape " + shape() + ".");
     }
@@ -550,13 +552,13 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
         if (pow < 0) {
             throw new IllegalArgumentException(String.format("Norm power p=%s must be greater or equal with 0.", Format.floatFlex(pow)));
         }
-        if (dtype().castValue(0).equals(pow)) {
+        if (dtype().cast(0).equals(pow)) {
             return (byte) shape().size();
         }
-        if (dtype().castValue(1).equals(pow)) {
+        if (dtype().cast(1).equals(pow)) {
             return abs().sum();
         }
-        if (dtype().castValue(2).equals(pow)) {
+        if (dtype().cast(2).equals(pow)) {
             return (byte) Math.sqrt(sqr().sum());
         }
         byte sum = (byte) 0;
@@ -605,7 +607,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        NArray<Byte> res = manager.ofByte().zeros(Shape.of(newDims), Order.autoFC(order));
+        NArray<Byte> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
         var resIt = res.ptrIterator(Order.C);
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         int size = it.size();
@@ -620,7 +622,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
                     int ptr = it.nextInt();
                     int resPtr = resIt.next();
                     taskList.add(() -> {
-                        var stride = manager.ofByte().stride(StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
+                        var stride = manager.stride(dt, StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
                         res.ptrSet(resPtr, op.apply(stride));
                     });
                 }
@@ -810,7 +812,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        NArray<Byte> res = manager.ofByte().zeros(Shape.of(newDims), Order.autoFC(order));
+        NArray<Byte> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
@@ -828,7 +830,7 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        NArray<Byte> res = manager.ofByte().zeros(Shape.of(newDims), Order.autoFC(order));
+        NArray<Byte> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
         var resIt = res.ptrIterator(Order.C);
         while (it.hasNext()) {
@@ -843,8 +845,8 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
     public NArray<Byte> copy(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
 
-        var copy = manager.ofByte().storage().zeros(size());
-        var dst = manager.ofByte().stride(StrideLayout.ofDense(shape(), 0, askOrder), copy);
+        var copy = manager.storageManager().zeros(dt, size());
+        var dst = manager.stride(dt, StrideLayout.ofDense(shape(), 0, askOrder), copy);
 
         if (layout.storageFastOrder() == askOrder) {
             sameLayoutCopy(copy, askOrder);

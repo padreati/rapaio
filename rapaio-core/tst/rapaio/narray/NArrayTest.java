@@ -282,7 +282,7 @@ public class NArrayTest {
         var tensor = g.seq(Shape.of(20, 2, 2, 25));
         assertEquals(tensor.toString(), tensor.toSummary());
 
-        if (g.dType() != DType.BYTE) {
+        if (g.dt() != DType.BYTE) {
             assertEquals("""
                     [[[[   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 ... ]  \s
                        [  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44 ... ]] \s
@@ -709,7 +709,7 @@ public class NArrayTest {
         assertTrue(t1.copy(Order.C).neg_().deepEquals(t1.neg(Order.F)));
         assertTrue(t1.copy(Order.F).neg_().deepEquals(t1.neg(Order.C)));
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.copy().log_().deepEquals(t1.log()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -720,7 +720,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.log1p().deepEquals(t1.log1p_()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -731,7 +731,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.exp().deepEquals(t1.exp_()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -742,7 +742,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.expm1().deepEquals(t1.copy().expm1_()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -753,7 +753,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub_(g.value(0.5));
             assertTrue(t1.sin().deepEquals(t1.sin_()));
             t1 = g.random(Shape.of(41, 31)).sub_(g.value(0.5));
@@ -765,7 +765,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.asin().deepEquals(t1.asin_()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -776,7 +776,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.sinh().deepEquals(t1.sinh_()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -787,7 +787,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.cos().deepEquals(t1.cos_()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -798,7 +798,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.acos().deepEquals(t1.acos_()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -809,7 +809,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.cosh().deepEquals(t1.cosh_()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -820,7 +820,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.tan().deepEquals(t1.tan_()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -831,7 +831,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.atan().deepEquals(t1.atan_()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -842,7 +842,7 @@ public class NArrayTest {
             assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
             assertTrue(t1.tanh().deepEquals(t1.tanh_()));
             t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
@@ -1332,7 +1332,7 @@ public class NArrayTest {
     @ParameterizedTest
     @MethodSource("dataFactorySource")
     <N extends Number> void testReduceMean(DataFactory<N> g) {
-        if(!g.dType().floatingPoint()) {
+        if(!g.dt().floatingPoint()) {
             return;
         }
         var t = g.seq(Shape.of(2, 3)).add_(1);
@@ -1375,7 +1375,7 @@ public class NArrayTest {
     @ParameterizedTest
     @MethodSource("dataFactorySource")
     <N extends Number> void testMatrixScatterCovarianceCorrelation(DataFactory<N> g) {
-        if (!g.dType().floatingPoint()) {
+        if (!g.dt().floatingPoint()) {
             return;
         }
         var m1 = g.seq(Shape.of(3, 4)).add_(g.value(1)).t();
@@ -1677,7 +1677,7 @@ public class NArrayTest {
         var t2 = g.seq(Shape.of(100));
         var t3 = g.seq(Shape.of(3));
 
-        switch (g.dType().id()) {
+        switch (g.dt().id()) {
             case DOUBLE:
                 assertEquals(t1.norm(), t1.norm(g.value(2)));
                 assertEquals(t2.abs().sum(), t2.norm(g.value(1)));
@@ -1699,7 +1699,7 @@ public class NArrayTest {
                 assertEquals("This operation is only available on floating point data types.", e.getMessage());
         }
 
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             var e = assertThrows(IllegalArgumentException.class, () -> t1.norm(g.value(-1)));
             assertEquals("Norm power p=-1 must be greater or equal with 0.", e.getMessage());
         }
@@ -1711,7 +1711,7 @@ public class NArrayTest {
 
         var t1 = g.seq(Shape.of(1, 100, 10));
         assertEquals(sequenceSum(g, t1.size()), t1.sum());
-        if (g.dType() == DType.BYTE) {
+        if (g.dt() == DType.BYTE) {
             assertEquals(g.value(127), t1.amax());
             assertEquals(g.value(127), t1.nanMax());
             assertEquals(g.value(-128), t1.amin());
@@ -1741,7 +1741,7 @@ public class NArrayTest {
         t4.set(g.value(Double.NaN), 1);
         t4.set(g.value(Double.NaN), 100);
         assertEquals(g.sum(sequenceSum(g, 100), g.value(-1)), t4.nanSum());
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             assertEquals(2, t4.nanCount());
             assertEquals(1, t4.zeroCount());
             assertEquals(g.value(Double.NaN), t4.amax());
@@ -1759,7 +1759,7 @@ public class NArrayTest {
         var t5 = g.seq(Shape.of(7));
         t5.set(g.value(Double.NaN), 0);
         t5.set(g.value(Double.NaN), 6);
-        if (g.dType().floatingPoint()) {
+        if (g.dt().floatingPoint()) {
             assertEquals(2, t5.nanCount());
             assertEquals(0, t5.zeroCount());
             assertEquals(g.value(120), t5.nanProd());
@@ -1781,7 +1781,7 @@ public class NArrayTest {
     @ParameterizedTest
     @MethodSource("dataFactorySource")
     <N extends Number> void testScatterVarCorr(DataFactory<N> g) {
-        if (g.dType().id() == DType.Id.BYTE || g.dType().id() == DType.Id.INTEGER) {
+        if (g.dt().id() == DType.Id.BYTE || g.dt().id() == DType.Id.INTEGER) {
             return;
         }
         var t1 = g.seq(Shape.of(1, 10, 10));

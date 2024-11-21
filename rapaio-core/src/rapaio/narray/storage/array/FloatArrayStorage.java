@@ -29,8 +29,29 @@ public final class FloatArrayStorage extends FloatStorage {
 
     private final float[] array;
 
+    public FloatArrayStorage(byte[] array) {
+        this.array = new float[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = array[i];
+        }
+    }
+
+    public FloatArrayStorage(int[] array) {
+        this.array = new float[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = array[i];
+        }
+    }
+
     public FloatArrayStorage(float[] array) {
         this.array = array;
+    }
+
+    public FloatArrayStorage(double[] array) {
+        this.array = new float[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = (float) array[i];
+        }
     }
 
     @Override

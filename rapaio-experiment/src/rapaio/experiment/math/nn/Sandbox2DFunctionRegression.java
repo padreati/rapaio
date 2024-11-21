@@ -39,8 +39,6 @@ import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 import rapaio.nn.data.ArrayDataset;
-import rapaio.nn.layer.BatchNorm1D;
-import rapaio.nn.layer.ELU;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.ReLU;
 import rapaio.nn.layer.Sequential;
@@ -67,21 +65,20 @@ public class Sandbox2DFunctionRegression {
         ArrayDataset test = split[1];
 
         Net nn = new Sequential(tm,
-                new BatchNorm1D(tm, 4),
-                new Linear(tm, 4, 1_000, true),
-                new ELU(tm),
-                new Linear(tm, 1_000, 1, true),
+                new Linear(tm, 4, 10_000, true),
+                new ReLU(),
+                new Linear(tm, 10_000, 1, true),
                 new ReLU()
         );
         nn.seed(42);
 
 
-        int EPOCHS = 100;
-        int BATCH_SIZE = 100;
-        double LR = 1e-3;
+        int EPOCHS = 40;
+        int BATCH_SIZE = 200;
+//        BATCH_SIZE = train.len();
 
-        Optimizer c = Optimizer.Adam(nn.parameters())
-                .lr.set(LR)
+        Optimizer c = Optimizer.Adam(tm, nn.parameters())
+                .lr.set(1e-3)
                 .weightDecay.set(0.1)
                 .amsgrad.set(true);
 
@@ -102,7 +99,7 @@ public class Sandbox2DFunctionRegression {
             double trainLossValue = result.lossValue();
             trainLoss.addDouble(trainLossValue);
 
-            Autograd.backward(result.generalLoss()).covered();
+            Autograd.backward(result.loss()).covered();
             c.step();
 
             nn.eval();
@@ -114,15 +111,25 @@ public class Sandbox2DFunctionRegression {
             if (epoch == 1 || epoch % 1 == 0) {
                 System.out.printf("Epoch: %d, Train loss: %.6f, test loss: %.6f\n", epoch, trainLossValue, teLoss);
             }
-
-
         }
         long end = System.currentTimeMillis();
         System.out.println(Duration.of(end - start, ChronoUnit.MILLIS));
 
+
+        var input = tm.randomTensor(Shape.of(2, 4), random).name("x");
+        System.out.println("input:" + input.value());
+        System.out.println("output:" + nn.forward11(input).value());
+        System.out.println("true:" +
+                fun(input.value().getDouble(0, 0), input.value().getDouble(0, 1),
+                        input.value().getDouble(0, 2), input.value().getDouble(0, 3)) +
+                ", " +
+                fun(input.value().getDouble(1, 0), input.value().getDouble(1, 1),
+                        input.value().getDouble(1, 2), input.value().getDouble(1, 3))
+        );
+
         WS.draw(lines(trainLoss, color(1), lwd(1)).lines(testLoss, color(2), lwd(1)));
 
-        nn.forward(tm.randomTensor(Shape.of(2, 4), random).name("x"))[0].value().printString();
+        tm.close();
     }
 
     public static double fun(double x1, double x2, double x3, double x4) {

@@ -24,6 +24,7 @@ package rapaio.narray.matrix;
 import java.io.Serial;
 import java.io.Serializable;
 
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
 import rapaio.narray.Shape;
 import rapaio.narray.NArrayManager;
@@ -37,15 +38,17 @@ public class QRDecomposition<N extends Number> implements Serializable {
     protected final NArray<N> QR;
     protected final NArray<N> diag;
 
-    protected final NArrayManager.OfType<N> tmt;
+    protected final DType<N> dt;
+    protected final NArrayManager tm;
 
     public QRDecomposition(NArray<N> ref) {
         // Initialize.
         this.ref = ref;
-        this.tmt = ref.manager().ofType(ref.dtype());
+        this.dt = ref.dtype();
+        this.tm = ref.manager();
 
         QR = ref.copy();
-        diag = tmt.zeros(Shape.of(QR.dim(1)));
+        diag = tm.zeros(dt, Shape.of(QR.dim(1)));
 
         // Main loop.
         for (int k = 0; k < QR.dim(1); k++) {
@@ -101,7 +104,7 @@ public class QRDecomposition<N extends Number> implements Serializable {
      * @return Lower trapezoidal matrix whose columns define the reflections
      */
     public NArray<N> h() {
-        var h = tmt.zeros(Shape.of(QR.dim(0), QR.dim(1)));
+        var h = tm.zeros(dt, Shape.of(QR.dim(0), QR.dim(1)));
         for (int i = 0; i < QR.dim(0); i++) {
             for (int j = 0; j < QR.dim(1); j++) {
                 if (i >= j) {
@@ -120,7 +123,7 @@ public class QRDecomposition<N extends Number> implements Serializable {
      * @return R
      */
     public NArray<N> r() {
-        var r = tmt.zeros(Shape.of(QR.dim(1), QR.dim(1)));
+        var r = tm.zeros(dt, Shape.of(QR.dim(1), QR.dim(1)));
         for (int i = 0; i < QR.dim(1); i++) {
             for (int j = 0; j < QR.dim(1); j++) {
                 if (i < j) {
@@ -142,7 +145,7 @@ public class QRDecomposition<N extends Number> implements Serializable {
      */
 
     public NArray<N> q() {
-        var q = tmt.zeros(Shape.of(QR.dim(0), QR.dim(1)));
+        var q = tm.zeros(dt, Shape.of(QR.dim(0), QR.dim(1)));
         for (int k = QR.dim(1) - 1; k >= 0; k--) {
             for (int i = 0; i < QR.dim(0); i++) {
                 q.setDouble(0.0, i, k);
@@ -219,6 +222,6 @@ public class QRDecomposition<N extends Number> implements Serializable {
     }
 
     public NArray<N> inv() {
-        return solve(tmt.eye(ref.dim(0)));
+        return solve(tm.eye(dt, ref.dim(0)));
     }
 }

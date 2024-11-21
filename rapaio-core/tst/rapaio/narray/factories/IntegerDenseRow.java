@@ -34,16 +34,16 @@ public final class IntegerDenseRow extends IntegerDense {
 
     @Override
     public NArray<Integer> seq(Shape shape) {
-        return ofType.seq(shape, Order.C);
+        return manager.seq(dt, shape, Order.C);
     }
 
     @Override
     public NArray<Integer> zeros(Shape shape) {
-        return ofType.zeros(shape, Order.C);
+        return manager.zeros(dt, shape, Order.C);
     }
 
     @Override
     public NArray<Integer> random(Shape shape) {
-        return ofType.random(shape, random, Order.C);
+        return manager.random(dt, shape, random, Order.C);
     }
 }

@@ -73,32 +73,17 @@ public class CodeGenApp {
         };
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/narray/storage/array/DoubleArrayStorage.java")
-                .dst.set("rapaio/narray/storage/array/FloatArrayStorage.java")
-                .replaces.set(floatReplaces)
-        );
-        templates.add(new CodeGenTemplate()
                 .src.set("rapaio/narray/manager/base/BaseDoubleNArrayStride.java")
                 .dst.set("rapaio/narray/manager/base/BaseFloatNArrayStride.java")
                 .replaces.set(floatReplaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/narray/storage/array/DoubleArrayStorage.java")
-                .dst.set("rapaio/narray/storage/array/IntArrayStorage.java")
-                .replaces.set(intReplaces)
-        );
-        templates.add(new CodeGenTemplate()
                 .src.set("rapaio/narray/manager/base/BaseDoubleNArrayStride.java")
                 .dst.set("rapaio/narray/manager/base/BaseIntNArrayStride.java")
                 .replaces.set(intReplaces)
         );
 
-        templates.add(new CodeGenTemplate()
-                .src.set("rapaio/narray/storage/array/DoubleArrayStorage.java")
-                .dst.set("rapaio/narray/storage/array/ByteArrayStorage.java")
-                .replaces.set(byteReplaces)
-        );
         templates.add(new CodeGenTemplate()
                 .src.set("rapaio/narray/manager/base/BaseDoubleNArrayStride.java")
                 .dst.set("rapaio/narray/manager/base/BaseByteNArrayStride.java")

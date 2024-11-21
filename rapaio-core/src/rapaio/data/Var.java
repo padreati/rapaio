@@ -37,7 +37,7 @@ import rapaio.data.stream.VSpots;
 import rapaio.data.transform.VarTransform;
 import rapaio.narray.DType;
 import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
+import rapaio.narray.NArrayManager;
 import rapaio.narray.Order;
 import rapaio.narray.Shape;
 import rapaio.narray.storage.wrapper.VarDoubleStorage;
@@ -385,8 +385,8 @@ public interface Var extends Serializable, Printable {
     @SuppressWarnings("unchecked")
     default <N extends Number> NArray<N> narray_(DType<N> dtype) {
         return (NArray<N>) switch (dtype.id()) {
-            case DOUBLE -> NArrays.ofDouble().stride(Shape.of(size()), Order.C, new VarDoubleStorage(this));
-            case FLOAT -> NArrays.ofFloat().stride(Shape.of(size()), Order.C, new VarFloatStorage(this));
+            case DOUBLE -> NArrayManager.base().stride(DType.DOUBLE, Shape.of(size()), Order.C, new VarDoubleStorage(this));
+            case FLOAT -> NArrayManager.base().stride(DType.FLOAT, Shape.of(size()), Order.C, new VarFloatStorage(this));
             default -> throw new NotImplementedException();
         };
     }
@@ -403,14 +403,14 @@ public interface Var extends Serializable, Printable {
                 for (int i = 0; i < copy.length; i++) {
                     copy[i] = getDouble(i);
                 }
-                yield (NArray<N>) NArrays.stride(Shape.of(size()), Order.C, copy);
+                yield (NArray<N>) NArrayManager.base().stride(DType.DOUBLE, Shape.of(size()), Order.C, copy);
             }
             case FLOAT -> {
                 float[] copy = new float[size()];
                 for (int i = 0; i < copy.length; i++) {
                     copy[i] = getFloat(i);
                 }
-                yield (NArray<N>) NArrays.ofFloat().stride(Shape.of(size()), Order.C, copy);
+                yield (NArray<N>) NArrayManager.base().stride(DType.FLOAT, Shape.of(size()), Order.C, copy);
             }
             default -> throw new NotImplementedException();
         };

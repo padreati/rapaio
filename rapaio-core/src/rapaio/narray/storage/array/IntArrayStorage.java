@@ -29,8 +29,29 @@ public final class IntArrayStorage extends IntStorage {
 
     private final int[] array;
 
+    public IntArrayStorage(byte[] array) {
+        this.array = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = array[i];
+        }
+    }
+
     public IntArrayStorage(int[] array) {
         this.array = array;
+    }
+
+    public IntArrayStorage(float[] array) {
+        this.array = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = (int) array[i];
+        }
+    }
+
+    public IntArrayStorage(double[] array) {
+        this.array = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            this.array[i] = (int) array[i];
+        }
     }
 
     @Override

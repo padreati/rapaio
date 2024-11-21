@@ -27,7 +27,7 @@ import rapaio.narray.NArrayManager;
 public abstract class ByteDense extends DataFactory<Byte> {
 
     public ByteDense(NArrayManager arrayManager) {
-        super(arrayManager, arrayManager.ofByte(), DType.BYTE);
+        super(arrayManager, DType.BYTE);
     }
 
     @Override

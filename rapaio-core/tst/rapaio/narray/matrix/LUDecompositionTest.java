@@ -31,6 +31,7 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
 import rapaio.narray.NArrayManager;
 import rapaio.narray.NArrays;
@@ -50,90 +51,90 @@ public class LUDecompositionTest {
 
     @Test
     void testSuite() {
-        testPlan(NArrayManager.base().ofDouble());
+        testPlan(NArrayManager.base(), DType.DOUBLE);
     }
 
-    <N extends Number> void testPlan(NArrayManager.OfType<N> tmt) {
-        testBasicGaussian(tmt);
-        testBasicCrout(tmt);
-        testIsSingular(tmt);
-        testDeterminant(tmt);
-        testInv(tmt);
-        testSolve(tmt);
-        testInvalidMatrixForDeterminant(tmt);
-        testInvalidSolver(tmt);
-        testPrintable(tmt);
+    <N extends Number> void testPlan(NArrayManager tm, DType<N> dt) {
+        testBasicGaussian(tm, dt);
+        testBasicCrout(tm, dt);
+        testIsSingular(tm, dt);
+        testDeterminant(tm, dt);
+        testInv(tm, dt);
+        testSolve(tm, dt);
+        testInvalidMatrixForDeterminant(tm, dt);
+        testInvalidSolver(tm, dt);
+        testPrintable(tm, dt);
     }
 
-    <N extends Number> void testBasicGaussian(NArrayManager.OfType<N> tmt) {
-        NArray<N> a = tmt.random(Shape.of(100, 100), random);
+    <N extends Number> void testBasicGaussian(NArrayManager tm, DType<N> dt) {
+        NArray<N> a = tm.random(dt, Shape.of(100, 100), random);
         LUDecomposition<N> lu = a.lu(LUDecomposition.Method.GAUSSIAN_ELIMINATION);
         NArray<N> a1 = a.take(0, lu.pivots());
         NArray<N> a2 = lu.l().mm(lu.u());
         assertTrue(a1.deepEquals(a2, TOL));
     }
 
-    <N extends Number> void testBasicCrout(NArrayManager.OfType<N> tmt) {
-        NArray<N> a = tmt.random(Shape.of(100, 100), random);
+    <N extends Number> void testBasicCrout(NArrayManager tm, DType<N> dt) {
+        NArray<N> a = tm.random(dt, Shape.of(100, 100), random);
         LUDecomposition<N> lu = a.lu(LUDecomposition.Method.CROUT);
         NArray<N> a1 = a.take(0, lu.pivots());
         NArray<N> a2 = lu.l().mm(lu.u());
         assertTrue(a1.deepEquals(a2, TOL));
     }
 
-    <N extends Number> void testIsSingular(NArrayManager.OfType<N> tmt) {
-        assertFalse(tmt.zeros(Shape.of(10, 10)).lu().isNonSingular());
-        assertTrue(tmt.random(Shape.of(10, 10), random).lu().isNonSingular());
+    <N extends Number> void testIsSingular(NArrayManager tm, DType<N> dt) {
+        assertFalse(tm.zeros(dt, Shape.of(10, 10)).lu().isNonSingular());
+        assertTrue(tm.random(dt, Shape.of(10, 10), random).lu().isNonSingular());
     }
 
-    <N extends Number> void testDeterminant(NArrayManager.OfType<N> tmt) {
-        NArray<N> a = tmt.stride(Shape.of(2, 2), Order.C, 1, 2, 3, 4);
+    <N extends Number> void testDeterminant(NArrayManager tm, DType<N> dt) {
+        NArray<N> a = tm.stride(dt, Shape.of(2, 2), Order.C, 1, 2, 3, 4);
         assertEquals(-2, a.lu().det(), TOL);
     }
 
-    <N extends Number> void testInv(NArrayManager.OfType<N> tmt) {
-        NArray<N> m = tmt.random(Shape.of(4, 4), random);
+    <N extends Number> void testInv(NArrayManager tm, DType<N> dt) {
+        NArray<N> m = tm.random(dt, Shape.of(4, 4), random);
         NArray<N> inv = m.lu().inv();
 
-        assertTrue(m.lu().solve(tmt.eye(4)).deepEquals(inv));
+        assertTrue(m.lu().solve(tm.eye(dt, 4)).deepEquals(inv));
         assertTrue(m.mm(inv).deepEquals(NArrays.eye(4), 1e-14));
     }
 
-    <N extends Number> void testSolve(NArrayManager.OfType<N> tmt) {
-        NArray<N> a1 = tmt.stride(Shape.of(3, 3), Order.C, 3, 2, -1, 2, -2, 4, -1, 0.5, -1);
-        NArray<N> b1 = tmt.stride(Shape.of(3, 1), Order.C, 1, -2, 0);
-        NArray<N> x1 = tmt.stride(Shape.of(3, 1), Order.C, 1, -2, -2);
+    <N extends Number> void testSolve(NArrayManager tm, DType<N> dt) {
+        NArray<N> a1 = tm.stride(dt, Shape.of(3, 3), Order.C, 3, 2, -1, 2, -2, 4, -1, 0.5, -1);
+        NArray<N> b1 = tm.stride(dt, Shape.of(3, 1), Order.C, 1, -2, 0);
+        NArray<N> x1 = tm.stride(dt, Shape.of(3, 1), Order.C, 1, -2, -2);
         assertTrue(x1.deepEquals(a1.lu().solve(b1), TOL));
 
-        NArray<N> a2 = tmt.stride(Shape.of(2, 2), Order.C, 2, 3, 4, 9);
-        NArray<N> b2 = tmt.stride(Shape.of(2, 1), Order.C, 6, 15);
-        NArray<N> x2 = tmt.stride(Shape.of(2, 1), Order.C, 1.5, 1);
+        NArray<N> a2 = tm.stride(dt, Shape.of(2, 2), Order.C, 2, 3, 4, 9);
+        NArray<N> b2 = tm.stride(dt, Shape.of(2, 1), Order.C, 6, 15);
+        NArray<N> x2 = tm.stride(dt, Shape.of(2, 1), Order.C, 1.5, 1);
         assertTrue(x2.deepEquals(a2.lu().solve(b2), TOL));
     }
 
-    <N extends Number> void testInvalidMatrixForDeterminant(NArrayManager.OfType<N> tmt) {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> tmt.random(Shape.of(4, 3), random).lu().det());
+    <N extends Number> void testInvalidMatrixForDeterminant(NArrayManager tm, DType<N> dt) {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> tm.random(dt, Shape.of(4, 3), random).lu().det());
         assertEquals("The determinant can be computed only for squared matrices.", ex.getMessage());
 
-        ex = assertThrows(IllegalArgumentException.class, () -> tmt.random(Shape.of(2, 3), random).lu().det());
+        ex = assertThrows(IllegalArgumentException.class, () -> tm.random(dt, Shape.of(2, 3), random).lu().det());
         assertEquals("For LU decomposition, number of rows must be greater or equal with number of columns.", ex.getMessage());
 
         ex = assertThrows(IllegalArgumentException.class,
-                () -> tmt.random(Shape.of(2, 3), random).lu(LUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
+                () -> tm.random(dt, Shape.of(2, 3), random).lu(LUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
         assertEquals("For LU decomposition, number of rows must be greater or equal with number of columns.", ex.getMessage());
     }
 
-    <N extends Number> void testInvalidSolver(NArrayManager.OfType<N> tmt) {
+    <N extends Number> void testInvalidSolver(NArrayManager tm, DType<N> dt) {
         var ex = assertThrows(IllegalArgumentException.class,
-                () -> tmt.random(Shape.of(4, 3), random).lu().solve(tmt.random(Shape.of(6, 6), random)));
+                () -> tm.random(dt, Shape.of(4, 3), random).lu().solve(tm.random(dt, Shape.of(6, 6), random)));
         assertEquals("Matrix row dimensions must agree.", ex.getMessage());
 
-        ex = assertThrows(IllegalArgumentException.class, () -> tmt.zeros(Shape.of(3, 3)).lu().solve(tmt.eye(3)));
+        ex = assertThrows(IllegalArgumentException.class, () -> tm.zeros(dt, Shape.of(3, 3)).lu().solve(tm.eye(dt, 3)));
         assertEquals("Matrix is singular.", ex.getMessage());
     }
 
-    <N extends Number> void testPrintable(NArrayManager.OfType<N> tmt) {
-        var m = tmt.random(Shape.of(4, 3), random);
+    <N extends Number> void testPrintable(NArrayManager tm, DType<N> dt) {
+        var m = tm.random(dt, Shape.of(4, 3), random);
         assertEquals("""
                 LU decomposition summary
                 ========================
@@ -151,7 +152,7 @@ public class LUDecompositionTest {
                 
                 pivots: [2,1,3,0,]""", m.lu().toSummary());
 
-        m = tmt.random(Shape.of(20, 4), random);
+        m = tm.random(dt, Shape.of(20, 4), random);
         assertEquals("""
                 LU decomposition summary
                 ========================

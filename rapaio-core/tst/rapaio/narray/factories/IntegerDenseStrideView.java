@@ -23,6 +23,7 @@ package rapaio.narray.factories;
 
 import java.util.Arrays;
 
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
 import rapaio.narray.Order;
 import rapaio.narray.Shape;
@@ -58,7 +59,7 @@ public final class IntegerDenseStrideView extends IntegerDense {
         for (int i = 0; i < l.strides().length; i++) {
             len += l.dim(i) * strides[i];
         }
-        return engine.ofInt().stride(StrideLayout.of(shape, offset, strides), ofType.storage().zeros(len));
+        return manager.stride(DType.INTEGER, StrideLayout.of(shape, offset, strides), manager.storageManager().zeros(dt(), len));
     }
 
     @Override

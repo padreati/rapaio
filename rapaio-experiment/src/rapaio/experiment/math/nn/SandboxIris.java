@@ -23,7 +23,6 @@ package rapaio.experiment.math.nn;
 
 import static rapaio.graphics.Plotter.lines;
 import static rapaio.graphics.opt.GOpts.color;
-import static rapaio.graphics.opt.GOpts.lwd;
 
 import java.awt.Color;
 
@@ -56,23 +55,23 @@ public class SandboxIris {
         var x = iris.mapVars(VarRange.of("0~3")).narray().cast(DType.FLOAT);
         var y = iris.fapply(OneHotEncoding.on(false, false, VarRange.of("class"))).mapVars("4~6").narray().cast(DType.FLOAT);
 
-        ArrayDataset[] split = new ArrayDataset(x, y).trainTestSplit(0.2);
+        ArrayDataset[] split = new ArrayDataset(x, y).trainTestSplit(0.15);
         ArrayDataset train = split[0];
         ArrayDataset test = split[1];
 
         Net nn = new Sequential(tm,
                 new BatchNorm1D(tm, 4),
-                new Linear(tm, 4, 1000, true),
+                new Linear(tm, 4, 400, true),
                 new ReLU(),
-                new BatchNorm1D(tm, 1000),
-                new Linear(tm, 1000, 3, true),
+                new BatchNorm1D(tm, 400),
+                new Linear(tm, 400, 3, true),
                 new ReLU(),
-                new BatchNorm1D(tm, 3),
+//                new BatchNorm1D(tm, 3),
                 new LogSoftmax(1)
         );
 
-        Optimizer optimizer = Optimizer.Adam(nn.parameters())
-                .lr.set(1e-2);
+        Optimizer optimizer = Optimizer.Adam(tm, nn.parameters())
+                .lr.set(1e-4);
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
         VarDouble testLoss = VarDouble.empty().name("trainLoss");
 
@@ -81,11 +80,11 @@ public class SandboxIris {
             optimizer.zeroGrad();
             nn.train();
 
-            var batchOutput = nn.batchForward(100, train.tensor(tm, 0));
+            Net.BatchOutput batchOut = nn.batchForward(50, train.tensor(tm, 0));
 
-            var result = batchOutput.applyLoss(new NegativeLikelihoodLoss(), train.tensor(tm, 1));
+            var result = batchOut.applyLoss(new NegativeLikelihoodLoss(), train.tensor(tm, 1));
             double trainLossValue = result.lossValue();
-            Autograd.backward(result.generalLoss());
+            Autograd.backward(result.loss());
 
             optimizer.step();
 
@@ -102,6 +101,8 @@ public class SandboxIris {
             }
         }
 
-        WS.draw(lines(trainLoss, color(Color.RED), lwd(1)).lines(testLoss, color(2), lwd(1)));
+        WS.draw(lines(trainLoss, color(Color.RED)).lines(testLoss, color(2)));
+
+        tm.close();
     }
 }

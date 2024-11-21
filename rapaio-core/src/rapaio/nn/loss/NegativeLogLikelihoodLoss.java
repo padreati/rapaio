@@ -23,7 +23,6 @@ package rapaio.nn.loss;
 
 import rapaio.core.param.Param;
 import rapaio.core.param.ValueParam;
-import rapaio.narray.NArrays;
 import rapaio.nn.Loss;
 import rapaio.nn.Tensor;
 
@@ -45,8 +44,8 @@ public class NegativeLogLikelihoodLoss extends AbstractLoss<NegativeLogLikelihoo
         batch = y.value().dim(0);
         last = pred.log().neg().mul(y).sum();
         if (reduce.get().equals(Reduce.MEAN)) {
-            last = last.div(last.tm().var(NArrays.ofType(last.dtype()).scalar(pred.value().size())));
+            last = last.div(last.tm().scalarTensor(pred.value().size()));
         }
-        last.setGrad(NArrays.ofType(pred.dtype()).scalar(1));
+        last.setGrad(pred.tm().scalarArray(1));
     }
 }

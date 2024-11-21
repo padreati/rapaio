@@ -52,7 +52,7 @@ public final class UnaryOpSigmoid extends NArrayUnaryOp {
 
     @Override
     public double applyDouble(double v) {
-        return (1 / (1 + Math.exp(-v)));
+        return 1 / (1 + Math.exp(-v));
     }
 
     @Override
