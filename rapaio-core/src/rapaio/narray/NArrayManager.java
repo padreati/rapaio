@@ -60,24 +60,20 @@ public abstract class NArrayManager {
         return storageManager;
     }
 
-    public final <N extends Number> NArray<N> scalar(DType<N> dt, N value) {
+    public final <N extends Number> NArray<N> scalar(DType<N> dt, byte value) {
         return stride(dt, StrideLayout.of(Shape.of(), 0, new int[0]), storageManager.scalar(dt, value));
     }
 
-    public final <N extends Number> NArray<N> scalar(DType<N> dt, byte value) {
-        return scalar(dt, dt.cast(value));
-    }
-
     public final <N extends Number> NArray<N> scalar(DType<N> dt, int value) {
-        return scalar(dt, dt.cast(value));
+        return stride(dt, StrideLayout.of(Shape.of(), 0, new int[0]), storageManager.scalar(dt, value));
     }
 
     public final <N extends Number> NArray<N> scalar(DType<N> dt, float value) {
-        return scalar(dt, dt.cast(value));
+        return stride(dt, StrideLayout.of(Shape.of(), 0, new int[0]), storageManager.scalar(dt, value));
     }
 
     public final <N extends Number> NArray<N> scalar(DType<N> dt, double value) {
-        return scalar(dt, dt.cast(value));
+        return stride(dt, StrideLayout.of(Shape.of(), 0, new int[0]), storageManager.scalar(dt, value));
     }
 
     public final <N extends Number> NArray<N> zeros(DType<N> dt, Shape shape) {
@@ -101,63 +97,57 @@ public abstract class NArrayManager {
         return eye;
     }
 
-    public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, N value) {
+    public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, byte value) {
         var storage = storageManager.zeros(dt, shape.size());
         storage.fill(value, 0, shape.size());
         return stride(dt, shape, Order.autoFC(Order.defaultOrder()), storage);
     }
 
-    public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, byte value) {
-        var storage = storageManager.zeros(dt, shape.size());
-        storage.fill(dt.cast(value), 0, shape.size());
-        return stride(dt, shape, Order.autoFC(Order.defaultOrder()), storage);
-    }
-
     public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, int value) {
         var storage = storageManager.zeros(dt, shape.size());
-        storage.fill(dt.cast(value), 0, shape.size());
+        storage.fill(value, 0, shape.size());
         return stride(dt, shape, Order.autoFC(Order.defaultOrder()), storage);
     }
 
     public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, float value) {
         var storage = storageManager.zeros(dt, shape.size());
-        storage.fill(dt.cast(value), 0, shape.size());
+        storage.fill(value, 0, shape.size());
         return stride(dt, shape, Order.autoFC(Order.defaultOrder()), storage);
     }
 
     public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, double value) {
         var storage = storageManager.zeros(dt, shape.size());
-        storage.fill(dt.cast(value), 0, shape.size());
+        storage.fill(value, 0, shape.size());
         return stride(dt, shape, Order.autoFC(Order.defaultOrder()), storage);
     }
 
-    public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, N value, Order order) {
-        var storage = storageManager.zeros(dt, shape.size());
-        storage.fill(dt.cast(value), 0, shape.size());
-        return stride(dt, shape, Order.autoFC(order), storage);
-    }
+//    public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, N value, Order order) {
+//        var storage = storageManager.zeros(dt, shape.size());
+//        storage.fill(dt.cast(value), 0, shape.size());
+//        return stride(dt, shape, Order.autoFC(order), storage);
+//    }
 
     public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, byte value, Order askOrder) {
         var storage = storageManager.zeros(dt, shape.size());
-        storage.fill(dt.cast(value), 0, shape.size());
+        storage.fill(value, 0, shape.size());
         return stride(dt, shape, Order.autoFC(askOrder), storage);
     }
 
     public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, int value, Order askOrder) {
         var storage = storageManager.zeros(dt, shape.size());
-        storage.fill(dt.cast(value), 0, shape.size());
+        storage.fill(value, 0, shape.size());
         return stride(dt, shape, Order.autoFC(askOrder), storage);
     }
 
     public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, float value, Order askOrder) {
         var storage = storageManager.zeros(dt, shape.size());
-        storage.fill(dt.cast(value), 0, shape.size());
+        storage.fill(value, 0, shape.size());
         return stride(dt, shape, Order.autoFC(askOrder), storage);
     }
 
     public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, double value, Order askOrder) {
         var storage = storageManager.zeros(dt, shape.size());
-        storage.fill(dt.cast(value), 0, shape.size());
+        storage.fill(value, 0, shape.size());
         return stride(dt, shape, Order.autoFC(askOrder), storage);
     }
 
@@ -184,9 +174,7 @@ public abstract class NArrayManager {
     }
 
 
-
-
-    public final <N extends Number> NArray<N> stride(DType<N> dt, Shape shape, Order order, Storage<N> storage) {
+    public final <N extends Number> NArray<N> stride(DType<N> dt, Shape shape, Order order, Storage storage) {
         return stride(dt, StrideLayout.ofDense(shape, 0, order), storage);
     }
 
@@ -222,7 +210,7 @@ public abstract class NArrayManager {
         return stride(dt, StrideLayout.ofDense(shape, 0, order), storageManager.from(dt, array));
     }
 
-    public abstract <N extends Number> NArray<N> stride(DType<N> dt, StrideLayout layout, Storage<N> storage);
+    public abstract <N extends Number> NArray<N> stride(DType<N> dt, StrideLayout layout, Storage storage);
 
     public final <N extends Number> NArray<N> stride(DType<N> dt, StrideLayout layout, byte[] array) {
         return stride(dt, layout, storageManager.from(dt, array));
@@ -367,7 +355,7 @@ public abstract class NArrayManager {
 
         protected abstract NArray<N> random(Shape shape, Random random, Order order);
 
-        public final NArray<N> stride(Shape shape, Order order, Storage<N> storage) {
+        public final NArray<N> stride(Shape shape, Order order, Storage storage) {
             return stride(StrideLayout.ofDense(shape, 0, order), storage);
         }
 
@@ -419,6 +407,6 @@ public abstract class NArrayManager {
             return stride(shape, order, parent.storageManager.from(dt, array));
         }
 
-        public abstract NArray<N> stride(StrideLayout layout, Storage<N> storage);
+        public abstract NArray<N> stride(StrideLayout layout, Storage storage);
     }
 }

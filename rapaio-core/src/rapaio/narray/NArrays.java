@@ -36,7 +36,7 @@ public final class NArrays {
     private static final DType<Double> dt = DType.DOUBLE;
     private static final NArrayManager tm = NArrayManager.base();
 
-    public static NArray<Double> scalar(Double value) {
+    public static NArray<Double> scalar(double value) {
         return tm.scalar(dt, value);
     }
 
@@ -92,7 +92,7 @@ public final class NArrays {
         return tm.stride(dt, shape, order, array);
     }
 
-    public static NArray<Double> stride(Shape shape, Order order, Storage<Double> storage) {
+    public static NArray<Double> stride(Shape shape, Order order, Storage storage) {
         return tm.stride(dt, shape, order, storage);
     }
 

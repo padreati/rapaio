@@ -159,7 +159,7 @@ public class QRDecompositionTest {
     }
 
     <N extends Number> void testSingular(NArrayManager tm, DType<N> dt) {
-        assertThrows(RuntimeException.class, () -> tm.full(dt, Shape.of(10, 10), dt.cast(2))
+        assertThrows(RuntimeException.class, () -> tm.full(dt, Shape.of(10, 10), 2)
                 .qr().solve(tm.random(dt, Shape.of(10, 1), random)));
     }
 

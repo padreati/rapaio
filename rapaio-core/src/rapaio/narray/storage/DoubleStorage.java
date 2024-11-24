@@ -24,33 +24,12 @@ package rapaio.narray.storage;
 import rapaio.narray.DType;
 import rapaio.narray.Storage;
 
-public abstract class DoubleStorage extends Storage<Double> {
+public abstract class DoubleStorage extends Storage {
 
     @Override
-    public final DType<Double> dType() {
+    public final DType<Double> dtype() {
         return DType.DOUBLE;
     }
-
-    @Override
-    public final Double get(int ptr) {
-        return getDouble(ptr);
-    }
-
-    @Override
-    public final void set(int ptr, Double v) {
-        setDouble(ptr, v);
-    }
-
-    @Override
-    public final void inc(int ptr, Double value) {
-        incDouble(ptr, value);
-    }
-
-    @Override
-    public final void fill(Double value, int start, int len) {
-        fillDouble(value, start, len);
-    }
-
 
     public final byte getByte(int ptr) {
         return (byte) getDouble(ptr);
@@ -67,8 +46,8 @@ public abstract class DoubleStorage extends Storage<Double> {
     }
 
     @Override
-    public final void fillByte(byte value, int start, int len) {
-        fillDouble(value, start, len);
+    public final void fill(byte value, int start, int len) {
+        fill((double) value, start, len);
     }
 
 
@@ -88,8 +67,8 @@ public abstract class DoubleStorage extends Storage<Double> {
     }
 
     @Override
-    public final void fillInt(int value, int start, int len) {
-        fillDouble(value, start, len);
+    public final void fill(int value, int start, int len) {
+        fill((double) value, start, len);
     }
 
 
@@ -109,8 +88,8 @@ public abstract class DoubleStorage extends Storage<Double> {
     }
 
     @Override
-    public final void fillFloat(float value, int start, int len) {
-        fillDouble(value, start, len);
+    public final void fill(float value, int start, int len) {
+        fill((double) value, start, len);
     }
 
 
@@ -120,6 +99,6 @@ public abstract class DoubleStorage extends Storage<Double> {
 
     public abstract void incDouble(int ptr, double value);
 
-    public abstract void fillDouble(double value, int start, int len);
+    public abstract void fill(double value, int start, int len);
 
 }

@@ -124,7 +124,7 @@ public final class ByteDenseStride extends ByteDense {
         byte[] buff = new byte[shape.size()];
         random.nextBytes(buff);
         for (int i = 0; i < shape.size(); i++) {
-            array.set(i, buff[i]);
+            array.setByte(i, buff[i]);
         }
         return manager.stride(dt, StrideLayout.of(shape, offset, strides), array);
     }

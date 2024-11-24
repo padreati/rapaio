@@ -26,7 +26,10 @@ import static rapaio.util.Hardware.L2_CACHE_SIZE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.Stack;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -34,6 +37,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
+import java.util.stream.StreamSupport;
 
 import rapaio.data.OperationNotAvailableException;
 import rapaio.narray.DType;
@@ -61,7 +65,7 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
 
     private static final DType<Float> dt = DType.FLOAT;
 
-    public BaseFloatNArrayStride(NArrayManager engine, StrideLayout layout, Storage<Float> storage) {
+    public BaseFloatNArrayStride(NArrayManager engine, StrideLayout layout, Storage storage) {
         super(engine, layout, storage);
     }
 
@@ -139,6 +143,11 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
     @Override
     public void ptrSet(int ptr, Float value) {
         storage.setFloat(ptr, value);
+    }
+
+    public final Iterator<Float> iterator(Order askOrder) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
+                .map(storage::getFloat).iterator();
     }
 
     @Override
@@ -856,8 +865,8 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
         return dst;
     }
 
-    private void sameLayoutCopy(Storage<Float> copy, Order askOrder) {
-        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
+    private void sameLayoutCopy(Storage copy, Order askOrder) {
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dt.vectorSpecies());
         var last = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {

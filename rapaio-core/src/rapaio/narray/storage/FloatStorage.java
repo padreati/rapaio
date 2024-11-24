@@ -24,34 +24,12 @@ package rapaio.narray.storage;
 import rapaio.narray.DType;
 import rapaio.narray.Storage;
 
-public abstract class FloatStorage extends Storage<Float> {
+public abstract class FloatStorage extends Storage {
 
     @Override
-    public final DType<Float> dType() {
+    public final DType<Float> dtype() {
         return DType.FLOAT;
     }
-
-
-    @Override
-    public final Float get(int ptr) {
-        return getFloat(ptr);
-    }
-
-    @Override
-    public final void set(int ptr, Float v) {
-        setFloat(ptr, v);
-    }
-
-    @Override
-    public final void inc(int ptr, Float value) {
-        incFloat(ptr, value);
-    }
-
-    @Override
-    public final void fill(Float value, int start, int len) {
-        fillFloat(value, start, len);
-    }
-
 
     @Override
     public final byte getByte(int ptr) {
@@ -69,8 +47,8 @@ public abstract class FloatStorage extends Storage<Float> {
     }
 
     @Override
-    public final void fillByte(byte value, int start, int len) {
-        fillFloat(value, start, len);
+    public final void fill(byte value, int start, int len) {
+        fill((double) value, start, len);
     }
 
 
@@ -90,8 +68,8 @@ public abstract class FloatStorage extends Storage<Float> {
     }
 
     @Override
-    public final void fillInt(int value, int start, int len) {
-        fillFloat(value, start, len);
+    public final void fill(int value, int start, int len) {
+        fill((double) value, start, len);
     }
 
 
@@ -101,7 +79,7 @@ public abstract class FloatStorage extends Storage<Float> {
 
     public abstract void incFloat(int ptr, float value);
 
-    public abstract void fillFloat(float value, int start, int len);
+    public abstract void fill(float value, int start, int len);
 
 
     @Override
@@ -120,7 +98,7 @@ public abstract class FloatStorage extends Storage<Float> {
     }
 
     @Override
-    public final void fillDouble(double value, int start, int len) {
-        fillFloat((float) value, start, len);
+    public final void fill(double value, int start, int len) {
+        fill((float) value, start, len);
     }
 }

@@ -99,7 +99,7 @@ public class NArrayManagerTest {
     }
 
     <N extends Number> void testFull(NArrayManager manager, DType<N> dt) {
-        var t = manager.full(dt, Shape.of(2, 3), dt.cast(5));
+        var t = manager.full(dt, Shape.of(2, 3), 5);
         assertEquals(2, t.rank());
         assertEquals(6, t.size());
 

@@ -24,31 +24,11 @@ package rapaio.narray.storage;
 import rapaio.narray.DType;
 import rapaio.narray.Storage;
 
-public abstract class ByteStorage extends Storage<Byte> {
+public abstract class ByteStorage extends Storage {
 
     @Override
-    public final DType<Byte> dType() {
+    public final DType<Byte> dtype() {
         return DType.BYTE;
-    }
-
-    @Override
-    public final Byte get(int ptr) {
-        return getByte(ptr);
-    }
-
-    @Override
-    public final void set(int ptr, Byte v) {
-        setByte(ptr, v);
-    }
-
-    @Override
-    public final void inc(int ptr, Byte value) {
-        incByte(ptr, value);
-    }
-
-    @Override
-    public void fill(Byte value, int start, int len) {
-        fillByte(value, start, len);
     }
 
     public abstract byte getByte(int ptr);
@@ -57,7 +37,7 @@ public abstract class ByteStorage extends Storage<Byte> {
 
     public abstract void incByte(int ptr, byte value);
 
-    public abstract void fillByte(byte value, int start, int len);
+    public abstract void fill(byte value, int start, int len);
 
 
     @Override
@@ -76,8 +56,8 @@ public abstract class ByteStorage extends Storage<Byte> {
     }
 
     @Override
-    public final void fillInt(int value, int start, int len) {
-        fillByte((byte) value, start, len);
+    public final void fill(int value, int start, int len) {
+        fill((byte) value, start, len);
     }
 
     @Override
@@ -96,8 +76,8 @@ public abstract class ByteStorage extends Storage<Byte> {
     }
 
     @Override
-    public final void fillFloat(float value, int start, int len) {
-        fillByte((byte) value, start, len);
+    public final void fill(float value, int start, int len) {
+        fill((byte) value, start, len);
     }
 
 
@@ -117,7 +97,7 @@ public abstract class ByteStorage extends Storage<Byte> {
     }
 
     @Override
-    public final void fillDouble(double value, int start, int len) {
-        fillByte((byte) value, start, len);
+    public final void fill(double value, int start, int len) {
+        fill((byte) value, start, len);
     }
 }

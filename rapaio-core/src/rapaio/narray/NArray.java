@@ -79,9 +79,9 @@ import rapaio.util.function.IntIntBiFunction;
 public abstract sealed class NArray<N extends Number> implements Printable, Iterable<N> permits AbstractStrideNArray {
 
     protected final NArrayManager manager;
-    protected final Storage<N> storage;
+    protected final Storage storage;
 
-    protected NArray(NArrayManager manager, Storage<N> storage) {
+    protected NArray(NArrayManager manager, Storage storage) {
         this.manager = manager;
         this.storage = storage;
     }
@@ -158,7 +158,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
      *
      * @return storage instance
      */
-    public final Storage<N> storage() {
+    public final Storage storage() {
         return storage;
     }
 
@@ -806,10 +806,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return iterator(Order.S);
     }
 
-    public final Iterator<N> iterator(Order askOrder) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
-                .map(storage::get).iterator();
-    }
+    public abstract Iterator<N> iterator(Order askOrder);
 
     public final Stream<N> stream() {
         return stream(Order.defaultOrder());

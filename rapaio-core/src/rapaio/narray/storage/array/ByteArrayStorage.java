@@ -73,7 +73,7 @@ public final class ByteArrayStorage extends ByteStorage {
     }
 
     @Override
-    public void fillByte(byte value, int start, int len) {
+    public void fill(byte value, int start, int len) {
         Arrays.fill(array, start, start + len, value);
     }
 

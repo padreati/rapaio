@@ -54,7 +54,7 @@ public abstract sealed class AbstractStrideNArray<N extends Number> extends NArr
     protected final StrideLayout layout;
     protected final StrideLoopDescriptor<N> loop;
 
-    public AbstractStrideNArray(NArrayManager manager, StrideLayout layout, Storage<N> storage) {
+    public AbstractStrideNArray(NArrayManager manager, StrideLayout layout, Storage storage) {
         super(manager, storage);
         this.layout = layout;
         this.loop = StrideLoopDescriptor.of(layout, layout.storageFastOrder(), dtype().vectorSpecies());

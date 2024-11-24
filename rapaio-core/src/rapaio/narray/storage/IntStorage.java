@@ -24,34 +24,12 @@ package rapaio.narray.storage;
 import rapaio.narray.DType;
 import rapaio.narray.Storage;
 
-public abstract class IntStorage extends Storage<Integer> {
+public abstract class IntStorage extends Storage {
 
     @Override
-    public final DType<Integer> dType() {
+    public final DType<Integer> dtype() {
         return DType.INTEGER;
     }
-
-
-    @Override
-    public final Integer get(int ptr) {
-        return getInt(ptr);
-    }
-
-    @Override
-    public final void set(int ptr, Integer v) {
-        setInt(ptr, v);
-    }
-
-    @Override
-    public final void inc(int ptr, Integer value) {
-        incInt(ptr, value);
-    }
-
-    @Override
-    public final void fill(Integer value, int start, int len) {
-        fillInt(value, start, len);
-    }
-
 
     @Override
     public final byte getByte(int ptr) {
@@ -69,8 +47,8 @@ public abstract class IntStorage extends Storage<Integer> {
     }
 
     @Override
-    public final void fillByte(byte value, int start, int len) {
-        fillInt(value, start, len);
+    public final void fill(byte value, int start, int len) {
+        fill((int)value, start, len);
     }
 
 
@@ -80,7 +58,7 @@ public abstract class IntStorage extends Storage<Integer> {
 
     public abstract void incInt(int ptr, int value);
 
-    public abstract void fillInt(int value, int start, int len);
+    public abstract void fill(int value, int start, int len);
 
 
     @Override
@@ -99,8 +77,8 @@ public abstract class IntStorage extends Storage<Integer> {
     }
 
     @Override
-    public final void fillFloat(float value, int start, int len) {
-        fillInt((int) value, start, len);
+    public final void fill(float value, int start, int len) {
+        fill((int) value, start, len);
     }
 
 
@@ -120,7 +98,7 @@ public abstract class IntStorage extends Storage<Integer> {
     }
 
     @Override
-    public final void fillDouble(double value, int start, int len) {
-        fillInt((int) value, start, len);
+    public final void fill(double value, int start, int len) {
+        fill((int) value, start, len);
     }
 }

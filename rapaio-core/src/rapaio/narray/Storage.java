@@ -21,19 +21,11 @@
 
 package rapaio.narray;
 
-public abstract class Storage<N extends Number> {
+public abstract class Storage {
 
-    public abstract DType<N> dType();
+    public abstract DType<?> dtype();
 
     public abstract int size();
-
-    public abstract N get(int ptr);
-
-    public abstract void set(int ptr, N value);
-
-    public abstract void inc(int ptr, N value);
-
-    public abstract void fill(N value, int start, int len);
 
 
     public abstract byte getByte(int ptr);
@@ -42,7 +34,7 @@ public abstract class Storage<N extends Number> {
 
     public abstract void incByte(int ptr, byte value);
 
-    public abstract void fillByte(byte value, int start, int len);
+    public abstract void fill(byte value, int start, int len);
 
 
     public abstract int getInt(int ptr);
@@ -51,7 +43,7 @@ public abstract class Storage<N extends Number> {
 
     public abstract void incInt(int ptr, int value);
 
-    public abstract void fillInt(int value, int start, int len);
+    public abstract void fill(int value, int start, int len);
 
 
     public abstract float getFloat(int ptr);
@@ -60,7 +52,7 @@ public abstract class Storage<N extends Number> {
 
     public abstract void incFloat(int ptr, float value);
 
-    public abstract void fillFloat(float value, int start, int len);
+    public abstract void fill(float value, int start, int len);
 
 
     public abstract double getDouble(int ptr);
@@ -69,6 +61,6 @@ public abstract class Storage<N extends Number> {
 
     public abstract void incDouble(int ptr, double value);
 
-    public abstract void fillDouble(double value, int start, int len);
+    public abstract void fill(double value, int start, int len);
 
 }

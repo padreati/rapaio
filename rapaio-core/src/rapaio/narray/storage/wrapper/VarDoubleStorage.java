@@ -25,7 +25,7 @@ import rapaio.data.Var;
 import rapaio.narray.DType;
 import rapaio.narray.Storage;
 
-public final class VarDoubleStorage extends Storage<Double> {
+public final class VarDoubleStorage extends Storage {
 
     private final Var vd;
 
@@ -34,33 +34,13 @@ public final class VarDoubleStorage extends Storage<Double> {
     }
 
     @Override
-    public DType<Double> dType() {
+    public DType<Double> dtype() {
         return DType.DOUBLE;
     }
 
     @Override
     public int size() {
         return vd.size();
-    }
-
-    @Override
-    public Double get(int ptr) {
-        return vd.getDouble(ptr);
-    }
-
-    @Override
-    public void set(int ptr, Double value) {
-        vd.setDouble(ptr, value);
-    }
-
-    @Override
-    public void inc(int ptr, Double value) {
-        vd.setDouble(ptr, vd.getDouble(ptr) + value);
-    }
-
-    @Override
-    public void fill(Double value, int start, int len) {
-        fillDouble(value, start, len);
     }
 
     @Override
@@ -79,8 +59,8 @@ public final class VarDoubleStorage extends Storage<Double> {
     }
 
     @Override
-    public void fillByte(byte value, int start, int len) {
-        fillDouble(value, start, len);
+    public void fill(byte value, int start, int len) {
+        fill((double)value, start, len);
     }
 
     @Override
@@ -99,8 +79,8 @@ public final class VarDoubleStorage extends Storage<Double> {
     }
 
     @Override
-    public void fillInt(int value, int start, int len) {
-        fillDouble(value, start, len);
+    public void fill(int value, int start, int len) {
+        fill((double)value, start, len);
     }
 
     @Override
@@ -119,8 +99,8 @@ public final class VarDoubleStorage extends Storage<Double> {
     }
 
     @Override
-    public void fillFloat(float value, int start, int len) {
-        fillDouble(value, start, len);
+    public void fill(float value, int start, int len) {
+        fill((double)value, start, len);
     }
 
     @Override
@@ -139,7 +119,7 @@ public final class VarDoubleStorage extends Storage<Double> {
     }
 
     @Override
-    public void fillDouble(double value, int start, int len) {
+    public void fill(double value, int start, int len) {
         for (int i = start; i < start+len; i++) {
             vd.setDouble(i, value);
         }

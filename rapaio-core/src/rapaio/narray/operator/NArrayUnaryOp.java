@@ -41,7 +41,7 @@ public abstract class NArrayUnaryOp {
 
     public abstract float applyFloat(float v);
 
-    public final void applyByte(StrideLoopDescriptor<Byte> loop, Storage<Byte> storage) {
+    public final void applyByte(StrideLoopDescriptor<Byte> loop, Storage storage) {
         if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
@@ -56,7 +56,7 @@ public abstract class NArrayUnaryOp {
         }
     }
 
-    private void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage<Byte> storage) {
+    private void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage storage) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 storage.setByte(p, applyByte(storage.getByte(p)));
@@ -69,7 +69,7 @@ public abstract class NArrayUnaryOp {
 
     protected abstract void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array);
 
-    public final void applyInt(StrideLoopDescriptor<Integer> loop, Storage<Integer> storage) {
+    public final void applyInt(StrideLoopDescriptor<Integer> loop, Storage storage) {
         if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
@@ -84,7 +84,7 @@ public abstract class NArrayUnaryOp {
         }
     }
 
-    private void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage<Integer> storage) {
+    private void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage storage) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 storage.setInt(p, applyInt(storage.getInt(p)));
@@ -97,7 +97,7 @@ public abstract class NArrayUnaryOp {
 
     protected abstract void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array);
 
-    public final void applyFloat(StrideLoopDescriptor<Float> loop, Storage<Float> storage) {
+    public final void applyFloat(StrideLoopDescriptor<Float> loop, Storage storage) {
         if (storage instanceof FloatArrayStorage as) {
             if (loop.step == 1) {
                 applyUnitFloat(loop, as.array());
@@ -109,7 +109,7 @@ public abstract class NArrayUnaryOp {
         }
     }
 
-    private void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage<Float> storage) {
+    private void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage storage) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 storage.setFloat(p, applyFloat(storage.getFloat(p)));
@@ -122,7 +122,7 @@ public abstract class NArrayUnaryOp {
 
     protected abstract void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array);
 
-    public final void applyDouble(StrideLoopDescriptor<Double> loop, Storage<Double> storage) {
+    public final void applyDouble(StrideLoopDescriptor<Double> loop, Storage storage) {
         if (storage instanceof DoubleArrayStorage as) {
             if (loop.step == 1) {
                 applyUnitDouble(loop, as.array());
@@ -134,7 +134,7 @@ public abstract class NArrayUnaryOp {
         }
     }
 
-    private void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage<Double> storage) {
+    private void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage storage) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 storage.setDouble(p, applyDouble(storage.getDouble(p)));

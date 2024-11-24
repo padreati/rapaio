@@ -24,6 +24,9 @@ package rapaio.narray;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import rapaio.io.serialization.AtomSerialization;
+import rapaio.io.serialization.LoadAtomHandler;
+import rapaio.io.serialization.SaveAtomHandler;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -231,5 +234,26 @@ public final class Shape {
     @Override
     public String toString() {
         return "Shape: [" + Arrays.stream(dims).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "]";
+    }
+
+    public static class Serialization extends AtomSerialization<Shape> {
+
+        @Override
+        public LoadAtomHandler<Shape> loadAtomHandler() {
+            return in -> {
+                int[] dims = in.readInts();
+                return new Shape(dims);
+            };
+        }
+
+        @Override
+        public SaveAtomHandler<Shape> saveAtomHandler() {
+            return (atom, out) -> {
+                if (!(atom instanceof Shape shape)) {
+                    throw new IllegalArgumentException("Atom is not of type Shape.");
+                }
+                out.saveInts(shape.dims);
+            };
+        }
     }
 }

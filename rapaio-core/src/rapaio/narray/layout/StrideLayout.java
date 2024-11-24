@@ -21,6 +21,9 @@
 
 package rapaio.narray.layout;
 
+import rapaio.io.serialization.AtomSerialization;
+import rapaio.io.serialization.LoadAtomHandler;
+import rapaio.io.serialization.SaveAtomHandler;
 import rapaio.narray.Layout;
 import rapaio.narray.Order;
 import rapaio.narray.Shape;
@@ -121,4 +124,30 @@ public interface StrideLayout extends Layout {
      * stride of the next-fastest index.
      */
     StrideLayout attemptReshape(Shape shape, Order askOrder);
+
+    class Serialization extends AtomSerialization<StrideLayout> {
+
+        @Override
+        public LoadAtomHandler<StrideLayout> loadAtomHandler() {
+            return in -> {
+                Shape shape = in.loadAtom(Shape.class);
+                int offset = in.readInt();
+                int[] strides = in.readInts();
+                return StrideLayout.of(shape, offset, strides);
+            };
+        }
+
+        @Override
+        public SaveAtomHandler<StrideLayout> saveAtomHandler() {
+            return (atom, out) -> {
+                if(!(atom instanceof StrideLayout layout)) {
+                    throw new IllegalArgumentException("Can't serialize scalar stride layout from instance: " + atom);
+                }
+                out.saveAtom(layout.shape());
+                out.saveInt(layout.offset());
+                out.saveInts(layout.strides());
+            };
+        }
+    }
+
 }

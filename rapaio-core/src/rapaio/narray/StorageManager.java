@@ -29,18 +29,24 @@ public abstract class StorageManager {
         return new ArrayStorageManager();
     }
 
-    public abstract <N extends Number, M extends Number> Storage<N> scalar(DType<N> dt, M value);
+    public abstract Storage scalar(DType<?> dt, byte value);
 
-    public abstract <N extends Number> Storage<N> zeros(DType<N> dt, int len);
+    public abstract Storage scalar(DType<?> dt, int value);
 
-    public abstract <N extends Number> Storage<N> from(DType<N> dt, byte... array);
+    public abstract Storage scalar(DType<?> dt, float value);
 
-    public abstract <N extends Number> Storage<N> from(DType<N> dt, int... array);
+    public abstract Storage scalar(DType<?> dt, double value);
 
-    public abstract <N extends Number> Storage<N> from(DType<N> dt, float... array);
+    public abstract Storage zeros(DType<?> dt, int len);
 
-    public abstract <N extends Number> Storage<N> from(DType<N> dt, double... array);
+    public abstract Storage from(DType<?> dt, byte... array);
 
-    public abstract<N extends Number>  Storage<N> from(DType<N> dt, Storage<?> source);
+    public abstract Storage from(DType<?> dt, int... array);
+
+    public abstract Storage from(DType<?> dt, float... array);
+
+    public abstract Storage from(DType<?> dt, double... array);
+
+    public abstract Storage from(DType<?> dt, Storage source);
 
 }

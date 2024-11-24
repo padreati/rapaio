@@ -28,20 +28,48 @@ import rapaio.narray.StorageManager;
 public class ArrayStorageManager extends StorageManager {
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <N extends Number, M extends Number> Storage<N> scalar(DType<N> dt, M value) {
-        return (Storage<N>) switch (dt.id()) {
-            case BYTE -> new ByteArrayStorage(new byte[] {value.byteValue()});
-            case INTEGER -> new IntArrayStorage(new int[] {value.intValue()});
-            case FLOAT -> new FloatArrayStorage(new float[] {value.floatValue()});
-            case DOUBLE -> new DoubleArrayStorage(new double[] {value.doubleValue()});
+    public Storage scalar(DType<?> dt, byte value) {
+        return switch (dt.id()) {
+            case BYTE -> new ByteArrayStorage(new byte[] {value});
+            case INTEGER -> new IntArrayStorage(new int[] {value});
+            case FLOAT -> new FloatArrayStorage(new float[] {value});
+            case DOUBLE -> new DoubleArrayStorage(new double[] {value});
         };
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <N extends Number> Storage<N> zeros(DType<N> dt, int len) {
-        return (Storage<N>) switch (dt.id()) {
+    public Storage scalar(DType<?> dt, int value) {
+        return switch (dt.id()) {
+            case BYTE -> new ByteArrayStorage(new byte[] {(byte) value});
+            case INTEGER -> new IntArrayStorage(new int[] {value});
+            case FLOAT -> new FloatArrayStorage(new float[] {value});
+            case DOUBLE -> new DoubleArrayStorage(new double[] {value});
+        };
+    }
+
+    @Override
+    public Storage scalar(DType<?> dt, float value) {
+        return switch (dt.id()) {
+            case BYTE -> new ByteArrayStorage(new byte[] {(byte) value});
+            case INTEGER -> new IntArrayStorage(new int[] {(int) value});
+            case FLOAT -> new FloatArrayStorage(new float[] {value});
+            case DOUBLE -> new DoubleArrayStorage(new double[] {value});
+        };
+    }
+
+    @Override
+    public Storage scalar(DType<?> dt, double value) {
+        return switch (dt.id()) {
+            case BYTE -> new ByteArrayStorage(new byte[] {(byte) value});
+            case INTEGER -> new IntArrayStorage(new int[] {(int) value});
+            case FLOAT -> new FloatArrayStorage(new float[] {(float) value});
+            case DOUBLE -> new DoubleArrayStorage(new double[] {value});
+        };
+    }
+
+    @Override
+    public Storage zeros(DType<?> dt, int len) {
+        return switch (dt.id()) {
             case BYTE -> new ByteArrayStorage(new byte[len]);
             case INTEGER -> new IntArrayStorage(new int[len]);
             case FLOAT -> new FloatArrayStorage(new float[len]);
@@ -50,9 +78,8 @@ public class ArrayStorageManager extends StorageManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <N extends Number> Storage<N> from(DType<N> dt, byte... array) {
-        return (Storage<N>) switch (dt.id()) {
+    public Storage from(DType<?> dt, byte... array) {
+        return switch (dt.id()) {
             case BYTE -> new ByteArrayStorage(array);
             case INTEGER -> new IntArrayStorage(array);
             case FLOAT -> new FloatArrayStorage(array);
@@ -61,9 +88,8 @@ public class ArrayStorageManager extends StorageManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <N extends Number> Storage<N> from(DType<N> dt, int... array) {
-        return (Storage<N>) switch (dt.id()) {
+    public Storage from(DType<?> dt, int... array) {
+        return switch (dt.id()) {
             case BYTE -> new ByteArrayStorage(array);
             case INTEGER -> new IntArrayStorage(array);
             case FLOAT -> new FloatArrayStorage(array);
@@ -72,9 +98,8 @@ public class ArrayStorageManager extends StorageManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <N extends Number> Storage<N> from(DType<N> dt, float... array) {
-        return (Storage<N>) switch (dt.id()) {
+    public Storage from(DType<?> dt, float... array) {
+        return switch (dt.id()) {
             case BYTE -> new ByteArrayStorage(array);
             case INTEGER -> new IntArrayStorage(array);
             case FLOAT -> new FloatArrayStorage(array);
@@ -83,9 +108,8 @@ public class ArrayStorageManager extends StorageManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <N extends Number> Storage<N> from(DType<N> dt, double... array) {
-        return (Storage<N>) switch (dt.id()) {
+    public Storage from(DType<?> dt, double... array) {
+        return switch (dt.id()) {
             case BYTE -> new ByteArrayStorage(array);
             case INTEGER -> new IntArrayStorage(array);
             case FLOAT -> new FloatArrayStorage(array);
@@ -94,36 +118,35 @@ public class ArrayStorageManager extends StorageManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <N extends Number> Storage<N> from(DType<N> dt, Storage<?> source) {
+    public Storage from(DType<?> dt, Storage source) {
         switch (dt.id()) {
             case BYTE -> {
                 byte[] copy = new byte[source.size()];
                 for (int i = 0; i < copy.length; i++) {
                     copy[i] = source.getByte(i);
                 }
-                return (Storage<N>) new ByteArrayStorage(copy);
+                return new ByteArrayStorage(copy);
             }
             case INTEGER -> {
                 int[] copy = new int[source.size()];
                 for (int i = 0; i < copy.length; i++) {
                     copy[i] = source.getInt(i);
                 }
-                return (Storage<N>) new IntArrayStorage(copy);
+                return new IntArrayStorage(copy);
             }
             case FLOAT -> {
                 float[] copy = new float[source.size()];
                 for (int i = 0; i < copy.length; i++) {
                     copy[i] = source.getFloat(i);
                 }
-                return (Storage<N>) new FloatArrayStorage(copy);
+                return new FloatArrayStorage(copy);
             }
             case DOUBLE -> {
                 double[] copy = new double[source.size()];
                 for (int i = 0; i < copy.length; i++) {
                     copy[i] = source.getDouble(i);
                 }
-                return (Storage<N>) new DoubleArrayStorage(copy);
+                return new DoubleArrayStorage(copy);
             }
         }
         return null;

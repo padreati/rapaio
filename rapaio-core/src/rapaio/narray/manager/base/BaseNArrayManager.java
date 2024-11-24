@@ -41,12 +41,12 @@ public class BaseNArrayManager extends NArrayManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <N extends Number> NArray<N> stride(DType<N> dt, StrideLayout layout, Storage<N> storage) {
+    public <N extends Number> NArray<N> stride(DType<N> dt, StrideLayout layout, Storage storage) {
         return (NArray<N>) switch (dt.id()) {
-            case DOUBLE -> new BaseDoubleNArrayStride(this, layout, (Storage<Double>) storage);
-            case FLOAT -> new BaseFloatNArrayStride(this, layout, (Storage<Float>) storage);
-            case INTEGER -> new BaseIntNArrayStride(this, layout, (Storage<Integer>) storage);
-            case BYTE -> new BaseByteNArrayStride(this, layout, (Storage<Byte>) storage);
+            case DOUBLE -> new BaseDoubleNArrayStride(this, layout, storage);
+            case FLOAT -> new BaseFloatNArrayStride(this, layout, storage);
+            case INTEGER -> new BaseIntNArrayStride(this, layout, storage);
+            case BYTE -> new BaseByteNArrayStride(this, layout, storage);
         };
     }
 

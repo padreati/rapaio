@@ -73,7 +73,7 @@ public final class DoubleArrayStorage extends DoubleStorage {
     }
 
     @Override
-    public void fillDouble(double value, int start, int len) {
+    public void fill(double value, int start, int len) {
         Arrays.fill(array, start, start + len, value);
     }
 

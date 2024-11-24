@@ -55,7 +55,7 @@ public abstract class DataFactory<N extends Number> {
     public abstract N sum(N x, N y);
 
     public NArray<N> scalar(N value) {
-        return manager.scalar(dt, value);
+        return manager.scalar(dt, value.doubleValue());
     }
 
     public abstract NArray<N> seq(Shape shape);

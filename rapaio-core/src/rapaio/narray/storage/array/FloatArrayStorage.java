@@ -73,7 +73,7 @@ public final class FloatArrayStorage extends FloatStorage {
     }
 
     @Override
-    public void fillFloat(float value, int start, int len) {
+    public void fill(float value, int start, int len) {
         Arrays.fill(array, start, start + len, value);
     }
 

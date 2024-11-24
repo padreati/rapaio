@@ -25,7 +25,7 @@ import rapaio.data.Var;
 import rapaio.narray.DType;
 import rapaio.narray.Storage;
 
-public class VarFloatStorage extends Storage<Float> {
+public class VarFloatStorage extends Storage {
 
     private final Var vd;
 
@@ -34,33 +34,13 @@ public class VarFloatStorage extends Storage<Float> {
     }
 
     @Override
-    public DType<Float> dType() {
+    public DType<Float> dtype() {
         return DType.FLOAT;
     }
 
     @Override
     public int size() {
         return vd.size();
-    }
-
-    @Override
-    public Float get(int ptr) {
-        return vd.getFloat(ptr);
-    }
-
-    @Override
-    public void set(int ptr, Float value) {
-        vd.setFloat(ptr, value);
-    }
-
-    @Override
-    public void inc(int ptr, Float value) {
-        vd.setDouble(ptr, vd.getFloat(ptr) + value);
-    }
-
-    @Override
-    public void fill(Float value, int start, int len) {
-        fillFloat(value, start, len);
     }
 
     @Override
@@ -79,8 +59,8 @@ public class VarFloatStorage extends Storage<Float> {
     }
 
     @Override
-    public void fillByte(byte value, int start, int len) {
-        fillFloat(value, start, len);
+    public void fill(byte value, int start, int len) {
+        fill((float)value, start, len);
     }
 
     @Override
@@ -99,8 +79,8 @@ public class VarFloatStorage extends Storage<Float> {
     }
 
     @Override
-    public void fillInt(int value, int start, int len) {
-        fillFloat(value, start, len);
+    public void fill(int value, int start, int len) {
+        fill((float)value, start, len);
     }
 
     @Override
@@ -119,8 +99,8 @@ public class VarFloatStorage extends Storage<Float> {
     }
 
     @Override
-    public void fillDouble(double value, int start, int len) {
-        fillFloat((float) value, start, len);
+    public void fill(double value, int start, int len) {
+        fill((float) value, start, len);
     }
 
     @Override
@@ -139,7 +119,7 @@ public class VarFloatStorage extends Storage<Float> {
     }
 
     @Override
-    public void fillFloat(float value, int start, int len) {
+    public void fill(float value, int start, int len) {
         for (int i = start; i < start + len; i++) {
             vd.setFloat(i, value);
         }
