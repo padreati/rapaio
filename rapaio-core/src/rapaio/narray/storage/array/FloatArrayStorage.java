@@ -23,6 +23,8 @@ package rapaio.narray.storage.array;
 
 import java.util.Arrays;
 
+import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.narray.storage.FloatStorage;
 
 public final class FloatArrayStorage extends FloatStorage {
@@ -59,6 +61,11 @@ public final class FloatArrayStorage extends FloatStorage {
         return array.length;
     }
 
+    @Override
+    public boolean supportVectorization() {
+        return true;
+    }
+
     public float getFloat(int ptr) {
         return array[ptr];
     }
@@ -75,6 +82,26 @@ public final class FloatArrayStorage extends FloatStorage {
     @Override
     public void fill(float value, int start, int len) {
         Arrays.fill(array, start, start + len, value);
+    }
+
+    @Override
+    public FloatVector getFloatVector(VectorSpecies<Float> vs, int offset) {
+        return FloatVector.fromArray(vs, array, offset);
+    }
+
+    @Override
+    public FloatVector getFloatVector(VectorSpecies<Float> vs, int offset, int[] idx, int idxOffset) {
+        return FloatVector.fromArray(vs, array, offset, idx, idxOffset);
+    }
+
+    @Override
+    public void setFloatVector(FloatVector value, int offset) {
+        value.intoArray(array, offset);
+    }
+
+    @Override
+    public void setFloatVector(FloatVector value, int offset, int[] idx, int idxOffset) {
+        value.intoArray(array, offset, idx, idxOffset);
     }
 
     public float[] array() {

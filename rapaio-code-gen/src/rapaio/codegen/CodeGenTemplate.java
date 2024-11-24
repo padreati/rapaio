@@ -35,14 +35,19 @@ import rapaio.codegen.param.ValueParam;
 
 public class CodeGenTemplate extends ParamSet<CodeGenTemplate> {
 
-    public ValueParam<String, CodeGenTemplate> src = new ValueParam<>(this, "", "src", s -> !s.isEmpty());
-    public ValueParam<String, CodeGenTemplate> dst = new ValueParam<>(this, "", "dst", s -> !s.isEmpty());
-    public ListParam<Replace, CodeGenTemplate> replaces =
+    static final String START_FREEZE = "FREEZE";
+    static final String END_FREEZE = "UNFREEZE";
+
+    ValueParam<String, CodeGenTemplate> src = new ValueParam<>(this, "", "src", s -> !s.isEmpty());
+    ValueParam<String, CodeGenTemplate> dst = new ValueParam<>(this, "", "dst", s -> !s.isEmpty());
+    ListParam<Replace, CodeGenTemplate> replaces =
             new ListParam<>(this, new ArrayList<>(), "simpleReplaces", (__, ___) -> true);
 
     public void run(String root) throws IOException {
 
         new File(root + dst.get()).delete();
+
+        boolean freeze = false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(root + src.get()))) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(root + dst.get()))) {
@@ -53,8 +58,20 @@ public class CodeGenTemplate extends ParamSet<CodeGenTemplate> {
                         writer.flush();
                         break;
                     }
+                    if (line.contains(START_FREEZE)) {
+                        freeze = true;
+                    }
+                    if (line.contains(END_FREEZE)) {
+                        freeze = false;
+                        continue;
+                    }
 
-                    processLine(writer, line);
+                    if (freeze) {
+                        writer.write(line);
+                        writer.newLine();
+                    } else {
+                        processLine(writer, line);
+                    }
                 }
             }
         }

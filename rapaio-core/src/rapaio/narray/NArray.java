@@ -49,7 +49,6 @@ import rapaio.narray.operator.NArrayOp;
 import rapaio.narray.operator.NArrayReduceOp;
 import rapaio.narray.operator.NArrayUnaryOp;
 import rapaio.printer.Printable;
-import rapaio.util.NotImplementedException;
 import rapaio.util.function.IntIntBiFunction;
 
 /**
@@ -130,7 +129,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
      * @return array of semi-positive dimension sizes
      */
     public final int[] dims() {
-        return layout().shape().dims();
+        return shape().dims();
     }
 
     /**
@@ -140,7 +139,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
      * @return size of the dimension for the given {@code axis}
      */
     public final int dim(int axis) {
-        return layout().shape().dim(axis);
+        return shape().dim(axis);
     }
 
     /**
@@ -150,7 +149,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
      * @return number of elements from NArray
      */
     public final int size() {
-        return layout().size();
+        return shape().size();
     }
 
     /**
@@ -2096,66 +2095,6 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     public abstract NArray<N> bmm(NArray<?> other, Order askOrder);
 
     /**
-     * Adds the current NArray with the batch matrix multiplications scaled by factors.
-     * The operation can be described as: {@code out = beta * self + alpha * sum_b left_b x right_b}
-     *
-     * @param left
-     * @param right
-     * @param beta
-     * @param alpha
-     * @return self updated NArray
-     */
-    public final NArray<N> addbmm(NArray<?> left, NArray<?> right, N beta, N alpha) {
-        throw new NotImplementedException();
-    }
-
-    /**
-     * Adds the current NArray to the batch of matrix multiplications scaled by factors to self.
-     * The operation can be described as: {@code self = beta * self + alpha * sum_b left_b x right_b}
-     *
-     * @param left
-     * @param right
-     * @param beta
-     * @param alpha
-     * @return
-     */
-    public final NArray<N> addbmm_(NArray<?> left, NArray<?> right, N beta, N alpha) {
-        throw new NotImplementedException();
-    }
-
-    /**
-     * Adds the current NArray to the batch matrix multiplications scaled by factors.
-     * The operation can be described as: {@code out = beta * self + alpha * left x right}
-     *
-     * @param left
-     * @param right
-     * @param beta
-     * @param alpha
-     * @return self updated NArray
-     */
-    public final NArray<N> addmm(NArray<?> left, NArray<?> right, N beta, N alpha) {
-        throw new NotImplementedException();
-    }
-
-    /**
-     * Adds the current NArray to the matrix multiplications scaled by factors to self.
-     * The operation can be described as: {@code self = beta * self + alpha * left x right}
-     *
-     * @param left
-     * @param right
-     * @param beta
-     * @param alpha
-     * @return
-     */
-    public final NArray<N> addmm_(NArray<?> left, NArray<?> right, N beta, N alpha) {
-        throw new NotImplementedException();
-    }
-
-    public final NArray<?> baddbmm(NArray<?> left, NArray<?> right, N beta, N alpha) {
-        throw new NotImplementedException();
-    }
-
-    /**
      * Shortcut method for {@link #diag(int)} with parameter {@code 0}.
      *
      * @return matrix if input is a vector, vector if input is a matrix
@@ -2234,44 +2173,20 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     }
 
     public final N norm() {
-        return norm(dtype().cast(2));
+        return norm(2);
     }
 
-    public abstract N norm(N pow);
-
-    public final NArray<N> normalize(N p) {
-        return copy(Order.defaultOrder()).normalize_(p);
-    }
-
-    public final NArray<N> normalize(int p) {
-        return copy(Order.defaultOrder()).normalize_(p);
-    }
+    public abstract N norm(double pow);
 
     public final NArray<N> normalize(double p) {
         return copy(Order.defaultOrder()).normalize_(p);
-    }
-
-    public final NArray<N> normalize(Order order, N p) {
-        return copy(order).normalize_(p);
-    }
-
-    public final NArray<N> normalize(Order order, int p) {
-        return copy(order).normalize_(p);
     }
 
     public final NArray<N> normalize(Order order, double p) {
         return copy(order).normalize_(p);
     }
 
-    public abstract NArray<N> normalize_(N p);
-
-    public final NArray<N> normalize_(int p) {
-        return normalize_(dtype().cast(p));
-    }
-
-    public final NArray<N> normalize_(double p) {
-        return normalize_(dtype().cast(p));
-    }
+    public abstract NArray<N> normalize_(double p);
 
     public final NArray<N> scatter(int ddof) {
         return scatter(Order.defaultOrder(), ddof);
@@ -2316,7 +2231,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         }
         NArray<N> std = stdc1d(0, 0);
         NArray<N> scaled = sub(mean1d(0));
-        return scaled.t().mm(scaled, askOrder).div_(std).div_(std.stretch(1)).div_(dtype().cast(dim(0)));
+        return scaled.t().mm(scaled, askOrder).div_(std).div_(std.stretch(1)).div_(dim(0));
     }
 
 

@@ -23,6 +23,8 @@ package rapaio.narray.storage.array;
 
 import java.util.Arrays;
 
+import jdk.incubator.vector.ByteVector;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.narray.storage.ByteStorage;
 
 public final class ByteArrayStorage extends ByteStorage {
@@ -59,6 +61,11 @@ public final class ByteArrayStorage extends ByteStorage {
         return array.length;
     }
 
+    @Override
+    public boolean supportVectorization() {
+        return true;
+    }
+
     public byte getByte(int ptr) {
         return array[ptr];
     }
@@ -75,6 +82,26 @@ public final class ByteArrayStorage extends ByteStorage {
     @Override
     public void fill(byte value, int start, int len) {
         Arrays.fill(array, start, start + len, value);
+    }
+
+    @Override
+    public ByteVector getByteVector(VectorSpecies<Byte> vs, int offset) {
+        return ByteVector.fromArray(vs, array, offset);
+    }
+
+    @Override
+    public ByteVector getByteVector(VectorSpecies<Byte> vs, int offset, int[] idx, int idxOffset) {
+        return ByteVector.fromArray(vs, array, offset, idx, idxOffset);
+    }
+
+    @Override
+    public void setByteVector(ByteVector value, int offset) {
+        value.intoArray(array, offset);
+    }
+
+    @Override
+    public void setByteVector(ByteVector value, int offset, int[] idx, int idxOffset) {
+        value.intoArray(array, offset, idx, idxOffset);
     }
 
     public byte[] array() {

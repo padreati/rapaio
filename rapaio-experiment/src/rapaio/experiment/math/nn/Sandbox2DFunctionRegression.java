@@ -39,6 +39,7 @@ import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 import rapaio.nn.data.ArrayDataset;
+import rapaio.nn.layer.BatchNorm1D;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.ReLU;
 import rapaio.nn.layer.Sequential;
@@ -65,9 +66,11 @@ public class Sandbox2DFunctionRegression {
         ArrayDataset test = split[1];
 
         Net nn = new Sequential(tm,
-                new Linear(tm, 4, 10_000, true),
+                new BatchNorm1D(tm, 4),
+                new Linear(tm, 4, 1_000, true),
                 new ReLU(),
-                new Linear(tm, 10_000, 1, true),
+                new BatchNorm1D(tm, 1_000),
+                new Linear(tm, 1_000, 1, true),
                 new ReLU()
         );
         nn.seed(42);

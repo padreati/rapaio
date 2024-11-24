@@ -39,6 +39,7 @@ import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
+import jdk.incubator.vector.DoubleVector;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.narray.DType;
 import rapaio.narray.Layout;
@@ -110,7 +111,7 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
         var result = manager.zeros(dt, Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
-        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vs());
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 out.setDouble(ptr++, storage.getDouble(p));
@@ -209,8 +210,27 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
     @Override
     public <M extends Number> NArray<Double> binaryOp_(NArrayBinaryOp op, M value) {
         double v = value.doubleValue();
+        DoubleVector m = DoubleVector.broadcast(dt.vs(), v);
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            int i = 0;
+            if (storage.supportVectorization()) {
+                if (loop.step == 1) {
+                    for (; i < loop.simdBound; i += loop.simdLen) {
+                        DoubleVector a = storage.getDoubleVector(dt.vs(), p);
+                        a = op.applyDouble(a, m);
+                        storage.setDoubleVector(a, p);
+                        p += loop.simdLen;
+                    }
+                } else {
+                    for (; i < loop.simdBound; i += loop.simdLen) {
+                        DoubleVector a = storage.getDoubleVector(dt.vs(), p, loop.simdOffsets(), 0);
+                        a = op.applyDouble(a, m);
+                        storage.setDoubleVector(a, p, loop.simdOffsets(), 0);
+                        p += loop.simdLen * loop.step;
+                    }
+                }
+            }
+            for (; i < loop.size; i++) {
                 storage.setDouble(p, op.applyDouble(storage.getDouble(p), v));
                 p += loop.step;
             }
@@ -554,28 +574,30 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
     }
 
     @Override
-    public Double norm(Double pow) {
+    public Double norm(
+            // FREEZE
+            double pow
+            // UNFREEZE
+    ) {
         if (!dtype().floatingPoint()) {
             throw new OperationNotAvailableException("This operation is only available on floating point data types.");
         }
         if (pow < 0) {
             throw new IllegalArgumentException(String.format("Norm power p=%s must be greater or equal with 0.", Format.floatFlex(pow)));
         }
-        if (dtype().cast(0).equals(pow)) {
+        if (pow == 0) {
             return (double) shape().size();
         }
-        if (dtype().cast(1).equals(pow)) {
+        if (pow == 1) {
             return abs().sum();
         }
-        if (dtype().cast(2).equals(pow)) {
+        if (pow == 2) {
             return (double) Math.sqrt(sqr().sum());
         }
         double sum = (double) 0;
-        var loop = StrideLoopDescriptor.of(layout, Order.S, dtype().vectorSpecies());
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                double value = (double) Math.abs(storage.getDouble(p));
-                sum += (double) Math.pow(value, pow);
+                sum += (double) Math.pow(Math.abs(storage.getDouble(p)), pow);
                 p += loop.step;
             }
         }
@@ -583,7 +605,11 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
     }
 
     @Override
-    public NArray<Double> normalize_(Double pow) {
+    public NArray<Double> normalize_(
+            // FREEZE
+            double pow
+            // UNFREEZE
+    ) {
         return div_(norm(pow));
     }
 
@@ -722,7 +748,7 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
         int argmax = -1;
         double argvalue = NArrayOp.reduceMax().initDouble();
         var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, order, dtype().vs());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 double value = storage.getDouble(p);
@@ -742,7 +768,7 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
         int argmin = -1;
         double argvalue = NArrayOp.reduceMin().initDouble();
         var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, order, dtype().vs());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 double value = storage.getDouble(p);
@@ -866,7 +892,7 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
     }
 
     private void sameLayoutCopy(Storage copy, Order askOrder) {
-        var loop = StrideLoopDescriptor.of(layout, askOrder, dt.vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dt.vs());
         var last = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
@@ -954,7 +980,7 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
     }
 
     private void directCopyTo(BaseDoubleNArrayStride src, BaseDoubleNArrayStride dst, Order askOrder) {
-        var loop = StrideLoopDescriptor.of(src.layout, askOrder, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(src.layout, askOrder, dtype().vs());
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {

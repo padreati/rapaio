@@ -37,10 +37,7 @@ public abstract class AbstractLoss<L extends AbstractLoss<L>> extends ParamSet<L
     }
 
     public final double loss() {
-        if (last.value().get() == null) {
-            return Double.NaN;
-        }
-        return last.value().get().doubleValue();
+        return last.value().getDouble();
     }
 
     public Tensor last() {

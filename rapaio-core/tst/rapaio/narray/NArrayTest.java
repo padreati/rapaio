@@ -1679,20 +1679,20 @@ public class NArrayTest {
 
         switch (g.dt().id()) {
             case DOUBLE:
-                assertEquals(t1.norm(), t1.norm(g.value(2)));
-                assertEquals(t2.abs().sum(), t2.norm(g.value(1)));
-                assertEquals(t2.sqr().sum().doubleValue(), Math.pow(t2.norm(g.value(2)).doubleValue(), 2), 1e-5);
-                assertEquals(g.value(Math.pow(1 + Math.pow(2, 0.5), 2)), t3.norm(g.value(0.5)));
+                assertEquals(t1.norm(), t1.norm(2));
+                assertEquals(t2.abs().sum(), t2.norm(1));
+                assertEquals(t2.sqr().sum().doubleValue(), Math.pow(t2.norm(2).doubleValue(), 2), 1e-5);
+                assertEquals(g.value(Math.pow(1 + Math.pow(2, 0.5), 2)), t3.norm(0.5));
 
-                assertTensorEqualValues(t1.div(t1.norm(g.value(2))), t1.normalize(g.value(2)));
+                assertTensorEqualValues(t1.div(t1.norm(2)), t1.normalize(2));
                 break;
             case FLOAT:
-                assertEquals(t1.norm(), t1.norm(g.value(2)));
-                assertEquals(t2.abs().sum(), t2.norm(g.value(1)));
-                assertEquals(Math.sqrt(t2.sqr().sum().floatValue()), t2.norm(g.value(2)).floatValue(), 1e-4);
-                assertEquals(g.value(Math.pow(1 + Math.pow(2, 0.5), 2)).floatValue(), t3.norm(g.value(0.5)).floatValue(), 1e-4);
+                assertEquals(t1.norm(), t1.norm(2));
+                assertEquals(t2.abs().sum(), t2.norm(1));
+                assertEquals(Math.sqrt(t2.sqr().sum().floatValue()), t2.norm(2).floatValue(), 1e-4);
+                assertEquals(g.value(Math.pow(1 + Math.sqrt(2), 2)).floatValue(), t3.norm(0.5).floatValue(), 1e-4);
 
-                assertTensorEqualValues(t1.div(t1.norm(g.value(2))), t1.normalize(g.value(2)));
+                assertTensorEqualValues(t1.div(t1.norm(2)), t1.normalize(2));
                 break;
             default:
                 var e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(3, 2)).norm());
@@ -1700,7 +1700,7 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            var e = assertThrows(IllegalArgumentException.class, () -> t1.norm(g.value(-1)));
+            var e = assertThrows(IllegalArgumentException.class, () -> t1.norm(-1));
             assertEquals("Norm power p=-1 must be greater or equal with 0.", e.getMessage());
         }
     }

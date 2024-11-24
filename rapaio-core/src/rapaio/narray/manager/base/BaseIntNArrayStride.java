@@ -39,6 +39,7 @@ import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
+import jdk.incubator.vector.IntVector;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.narray.DType;
 import rapaio.narray.Layout;
@@ -110,7 +111,7 @@ public final class BaseIntNArrayStride extends AbstractStrideNArray<Integer> {
         var result = manager.zeros(dt, Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
-        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vs());
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 out.setInt(ptr++, storage.getInt(p));
@@ -209,8 +210,27 @@ public final class BaseIntNArrayStride extends AbstractStrideNArray<Integer> {
     @Override
     public <M extends Number> NArray<Integer> binaryOp_(NArrayBinaryOp op, M value) {
         int v = value.intValue();
+        IntVector m = IntVector.broadcast(dt.vs(), v);
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            int i = 0;
+            if (storage.supportVectorization()) {
+                if (loop.step == 1) {
+                    for (; i < loop.simdBound; i += loop.simdLen) {
+                        IntVector a = storage.getIntVector(dt.vs(), p);
+                        a = op.applyInt(a, m);
+                        storage.setIntVector(a, p);
+                        p += loop.simdLen;
+                    }
+                } else {
+                    for (; i < loop.simdBound; i += loop.simdLen) {
+                        IntVector a = storage.getIntVector(dt.vs(), p, loop.simdOffsets(), 0);
+                        a = op.applyInt(a, m);
+                        storage.setIntVector(a, p, loop.simdOffsets(), 0);
+                        p += loop.simdLen * loop.step;
+                    }
+                }
+            }
+            for (; i < loop.size; i++) {
                 storage.setInt(p, op.applyInt(storage.getInt(p), v));
                 p += loop.step;
             }
@@ -554,28 +574,29 @@ public final class BaseIntNArrayStride extends AbstractStrideNArray<Integer> {
     }
 
     @Override
-    public Integer norm(Integer pow) {
+    public Integer norm(
+            // FREEZE
+            double pow
+    ) {
         if (!dtype().floatingPoint()) {
             throw new OperationNotAvailableException("This operation is only available on floating point data types.");
         }
         if (pow < 0) {
             throw new IllegalArgumentException(String.format("Norm power p=%s must be greater or equal with 0.", Format.floatFlex(pow)));
         }
-        if (dtype().cast(0).equals(pow)) {
+        if (pow == 0) {
             return (int) shape().size();
         }
-        if (dtype().cast(1).equals(pow)) {
+        if (pow == 1) {
             return abs().sum();
         }
-        if (dtype().cast(2).equals(pow)) {
+        if (pow == 2) {
             return (int) Math.sqrt(sqr().sum());
         }
         int sum = (int) 0;
-        var loop = StrideLoopDescriptor.of(layout, Order.S, dtype().vectorSpecies());
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                int value = (int) Math.abs(storage.getInt(p));
-                sum += (int) Math.pow(value, pow);
+                sum += (int) Math.pow(Math.abs(storage.getInt(p)), pow);
                 p += loop.step;
             }
         }
@@ -583,7 +604,10 @@ public final class BaseIntNArrayStride extends AbstractStrideNArray<Integer> {
     }
 
     @Override
-    public NArray<Integer> normalize_(Integer pow) {
+    public NArray<Integer> normalize_(
+            // FREEZE
+            double pow
+    ) {
         return div_(norm(pow));
     }
 
@@ -722,7 +746,7 @@ public final class BaseIntNArrayStride extends AbstractStrideNArray<Integer> {
         int argmax = -1;
         int argvalue = NArrayOp.reduceMax().initInt();
         var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, order, dtype().vs());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 int value = storage.getInt(p);
@@ -742,7 +766,7 @@ public final class BaseIntNArrayStride extends AbstractStrideNArray<Integer> {
         int argmin = -1;
         int argvalue = NArrayOp.reduceMin().initInt();
         var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, order, dtype().vs());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 int value = storage.getInt(p);
@@ -866,7 +890,7 @@ public final class BaseIntNArrayStride extends AbstractStrideNArray<Integer> {
     }
 
     private void sameLayoutCopy(Storage copy, Order askOrder) {
-        var loop = StrideLoopDescriptor.of(layout, askOrder, dt.vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dt.vs());
         var last = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
@@ -954,7 +978,7 @@ public final class BaseIntNArrayStride extends AbstractStrideNArray<Integer> {
     }
 
     private void directCopyTo(BaseIntNArrayStride src, BaseIntNArrayStride dst, Order askOrder) {
-        var loop = StrideLoopDescriptor.of(src.layout, askOrder, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(src.layout, askOrder, dtype().vs());
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {

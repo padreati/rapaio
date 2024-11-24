@@ -57,7 +57,7 @@ public abstract sealed class AbstractStrideNArray<N extends Number> extends NArr
     public AbstractStrideNArray(NArrayManager manager, StrideLayout layout, Storage storage) {
         super(manager, storage);
         this.layout = layout;
-        this.loop = StrideLoopDescriptor.of(layout, layout.storageFastOrder(), dtype().vectorSpecies());
+        this.loop = StrideLoopDescriptor.of(layout, layout.storageFastOrder(), dtype().vs());
     }
 
     @Override
@@ -280,7 +280,7 @@ public abstract sealed class AbstractStrideNArray<N extends Number> extends NArr
         var castTensor = manager().zeros(dt, shape(), askOrder);
 
         Order fastOrder = Layout.storageFastTandemOrder(castTensor.layout(), layout);
-        var loopDescriptor = StrideLoopDescriptor.of((StrideLayout) castTensor.layout(), fastOrder, dt.vectorSpecies());
+        var loopDescriptor = StrideLoopDescriptor.of((StrideLayout) castTensor.layout(), fastOrder, dt.vs());
         var iter = ptrIterator(fastOrder);
         for (int p : loopDescriptor.offsets) {
             for (int i = 0; i < loopDescriptor.size; i++) {
@@ -313,7 +313,7 @@ public abstract sealed class AbstractStrideNArray<N extends Number> extends NArr
     public double[] toDoubleArray(Order askOrder) {
         double[] copy = new double[size()];
         int pos = 0;
-        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vectorSpecies());
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vs());
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;

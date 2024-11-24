@@ -44,6 +44,9 @@ public final class StrideLoopDescriptor<N extends Number> {
     public final int count;
     public final int[] offsets;
     public final VectorSpecies<N> vs;
+    /**
+     * Number of simd values for vector species
+     */
     public final int simdLen;
     public final int simdBound;
     private int[] simdOffsets;

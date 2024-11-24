@@ -130,7 +130,7 @@ public class MultinomialEstimator extends AbstractEstimator {
                 String.join(",", getTestNames()),
                 targetLevels.stream()
                         .map(targetLevel -> targetLevel + ":[" + densityMap.get(targetLevel)
-                                .stream().map(Format::floatFlexLong).collect(Collectors.joining(",")) + "]")
+                                .stream().map(v -> Format.floatFlexLong(v.doubleValue())).collect(Collectors.joining(",")) + "]")
                         .collect(Collectors.joining(","))
         );
     }

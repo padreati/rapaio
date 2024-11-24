@@ -120,15 +120,15 @@ public class Histogram extends Artist {
         if (options.getHorizontal()) {
             plot.yAxis().domain().unionNumeric(hist.min());
             plot.yAxis().domain().unionNumeric(hist.max());
-            for (double freq : freqTable) {
-                plot.xAxis().domain().unionNumeric(freq);
+            for (var freq : freqTable) {
+                plot.xAxis().domain().unionNumeric(freq.doubleValue());
             }
             plot.xAxis().domain().unionNumeric(0);
         } else {
             plot.xAxis().domain().unionNumeric(hist.min());
             plot.xAxis().domain().unionNumeric(hist.max());
-            for (double freq : freqTable) {
-                plot.yAxis().domain().unionNumeric(freq);
+            for (var freq : freqTable) {
+                plot.yAxis().domain().unionNumeric(freq.doubleValue());
             }
             plot.yAxis().domain().unionNumeric(0);
         }

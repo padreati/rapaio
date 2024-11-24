@@ -139,10 +139,10 @@ public final class Confusion implements Printable {
         cmProbability.add_(cmFrequency).div_(completeCases);
 
         if (binary) {
-            tp = cmFrequency.get(0, 0);
-            tn = cmFrequency.get(1, 1);
-            fp = cmFrequency.get(1, 0);
-            fn = cmFrequency.get(0, 1);
+            tp = cmFrequency.getDouble(0, 0);
+            tn = cmFrequency.getDouble(1, 1);
+            fp = cmFrequency.getDouble(1, 0);
+            fn = cmFrequency.getDouble(0, 1);
 
             mcc = (tp * tn - fp * fn) / Math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn));
             f1 = 2 * tp / (2 * tp + fp + fn);
@@ -189,10 +189,10 @@ public final class Confusion implements Printable {
 
         for (int i = 0; i < factors.size() - 1; i++) {
             for (int j = 0; j < factors.size() - 1; j++) {
-                tt.textRight(i + 2, j + 2, ((i == j) ? ">" : " ") + Format.floatFlex(cmFrequency.get(i, j)));
-                grandTotal += cmFrequency.get(i, j);
-                rowTotals[i] += cmFrequency.get(i, j);
-                colTotals[j] += cmFrequency.get(i, j);
+                tt.textRight(i + 2, j + 2, ((i == j) ? ">" : " ") + Format.floatFlex(cmFrequency.getDouble(i, j)));
+                grandTotal += cmFrequency.getDouble(i, j);
+                rowTotals[i] += cmFrequency.getDouble(i, j);
+                colTotals[j] += cmFrequency.getDouble(i, j);
             }
         }
         for (int i = 0; i < factors.size() - 1; i++) {
@@ -209,7 +209,7 @@ public final class Confusion implements Printable {
 
         for (int i = 0; i < factors.size() - 1; i++) {
             for (int j = 0; j < factors.size() - 1; j++) {
-                tt.textRight(i + 2, j + 2, ((i == j) ? ">" : " ") + Format.floatShort(cmProbability.get(i, j)));
+                tt.textRight(i + 2, j + 2, ((i == j) ? ">" : " ") + Format.floatShort(cmProbability.getDouble(i, j)));
             }
         }
         for (int i = 0; i < factors.size() - 1; i++) {

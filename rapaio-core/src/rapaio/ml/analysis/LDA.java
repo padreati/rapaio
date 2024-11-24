@@ -135,7 +135,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
             rows[i] = i;
         }
 
-        Arrays.sort(rows, (o1, o2) -> -Double.compare(eigenValues.get(o1), eigenValues.get(o2)));
+        Arrays.sort(rows, (o1, o2) -> -Double.compare(eigenValues.getDouble(o1), eigenValues.getDouble(o2)));
         int[] indexes = Arrays.stream(rows).mapToInt(v -> v).toArray();
 
         eigenValues = eigenValues.take(0, indexes).copy();
@@ -222,11 +222,11 @@ public class LDA extends ParamSet<LDA> implements Printable {
         );
         double total = 0.0;
         for (int i = 0; i < eigenValues.size(); i++) {
-            total += eigenValues.get(i);
+            total += eigenValues.getDouble(i);
         }
         for (int i = 0; i < eigenValues.size(); i++) {
-            eval.setDouble(i, "values", eigenValues.get(i));
-            eval.setDouble(i, "percent", eigenValues.get(i) / total);
+            eval.setDouble(i, "values", eigenValues.getDouble(i));
+            eval.setDouble(i, "percent", eigenValues.getDouble(i) / total);
         }
 
         sb.append("Eigen values\n");

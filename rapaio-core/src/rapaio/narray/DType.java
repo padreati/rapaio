@@ -86,7 +86,7 @@ public abstract class DType<N extends Number> {
 
     public abstract Comparator<N> reverseComparator();
 
-    public abstract VectorSpecies<N> vectorSpecies();
+    public abstract VectorSpecies<N> vs();
 
     @Override
     public boolean equals(Object o) {
@@ -153,7 +153,7 @@ public abstract class DType<N extends Number> {
         }
 
         @Override
-        public VectorSpecies<Byte> vectorSpecies() {
+        public VectorSpecies<Byte> vs() {
             return vs;
         }
     }
@@ -207,7 +207,7 @@ public abstract class DType<N extends Number> {
         }
 
         @Override
-        public VectorSpecies<Integer> vectorSpecies() {
+        public VectorSpecies<Integer> vs() {
             return vs;
         }
     }
@@ -261,7 +261,7 @@ public abstract class DType<N extends Number> {
         }
 
         @Override
-        public VectorSpecies<Float> vectorSpecies() {
+        public VectorSpecies<Float> vs() {
             return vs;
         }
     }
@@ -315,7 +315,7 @@ public abstract class DType<N extends Number> {
         }
 
         @Override
-        public VectorSpecies<Double> vectorSpecies() {
+        public VectorSpecies<Double> vs() {
             return vs;
         }
     }

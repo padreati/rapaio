@@ -21,6 +21,10 @@
 
 package rapaio.narray.storage;
 
+import jdk.incubator.vector.ByteVector;
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.narray.DType;
 import rapaio.narray.Storage;
 
@@ -48,18 +52,8 @@ public abstract class IntStorage extends Storage {
 
     @Override
     public final void fill(byte value, int start, int len) {
-        fill((int)value, start, len);
+        fill((int) value, start, len);
     }
-
-
-    public abstract int getInt(int ptr);
-
-    public abstract void setInt(int ptr, int v);
-
-    public abstract void incInt(int ptr, int value);
-
-    public abstract void fill(int value, int start, int len);
-
 
     @Override
     public final float getFloat(int ptr) {
@@ -100,5 +94,66 @@ public abstract class IntStorage extends Storage {
     @Override
     public final void fill(double value, int start, int len) {
         fill((int) value, start, len);
+    }
+
+
+    @Override
+    public final ByteVector getByteVector(VectorSpecies<Byte> vs, int offset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final ByteVector getByteVector(VectorSpecies<Byte> vs, int offset, int[] idx, int idxOffset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setByteVector(ByteVector value, int offset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setByteVector(ByteVector value, int offset, int[] idx, int idxOffset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final FloatVector getFloatVector(VectorSpecies<Float> vs, int offset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final FloatVector getFloatVector(VectorSpecies<Float> vs, int offset, int[] idx, int idxOffset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setFloatVector(FloatVector value, int offset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setFloatVector(FloatVector value, int offset, int[] idx, int idxOffset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final DoubleVector getDoubleVector(VectorSpecies<Double> vs, int offset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final DoubleVector getDoubleVector(VectorSpecies<Double> vs, int offset, int[] idx, int idxOffset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setDoubleVector(DoubleVector value, int offset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setDoubleVector(DoubleVector value, int offset, int[] idx, int idxOffset) {
+        throw new UnsupportedOperationException();
     }
 }

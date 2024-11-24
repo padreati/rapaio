@@ -36,9 +36,10 @@ import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
+import rapaio.narray.DType;
 import rapaio.narray.NArray;
+import rapaio.narray.NArrayManager;
 import rapaio.narray.Shape;
-import rapaio.narray.NArrays;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -181,7 +182,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     public DensityTable(Index<U> rowIndex, Index<V> colIndex) {
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
-        this.values = NArrays.zeros(Shape.of(rowIndex.size(), colIndex.size()));
+        this.values = NArrayManager.base().zeros(DType.DOUBLE, Shape.of(rowIndex.size(), colIndex.size()));
     }
 
     public int rows() {
@@ -201,11 +202,11 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     public double get(int row, int col) {
-        return values.get(row, col);
+        return values.getDouble(row, col);
     }
 
     public double get(U row, V col) {
-        return values.get(rowIndex.getIndex(row), colIndex.getIndex(col));
+        return values.getDouble(rowIndex.getIndex(row), colIndex.getIndex(col));
     }
 
     public void inc(int row, int col, double weight) {
@@ -285,7 +286,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         for (int i = 0; i < rowIndex.size(); i++) {
             double total = 0;
             for (int j = 1; j < colIndex.size(); j++) {
-                total += values.get(i, j);
+                total += values.getDouble(i, j);
             }
             if (total >= minWeight) {
                 count++;
@@ -309,7 +310,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     private void putValues(TextTable tt) {
         for (int i = 0; i < rowIndex.size(); i++) {
             for (int j = 0; j < colIndex.size(); j++) {
-                tt.floatFlex(i + 1, j + 1, values.get(i, j));
+                tt.floatFlex(i + 1, j + 1, values.getDouble(i, j));
             }
         }
     }
@@ -353,12 +354,12 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         for (int i = 0; i < splitByTotals.size(); i++) {
             double ginik = 1;
             for (int j = 0; j < straightTotals.size(); j++) {
-                if (splitByTotals.get(i) > 0) {
-                    var value = splitByRows ? values.get(i, j) : values.get(j, i);
-                    ginik -= pow(value / splitByTotals.get(i), 2);
+                if (splitByTotals.getDouble(i) > 0) {
+                    var value = splitByRows ? values.getDouble(i, j) : values.getDouble(j, i);
+                    ginik -= pow(value / splitByTotals.getDouble(i), 2);
                 }
             }
-            gini -= ginik * splitByTotals.get(i) / total;
+            gini -= ginik * splitByTotals.getDouble(i) / total;
         }
 
         return gini;
@@ -369,8 +370,8 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                 double gain = 0;
                 for (int i = 0; i < rowLength; i++) {
                     for (int j = 0; j < colLength; j++) {
-                        if (values.get(i, j) > 0) {
-                            gain += -log2(values.get(i, j) / totals[i]) * values.get(i, j) / total;
+                        if (values.getDouble(i, j) > 0) {
+                            gain += -log2(values.getDouble(i, j) / totals[i]) * values.getDouble(i, j) / total;
                         }
                     }
                 }
@@ -404,7 +405,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
             double[] totals = new double[onRow ? dt.rowIndex.size() : dt.colIndex.size()];
             for (int i = 0; i < dt.rowIndex.size(); i++) {
                 for (int j = 0; j < dt.colIndex.size(); j++) {
-                    totals[onRow ? i : j] += dt.values.get(i, j);
+                    totals[onRow ? i : j] += dt.values.getDouble(i, j);
                 }
             }
             double total = nanSum(totals, 0, totals.length);

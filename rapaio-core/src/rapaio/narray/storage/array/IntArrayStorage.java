@@ -23,6 +23,8 @@ package rapaio.narray.storage.array;
 
 import java.util.Arrays;
 
+import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.narray.storage.IntStorage;
 
 public final class IntArrayStorage extends IntStorage {
@@ -59,6 +61,11 @@ public final class IntArrayStorage extends IntStorage {
         return array.length;
     }
 
+    @Override
+    public boolean supportVectorization() {
+        return true;
+    }
+
     public int getInt(int ptr) {
         return array[ptr];
     }
@@ -75,6 +82,26 @@ public final class IntArrayStorage extends IntStorage {
     @Override
     public void fill(int value, int start, int len) {
         Arrays.fill(array, start, start + len, value);
+    }
+
+    @Override
+    public IntVector getIntVector(VectorSpecies<Integer> vs, int offset) {
+        return IntVector.fromArray(vs, array, offset);
+    }
+
+    @Override
+    public IntVector getIntVector(VectorSpecies<Integer> vs, int offset, int[] idx, int idxOffset) {
+        return IntVector.fromArray(vs, array, offset, idx, idxOffset);
+    }
+
+    @Override
+    public void setIntVector(IntVector value, int offset) {
+        value.intoArray(array, offset);
+    }
+
+    @Override
+    public void setIntVector(IntVector value, int offset, int[] idx, int idxOffset) {
+        value.intoArray(array, offset, idx, idxOffset);
     }
 
     public int[] array() {

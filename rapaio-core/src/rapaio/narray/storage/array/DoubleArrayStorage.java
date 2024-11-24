@@ -23,6 +23,8 @@ package rapaio.narray.storage.array;
 
 import java.util.Arrays;
 
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.narray.storage.DoubleStorage;
 
 public final class DoubleArrayStorage extends DoubleStorage {
@@ -59,6 +61,11 @@ public final class DoubleArrayStorage extends DoubleStorage {
         return array.length;
     }
 
+    @Override
+    public boolean supportVectorization() {
+        return true;
+    }
+
     public double getDouble(int ptr) {
         return array[ptr];
     }
@@ -75,6 +82,26 @@ public final class DoubleArrayStorage extends DoubleStorage {
     @Override
     public void fill(double value, int start, int len) {
         Arrays.fill(array, start, start + len, value);
+    }
+
+    @Override
+    public DoubleVector getDoubleVector(VectorSpecies<Double> vs, int offset) {
+        return DoubleVector.fromArray(vs, array, offset);
+    }
+
+    @Override
+    public DoubleVector getDoubleVector(VectorSpecies<Double> vs, int offset, int[] idx, int idxOffset) {
+        return DoubleVector.fromArray(vs, array, offset, idx, idxOffset);
+    }
+
+    @Override
+    public void setDoubleVector(DoubleVector value, int offset) {
+        value.intoArray(array, offset);
+    }
+
+    @Override
+    public void setDoubleVector(DoubleVector value, int offset, int[] idx, int idxOffset) {
+        value.intoArray(array, offset, idx, idxOffset);
     }
 
     public double[] array() {
