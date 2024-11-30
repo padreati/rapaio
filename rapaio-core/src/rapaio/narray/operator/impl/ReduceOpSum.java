@@ -30,17 +30,17 @@ import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayReduceOp;
 
-public final class ReduceOpMin extends NArrayReduceOp {
+public final class ReduceOpSum extends NArrayReduceOp {
 
     @Override
     public boolean floatingPointOnly() {
         return false;
     }
 
-    public static final byte initByte = Byte.MAX_VALUE;
-    public static final int initInt = Integer.MAX_VALUE;
-    public static final float initFloat = Float.POSITIVE_INFINITY;
-    public static final double initDouble = Double.POSITIVE_INFINITY;
+    private static final byte initByte = 0;
+    private static final byte initInt = 0;
+    private static final float initFloat = 0f;
+    private static final double initDouble = 0d;
 
     @Override
     protected byte reduceByteVectorUnit(StrideLoopDescriptor<Byte> loop, Storage storage) {
@@ -50,12 +50,12 @@ public final class ReduceOpMin extends NArrayReduceOp {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 ByteVector v = storage.getByteVector(loop.vs, p);
-                a = a.min(v);
+                a = a.add(v);
                 p += loop.simdLen;
             }
-            result = (byte) Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.size; i++) {
-                result = (byte) Math.min(result, storage.getByte(p));
+                result += storage.getByte(p);
                 p++;
             }
         }
@@ -70,12 +70,12 @@ public final class ReduceOpMin extends NArrayReduceOp {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 ByteVector v = storage.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
-                a = a.min(v);
+                a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
-            result = (byte) Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.size; i++) {
-                result = (byte) Math.min(result, storage.getByte(p));
+                result += storage.getByte(p);
                 p += loop.step;
             }
         }
@@ -87,7 +87,7 @@ public final class ReduceOpMin extends NArrayReduceOp {
         byte result = initByte;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                result = (byte) Math.min(result, storage.getByte(p));
+                result += storage.getByte(p);
                 p += loop.step;
             }
         }
@@ -102,12 +102,12 @@ public final class ReduceOpMin extends NArrayReduceOp {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 IntVector v = storage.getIntVector(loop.vs, p);
-                a = a.min(v);
+                a = a.add(v);
                 p += loop.simdLen;
             }
-            result = Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.size; i++) {
-                result = Math.min(result, storage.getInt(p));
+                result += storage.getInt(p);
                 p++;
             }
         }
@@ -122,12 +122,12 @@ public final class ReduceOpMin extends NArrayReduceOp {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 IntVector v = storage.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
-                a = a.min(v);
+                a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
-            result = Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.size; i++) {
-                result = Math.min(result, storage.getInt(p));
+                result += storage.getInt(p);
                 p += loop.step;
             }
         }
@@ -139,7 +139,7 @@ public final class ReduceOpMin extends NArrayReduceOp {
         int result = initInt;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                result = Math.min(result, storage.getByte(p));
+                result += storage.getInt(p);
                 p += loop.step;
             }
         }
@@ -149,17 +149,17 @@ public final class ReduceOpMin extends NArrayReduceOp {
     @Override
     protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
         float result = initFloat;
-        FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
         for (int p : loop.offsets) {
+            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 FloatVector v = storage.getFloatVector(loop.vs, p);
-                a = a.min(v);
+                a = a.add(v);
                 p += loop.simdLen;
             }
-            result = Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.size; i++) {
-                result = Math.min(result, storage.getFloat(p));
+                result += storage.getFloat(p);
                 p++;
             }
         }
@@ -169,17 +169,17 @@ public final class ReduceOpMin extends NArrayReduceOp {
     @Override
     protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
         float result = initFloat;
-        FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
         for (int p : loop.offsets) {
+            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 FloatVector v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
-                a = a.min(v);
+                a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
-            result = Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.size; i++) {
-                result = Math.min(result, storage.getFloat(p));
+                result += storage.getFloat(p);
                 p += loop.step;
             }
         }
@@ -188,10 +188,10 @@ public final class ReduceOpMin extends NArrayReduceOp {
 
     @Override
     protected float reduceFloatDefault(StrideLoopDescriptor<Float> loop, Storage storage) {
-        float result = 0;
+        float result = initFloat;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                result = Math.min(result, storage.getFloat(p));
+                result += storage.getFloat(p);
                 p += loop.step;
             }
         }
@@ -201,17 +201,17 @@ public final class ReduceOpMin extends NArrayReduceOp {
     @Override
     protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
         double result = initDouble;
-        DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
         for (int p : loop.offsets) {
+            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 DoubleVector v = storage.getDoubleVector(loop.vs, p);
-                a = a.min(v);
+                a = a.add(v);
                 p += loop.simdLen;
             }
-            result = Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.size; i++) {
-                result = Math.min(result, storage.getDouble(p));
+                result += storage.getDouble(p);
                 p++;
             }
         }
@@ -221,17 +221,17 @@ public final class ReduceOpMin extends NArrayReduceOp {
     @Override
     protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
         double result = initDouble;
-        DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
         for (int p : loop.offsets) {
+            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 DoubleVector v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
-                a = a.min(v);
+                a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
-            result = Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.size; i++) {
-                result = Math.min(result, storage.getDouble(p));
+                result += storage.getDouble(p);
                 p += loop.step;
             }
         }
@@ -243,7 +243,7 @@ public final class ReduceOpMin extends NArrayReduceOp {
         double result = initDouble;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                result = Math.min(result, storage.getDouble(p));
+                result += storage.getDouble(p);
                 p += loop.step;
             }
         }

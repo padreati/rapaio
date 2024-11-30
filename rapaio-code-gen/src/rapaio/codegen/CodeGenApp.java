@@ -40,6 +40,7 @@ public class CodeGenApp {
 
         Replace[] intReplaces = new Replace[] {
                 Replace.of("BaseDoubleNArrayStride", "BaseIntNArrayStride"),
+                Replace.of("reduceDouble", "reduceInt"),
                 Replace.of("DoubleVector", "IntVector"),
                 Replace.of("ofDouble", "ofInt"),
                 Replace.of("setDouble", "setInt"),

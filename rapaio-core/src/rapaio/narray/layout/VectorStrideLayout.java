@@ -22,6 +22,7 @@
 package rapaio.narray.layout;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import rapaio.narray.Order;
 import rapaio.narray.Shape;
@@ -260,5 +261,19 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
     @Override
     public String toString() {
         return "VectorStride([" + dim(0) + "]," + offset + ",[" + stride(0) + "])";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        VectorStrideLayout that = (VectorStrideLayout) o;
+        return offset == that.offset && stride == that.stride && Objects.equals(shape, that.shape);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(shape, offset, stride);
     }
 }

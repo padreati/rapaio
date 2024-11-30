@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.ml.model.linear;
+package rapaio.ml.analysis;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.analysis.LDA;
 
 public class LDATest {
 

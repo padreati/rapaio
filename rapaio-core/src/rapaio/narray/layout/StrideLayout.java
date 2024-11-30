@@ -109,7 +109,7 @@ public interface StrideLayout extends Layout {
     int[] narrowStrides(int axis);
 
     /**
-     * Attempts to computes a stride layout for reshape, if possible.
+     * Attempts to compute a stride layout for reshape, if possible.
      * <p>
      * The shape should be compatible (have the same size as original), but this validation is not checked, it is left in the scope
      * of caller. This is to distinguish between cases when a reshape is invalid or requires copy.

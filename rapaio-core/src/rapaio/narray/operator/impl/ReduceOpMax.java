@@ -25,91 +25,228 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorSpecies;
+import jdk.incubator.vector.VectorOperators;
+import rapaio.narray.Storage;
+import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayReduceOp;
 
 public final class ReduceOpMax extends NArrayReduceOp {
 
     @Override
-    public byte initByte() {
-        return Byte.MIN_VALUE;
+    public boolean floatingPointOnly() {
+        return false;
+    }
+
+    public static final byte initByte = Byte.MIN_VALUE;
+    public static final int initInt = Integer.MIN_VALUE;
+    public static final float initFloat = Float.NEGATIVE_INFINITY;
+    public static final double initDouble = Double.NEGATIVE_INFINITY;
+
+    @Override
+    protected byte reduceByteVectorUnit(StrideLoopDescriptor<Byte> loop, Storage storage) {
+        byte result = initByte;
+        for (int p : loop.offsets) {
+            ByteVector a = ByteVector.broadcast(loop.vs, initByte);
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                ByteVector v = storage.getByteVector(loop.vs, p);
+                a = a.max(v);
+                p += loop.simdLen;
+            }
+            result = (byte) Math.max(result, a.reduceLanes(VectorOperators.MAX));
+            for (; i < loop.size; i++) {
+                result = (byte) Math.max(result, storage.getByte(p));
+                p++;
+            }
+        }
+        return result;
     }
 
     @Override
-    public byte applyByte(byte a, byte b) {
-        return a >= b ? a : b;
+    protected byte reduceByteVectorStep(StrideLoopDescriptor<Byte> loop, Storage storage) {
+        byte result = initByte;
+        for (int p : loop.offsets) {
+            ByteVector a = ByteVector.broadcast(loop.vs, initByte);
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                ByteVector v = storage.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
+                a = a.max(v);
+                p += loop.simdLen * loop.step;
+            }
+            result = (byte) Math.max(result, a.reduceLanes(VectorOperators.MAX));
+            for (; i < loop.size; i++) {
+                result = (byte) Math.max(result, storage.getByte(p));
+                p += loop.step;
+            }
+        }
+        return result;
     }
 
     @Override
-    public ByteVector initByte(VectorSpecies<Byte> species) {
-        return ByteVector.broadcast(species, Byte.MIN_VALUE);
+    protected byte reduceByteDefault(StrideLoopDescriptor<Byte> loop, Storage storage) {
+        byte result = initByte;
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                result = (byte) Math.max(result, storage.getByte(p));
+                p += loop.step;
+            }
+        }
+        return result;
     }
 
     @Override
-    public ByteVector applyByte(ByteVector a, ByteVector b) {
-        return a.max(b);
-    }
-
-
-    @Override
-    public int initInt() {
-        return Integer.MIN_VALUE;
-    }
-
-    @Override
-    public int applyInt(int a, int b) {
-        return Math.max(a, b);
-    }
-
-    @Override
-    public IntVector initInt(VectorSpecies<Integer> species) {
-        return IntVector.broadcast(species, Integer.MIN_VALUE);
-    }
-
-    @Override
-    public IntVector applyInt(IntVector a, IntVector b) {
-        return a.max(b);
-    }
-
-
-    @Override
-    public float initFloat() {
-        return Float.NEGATIVE_INFINITY;
+    protected int reduceIntVectorUnit(StrideLoopDescriptor<Integer> loop, Storage storage) {
+        int result = initInt;
+        for (int p : loop.offsets) {
+            IntVector a = IntVector.broadcast(loop.vs, initInt);
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                IntVector v = storage.getIntVector(loop.vs, p);
+                a = a.max(v);
+                p += loop.simdLen;
+            }
+            result = Math.max(result, a.reduceLanes(VectorOperators.MAX));
+            for (; i < loop.size; i++) {
+                result = Math.max(result, storage.getInt(p));
+                p++;
+            }
+        }
+        return result;
     }
 
     @Override
-    public float applyFloat(float a, float b) {
-        return Math.max(a, b);
+    protected int reduceIntVectorStep(StrideLoopDescriptor<Integer> loop, Storage storage) {
+        int result = initInt;
+        for (int p : loop.offsets) {
+            IntVector a = IntVector.broadcast(loop.vs, initInt);
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                IntVector v = storage.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
+                a = a.max(v);
+                p += loop.simdLen * loop.step;
+            }
+            result = Math.max(result, a.reduceLanes(VectorOperators.MAX));
+            for (; i < loop.size; i++) {
+                result = Math.max(result, storage.getInt(p));
+                p += loop.step;
+            }
+        }
+        return result;
     }
 
     @Override
-    public FloatVector initFloat(VectorSpecies<Float> species) {
-        return FloatVector.broadcast(species, Float.NEGATIVE_INFINITY);
+    protected int reduceIntDefault(StrideLoopDescriptor<Integer> loop, Storage storage) {
+        int result = initInt;
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                result = Math.max(result, storage.getInt(p));
+                p += loop.step;
+            }
+        }
+        return result;
     }
 
     @Override
-    public FloatVector applyFloat(FloatVector a, FloatVector b) {
-        return a.max(b);
+    protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
+        float result = initFloat;
+        for (int p : loop.offsets) {
+            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                FloatVector v = storage.getFloatVector(loop.vs, p);
+                a = a.max(v);
+                p += loop.simdLen;
+            }
+            result = Math.max(result, a.reduceLanes(VectorOperators.MAX));
+            for (; i < loop.size; i++) {
+                result = Math.max(result, storage.getFloat(p));
+                p++;
+            }
+        }
+        return result;
     }
 
-
     @Override
-    public double initDouble() {
-        return Double.NEGATIVE_INFINITY;
+    protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
+        float result = initFloat;
+        for (int p : loop.offsets) {
+            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                FloatVector v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                a = a.max(v);
+                p += loop.simdLen * loop.step;
+            }
+            result = Math.max(result, a.reduceLanes(VectorOperators.MAX));
+            for (; i < loop.size; i++) {
+                result = Math.max(result, storage.getFloat(p));
+                p += loop.step;
+            }
+        }
+        return result;
     }
 
     @Override
-    public double applyDouble(double a, double b) {
-        return Math.max(a, b);
+    protected float reduceFloatDefault(StrideLoopDescriptor<Float> loop, Storage storage) {
+        float result = initFloat;
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                result = Math.max(result, storage.getFloat(p));
+                p += loop.step;
+            }
+        }
+        return result;
     }
 
     @Override
-    public DoubleVector initDouble(VectorSpecies<Double> species) {
-        return DoubleVector.broadcast(species, Double.NEGATIVE_INFINITY);
+    protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
+        double result = initDouble;
+        for (int p : loop.offsets) {
+            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                DoubleVector v = storage.getDoubleVector(loop.vs, p);
+                a = a.max(v);
+                p += loop.simdLen;
+            }
+            result = Math.max(result, a.reduceLanes(VectorOperators.MAX));
+            for (; i < loop.size; i++) {
+                result = Math.max(result, storage.getDouble(p));
+                p++;
+            }
+        }
+        return result;
     }
 
     @Override
-    public DoubleVector applyDouble(DoubleVector a, DoubleVector b) {
-        return a.max(b);
+    protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
+        double result = initDouble;
+        for (int p : loop.offsets) {
+            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                DoubleVector v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                a = a.max(v);
+                p += loop.simdLen * loop.step;
+            }
+            result = Math.max(result, a.reduceLanes(VectorOperators.MAX));
+            for (; i < loop.size; i++) {
+                result = Math.max(result, storage.getDouble(p));
+                p += loop.step;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    protected double reduceDoubleDefault(StrideLoopDescriptor<Double> loop, Storage storage) {
+        double result = initDouble;
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                result = Math.max(result, storage.getDouble(p));
+                p += loop.step;
+            }
+        }
+        return result;
     }
 }

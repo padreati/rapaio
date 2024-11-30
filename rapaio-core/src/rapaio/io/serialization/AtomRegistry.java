@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import rapaio.narray.Shape;
+import rapaio.narray.Storage;
 import rapaio.narray.layout.StrideLayout;
 
 public class AtomRegistry {
@@ -43,6 +44,7 @@ public class AtomRegistry {
     private AtomRegistry() {
         register(Shape.Serialization.class);
         register(StrideLayout.Serialization.class);
+        register(Storage.Serialization.class);
     }
 
     public <A> void register(Class<? extends AtomSerialization<A>> classT) {
@@ -55,16 +57,12 @@ public class AtomRegistry {
     }
 
     public <A> AtomSerialization<A> getSerializationHandler(Class<A> clazz) {
-        Class<? extends A> parent = clazz;
-        while (true) {
-            AtomSerialization<?> serialization = registry.get(parent);
-            if (serialization != null) {
-                return (AtomSerialization<A>) serialization;
-            }
-            parent = (Class<? extends A>) parent.getSuperclass();
-            if (parent == null) {
-                throw new IllegalArgumentException("Serialization handler not found for class:" + clazz + ".");
+
+        for (var c : registry.keySet()) {
+            if (c.isAssignableFrom(clazz)) {
+                return (AtomSerialization<A>) registry.get(c);
             }
         }
+        throw new IllegalArgumentException("Serialization handler not found for class:" + clazz + ".");
     }
 }

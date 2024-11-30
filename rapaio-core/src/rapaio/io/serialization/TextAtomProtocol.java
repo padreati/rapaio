@@ -99,7 +99,7 @@ public class TextAtomProtocol {
         }
 
         @Override
-        public void putDoubles(double[] array) throws IOException {
+        public void saveDoubles(double[] array) throws IOException {
             out.write("double[" + array.length + "]: " + Arrays.toString(array) + "\n");
         }
 

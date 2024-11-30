@@ -26,6 +26,13 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
+import rapaio.io.serialization.AtomSerialization;
+import rapaio.io.serialization.LoadAtomHandler;
+import rapaio.io.serialization.SaveAtomHandler;
+import rapaio.narray.storage.array.ByteArrayStorage;
+import rapaio.narray.storage.array.DoubleArrayStorage;
+import rapaio.narray.storage.array.FloatArrayStorage;
+import rapaio.narray.storage.array.IntArrayStorage;
 
 public abstract class Storage {
 
@@ -107,4 +114,58 @@ public abstract class Storage {
 
     public abstract void setDoubleVector(DoubleVector value, int offset, int[] idx, int idxOffset);
 
+
+    public static class Serialization extends AtomSerialization<Storage> {
+
+        @Override
+        public LoadAtomHandler<? extends Storage> loadAtomHandler() {
+            return in -> {
+                String className = in.readString();
+                if (ByteArrayStorage.class.getName().equals(className)) {
+                    byte[] bytes = in.readBytes();
+                    return new ByteArrayStorage(bytes);
+                }
+                if (IntArrayStorage.class.getName().equals(className)) {
+                    int[] ints = in.readInts();
+                    return new IntArrayStorage(ints);
+                }
+                if (FloatArrayStorage.class.getName().equals(className)) {
+                    float[] floats = in.readFloats();
+                    return new FloatArrayStorage(floats);
+                }
+                if (DoubleArrayStorage.class.getName().equals(className)) {
+                    double[] doubles = in.readDoubles();
+                    return new DoubleArrayStorage(doubles);
+                }
+                throw new RuntimeException("Unknown class " + className);
+            };
+        }
+
+        @Override
+        public SaveAtomHandler<? extends Storage> saveAtomHandler() {
+            return (atom, out) -> {
+                if (atom instanceof ByteArrayStorage bas) {
+                    out.saveString(ByteArrayStorage.class.getName());
+                    out.saveBytes(bas.array());
+                    return;
+                }
+                if (atom instanceof IntArrayStorage ias) {
+                    out.saveString(IntArrayStorage.class.getName());
+                    out.saveInts(ias.array());
+                    return;
+                }
+                if (atom instanceof FloatArrayStorage fas) {
+                    out.saveString(FloatArrayStorage.class.getName());
+                    out.saveFloats(fas.array());
+                    return;
+                }
+                if (atom instanceof DoubleArrayStorage das) {
+                    out.saveString(DoubleArrayStorage.class.getName());
+                    out.saveDoubles(das.array());
+                    return;
+                }
+                throw new RuntimeException("Unknown storage type: " + atom.getClass().getName());
+            };
+        }
+    }
 }

@@ -21,6 +21,8 @@
 
 package rapaio.narray.layout;
 
+import java.util.Objects;
+
 import rapaio.narray.Order;
 import rapaio.narray.Shape;
 import rapaio.util.collection.IntArrays;
@@ -166,5 +168,19 @@ public record ScalarStrideLayout(int offset) implements StrideLayout {
     @Override
     public String toString() {
         return "ScalarStride([]," + offset + ",[])";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ScalarStrideLayout that = (ScalarStrideLayout) o;
+        return offset == that.offset;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(offset);
     }
 }

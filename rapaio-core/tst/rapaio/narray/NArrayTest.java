@@ -95,13 +95,13 @@ public class NArrayTest {
         var t = g.seq(Shape.of(1));
         N value = g.value(1);
         if (value instanceof Double) {
-            assertEquals(t.dtype(), DType.DOUBLE);
+            assertEquals(DType.DOUBLE, t.dtype());
         }
         if (value instanceof Float) {
-            assertEquals(t.dtype(), DType.FLOAT);
+            assertEquals(DType.FLOAT, t.dtype());
         }
         if (value instanceof Integer) {
-            assertEquals(t.dtype(), DType.INTEGER);
+            assertEquals(DType.INTEGER, t.dtype());
         }
         assertEquals(g.engine(), t.manager());
     }
@@ -118,7 +118,7 @@ public class NArrayTest {
         var t4 = g.seq(Shape.of(2, 3));
 
         assertTrue(t3.mul(t4).deepEquals(t4.mul(t3)));
-        assertTrue(t4.mul(t3).deepEquals(t4.mul(g.zeros(Shape.of(2, 3)).add(g.value(2)))));
+        assertTrue(t4.mul(t3).deepEquals(t4.mul(g.zeros(Shape.of(2, 3)).add(2))));
     }
 
     @ParameterizedTest
@@ -258,22 +258,22 @@ public class NArrayTest {
         var t1 = g.seq(Shape.of(10, 10));
         var t2 = g.random(Shape.of(10, 10));
 
-        var r = t1.fma(g.value(2), t2);
+        var r = t1.fma(2, t2);
         assertTensorEqualValues(t1.fma_(g.value(2), t2), r);
 
         t1 = g.seq(Shape.of(10, 10));
         t2 = g.random(Shape.of(10, 10));
-        r = t1.fma(g.value(2), t2, Order.F);
+        r = t1.fma(2, t2, Order.F);
         assertTensorEqualValues(t1.fma_(g.value(2), t2), r);
 
         IllegalArgumentException e =
-                assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10)).fma(g.value(2), g.seq(Shape.of(10, 2))));
+                assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10)).fma(2, g.seq(Shape.of(10, 2))));
         assertEquals("NArrays does not have the same shape.", e.getMessage());
 
         t1 = g.seq(Shape.of(10, 10));
-        r = t1.fma(g.value(2), g.scalar(g.value(2)));
+        r = t1.fma(2, g.scalar(g.value(2)));
 
-        assertTensorEqualValues(t1.add(g.value(4)), r);
+        assertTensorEqualValues(t1.add(4), r);
     }
 
     @ParameterizedTest
@@ -697,22 +697,22 @@ public class NArrayTest {
     @MethodSource("dataFactorySource")
     <N extends Number> void testMathUnary(DataFactory<N> g) {
 
-        var t1 = g.random(Shape.of(41, 31)).sub_(g.value(0.5));
+        var t1 = g.random(Shape.of(41, 31)).sub_(0.5);
         assertTrue(t1.abs().deepEquals(t1.abs_()));
-        t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+        t1 = g.random(Shape.of(41, 31)).sub(0.5);
         assertTrue(t1.abs(Order.F).deepEquals(t1.copy(Order.C).abs_()));
         assertTrue(t1.copy(Order.F).abs_().deepEquals(t1.abs(Order.C)));
 
-        t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+        t1 = g.random(Shape.of(41, 31)).sub(0.5);
         assertTrue(t1.neg().deepEquals(t1.neg_()));
-        t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+        t1 = g.random(Shape.of(41, 31)).sub(0.5);
         assertTrue(t1.copy(Order.C).neg_().deepEquals(t1.neg(Order.F)));
         assertTrue(t1.copy(Order.F).neg_().deepEquals(t1.neg(Order.C)));
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy().log_().deepEquals(t1.log()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).log_().deepEquals(t1.log(Order.C)));
             assertTrue(t1.copy(Order.F).log_().deepEquals(t1.log(Order.F)));
         } else {
@@ -721,9 +721,9 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.log1p().deepEquals(t1.log1p_()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).log1p_().deepEquals(t1.log1p(Order.C)));
             assertTrue(t1.copy(Order.F).log1p_().deepEquals(t1.log1p(Order.F)));
         } else {
@@ -732,9 +732,9 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.exp().deepEquals(t1.exp_()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).exp_().deepEquals(t1.exp(Order.C)));
             assertTrue(t1.copy(Order.F).exp_().deepEquals(t1.exp(Order.F)));
         } else {
@@ -743,9 +743,9 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.expm1().deepEquals(t1.copy().expm1_()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).expm1_().deepEquals(t1.expm1(Order.C)));
             assertTrue(t1.copy(Order.F).expm1_().deepEquals(t1.expm1(Order.F)));
         } else {
@@ -754,11 +754,11 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub_(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub_(0.5);
             assertTrue(t1.sin().deepEquals(t1.sin_()));
-            t1 = g.random(Shape.of(41, 31)).sub_(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub_(0.5);
             assertTrue(t1.copy(Order.C).sin_().deepEquals(t1.sin(Order.C)));
-            t1 = g.random(Shape.of(41, 31)).sub_(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub_(0.5);
             assertTrue(t1.copy(Order.F).sin_().deepEquals(t1.sin(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).sin_());
@@ -766,9 +766,9 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.asin().deepEquals(t1.asin_()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).asin_().deepEquals(t1.asin(Order.C)));
             assertTrue(t1.copy(Order.F).asin_().deepEquals(t1.asin(Order.F)));
         } else {
@@ -777,9 +777,9 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.sinh().deepEquals(t1.sinh_()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).sinh_().deepEquals(t1.sinh(Order.C)));
             assertTrue(t1.copy(Order.F).sinh_().deepEquals(t1.sinh(Order.F)));
         } else {
@@ -788,9 +788,9 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.cos().deepEquals(t1.cos_()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).cos_().deepEquals(t1.cos(Order.C)));
             assertTrue(t1.copy(Order.F).cos_().deepEquals(t1.cos(Order.F)));
         } else {
@@ -799,9 +799,9 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.acos().deepEquals(t1.acos_()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).acos_().deepEquals(t1.acos(Order.C)));
             assertTrue(t1.copy(Order.F).acos_().deepEquals(t1.acos(Order.F)));
         } else {
@@ -810,9 +810,9 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.cosh().deepEquals(t1.cosh_()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).cosh_().deepEquals(t1.cosh(Order.C)));
             assertTrue(t1.copy(Order.F).cosh_().deepEquals(t1.cosh(Order.F)));
         } else {
@@ -821,9 +821,9 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.tan().deepEquals(t1.tan_()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).tan_().deepEquals(t1.tan(Order.C)));
             assertTrue(t1.copy(Order.F).tan_().deepEquals(t1.tan(Order.F)));
         } else {
@@ -832,9 +832,9 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.atan().deepEquals(t1.atan_()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).atan_().deepEquals(t1.atan(Order.C)));
             assertTrue(t1.copy(Order.F).atan_().deepEquals(t1.atan(Order.F)));
         } else {
@@ -843,9 +843,9 @@ public class NArrayTest {
         }
 
         if (g.dt().floatingPoint()) {
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.tanh().deepEquals(t1.tanh_()));
-            t1 = g.random(Shape.of(41, 31)).sub(g.value(0.5));
+            t1 = g.random(Shape.of(41, 31)).sub(0.5);
             assertTrue(t1.copy(Order.C).tanh_().deepEquals(t1.tanh(Order.C)));
             assertTrue(t1.copy(Order.F).tanh_().deepEquals(t1.tanh(Order.F)));
         } else {
@@ -858,25 +858,25 @@ public class NArrayTest {
     @MethodSource("dataFactorySource")
     <N extends Number> void testMathBinaryScalar(DataFactory<N> g) {
         var t = g.seq(Shape.of(2, 3, 2));
-        var c = t.add(g.value(10));
-        assertTrue(t.add_(g.value(10)).deepEquals(c));
+        var c = t.add(10);
+        assertTrue(t.add_(10).deepEquals(c));
 
         t = g.seq(Shape.of(2, 3, 2));
-        c = t.sub(g.value(2));
-        assertTrue(t.sub_(g.value(2)).deepEquals(c));
+        c = t.sub(2);
+        assertTrue(t.sub_(2).deepEquals(c));
 
         t = g.seq(Shape.of(2, 3, 2));
-        c = t.mul(g.value(5));
-        assertTrue(t.mul_(g.value(5)).deepEquals(c));
+        c = t.mul(5);
+        assertTrue(t.mul_(5).deepEquals(c));
 
         t = g.seq(Shape.of(2, 3, 2));
-        c = t.div(g.value(4));
-        assertTrue(t.div_(g.value(4)).deepEquals(c));
+        c = t.div(4);
+        assertTrue(t.div_(4).deepEquals(c));
 
         t = g.seq(Shape.of(2, 3, 2));
         c = t.copy();
-        assertTrue(c.deepEquals(t.add_(g.value(10)).sub_(g.value(10))));
-        assertTrue(c.deepEquals(t.mul(g.value(2)).div(g.value(2))));
+        assertTrue(c.deepEquals(t.add_(10).sub_(10)));
+        assertTrue(c.deepEquals(t.mul(2).div(2)));
     }
 
     @ParameterizedTest
@@ -887,7 +887,7 @@ public class NArrayTest {
 
         var t1 = g.seq(shape);
         var c1 = t1.copy();
-        var t2 = g.seq(shape).add_(g.value(1));
+        var t2 = g.seq(shape).add_(1);
         var c2 = t2.copy();
 
         assertTrue(c1.add(c2).deepEquals(t1.add_(t2)));
@@ -988,7 +988,7 @@ public class NArrayTest {
         assertEquals(Shape.of(100), r1.shape());
 
         for (int i = 0; i < 100; i++) {
-            assertEquals(v1.add(g.value(i * 31)).inner(v1), r1.get(i));
+            assertEquals(v1.add(i * 31).inner(v1), r1.get(i));
         }
 
         var r2 = v1.stretch(0).mv(v1);
@@ -1332,7 +1332,7 @@ public class NArrayTest {
     @ParameterizedTest
     @MethodSource("dataFactorySource")
     <N extends Number> void testReduceMean(DataFactory<N> g) {
-        if(!g.dt().floatingPoint()) {
+        if (!g.dt().floatingPoint()) {
             return;
         }
         var t = g.seq(Shape.of(2, 3)).add_(1);
@@ -1378,7 +1378,7 @@ public class NArrayTest {
         if (!g.dt().floatingPoint()) {
             return;
         }
-        var m1 = g.seq(Shape.of(3, 4)).add_(g.value(1)).t();
+        var m1 = g.seq(Shape.of(3, 4)).add_(1).t();
 
         var scatter1 = m1.scatter(0);
         assertEquals(Shape.of(3, 3), scatter1.shape());
@@ -1684,7 +1684,7 @@ public class NArrayTest {
                 assertEquals(t2.sqr().sum().doubleValue(), Math.pow(t2.norm(2).doubleValue(), 2), 1e-5);
                 assertEquals(g.value(Math.pow(1 + Math.pow(2, 0.5), 2)), t3.norm(0.5));
 
-                assertTensorEqualValues(t1.div(t1.norm(2)), t1.normalize(2));
+                assertTensorEqualValues(t1.div(t1.norm(2).doubleValue()), t1.normalize(2));
                 break;
             case FLOAT:
                 assertEquals(t1.norm(), t1.norm(2));
@@ -1692,7 +1692,7 @@ public class NArrayTest {
                 assertEquals(Math.sqrt(t2.sqr().sum().floatValue()), t2.norm(2).floatValue(), 1e-4);
                 assertEquals(g.value(Math.pow(1 + Math.sqrt(2), 2)).floatValue(), t3.norm(0.5).floatValue(), 1e-4);
 
-                assertTensorEqualValues(t1.div(t1.norm(2)), t1.normalize(2));
+                assertTensorEqualValues(t1.div(t1.norm(2).doubleValue()), t1.normalize(2));
                 break;
             default:
                 var e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(3, 2)).norm());
@@ -1790,7 +1790,7 @@ public class NArrayTest {
         assertTensorEqualValues(t1.varc1d(1, 0), t1.var1d(1));
 
         double mean = t1.sum().doubleValue() / t1.size();
-        assertEquals(t1.sub(g.value(mean)).sqr().sum().doubleValue() / t1.size(), t1.var().doubleValue());
+        assertEquals(t1.sub(mean).sqr().sum().doubleValue() / t1.size(), t1.var().doubleValue());
     }
 
     @ParameterizedTest

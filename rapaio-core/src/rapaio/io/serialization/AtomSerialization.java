@@ -25,7 +25,7 @@ import java.lang.reflect.ParameterizedType;
 
 public abstract class AtomSerialization<T> {
 
-    private Class<T> persistentClass;
+    private final Class<T> persistentClass;
 
     @SuppressWarnings("unchecked")
     public AtomSerialization() {
@@ -37,7 +37,7 @@ public abstract class AtomSerialization<T> {
         return persistentClass;
     }
 
-    public abstract LoadAtomHandler<T> loadAtomHandler();
+    public abstract LoadAtomHandler<? extends T> loadAtomHandler();
 
-    public abstract SaveAtomHandler<T> saveAtomHandler();
+    public abstract SaveAtomHandler<? extends T> saveAtomHandler();
 }

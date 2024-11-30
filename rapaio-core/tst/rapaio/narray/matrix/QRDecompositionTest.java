@@ -103,7 +103,7 @@ public class QRDecompositionTest {
             QRDecomposition<N> qr = a.qr();
 
             NArray<N> h = qr.h();
-            NArray<N> p = tm.eye(dt, 10).sub(h.mul(dt.cast(2)).mm(h.t()));
+            NArray<N> p = tm.eye(dt, 10).sub(h.mul(2).mm(h.t()));
 
             // p is hermitian
             assertTrue(p.deepEquals(p.t(), TOL));

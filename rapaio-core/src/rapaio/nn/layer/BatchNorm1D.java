@@ -71,23 +71,23 @@ public class BatchNorm1D extends AbstractNet {
             throw new IllegalArgumentException("Input has an invalid shape: " + x.value().shape());
         }
         if (train) {
-            var mean = x.mean1d(0);
-            var std = x.std1d(0, 0, mean);
+            Tensor mean = x.mean1d(0);
+            Tensor std = x.std1d(0, 0, epsValue, mean);
 
             if (sampleMean == null || sampleStd == null) {
                 sampleMean = mean;
-                sampleStd = std.identity();
+                sampleStd = std;
             } else {
-                sampleMean = sampleMean.mul(1 - momentum).add(mean.mul(momentum));
-                sampleStd = sampleStd.mul(1 - momentum).add(std.mul(momentum));
+                sampleMean = tm.var(sampleMean.value().mul(1 - momentum).add_(mean.value().mul(momentum)));
+                sampleStd = tm.var(sampleStd.value().mul(1 - momentum).add_(std.value().mul(momentum)));
             }
-            var s = x.sub(mean).div(std.add(epsValue));
+            var s = x.sub(mean).div(std);
             return s.mul(gamma).add(beta);
         } else {
             if (sampleMean == null || sampleStd == null) {
                 throw new IllegalArgumentException("BatchNorm1D requires at least one optimization step.");
             }
-            var s = x.sub(sampleMean).div(sampleStd.add(epsValue));
+            var s = x.sub(sampleMean).div(sampleStd);
             return s.mul(gamma).add(beta);
         }
     }

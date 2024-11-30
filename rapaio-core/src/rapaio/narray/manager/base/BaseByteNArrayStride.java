@@ -51,13 +51,14 @@ import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.iterators.StridePointerIterator;
 import rapaio.narray.layout.StrideLayout;
-import rapaio.narray.layout.StrideWrapper;
 import rapaio.narray.manager.AbstractStrideNArray;
 import rapaio.narray.operator.Broadcast;
 import rapaio.narray.operator.NArrayBinaryOp;
 import rapaio.narray.operator.NArrayOp;
 import rapaio.narray.operator.NArrayReduceOp;
 import rapaio.narray.operator.NArrayUnaryOp;
+import rapaio.narray.operator.impl.ReduceOpMax;
+import rapaio.narray.operator.impl.ReduceOpMin;
 import rapaio.printer.Format;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.IntIntBiFunction;
@@ -259,6 +260,225 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
         }
         return this;
     }
+
+    // REDUCE OPERATIONS
+
+    @Override
+    public Byte reduceOp(NArrayReduceOp op) {
+        return op.reduceByte(loop, storage);
+    }
+
+    @Override
+    public NArray<Byte> reduceOp1d(NArrayReduceOp op, int axis, Order order) {
+        if (axis < 0) {
+            axis += shape().rank();
+        }
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        NArray<Byte> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
+        var resIt = res.ptrIterator(Order.C);
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+
+        int chunk = 128;
+        int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            CountDownLatch latch = new CountDownLatch(tasks);
+            for (int i = 0; i < tasks; i++) {
+                List<Runnable> taskList = new ArrayList<>();
+                while (it.hasNext() && taskList.size() < chunk) {
+                    int ptr = it.nextInt();
+                    int resPtr = resIt.next();
+                    taskList.add(() -> {
+                        StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
+                        byte value = manager.stride(dt, strideLayout, storage).reduceOp(op);
+                        res.ptrSet(resPtr, value);
+                    });
+                }
+                executor.submit(() -> {
+                    for (var t : taskList) {
+                        t.run();
+                    }
+                    latch.countDown();
+                });
+            }
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public NArray<Byte> varc1d(int axis, int ddof, NArray<?> mean, Order order) {
+        if (axis < 0) {
+            axis += shape().rank();
+        }
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        NArray<Byte> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
+        if(!res.shape().equals(mean.shape())) {
+            throw new IllegalArgumentException("Mean array must have the same shape as the result array.");
+        }
+
+        var resIt = res.ptrIterator(Order.C);
+        var meanIt = mean.ptrIterator(Order.C);
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+
+        int chunk = 128;
+        int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            CountDownLatch latch = new CountDownLatch(tasks);
+            for (int i = 0; i < tasks; i++) {
+                List<Runnable> taskList = new ArrayList<>();
+                while (it.hasNext() && taskList.size() < chunk) {
+                    int ptr = it.nextInt();
+                    int resPtr = resIt.next();
+                    taskList.add(() -> {
+                        StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
+                        byte m = mean.ptrGetByte(meanIt.next());
+                        byte value = manager.stride(dt, strideLayout, storage).reduceOp(NArrayOp.reduceVarc(ddof, m));
+                        res.ptrSet(resPtr, value);
+                    });
+                }
+                executor.submit(() -> {
+                    for (var t : taskList) {
+                        t.run();
+                    }
+                    latch.countDown();
+                });
+            }
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public NArray<Byte> softmax1d_(int axis) {
+        if (!dtype().floatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        // TODO: this can be improved perhaps a lot
+        sub_(amax1d(axis).strexp(axis, dim(axis))).exp_();
+        div_(sum1d(axis).strexp(axis, dim(axis)));
+        return this;
+    }
+
+    @Override
+    public NArray<Byte> logsoftmax1d_(int axis) {
+        if (!dtype().floatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        // TODO: this can be improved perhaps a lot
+        var max = amax1d(axis).strexp(axis, dim(axis));
+        sub_(this.sub(max).exp().sum1d(axis).log_().strexp(axis, dim(axis))).sub_(max);
+        return this;
+    }
+
+    @Override
+    public Byte nanMean() {
+        if (!dtype().floatingPoint()) {
+            throw new IllegalArgumentException("Operation available only for float tensors.");
+        }
+        int size = size() - nanCount();
+        // first pass compute raw mean
+        byte sum = nanSum();
+
+        byte mean = (byte) (sum / size);
+        // second pass adjustments for mean
+        sum = 0;
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                byte v = storage.getByte(p);
+                p += loop.step;
+                if (dtype().isNaN(v)) {
+                    continue;
+                }
+                sum += (byte) (v - mean);
+            }
+        }
+        return (byte) (mean + sum / size);
+    }
+
+    @Override
+    public int argmax(Order order) {
+        int argmax = -1;
+        byte argvalue = ReduceOpMax.initByte;
+        var i = 0;
+        var loop = StrideLoopDescriptor.of(layout, order, dtype().vs());
+        for (int p : loop.offsets) {
+            for (int j = 0; j < loop.size; j++) {
+                byte value = storage.getByte(p);
+                p += loop.step;
+                if (value > argvalue) {
+                    argvalue = value;
+                    argmax = i;
+                }
+                i++;
+            }
+        }
+        return argmax;
+    }
+
+    @Override
+    public int argmin(Order order) {
+        int argmin = -1;
+        byte argvalue = ReduceOpMin.initByte;
+        var i = 0;
+        var loop = StrideLoopDescriptor.of(layout, order, dtype().vs());
+        for (int p : loop.offsets) {
+            for (int j = 0; j < loop.size; j++) {
+                byte value = storage.getByte(p);
+                p += loop.step;
+                if (value < argvalue) {
+                    argvalue = value;
+                    argmin = i;
+                }
+                i++;
+            }
+        }
+        return argmin;
+    }
+
+    @Override
+    public int nanCount() {
+        int count = 0;
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                if (dtype().isNaN(storage.getByte(p))) {
+                    count++;
+                }
+                p += loop.step;
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public int zeroCount() {
+        int count = 0;
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                if (storage.getByte(p) == 0) {
+                    count++;
+                }
+                p += loop.step;
+            }
+        }
+        return count;
+    }
+
 
     // LINEAR ALGEBRA OPERATIONS
 
@@ -609,269 +829,6 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
             double pow
     ) {
         return div_(norm(pow));
-    }
-
-    @Override
-    public NArray<Byte> softmax1d_(int axis) {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        // TODO: this can be improved perhaps a lot
-        sub_(amax1d(axis).strexp(axis, dim(axis))).exp_();
-        div_(sum1d(axis).strexp(axis, dim(axis)));
-        return this;
-    }
-
-    @Override
-    public NArray<Byte> logsoftmax1d_(int axis) {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        // TODO: this can be improved perhaps a lot
-        var max = amax1d(axis).strexp(axis, dim(axis));
-        sub_(this.sub(max).exp().sum1d(axis).log_().strexp(axis, dim(axis))).sub_(max);
-        return this;
-    }
-
-    @Override
-    protected NArray<Byte> alongAxisOperation(Order order, int axis, Function<NArray<Byte>, Byte> op) {
-        int[] newDims = layout.shape().narrowDims(axis);
-        int[] newStrides = layout.narrowStrides(axis);
-        int selDim = layout.dim(axis);
-        int selStride = layout.stride(axis);
-
-        NArray<Byte> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
-        var resIt = res.ptrIterator(Order.C);
-        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
-        int size = it.size();
-        int chunk = 128;
-        int tasks = (size % chunk == 0) ? size / chunk : size / chunk + 1;
-
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            CountDownLatch latch = new CountDownLatch(tasks);
-            for (int i = 0; i < tasks; i++) {
-                List<Runnable> taskList = new ArrayList<>();
-                while (it.hasNext() && taskList.size() < chunk) {
-                    int ptr = it.nextInt();
-                    int resPtr = resIt.next();
-                    taskList.add(() -> {
-                        var stride = manager.stride(dt, StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride}), storage);
-                        res.ptrSet(resPtr, op.apply(stride));
-                    });
-                }
-                executor.submit(() -> {
-                    for (var t : taskList) {
-                        t.run();
-                    }
-                    latch.countDown();
-                });
-            }
-        }
-        return res;
-    }
-
-    @Override
-    public Byte mean() {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        int size = size();
-        // first pass compute raw mean
-        byte sum = 0;
-        for (int off : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                sum += storage.getByte(off + i * loop.step);
-            }
-        }
-        byte mean = (byte) (sum / size);
-        // second pass adjustments for mean
-        sum = 0;
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                sum += (byte) (storage.getByte(p) - mean);
-                p += loop.step;
-            }
-        }
-        return (byte) (mean + sum / size);
-    }
-
-    @Override
-    public Byte nanMean() {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        int size = size() - nanCount();
-        // first pass compute raw mean
-        byte sum = nanSum();
-
-        byte mean = (byte) (sum / size);
-        // second pass adjustments for mean
-        sum = 0;
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                byte v = storage.getByte(p);
-                p += loop.step;
-                if (dtype().isNaN(v)) {
-                    continue;
-                }
-                sum += (byte) (v - mean);
-            }
-        }
-        return (byte) (mean + sum / size);
-    }
-
-    @Override
-    public Byte varc(int ddof) {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        int size = size();
-        byte mean = (byte) mean();
-
-        byte sum2 = 0;
-        byte sum3 = 0;
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                byte centered = (byte) (storage.getByte(p) - mean);
-                sum2 += (byte) (centered * centered);
-                sum3 += centered;
-                p += loop.step;
-            }
-        }
-        return (byte) ((sum2 - (sum3 * sum3) / (size - ddof)) / (size - ddof));
-    }
-
-    @Override
-    public int argmax(Order order) {
-        int argmax = -1;
-        byte argvalue = NArrayOp.reduceMax().initByte();
-        var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order, dtype().vs());
-        for (int p : loop.offsets) {
-            for (int j = 0; j < loop.size; j++) {
-                byte value = storage.getByte(p);
-                p += loop.step;
-                if (value > argvalue) {
-                    argvalue = value;
-                    argmax = i;
-                }
-                i++;
-            }
-        }
-        return argmax;
-    }
-
-    @Override
-    public int argmin(Order order) {
-        int argmin = -1;
-        byte argvalue = NArrayOp.reduceMin().initByte();
-        var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order, dtype().vs());
-        for (int p : loop.offsets) {
-            for (int j = 0; j < loop.size; j++) {
-                byte value = storage.getByte(p);
-                p += loop.step;
-                if (value < argvalue) {
-                    argvalue = value;
-                    argmin = i;
-                }
-                i++;
-            }
-        }
-        return argmin;
-    }
-
-    @Override
-    public int nanCount() {
-        int count = 0;
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                if (dtype().isNaN(storage.getByte(p))) {
-                    count++;
-                }
-                p += loop.step;
-            }
-        }
-        return count;
-    }
-
-    @Override
-    public int zeroCount() {
-        int count = 0;
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                if (storage.getByte(p) == 0) {
-                    count++;
-                }
-                p += loop.step;
-            }
-        }
-        return count;
-    }
-
-    @Override
-    public Byte reduceOp(NArrayReduceOp op) {
-        byte agg = op.initByte();
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                agg = op.applyByte(agg, storage.getByte(p));
-                p += loop.step;
-            }
-        }
-        return agg;
-    }
-
-    @Override
-    public Byte nanAssociativeOp(NArrayReduceOp op) {
-        byte aggregate = op.initByte();
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                if (!dtype().isNaN(storage.getByte(p))) {
-                    aggregate = op.applyByte(aggregate, storage.getByte(p));
-                }
-                p += loop.step;
-            }
-        }
-        return aggregate;
-    }
-
-    @Override
-    public NArray<Byte> associativeOpNarrow(NArrayReduceOp op, Order order, int axis) {
-        if (axis < 0) {
-            axis += shape().rank();
-        }
-        int[] newDims = layout.shape().narrowDims(axis);
-        int[] newStrides = layout.narrowStrides(axis);
-        int selDim = layout.dim(axis);
-        int selStride = layout.stride(axis);
-
-        NArray<Byte> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
-        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
-        var resIt = res.ptrIterator(Order.C);
-        while (it.hasNext()) {
-            int ptr = it.nextInt();
-            byte value = StrideWrapper.of(ptr, selStride, selDim, this).aggregate(op.initByte(), op::applyByte);
-            res.ptrSet(resIt.next(), value);
-        }
-        return res;
-    }
-
-    @Override
-    public NArray<Byte> nanAssociativeOpNarrow(NArrayReduceOp op, Order order, int axis) {
-        int[] newDims = layout.shape().narrowDims(axis);
-        int[] newStrides = layout.narrowStrides(axis);
-        int selDim = layout.dim(axis);
-        int selStride = layout.stride(axis);
-
-        NArray<Byte> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
-        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
-        var resIt = res.ptrIterator(Order.C);
-        while (it.hasNext()) {
-            int ptr = it.nextInt();
-            byte value = StrideWrapper.of(ptr, selStride, selDim, this).nanAggregate(DType.BYTE, op.initByte(), op::applyByte);
-            res.ptrSet(resIt.next(), value);
-        }
-        return res;
     }
 
     @Override

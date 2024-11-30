@@ -416,26 +416,21 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
     }
 
     @Override
+    public String toString() {
+        return "MatrixStride([" + dim(0) + "," + dim(1) + "]," + offset + ",[" + stride(0) + "," + stride(1) + "])";
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        MatrixStrideLayout layout = (MatrixStrideLayout) o;
-        return offset == layout.offset && shape.equals(layout.shape) && Arrays.equals(strides, layout.strides);
+        MatrixStrideLayout that = (MatrixStrideLayout) o;
+        return offset == that.offset && Objects.equals(shape, that.shape) && Objects.deepEquals(strides, that.strides);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(shape, offset);
-        result = 31 * result + Arrays.hashCode(strides);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "MatrixStride([" + dim(0) + "," + dim(1) + "]," + offset + ",[" + stride(0) + "," + stride(1) + "])";
+        return Objects.hash(shape, offset, Arrays.hashCode(strides));
     }
 }

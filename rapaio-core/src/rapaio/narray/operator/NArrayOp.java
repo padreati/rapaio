@@ -29,10 +29,16 @@ import rapaio.narray.operator.impl.BinaryOpMax;
 import rapaio.narray.operator.impl.BinaryOpMin;
 import rapaio.narray.operator.impl.BinaryOpMul;
 import rapaio.narray.operator.impl.BinaryOpSub;
-import rapaio.narray.operator.impl.ReduceOpAdd;
 import rapaio.narray.operator.impl.ReduceOpMax;
+import rapaio.narray.operator.impl.ReduceOpMean;
 import rapaio.narray.operator.impl.ReduceOpMin;
-import rapaio.narray.operator.impl.ReduceOpMul;
+import rapaio.narray.operator.impl.ReduceOpNanProd;
+import rapaio.narray.operator.impl.ReduceOpProd;
+import rapaio.narray.operator.impl.ReduceOpNanMax;
+import rapaio.narray.operator.impl.ReduceOpNanMin;
+import rapaio.narray.operator.impl.ReduceOpNanSum;
+import rapaio.narray.operator.impl.ReduceOpSum;
+import rapaio.narray.operator.impl.ReduceOpVarc;
 import rapaio.narray.operator.impl.UnaryOpAbs;
 import rapaio.narray.operator.impl.UnaryOpAcos;
 import rapaio.narray.operator.impl.UnaryOpAsin;
@@ -97,10 +103,16 @@ public final class NArrayOp {
     private static final BinaryOpMin MIN = new BinaryOpMin();
     private static final BinaryOpMax MAX = new BinaryOpMax();
 
-    private static final ReduceOpAdd ADD_ASSOC = new ReduceOpAdd();
-    private static final ReduceOpMul MUL_ASSOC = new ReduceOpMul();
-    private static final ReduceOpMin MIN_ASSOC = new ReduceOpMin();
-    private static final ReduceOpMax MAX_ASSOC = new ReduceOpMax();
+    private static final ReduceOpSum REDUCE_SUM = new ReduceOpSum();
+    private static final ReduceOpProd REDUCE_PROD = new ReduceOpProd();
+    private static final ReduceOpMin REDUCE_MIN = new ReduceOpMin();
+    private static final ReduceOpMax REDUCE_MAX = new ReduceOpMax();
+    private static final ReduceOpMean REDUCE_MEAN = new ReduceOpMean();
+
+    private static final ReduceOpNanSum REDUCE_NAN_SUM = new ReduceOpNanSum();
+    private static final ReduceOpNanProd REDUCE_NAN_PROD = new ReduceOpNanProd();
+    private static final ReduceOpNanMin REDUCE_NAN_MIN = new ReduceOpNanMin();
+    private static final ReduceOpNanMax REDUCE_NAN_MAX = new ReduceOpNanMax();
 
 
     public static UnaryOpRint unaryRint() {
@@ -236,19 +248,47 @@ public final class NArrayOp {
         return MAX;
     }
 
-    public static ReduceOpAdd reduceAdd() {
-        return ADD_ASSOC;
+    public static ReduceOpSum reduceSum() {
+        return REDUCE_SUM;
     }
 
-    public static ReduceOpMul reduceMul() {
-        return MUL_ASSOC;
+    public static ReduceOpProd reduceProd() {
+        return REDUCE_PROD;
     }
 
     public static ReduceOpMin reduceMin() {
-        return MIN_ASSOC;
+        return REDUCE_MIN;
     }
 
     public static ReduceOpMax reduceMax() {
-        return MAX_ASSOC;
+        return REDUCE_MAX;
+    }
+
+    public static ReduceOpMean reduceMean() {
+        return REDUCE_MEAN;
+    }
+
+    public static ReduceOpVarc reduceVarc(int ddof) {
+        return new ReduceOpVarc(ddof, Double.NaN);
+    }
+
+    public static ReduceOpVarc reduceVarc(int ddof, double mean) {
+        return new ReduceOpVarc(ddof, mean);
+    }
+
+    public static ReduceOpNanSum reduceNanSum() {
+        return REDUCE_NAN_SUM;
+    }
+
+    public static ReduceOpNanProd reduceNanProd() {
+        return REDUCE_NAN_PROD;
+    }
+
+    public static ReduceOpNanMin reduceNanMin() {
+        return REDUCE_NAN_MIN;
+    }
+
+    public static ReduceOpNanMax reduceNanMax() {
+        return REDUCE_NAN_MAX;
     }
 }

@@ -36,10 +36,10 @@ import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.model.ensemble.CForest;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
 
 /**
  * Principal component analysis decomposition test
@@ -146,13 +146,13 @@ public class PCATest {
                 input shape: rows=40, vars=3
                 eigen values:
                 [[ 1.6710094305325662 ] \s
-                 [ 0.8383259734162228 ] \s
-                 [ 0.6819539303101684 ]]\s
+                 [ 0.8383259734162226 ] \s
+                 [ 0.6819539303101686 ]]\s
                 
                 eigen vectors:
-                [[ 0.4921022293062839  -0.6467028606590828  -0.5827613627610746  ] \s
-                 [ 0.47927902494614144 -0.35756937446326975  0.8015209034657936  ] \s
-                 [ 0.7267234770932213   0.6737355211515164  -0.13399043018153708 ]]\s
+                [[ 0.49210222930628383 -0.6467028606590826  -0.5827613627610746  ] \s
+                 [ 0.4792790249461415  -0.35756937446326975  0.8015209034657934  ] \s
+                 [ 0.7267234770932209   0.6737355211515162  -0.13399043018153703 ]]\s
                 
                 """, pca.toSummary());
         assertEquals(pca.toSummary(), pca.toContent());

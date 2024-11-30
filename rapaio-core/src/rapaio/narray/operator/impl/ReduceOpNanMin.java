@@ -25,12 +25,13 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
 import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayReduceOp;
 
-public final class ReduceOpMin extends NArrayReduceOp {
+public final class ReduceOpNanMin extends NArrayReduceOp {
 
     @Override
     public boolean floatingPointOnly() {
@@ -154,12 +155,17 @@ public final class ReduceOpMin extends NArrayReduceOp {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 FloatVector v = storage.getFloatVector(loop.vs, p);
-                a = a.min(v);
+                VectorMask<Float> m = v.test(VectorOperators.IS_NAN);
+                a = a.lanewise(VectorOperators.MIN, v, m.not());
                 p += loop.simdLen;
             }
-            result = Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
+            result = Math.min(result, a.reduceLanes(VectorOperators.MIN, m.not()));
             for (; i < loop.size; i++) {
-                result = Math.min(result, storage.getFloat(p));
+                float value = storage.getFloat(p);
+                if (!Float.isNaN(value)) {
+                    result = Math.min(result, value);
+                }
                 p++;
             }
         }
@@ -174,12 +180,17 @@ public final class ReduceOpMin extends NArrayReduceOp {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 FloatVector v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
-                a = a.min(v);
+                VectorMask<Float> m = v.test(VectorOperators.IS_NAN);
+                a = a.lanewise(VectorOperators.MIN, v, m.not());
                 p += loop.simdLen * loop.step;
             }
-            result = Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
+            result = Math.min(result, a.reduceLanes(VectorOperators.MIN, m.not()));
             for (; i < loop.size; i++) {
-                result = Math.min(result, storage.getFloat(p));
+                float value = storage.getFloat(p);
+                if (!Float.isNaN(value)) {
+                    result = Math.min(result, value);
+                }
                 p += loop.step;
             }
         }
@@ -191,7 +202,10 @@ public final class ReduceOpMin extends NArrayReduceOp {
         float result = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                result = Math.min(result, storage.getFloat(p));
+                float value = storage.getFloat(p);
+                if (!Float.isNaN(value)) {
+                    result = Math.min(result, value);
+                }
                 p += loop.step;
             }
         }
@@ -206,12 +220,17 @@ public final class ReduceOpMin extends NArrayReduceOp {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 DoubleVector v = storage.getDoubleVector(loop.vs, p);
-                a = a.min(v);
+                VectorMask<Double> m = v.test(VectorOperators.IS_NAN);
+                a = a.lanewise(VectorOperators.MIN, v, m.not());
                 p += loop.simdLen;
             }
-            result = Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
+            result = Math.min(result, a.reduceLanes(VectorOperators.MIN, m.not()));
             for (; i < loop.size; i++) {
-                result = Math.min(result, storage.getDouble(p));
+                double value = storage.getDouble(p);
+                if (!Double.isNaN(value)) {
+                    result = Math.min(result, value);
+                }
                 p++;
             }
         }
@@ -226,12 +245,17 @@ public final class ReduceOpMin extends NArrayReduceOp {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 DoubleVector v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
-                a = a.min(v);
+                VectorMask<Double> m = v.test(VectorOperators.IS_NAN);
+                a = a.lanewise(VectorOperators.MIN, v, m.not());
                 p += loop.simdLen * loop.step;
             }
-            result = Math.min(result, a.reduceLanes(VectorOperators.MIN));
+            VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
+            result = Math.min(result, a.reduceLanes(VectorOperators.MIN, m.not()));
             for (; i < loop.size; i++) {
-                result = Math.min(result, storage.getDouble(p));
+                double value = storage.getDouble(p);
+                if (!Double.isNaN(value)) {
+                    result = Math.min(result, value);
+                }
                 p += loop.step;
             }
         }
@@ -243,7 +267,10 @@ public final class ReduceOpMin extends NArrayReduceOp {
         double result = initDouble;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                result = Math.min(result, storage.getDouble(p));
+                double value = storage.getDouble(p);
+                if (!Double.isNaN(value)) {
+                    result = Math.min(result, value);
+                }
                 p += loop.step;
             }
         }

@@ -1272,14 +1272,15 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
 
     //--------- BINARY OPERATIONS ----------------//
 
-    public final NArray<N> binaryOp(NArrayBinaryOp op, NArray<?> t, Order order) {
-        Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this.shape(), t.shape()));
+    public final NArray<N> binaryOp(NArrayBinaryOp op, NArray<?> other, Order order) {
+        // TODO: research optimization
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this.shape(), other.shape()));
         if (!broadcast.valid()) {
             throw new IllegalArgumentException(
-                    String.format("Operation could not be applied on NArrays with shape: %s, %s", shape(), t.shape()));
+                    String.format("Operation could not be applied on NArrays with shape: %s, %s", shape(), other.shape()));
         }
         NArray<N> copy = broadcast.transform(this).copy(order);
-        return copy.binaryOp_(op, broadcast.transform(t));
+        return copy.binaryOp_(op, broadcast.transform(other));
     }
 
     public abstract NArray<N> binaryOp_(NArrayBinaryOp op, NArray<?> value);
@@ -1362,20 +1363,12 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return binaryOp_(NArrayOp.binaryMax(), array);
     }
 
-    public final NArray<N> add(N value) {
-        return binaryOp(NArrayOp.binaryAdd(), value, Order.defaultOrder());
-    }
-
     public final NArray<N> add(int value) {
         return binaryOp(NArrayOp.binaryAdd(), value, Order.defaultOrder());
     }
 
     public final NArray<N> add(double value) {
         return binaryOp(NArrayOp.binaryAdd(), value, Order.defaultOrder());
-    }
-
-    public final NArray<N> add(N value, Order order) {
-        return binaryOp(NArrayOp.binaryAdd(), value, order);
     }
 
     public final NArray<N> add(int value, Order order) {
@@ -1386,20 +1379,12 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return binaryOp(NArrayOp.binaryAdd(), value, order);
     }
 
-    public final NArray<N> add_(N value) {
-        return binaryOp_(NArrayOp.binaryAdd(), value);
-    }
-
     public final NArray<N> add_(int value) {
         return binaryOp_(NArrayOp.binaryAdd(), value);
     }
 
     public final NArray<N> add_(double value) {
         return binaryOp_(NArrayOp.binaryAdd(), value);
-    }
-
-    public final NArray<N> sub(N value) {
-        return binaryOp(NArrayOp.binarySub(), value, Order.defaultOrder());
     }
 
     public final NArray<N> sub(int value) {
@@ -1410,20 +1395,12 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return binaryOp(NArrayOp.binarySub(), value, Order.defaultOrder());
     }
 
-    public final NArray<N> sub(N value, Order order) {
-        return binaryOp(NArrayOp.binarySub(), value, order);
-    }
-
     public final NArray<N> sub(int value, Order order) {
         return binaryOp(NArrayOp.binarySub(), value, order);
     }
 
     public final NArray<N> sub(double value, Order order) {
         return binaryOp(NArrayOp.binarySub(), value, order);
-    }
-
-    public final NArray<N> sub_(N value) {
-        return binaryOp_(NArrayOp.binarySub(), value);
     }
 
     public final NArray<N> sub_(int value) {
@@ -1434,20 +1411,12 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return binaryOp_(NArrayOp.binarySub(), value);
     }
 
-    public final NArray<N> mul(N value) {
-        return binaryOp(NArrayOp.binaryMul(), value, Order.defaultOrder());
-    }
-
     public final NArray<N> mul(int value) {
         return binaryOp(NArrayOp.binaryMul(), value, Order.defaultOrder());
     }
 
     public final NArray<N> mul(double value) {
         return binaryOp(NArrayOp.binaryMul(), value, Order.defaultOrder());
-    }
-
-    public final NArray<N> mul(N value, Order order) {
-        return binaryOp(NArrayOp.binaryMul(), value, order);
     }
 
     public final NArray<N> mul(int value, Order order) {
@@ -1458,20 +1427,12 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return binaryOp(NArrayOp.binaryMul(), value, order);
     }
 
-    public final NArray<N> mul_(N value) {
-        return binaryOp_(NArrayOp.binaryMul(), value);
-    }
-
     public final NArray<N> mul_(int value) {
         return binaryOp_(NArrayOp.binaryMul(), value);
     }
 
     public final NArray<N> mul_(double value) {
         return binaryOp_(NArrayOp.binaryMul(), value);
-    }
-
-    public final NArray<N> div(N value) {
-        return binaryOp(NArrayOp.binaryDiv(), value, Order.defaultOrder());
     }
 
     public final NArray<N> div(int value) {
@@ -1482,20 +1443,12 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return binaryOp(NArrayOp.binaryDiv(), value, Order.defaultOrder());
     }
 
-    public final NArray<N> div(N value, Order order) {
-        return binaryOp(NArrayOp.binaryDiv(), value, order);
-    }
-
     public final NArray<N> div(int value, Order order) {
         return binaryOp(NArrayOp.binaryDiv(), value, order);
     }
 
     public final NArray<N> div(double value, Order order) {
         return binaryOp(NArrayOp.binaryDiv(), value, order);
-    }
-
-    public final NArray<N> div_(N value) {
-        return binaryOp_(NArrayOp.binaryDiv(), value);
     }
 
     public final NArray<N> div_(int value) {
@@ -1506,20 +1459,12 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return binaryOp_(NArrayOp.binaryDiv(), value);
     }
 
-    public final NArray<N> min(N value) {
-        return binaryOp(NArrayOp.binaryMin(), value, Order.defaultOrder());
-    }
-
     public final NArray<N> min(int value) {
         return binaryOp(NArrayOp.binaryMin(), value, Order.defaultOrder());
     }
 
     public final NArray<N> min(double value) {
         return binaryOp(NArrayOp.binaryMin(), value, Order.defaultOrder());
-    }
-
-    public final NArray<N> min(N value, Order order) {
-        return binaryOp(NArrayOp.binaryMin(), value, order);
     }
 
     public final NArray<N> min(int value, Order order) {
@@ -1530,20 +1475,12 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return binaryOp(NArrayOp.binaryMin(), value, order);
     }
 
-    public final NArray<N> min_(N value) {
-        return binaryOp_(NArrayOp.binaryMin(), value);
-    }
-
     public final NArray<N> min_(int value) {
         return binaryOp_(NArrayOp.binaryMin(), value);
     }
 
     public final NArray<N> min_(double value) {
         return binaryOp_(NArrayOp.binaryMin(), value);
-    }
-
-    public final NArray<N> max(N value) {
-        return binaryOp(NArrayOp.binaryMax(), value, Order.defaultOrder());
     }
 
     public final NArray<N> max(int value) {
@@ -1554,20 +1491,12 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return binaryOp(NArrayOp.binaryMax(), value, Order.defaultOrder());
     }
 
-    public final NArray<N> max(N value, Order order) {
-        return binaryOp(NArrayOp.binaryMax(), value, order);
-    }
-
     public final NArray<N> max(int value, Order order) {
         return binaryOp(NArrayOp.binaryMax(), value, order);
     }
 
     public final NArray<N> max(double value, Order order) {
         return binaryOp(NArrayOp.binaryMax(), value, order);
-    }
-
-    public final NArray<N> max_(N value) {
-        return binaryOp_(NArrayOp.binaryMax(), value);
     }
 
     public final NArray<N> max_(int value) {
@@ -1578,20 +1507,12 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return binaryOp_(NArrayOp.binaryMax(), value);
     }
 
-    public final NArray<N> fma(N a, NArray<?> t) {
-        return fma(a, t, Order.defaultOrder());
-    }
-
     public final NArray<N> fma(int a, NArray<?> t) {
         return fma(a, t, Order.defaultOrder());
     }
 
     public final NArray<N> fma(double a, NArray<?> t) {
         return fma(a, t, Order.defaultOrder());
-    }
-
-    public final NArray<N> fma(N a, NArray<?> t, Order order) {
-        return copy(order).fma_(a, t);
     }
 
     public final NArray<N> fma(int a, NArray<?> t, Order order) {
@@ -1621,67 +1542,53 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
 
     //--------- REDUCE OPERATIONS ----------------//
 
-    public abstract N reduceOp(NArrayReduceOp op);
-
-    public abstract N nanAssociativeOp(NArrayReduceOp op);
-
-    public abstract NArray<N> associativeOpNarrow(NArrayReduceOp op, Order order, int axis);
-
-    public abstract NArray<N> nanAssociativeOpNarrow(NArrayReduceOp op, Order order, int axis);
-
     public final N sum() {
-        return reduceOp(NArrayOp.reduceAdd());
+        return reduceOp(NArrayOp.reduceSum());
     }
 
     public final NArray<N> sum1d(int axis) {
-        return sum1d(axis, Order.defaultOrder());
+        return reduceOp1d(NArrayOp.reduceSum(), axis, Order.defaultOrder());
     }
 
     public final NArray<N> sum1d(int axis, Order order) {
-        return associativeOpNarrow(NArrayOp.reduceAdd(), order, axis);
+        return reduceOp1d(NArrayOp.reduceSum(), axis, order);
     }
 
     public final N nanSum() {
-        return nanAssociativeOp(NArrayOp.reduceAdd());
+        return reduceOp(NArrayOp.reduceNanSum());
     }
 
     public final NArray<N> nanSum1d(int axis) {
-        return nanSum1d(axis, Order.defaultOrder());
+        return reduceOp1d(NArrayOp.reduceNanSum(), axis, Order.defaultOrder());
     }
 
     public final NArray<N> nanSum1d(int axis, Order order) {
-        return nanAssociativeOpNarrow(NArrayOp.reduceAdd(), order, axis);
+        return reduceOp1d(NArrayOp.reduceNanSum(), axis, order);
     }
 
     public final N prod() {
-        return reduceOp(NArrayOp.reduceMul());
+        return reduceOp(NArrayOp.reduceProd());
     }
 
     public final NArray<N> prod1d(int axis) {
-        return prod1d(axis, Order.defaultOrder());
+        return reduceOp1d(NArrayOp.reduceProd(), axis, Order.defaultOrder());
     }
 
     public final NArray<N> prod1d(int axis, Order order) {
-        return associativeOpNarrow(NArrayOp.reduceMul(), order, axis);
+        return reduceOp1d(NArrayOp.reduceProd(), axis, order);
     }
 
     public final N nanProd() {
-        return nanAssociativeOp(NArrayOp.reduceMul());
+        return reduceOp(NArrayOp.reduceNanProd());
     }
 
     public final NArray<N> nanProd1d(int axis) {
-        return nanProd1d(axis, Order.defaultOrder());
+        return reduceOp1d(NArrayOp.reduceNanProd(), axis, Order.defaultOrder());
     }
 
     public final NArray<N> nanProd1d(int axis, Order order) {
-        return nanAssociativeOpNarrow(NArrayOp.reduceMul(), order, axis);
+        return reduceOp1d(NArrayOp.reduceNanProd(), axis, order);
     }
-
-    public final int argmax() {
-        return argmax(Order.defaultOrder());
-    }
-
-    public abstract int argmax(Order order);
 
     public final N amax() {
         return reduceOp(NArrayOp.reduceMax());
@@ -1692,20 +1599,151 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     }
 
     public final NArray<N> amax1d(int axis, Order order) {
-        return associativeOpNarrow(NArrayOp.reduceMax(), order, axis);
+        return reduceOp1d(NArrayOp.reduceMax(), axis, order);
     }
 
     public final N nanMax() {
-        return nanAssociativeOp(NArrayOp.reduceMax());
+        return reduceOp(NArrayOp.reduceNanMax());
     }
 
     public final NArray<N> nanMax1d(int axis) {
-        return nanMax1d(axis, Order.defaultOrder());
+        return reduceOp1d(NArrayOp.reduceNanMax(), axis, Order.defaultOrder());
     }
 
     public final NArray<N> nanMax1d(int axis, Order order) {
-        return nanAssociativeOpNarrow(NArrayOp.reduceMax(), order, axis);
+        return reduceOp1d(NArrayOp.reduceNanMax(), axis, order);
     }
+
+    public final N amin() {
+        return reduceOp(NArrayOp.reduceMin());
+    }
+
+    public final NArray<N> amin1d(int axis) {
+        return reduceOp1d(NArrayOp.reduceMin(), axis, Order.defaultOrder());
+    }
+
+    public final NArray<N> amin1d(int axis, Order order) {
+        return reduceOp1d(NArrayOp.reduceMin(), axis, order);
+    }
+
+    public final N nanMin() {
+        return reduceOp(NArrayOp.reduceNanMin());
+    }
+
+    public final NArray<N> nanMin1d(int axis) {
+        return reduceOp1d(NArrayOp.reduceNanMin(), axis, Order.defaultOrder());
+    }
+
+    public final NArray<N> nanMin1d(int axis, Order order) {
+        return reduceOp1d(NArrayOp.reduceNanMin(), axis, order);
+    }
+
+    public final N mean() {
+        return reduceOp(NArrayOp.reduceMean());
+    }
+
+    public final NArray<N> mean1d(int axis) {
+        return reduceOp1d(NArrayOp.reduceMean(), axis, Order.defaultOrder());
+    }
+
+    public final NArray<N> mean1d(int axis, Order order) {
+        return reduceOp1d(NArrayOp.reduceMean(), axis, order);
+    }
+
+    public final N var() {
+        return varc(0);
+    }
+
+    public final N std() {
+        return dtype().cast(Math.sqrt(var().doubleValue()));
+    }
+
+    public final NArray<N> var1d(int axis) {
+        return varc1d(axis, 0, Order.defaultOrder());
+    }
+
+    public final NArray<N> std1d(int axis) {
+        return var1d(axis).sqrt_();
+    }
+
+    public final NArray<N> var1d(int axis, Order order) {
+        return varc1d(axis, 0, order);
+    }
+
+    public final NArray<N> std1d(int axis, Order order) {
+        return var1d(axis, order).sqrt_();
+    }
+
+    public final N varc(int ddof) {
+        return reduceOp(NArrayOp.reduceVarc(ddof));
+    }
+
+    public final N stdc(int ddof) {
+        return dtype().cast(Math.sqrt(varc(ddof).doubleValue()));
+    }
+
+    public final NArray<N> varc1d(int axis, int ddof) {
+        return reduceOp1d(NArrayOp.reduceVarc(ddof), axis, Order.defaultOrder());
+    }
+
+    public final NArray<N> stdc1d(int axis, int ddof) {
+        return varc1d(axis, ddof).sqrt_();
+    }
+
+    public final NArray<N> varc1d(int axis, int ddof, Order order) {
+        return reduceOp1d(NArrayOp.reduceVarc(ddof), axis, order);
+    }
+
+    public final NArray<N> stdc1d(int axis, int ddof, Order order) {
+        return varc1d(axis, ddof, order).sqrt_();
+    }
+
+
+    public final N varc(int ddof, double mean) {
+        return reduceOp(NArrayOp.reduceVarc(ddof, mean));
+    }
+
+    public final NArray<N> varc1d(int axis, int ddof, NArray<?> mean) {
+        return varc1d(axis, ddof, mean, Order.defaultOrder());
+    }
+
+    public abstract NArray<N> varc1d(int axis, int ddof, NArray<?> mean, Order order);
+
+
+
+
+    public abstract N reduceOp(NArrayReduceOp op);
+
+    public abstract NArray<N> reduceOp1d(NArrayReduceOp op, int axis, Order order);
+
+    public abstract N nanMean();
+
+    public final NArray<N> softmax1d(int axis) {
+        return softmax1d(axis, Order.defaultOrder());
+    }
+
+    public final NArray<N> softmax1d(int axis, Order askOrder) {
+        return copy(askOrder).softmax1d_(axis);
+    }
+
+    public abstract NArray<N> softmax1d_(int axis);
+
+
+    public final NArray<N> logsoftmax1d(int axis) {
+        return logsoftmax1d(axis, Order.defaultOrder());
+    }
+
+    public final NArray<N> logsoftmax1d(int axis, Order askOrder) {
+        return copy(askOrder).logsoftmax1d_(axis);
+    }
+
+    public abstract NArray<N> logsoftmax1d_(int axis);
+
+    public final int argmax() {
+        return argmax(Order.defaultOrder());
+    }
+
+    public abstract int argmax(Order order);
 
     public final int argmin() {
         return argmin(Order.defaultOrder());
@@ -1713,29 +1751,20 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
 
     public abstract int argmin(Order order);
 
-    public final N amin() {
-        return reduceOp(NArrayOp.reduceMin());
-    }
 
-    public final NArray<N> amin1d(int axis) {
-        return amin1d(axis, Order.defaultOrder());
-    }
+    /**
+     * Computes the number of NaN values. For integer value types this operation returns 0.
+     *
+     * @return number of NaN values
+     */
+    public abstract int nanCount();
 
-    public final NArray<N> amin1d(int axis, Order order) {
-        return associativeOpNarrow(NArrayOp.reduceMin(), order, axis);
-    }
-
-    public final N nanMin() {
-        return nanAssociativeOp(NArrayOp.reduceMin());
-    }
-
-    public final NArray<N> nanMin1d(int axis) {
-        return nanMin1d(axis, Order.defaultOrder());
-    }
-
-    public final NArray<N> nanMin1d(int axis, Order order) {
-        return nanAssociativeOpNarrow(NArrayOp.reduceMin(), order, axis);
-    }
+    /**
+     * Computes the number of values equal with zero.
+     *
+     * @return number of zero values
+     */
+    public abstract int zeroCount();
 
     public final NArray<N> reduceSum(Shape targetShape) {
         return reduceSum(targetShape, Order.defaultOrder());
@@ -2199,7 +2228,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         if (!dtype().floatingPoint()) {
             throw new OperationNotAvailableException("Available only for floating point NArrays.");
         }
-        return t().mm(this, askOrder).div_(dtype().cast(dim(0) - ddof));
+        return t().mm(this, askOrder).div_(dim(0) - ddof);
     }
 
     public final NArray<N> cov(int ddof) {
@@ -2215,7 +2244,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         }
         NArray<N> mean = mean1d(0);
         NArray<N> centered = sub(mean);
-        return centered.t().mm(centered, askOrder).div_(dtype().cast(dim(0) - ddof));
+        return centered.t().mm(centered, askOrder).div_(dim(0) - ddof);
     }
 
     public final NArray<N> corr() {
@@ -2236,102 +2265,6 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
 
 
     //------- SUMMARY OPERATIONS ----------//
-
-    protected abstract NArray<N> alongAxisOperation(Order order, int axis, Function<NArray<N>, N> op);
-
-    public abstract N mean();
-
-    public final NArray<N> mean1d(int axis) {
-        return mean1d(axis, Order.defaultOrder());
-    }
-
-    public final NArray<N> mean1d(int axis, Order order) {
-        return alongAxisOperation(order, axis, NArray::mean);
-    }
-
-    public abstract N nanMean();
-
-    public final N std() {
-        return dtype().cast(Math.sqrt(var().doubleValue()));
-    }
-
-    public final NArray<N> std1d(int axis) {
-        return std1d(axis, Order.defaultOrder());
-    }
-
-    public final NArray<N> std1d(int axis, Order order) {
-        return alongAxisOperation(order, axis, NArray::std);
-    }
-
-    public final N stdc(int ddof) {
-        return dtype().cast(Math.sqrt(varc(ddof).doubleValue()));
-    }
-
-    public final NArray<N> stdc1d(int axis, int ddof) {
-        return stdc1d(axis, ddof, Order.defaultOrder());
-    }
-
-    public final NArray<N> stdc1d(int axis, int ddof, Order order) {
-        return alongAxisOperation(order, axis, t -> t.stdc(ddof));
-    }
-
-    public final N var() {
-        return varc(0);
-    }
-
-    public final NArray<N> var1d(int axis) {
-        return var1d(axis, Order.defaultOrder());
-    }
-
-    public final NArray<N> var1d(int axis, Order order) {
-        return varc1d(axis, 0, order);
-    }
-
-    public abstract N varc(int ddof);
-
-    public final NArray<N> varc1d(int axis, int ddof) {
-        return varc1d(axis, ddof, Order.defaultOrder());
-    }
-
-    public final NArray<N> varc1d(int axis, int ddof, Order order) {
-        return alongAxisOperation(order, axis, t -> t.varc(ddof));
-    }
-
-    public final NArray<N> softmax1d(int axis) {
-        return softmax1d(axis, Order.defaultOrder());
-    }
-
-    public final NArray<N> softmax1d(int axis, Order askOrder) {
-        return copy(askOrder).softmax1d_(axis);
-    }
-
-    public abstract NArray<N> softmax1d_(int axis);
-
-
-    public final NArray<N> logsoftmax1d(int axis) {
-        return logsoftmax1d(axis, Order.defaultOrder());
-    }
-
-    public final NArray<N> logsoftmax1d(int axis, Order askOrder) {
-        return copy(askOrder).logsoftmax1d_(axis);
-    }
-
-    public abstract NArray<N> logsoftmax1d_(int axis);
-
-
-    /**
-     * Computes the number of NaN values. For integer value types this operation returns 0.
-     *
-     * @return number of NaN values
-     */
-    public abstract int nanCount();
-
-    /**
-     * Computes the number of values equal with zero.
-     *
-     * @return number of zero values
-     */
-    public abstract int zeroCount();
 
     @SuppressWarnings("unchecked")
     public final <M extends Number> NArray<M> cast(DType<M> dtype) {

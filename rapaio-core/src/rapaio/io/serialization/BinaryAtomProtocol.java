@@ -114,7 +114,7 @@ public class BinaryAtomProtocol {
         }
 
         @Override
-        public void putDoubles(double[] array) throws IOException {
+        public void saveDoubles(double[] array) throws IOException {
             out.writeInt(array.length);
             for (double d : array) {
                 out.writeDouble(d);

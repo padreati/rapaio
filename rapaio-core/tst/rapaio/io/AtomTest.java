@@ -21,44 +21,84 @@
 
 package rapaio.io;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import rapaio.io.serialization.AtomOutputStream;
 import rapaio.io.serialization.BinaryAtomProtocol;
+import rapaio.narray.DType;
 import rapaio.narray.Shape;
+import rapaio.narray.Storage;
+import rapaio.narray.StorageManager;
 import rapaio.narray.layout.StrideLayout;
+import rapaio.narray.storage.array.ByteArrayStorage;
+import rapaio.narray.storage.array.DoubleArrayStorage;
+import rapaio.narray.storage.array.FloatArrayStorage;
+import rapaio.narray.storage.array.IntArrayStorage;
 
 public class AtomTest {
 
     @TempDir
     public Path tempDir;
 
-    @Disabled
     @Test
     void testSerializeNArray() throws IOException {
 
         Shape shape1 = Shape.of(1, 2, 3);
+
         StrideLayout scalarLayout1 = StrideLayout.of(Shape.of(), 3, new int[] {});
+        StrideLayout vectorLayout1 = StrideLayout.of(Shape.of(5), 3, new int[] {1});
+        StrideLayout matrixLayout1 = StrideLayout.of(Shape.of(7, 5), 3, new int[] {1, 2});
+        StrideLayout tensorLayout1 = StrideLayout.of(Shape.of(7, 5, 12, 3), 8, new int[] {10, 2, 7, 2});
+
+        Storage byteStorage1 = StorageManager.array().from(DType.BYTE, (byte) 1, (byte) 3, (byte) 5);
+        Storage intStorage1 = StorageManager.array().from(DType.INTEGER, 1, 2, 3);
+        Storage floatStorage1 = StorageManager.array().from(DType.FLOAT, 0.1f, 0.2f, 0.3f);
+        Storage doubleStorage1 = StorageManager.array().from(DType.DOUBLE, 0.2, 0.4, 0.6);
 
         try (AtomOutputStream out = BinaryAtomProtocol.outputToFile(tempDir.resolve("shape.atom").toFile())) {
             out.saveAtom(shape1);
             out.saveAtom(scalarLayout1);
+            out.saveAtoms(List.of(vectorLayout1, matrixLayout1, tensorLayout1));
+            out.saveAtoms(List.of(byteStorage1, intStorage1, floatStorage1, doubleStorage1));
         }
 
         try (var in = BinaryAtomProtocol.inputFromFile(tempDir.resolve("shape.atom").toFile())) {
 
             Shape shape2 = in.loadAtom(Shape.class);
+
             StrideLayout scalarLayout2 = in.loadAtom(StrideLayout.class);
+            StrideLayout vectorLayout2 = in.loadAtom(StrideLayout.class);
+            StrideLayout matrixLayout2 = in.loadAtom(StrideLayout.class);
+            StrideLayout tensorLayout2 = in.loadAtom(StrideLayout.class);
+
+            Storage byteStorage2 = in.loadAtom(Storage.class);
+            Storage intStorage2 = in.loadAtom(Storage.class);
+            Storage floatStorage2 = in.loadAtom(Storage.class);
+            Storage doubleStorage2 = in.loadAtom(Storage.class);
 
             assertEquals(shape1, shape2);
             assertEquals(scalarLayout1, scalarLayout2);
+            assertEquals(vectorLayout1, vectorLayout2);
+            assertEquals(matrixLayout1, matrixLayout2);
+            assertEquals(tensorLayout1, tensorLayout2);
+
+            assertEquals(byteStorage1.dtype(), byteStorage2.dtype());
+            assertArrayEquals(((ByteArrayStorage) byteStorage1).array(), ((ByteArrayStorage) byteStorage2).array());
+            assertEquals(intStorage1.dtype(), intStorage2.dtype());
+            assertArrayEquals(((IntArrayStorage) intStorage1).array(), ((IntArrayStorage) intStorage2).array());
+            assertEquals(floatStorage1.dtype(), floatStorage2.dtype());
+            assertArrayEquals(((FloatArrayStorage) floatStorage1).array(), ((FloatArrayStorage) floatStorage2).array());
+            assertEquals(doubleStorage1.dtype(), doubleStorage2.dtype());
+            assertArrayEquals(((DoubleArrayStorage) doubleStorage1).array(), ((DoubleArrayStorage) doubleStorage2).array());
+
         }
     }
 }

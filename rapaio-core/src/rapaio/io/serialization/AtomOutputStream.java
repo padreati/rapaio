@@ -42,7 +42,7 @@ public interface AtomOutputStream extends AutoCloseable {
 
     void saveFloats(float[] array) throws IOException;
 
-    void putDoubles(double[] array) throws IOException;
+    void saveDoubles(double[] array) throws IOException;
 
     void saveAtom(Object atom) throws IOException;
 

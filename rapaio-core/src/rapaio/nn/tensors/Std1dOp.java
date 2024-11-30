@@ -45,9 +45,9 @@ public final class Std1dOp extends AbstractTensor {
         double dof = x.dim(axis) - ddof;
         var mu = mean != null ? mean : x.mean1d(axis);
         var centered = x.value().sub(mu.value());
-        var std = centered.sqr().sum1d(axis).div(dof).sqrt();
+        var std = x.value().varc1d(axis, ddof, mu.value()).add_(epsilon).sqrt_();
         this.setValue(std);
-        backEdge(x, () -> this.grad().mul(centered.div(std.add(epsilon)).div_(dof)));
+        backEdge(x, () -> this.grad().mul(centered.div(std).div_(dof)));
         backEdge(mu, () -> tm.zerosTensor(mu.shape()).value());
     }
 }
