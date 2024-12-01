@@ -24,6 +24,7 @@ package rapaio.narray.operator.impl;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
+import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayUnaryOp;
 
@@ -34,147 +35,165 @@ public class UnaryOpNanToNum<N extends Number> extends NArrayUnaryOp {
     private final N pinf;
 
     public UnaryOpNanToNum(N nan, N ninf, N pinf) {
+        super(false);
         this.nan = nan;
         this.ninf = ninf;
         this.pinf = pinf;
     }
 
     @Override
-    public boolean floatingPointOnly() {
-        return false;
+    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
     }
 
     @Override
-    public byte applyByte(byte v) {
-        return v;
+    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
     }
 
     @Override
-    public int applyInt(int v) {
-        return v;
+    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
     }
 
     @Override
-    public double applyDouble(double v) {
-        v = Double.isNaN(v) ? nan.doubleValue() : v;
-        v = Double.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.doubleValue() : ninf.doubleValue());
-        return v;
+    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
     }
 
     @Override
-    public float applyFloat(float v) {
-        v = Float.isNaN(v) ? nan.floatValue() : v;
-        v = Float.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.floatValue() : ninf.floatValue());
-        return v;
+    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
     }
 
     @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
-    }
-
-    @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array) {
-    }
-
-    @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array) {
-    }
-
-    @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         var vnan = FloatVector.broadcast(loop.vs, nan.floatValue());
         var vpinf = FloatVector.broadcast(loop.vs, pinf.floatValue());
         var vninf = FloatVector.broadcast(loop.vs, ninf.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector b = FloatVector.fromArray(loop.vs, array, p);
+                var b = s.getFloatVector(loop.vs, p);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Float.POSITIVE_INFINITY));
                     b = b.blend(vninf, b.compare(VectorOperators.EQ, Float.NEGATIVE_INFINITY));
-                    b.intoArray(array, p);
+                    s.setFloatVector(b, p);
                 }
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = applyFloat(array[p]);
+                float v = s.getFloat(p);
+                v = Float.isNaN(v) ? nan.floatValue() : v;
+                v = Float.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.floatValue() : ninf.floatValue());
+                s.setFloat(p, v);
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         var vnan = FloatVector.broadcast(loop.vs, nan.floatValue());
         var vpinf = FloatVector.broadcast(loop.vs, pinf.floatValue());
         var vninf = FloatVector.broadcast(loop.vs, ninf.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector b = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                FloatVector b = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Float.POSITIVE_INFINITY));
                     b = b.blend(vninf, b.compare(VectorOperators.EQ, Float.NEGATIVE_INFINITY));
-                    b.intoArray(array, p, loop.simdOffsets(), 0);
+                    s.setFloatVector(b, p, loop.simdOffsets(), 0);
                 }
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = applyFloat(array[p]);
+                float v = s.getFloat(p);
+                v = Float.isNaN(v) ? nan.floatValue() : v;
+                v = Float.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.floatValue() : ninf.floatValue());
+                s.setFloat(p, v);
                 p += loop.step;
             }
         }
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                float v = s.getFloat(p);
+                v = Float.isNaN(v) ? nan.floatValue() : v;
+                v = Float.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.floatValue() : ninf.floatValue());
+                s.setFloat(p, v);
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         var vnan = DoubleVector.broadcast(loop.vs, nan.floatValue());
         var vpinf = DoubleVector.broadcast(loop.vs, pinf.floatValue());
         var vninf = DoubleVector.broadcast(loop.vs, ninf.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector b = DoubleVector.fromArray(loop.vs, array, p);
+                DoubleVector b = s.getDoubleVector(loop.vs, p);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Double.POSITIVE_INFINITY));
                     b = b.blend(vninf, b.compare(VectorOperators.EQ, Double.NEGATIVE_INFINITY));
-                    b.intoArray(array, p);
+                    s.setDoubleVector(b, p);
                 }
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = applyDouble(array[p]);
+                double v = s.getDouble(p);
+                v = Double.isNaN(v) ? nan.doubleValue() : v;
+                v = Double.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.doubleValue() : ninf.doubleValue());
+                s.setDouble(p, v);
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         var vnan = DoubleVector.broadcast(loop.vs, nan.floatValue());
         var vpinf = DoubleVector.broadcast(loop.vs, pinf.floatValue());
         var vninf = DoubleVector.broadcast(loop.vs, ninf.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector b = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                DoubleVector b = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Double.POSITIVE_INFINITY));
                     b = b.blend(vninf, b.compare(VectorOperators.EQ, Double.NEGATIVE_INFINITY));
-                    b.intoArray(array, p, loop.simdOffsets(), 0);
+                    s.setDoubleVector(b, p, loop.simdOffsets(), 0);
                 }
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = applyDouble(array[p]);
+                double v = s.getDouble(p);
+                v = Double.isNaN(v) ? nan.doubleValue() : v;
+                v = Double.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.doubleValue() : ninf.doubleValue());
+                s.setDouble(p, v);
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                double v = s.getDouble(p);
+                v = Double.isNaN(v) ? nan.doubleValue() : v;
+                v = Double.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.doubleValue() : ninf.doubleValue());
+                s.setDouble(p, v);
                 p += loop.step;
             }
         }

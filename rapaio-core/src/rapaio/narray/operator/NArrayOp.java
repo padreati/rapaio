@@ -32,11 +32,11 @@ import rapaio.narray.operator.impl.BinaryOpSub;
 import rapaio.narray.operator.impl.ReduceOpMax;
 import rapaio.narray.operator.impl.ReduceOpMean;
 import rapaio.narray.operator.impl.ReduceOpMin;
-import rapaio.narray.operator.impl.ReduceOpNanProd;
-import rapaio.narray.operator.impl.ReduceOpProd;
 import rapaio.narray.operator.impl.ReduceOpNanMax;
 import rapaio.narray.operator.impl.ReduceOpNanMin;
+import rapaio.narray.operator.impl.ReduceOpNanProd;
 import rapaio.narray.operator.impl.ReduceOpNanSum;
+import rapaio.narray.operator.impl.ReduceOpProd;
 import rapaio.narray.operator.impl.ReduceOpSum;
 import rapaio.narray.operator.impl.ReduceOpVarc;
 import rapaio.narray.operator.impl.UnaryOpAbs;
@@ -55,6 +55,7 @@ import rapaio.narray.operator.impl.UnaryOpFillNan;
 import rapaio.narray.operator.impl.UnaryOpFloor;
 import rapaio.narray.operator.impl.UnaryOpLog;
 import rapaio.narray.operator.impl.UnaryOpLog1p;
+import rapaio.narray.operator.impl.UnaryOpLogSoftmax;
 import rapaio.narray.operator.impl.UnaryOpNanToNum;
 import rapaio.narray.operator.impl.UnaryOpNeg;
 import rapaio.narray.operator.impl.UnaryOpPow;
@@ -62,6 +63,7 @@ import rapaio.narray.operator.impl.UnaryOpRint;
 import rapaio.narray.operator.impl.UnaryOpSigmoid;
 import rapaio.narray.operator.impl.UnaryOpSin;
 import rapaio.narray.operator.impl.UnaryOpSinh;
+import rapaio.narray.operator.impl.UnaryOpSoftmax;
 import rapaio.narray.operator.impl.UnaryOpSqr;
 import rapaio.narray.operator.impl.UnaryOpSqrt;
 import rapaio.narray.operator.impl.UnaryOpTan;
@@ -95,6 +97,8 @@ public final class NArrayOp {
     private static final UnaryOpSqrt SQRT = new UnaryOpSqrt();
 
     private static final UnaryOpSigmoid SIGMOID = new UnaryOpSigmoid();
+    private static final UnaryOpSoftmax SOFTMAX = new UnaryOpSoftmax();
+    private static final UnaryOpLogSoftmax LOG_SOFTMAX = new UnaryOpLogSoftmax();
 
     private static final BinaryOpAdd ADD = new BinaryOpAdd();
     private static final BinaryOpSub SUB = new BinaryOpSub();
@@ -222,6 +226,14 @@ public final class NArrayOp {
 
     public static UnaryOpSigmoid unarySigmoid() {
         return SIGMOID;
+    }
+
+    public static UnaryOpSoftmax unarySoftmax() {
+        return SOFTMAX;
+    }
+
+    public static UnaryOpLogSoftmax unaryLogSoftmax() {
+        return LOG_SOFTMAX;
     }
 
     public static BinaryOpAdd binaryAdd() {

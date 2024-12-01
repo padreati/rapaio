@@ -183,6 +183,46 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
     }
 
     @Override
+    public NArray<Double> unaryOp1d_(NArrayUnaryOp op, int axis) {
+        int ax = axis < 0 ? axis + shape().rank() : axis;
+
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+
+
+        int chunk = 64;
+        int tasks = Math.ceilDiv(dim(ax), chunk);
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            CountDownLatch latch = new CountDownLatch(tasks);
+            for (int i = 0; i < tasks; i++) {
+                List<Runnable> taskList = new ArrayList<>();
+                while (it.hasNext() && taskList.size() < chunk) {
+                    int ptr = it.nextInt();
+                    taskList.add(() -> {
+                        manager.stride(dt, StrideLayout.of(new int[]{selDim}, ptr, new int[]{selStride}), storage).unaryOp_(op);
+                    });
+                }
+                executor.submit(() -> {
+                    for (var t : taskList) {
+                        t.run();
+                    }
+                    latch.countDown();
+                });
+            }
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return this;
+    }
+
+    @Override
     public NArray<Double> binaryOp_(NArrayBinaryOp op, NArray<?> other) {
         if (other.isScalar()) {
             return binaryOp_(op, other.getDouble());
@@ -324,7 +364,7 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
         int selStride = layout.stride(axis);
 
         NArray<Double> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
-        if(!res.shape().equals(mean.shape())) {
+        if (!res.shape().equals(mean.shape())) {
             throw new IllegalArgumentException("Mean array must have the same shape as the result array.");
         }
 
@@ -362,28 +402,6 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
             }
         }
         return res;
-    }
-
-    @Override
-    public NArray<Double> softmax1d_(int axis) {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        // TODO: this can be improved perhaps a lot
-        sub_(amax1d(axis).strexp(axis, dim(axis))).exp_();
-        div_(sum1d(axis).strexp(axis, dim(axis)));
-        return this;
-    }
-
-    @Override
-    public NArray<Double> logsoftmax1d_(int axis) {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        // TODO: this can be improved perhaps a lot
-        var max = amax1d(axis).strexp(axis, dim(axis));
-        sub_(this.sub(max).exp().sum1d(axis).log_().strexp(axis, dim(axis))).sub_(max);
-        return this;
     }
 
     @Override

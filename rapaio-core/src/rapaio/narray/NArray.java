@@ -908,7 +908,7 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     //--------- UNARY OPERATIONS ----------------//
 
     public final NArray<N> unaryOp(NArrayUnaryOp op) {
-        return unaryOp(op, Order.defaultOrder());
+        return copy(Order.defaultOrder()).unaryOp_(op);
     }
 
     public final NArray<N> unaryOp(NArrayUnaryOp op, Order order) {
@@ -916,6 +916,16 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     }
 
     public abstract NArray<N> unaryOp_(NArrayUnaryOp op);
+
+    public final NArray<N> unaryOp1d(NArrayUnaryOp op, int axis) {
+        return copy(Order.defaultOrder()).unaryOp1d_(op, axis);
+    }
+
+    public final NArray<N> unaryOp1d(NArrayUnaryOp op, int axis, Order order) {
+        return copy(order).unaryOp1d_(op, axis);
+    }
+
+    public abstract NArray<N> unaryOp1d_(NArrayUnaryOp op, int axis);
 
     public final NArray<N> fill_(N value) {
         return unaryOp_(NArrayOp.unaryFill(value));
@@ -1270,6 +1280,55 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return unaryOp_(NArrayOp.unarySigmoid());
     }
 
+    public final NArray<N> softmax() {
+        return unaryOp(NArrayOp.unarySoftmax());
+    }
+
+    public final NArray<N> softmax(Order order) {
+        return unaryOp(NArrayOp.unarySoftmax(), order);
+    }
+
+    public final NArray<N> softmax_() {
+        return unaryOp_(NArrayOp.unarySoftmax());
+    }
+
+    public final NArray<N> softmax1d(int axis) {
+        return softmax1d(axis, Order.defaultOrder());
+    }
+
+    public final NArray<N> softmax1d(int axis, Order askOrder) {
+        return copy(askOrder).softmax1d_(axis);
+    }
+
+    public final NArray<N> softmax1d_(int axis) {
+        return unaryOp1d_(NArrayOp.unarySoftmax(), axis);
+    }
+
+    public final NArray<N> logsoftmax() {
+        return unaryOp(NArrayOp.unaryLogSoftmax());
+    }
+
+    public final NArray<N> logsoftmax(Order order) {
+        return unaryOp(NArrayOp.unaryLogSoftmax(), order);
+    }
+
+    public final NArray<N> logsoftmax_() {
+        return unaryOp_(NArrayOp.unaryLogSoftmax());
+    }
+
+    public final NArray<N> logsoftmax1d(int axis) {
+        return logsoftmax1d(axis, Order.defaultOrder());
+    }
+
+    public final NArray<N> logsoftmax1d(int axis, Order askOrder) {
+        return copy(askOrder).logsoftmax1d_(axis);
+    }
+
+    public final NArray<N> logsoftmax1d_(int axis) {
+        return unaryOp1d_(NArrayOp.unaryLogSoftmax(), axis);
+    }
+
+
     //--------- BINARY OPERATIONS ----------------//
 
     public final NArray<N> binaryOp(NArrayBinaryOp op, NArray<?> other, Order order) {
@@ -1542,6 +1601,10 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
 
     //--------- REDUCE OPERATIONS ----------------//
 
+    public abstract N reduceOp(NArrayReduceOp op);
+
+    public abstract NArray<N> reduceOp1d(NArrayReduceOp op, int axis, Order order);
+
     public final N sum() {
         return reduceOp(NArrayOp.reduceSum());
     }
@@ -1698,7 +1761,6 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return varc1d(axis, ddof, order).sqrt_();
     }
 
-
     public final N varc(int ddof, double mean) {
         return reduceOp(NArrayOp.reduceVarc(ddof, mean));
     }
@@ -1712,32 +1774,8 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
 
 
 
-    public abstract N reduceOp(NArrayReduceOp op);
-
-    public abstract NArray<N> reduceOp1d(NArrayReduceOp op, int axis, Order order);
 
     public abstract N nanMean();
-
-    public final NArray<N> softmax1d(int axis) {
-        return softmax1d(axis, Order.defaultOrder());
-    }
-
-    public final NArray<N> softmax1d(int axis, Order askOrder) {
-        return copy(askOrder).softmax1d_(axis);
-    }
-
-    public abstract NArray<N> softmax1d_(int axis);
-
-
-    public final NArray<N> logsoftmax1d(int axis) {
-        return logsoftmax1d(axis, Order.defaultOrder());
-    }
-
-    public final NArray<N> logsoftmax1d(int axis, Order askOrder) {
-        return copy(askOrder).logsoftmax1d_(axis);
-    }
-
-    public abstract NArray<N> logsoftmax1d_(int axis);
 
     public final int argmax() {
         return argmax(Order.defaultOrder());

@@ -61,10 +61,10 @@ public class SandboxIris {
 
         Net nn = new Sequential(tm,
                 new BatchNorm1D(tm, 4),
-                new Linear(tm, 4, 400, true),
+                new Linear(tm, 4, 1000, true),
                 new ReLU(),
-                new BatchNorm1D(tm, 400),
-                new Linear(tm, 400, 3, true),
+//                new BatchNorm1D(tm, 400),
+                new Linear(tm, 1000, 3, true),
                 new ReLU(),
 //                new BatchNorm1D(tm, 3),
                 new LogSoftmax(1)
@@ -75,12 +75,12 @@ public class SandboxIris {
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
         VarDouble testLoss = VarDouble.empty().name("trainLoss");
 
-        for (int epoch = 0; epoch < 1_000; epoch++) {
+        for (int epoch = 0; epoch < 2_000; epoch++) {
 
             optimizer.zeroGrad();
             nn.train();
 
-            Net.BatchOutput batchOut = nn.batchForward(50, train.tensor(tm, 0));
+            Net.BatchOutput batchOut = nn.batchForward(20, train.tensor(tm, 0));
 
             var result = batchOut.applyLoss(new NegativeLikelihoodLoss(), train.tensor(tm, 1));
             double trainLossValue = result.lossValue();

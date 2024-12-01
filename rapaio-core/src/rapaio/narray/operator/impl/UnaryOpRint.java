@@ -21,91 +21,76 @@
 
 package rapaio.narray.operator.impl;
 
+import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayUnaryOp;
 
 public final class UnaryOpRint extends NArrayUnaryOp {
 
-    @Override
-    public boolean floatingPointOnly() {
-        return false;
+    public UnaryOpRint() {
+        super(false);
     }
 
     @Override
-    public double applyDouble(double v) {
-        return Math.rint(v);
+    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.rint(v);
+    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
     }
 
     @Override
-    public int applyInt(int v) {
-        return v;
+    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
     }
 
     @Override
-    public byte applyByte(byte v) {
-        return v;
+    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
     }
 
     @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
     }
 
     @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array) {
+    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        applyGenericFloat(loop, s);
     }
 
     @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array) {
+    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        applyGenericFloat(loop, s);
     }
 
     @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
-            int i = 0;
-            for (; i < loop.size; i++) {
-                array[p] = (float) Math.rint(array[p]);
-                p++;
-            }
-        }
-    }
-
-    @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array) {
-        for (int p : loop.offsets) {
-            int i = 0;
-            for (; i < loop.size; i++) {
-                array[p] = (float) Math.rint(array[p]);
+            for (int i = 0; i < loop.size; i++) {
+                s.setFloat(p, (float) Math.rint(s.getFloat(p)));
                 p += loop.step;
             }
         }
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array) {
-        for (int p : loop.offsets) {
-            int i = 0;
-            for (; i < loop.size; i++) {
-                array[p] = Math.rint(array[p]);
-                p++;
-            }
-        }
+    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        applyGenericDouble(loop, s);
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        applyGenericDouble(loop, s);
+    }
+
+    @Override
+    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.size; i++) {
-                array[p] = Math.rint(array[p]);
+                s.setDouble(p, Math.rint(s.getDouble(p)));
                 p += loop.step;
             }
         }

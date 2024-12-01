@@ -24,6 +24,7 @@ package rapaio.narray.operator.impl;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
+import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayUnaryOp;
 
@@ -33,118 +34,134 @@ public class UnaryOpFillNan<N extends Number> extends NArrayUnaryOp {
     private final double fillDouble;
 
     public UnaryOpFillNan(N fill) {
+        super(false);
         fillFloat = fill.floatValue();
         fillDouble = fill.doubleValue();
     }
 
     @Override
-    public boolean floatingPointOnly() {
-        return false;
+    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
     }
 
     @Override
-    public byte applyByte(byte v) {
-        return v;
+    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
     }
 
     @Override
-    public int applyInt(int v) {
-        return v;
+    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
     }
 
     @Override
-    public double applyDouble(double v) {
-        return Double.isNaN(v) ? fillDouble : v;
+    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
     }
 
     @Override
-    public float applyFloat(float v) {
-        return Float.isNaN(v) ? fillFloat : v;
+    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
     }
 
     @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
-    }
-
-    @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array) {
-    }
-
-    @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array) {
-    }
-
-    @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         var a = FloatVector.broadcast(loop.vs, fillFloat);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector b = FloatVector.fromArray(loop.vs, array, p);
+                FloatVector b = s.getFloatVector(loop.vs, p);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
-                b.intoArray(array, p);
+                s.setFloatVector(b, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Float.isNaN(array[p]) ? fillFloat : array[p];
+                if (Float.isNaN(s.getFloat(p))) {
+                    s.setFloat(p, fillFloat);
+                }
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         var a = FloatVector.broadcast(loop.vs, fillFloat);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector b = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                FloatVector b = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
-                b.intoArray(array, p, loop.simdOffsets(), 0);
+                s.setFloatVector(b, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Float.isNaN(array[p]) ? fillFloat : array[p];
+                if (Float.isNaN(s.getFloat(p))) {
+                    s.setFloat(p, fillFloat);
+                }
                 p += loop.step;
             }
         }
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                if (Float.isNaN(s.getFloat(p))) {
+                    s.setFloat(p, fillFloat);
+                }
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         var a = DoubleVector.broadcast(loop.vs, fillDouble);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector b = DoubleVector.fromArray(loop.vs, array, p);
+                var b = s.getDoubleVector(loop.vs, p);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
-                b.intoArray(array, p);
+                s.setDoubleVector(b, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Double.isNaN(array[p]) ? fillDouble : array[p];
+                if (Double.isNaN(s.getDouble(p))) {
+                    s.setDouble(p, fillDouble);
+                }
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         var a = DoubleVector.broadcast(loop.vs, fillDouble);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector b = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                DoubleVector b = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
-                b.intoArray(array, p, loop.simdOffsets(), 0);
+                s.setDoubleVector(b, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Double.isNaN(array[p]) ? fillDouble : array[p];
+                if (Double.isNaN(s.getDouble(p))) {
+                    s.setDouble(p, fillDouble);
+                }
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                if (Double.isNaN(s.getDouble(p))) {
+                    s.setDouble(p, fillDouble);
+                }
                 p += loop.step;
             }
         }

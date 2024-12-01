@@ -21,7 +21,9 @@
 
 package rapaio.narray.operator.impl;
 
+import jdk.incubator.vector.VectorOperators;
 import rapaio.narray.DType;
+import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayUnaryOp;
 
@@ -40,6 +42,7 @@ public class UnaryOpClamp<N extends Number> extends NArrayUnaryOp {
     private final double doubleMax;
 
     public UnaryOpClamp(DType<N> dtype, N min, N max) {
+        super(false);
         hasMin = !dtype.isNaN(min);
         hasMax = !dtype.isNaN(max);
 
@@ -54,64 +57,28 @@ public class UnaryOpClamp<N extends Number> extends NArrayUnaryOp {
     }
 
     @Override
-    public boolean floatingPointOnly() {
-        return false;
-    }
-
-    @Override
-    public byte applyByte(byte v) {
-        if (hasMin) {
-            v = v < byteMin ? byteMin : v;
-        }
-        if (hasMax) {
-            v = v > byteMax ? byteMax : v;
-        }
-        return v;
-    }
-
-    @Override
-    public int applyInt(int v) {
-        if (hasMin) {
-            v = Math.max(v, intMin);
-        }
-        if (hasMax) {
-            v = Math.min(v, intMax);
-        }
-        return v;
-    }
-
-    @Override
-    public float applyFloat(float v) {
-        if (hasMin) {
-            v = Math.max(v, floatMin);
-        }
-        if (hasMax) {
-            v = Math.min(v, floatMax);
-        }
-        return v;
-    }
-
-    @Override
-    public double applyDouble(double v) {
-        if (hasMin) {
-            v = Math.max(v, doubleMin);
-        }
-        if (hasMax) {
-            v = Math.min(v, doubleMax);
-        }
-        return v;
-    }
-
-    @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
-            for (; i < loop.size; i++) {
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = s.getByteVector(loop.vs, p);
                 if (hasMin) {
-                    array[p] = (byte) Math.max(array[p], byteMin);
+                    var m = a.compare(VectorOperators.LT, byteMin);
+                    a = a.blend(byteMin, m);
                 }
                 if (hasMax) {
-                    array[p] = (byte) Math.min(array[p], byteMax);
+                    var m = a.compare(VectorOperators.GT, byteMax);
+                    a = a.blend(byteMax, m);
+                }
+                s.setByteVector(a, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                if (hasMin && s.getByte(p) < byteMin) {
+                    s.setByte(p, byteMin);
+                }
+                if (hasMax && s.getByte(p) > byteMax) {
+                    s.setByte(p, byteMax);
                 }
                 p++;
             }
@@ -119,15 +86,28 @@ public class UnaryOpClamp<N extends Number> extends NArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
-            for (; i < loop.size; i++) {
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = s.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
                 if (hasMin) {
-                    array[p] = (byte) Math.max(array[p], byteMin);
+                    var m = a.compare(VectorOperators.LT, byteMin);
+                    a = a.blend(byteMin, m);
                 }
                 if (hasMax) {
-                    array[p] = (byte) Math.min(array[p], byteMax);
+                    var m = a.compare(VectorOperators.GT, byteMax);
+                    a = a.blend(byteMax, m);
+                }
+                s.setByteVector(a, p, loop.simdOffsets(), 0);
+                p += loop.simdLen * loop.step;
+            }
+            for (; i < loop.size; i++) {
+                if (hasMin && s.getByte(p) < byteMin) {
+                    s.setByte(p, byteMin);
+                }
+                if (hasMax && s.getByte(p) > byteMax) {
+                    s.setByte(p, byteMax);
                 }
                 p += loop.step;
             }
@@ -135,31 +115,14 @@ public class UnaryOpClamp<N extends Number> extends NArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array) {
+    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
-            int i = 0;
-            for (; i < loop.size; i++) {
-                if (hasMin) {
-                    array[p] = Math.max(array[p], intMin);
+            for (int i = 0; i < loop.size; i++) {
+                if (hasMin && s.getByte(p) < byteMin) {
+                    s.setByte(p, byteMin);
                 }
-                if (hasMax) {
-                    array[p] = Math.min(array[p], intMax);
-                }
-                p++;
-            }
-        }
-    }
-
-    @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array) {
-        for (int p : loop.offsets) {
-            int i = 0;
-            for (; i < loop.size; i++) {
-                if (hasMin) {
-                    array[p] = Math.max(array[p], intMin);
-                }
-                if (hasMax) {
-                    array[p] = Math.min(array[p], intMax);
+                if (hasMax && s.getByte(p) > byteMax) {
+                    s.setByte(p, byteMax);
                 }
                 p += loop.step;
             }
@@ -167,15 +130,28 @@ public class UnaryOpClamp<N extends Number> extends NArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
-            for (; i < loop.size; i++) {
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = s.getIntVector(loop.vs, p);
                 if (hasMin) {
-                    array[p] = Math.max(array[p], floatMin);
+                    var m = a.compare(VectorOperators.LT, intMin);
+                    a = a.blend(intMin, m);
                 }
                 if (hasMax) {
-                    array[p] = Math.min(array[p], floatMax);
+                    var m = a.compare(VectorOperators.GT, intMax);
+                    a = a.blend(intMax, m);
+                }
+                s.setIntVector(a, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                if (hasMin && s.getInt(p) < intMin) {
+                    s.setInt(p, intMin);
+                }
+                if (hasMax && s.getInt(p) > intMax) {
+                    s.setInt(p, intMax);
                 }
                 p++;
             }
@@ -183,15 +159,28 @@ public class UnaryOpClamp<N extends Number> extends NArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
-            for (; i < loop.size; i++) {
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = s.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
                 if (hasMin) {
-                    array[p] = Math.max(array[p], floatMin);
+                    var m = a.compare(VectorOperators.LT, intMin);
+                    a = a.blend(intMin, m);
                 }
                 if (hasMax) {
-                    array[p] = Math.min(array[p], floatMax);
+                    var m = a.compare(VectorOperators.GT, intMax);
+                    a = a.blend(intMax, m);
+                }
+                s.setIntVector(a, p, loop.simdOffsets(), 0);
+                p += loop.simdLen * loop.step;
+            }
+            for (; i < loop.size; i++) {
+                if (hasMin && s.getInt(p) < intMin) {
+                    s.setInt(p, intMin);
+                }
+                if (hasMax && s.getInt(p) > intMax) {
+                    s.setInt(p, intMax);
                 }
                 p += loop.step;
             }
@@ -199,15 +188,43 @@ public class UnaryOpClamp<N extends Number> extends NArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                if (hasMin && s.getInt(p) < intMin) {
+                    s.setInt(p, intMin);
+                }
+                if (hasMax && s.getInt(p) > intMax) {
+                    s.setInt(p, intMax);
+                }
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
-            for (; i < loop.size; i++) {
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = s.getFloatVector(loop.vs, p);
                 if (hasMin) {
-                    array[p] = Math.max(array[p], doubleMin);
+                    var m = a.compare(VectorOperators.LT, floatMin);
+                    a = a.blend(floatMin, m);
                 }
                 if (hasMax) {
-                    array[p] = Math.min(array[p], doubleMax);
+                    var m = a.compare(VectorOperators.GT, floatMax);
+                    a = a.blend(floatMax, m);
+                }
+                s.setFloatVector(a, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                if (hasMin && s.getFloat(p) < floatMin) {
+                    s.setFloat(p, floatMin);
+                }
+                if (hasMax && s.getFloat(p) > floatMax) {
+                    s.setFloat(p, floatMax);
                 }
                 p++;
             }
@@ -215,15 +232,116 @@ public class UnaryOpClamp<N extends Number> extends NArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
-            for (; i < loop.size; i++) {
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
                 if (hasMin) {
-                    array[p] = Math.max(array[p], doubleMin);
+                    var m = a.compare(VectorOperators.LT, floatMin);
+                    a = a.blend(floatMin, m);
                 }
                 if (hasMax) {
-                    array[p] = Math.min(array[p], doubleMax);
+                    var m = a.compare(VectorOperators.GT, floatMax);
+                    a = a.blend(floatMax, m);
+                }
+                s.setFloatVector(a, p, loop.simdOffsets(), 0);
+                p += loop.simdLen * loop.step;
+            }
+            for (; i < loop.size; i++) {
+                if (hasMin && s.getFloat(p) < floatMin) {
+                    s.setFloat(p, floatMin);
+                }
+                if (hasMax && s.getFloat(p) > floatMax) {
+                    s.setFloat(p, floatMax);
+                }
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                if (hasMin && s.getFloat(p) < floatMin) {
+                    s.setFloat(p, floatMin);
+                }
+                if (hasMax && s.getFloat(p) > floatMax) {
+                    s.setFloat(p, floatMax);
+                }
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = s.getDoubleVector(loop.vs, p);
+                if (hasMin) {
+                    var m = a.compare(VectorOperators.LT, doubleMin);
+                    a = a.blend(doubleMin, m);
+                }
+                if (hasMax) {
+                    var m = a.compare(VectorOperators.GT, doubleMax);
+                    a = a.blend(doubleMax, m);
+                }
+                s.setDoubleVector(a, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                if (hasMin && s.getDouble(p) < doubleMin) {
+                    s.setDouble(p, doubleMin);
+                }
+                if (hasMax && s.getDouble(p) > doubleMax) {
+                    s.setDouble(p, doubleMax);
+                }
+                p++;
+            }
+        }
+    }
+
+    @Override
+    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                if (hasMin) {
+                    var m = a.compare(VectorOperators.LT, doubleMin);
+                    a = a.blend(doubleMin, m);
+                }
+                if (hasMax) {
+                    var m = a.compare(VectorOperators.GT, doubleMax);
+                    a = a.blend(doubleMax, m);
+                }
+                s.setDoubleVector(a, p, loop.simdOffsets(), 0);
+                p += loop.simdLen * loop.step;
+            }
+            for (; i < loop.size; i++) {
+                if (hasMin && s.getDouble(p) < doubleMin) {
+                    s.setDouble(p, doubleMin);
+                }
+                if (hasMax && s.getDouble(p) > doubleMax) {
+                    s.setDouble(p, doubleMax);
+                }
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                if (hasMin && s.getDouble(p) < doubleMin) {
+                    s.setDouble(p, doubleMin);
+                }
+                if (hasMax && s.getDouble(p) > doubleMax) {
+                    s.setDouble(p, doubleMax);
                 }
                 p += loop.step;
             }

@@ -26,8 +26,9 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorMask;
-import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.Compare;
+import rapaio.narray.Storage;
+import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayUnaryOp;
 
 public class UnaryOpCompareMask<N extends Number> extends NArrayUnaryOp {
@@ -36,182 +37,220 @@ public class UnaryOpCompareMask<N extends Number> extends NArrayUnaryOp {
     private final N value;
 
     public UnaryOpCompareMask(Compare compare, N value) {
+        super(false);
         this.compare = compare;
         this.value = value;
     }
 
     @Override
-    public boolean floatingPointOnly() {
-        return false;
-    }
-
-    @Override
-    public byte applyByte(byte v) {
-        return compare.compareByte(v, value.byteValue()) ? (byte) 1 : (byte) 0;
-    }
-
-    @Override
-    public int applyInt(int v) {
-        return compare.compareInt(v, value.intValue()) ? 1 : 0;
-    }
-
-    @Override
-    public float applyFloat(float v) {
-        return compare.compareFloat(v, value.floatValue()) ? 1f : 0f;
-    }
-
-    @Override
-    public double applyDouble(double v) {
-        return compare.compareDouble(v, value.doubleValue()) ? 1d : 0d;
-    }
-
-    @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                ByteVector a = ByteVector.fromArray(loop.vs, array, p);
+                ByteVector a = s.getByteVector(loop.vs, p);
                 VectorMask<Byte> mask = a.compare(compare.vectorComparison(), value.byteValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
-                a.intoArray(array, p);
+                s.setByteVector(a, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = applyByte(array[p]);
+                byte v = s.getByte(p);
+                s.setByte(p, compare.compareByte(v, value.byteValue()) ? (byte) 1 : (byte) 0);
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                ByteVector a = ByteVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                ByteVector a = s.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
                 VectorMask<Byte> mask = a.compare(compare.vectorComparison(), value.byteValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
-                a.intoArray(array, p, loop.simdOffsets(), 0);
+                s.setByteVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = applyByte(array[p]);
+                byte v = s.getByte(p);
+                s.setByte(p, compare.compareByte(v, value.byteValue()) ? (byte) 1 : (byte) 0);
                 p += loop.step;
             }
         }
     }
 
     @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array) {
+    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                byte v = s.getByte(p);
+                s.setByte(p, compare.compareByte(v, value.byteValue()) ? (byte) 1 : (byte) 0);
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector a = IntVector.fromArray(loop.vs, array, p);
+                IntVector a = s.getIntVector(loop.vs, p);
                 VectorMask<Integer> mask = a.compare(compare.vectorComparison(), value.intValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
-                a.intoArray(array, p);
+                s.setIntVector(a, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = applyInt(array[p]);
+                int v = s.getInt(p);
+                s.setInt(p, compare.compareInt(v, value.intValue()) ? 1 : 0);
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array) {
+    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector a = IntVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                IntVector a = s.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
                 VectorMask<Integer> mask = a.compare(compare.vectorComparison(), value.intValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
-                a.intoArray(array, p, loop.simdOffsets(), 0);
+                s.setIntVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = applyInt(array[p]);
+                int v = s.getInt(p);
+                s.setInt(p, compare.compareInt(v, value.intValue()) ? 1 : 0);
                 p += loop.step;
             }
         }
     }
 
     @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
-            int i = 0;
-            for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector a = FloatVector.fromArray(loop.vs, array, p);
-                VectorMask<Float> mask = a.compare(compare.vectorComparison(), value.floatValue());
-                a = a.blend(1, mask);
-                a = a.blend(0, mask.not());
-                a.intoArray(array, p);
-                p += loop.simdLen;
-            }
-            for (; i < loop.size; i++) {
-                array[p] = applyFloat(array[p]);
-                p++;
-            }
-        }
-    }
-
-    @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array) {
-        for (int p : loop.offsets) {
-            int i = 0;
-            for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
-                VectorMask<Float> mask = a.compare(compare.vectorComparison(), value.floatValue());
-                a = a.blend(1, mask);
-                a = a.blend(0, mask.not());
-                a.intoArray(array, p, loop.simdOffsets(), 0);
-                p += loop.step * loop.simdLen;
-            }
-            for (; i < loop.size; i++) {
-                array[p] = applyFloat(array[p]);
+            for (int i = 0; i < loop.size; i++) {
+                int v = s.getInt(p);
+                s.setInt(p, compare.compareInt(v, value.intValue()) ? 1 : 0);
                 p += loop.step;
             }
         }
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        float ref = value.floatValue();
+        FloatVector vref = FloatVector.broadcast(loop.vs, value.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p);
-                VectorMask<Double> mask = a.compare(compare.vectorComparison(), value.doubleValue());
+                var a = s.getFloatVector(loop.vs, p);
+                var mask = a.compare(compare.vectorComparison(), vref);
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
-                a.intoArray(array, p);
+                s.setFloatVector(a, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = applyDouble(array[p]);
+                float v = s.getFloat(p);
+                s.setFloat(p, compare.compareFloat(v, ref) ? 1 : 0);
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        float ref = value.floatValue();
+        FloatVector vref = FloatVector.broadcast(loop.vs, value.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
-                VectorMask<Double> mask = a.compare(compare.vectorComparison(), value.doubleValue());
+                FloatVector a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                VectorMask<Float> mask = a.compare(compare.vectorComparison(), vref);
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
-                a.intoArray(array, p, loop.simdOffsets(), 0);
+                s.setFloatVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = applyDouble(array[p]);
+                float v = s.getFloat(p);
+                s.setFloat(p, compare.compareFloat(v, ref) ? 1 : 0);
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        float ref = value.floatValue();
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                float v = s.getFloat(p);
+                s.setFloat(p, compare.compareFloat(v, ref) ? 1 : 0);
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        double ref = value.floatValue();
+        DoubleVector vref = DoubleVector.broadcast(loop.vs, value.doubleValue());
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                DoubleVector a = s.getDoubleVector(loop.vs, p);
+                VectorMask<Double> mask = a.compare(compare.vectorComparison(), vref);
+                a = a.blend(1, mask);
+                a = a.blend(0, mask.not());
+                s.setDoubleVector(a, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                double v = s.getDouble(p);
+                s.setDouble(p, compare.compareDouble(v, ref) ? 1 : 0);
+                p++;
+            }
+        }
+    }
+
+    @Override
+    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        double ref = value.floatValue();
+        DoubleVector vref = DoubleVector.broadcast(loop.vs, value.doubleValue());
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                DoubleVector a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                VectorMask<Double> mask = a.compare(compare.vectorComparison(), vref);
+                a = a.blend(1, mask);
+                a = a.blend(0, mask.not());
+                s.setDoubleVector(a, p, loop.simdOffsets(), 0);
+                p += loop.step * loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                double v = s.getDouble(p);
+                s.setDouble(p, compare.compareDouble(v, ref) ? 1 : 0);
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        double ref = value.floatValue();
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                double v = s.getDouble(p);
+                s.setDouble(p, compare.compareDouble(v, ref) ? 1 : 0);
                 p += loop.step;
             }
         }

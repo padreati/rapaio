@@ -21,171 +21,201 @@
 
 package rapaio.narray.operator.impl;
 
-import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.IntVector;
+import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayUnaryOp;
 
 public final class UnaryOpSqr extends NArrayUnaryOp {
 
-    @Override
-    public boolean floatingPointOnly() {
-        return false;
+    public UnaryOpSqr() {
+        super(false);
     }
 
     @Override
-    public byte applyByte(byte v) {
-        return (byte) (v * v);
-    }
-
-    @Override
-    public int applyInt(int v) {
-        return v * v;
-    }
-
-    @Override
-    public float applyFloat(float v) {
-        return v * v;
-    }
-
-    @Override
-    public double applyDouble(double v) {
-        return v * v;
-    }
-
-    @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = ByteVector.fromArray(loop.vs, array, p);
+                var a = s.getByteVector(loop.vs, p);
                 a = a.mul(a);
-                a.intoArray(array, p);
+                s.setByteVector(a, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (byte) (array[p] * array[p]);
+                byte value = s.getByte(p);
+                s.setByte(p, (byte) (value * value));
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = ByteVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                var a = s.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
                 a = a.mul(a);
-                a.intoArray(array, p, loop.simdOffsets(), 0);
+                s.setByteVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (byte) (array[p] * array[p]);
+                byte value = s.getByte(p);
+                s.setByte(p, (byte) (value * value));
                 p += loop.step;
             }
         }
     }
 
     @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array) {
+    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                byte value = s.getByte(p);
+                s.setByte(p, (byte) (value * value));
+                p += loop.step;
+            }
+        }
+    }
+
+
+    @Override
+    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = IntVector.fromArray(loop.vs, array, p);
+                var a = s.getIntVector(loop.vs, p);
                 a = a.mul(a);
-                a.intoArray(array, p);
+                s.setIntVector(a, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = array[p] * array[p];
+                int value = s.getInt(p);
+                s.setInt(p, value * value);
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array) {
+    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = IntVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                var a = s.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
                 a = a.mul(a);
-                a.intoArray(array, p, loop.simdOffsets(), 0);
+                s.setIntVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = array[p] * array[p];
+                int value = s.getInt(p);
+                s.setInt(p, value * value);
                 p += loop.step;
             }
         }
     }
 
     @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
-            int i = 0;
-            for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p);
-                a = a.mul(a);
-                a.intoArray(array, p);
-                p += loop.simdLen;
-            }
-            for (; i < loop.size; i++) {
-                array[p] = array[p] * array[p];
+            for (int i = 0; i < loop.size; i++) {
+                int value = s.getInt(p);
+                s.setInt(p, value * value);
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                var a = s.getFloatVector(loop.vs, p);
                 a = a.mul(a);
-                a.intoArray(array, p, loop.simdOffsets(), 0);
+                s.setFloatVector(a, p);
+                p += loop.simdLen;
+            }
+            for (; i < loop.size; i++) {
+                float value = s.getFloat(p);
+                s.setFloat(p, value * value);
+                p++;
+            }
+        }
+    }
+
+    @Override
+    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        for (int p : loop.offsets) {
+            int i = 0;
+            for (; i < loop.simdBound; i += loop.simdLen) {
+                var a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                a = a.mul(a);
+                s.setFloatVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = array[p] * array[p];
+                float value = s.getFloat(p);
+                s.setFloat(p, value * value);
                 p += loop.step;
             }
         }
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                float value = s.getFloat(p);
+                s.setFloat(p, value * value);
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p);
+                DoubleVector a = s.getDoubleVector(loop.vs, p);
                 a = a.mul(a);
-                a.intoArray(array, p);
+                s.setDoubleVector(a, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = array[p] * array[p];
+                double value = s.getDouble(p);
+                s.setDouble(p, value * value);
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                DoubleVector a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
                 a = a.mul(a);
-                a.intoArray(array, p, loop.simdOffsets(), 0);
+                s.setDoubleVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = array[p] * array[p];
+                double value = s.getDouble(p);
+                s.setDouble(p, value * value);
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                double value = s.getDouble(p);
+                s.setDouble(p, value * value);
                 p += loop.step;
             }
         }

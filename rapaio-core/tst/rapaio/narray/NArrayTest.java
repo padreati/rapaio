@@ -1804,6 +1804,24 @@ public class NArrayTest {
         assertTensorEqualValues(t1, t3);
     }
 
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void softmaxTest(DataFactory<N> g) {
+        if (!g.dt().floatingPoint()) {
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(2, 3, 4)).softmax());
+            assertEquals("This operation is available only for floating point NArrays.", ex.getMessage());
+            return;
+        }
+
+        for (int i = 0; i < 3; i++) {
+            NArray<?> t1 = g.random(Shape.of(50, 30)).mul_(3);
+            assertTrue(t1.softmax1d(1).deepEquals(t1.logsoftmax1d(1).exp(), 1e-5));
+            assertTrue(t1.softmax1d(1).log_().deepEquals(t1.logsoftmax1d(1), 1e-5));
+            assertTrue(t1.softmax1d(0).deepEquals(t1.logsoftmax1d(0).exp(), 1e-5));
+            assertTrue(t1.softmax1d(0).log_().deepEquals(t1.logsoftmax1d(0), 1e-5));
+        }
+    }
+
     private <N extends Number> N sequenceSum(DataFactory<N> g, int len) {
         N sum = g.value(0);
         for (int i = 1; i < len; i++) {

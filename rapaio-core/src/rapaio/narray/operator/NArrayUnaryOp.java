@@ -24,127 +24,95 @@ package rapaio.narray.operator;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
-import rapaio.narray.storage.array.ByteArrayStorage;
-import rapaio.narray.storage.array.DoubleArrayStorage;
-import rapaio.narray.storage.array.FloatArrayStorage;
-import rapaio.narray.storage.array.IntArrayStorage;
 
 public abstract class NArrayUnaryOp {
 
-    public abstract boolean floatingPointOnly();
+    private final boolean floatingPointOnly;
 
-    public abstract byte applyByte(byte v);
+    public NArrayUnaryOp(boolean floatingPointOnly) {
+        this.floatingPointOnly = floatingPointOnly;
+    }
 
-    public abstract int applyInt(int v);
+    public final boolean floatingPointOnly() {
+        return floatingPointOnly;
+    }
 
-    public abstract double applyDouble(double v);
-
-    public abstract float applyFloat(float v);
-
-    public final void applyByte(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    public final void applyByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
-        if (storage instanceof ByteArrayStorage as) {
+        if (s.supportVectorization()) {
             if (loop.step == 1) {
-                applyUnitByte(loop, as.array());
+                applyUnitByte(loop, s);
             } else {
-                applyStepByte(loop, as.array());
+                applyStepByte(loop, s);
             }
         } else {
-            applyGenericByte(loop, storage);
+            applyGenericByte(loop, s);
         }
     }
 
-    private void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage storage) {
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                storage.setByte(p, applyByte(storage.getByte(p)));
-                p += loop.step;
-            }
-        }
-    }
-
-    protected abstract void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array);
-
-    protected abstract void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array);
-
-    public final void applyInt(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    public final void applyInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
-        if (storage instanceof IntArrayStorage as) {
+        if (s.supportVectorization()) {
             if (loop.step == 1) {
-                applyUnitInt(loop, as.array());
+                applyUnitInt(loop, s);
             } else {
-                applyStepInt(loop, as.array());
+                applyStepInt(loop, s);
             }
         } else {
-            applyGenericInt(loop, storage);
+            applyGenericInt(loop, s);
         }
     }
 
-    private void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage storage) {
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                storage.setInt(p, applyInt(storage.getInt(p)));
-                p += loop.step;
-            }
-        }
-    }
-
-    protected abstract void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array);
-
-    protected abstract void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array);
-
-    public final void applyFloat(StrideLoopDescriptor<Float> loop, Storage storage) {
-        if (storage instanceof FloatArrayStorage as) {
+    public final void applyFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        if (s.supportVectorization()) {
             if (loop.step == 1) {
-                applyUnitFloat(loop, as.array());
+                applyUnitFloat(loop, s);
             } else {
-                applyStepFloat(loop, as.array());
+                applyStepFloat(loop, s);
             }
         } else {
-            applyGenericFloat(loop, storage);
+            applyGenericFloat(loop, s);
         }
     }
 
-    private void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage storage) {
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                storage.setFloat(p, applyFloat(storage.getFloat(p)));
-                p += loop.step;
-            }
-        }
-    }
-
-    protected abstract void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array);
-
-    protected abstract void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array);
-
-    public final void applyDouble(StrideLoopDescriptor<Double> loop, Storage storage) {
-        if (storage instanceof DoubleArrayStorage as) {
+    public final void applyDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        if (s.supportVectorization()) {
             if (loop.step == 1) {
-                applyUnitDouble(loop, as.array());
+                applyUnitDouble(loop, s);
             } else {
-                applyStepDouble(loop, as.array());
+                applyStepDouble(loop, s);
             }
         } else {
-            applyGenericDouble(loop, storage);
+            applyGenericDouble(loop, s);
         }
     }
 
-    private void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage storage) {
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                storage.setDouble(p, applyDouble(storage.getDouble(p)));
-                p += loop.step;
-            }
-        }
-    }
+    protected abstract void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s);
 
-    protected abstract void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array);
+    protected abstract void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s);
 
-    protected abstract void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array);
+    protected abstract void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s);
+
+    protected abstract void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s);
+
+    protected abstract void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s);
+
+    protected abstract void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s);
+
+    protected abstract void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s);
+
+    protected abstract void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s);
+
+    protected abstract void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s);
+
+    protected abstract void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s);
+
+    protected abstract void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s);
+
+    protected abstract void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s);
 }
 

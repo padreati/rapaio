@@ -22,118 +22,132 @@
 package rapaio.narray.operator.impl;
 
 import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
 import rapaio.data.OperationNotAvailableException;
+import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayUnaryOp;
 
 public final class UnaryOpAcos extends NArrayUnaryOp {
 
-    @Override
-    public boolean floatingPointOnly() {
-        return true;
+    public UnaryOpAcos() {
+        super(true);
     }
 
     @Override
-    public byte applyByte(byte v) {
+    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    public int applyInt(int v) {
+    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.acos(v);
+    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+        throw new OperationNotAvailableException();
+    }
+
+
+    @Override
+    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
-    public double applyDouble(double v) {
-        return Math.acos(v);
+    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
-    }
-
-    @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array) {
-    }
-
-    @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array) {
-    }
-
-    @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p);
+                var a = s.getFloatVector(loop.vs, p);
                 a = a.lanewise(VectorOperators.ACOS);
-                a.intoArray(array, p);
+                s.setFloatVector(a, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (float) Math.acos(array[p]);
+                s.setFloat(p, (float) Math.acos(s.getFloat(p)));
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                var a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
                 a = a.lanewise(VectorOperators.ACOS);
-                a.intoArray(array, p, loop.simdOffsets(), 0);
+                s.setFloatVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (float) Math.acos(array[p]);
+                s.setFloat(p, (float) Math.acos(s.getFloat(p)));
                 p += loop.step;
             }
         }
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                s.setFloat(p, (float) Math.acos(s.getFloat(p)));
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p);
+                DoubleVector a = s.getDoubleVector(loop.vs, p);
                 a = a.lanewise(VectorOperators.ACOS);
-                a.intoArray(array, p);
+                s.setDoubleVector(a, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.acos(array[p]);
+                s.setDouble(p, Math.acos(s.getDouble(p)));
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
+                DoubleVector a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
                 a = a.lanewise(VectorOperators.ACOS);
-                a.intoArray(array, p, loop.simdOffsets(), 0);
+                s.setDoubleVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.acos(array[p]);
+                s.setDouble(p, Math.acos(s.getDouble(p)));
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                s.setDouble(p, Math.acos(s.getDouble(p)));
                 p += loop.step;
             }
         }

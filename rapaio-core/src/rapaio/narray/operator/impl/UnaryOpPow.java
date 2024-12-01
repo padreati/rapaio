@@ -22,8 +22,8 @@
 package rapaio.narray.operator.impl;
 
 import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.FloatVector;
 import rapaio.data.OperationNotAvailableException;
+import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayUnaryOp;
 
@@ -31,117 +31,124 @@ public class UnaryOpPow extends NArrayUnaryOp {
     private final double power;
 
     public UnaryOpPow(double power) {
+        super(true);
         this.power = power;
     }
 
     @Override
-    public boolean floatingPointOnly() {
-        return true;
-    }
-
-    @Override
-    public byte applyByte(byte v) {
+    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    public int applyInt(int v) {
+    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    public float applyFloat(float v) {
-        return (float) Math.pow(v, power);
+    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+        throw new OperationNotAvailableException();
     }
 
-    @Override
-    public double applyDouble(double v) {
-        return Math.pow(v, power);
-    }
 
     @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, byte[] array) {
+    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, int[] array) {
+    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, int[] array) {
-        throw new OperationNotAvailableException();
-    }
-
-    @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p);
-                a = a.neg();
-                a.intoArray(array, p);
+                var a = s.getFloatVector(loop.vs, p);
+                a = a.pow((float) power);
+                s.setFloatVector(a, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (float) Math.pow(array[p], power);
+                s.setFloat(p, (float) Math.pow(s.getFloat(p), power));
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, float[] array) {
+    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = FloatVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
-                a = a.neg();
-                a.intoArray(array, p, loop.simdOffsets(), 0);
-                p += loop.simdLen;
+                var a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                a = a.pow((float) power);
+                s.setFloatVector(a, p, loop.simdOffsets(), 0);
+                p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = (float) Math.pow(array[p], power);
+                s.setFloat(p, (float) Math.pow(s.getFloat(p), power));
                 p += loop.step;
             }
         }
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                s.setFloat(p, (float) Math.pow(s.getFloat(p), power));
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = DoubleVector.fromArray(loop.vs, array, p);
-                a = a.neg();
-                a.intoArray(array, p);
+                DoubleVector a = s.getDoubleVector(loop.vs, p);
+                a = a.pow(power);
+                s.setDoubleVector(a, p);
                 p += loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.pow(array[p], power);
+                s.setDouble(p, Math.pow(s.getDouble(p), power));
                 p++;
             }
         }
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, double[] array) {
+    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = DoubleVector.fromArray(loop.vs, array, p, loop.simdOffsets(), 0);
-                a = a.neg();
-                a.intoArray(array, p, loop.simdOffsets(), 0);
-                p += loop.simdLen;
+                DoubleVector a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                a = a.pow(power);
+                s.setDoubleVector(a, p, loop.simdOffsets(), 0);
+                p += loop.step * loop.simdLen;
             }
             for (; i < loop.size; i++) {
-                array[p] = Math.pow(array[p], power);
+                s.setDouble(p, Math.pow(s.getDouble(p), power));
+                p += loop.step;
+            }
+        }
+    }
+
+    @Override
+    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.size; i++) {
+                s.setDouble(p, Math.pow(s.getDouble(p), power));
                 p += loop.step;
             }
         }
