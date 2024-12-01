@@ -405,31 +405,6 @@ public final class BaseByteNArrayStride extends AbstractStrideNArray<Byte> {
     }
 
     @Override
-    public Byte nanMean() {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        int size = size() - nanCount();
-        // first pass compute raw mean
-        byte sum = nanSum();
-
-        byte mean = (byte) (sum / size);
-        // second pass adjustments for mean
-        sum = 0;
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                byte v = storage.getByte(p);
-                p += loop.step;
-                if (dtype().isNaN(v)) {
-                    continue;
-                }
-                sum += (byte) (v - mean);
-            }
-        }
-        return (byte) (mean + sum / size);
-    }
-
-    @Override
     public int argmax(Order order) {
         int argmax = -1;
         byte argvalue = ReduceOpMax.initByte;

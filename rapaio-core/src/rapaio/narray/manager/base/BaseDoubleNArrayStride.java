@@ -405,31 +405,6 @@ public final class BaseDoubleNArrayStride extends AbstractStrideNArray<Double> {
     }
 
     @Override
-    public Double nanMean() {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        int size = size() - nanCount();
-        // first pass compute raw mean
-        double sum = nanSum();
-
-        double mean = (double) (sum / size);
-        // second pass adjustments for mean
-        sum = 0;
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                double v = storage.getDouble(p);
-                p += loop.step;
-                if (dtype().isNaN(v)) {
-                    continue;
-                }
-                sum += (double) (v - mean);
-            }
-        }
-        return (double) (mean + sum / size);
-    }
-
-    @Override
     public int argmax(Order order) {
         int argmax = -1;
         double argvalue = ReduceOpMax.initDouble;

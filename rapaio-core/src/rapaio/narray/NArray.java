@@ -1713,6 +1713,10 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
         return reduceOp1d(NArrayOp.reduceMean(), axis, order);
     }
 
+    public final N nanMean() {
+        return reduceOp(NArrayOp.reduceNanMean());
+    }
+
     public final N var() {
         return varc(0);
     }
@@ -1775,7 +1779,6 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
 
 
 
-    public abstract N nanMean();
 
     public final int argmax() {
         return argmax(Order.defaultOrder());

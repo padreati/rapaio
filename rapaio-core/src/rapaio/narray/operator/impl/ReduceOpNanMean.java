@@ -29,15 +29,12 @@ import rapaio.narray.Storage;
 import rapaio.narray.iterators.StrideLoopDescriptor;
 import rapaio.narray.operator.NArrayReduceOp;
 
-public final class ReduceOpMean extends NArrayReduceOp {
+public final class ReduceOpNanMean extends NArrayReduceOp {
 
     @Override
     public boolean floatingPointOnly() {
         return true;
     }
-
-    private static final float initFloat = 0;
-    private static final double initDouble = 0;
 
     @Override
     protected byte reduceByteVectorUnit(StrideLoopDescriptor<Byte> loop, Storage storage) {
@@ -71,38 +68,49 @@ public final class ReduceOpMean extends NArrayReduceOp {
 
     @Override
     protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
-        float sum = initFloat;
+        float sum = 0;
+        float count = 0;
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            var a = FloatVector.zero(loop.vs);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p);
-                a = a.add(v);
+                var v = storage.getFloatVector(loop.vs, p);
+                var m = v.test(VectorOperators.IS_NAN);
+                a = a.add(v, m.not());
+                count += m.not().trueCount();
                 p += loop.simdLen;
             }
-            sum += a.reduceLanes(VectorOperators.ADD);
+            var m = a.test(VectorOperators.IS_NAN);
+            sum += a.reduceLanes(VectorOperators.ADD, m.not());
             for (; i < loop.size; i++) {
-                sum += storage.getFloat(p);
+                float v = storage.getFloat(p);
+                if (Float.isNaN(v)) {
+                    sum += v;
+                    count++;
+                }
                 p++;
             }
         }
-        float count = loop.size * loop.offsets.length;
         float mean = sum / count;
-
         sum = 0;
         FloatVector vmean = FloatVector.broadcast(loop.vs, mean);
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            FloatVector a = FloatVector.zero(loop.vs);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p);
-                v = v.sub(vmean);
-                a = a.add(v);
+                var v = storage.getFloatVector(loop.vs, p);
+                var m = v.test(VectorOperators.IS_NAN);
+                v = v.sub(vmean, m.not());
+                a = a.add(v, m.not());
                 p += loop.simdLen;
             }
-            sum += a.reduceLanes(VectorOperators.ADD);
+            var m = a.test(VectorOperators.IS_NAN);
+            sum += a.reduceLanes(VectorOperators.ADD, m.not());
             for (; i < loop.size; i++) {
-                sum += storage.getFloat(p) - mean;
+                float v = storage.getFloat(p);
+                if (!Float.isNaN(v)) {
+                    sum += storage.getFloat(p) - mean;
+                }
                 p++;
             }
         }
@@ -112,61 +120,76 @@ public final class ReduceOpMean extends NArrayReduceOp {
 
     @Override
     protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
-        float sum = initFloat;
+        float sum = 0;
+        float count = 0;
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            var a = FloatVector.zero(loop.vs);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
-                a = a.add(v);
+                var v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                var m = v.test(VectorOperators.IS_NAN);
+                a = a.add(v, m.not());
+                count += m.not().trueCount();
                 p += loop.simdLen * loop.step;
             }
-            sum += a.reduceLanes(VectorOperators.ADD);
+            var m = a.test(VectorOperators.IS_NAN);
+            sum += a.reduceLanes(VectorOperators.ADD, m.not());
             for (; i < loop.size; i++) {
-                sum += storage.getFloat(p);
+                float v = storage.getFloat(p);
+                if (!Float.isNaN(v)) {
+                    sum += v;
+                    count++;
+                }
                 p += loop.step;
             }
         }
-        float count = loop.size * loop.offsets.length;
         float mean = sum / count;
-
         sum = 0;
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            FloatVector a = FloatVector.zero(loop.vs);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
-                v = v.sub(mean);
-                a = a.add(v);
+                var v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                var m = v.test(VectorOperators.IS_NAN);
+                v = v.sub(mean, m.not());
+                a = a.add(v, m.not());
                 p += loop.simdLen * loop.step;
             }
-            sum += a.reduceLanes(VectorOperators.ADD);
+            var m = a.test(VectorOperators.IS_NAN);
+            sum += a.reduceLanes(VectorOperators.ADD, m.not());
             for (; i < loop.size; i++) {
-                sum += storage.getFloat(p) - mean;
+                float v = storage.getFloat(p);
+                if (!Float.isNaN(v)) {
+                    sum += storage.getFloat(p) - mean;
+                }
                 p += loop.step;
             }
         }
-
         return mean + sum / count;
     }
 
     @Override
     protected float reduceFloatDefault(StrideLoopDescriptor<Float> loop, Storage storage) {
-        float sum = initFloat;
+        float sum = 0;
+        float count = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                sum += storage.getFloat(p);
+                float v = storage.getFloat(p);
+                if (!Float.isNaN(v)) {
+                    sum += v;
+                    count++;
+                }
                 p += loop.step;
             }
         }
-
-        float count = loop.size * loop.offsets.length;
         float mean = sum / count;
-
         sum = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                sum += storage.getFloat(p) - mean;
+                float v = storage.getFloat(p);
+                if (!Float.isNaN(v)) {
+                    sum += storage.getFloat(p) - mean;
+                }
                 p += loop.step;
             }
         }
@@ -176,38 +199,47 @@ public final class ReduceOpMean extends NArrayReduceOp {
 
     @Override
     protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
-        double sum = initDouble;
+        double sum = 0;
+        double count = 0;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            var a = DoubleVector.zero(loop.vs);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p);
-                a = a.add(v);
+                var v = storage.getDoubleVector(loop.vs, p);
+                var m = v.test(VectorOperators.IS_NAN);
+                a = a.add(v, m.not());
+                count += m.not().trueCount();
                 p += loop.simdLen;
             }
-            sum += a.reduceLanes(VectorOperators.ADD);
+            var m = a.test(VectorOperators.IS_NAN);
+            sum += a.reduceLanes(VectorOperators.ADD, m.not());
             for (; i < loop.size; i++) {
-                sum += storage.getDouble(p);
+                double v = storage.getDouble(p);
+                if (!Double.isNaN(v)) {
+                    sum += v;
+                    count++;
+                }
                 p++;
             }
         }
-
-        double count = loop.size * loop.offsets.length;
         double mean = sum / count;
-
         sum = 0;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            var a = DoubleVector.zero(loop.vs);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p);
-                v = v.sub(mean);
-                a = a.add(v);
+                var v = storage.getDoubleVector(loop.vs, p);
+                var m = v.test(VectorOperators.IS_NAN);
+                v = v.sub(mean, m.not());
+                a = a.add(v, m.not());
                 p += loop.simdLen;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.size; i++) {
-                sum += storage.getDouble(p) - mean;
+                double v = storage.getDouble(p);
+                if (!Double.isNaN(v)) {
+                    sum += storage.getDouble(p) - mean;
+                }
                 p++;
             }
         }
@@ -216,65 +248,78 @@ public final class ReduceOpMean extends NArrayReduceOp {
 
     @Override
     protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
-        double sum = initDouble;
+        double sum = 0;
+        double count = 0;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            var a = DoubleVector.zero(loop.vs);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
-                a = a.add(v);
+                var v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                var m = v.test(VectorOperators.IS_NAN);
+                a = a.add(v, m.not());
+                count += m.not().trueCount();
                 p += loop.simdLen * loop.step;
             }
-            sum += a.reduceLanes(VectorOperators.ADD);
+            var m = a.test(VectorOperators.IS_NAN);
+            sum += a.reduceLanes(VectorOperators.ADD, m.not());
             for (; i < loop.size; i++) {
-                sum += storage.getDouble(p);
+                double v = storage.getDouble(p);
+                if (!Double.isNaN(v)) {
+                    sum += v;
+                    count++;
+                }
                 p += loop.step;
             }
         }
-
-        double count = loop.size * loop.offsets.length;
         double mean = sum / count;
         sum = 0;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            var a = DoubleVector.zero(loop.vs);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
-                v = v.sub(mean);
-                a = a.add(v);
+                var v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                var m = v.test(VectorOperators.IS_NAN);
+                v = v.sub(mean, m.not());
+                a = a.add(v, m.not());
                 p += loop.simdLen * loop.step;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.size; i++) {
-                sum += storage.getDouble(p) - mean;
+                double v = storage.getDouble(p);
+                if (!Double.isNaN(v)) {
+                    sum += v - mean;
+                }
                 p += loop.step;
             }
         }
-
         return mean + sum / count;
     }
 
     @Override
     protected double reduceDoubleDefault(StrideLoopDescriptor<Double> loop, Storage storage) {
-        double sum = initDouble;
+        double sum = 0;
+        double count = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                sum += storage.getDouble(p);
+                double v = storage.getDouble(p);
+                if (!Double.isNaN(v)) {
+                    sum += v;
+                    count++;
+                }
                 p += loop.step;
             }
         }
-
-        double count = loop.size * loop.offsets.length;
         double mean = sum / count;
-
         sum = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                sum += storage.getDouble(p) - mean;
+                double v = storage.getDouble(p);
+                if (!Double.isNaN(v)) {
+                    sum += v - mean;
+                }
                 p += loop.step;
             }
         }
-
         return mean + sum / count;
     }
 }

@@ -33,6 +33,7 @@ import rapaio.narray.operator.impl.ReduceOpMax;
 import rapaio.narray.operator.impl.ReduceOpMean;
 import rapaio.narray.operator.impl.ReduceOpMin;
 import rapaio.narray.operator.impl.ReduceOpNanMax;
+import rapaio.narray.operator.impl.ReduceOpNanMean;
 import rapaio.narray.operator.impl.ReduceOpNanMin;
 import rapaio.narray.operator.impl.ReduceOpNanProd;
 import rapaio.narray.operator.impl.ReduceOpNanSum;
@@ -117,6 +118,7 @@ public final class NArrayOp {
     private static final ReduceOpNanProd REDUCE_NAN_PROD = new ReduceOpNanProd();
     private static final ReduceOpNanMin REDUCE_NAN_MIN = new ReduceOpNanMin();
     private static final ReduceOpNanMax REDUCE_NAN_MAX = new ReduceOpNanMax();
+    private static final ReduceOpNanMean REDUCE_NAN_MEAN = new ReduceOpNanMean();
 
 
     public static UnaryOpRint unaryRint() {
@@ -303,4 +305,9 @@ public final class NArrayOp {
     public static ReduceOpNanMax reduceNanMax() {
         return REDUCE_NAN_MAX;
     }
+
+    public static ReduceOpNanMean reduceNanMean() {
+        return REDUCE_NAN_MEAN;
+    }
+
 }

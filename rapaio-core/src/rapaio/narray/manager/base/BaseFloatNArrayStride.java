@@ -405,31 +405,6 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
     }
 
     @Override
-    public Float nanMean() {
-        if (!dtype().floatingPoint()) {
-            throw new IllegalArgumentException("Operation available only for float tensors.");
-        }
-        int size = size() - nanCount();
-        // first pass compute raw mean
-        float sum = nanSum();
-
-        float mean = (float) (sum / size);
-        // second pass adjustments for mean
-        sum = 0;
-        for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
-                float v = storage.getFloat(p);
-                p += loop.step;
-                if (dtype().isNaN(v)) {
-                    continue;
-                }
-                sum += (float) (v - mean);
-            }
-        }
-        return (float) (mean + sum / size);
-    }
-
-    @Override
     public int argmax(Order order) {
         int argmax = -1;
         float argvalue = ReduceOpMax.initFloat;
