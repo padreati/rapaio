@@ -26,6 +26,7 @@ import java.util.List;
 import rapaio.core.distributions.Uniform;
 import rapaio.narray.Order;
 import rapaio.narray.Shape;
+import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
@@ -56,15 +57,22 @@ public class Linear extends AbstractNet {
 
     private void reset() {
         double range = 1. / Math.sqrt(inFeatures);
-        w.setValue(tm.randomArray(Shape.of(inFeatures, outFeatures), Uniform.of(-range, range), random, Order.F));
+        w.setValue(tm.randomArray(Shape.of(inFeatures, outFeatures), Uniform.of(-range, range), tm.random(), Order.F));
         if (bias) {
-            b.setValue(tm.randomArray(Shape.of(outFeatures), Uniform.of(-range, range), random, Order.F));
+            b.setValue(tm.randomArray(Shape.of(outFeatures), Uniform.of(-range, range), tm.random(), Order.F));
         }
     }
 
     @Override
     public List<Tensor> parameters() {
         return (bias) ? List.of(w, b) : List.of(w);
+    }
+
+    @Override
+    public NetState state() {
+        NetState state = new NetState();
+        state.addTensors(bias ? List.of(w, b) : List.of(w));
+        return state;
     }
 
     @Override

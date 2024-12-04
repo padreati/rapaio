@@ -23,6 +23,7 @@ package rapaio.nn.layer;
 
 import java.util.List;
 
+import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
 
 public class Dropout extends AbstractNet {
@@ -46,9 +47,14 @@ public class Dropout extends AbstractNet {
     }
 
     @Override
+    public NetState state() {
+        return new NetState();
+    }
+
+    @Override
     public Tensor forward11(Tensor x) {
         if (train) {
-            return x.dropout(p, random, inplace);
+            return x.dropout(p, tm.random(), inplace);
         }
         return x;
     }

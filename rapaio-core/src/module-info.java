@@ -36,7 +36,7 @@ module rapaio.core {
     exports rapaio.graphics.plot.artist;
 
     exports rapaio.io;
-    exports rapaio.io.serialization;
+    exports rapaio.io.atom;
 
     exports rapaio.math.optimization.functions;
     exports rapaio.math.optimization;

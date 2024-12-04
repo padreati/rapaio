@@ -31,8 +31,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import rapaio.io.serialization.AtomOutputStream;
-import rapaio.io.serialization.BinaryAtomProtocol;
+import rapaio.io.atom.AtomOutputStream;
+import rapaio.io.atom.BinaryAtomProtocol;
 import rapaio.narray.DType;
 import rapaio.narray.Shape;
 import rapaio.narray.Storage;

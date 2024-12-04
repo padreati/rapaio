@@ -1776,15 +1776,17 @@ public abstract sealed class NArray<N extends Number> implements Printable, Iter
     public abstract NArray<N> varc1d(int axis, int ddof, NArray<?> mean, Order order);
 
 
-
-
-
-
     public final int argmax() {
         return argmax(Order.defaultOrder());
     }
 
     public abstract int argmax(Order order);
+
+    public final NArray<Integer> argmax1d(int axis) {
+        return argmax1d(axis, Order.defaultOrder());
+    }
+
+    public abstract NArray<Integer> argmax1d(int axis, Order order);
 
     public final int argmin() {
         return argmin(Order.defaultOrder());

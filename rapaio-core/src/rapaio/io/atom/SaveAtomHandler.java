@@ -19,11 +19,12 @@
  *
  */
 
-package rapaio.io.serialization;
+package rapaio.io.atom;
 
 import java.io.IOException;
 
-public interface LoadAtomHandler<T> {
+@FunctionalInterface
+public interface SaveAtomHandler<T> {
 
-    T loadAtom(AtomInputStream in) throws IOException;
+    void saveAtom(Object atom, AtomOutputStream out) throws IOException;
 }

@@ -26,9 +26,9 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
-import rapaio.io.serialization.AtomSerialization;
-import rapaio.io.serialization.LoadAtomHandler;
-import rapaio.io.serialization.SaveAtomHandler;
+import rapaio.io.atom.AtomSerialization;
+import rapaio.io.atom.LoadAtomHandler;
+import rapaio.io.atom.SaveAtomHandler;
 import rapaio.narray.storage.array.ByteArrayStorage;
 import rapaio.narray.storage.array.DoubleArrayStorage;
 import rapaio.narray.storage.array.FloatArrayStorage;
@@ -119,7 +119,7 @@ public abstract class Storage {
 
         @Override
         public LoadAtomHandler<? extends Storage> loadAtomHandler() {
-            return in -> {
+            return (in, _) -> {
                 String className = in.readString();
                 if (ByteArrayStorage.class.getName().equals(className)) {
                     byte[] bytes = in.readBytes();

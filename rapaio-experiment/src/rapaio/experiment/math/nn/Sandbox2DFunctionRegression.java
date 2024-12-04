@@ -50,6 +50,8 @@ public class Sandbox2DFunctionRegression {
 
     public static void main() {
         TensorManager tm = TensorManager.ofFloat();
+        tm.seed(42);
+
         Random random = new Random(42);
 
         final int N = 1_000;
@@ -73,7 +75,6 @@ public class Sandbox2DFunctionRegression {
                 new Linear(tm, 1_000, 1, true),
                 new ReLU()
         );
-        nn.seed(42);
 
 
         int EPOCHS = 40;

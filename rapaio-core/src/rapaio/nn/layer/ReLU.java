@@ -23,6 +23,7 @@ package rapaio.nn.layer;
 
 import java.util.List;
 
+import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
 
 public class ReLU extends AbstractNet {
@@ -34,6 +35,11 @@ public class ReLU extends AbstractNet {
     @Override
     public List<Tensor> parameters() {
         return List.of();
+    }
+
+    @Override
+    public NetState state() {
+        return new NetState();
     }
 
     @Override

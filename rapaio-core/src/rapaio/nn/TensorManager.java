@@ -49,6 +49,7 @@ public final class TensorManager implements Closeable {
     }
 
     private final DType<?> dt;
+    private final Random random;
 
     private final NArrayManager arrayManager;
     private final int outerThreads;
@@ -58,11 +59,20 @@ public final class TensorManager implements Closeable {
 
     private TensorManager(DType<?> dt, int outerThreads, int innerThreads) {
         this.dt = dt;
+        this.random = new Random();
         this.arrayManager = NArrayManager.base();
         this.outerThreads = outerThreads;
         this.innerThreads = innerThreads;
 
         this.outerExecutor = Executors.newFixedThreadPool(outerThreads);
+    }
+
+    public void seed(long seed) {
+        random.setSeed(seed);
+    }
+
+    public Random random() {
+        return random;
     }
 
     public DType<?> dtype() {

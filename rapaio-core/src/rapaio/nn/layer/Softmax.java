@@ -23,6 +23,7 @@ package rapaio.nn.layer;
 
 import java.util.List;
 
+import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
 
 public class Softmax extends AbstractNet {
@@ -37,6 +38,11 @@ public class Softmax extends AbstractNet {
     @Override
     public List<Tensor> parameters() {
         return List.of();
+    }
+
+    @Override
+    public NetState state() {
+        return new NetState();
     }
 
     @Override

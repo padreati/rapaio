@@ -121,12 +121,6 @@ public abstract class NArrayManager {
         return stride(dt, shape, Order.autoFC(Order.defaultOrder()), storage);
     }
 
-//    public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, N value, Order order) {
-//        var storage = storageManager.zeros(dt, shape.size());
-//        storage.fill(dt.cast(value), 0, shape.size());
-//        return stride(dt, shape, Order.autoFC(order), storage);
-//    }
-
     public final <N extends Number> NArray<N> full(DType<N> dt, Shape shape, byte value, Order askOrder) {
         var storage = storageManager.zeros(dt, shape.size());
         storage.fill(value, 0, shape.size());

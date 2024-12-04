@@ -24,9 +24,9 @@ package rapaio.narray;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import rapaio.io.serialization.AtomSerialization;
-import rapaio.io.serialization.LoadAtomHandler;
-import rapaio.io.serialization.SaveAtomHandler;
+import rapaio.io.atom.AtomSerialization;
+import rapaio.io.atom.LoadAtomHandler;
+import rapaio.io.atom.SaveAtomHandler;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -240,7 +240,7 @@ public final class Shape {
 
         @Override
         public LoadAtomHandler<Shape> loadAtomHandler() {
-            return in -> {
+            return (in, _) -> {
                 int[] dims = in.readInts();
                 return new Shape(dims);
             };

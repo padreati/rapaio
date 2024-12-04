@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.io.serialization;
+package rapaio.io.atom;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -224,9 +224,9 @@ public class BinaryAtomProtocol {
         }
 
         @Override
-        public <T> T loadAtom(Class<T> clazz) throws IOException {
+        public <T> T loadAtom(Class<T> clazz, AtomContext ctx) throws IOException {
             var serializationHandler = AtomRegistry.instance().getSerializationHandler(clazz);
-            return serializationHandler.loadAtomHandler().loadAtom(this);
+            return serializationHandler.loadAtomHandler().loadAtom(this, ctx);
         }
     }
 }

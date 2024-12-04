@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import rapaio.nn.Net;
+import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
@@ -38,16 +39,17 @@ public class Sequential extends AbstractNet {
     }
 
     @Override
-    public void seed(long seed) {
-        super.seed(seed);
-        for (Net net : nets) {
-            net.seed(seed);
-        }
+    public List<Tensor> parameters() {
+        return Arrays.stream(nets).flatMap(module -> module.parameters().stream()).toList();
     }
 
     @Override
-    public List<Tensor> parameters() {
-        return Arrays.stream(nets).flatMap(module -> module.parameters().stream()).toList();
+    public NetState state() {
+        NetState state = new NetState();
+        for (Net net : nets) {
+            state.merge(net.state());
+        }
+        return state;
     }
 
     @Override

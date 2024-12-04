@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.io.serialization;
+package rapaio.io.atom;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -56,8 +56,8 @@ public class AtomRegistry {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <A> AtomSerialization<A> getSerializationHandler(Class<A> clazz) {
-
         for (var c : registry.keySet()) {
             if (c.isAssignableFrom(clazz)) {
                 return (AtomSerialization<A>) registry.get(c);

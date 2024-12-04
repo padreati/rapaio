@@ -19,11 +19,34 @@
  *
  */
 
-package rapaio.io.serialization;
+package rapaio.io.atom;
 
 import java.io.IOException;
+import java.util.List;
 
-public interface SaveAtomHandler<T> {
+public interface AtomOutputStream extends AutoCloseable {
 
-    void saveAtom(Object atom, AtomOutputStream out) throws IOException;
+    void saveByte(byte value) throws IOException;
+
+    void saveInt(int value) throws IOException;
+
+    void saveFloat(float value) throws IOException;
+
+    void saveDouble(double value) throws IOException;
+
+    void saveString(String value) throws IOException;
+
+    void saveBytes(byte[] bytes) throws IOException;
+
+    void saveInts(int[] array) throws IOException;
+
+    void saveFloats(float[] array) throws IOException;
+
+    void saveDoubles(double[] array) throws IOException;
+
+    void saveAtom(Object atom) throws IOException;
+
+    void saveAtoms(List<?> atoms) throws IOException;
+
+    void close() throws IOException;
 }

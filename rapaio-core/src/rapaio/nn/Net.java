@@ -21,13 +21,15 @@
 
 package rapaio.nn;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
+import rapaio.io.atom.AtomInputStream;
+import rapaio.io.atom.AtomOutputStream;
 import rapaio.nn.data.ArrayDataset;
 import rapaio.util.NotImplementedException;
 
@@ -37,9 +39,7 @@ public interface Net extends Serializable {
 
     List<Tensor> parameters();
 
-    void seed(long seed);
-
-    Random random();
+    NetState state();
 
     void train();
 
@@ -64,7 +64,7 @@ public interface Net extends Serializable {
         ArrayDataset dataset = new ArrayDataset(inputs);
         List<CompletableFuture<Tensor[]>> futures = new ArrayList<>();
 
-        long seed = random().nextLong();
+        long seed = tm().random().nextLong();
         dataset.seed(seed);
         var batchIt = dataset.batchIndexIterator(batchSize, true, skipLast);
 
@@ -83,19 +83,7 @@ public interface Net extends Serializable {
         }
     }
 
-    class BatchOutput {
-
-        private final TensorManager tm;
-        private final int batchSize;
-        private final long seed;
-        private final List<Tensor[]> outputs;
-
-        private BatchOutput(TensorManager tm, int batchSize, long seed, List<Tensor[]> outputs) {
-            this.tm = tm;
-            this.batchSize = batchSize;
-            this.seed = seed;
-            this.outputs = outputs;
-        }
+    record BatchOutput(TensorManager tm,int batchSize,long seed, List<Tensor[]> outputs) {
 
         public BatchLoss applyLoss(Loss localLoss, Tensor trueValues) {
             if (outputs.isEmpty()) {
@@ -119,4 +107,7 @@ public interface Net extends Serializable {
     record BatchLoss(Tensor loss, double lossValue) {
     }
 
+    void saveState(AtomOutputStream out) throws IOException;
+
+    void loadState(AtomInputStream in) throws IOException;
 }

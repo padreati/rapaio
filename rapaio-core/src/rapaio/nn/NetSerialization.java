@@ -19,25 +19,20 @@
  *
  */
 
-package rapaio.io.serialization;
+package rapaio.nn;
 
-import java.lang.reflect.ParameterizedType;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
-public abstract class AtomSerialization<T> {
+import rapaio.io.atom.TextAtomProtocol;
 
-    private final Class<T> persistentClass;
+public class NetSerialization {
 
-    @SuppressWarnings("unchecked")
-    public AtomSerialization() {
-        this.persistentClass = (Class<T>) ((ParameterizedType) getClass()
-                .getGenericSuperclass()).getActualTypeArguments()[0];
+    public static void printNetState(Net net) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try(var out = TextAtomProtocol.outputToStream(baos)) {
+            net.saveState(out);
+        }
+        System.out.println(baos.toString());
     }
-
-    public final Class<T> getClassType() {
-        return persistentClass;
-    }
-
-    public abstract LoadAtomHandler<? extends T> loadAtomHandler();
-
-    public abstract SaveAtomHandler<? extends T> saveAtomHandler();
 }

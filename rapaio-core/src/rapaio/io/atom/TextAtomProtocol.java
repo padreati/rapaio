@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.io.serialization;
+package rapaio.io.atom;
 
 import java.io.BufferedWriter;
 import java.io.File;

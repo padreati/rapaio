@@ -24,6 +24,7 @@ package rapaio.nn.layer;
 import java.util.List;
 
 import rapaio.narray.Shape;
+import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
@@ -36,11 +37,11 @@ public class BatchNorm1D extends AbstractNet {
     private final double epsValue;
     private final double momentum;
 
-    private final Tensor gamma;
-    private final Tensor beta;
-
     private Tensor sampleMean;
     private Tensor sampleStd;
+
+    private final Tensor gamma;
+    private final Tensor beta;
 
     public BatchNorm1D(TensorManager tm, int numFeatures) {
         this(tm, numFeatures, DEFAULT_MOMENTUM, DEFAULT_EPSILON);
@@ -56,6 +57,9 @@ public class BatchNorm1D extends AbstractNet {
         this.momentum = momentum;
         this.epsValue = eps;
 
+        this.sampleMean = tm.zerosTensor(Shape.of(numFeatures));
+        this.sampleStd = tm.fullTensor(Shape.of(numFeatures), 1);
+
         this.gamma = tm.fullTensor(Shape.of(numFeatures), 1).requiresGrad(true).name("gamma");
         this.beta = tm.fullTensor(Shape.of(numFeatures), 0).requiresGrad(true).name("beta");
     }
@@ -63,6 +67,13 @@ public class BatchNorm1D extends AbstractNet {
     @Override
     public List<Tensor> parameters() {
         return List.of(gamma, beta);
+    }
+
+    @Override
+    public NetState state() {
+        NetState state = new NetState();
+        state.addTensors(List.of(sampleMean, sampleStd, gamma, beta));
+        return state;
     }
 
     @Override

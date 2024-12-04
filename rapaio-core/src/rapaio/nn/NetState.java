@@ -19,31 +19,35 @@
  *
  */
 
-package rapaio.nn.layer;
+package rapaio.nn;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import rapaio.nn.NetState;
-import rapaio.nn.Tensor;
+public final class NetState {
 
-public class Sigmoid extends AbstractNet {
+    private final ArrayList<Tensor> tensors;
 
-    public Sigmoid() {
-        super(null);
+    public NetState() {
+        this.tensors = new ArrayList<>();
     }
 
-    @Override
-    public List<Tensor> parameters() {
-        return List.of();
+    public NetState add(Tensor tensor) {
+        tensors.add(tensor);
+        return this;
     }
 
-    @Override
-    public NetState state() {
-        return new NetState();
+    public NetState addTensors(List<Tensor> tensors) {
+        this.tensors.addAll(tensors);
+        return this;
     }
 
-    @Override
-    public Tensor forward11(Tensor x) {
-        return x.sigmoid();
+    public void merge(NetState netState) {
+        tensors.addAll(netState.tensors);
+    }
+
+
+    public List<Tensor> tensors() {
+        return tensors;
     }
 }

@@ -21,9 +21,9 @@
 
 package rapaio.narray.layout;
 
-import rapaio.io.serialization.AtomSerialization;
-import rapaio.io.serialization.LoadAtomHandler;
-import rapaio.io.serialization.SaveAtomHandler;
+import rapaio.io.atom.AtomSerialization;
+import rapaio.io.atom.LoadAtomHandler;
+import rapaio.io.atom.SaveAtomHandler;
 import rapaio.narray.Layout;
 import rapaio.narray.Order;
 import rapaio.narray.Shape;
@@ -129,7 +129,7 @@ public interface StrideLayout extends Layout {
 
         @Override
         public LoadAtomHandler<StrideLayout> loadAtomHandler() {
-            return in -> {
+            return (in, _) -> {
                 Shape shape = in.loadAtom(Shape.class);
                 int offset = in.readInt();
                 int[] strides = in.readInts();

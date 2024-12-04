@@ -24,6 +24,7 @@ package rapaio.nn.layer;
 import java.util.List;
 
 import rapaio.narray.Compare;
+import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
@@ -45,6 +46,11 @@ public class ELU extends AbstractNet {
     @Override
     public List<Tensor> parameters() {
         return List.of();
+    }
+
+    @Override
+    public NetState state() {
+        return new NetState();
     }
 
     @Override

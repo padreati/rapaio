@@ -19,31 +19,25 @@
  *
  */
 
-package rapaio.io.serialization;
+package rapaio.io.atom;
 
-import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 
-public interface AtomInputStream extends AutoCloseable {
+public abstract class AtomSerialization<T> {
 
-    byte readByte() throws IOException;
+    private final Class<T> persistentClass;
 
-    int readInt() throws IOException;
+    @SuppressWarnings("unchecked")
+    public AtomSerialization() {
+        this.persistentClass = (Class<T>) ((ParameterizedType) getClass()
+                .getGenericSuperclass()).getActualTypeArguments()[0];
+    }
 
-    float readFloat() throws IOException;
+    public final Class<T> getClassType() {
+        return persistentClass;
+    }
 
-    double readDouble() throws IOException;
+    public abstract LoadAtomHandler<? extends T> loadAtomHandler();
 
-    String readString() throws IOException;
-
-    byte[] readBytes() throws IOException;
-
-    int[] readInts() throws IOException;
-
-    float[] readFloats() throws IOException;
-
-    double[] readDoubles() throws IOException;
-
-    <T> T loadAtom(Class<T> clazz) throws IOException;
-
-    void close() throws IOException;
+    public abstract SaveAtomHandler<? extends T> saveAtomHandler();
 }

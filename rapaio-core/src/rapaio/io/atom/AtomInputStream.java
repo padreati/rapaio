@@ -19,31 +19,35 @@
  *
  */
 
-package rapaio.nn.layer;
+package rapaio.io.atom;
 
-import java.util.List;
+import java.io.IOException;
 
-import rapaio.nn.NetState;
-import rapaio.nn.Tensor;
+public interface AtomInputStream extends AutoCloseable {
 
-public class Sigmoid extends AbstractNet {
+    byte readByte() throws IOException;
 
-    public Sigmoid() {
-        super(null);
+    int readInt() throws IOException;
+
+    float readFloat() throws IOException;
+
+    double readDouble() throws IOException;
+
+    String readString() throws IOException;
+
+    byte[] readBytes() throws IOException;
+
+    int[] readInts() throws IOException;
+
+    float[] readFloats() throws IOException;
+
+    double[] readDoubles() throws IOException;
+
+    default <T> T loadAtom(Class<T> clazz) throws IOException {
+        return loadAtom(clazz, null);
     }
 
-    @Override
-    public List<Tensor> parameters() {
-        return List.of();
-    }
+    <T> T loadAtom(Class<T> clazz, AtomContext ctx) throws IOException;
 
-    @Override
-    public NetState state() {
-        return new NetState();
-    }
-
-    @Override
-    public Tensor forward11(Tensor x) {
-        return x.sigmoid();
-    }
+    void close() throws IOException;
 }

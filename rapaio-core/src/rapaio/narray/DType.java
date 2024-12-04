@@ -37,6 +37,25 @@ public abstract class DType<N extends Number> {
     public static final DType<Float> FLOAT = new DTypeFloat();
     public static final DType<Double> DOUBLE = new DTypeDouble();
 
+    public static DType<?> fromId(String id) {
+        if(id == null) {
+            throw new IllegalArgumentException("id is null");
+        }
+        if(id.equalsIgnoreCase("double")) {
+            return DOUBLE;
+        }
+        if(id.equalsIgnoreCase("float")) {
+            return FLOAT;
+        }
+        if(id.equalsIgnoreCase("int")) {
+            return INTEGER;
+        }
+        if(id.equalsIgnoreCase("byte")) {
+            return BYTE;
+        }
+        throw new IllegalArgumentException("Unknown dtype: " + id);
+    }
+
     public enum Id {
         BYTE,
         INTEGER,

@@ -425,6 +425,52 @@ public final class BaseFloatNArrayStride extends AbstractStrideNArray<Float> {
     }
 
     @Override
+    public NArray<Integer> argmax1d(int axis, Order order) {
+        if (axis < 0) {
+            axis += shape().rank();
+        }
+        int[] newDims = layout.shape().narrowDims(axis);
+        int[] newStrides = layout.narrowStrides(axis);
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        NArray<Integer> res = manager.zeros(DType.INTEGER, Shape.of(newDims), Order.autoFC(order));
+
+        var resIt = res.ptrIterator(Order.C);
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+
+        int chunk = 128;
+        int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            CountDownLatch latch = new CountDownLatch(tasks);
+            for (int i = 0; i < tasks; i++) {
+                List<Runnable> taskList = new ArrayList<>();
+                while (it.hasNext() && taskList.size() < chunk) {
+                    int ptr = it.nextInt();
+                    int resPtr = resIt.next();
+                    taskList.add(() -> {
+                        StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
+                        int value = manager.stride(dt, strideLayout, storage).argmax();
+                        res.ptrSetInt(resPtr, value);
+                    });
+                }
+                executor.submit(() -> {
+                    for (var t : taskList) {
+                        t.run();
+                    }
+                    latch.countDown();
+                });
+            }
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return res;
+    }
+
+    @Override
     public int argmin(Order order) {
         int argmin = -1;
         float argvalue = ReduceOpMin.initFloat;

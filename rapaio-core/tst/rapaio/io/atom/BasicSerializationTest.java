@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.io.serialization;
+package rapaio.io.atom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -81,12 +81,9 @@ public class BasicSerializationTest {
 
         static class Serialization extends AtomSerialization<Point> {
 
-            public Serialization() {
-            }
-
             @Override
             public LoadAtomHandler<Point> loadAtomHandler() {
-                return in -> {
+                return (in, _) -> {
                     double x = in.readDouble();
                     double y = in.readDouble();
                     return new Point(x, y);
