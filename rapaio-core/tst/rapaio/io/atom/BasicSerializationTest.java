@@ -81,6 +81,8 @@ public class BasicSerializationTest {
 
         static class Serialization extends AtomSerialization<Point> {
 
+            public Serialization() {}
+
             @Override
             public LoadAtomHandler<Point> loadAtomHandler() {
                 return (in, _) -> {
