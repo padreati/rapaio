@@ -43,6 +43,7 @@ import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.LogSoftmax;
 import rapaio.nn.layer.Sequential;
 import rapaio.nn.loss.NegativeLikelihoodLoss;
+import rapaio.printer.Format;
 
 public class SandboxIris {
     public static void main() throws IOException {
@@ -60,10 +61,10 @@ public class SandboxIris {
 
         Net nn = new Sequential(tm,
                 new BatchNorm1D(tm, 4),
-                new Linear(tm, 4, 10_000, true),
+                new Linear(tm, 4, 12, true),
                 new ELU(tm),
-//                new BatchNorm1D(tm, 400),
-                new Linear(tm, 10_000, 3, true),
+                new BatchNorm1D(tm, 12),
+                new Linear(tm, 12, 3, true),
                 new ELU(tm),
 //                new BatchNorm1D(tm, 3),
                 new LogSoftmax(1)
@@ -74,12 +75,12 @@ public class SandboxIris {
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
         VarDouble testLoss = VarDouble.empty().name("trainLoss");
 
-        for (int epoch = 0; epoch < 1_000; epoch++) {
+        for (int epoch = 0; epoch < 10_000; epoch++) {
 
             optimizer.zeroGrad();
             nn.train();
 
-            Net.BatchOutput batchOut = nn.batchForward(20, train.tensor(tm, 0));
+            Net.BatchOutput batchOut = nn.batchForward(50, train.tensor(tm, 0));
             Net.BatchLoss batchLoss = batchOut.applyLoss(new NegativeLikelihoodLoss(), train.tensor(tm, 1));
 
             double trainLossValue = batchLoss.lossValue();
@@ -95,16 +96,17 @@ public class SandboxIris {
             trainLoss.addDouble(trainLossValue);
             testLoss.addDouble(testLossValue);
 
-            if (epoch < 10 || epoch % 50 == 0) {
-                System.out.println("Epoch: " + (epoch + 1) + ", train loss:" + trainLossValue + ", test loss:" + testLossValue);
+            if (epoch % 50 == 0) {
 
                 var y_pred = nn.forward11(tm.var(x)).value().exp().argmax1d(1);
-                VarNominal y_pred_nom = VarNominal.empty(iris.rowCount(), iris.rvar("class").levels());
-                for (int i = 0; i < y_pred_nom.size(); i++) {
-                    y_pred_nom.setInt(i, y_pred.getInt(i) + 1);
-                }
+                var levels = iris.rvar("class").levels();
 
-                Confusion.from(iris.rvar("class"), y_pred_nom).printContent();
+                var cm = Confusion.from(iris.rvar("class"), VarNominal.from(levels, y_pred));
+
+                System.out.println(
+                        "Epoch: " + epoch + ", train loss:" + trainLossValue + ", test loss:" + testLossValue +
+                                ", error: " + Format.floatShort(cm.error()) + ", accuracy: " + Format.floatShort(cm.accuracy()));
+                cm.frequencyMatrix().printContent();
             }
         }
 

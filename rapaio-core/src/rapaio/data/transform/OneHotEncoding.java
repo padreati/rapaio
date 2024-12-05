@@ -87,7 +87,7 @@ public class OneHotEncoding extends AbstractTransform {
         for (String varName : varNames) {
             // for each nominal variable
             if (df.rvar(varName).type().isNominal()) {
-                levels.put(varName, df.rvar(varName).levels());
+                levels.put(varName, df.rvar(varName).levels(true));
             }
         }
     }

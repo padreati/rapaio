@@ -38,6 +38,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import rapaio.narray.NArray;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
@@ -134,6 +135,28 @@ public final class VarNominal extends AbstractVar {
             nominal.setLabel(i, func.apply(i));
         }
         return nominal;
+    }
+
+    public static VarNominal from(List<String> dict, NArray<?> array) {
+        if (array.rank() == 1) {
+            VarNominal nominal = VarNominal.empty(array.dim(0), dict);
+            for (int i = 0; i < nominal.size(); i++) {
+                nominal.setInt(i, array.getInt(i));
+            }
+            return nominal;
+        }
+        if (array.rank() == 2) {
+            VarNominal nominal = VarNominal.empty(array.dim(0), dict);
+            for (int i = 0; i < nominal.size(); i++) {
+                for (int j = 0; j < nominal.levels().size(); j++) {
+                    if (array.getInt(i, j) == 1) {
+                        nominal.setInt(i, j);
+                    }
+                }
+            }
+            return nominal;
+        }
+        throw new IllegalArgumentException("Rank must be 1 or 2.");
     }
 
     @Serial
