@@ -21,6 +21,14 @@
 
 package rapaio.ml.model.meta;
 
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Logger;
+
+import rapaio.core.param.ListParam;
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -30,14 +38,6 @@ import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Printable;
-import rapaio.core.param.ListParam;
-import rapaio.core.param.ValueParam;
-
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Logger;
 
 /**
  * Stacking with a stacking classifier
@@ -103,7 +103,7 @@ public class CStacking extends ClassifierModel<CStacking, ClassifierResult, RunI
 
         logger.fine("started learning for stacker classifier...");
         List<Var> vars = new ArrayList<>();
-        int max = firstTargetLevels().size() == 3 ? 2 : firstTargetLevels().size();
+        int max = firstTargetLevels().size();
         for (int i = 0; i < weaks.size(); i++) {
             logger.fine("started fitting weak learner " + i + " from " + weaks.size());
             var weak = weaks.get(i);
@@ -125,11 +125,11 @@ public class CStacking extends ClassifierModel<CStacking, ClassifierResult, RunI
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         logger.fine("predict method called.");
         List<Var> vars = new ArrayList<>();
-        int max = firstTargetLevels().size() == 3 ? 2 : firstTargetLevels().size();
+        int max = firstTargetLevels().size();
         for (int i = 0; i < weaks.size(); i++) {
             var weak = weaks.get(i);
             var density = weak.predict(df, true, true).firstDensity();
-            for (int j = 1; j < max; j++) {
+            for (int j = 0; j < max; j++) {
                 vars.add(density.rvar(j).name(density.rvar(j).name() + "_" + i));
             }
         }

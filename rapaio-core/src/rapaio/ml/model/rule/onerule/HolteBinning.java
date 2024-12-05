@@ -92,7 +92,7 @@ public class HolteBinning implements OneRule.Binning {
                     continue;
                 }
 
-                // if it predicts the same class as current interval, than incorporate this interval
+                // if it predicts the same class as current interval, then incorporate this interval
                 if ((hist.get(bestIndex) < minCount) || (hist.findBestIndex() == delta.findBestIndex())) {
                     for (int k = 0; k < hist.rowCount(); k++) {
                         hist.increment(k, delta.get(k));

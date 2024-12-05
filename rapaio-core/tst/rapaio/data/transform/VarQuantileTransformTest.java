@@ -43,10 +43,9 @@ public class VarQuantileTransformTest {
         Var q1 = x.fapply(f1);
 
         assertEquals(101, q1.size());
-        assertEquals(3, q1.levels().size());
-        assertEquals("?", q1.levels().get(0));
-        assertEquals("-Inf~10.5", q1.levels().get(1));
-        assertEquals("10.5~Inf", q1.levels().get(2));
+        assertEquals(2, q1.levels().size());
+        assertEquals("-Inf~10.5", q1.levels().get(0));
+        assertEquals("10.5~Inf", q1.levels().get(1));
 
         for (int i = 0; i < x.size() / 2 + 1; i++) {
             assertEquals("-Inf~10.5", q1.getLabel(i));
@@ -59,7 +58,7 @@ public class VarQuantileTransformTest {
         Var q2 = x.fapply(f2);
 
         assertEquals(101, q2.size());
-        assertEquals(5, q2.levels().size());
+        assertEquals(4, q2.levels().size());
         for (int i = 1; i < x.size(); i++) {
             assertTrue(x.getInt(i - 1) <= x.getInt(i));
         }

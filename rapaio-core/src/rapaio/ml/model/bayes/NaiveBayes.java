@@ -167,7 +167,7 @@ public class NaiveBayes extends ClassifierModel<NaiveBayes, ClassifierResult, Ru
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
                     DensityVector<String> dv = DensityVector.emptyByLabels(false, firstTargetLevels());
-                    for (int j = 1; j < firstTargetLevels().size(); j++) {
+                    for (int j = 0; j < firstTargetLevels().size(); j++) {
                         double sumLog = Math.log(prior.get().computePrior(firstTargetLevel(j)));
 
                         for (Estimator estimator : estimators.get()) {
@@ -181,7 +181,7 @@ public class NaiveBayes extends ClassifierModel<NaiveBayes, ClassifierResult, Ru
                         pred.firstClasses().setLabel(i, dv.findBestLabel());
                     }
                     if (withDensities) {
-                        for (int j = 1; j < firstTargetLevels().size(); j++) {
+                        for (int j = 0; j < firstTargetLevels().size(); j++) {
                             pred.firstDensity().setDouble(i, j, dv.get(firstTargetLevel(j)));
                         }
                     }

@@ -82,10 +82,10 @@ public final class Confusion implements Printable {
         this.actual = actual;
         this.predict = predict;
         validate();
-        this.factors = actual.levels();
+        this.factors = actual.levels(true);
         this.cmFrequency = NArrays.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
         this.cmProbability = NArrays.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
-        this.binary = actual.levels().size() == 3;
+        this.binary = actual.levels().size() == 2;
         compute();
     }
 
@@ -119,12 +119,10 @@ public final class Confusion implements Printable {
     }
 
     private void compute() {
-        int offsetActual = (actual.type() == VarType.NOMINAL) ? 1 : 0;
-        int offsetPredict = (actual.type() == VarType.NOMINAL) ? 1 : 0;
         for (int i = 0; i < actual.size(); i++) {
             if (!actual.isMissing(i) && !predict.isMissing(i)) {
                 completeCases++;
-                cmFrequency.incDouble(1, actual.getInt(i) - offsetActual, predict.getInt(i) - offsetPredict);
+                cmFrequency.incDouble(1, actual.getInt(i), predict.getInt(i));
             }
         }
         acc = cmFrequency.trace();

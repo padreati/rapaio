@@ -48,7 +48,7 @@ public class DensityVectorTest {
 
         assertTrue(DensityVector.fromLevelCounts(true, VarNominal.copy("a", "b", "a"))
                 .equalsFull(DensityVector.fromLevelCounts(true, VarNominal.copy("a", "a", "b"))));
-        assertTrue(DensityVector.emptyByLabels(1).equalsFull(DensityVector.emptyByLabels(true, "v0")));
+        assertTrue(DensityVector.emptyByLabels(1).equalsFull(DensityVector.emptyByLabels(false, "v0")));
         assertTrue(DensityVector.fromLevelCounts(true, VarNominal.copy("a", "a", "b", "c"))
                 .equalsFull(DensityVector.fromLevelWeights(
                         true,
@@ -146,7 +146,7 @@ public class DensityVectorTest {
                 VarDouble.copy(0.0, 1.0, 7.0, 5.0)
         );
 
-        var dv2 = DensityVector.emptyByLabels(false, "?", "a", "b", "c");
+        var dv2 = DensityVector.emptyByLabels(false, "a", "b", "c");
         dv2.increment(0, dv1.get(0));
         dv2.set(1, 4);
         dv2.increment(1, 3);

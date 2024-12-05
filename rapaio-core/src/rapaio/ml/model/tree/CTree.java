@@ -314,7 +314,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
                 prediction.firstClasses().setLabel(i, label);
             }
             if (withDensities) {
-                for (int j = 1; j < firstTargetLevels().size(); j++) {
+                for (int j = 0; j < firstTargetLevels().size(); j++) {
                     prediction.firstDensity().setDouble(i, j, dv.get(firstTargetLevel(j)));
                 }
             }
@@ -427,7 +427,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
         sb.append(Format.floatFlexShort(node.counter.sumExcept(node.bestLabel))).append(" ");
         sb.append(node.bestLabel).append(" (");
         var d = node.density.copy().normalize();
-        for (int i = 1; i < firstTargetLevels().size(); i++) {
+        for (int i = 0; i < firstTargetLevels().size(); i++) {
             sb.append(Format.floatFlexShort(d.get(firstTargetLevel(i)))).append(" ");
         }
         sb.append(") ");

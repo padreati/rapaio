@@ -142,7 +142,7 @@ public enum Search implements Serializable {
 
             // we ignore the missing data points, thus we need only non missing levels
             List<String> testLevels = df.levels(testName);
-            int len = testLevels.size() - 1;
+            int len = testLevels.size();
             WeightedOnlineStat[] onlineStats = new WeightedOnlineStat[len];
 
             // initialize
@@ -157,7 +157,7 @@ public enum Search implements Serializable {
                     continue;
                 }
                 int index = df.getInt(i, testNameIndex);
-                onlineStats[index - 1].update(df.getDouble(i, targetNameIndex), w.getDouble(i));
+                onlineStats[index].update(df.getDouble(i, targetNameIndex), w.getDouble(i));
             }
 
             // check to see if we have enough instances in all child nodes
@@ -188,7 +188,7 @@ public enum Search implements Serializable {
             double value = tree.loss.get().computeSplitLossScore(p);
             Candidate candidate = new Candidate(value, testName);
             for (int i = 0; i < len; i++) {
-                String label = testLevels.get(i + 1);
+                String label = testLevels.get(i);
                 candidate.addGroup(RowPredicate.nomEqual(testName, label));
             }
             return Optional.of(candidate);
@@ -208,7 +208,7 @@ public enum Search implements Serializable {
 
             // we ignore the missing data points, thus we need only non missing levels
             List<String> testLevels = df.levels(testName);
-            int len = testLevels.size() - 1;
+            int len = testLevels.size();
 
             WeightedOnlineStat[] onlineStats = IntStream.range(0, len)
                     .mapToObj(i -> new WeightedOnlineStat())
@@ -220,7 +220,7 @@ public enum Search implements Serializable {
                     continue;
                 }
                 int index = df.getInt(i, testNameIndex);
-                onlineStats[index - 1].update(df.getDouble(i, targetIndex), w.getDouble(i));
+                onlineStats[index].update(df.getDouble(i, targetIndex), w.getDouble(i));
             }
 
             WeightedOnlineStat wos = WeightedOnlineStat.of(onlineStats);
@@ -264,8 +264,8 @@ public enum Search implements Serializable {
                 if (Double.isNaN(bestScore) || value > bestScore) {
                     bestScore = value;
                     best = new Candidate(value, testName);
-                    best.addGroup(RowPredicate.nomEqual(testName, testLevels.get(i + 1)));
-                    best.addGroup(RowPredicate.nomNotEqual(testName, testLevels.get(i + 1)));
+                    best.addGroup(RowPredicate.nomEqual(testName, testLevels.get(i)));
+                    best.addGroup(RowPredicate.nomNotEqual(testName, testLevels.get(i)));
                 }
             }
             return (best == null) ? Optional.empty() : Optional.of(best);

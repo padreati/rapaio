@@ -53,7 +53,7 @@ public class RowSamplerTest {
         random = new Random(123);
         df = Datasets.loadIrisDataset();
         w = VarDouble.from(df.rowCount(), row -> (double) df.getInt(row, "class")).name("w");
-        assertEquals(w.stream().mapToDouble().sum(), 50 * (1 + 2 + 3), 1e-20);
+        assertEquals(w.stream().mapToDouble().sum(), 50 * (0 + 1 + 2), 1e-20);
     }
 
     @Test

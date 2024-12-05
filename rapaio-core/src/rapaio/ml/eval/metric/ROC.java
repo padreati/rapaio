@@ -88,7 +88,7 @@ public class ROC implements Printable, Serializable {
      * @param index  index of the class considered 1, all other index values are 0
      */
     public static ROC from(Var score, Var actual, int index) {
-        return from(score, actual, actual.levels().get(index));
+        return from(score, actual, actual.levels(true).get(index));
     }
 
     /**

@@ -182,7 +182,11 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     public DensityTable(Index<U> rowIndex, Index<V> colIndex) {
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
-        this.values = NArrayManager.base().zeros(DType.DOUBLE, Shape.of(rowIndex.size(), colIndex.size()));
+        if (rowIndex.size() == 0 && colIndex.size() == 0) {
+            this.values = NArrayManager.base().scalar(DType.DOUBLE, 0).stretch(0, 1);
+        } else {
+            this.values = NArrayManager.base().zeros(DType.DOUBLE, Shape.of(rowIndex.size(), colIndex.size()));
+        }
     }
 
     public int rows() {

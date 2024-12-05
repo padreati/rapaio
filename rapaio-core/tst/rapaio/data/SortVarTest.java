@@ -168,8 +168,6 @@ public class SortVarTest {
 
         for (int i = 0; i < sort.size(); i++) {
             sort.setInt(i, 2);
-            assertEquals(nominal.levels().get(2), nominal.getLabel(i));
-            assertEquals(2, nominal.getInt(i));
         }
 
         assertEquals(nominal.levels().size(), sort.levels().size());

@@ -59,14 +59,14 @@ public enum Search implements Serializable {
 
             double testValue = df.getDouble(split, testName);
 
-            var dt = DensityTable.empty(false, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
+            var dt = DensityTable.empty(true, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
             int missingWeights = 0;
             for (int i = 0; i < df.rowCount(); i++) {
                 if (df.isMissing(i, testName)) {
                     missingWeights += w.getDouble(i);
                     continue;
                 }
-                dt.inc(df.getDouble(i, testName) <= testValue ? 0 : 1, df.getInt(i, targetName) - 1, w.getDouble(i));
+                dt.inc(df.getDouble(i, testName) <= testValue ? 0 : 1, df.getInt(i, targetName), w.getDouble(i));
             }
 
             double score = function.compute(dt);
@@ -89,7 +89,7 @@ public enum Search implements Serializable {
 
             int testIndex = df.varIndex(testName);
             int targetIndex = df.varIndex(targetName);
-            var dt = DensityTable.empty(false, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
+            var dt = DensityTable.empty(true, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
 
             int[] rows = new int[df.rowCount()];
             double missingWeight = 0;
@@ -111,7 +111,7 @@ public enum Search implements Serializable {
 
             for (int i = 0; i < len; i++) {
 
-                int index = df.getInt(rows[i], targetIndex) - 1;
+                int index = df.getInt(rows[i], targetIndex);
 
                 double w = weights.getDouble(rows[i]);
                 dt.inc(0, index, +w);
@@ -184,7 +184,7 @@ public enum Search implements Serializable {
             var dt = DensityTable.fromLabels(false, df, testName, targetName, weights);
             double score = function.compute(dt);
             Candidate candidate = new Candidate(score, testName);
-            df.levels(testName).stream().skip(1).forEach(label -> candidate.addGroup(RowPredicate.nomEqual(testName, label)));
+            df.levels(testName).forEach(label -> candidate.addGroup(RowPredicate.nomEqual(testName, label)));
             return candidate;
         }
     },
@@ -204,7 +204,6 @@ public enum Search implements Serializable {
             double totalRows = DoubleArrays.nanSum(rowCounts, 0, rowCounts.length);
 
             List<String> targetLevels = df.levels(targetName);
-            targetLevels = targetLevels.subList(1, targetLevels.size());
 
             var dt = DensityTable.empty(true, List.of("testLevel", "other"), targetLevels);
             double bestScore = Double.NaN;

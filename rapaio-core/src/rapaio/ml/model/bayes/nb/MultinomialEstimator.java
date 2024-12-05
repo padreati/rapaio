@@ -139,7 +139,7 @@ public class MultinomialEstimator extends AbstractEstimator {
     public boolean fit(Frame df, Var weights, String targetName) {
         validateFit(df, weights, targetName);
 
-        targetLevels = df.levels(targetName).stream().skip(1).collect(Collectors.toList());
+        targetLevels = df.levels(targetName);
 
         Map<String, DensityVector<String>> countDensities = new HashMap<>();
         for (int i = 0; i < df.rowCount(); i++) {
@@ -150,7 +150,7 @@ public class MultinomialEstimator extends AbstractEstimator {
             // update each test count conditioned on target level
             String targetLevel = df.getLabel(i, targetName);
             var density = countDensities.computeIfAbsent(targetLevel, level -> {
-                DensityVector<String> d = DensityVector.emptyByLabels(true, getTestNames());
+                DensityVector<String> d = DensityVector.emptyByLabels(false, getTestNames());
                 for (String testName : d.index().getValues()) {
                     d.increment(testName, laplaceSmoother);
                 }

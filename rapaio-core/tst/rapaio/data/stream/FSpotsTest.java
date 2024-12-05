@@ -191,7 +191,7 @@ public class FSpotsTest {
 
         String[] levels1 = spot.levels(1).toArray(new String[0]);
         String[] levels2 = spot.levels("y").toArray(new String[0]);
-        String[] levels3 = new String[] {"?", "a", "b"};
+        String[] levels3 = new String[] {"a", "b"};
 
         assertArrayEquals(levels1, levels2);
         assertArrayEquals(levels2, levels3);

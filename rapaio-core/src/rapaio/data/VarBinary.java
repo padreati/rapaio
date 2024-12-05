@@ -377,7 +377,7 @@ public final class VarBinary extends AbstractVar {
 
     @Override
     public List<String> levels() {
-        return Arrays.asList("?", "true", "false");
+        return Arrays.asList("true", "false");
     }
 
     @Override

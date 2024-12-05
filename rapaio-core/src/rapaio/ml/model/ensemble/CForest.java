@@ -217,7 +217,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
     protected boolean coreFit(Frame df, Var weights) {
 
         if (oob.get()) {
-            oobDensities = NArrays.zeros(Shape.of(df.rowCount(), firstTargetLevels().size() - 1));
+            oobDensities = NArrays.zeros(Shape.of(df.rowCount(), firstTargetLevels().size()));
             oobTrueClass = df.rvar(firstTargetName()).copy();
             oobPredictedClasses = VarNominal.empty(df.rowCount(), firstTargetLevels());
         }
@@ -352,14 +352,14 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
         var prediction = model.predict(oobTest);
         for (int j = 0; j < oobTest.rowCount(); j++) {
             int fitIndex = prediction.firstClasses().getInt(j);
-            oobDensities.incDouble(1.0, oobMap.get(j), fitIndex - 1);
+            oobDensities.incDouble(1.0, oobMap.get(j), fitIndex);
         }
         oobPredictedClasses.clearRows();
         totalOobError = 0.0;
         totalOobInstances = 0.0;
 
         for (int i = 0; i < oobDensities.dim(0); i++) {
-            String bestLevel = firstTargetLevels().get(oobDensities.takesq(0, i).argmax() + 1);
+            String bestLevel = firstTargetLevels().get(oobDensities.takesq(0, i).argmax());
             oobPredictedClasses.setLabel(i, bestLevel);
             if (!bestLevel.equals(oobTrueClass.getLabel(i))) {
                 totalOobError++;

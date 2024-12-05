@@ -43,19 +43,19 @@ public enum BaggingMode implements Serializable {
             predictions.stream().map(ClassifierResult::firstClasses).forEach(d -> {
                 for (int i = 0; i < d.size(); i++) {
                     int best = d.getInt(i);
-                    densities.setDouble(i, best, densities.getDouble(i, best) + 1);
+                    densities.setDouble(i, best, densities.getDouble(i, best));
                 }
             });
             for (int i = 0; i < classes.size(); i++) {
                 var dv = DensityVector.emptyByLabels(false, dictionary);
-                for (int j = 1; j < dictionary.size(); j++) {
+                for (int j = 0; j < dictionary.size(); j++) {
                     dv.increment(dictionary.get(j), densities.getDouble(i, j));
                 }
                 dv.normalize();
-                for (int j = 1; j < dictionary.size(); j++) {
+                for (int j = 0; j < dictionary.size(); j++) {
                     densities.setDouble(i, j, dv.get(dictionary.get(j)));
                 }
-                classes.setDouble(i, dv.findBestIndex() + 1);
+                classes.setDouble(i, dv.findBestIndex());
             }
         }
     },
@@ -80,14 +80,14 @@ public enum BaggingMode implements Serializable {
             });
             for (int i = 0; i < classes.size(); i++) {
                 var dv = DensityVector.emptyByLabels(false, dictionary);
-                for (int j = 1; j < dictionary.size(); j++) {
+                for (int j = 0; j < dictionary.size(); j++) {
                     dv.increment(dictionary.get(j), densities.getDouble(i, j));
                 }
                 dv.normalize();
-                for (int j = 1; j < dictionary.size(); j++) {
+                for (int j = 0; j < dictionary.size(); j++) {
                     densities.setDouble(i, j, dv.get(dictionary.get(j)));
                 }
-                classes.setDouble(i, dv.findBestIndex() + 1);
+                classes.setDouble(i, dv.findBestIndex());
             }
         }
     };

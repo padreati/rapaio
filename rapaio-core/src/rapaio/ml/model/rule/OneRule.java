@@ -23,16 +23,17 @@ package rapaio.ml.model.rule;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+import rapaio.core.param.ValueParam;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
@@ -185,7 +186,10 @@ public class OneRule extends ClassifierModel<OneRule, ClassifierResult, RunInfo<
     private RuleSet buildNominal(String testVarName, Frame df, Var weights) {
         RuleSet set = new RuleSet(testVarName);
 
-        List<String> testDict = df.rvar(testVarName).levels();
+        List<String> testDict = new ArrayList<>();
+        testDict.add("?");
+        testDict.addAll(df.rvar(testVarName).levels());
+
         List<String> targetDict = firstTargetLevels();
 
         DensityVector<String>[] densityVectors = new DensityVector[testDict.size()];
@@ -196,7 +200,7 @@ public class OneRule extends ClassifierModel<OneRule, ClassifierResult, RunInfo<
         int testIndex = df.varIndex(testVarName);
         int targetIndex = df.varIndex(firstTargetName());
         for (int i = 0; i < df.rowCount(); i++) {
-            densityVectors[df.getInt(i, testIndex)].increment(df.getLabel(i, targetIndex), weights.getDouble(i));
+            densityVectors[df.getInt(i, testIndex)+1].increment(df.getLabel(i, targetIndex), weights.getDouble(i));
         }
 
         for (int i = 0; i < testDict.size(); i++) {

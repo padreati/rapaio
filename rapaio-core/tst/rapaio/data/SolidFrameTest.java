@@ -134,7 +134,7 @@ public class SolidFrameTest {
         assertEquals("are", df.getLabel(1, 2));
         assertEquals("mere", df.getLabel(2, 2));
 
-        df.setInt(1, 2, 3);
+        df.setInt(1, 2, 2);
         assertEquals("mere", df.getLabel(1, 2));
 
         assertEquals(1, df.getInt(0, 3));

@@ -62,9 +62,8 @@ public class PriorUniform implements Prior {
     @Override
     public void fitPriors(Frame df, Var weights, String targetVar) {
         List<String> targetLevels = new ArrayList<>(df.levels(targetVar));
-        targetLevels = targetLevels.subList(1, targetLevels.size());
         if (!df.levels(targetVar).isEmpty()) {
-            double degrees = df.levels(targetVar).size() - 1;
+            double degrees = df.levels(targetVar).size();
             uniformPrior = 1.0 / degrees;
             levels.addAll(targetLevels);
         }

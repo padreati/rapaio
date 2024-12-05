@@ -57,10 +57,11 @@ public class IndexLabel implements Index<String> {
         List<String> levels;
         switch (v.type()) {
             case NOMINAL -> {
-                levels = v.levels();
-                if (!withMissing) {
-                    levels = levels.subList(1, levels.size());
+                levels = new ArrayList<>();
+                if(withMissing) {
+                    levels.add("?");
                 }
+                levels.addAll(v.levels());
             }
             case BINARY -> {
                 if (withMissing) {

@@ -249,7 +249,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
 
     private void prepareDataset(Frame df, Var w, State state) {
 
-        List<String> targetLevels = firstTargetLevels().subList(1, firstTargetLevels().size());
+        List<String> targetLevels = firstTargetLevels();
         boolean valid = false;
 
         Frame dfTrain = null;

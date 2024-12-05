@@ -159,7 +159,7 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
 
                 result.firstClasses().setLabel(i, problemInfo.levels().get((int) score));
                 for (int j = 0; j < k; j++) {
-                    result.firstDensity().setDouble(i, j + 1, prob[j]);
+                    result.firstDensity().setDouble(i, j, prob[j]);
                 }
             } else {
                 double[] values = new double[k * (k - 1) / 2];
@@ -168,7 +168,7 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
                 result.firstClasses().setLabel(i, problemInfo.levels().get((int) score));
                 if(withDistributions) {
                     for (int j = 0; j < k; j++) {
-                        result.firstDensity().setDouble(i, j + 1, values[j]);
+                        result.firstDensity().setDouble(i, j, values[j]);
                     }
                 }
 
@@ -184,7 +184,7 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
                 result.firstClasses().setLabel(i, problemInfo.levels().get((int) score));
                 if(withDistributions) {
                     for (int j = 0; j < k; j++) {
-                        result.firstDensity().setDouble(i, j + 1, dist[j]);
+                        result.firstDensity().setDouble(i, j, dist[j]);
                     }
                 }
             }

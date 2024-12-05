@@ -23,6 +23,7 @@ package rapaio.data;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -289,6 +290,26 @@ public interface Var extends Serializable, Printable {
      * @return term levels defined by the nominal var.
      */
     List<String> levels();
+
+    /**
+     * Returns the term levels used by the nominal values.
+     * <p>
+     * Term levels contains all the nominal labels used by
+     * observations and might contain also additional nominal labels.
+     * Term levels defines the domain of the definition for the nominal variable.
+     * <p>
+     * For other var types like numerical ones this method returns nothing.
+     *
+     * @return term levels defined by the nominal var.
+     */
+    default List<String> levels(boolean missingPrefix) {
+        if (missingPrefix) {
+            List<String> levels = new ArrayList<>(levels());
+            levels.addFirst("?");
+            return levels;
+        }
+        return levels();
+    }
 
     /**
      * Replace the used levels with a new one. A mapping between the

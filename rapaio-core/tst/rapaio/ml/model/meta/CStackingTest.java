@@ -60,7 +60,7 @@ public class CStackingTest {
                 .learners.add(new CTree())
                 .learners.add(new CTree())
                 .stackModel.set(new SvmClassifier());
-        var tts = SamplingTools.trainTestSplit(new Random(1223), iris, 0.8);
+        var tts = SamplingTools.trainTestSplit(new Random(324), iris, 0.8);
         var pred = s.fit(tts.trainDf(), target).predict(tts.testDf());
         double accuracy = Accuracy.newMetric(true).compute(tts.testDf().rvar(target), pred).getScore().value();
         assertTrue(accuracy>0.9);

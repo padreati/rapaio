@@ -187,8 +187,6 @@ public class NaiveBayesTest {
 
         Frame densities = result.firstDensity();
         for (int i = 0; i < densities.rowCount(); i++) {
-            assertEquals(0, densities.getDouble(i, 0), TOLERANCE);
-
             double r1 = 1 / (1 + Math.exp(i / 10.)) * model.prior.get().computePrior("a");
             double r2 = 1 / (1 + Math.exp(-i / 10.)) * model.prior.get().computePrior("b");
             double sum = r1 + r2;
@@ -262,7 +260,7 @@ public class NaiveBayesTest {
                 3.  petal-width : DOUBLE  |\s
 
                 target vars:
-                > class : NOMINAL [?,setosa,versicolor,virginica]
+                > class : NOMINAL [setosa,versicolor,virginica]
 
                 Prior: MLE{virginica:0.3333333,setosa:0.3333333,versicolor:0.3333333}
                 Estimators:\s

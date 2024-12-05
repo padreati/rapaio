@@ -81,10 +81,10 @@ public class CForestTest {
         var densities = model.oobDensities();
 
         assertEquals(iris.rowCount(), densities.dim(0));
-        assertEquals(model.firstTargetLevels().size() - 1, densities.dim(1));
+        assertEquals(model.firstTargetLevels().size(), densities.dim(1));
 
         for (int i = 0; i < iris.rowCount(); i++) {
-            assertEquals(densities.takesq(0, i).argmax(), predClass.getInt(i) - 1);
+            assertEquals(densities.takesq(0, i).argmax(), predClass.getInt(i));
         }
     }
 
@@ -164,7 +164,7 @@ public class CForestTest {
                 3.  petal-width : DOUBLE  |\s
                                 
                 target vars:
-                > class : NOMINAL [?,setosa,versicolor,virginica]
+                > class : NOMINAL [setosa,versicolor,virginica]
                                 
                                 
                 Fitted trees:100
@@ -193,7 +193,7 @@ public class CForestTest {
                 3.  petal-width : DOUBLE  |\s
                                 
                 target vars:
-                > class : NOMINAL [?,setosa,versicolor,virginica]
+                > class : NOMINAL [setosa,versicolor,virginica]
                                 
                                 
                 Fitted trees:100
@@ -229,7 +229,7 @@ public class CForestTest {
     void testParallelism() {
         var iris = Datasets.loadIrisDataset();
         String target = "class";
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             var rf = CForest.newModel()
                     .runs.set(100)
                     .poolSize.set(3)

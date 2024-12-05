@@ -182,7 +182,7 @@ public class OneRuleTest {
                         3.  petal-width : DOUBLE  |\s
 
                         target vars:
-                        > class : NOMINAL [?,setosa,versicolor,virginica]
+                        > class : NOMINAL [setosa,versicolor,virginica]
 
                         BestRuleSet {var=petal-length, acc=0.9933333333333333}
                         > NumericRule {minValue=-Infinity,maxValue=2.45,class=setosa,errors=0,total=50,accuracy=1}
@@ -223,7 +223,7 @@ public class OneRuleTest {
                 10.               stalk-root : NOMINAL  | 21.                  habitat : NOMINAL  |\s
 
                 target vars:
-                > classes : NOMINAL [?,p,e]
+                > classes : NOMINAL [p,e]
 
                 BestRuleSet {var=odor, acc=0.9852289512555391}
                 > NominalRule {value=?, class=p, errors=0, total=0, acc=0}

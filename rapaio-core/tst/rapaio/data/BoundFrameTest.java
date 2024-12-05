@@ -199,7 +199,7 @@ public class BoundFrameTest {
             assertSame(types[i], bound.type(names[i]));
         }
 
-        String[] levels = new String[] {"?", "c", "d", "b", "a", "e", "xx", "yy"};
+        String[] levels = new String[] {"c", "d", "b", "a", "e", "xx", "yy"};
         assertArrayEquals(levels, bound.levels("nominal").toArray(new String[0]));
 
         // test build from an empty frame

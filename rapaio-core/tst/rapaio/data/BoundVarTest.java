@@ -246,8 +246,8 @@ public class BoundVarTest {
         x.setLabel(0, "b");
         assertEquals("b", x.getLabel(0));
 
-        assertEquals("a", x.levels().get(1));
-        assertEquals("b", x.levels().get(2));
-        assertEquals(3, x.levels().size());
+        assertEquals("a", x.levels().get(0));
+        assertEquals("b", x.levels().get(1));
+        assertEquals(2, x.levels().size());
     }
 }

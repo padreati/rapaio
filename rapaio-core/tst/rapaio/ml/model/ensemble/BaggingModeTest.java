@@ -46,7 +46,7 @@ import rapaio.ml.model.ClassifierResult;
  */
 public class BaggingModeTest {
 
-    private static final List<String> dictionary = List.of("?", "a", "b", "c");
+    private static final List<String> dictionary = List.of("a", "b", "c");
 
     private List<ClassifierResult> results;
     private VarNominal classes;
@@ -55,13 +55,12 @@ public class BaggingModeTest {
     @BeforeEach
     void beforeEach() {
         results = new ArrayList<>();
-        results.add(buildResult(0, 0.6, 0, 0.4));
-        results.add(buildResult(0, 0.5, 0.1, 0.4));
-        results.add(buildResult(0, 0, 0.1, 0.9));
+        results.add(buildResult(0.6, 0, 0.4));
+        results.add(buildResult(0.5, 0.1, 0.4));
+        results.add(buildResult(0, 0.1, 0.9));
 
         classes = VarNominal.empty(1, "a", "b", "c");
         densities = SolidFrame.byVars(
-                VarDouble.fill(1, 0).name("?"),
                 VarDouble.fill(1, 0).name("a"),
                 VarDouble.fill(1, 0).name("b"),
                 VarDouble.fill(1, 0).name("c")
@@ -102,7 +101,7 @@ public class BaggingModeTest {
 
         int max = 0;
         double pMax = probabilities[0];
-        for (int i = 1; i < probabilities.length; i++) {
+        for (int i = 0; i < probabilities.length; i++) {
             if (probabilities[i] > pMax) {
                 max = i;
                 pMax = probabilities[i];

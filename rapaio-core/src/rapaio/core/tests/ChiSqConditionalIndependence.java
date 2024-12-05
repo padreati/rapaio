@@ -74,17 +74,17 @@ public class ChiSqConditionalIndependence implements HTest {
         Frame df = BoundFrame.byVars(x, y, z);
         List<String> levels = z.levels();
 
-        zlevels = new String[levels.size() - 1];
-        ztests = new ChiSqIndependence[levels.size() - 1];
+        zlevels = new String[levels.size()];
+        ztests = new ChiSqIndependence[levels.size()];
 
-        for (int i = 1; i < levels.size(); i++) {
+        for (int i = 0; i < levels.size(); i++) {
             String level = levels.get(i);
-            zlevels[i - 1] = levels.get(i);
+            zlevels[i] = levels.get(i);
             Frame map = df.stream().filter(s -> s.getLabel(2).equals(level)).toMappedFrame();
-            ztests[i - 1] = ChiSqIndependence.from(map.rvar(0), map.rvar(1), false);
+            ztests[i] = ChiSqIndependence.from(map.rvar(0), map.rvar(1), false);
         }
 
-        degrees = (z.levels().size() - 1) * (x.levels().size() - 2) * (y.levels().size() - 2);
+        degrees = z.levels().size() * (x.levels().size() - 1) * (y.levels().size() - 1);
         for (ChiSqIndependence ztest : ztests) {
             statistic += ztest.getChiValue();
         }

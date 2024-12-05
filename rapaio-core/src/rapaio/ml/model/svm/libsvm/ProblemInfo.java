@@ -50,7 +50,7 @@ public record ProblemInfo(Random random, NArray<Double>[] xs, double[] y,
         for (int i = 0; i < x.dim(0); i++) {
             switch (target.type()) {
                 case BINARY, INT -> y[i] = target.getInt(i);
-                case NOMINAL -> y[i] = target.getInt(i) - 1;
+                case NOMINAL -> y[i] = target.getInt(i);
                 default -> throw new IllegalArgumentException("Not implemented");
             }
         }
@@ -60,7 +60,7 @@ public record ProblemInfo(Random random, NArray<Double>[] xs, double[] y,
 
         if (parent.levels.get().isEmpty()) {
             // specified by the dictionary from target variable
-            target.levels().stream().skip(1).forEach(label -> {
+            target.levels().forEach(label -> {
                 index.put(label, levels.size());
                 levels.add(label);
                 map.put(label, new ArrayMapping());

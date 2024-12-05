@@ -79,7 +79,7 @@ public class ConfusionTest {
         assertEquals("Actual and predict variables does not have the same nominal level size.", e.getMessage());
 
         e = assertThrows(IllegalArgumentException.class, () -> Confusion.from(VarBinary.empty(), VarNominal.empty(0, "a", "b")));
-        assertEquals("Actual and prediction does not have same nominal levels (actual:?,true,false, predict:?,a,b).", e.getMessage());
+        assertEquals("Actual and prediction does not have same nominal levels (actual:true,false, predict:a,b).", e.getMessage());
     }
 
     @Test

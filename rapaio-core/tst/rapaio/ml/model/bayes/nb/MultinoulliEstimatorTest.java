@@ -80,7 +80,7 @@ public class MultinoulliEstimatorTest {
         var estimator = MultinoulliEstimator.forName("x");
         estimator.fit(SolidFrame.byVars(t, x), VarDouble.empty(), "t");
         assertNotNull(estimator);
-        assertEquals("Multinoulli{tests=[x], laplaceSmoother=1, values=[{targetLevel:?,[?:1,},]}",
+        assertEquals("Multinoulli{tests=[x], laplaceSmoother=1, values=[]}",
                 estimator.fittedName());
     }
 
@@ -93,19 +93,13 @@ public class MultinoulliEstimatorTest {
         var estimator1 = MultinoulliEstimator.forName("x");
         estimator1.fit(df1, VarDouble.empty(5), "t");
 
-        assertEquals("Multinoulli{tests=[x], laplaceSmoother=1, values=[" +
-                "{targetLevel:?,[?:0.25,x:0.25,y:0.25,z:0.25,}," +
-                "{targetLevel:a,[?:0.143,x:0.429,y:0.286,z:0.143,}," +
-                "{targetLevel:b,[?:0.167,x:0.167,y:0.333,z:0.333,},]}", estimator1.fittedName());
-        assertEquals(0.42857142857142855, estimator1.predict(df1, 0, "a"));
+        assertEquals("Multinoulli{tests=[x], laplaceSmoother=1, values=[{targetLevel:a,[x:0.5,y:0.333,z:0.167,},{targetLevel:b,[x:0.2,y:0.4,z:0.4,},]}", estimator1.fittedName());
+        assertEquals(0.5, estimator1.predict(df1, 0, "a"));
 
         Frame df2 = df1.fapply(OneHotEncoding.on("x"));
         var estimator2 = MultinoulliEstimator.forRange(df2, VarRange.byName(name -> !name.equals("t")));
         estimator2.fit(df2, VarDouble.empty(5), "t");
-        assertEquals("Multinoulli{tests=[x.?,x.x,x.y,x.z], laplaceSmoother=1, values=[" +
-                "{targetLevel:?,[x.?:0.25,x.x:0.25,x.y:0.25,x.z:0.25,}," +
-                "{targetLevel:a,[x.?:0.143,x.x:0.429,x.y:0.286,x.z:0.143,}," +
-                "{targetLevel:b,[x.?:0.167,x.x:0.167,x.y:0.333,x.z:0.333,},]}", estimator2.fittedName());
-        assertEquals(0.42857142857142855, estimator2.predict(df2, 0, "a"));
+        assertEquals("Multinoulli{tests=[x.x,x.y,x.z], laplaceSmoother=1, values=[{targetLevel:a,[x.x:0.5,x.y:0.333,x.z:0.167,},{targetLevel:b,[x.x:0.2,x.y:0.4,x.z:0.4,},]}", estimator2.fittedName());
+        assertEquals(0.5, estimator2.predict(df2, 0, "a"));
     }
 }

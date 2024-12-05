@@ -238,12 +238,11 @@ public class MappedFrameTest {
         assertEquals(0, map.getInt(1, "e"));
 
         List<String> levels = map.levels("c");
-        assertEquals(5, levels.size());
-        assertEquals("?", levels.get(0));
-        assertEquals("a", levels.get(1));
-        assertEquals("b", levels.get(2));
-        assertEquals("10", levels.get(3));
-        assertEquals("20", levels.get(4));
+        assertEquals(4, levels.size());
+        assertEquals("a", levels.get(0));
+        assertEquals("b", levels.get(1));
+        assertEquals("10", levels.get(2));
+        assertEquals("20", levels.get(3));
 
         map.setMissing(0, 0);
         map.setMissing(1, "a");

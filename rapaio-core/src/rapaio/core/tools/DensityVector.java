@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoublePredicate;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 import rapaio.data.Index;
@@ -58,9 +57,12 @@ public class DensityVector<T> implements Printable, Serializable {
      */
     public static DensityVector<String> emptyByLabels(boolean useFirst, List<String> values) {
         if (useFirst) {
-            return new DensityVector<>(IndexLabel.fromLabelValues(values));
+            List<String> copy = new ArrayList<>();
+            copy.add("?");
+            copy.addAll(values);
+            return new DensityVector<>(IndexLabel.fromLabelValues(copy));
         }
-        return new DensityVector<>(IndexLabel.fromLabelValues(values.subList(1, values.size())));
+        return new DensityVector<>(IndexLabel.fromLabelValues(values));
     }
 
     /**
@@ -71,9 +73,12 @@ public class DensityVector<T> implements Printable, Serializable {
      */
     public static DensityVector<String> emptyByLabels(boolean useMissing, String... labels) {
         if (useMissing) {
-            return new DensityVector<>(IndexLabel.fromLabelValues(labels));
+            List<String> copy = new ArrayList<>();
+            copy.add("?");
+            copy.addAll(List.of(labels));
+            return new DensityVector<>(IndexLabel.fromLabelValues(copy));
         }
-        return new DensityVector<>(IndexLabel.fromLabelValues(Arrays.stream(labels).skip(1).collect(Collectors.toList())));
+        return new DensityVector<>(IndexLabel.fromLabelValues(labels));
     }
 
     /**
@@ -237,7 +242,9 @@ public class DensityVector<T> implements Printable, Serializable {
      * Normalize values from density vector to sum of powers.
      */
     public DensityVector<T> normalize(double pow) {
-        NArrays.stride(values).normalize_(pow);
+        if(NArrays.stride(values).norm(pow) != 0) {
+            NArrays.stride(values).normalize_(pow);
+        }
         return this;
     }
 

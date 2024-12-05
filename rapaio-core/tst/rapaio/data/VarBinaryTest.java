@@ -279,10 +279,9 @@ public class VarBinaryTest {
         }
 
         List<String> levels = VarBinary.empty().levels();
-        assertEquals(3, levels.size());
-        assertEquals("?", levels.get(0));
-        assertEquals("true", levels.get(1));
-        assertEquals("false", levels.get(2));
+        assertEquals(2, levels.size());
+        assertEquals("true", levels.get(0));
+        assertEquals("false", levels.get(1));
     }
 
     @Test

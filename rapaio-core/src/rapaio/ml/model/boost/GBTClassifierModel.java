@@ -113,7 +113,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
         // algorithm described by ESTL pag. 387
 
-        K = firstTargetLevels().size() - 1;
+        K = firstTargetLevels().size();
         f = NArrays.zeros(Shape.of(K, df.rowCount()));
         p = NArrays.zeros(Shape.of(K, df.rowCount()));
         residual = NArrays.zeros(Shape.of(K, df.rowCount()));
@@ -124,7 +124,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
         final NArray<Double> yk = NArrays.zeros(Shape.of(K, df.rowCount()));
         for (int i = 0; i < df.rowCount(); i++) {
-            yk.setDouble(1, df.getInt(i, firstTargetName()) - 1, i);
+            yk.setDouble(1, df.getInt(i, firstTargetName()), i);
         }
 
         for (int m = 0; m < runs.get(); m++) {
@@ -201,7 +201,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
             }
             if (t != 0) {
                 for (int k = 0; k < K; k++) {
-                    cr.firstDensity().setDouble(i, k + 1, Math.exp(p_f.getDouble(k, i) - max.getDouble(i)) / t);
+                    cr.firstDensity().setDouble(i, k, Math.exp(p_f.getDouble(k, i) - max.getDouble(i)) / t);
                 }
             }
         }
@@ -210,9 +210,9 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
             int maxIndex = 0;
             double maxValue = Double.NEGATIVE_INFINITY;
             for (int k = 0; k < K; k++) {
-                if (cr.firstDensity().getDouble(i, k + 1) > maxValue) {
-                    maxValue = cr.firstDensity().getDouble(i, k + 1);
-                    maxIndex = k + 1;
+                if (cr.firstDensity().getDouble(i, k) > maxValue) {
+                    maxValue = cr.firstDensity().getDouble(i, k);
+                    maxIndex = k;
                 }
             }
             cr.firstClasses().setInt(i, maxIndex);

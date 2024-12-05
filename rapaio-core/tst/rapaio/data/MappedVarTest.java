@@ -111,9 +111,8 @@ public class MappedVarTest {
         assertEquals("y", x.getLabel(0));
 
         List<String> levels = x.levels();
-        assertEquals("?", levels.get(0));
-        assertEquals("x", levels.get(1));
-        assertEquals("y", levels.get(2));
+        assertEquals("x", levels.get(0));
+        assertEquals("y", levels.get(1));
     }
 
     @Test

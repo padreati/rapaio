@@ -154,7 +154,7 @@ public class MultinoulliEstimator extends AbstractEstimator {
     }
 
     private boolean fitNominal(Frame df, String targetName) {
-        DensityTable<String, String> dt = DensityTable.fromLabels(true, df, getTestNames().get(0), targetName, null);
+        DensityTable<String, String> dt = DensityTable.fromLabels(false, df, getTestNames().get(0), targetName, null);
         for (int i = 0; i < dt.rows(); i++) {
             for (int j = 0; j < dt.cols(); j++) {
                 dt.inc(i, j, laplaceSmoother);

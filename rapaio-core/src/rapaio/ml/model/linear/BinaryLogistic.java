@@ -25,7 +25,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
 
 import rapaio.core.param.ValueParam;
@@ -35,15 +34,15 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.MathTools;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.linear.binarylogistic.BinaryLogisticIRLS;
 import rapaio.ml.model.linear.binarylogistic.BinaryLogisticNewton;
+import rapaio.narray.NArray;
+import rapaio.narray.NArrays;
+import rapaio.narray.Shape;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -203,10 +202,10 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
             }
             case NOMINAL -> {
                 var result = NArrays.zeros(Shape.of(target.size()));
-                positiveLabel = !Objects.equals(nominalLevel.get(), "") ? nominalLevel.get() : targetLevels.get(firstTargetName()).get(1);
+                positiveLabel = !nominalLevel.get().isEmpty() ? nominalLevel.get() : targetLevels.get(firstTargetName()).get(0);
                 negativeLabel = firstTargetLevels().stream()
                         .filter(label -> !label.equals(positiveLabel))
-                        .filter(label -> !label.equals("?")).findFirst().orElse("?");
+                        .findFirst().orElse("?");
                 for (int i = 0; i < target.size(); i++) {
                     if (target.isMissing(i)) {
                         throw new IllegalArgumentException("Target variable does not allow missing values.");
@@ -255,8 +254,8 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
                 cr.firstClasses().setLabel(r, pi > 0.5 ? positiveLabel : negativeLabel);
             }
             if (withDistributions) {
-                cr.firstDensity().setDouble(r, 1, pi);
-                cr.firstDensity().setDouble(r, 2, 1 - pi);
+                cr.firstDensity().setDouble(r, 0, pi);
+                cr.firstDensity().setDouble(r, 1, 1 - pi);
             }
         }
         return cr;

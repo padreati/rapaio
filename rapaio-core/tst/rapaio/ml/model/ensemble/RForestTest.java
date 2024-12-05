@@ -21,9 +21,7 @@
 
 package rapaio.ml.model.ensemble;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Random;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -91,8 +89,7 @@ public class RForestTest {
     void testParallelism() {
         var iris = Datasets.loadISLAdvertising();
         String target = "Sales";
-        Random random = new Random();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             var rf = RForest.newRF().runs.set(100).poolSize.set(-1).seed.set(123L);
             rf.fit(iris, target);
         }

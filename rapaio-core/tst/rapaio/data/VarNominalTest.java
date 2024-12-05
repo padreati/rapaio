@@ -43,13 +43,11 @@ public class VarNominalTest {
     void testSmoke() {
         Var v = VarNominal.empty(0);
         assertEquals(0, v.size());
-        assertEquals(1, v.levels().size());
-        assertEquals("?", v.levels().get(0));
+        assertEquals(0, v.levels().size());
 
         v = VarNominal.empty();
         assertEquals(0, v.size());
-        assertEquals(1, v.levels().size());
-        assertEquals("?", v.levels().get(0));
+        assertEquals(0, v.levels().size());
 
         assertTrue(v.type().isNominal());
         assertFalse(v.type().isNumeric());
@@ -64,10 +62,9 @@ public class VarNominalTest {
     @Test
     void testDictionary() {
         Var v = VarNominal.empty(0, "a", "a", "v", "a");
-        assertEquals(3, v.levels().size());
-        assertEquals("?", v.levels().get(0));
-        assertEquals("a", v.levels().get(1));
-        assertEquals("v", v.levels().get(2));
+        assertEquals(2, v.levels().size());
+        assertEquals("a", v.levels().get(0));
+        assertEquals("v", v.levels().get(1));
 
         ArrayList<String> set = new ArrayList<>();
         set.add("a");
@@ -75,10 +72,9 @@ public class VarNominalTest {
         set.add("a");
 
         v = VarNominal.empty(0, set);
-        assertEquals(3, v.levels().size());
-        assertEquals("?", v.levels().get(0));
-        assertEquals("a", v.levels().get(1));
-        assertEquals("v", v.levels().get(2));
+        assertEquals(2, v.levels().size());
+        assertEquals("a", v.levels().get(0));
+        assertEquals("v", v.levels().get(1));
     }
 
     @Test
@@ -86,15 +82,15 @@ public class VarNominalTest {
         Var v = VarNominal.empty(4, "a", "b", "c");
         for (int i = 0; i < 4; i++) {
             assertTrue(v.isMissing(i));
-            assertEquals(0, v.getInt(i));
+            assertEquals(-1, v.getInt(i));
         }
 
         // w/ index
 
-        v.setInt(0, 1);
-        v.setInt(1, 2);
-        v.setInt(2, 3);
-        v.setInt(3, 0);
+        v.setInt(0, 0);
+        v.setInt(1, 1);
+        v.setInt(2, 2);
+        v.setInt(3, -1);
 
         assertEquals("a", v.getLabel(0));
         assertEquals("b", v.getLabel(1));
@@ -106,17 +102,17 @@ public class VarNominalTest {
         v.setLabel(2, "a");
         v.setLabel(3, "?");
 
-        assertEquals(3, v.getInt(0));
-        assertEquals(2, v.getInt(1));
-        assertEquals(1, v.getInt(2));
-        assertEquals(0, v.getInt(3));
+        assertEquals(2, v.getInt(0));
+        assertEquals(1, v.getInt(1));
+        assertEquals(0, v.getInt(2));
+        assertEquals(-1, v.getInt(3));
 
         // w/ value
 
-        v.setDouble(0, 1);
-        v.setDouble(1, 2);
-        v.setDouble(2, 3);
-        v.setDouble(3, 0);
+        v.setDouble(0, 0);
+        v.setDouble(1, 1);
+        v.setDouble(2, 2);
+        v.setDouble(3, -1);
 
         assertEquals("a", v.getLabel(0));
         assertEquals("b", v.getLabel(1));
@@ -128,10 +124,10 @@ public class VarNominalTest {
         v.setLabel(2, "a");
         v.setLabel(3, "?");
 
-        assertEquals(3, v.getDouble(0), 1e-10);
-        assertEquals(2, v.getDouble(1), 1e-10);
-        assertEquals(1, v.getDouble(2), 1e-10);
-        assertEquals(0, v.getDouble(3), 1e-10);
+        assertEquals(2, v.getDouble(0), 1e-10);
+        assertEquals(1, v.getDouble(1), 1e-10);
+        assertEquals(0, v.getDouble(2), 1e-10);
+        assertEquals(-1, v.getDouble(3), 1e-10);
     }
 
     @Test
@@ -178,11 +174,11 @@ public class VarNominalTest {
         var.addMissing();
         assertEquals(1, var.size());
 
-        var.addInt(1);
+        var.addInt(0);
         assertEquals(2, var.size());
         assertEquals("x", var.getLabel(1));
 
-        var.addDouble(2.4);
+        var.addDouble(1.4);
         assertEquals(3, var.size());
         assertEquals("y", var.getLabel(2));
 
@@ -250,7 +246,7 @@ public class VarNominalTest {
 
         x.setLevels("x", "y", "x");
 
-        assertEquals(3, x.levels().size());
+        assertEquals(2, x.levels().size());
         assertEquals("x", x.getLabel(0));
         assertEquals("y", x.getLabel(1));
         assertEquals("x", x.getLabel(2));
@@ -270,7 +266,7 @@ public class VarNominalTest {
 
         x.setLevels("x", "y", "z", "p");
 
-        assertEquals(5, x.levels().size());
+        assertEquals(4, x.levels().size());
         assertEquals("x", x.getLabel(0));
         assertEquals("y", x.getLabel(1));
         assertEquals("x", x.getLabel(2));

@@ -85,8 +85,8 @@ public class ZeroRuleTest {
         assertNotNull(result);
         assertEquals(3, result.firstClasses().size());
         for (int i = 0; i < result.firstDensity().rowCount(); i++) {
-            assertEquals(1, result.firstDensity().getDouble(i, 1), TOL);
-            assertEquals(0, result.firstDensity().getDouble(i, 2), TOL);
+            assertEquals(1, result.firstDensity().getDouble(i, 0), TOL);
+            assertEquals(0, result.firstDensity().getDouble(i, 1), TOL);
             assertEquals("a", result.firstClasses().getLabel(i));
         }
     }

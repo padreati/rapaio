@@ -99,27 +99,32 @@ public final class VarNominal extends AbstractVar {
         HashSet<String> used = new HashSet<>();
         used.add("?");
         for (String next : dict) {
-            if (used.contains(next)) continue;
+            if (used.contains(next)) {
+                continue;
+            }
             used.add(next);
             nominal.dict.add(next);
             nominal.reverse.put(next, (short) nominal.reverse.size());
         }
         nominal.data = new short[rows];
+        Arrays.fill(nominal.data, (short) -1);
         nominal.rows = rows;
         return nominal;
     }
 
     public static VarNominal copy(String... values) {
         VarNominal nominal = VarNominal.empty();
-        for (String value : values)
+        for (String value : values) {
             nominal.addLabel(value);
+        }
         return nominal;
     }
 
     public static VarNominal copy(List<String> values) {
         VarNominal nominal = VarNominal.empty();
-        for (String value : values)
+        for (String value : values) {
             nominal.addLabel(value);
+        }
         return nominal;
     }
 
@@ -134,7 +139,7 @@ public final class VarNominal extends AbstractVar {
     @Serial
     private static final long serialVersionUID = -7541719735879481349L;
     public static final String MISSING_VALUE = "?";
-    private static final int MISSING_INDEX = 0;
+    private static final int MISSING_INDEX = -1;
 
     private int rows;
     private ArrayList<String> dict;
@@ -145,9 +150,7 @@ public final class VarNominal extends AbstractVar {
 
     private VarNominal() {
         this.reverse = new HashMap<>();
-        this.reverse.put("?", (short) 0);
         this.dict = new ArrayList<>();
-        this.dict.add("?");
         data = new short[0];
         rows = 0;
     }
@@ -214,7 +217,7 @@ public final class VarNominal extends AbstractVar {
     public void addRows(int rowCount) {
         grow(rows + rowCount);
         for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = 0;
+            data[rows + i] = MISSING_INDEX;
         }
         rows += rowCount;
     }
@@ -233,12 +236,15 @@ public final class VarNominal extends AbstractVar {
     }
 
     private void grow(int minCapacity) {
-        if (minCapacity - data.length <= 0) return;
+        if (minCapacity - data.length <= 0) {
+            return;
+        }
 
         int oldCapacity = data.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);
-        if (newCapacity - minCapacity < 0)
+        if (newCapacity - minCapacity < 0) {
             newCapacity = minCapacity;
+        }
         data = Arrays.copyOf(data, newCapacity);
     }
 
@@ -254,7 +260,7 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public void setInt(int row, int value) {
-        if (value > Short.MAX_VALUE - 1 || value < 0) {
+        if (value > Short.MAX_VALUE - 1 || value < -1) {
             throw new IllegalArgumentException("Invalid value for nominal index.");
         }
         data[row] = (short) value;
@@ -262,7 +268,11 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public void addInt(int value) {
-        addLabel(dict.get(value));
+        if (value == MISSING_INDEX) {
+            addLabel(MISSING_VALUE);
+        } else {
+            addLabel(dict.get(value));
+        }
     }
 
     @Override
@@ -297,7 +307,7 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public String getLabel(int row) {
-        return formatter.format(dict.get(data[row]));
+        return formatter.format(data[row] == MISSING_INDEX ? MISSING_VALUE : dict.get(data[row]));
     }
 
     @Override
@@ -321,9 +331,14 @@ public final class VarNominal extends AbstractVar {
     public void addLabel(String value) {
         grow(rows + 1);
         value = parser.parse(value);
+        if (value.equals(MISSING_VALUE)) {
+            data[rows++] = MISSING_INDEX;
+            return;
+        }
         if (!reverse.containsKey(value)) {
             if (dict.size() == Short.MAX_VALUE - 1) {
-                throw new IllegalStateException("Cannot add new label since dictionary achieved it's maximum size for variable: %s.".formatted(name()));
+                throw new IllegalStateException(
+                        "Cannot add new label since dictionary achieved it's maximum size for variable: %s.".formatted(name()));
             }
             dict.add(value);
             reverse.put(value, (short) reverse.size());
@@ -339,21 +354,12 @@ public final class VarNominal extends AbstractVar {
     @Override
     public void setLevels(String... dict) {
         List<String> oldDict = this.dict;
-        if (dict.length > 0 && !dict[0].equals("?")) {
-            String[] newDict = new String[dict.length + 1];
-            newDict[0] = "?";
-            System.arraycopy(dict, 0, newDict, 1, dict.length);
-            dict = newDict;
-        }
-
         if (this.dict.size() > dict.length) {
             throw new IllegalArgumentException("new levels does not contains all old labels");
         }
 
         this.dict = new ArrayList<>();
         this.reverse = new HashMap<>(dict.length);
-        this.dict.add("?");
-        this.reverse.put("?", (short) 0);
 
         short[] pos = new short[oldDict.size()];
         for (int i = 0; i < dict.length; i++) {
@@ -362,12 +368,15 @@ public final class VarNominal extends AbstractVar {
                 this.dict.add(term);
                 this.reverse.put(term, (short) this.reverse.size());
             }
-            if (i < oldDict.size())
+            if (i < oldDict.size()) {
                 pos[i] = this.reverse.get(term);
+            }
         }
 
         for (int i = 0; i < rows; i++) {
-            data[i] = pos[data[i]];
+            if (data[i] != -1) {
+                data[i] = pos[data[i]];
+            }
         }
     }
 

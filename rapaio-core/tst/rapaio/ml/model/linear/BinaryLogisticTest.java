@@ -206,7 +206,7 @@ public class BinaryLogisticTest {
                 1. petal-width : DOUBLE  |\s
                                 
                 target vars:
-                > clazz : NOMINAL [?,setosa,versicolor]
+                > clazz : NOMINAL [setosa,versicolor]
                                 
                 Learning data:
                 > has learned: true
@@ -250,7 +250,7 @@ public class BinaryLogisticTest {
                 1. petal-width : DOUBLE  |\s
                                 
                 target vars:
-                > clazz : NOMINAL [?,setosa,versicolor]
+                > clazz : NOMINAL [setosa,versicolor]
                                 
                 Learning data:
                 > has learned: true
@@ -277,7 +277,7 @@ public class BinaryLogisticTest {
         x.narray_().narrow(0, 0, n).add_(VarDouble.sample(Normal.of(0, 0.5), random, n).narray_());
         x.narray_().narrow(0, n, 2 * n).add_(VarDouble.sample(Normal.of(0.75, 0.5), random, n).narray_());
 
-        VarNominal ynom = VarNominal.from(2 * n, i -> i < n ? "1" : "2").name("y");
+        VarNominal ynom = VarNominal.from(2 * n, i -> i < n ? "1" : "0", "0", "1").name("y");
         VarBinary ybin = VarBinary.from(2 * n, i -> i < n).name("y");
 
         var resultNom = BinaryLogistic.newModel().fit(SolidFrame.byVars(x, ynom), "y")
@@ -288,10 +288,10 @@ public class BinaryLogisticTest {
         var predNom = resultNom.firstClasses();
         var predBin = resultBin.firstClasses();
 
-        assertTrue(predNom.narray_().apply_(v -> v == 2 ? 0. : 1).deepEquals(predBin.narray_()));
+        assertTrue(predNom.narray().deepEquals(predBin.narray()));
 
-        assertTrue(resultNom.firstDensity().rvar(0).deepEquals(resultBin.firstDensity().rvar(0)));
-        assertTrue(resultNom.firstDensity().rvar(1).narray_().deepEquals(resultBin.firstDensity().rvar(1).narray_()));
+        assertTrue(resultNom.firstDensity().rvar(0).narray_().deepEquals(resultBin.firstDensity().rvar(1).narray_(), 1e-10));
+        assertTrue(resultNom.firstDensity().rvar(1).narray_().deepEquals(resultBin.firstDensity().rvar(0).narray_(), 1e-10));
     }
 
     @Test
