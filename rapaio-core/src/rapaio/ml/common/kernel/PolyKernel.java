@@ -25,8 +25,8 @@ import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 
+import rapaio.darray.DArray;
 import rapaio.math.MathTools;
-import rapaio.narray.NArray;
 
 /**
  * The Polynomial kernel is a non-stationary kernel. Polynomial kernels
@@ -86,7 +86,7 @@ public class PolyKernel extends AbstractKernel {
     }
 
     @Override
-    public double compute(NArray<Double> v, NArray<Double> u) {
+    public double compute(DArray<Double> v, DArray<Double> u) {
         if (isLinear()) {
             return slope * v.inner(u) + bias;
         }

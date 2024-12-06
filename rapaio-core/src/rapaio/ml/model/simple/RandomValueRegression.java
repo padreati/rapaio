@@ -27,11 +27,11 @@ import java.util.Random;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Uniform;
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;

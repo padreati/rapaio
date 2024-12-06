@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 import rapaio.util.collection.IntArrays;
@@ -34,13 +34,13 @@ public class ArrayDataset {
 
     private final Random random = new Random();
     private final int len;
-    private final NArray<?>[] arrays;
+    private final DArray<?>[] arrays;
 
     public ArrayDataset(Tensor... tensors) {
-        this(Arrays.stream(tensors).map(Tensor::value).toArray(NArray[]::new));
+        this(Arrays.stream(tensors).map(Tensor::value).toArray(DArray[]::new));
     }
 
-    public ArrayDataset(NArray<?>... arrays) {
+    public ArrayDataset(DArray<?>... arrays) {
         this.arrays = arrays;
         this.len = Arrays.stream(arrays).mapToInt(array -> array.dim(0)).min().orElse(0);
         if (len == 0) {
@@ -56,11 +56,11 @@ public class ArrayDataset {
         return len;
     }
 
-    public NArray<?>[] arrays() {
+    public DArray<?>[] arrays() {
         return arrays;
     }
 
-    public NArray<?> array(int index) {
+    public DArray<?> array(int index) {
         return arrays[index];
     }
 
@@ -81,9 +81,9 @@ public class ArrayDataset {
         int[] testIndex = Arrays.copyOfRange(index, trainSize, len);
         return new ArrayDataset[] {
                 trainIndex.length == 0 ? null :
-                        new ArrayDataset(Arrays.stream(arrays).map(a -> a.take(0, trainIndex)).toArray(NArray[]::new)),
+                        new ArrayDataset(Arrays.stream(arrays).map(a -> a.sel(0, trainIndex)).toArray(DArray[]::new)),
                 testIndex.length == 0 ? null :
-                        new ArrayDataset(Arrays.stream(arrays).map(a -> a.take(0, testIndex)).toArray(NArray[]::new))
+                        new ArrayDataset(Arrays.stream(arrays).map(a -> a.sel(0, testIndex)).toArray(DArray[]::new))
         };
     }
 
@@ -104,7 +104,7 @@ public class ArrayDataset {
         int len;
         int pos = 0;
 
-        public BatchIndexIterator(int batchSize, boolean shuffle, boolean skipLast, Random random, NArray<?>[] arrays) {
+        public BatchIndexIterator(int batchSize, boolean shuffle, boolean skipLast, Random random, DArray<?>[] arrays) {
             this.index = IntArrays.newSeq(Arrays.stream(arrays).mapToInt(array -> array.dim(0)).min().orElse(0));
             if (shuffle) {
                 IntArrays.shuffle(this.index, random);

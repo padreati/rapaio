@@ -32,14 +32,14 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import rapaio.darray.DArray;
+import rapaio.darray.DArrayManager;
+import rapaio.darray.DType;
+import rapaio.darray.Shape;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
-import rapaio.narray.DType;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrayManager;
-import rapaio.narray.Shape;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -177,15 +177,15 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     private final Index<U> rowIndex;
     private final Index<V> colIndex;
 
-    private final NArray<Double> values;
+    private final DArray<Double> values;
 
     public DensityTable(Index<U> rowIndex, Index<V> colIndex) {
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
         if (rowIndex.size() == 0 && colIndex.size() == 0) {
-            this.values = NArrayManager.base().scalar(DType.DOUBLE, 0).stretch(0, 1);
+            this.values = DArrayManager.base().scalar(DType.DOUBLE, 0).stretch(0, 1);
         } else {
-            this.values = NArrayManager.base().zeros(DType.DOUBLE, Shape.of(rowIndex.size(), colIndex.size()));
+            this.values = DArrayManager.base().zeros(DType.DOUBLE, Shape.of(rowIndex.size(), colIndex.size()));
         }
     }
 
@@ -370,7 +370,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     private final DensityTableFunction concreteRowAverageEntropy = new DensityTableFunction(this, true,
-            (double total, double[] totals, NArray<Double> values, int rowLength, int colLength) -> {
+            (double total, double[] totals, DArray<Double> values, int rowLength, int colLength) -> {
                 double gain = 0;
                 for (int i = 0; i < rowLength; i++) {
                     for (int j = 0; j < colLength; j++) {
@@ -383,7 +383,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
             });
 
     private final DensityTableFunction concreteRowIntrinsicInfo = new DensityTableFunction(this, true,
-            (double total, double[] totals, NArray<Double> values, int rowLength, int colLength) -> {
+            (double total, double[] totals, DArray<Double> values, int rowLength, int colLength) -> {
                 double splitInfo = 0;
                 for (double val : totals) {
                     if (val > 0) {
@@ -393,7 +393,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                 return splitInfo;
             });
     private final DensityTableFunction concreteTotalColEntropy = new DensityTableFunction(this, false,
-            (double total, double[] totals, NArray<Double> values, int rowLength, int colLength) -> {
+            (double total, double[] totals, DArray<Double> values, int rowLength, int colLength) -> {
                 double entropy = 0;
                 for (double val : totals) {
                     if (val > 0) {
@@ -419,7 +419,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
 
     @FunctionalInterface
     interface Function {
-        double apply(double total, double[] totals, NArray<Double> values, int rowLength, int colLength);
+        double apply(double total, double[] totals, DArray<Double> values, int rowLength, int colLength);
     }
 }
 

@@ -23,8 +23,8 @@ package rapaio.ml.common.distance;
 
 import static rapaio.printer.Format.floatFlex;
 
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
-import rapaio.narray.NArray;
 
 public class Constant implements Distance {
 
@@ -48,7 +48,7 @@ public class Constant implements Distance {
     }
 
     @Override
-    public double compute(NArray<Double> x, NArray<Double> y) {
+    public double compute(DArray<Double> x, DArray<Double> y) {
         return reduced(x, y);
     }
 
@@ -58,7 +58,7 @@ public class Constant implements Distance {
     }
 
     @Override
-    public double reduced(NArray<Double> x, NArray<Double> y) {
+    public double reduced(DArray<Double> x, DArray<Double> y) {
         return constant;
     }
 

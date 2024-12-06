@@ -21,7 +21,7 @@
 
 package rapaio.ml.model.tree.ctree;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 import java.io.Serializable;
 import java.util.ArrayList;

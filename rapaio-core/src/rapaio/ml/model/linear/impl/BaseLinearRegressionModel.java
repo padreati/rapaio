@@ -25,10 +25,10 @@ import java.io.Serial;
 import java.util.Objects;
 
 import rapaio.core.param.ValueParam;
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
 import rapaio.data.transform.AddIntercept;
-import rapaio.narray.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RunInfo;
@@ -52,17 +52,17 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
      */
     public final ValueParam<Boolean, M> intercept = new ValueParam<>((M) this, true, "intercept", Objects::nonNull);
 
-    protected NArray<Double> beta;
+    protected DArray<Double> beta;
 
-    public NArray<Double> firstCoefficients() {
-        return beta.takesq(1, 0);
+    public DArray<Double> firstCoefficients() {
+        return beta.selsq(1, 0);
     }
 
-    public NArray<Double> getCoefficients(int targetIndex) {
-        return beta.takesq(1, targetIndex);
+    public DArray<Double> getCoefficients(int targetIndex) {
+        return beta.selsq(1, targetIndex);
     }
 
-    public NArray<Double> getAllCoefficients() {
+    public DArray<Double> getAllCoefficients() {
         return beta;
     }
 
@@ -136,7 +136,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
             String targetName = targetNames[i];
             sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
             sb.append("> Coefficients: \n");
-            NArray<Double> coeff = beta.takesq(1, i);
+            DArray<Double> coeff = beta.selsq(1, i);
 
             TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
             tt.textCenter(0, 0, "Name");

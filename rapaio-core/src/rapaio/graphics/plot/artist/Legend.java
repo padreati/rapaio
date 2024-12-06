@@ -21,17 +21,18 @@
 
 package rapaio.graphics.plot.artist;
 
-import rapaio.graphics.opt.GOpt;
-import rapaio.graphics.opt.GOpts;
-import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.Axis;
+import static rapaio.graphics.opt.GOpts.fill;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serial;
 import java.util.stream.IntStream;
 
-import static rapaio.graphics.opt.GOpts.fill;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
+import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.Axis;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

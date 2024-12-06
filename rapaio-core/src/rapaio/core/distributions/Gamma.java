@@ -21,10 +21,14 @@
 
 package rapaio.core.distributions;
 
-import static java.lang.StrictMath.*;
+import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.exp;
+import static java.lang.StrictMath.log;
+import static java.lang.StrictMath.sqrt;
 
-import static rapaio.math.MathTools.*;
-import static rapaio.printer.Format.*;
+import static rapaio.math.MathTools.incGamma;
+import static rapaio.math.MathTools.lnGamma;
+import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 import java.util.Random;

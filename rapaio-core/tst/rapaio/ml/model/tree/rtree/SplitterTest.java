@@ -21,7 +21,7 @@
 
 package rapaio.ml.model.tree.rtree;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Random;

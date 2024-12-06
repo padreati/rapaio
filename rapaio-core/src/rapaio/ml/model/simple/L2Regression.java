@@ -23,6 +23,7 @@ package rapaio.ml.model.simple;
 
 import java.io.Serial;
 
+import rapaio.core.param.ParametricEquals;
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -31,7 +32,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.core.param.ParametricEquals;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;

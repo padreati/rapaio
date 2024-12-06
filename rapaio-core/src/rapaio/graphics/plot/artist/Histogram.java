@@ -32,13 +32,13 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serial;
 
 import rapaio.core.tools.HistogramTable;
+import rapaio.darray.DArray;
 import rapaio.data.Var;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
-import rapaio.narray.NArray;
 
 /**
  * Plot component which allows one to add a histogram to a plot.
@@ -104,7 +104,7 @@ public class Histogram extends Artist {
         }
     }
 
-    private NArray<Double> freqTable;
+    private DArray<Double> freqTable;
 
     private void buildData() {
         freqTable = hist.freq().copy();

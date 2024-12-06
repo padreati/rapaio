@@ -24,10 +24,10 @@ package rapaio.core.tools;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.Var;
-import rapaio.narray.Shape;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -82,8 +82,8 @@ public final class HistogramTable implements Printable {
         return bins;
     }
 
-    public NArray<Double> freq() {
-        return NArrays.stride(Shape.of(bins), freq);
+    public DArray<Double> freq() {
+        return DArrays.stride(Shape.of(bins), freq);
     }
 
     @Override

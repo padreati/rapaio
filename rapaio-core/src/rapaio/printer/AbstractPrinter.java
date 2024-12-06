@@ -21,11 +21,11 @@
 
 package rapaio.printer;
 
-import rapaio.printer.opt.POpt;
-import rapaio.printer.opt.POpts;
-
 import static rapaio.printer.opt.POpts.graphicHeight;
 import static rapaio.printer.opt.POpts.graphicWidth;
+
+import rapaio.printer.opt.POpt;
+import rapaio.printer.opt.POpts;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

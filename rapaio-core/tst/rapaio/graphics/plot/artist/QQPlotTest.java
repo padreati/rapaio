@@ -31,6 +31,8 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
@@ -38,8 +40,6 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.Plot;
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Normal;
 import rapaio.printer.ImageTools;
 
 public class QQPlotTest extends AbstractArtistTest {

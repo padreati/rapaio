@@ -27,7 +27,12 @@ import static java.lang.Math.sqrt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MathTools.beta;
+import static rapaio.math.MathTools.betaIncReg;
+import static rapaio.math.MathTools.incGamma;
+import static rapaio.math.MathTools.invBetaIncReg;
+import static rapaio.math.MathTools.lnGamma;
+import static rapaio.math.MathTools.logBinomial;
 
 import org.junit.jupiter.api.Test;
 

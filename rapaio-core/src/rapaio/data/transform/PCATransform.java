@@ -24,9 +24,9 @@ package rapaio.data.transform;
 import java.io.Serial;
 import java.util.function.BiFunction;
 
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
-import rapaio.narray.NArray;
 import rapaio.ml.analysis.PCA;
 
 /**
@@ -80,10 +80,10 @@ public class PCATransform extends AbstractTransform {
     private static final long serialVersionUID = 2797285371357486124L;
 
     final String prefix;
-    final BiFunction<NArray<Double>, NArray<Double>, Integer> kFun;
+    final BiFunction<DArray<Double>, DArray<Double>, Integer> kFun;
     private PCA pca;
 
-    private PCATransform(String prefix, BiFunction<NArray<Double>, NArray<Double>, Integer> kFun, VarRange varRange) {
+    private PCATransform(String prefix, BiFunction<DArray<Double>, DArray<Double>, Integer> kFun, VarRange varRange) {
         super(varRange);
         this.prefix = prefix;
         this.kFun = kFun;

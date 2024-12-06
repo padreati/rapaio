@@ -21,7 +21,7 @@
 
 package rapaio.experiment.math.nn;
 
-import rapaio.narray.Shape;
+import rapaio.darray.Shape;
 import rapaio.nn.Autograd;
 import rapaio.nn.Net;
 import rapaio.nn.Tensor;

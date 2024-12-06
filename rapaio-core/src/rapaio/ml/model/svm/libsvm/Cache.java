@@ -21,9 +21,9 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.util.Reference;
 
 /**
@@ -40,7 +40,7 @@ public class Cache {
     private static final class Entry {
         private Entry prev;
         private Entry next;
-        private NArray<Double> data;
+        private DArray<Double> data;
 
         public int len() {
             return data == null ? 0 : data.size();
@@ -85,7 +85,7 @@ public class Cache {
      * the position until it is computed, starting from 0. The other positions will be filled by
      * the caller and the values will remain in cache since data is passed as reference.
      */
-    public int getData(int index, Reference<NArray<Double>> data, int len) {
+    public int getData(int index, Reference<DArray<Double>> data, int len) {
         Entry h = entries[index];
 
         lruUnlink(h);
@@ -102,7 +102,7 @@ public class Cache {
                 old.data = null;
             }
             // allocate new space
-            h.data = (h.data == null) ? NArrays.zeros(Shape.of(len)) : h.data.pad(0, more);
+            h.data = (h.data == null) ? DArrays.zeros(Shape.of(len)) : h.data.pad(0, more);
             size -= more;
         }
 

@@ -31,7 +31,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.narray.NArrays;
+import rapaio.darray.DArrays;
 
 public class AutogradTest {
 
@@ -54,7 +54,7 @@ public class AutogradTest {
         Tensor e2 = e1.add(f).name("e2");
         Tensor g = e2.add(d).name("g");
         Tensor h = f.add(g).name("h");
-        h.setGrad(NArrays.scalar(1.));
+        h.setGrad(DArrays.scalar(1.));
 
         Autograd.ComputeGraph graph = new Autograd.ComputeGraph(h, true);
         graph.run();
@@ -88,7 +88,7 @@ public class AutogradTest {
         Tensor e2 = e1.add(f).name("e2");
         Tensor g = e2.add(d).name("g");
         Tensor h = f.add(g).name("h");
-        h.setGrad(NArrays.scalar(1.));
+        h.setGrad(DArrays.scalar(1.));
 
         Autograd.ComputeGraph graph = new Autograd.ComputeGraph(h, true);
         graph.run();
@@ -117,7 +117,7 @@ public class AutogradTest {
         Tensor e2 = e1.add(f).name("e2");
         Tensor g = e2.add(d).name("g");
         Tensor h = f.add(g).name("h");
-        h.setGrad(NArrays.scalar(1.));
+        h.setGrad(DArrays.scalar(1.));
 
         a.requiresGrad(true);
 
@@ -147,7 +147,7 @@ public class AutogradTest {
         Tensor e2 = e1.add(f).name("e2");
         Tensor g = e2.add(d).name("g");
         Tensor h = f.add(g).name("h");
-        h.setGrad(NArrays.scalar(1.));
+        h.setGrad(DArrays.scalar(1.));
 
         b.requiresGrad(true);
 
@@ -178,7 +178,7 @@ public class AutogradTest {
         Tensor e2 = e1.add(f).name("e2");
         Tensor g = e2.add(d).name("g");
         Tensor h = f.add(g).name("h");
-        h.setGrad(NArrays.scalar(1.));
+        h.setGrad(DArrays.scalar(1.));
 
         a.requiresGrad(true);
         f.requiresGrad(true);
@@ -219,7 +219,7 @@ public class AutogradTest {
         Tensor e2 = e1.add(f).name("e2");
         Tensor g = e2.add(d).name("g");
         Tensor h = f.add(g).name("h");
-        h.setGrad(NArrays.scalar(1.));
+        h.setGrad(DArrays.scalar(1.));
 
         a.requiresGrad(true);
         f.requiresGrad(true);

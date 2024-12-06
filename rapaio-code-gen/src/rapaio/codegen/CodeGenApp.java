@@ -39,7 +39,7 @@ public class CodeGenApp {
         };
 
         Replace[] intReplaces = new Replace[] {
-                Replace.of("BaseDoubleNArrayStride", "BaseIntNArrayStride"),
+                Replace.of("BaseDoubleDArrayStride", "BaseIntDArrayStride"),
                 Replace.of("reduceDouble", "reduceInt"),
                 Replace.of("DoubleVector", "IntVector"),
                 Replace.of("ofDouble", "ofInt"),
@@ -74,20 +74,20 @@ public class CodeGenApp {
         };
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/narray/manager/base/BaseDoubleNArrayStride.java")
-                .dst.set("rapaio/narray/manager/base/BaseFloatNArrayStride.java")
+                .src.set("rapaio/darray/manager/base/BaseDoubleDArrayStride.java")
+                .dst.set("rapaio/darray/manager/base/BaseFloatDArrayStride.java")
                 .replaces.set(floatReplaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/narray/manager/base/BaseDoubleNArrayStride.java")
-                .dst.set("rapaio/narray/manager/base/BaseIntNArrayStride.java")
+                .src.set("rapaio/darray/manager/base/BaseDoubleDArrayStride.java")
+                .dst.set("rapaio/darray/manager/base/BaseIntDArrayStride.java")
                 .replaces.set(intReplaces)
         );
 
         templates.add(new CodeGenTemplate()
-                .src.set("rapaio/narray/manager/base/BaseDoubleNArrayStride.java")
-                .dst.set("rapaio/narray/manager/base/BaseByteNArrayStride.java")
+                .src.set("rapaio/darray/manager/base/BaseDoubleDArrayStride.java")
+                .dst.set("rapaio/darray/manager/base/BaseByteDArrayStride.java")
                 .replaces.set(byteReplaces)
         );
 

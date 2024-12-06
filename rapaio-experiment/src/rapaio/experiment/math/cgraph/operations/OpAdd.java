@@ -23,8 +23,8 @@ package rapaio.experiment.math.cgraph.operations;
 
 import java.util.List;
 
-import rapaio.experiment.math.cgraph.CompContext;
 import rapaio.experiment.math.cgraph.CNode;
+import rapaio.experiment.math.cgraph.CompContext;
 
 public class OpAdd extends CNode {
 

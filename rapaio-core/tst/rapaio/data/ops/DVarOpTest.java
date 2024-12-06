@@ -21,9 +21,12 @@
 
 package rapaio.data.ops;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.DataTestingTools.*;
+import static rapaio.DataTestingTools.generateRandomBinaryVariable;
+import static rapaio.DataTestingTools.generateRandomDoubleVariable;
+import static rapaio.DataTestingTools.generateRandomIntVariable;
 
 import java.util.Random;
 

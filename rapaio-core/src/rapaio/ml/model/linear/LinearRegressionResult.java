@@ -27,14 +27,14 @@ import java.util.Set;
 
 import rapaio.core.distributions.StudentT;
 import rapaio.core.stat.Quantiles;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.transform.AddIntercept;
 import rapaio.math.MathTools;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 import rapaio.printer.Format;
@@ -48,10 +48,10 @@ import rapaio.printer.opt.POpt;
 public class LinearRegressionResult extends RegressionResult {
 
     protected final BaseLinearRegressionModel<?> lm;
-    protected NArray<Double> beta_hat;
-    protected NArray<Double> beta_std_error;
-    protected NArray<Double> beta_t_value;
-    protected NArray<Double> beta_p_value;
+    protected DArray<Double> beta_hat;
+    protected DArray<Double> beta_std_error;
+    protected DArray<Double> beta_t_value;
+    protected DArray<Double> beta_p_value;
     protected String[][] beta_significance;
 
     public LinearRegressionResult(BaseLinearRegressionModel<?> model, Frame df, boolean withResiduals, double[] quantiles) {
@@ -59,19 +59,19 @@ public class LinearRegressionResult extends RegressionResult {
         this.lm = model;
     }
 
-    public NArray<Double> getBetaHat() {
+    public DArray<Double> getBetaHat() {
         return beta_hat;
     }
 
-    public NArray<Double> getBetaStdError() {
+    public DArray<Double> getBetaStdError() {
         return beta_std_error;
     }
 
-    public NArray<Double> getBetaTValue() {
+    public DArray<Double> getBetaTValue() {
         return beta_t_value;
     }
 
-    public NArray<Double> getBetaPValue() {
+    public DArray<Double> getBetaPValue() {
         return beta_p_value;
     }
 
@@ -89,9 +89,9 @@ public class LinearRegressionResult extends RegressionResult {
         String[] targets = lm.targetNames();
 
         beta_hat = lm.getAllCoefficients().copy();
-        beta_std_error = NArrays.zeros(Shape.of(inputs.length, targets.length));
-        beta_t_value = NArrays.zeros(Shape.of(inputs.length, targets.length));
-        beta_p_value = NArrays.zeros(Shape.of(inputs.length, targets.length));
+        beta_std_error = DArrays.zeros(Shape.of(inputs.length, targets.length));
+        beta_t_value = DArrays.zeros(Shape.of(inputs.length, targets.length));
+        beta_p_value = DArrays.zeros(Shape.of(inputs.length, targets.length));
         beta_significance = new String[inputs.length][targets.length];
 
         if (withResiduals) {
@@ -103,7 +103,7 @@ public class LinearRegressionResult extends RegressionResult {
 
                 int degrees = res.size() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
-                var coeff = beta_hat.takesq(1, i);
+                var coeff = beta_hat.selsq(1, i);
 
                 Frame features = df;
                 Set<String> availableFeatures = new HashSet<>(Arrays.asList(df.varNames()));
@@ -112,8 +112,8 @@ public class LinearRegressionResult extends RegressionResult {
                         features = df.bindVars(VarDouble.fill(df.rowCount(), 1).name(AddIntercept.INTERCEPT)).copy();
                     }
                 }
-                NArray<Double> X = features.mapVars(model.inputNames()).narray();
-                NArray<Double> m_beta_hat = X.t().mm(X).qr().inv();
+                DArray<Double> X = features.mapVars(model.inputNames()).darray();
+                DArray<Double> m_beta_hat = X.t().mm(X).qr().inv();
 
                 for (int j = 0; j < model.inputNames().length; j++) {
                     beta_std_error.setDouble(Math.sqrt(m_beta_hat.getDouble(j, j) * var), j, i);

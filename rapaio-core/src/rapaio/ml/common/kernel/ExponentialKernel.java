@@ -23,7 +23,7 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serial;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 import rapaio.printer.Format;
 
 /**
@@ -53,7 +53,7 @@ public class ExponentialKernel extends AbstractKernel {
     }
 
     @Override
-    public double compute(NArray<Double> v, NArray<Double> u) {
+    public double compute(DArray<Double> v, DArray<Double> u) {
         double value = deltaSumSquares(v, u);
         return Math.exp(factor * value);
     }

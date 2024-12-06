@@ -30,6 +30,8 @@ import java.util.List;
 
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.darray.DArray;
+import rapaio.darray.matrix.CholeskyDecomposition;
 import rapaio.data.VarDouble;
 import rapaio.math.optimization.Solver;
 import rapaio.math.optimization.functions.RDerivative;
@@ -37,8 +39,6 @@ import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.optimization.functions.RHessian;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.narray.NArray;
-import rapaio.narray.matrix.CholeskyDecomposition;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
@@ -55,11 +55,11 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
     public final ValueParam<RFunction, NewtonRaphsonSolver> f = new ValueParam<>(this, null, "f");
     public final ValueParam<RDerivative, NewtonRaphsonSolver> d1f = new ValueParam<>(this, null, "d1f");
     public final ValueParam<RHessian, NewtonRaphsonSolver> d2f = new ValueParam<>(this, null, "d2f");
-    public final ValueParam<NArray<Double>, NewtonRaphsonSolver> x0 = new ValueParam<>(this, null, "x0");
+    public final ValueParam<DArray<Double>, NewtonRaphsonSolver> x0 = new ValueParam<>(this, null, "x0");
 
-    private NArray<Double> sol;
+    private DArray<Double> sol;
 
-    private final List<NArray<Double>> solutions = new ArrayList<>();
+    private final List<DArray<Double>> solutions = new ArrayList<>();
     private VarDouble errors;
     private boolean converged = false;
 
@@ -74,11 +74,11 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         sol = x0.get().copy();
         for (int i = 0; i < maxIt.get(); i++) {
             solutions.add(sol.copy());
-            NArray<Double> d1f_x = d1f.get().apply(sol);
-            NArray<Double> d2f_x = d2f.get().apply(sol);
-            NArray<Double> d1f_x_n = d1f_x.copy().mul(-1.);
+            DArray<Double> d1f_x = d1f.get().apply(sol);
+            DArray<Double> d2f_x = d2f.get().apply(sol);
+            DArray<Double> d1f_x_n = d1f_x.copy().mul(-1.);
 
-            NArray<Double> delta_x;
+            DArray<Double> delta_x;
 
             // try LU decomposition, otherwise work with QR
 //            LUDecomposition lu = LUDecomposition.from(d2f_x);
@@ -105,7 +105,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         return this;
     }
 
-    private CholeskyDecomposition<Double> modifiedCholesky(NArray<Double> A) {
+    private CholeskyDecomposition<Double> modifiedCholesky(DArray<Double> A) {
         double beta = 0.001;
 
         // find minimum diagonal element
@@ -119,7 +119,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         double sigma = (minac > 0) ? 0 : -minac + beta;
 
         // update matrix
-        NArray<Double> Ac = A.copy();
+        DArray<Double> Ac = A.copy();
         for (int i = 0; i < Ac.dim(0); i++) {
             Ac.setDouble(A.get(i, i) + sigma, i, i);
         }
@@ -134,7 +134,7 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
             // update sigma
             sigma = max(100 * sigma, beta);
             // update matrix
-            NArray<Double> Acc = Ac.copy();
+            DArray<Double> Acc = Ac.copy();
             for (int i = 0; i < Acc.dim(0); i++) {
                 Acc.setDouble(Ac.get(i, i) + sigma, i, i);
             }
@@ -152,11 +152,11 @@ public class NewtonRaphsonSolver extends ParamSet<NewtonRaphsonSolver> implement
         return "solution: " + sol.toString() + "\n";
     }
 
-    public List<NArray<Double>> solutions() {
+    public List<DArray<Double>> solutions() {
         return solutions;
     }
 
-    public NArray<Double> solution() {
+    public DArray<Double> solution() {
         return sol;
     }
 

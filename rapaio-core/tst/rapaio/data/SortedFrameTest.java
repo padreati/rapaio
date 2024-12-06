@@ -21,9 +21,12 @@
 
 package rapaio.data;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.data.RowComparators.*;
+import static rapaio.data.RowComparators.doubleComparator;
+import static rapaio.data.RowComparators.labelComparator;
 
 import java.io.IOException;
 import java.util.Random;

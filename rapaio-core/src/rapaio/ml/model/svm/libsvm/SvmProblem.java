@@ -23,11 +23,11 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.Random;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 
 public class SvmProblem implements java.io.Serializable {
     public Random random;
     public int len;
-    public NArray<Double>[] xs;
+    public DArray<Double>[] xs;
     public double[] y;
 }

@@ -29,12 +29,12 @@ import java.util.List;
 
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.darray.DArray;
 import rapaio.data.VarDouble;
 import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.narray.NArray;
 
 /**
  * Implements the gradient descend optimization algorithm. Gradient descent is an optimization
@@ -83,11 +83,11 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
     /**
      * Initial value
      */
-    public final ValueParam<NArray<Double>, SteepestDescentSolver> x0 = new ValueParam<>(this, null, "x0");
+    public final ValueParam<DArray<Double>, SteepestDescentSolver> x0 = new ValueParam<>(this, null, "x0");
 
-    private NArray<Double> sol;
+    private DArray<Double> sol;
 
-    private List<NArray<Double>> solutions;
+    private List<DArray<Double>> solutions;
     private VarDouble errors;
     private boolean converged = false;
 
@@ -99,7 +99,7 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
         sol = x0.get().copy();
         solutions.add(sol.copy());
         for (int i = 0; i < maxIt.get(); i++) {
-            NArray<Double> p = d1f.get().apply(sol).mul(-1.);
+            DArray<Double> p = d1f.get().apply(sol).mul(-1.);
             double error = p.norm(2.);
             errors.addDouble(error);
             if (abs(error) < tol.get()) {
@@ -119,12 +119,12 @@ public class SteepestDescentSolver extends ParamSet<SteepestDescentSolver> imple
     }
 
     @Override
-    public List<NArray<Double>> solutions() {
+    public List<DArray<Double>> solutions() {
         return solutions;
     }
 
     @Override
-    public NArray<Double> solution() {
+    public DArray<Double> solution() {
         return sol;
     }
 

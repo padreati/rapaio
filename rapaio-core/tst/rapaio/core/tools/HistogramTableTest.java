@@ -32,10 +32,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.VarDouble;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
 
 public class HistogramTableTest {
 
@@ -48,7 +48,7 @@ public class HistogramTableTest {
 
     @Test
     void testBuilders() {
-        NArray<Double> vector = NArrays.random(Shape.of(10_000), random);
+        DArray<Double> vector = DArrays.random(Shape.of(10_000), random);
         VarDouble variable = vector.dv().name("x");
 
         HistogramTable ht2 = new HistogramTable(variable, 0.1, 0.9, 20);
@@ -135,7 +135,7 @@ public class HistogramTableTest {
 
     @Test
     void testFriedmanDiaconis() {
-        NArray<Double> t = NArrays.random(Shape.of(1_000), random);
+        DArray<Double> t = DArrays.random(Shape.of(1_000), random);
         VarDouble v = t.dv();
         HistogramTable ht = new HistogramTable(v, Double.NaN, Double.NaN, 0);
         assertEquals(27, ht.bins());

@@ -21,8 +21,11 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOpts.*;
+import static rapaio.graphics.Plotter.barplot;
+import static rapaio.graphics.Plotter.gridLayer;
+import static rapaio.graphics.opt.GOpts.sort;
+import static rapaio.graphics.opt.GOpts.stacked;
+import static rapaio.graphics.opt.GOpts.top;
 
 import java.io.IOException;
 import java.util.Random;

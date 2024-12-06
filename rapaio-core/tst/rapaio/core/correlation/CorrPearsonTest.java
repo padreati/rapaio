@@ -31,11 +31,11 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
 import rapaio.core.tools.DistanceMatrix;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.narray.NArray;
-import rapaio.narray.Shape;
-import rapaio.narray.NArrays;
 
 /**
  * Tests for pearson correlation
@@ -107,7 +107,7 @@ public class CorrPearsonTest {
         VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext(random)).name("z");
 
 
-        NArray<Double> exp = NArrays.stride(Shape.of(3, 3),
+        DArray<Double> exp = DArrays.stride(Shape.of(3, 3),
                 1.0, 0.8356446312071465, 0.7997143292750087,
                 0.8356446312071465, 1.0, 0.9938073109055182,
                 0.7997143292750087, 0.9938073109055182, 1.0);

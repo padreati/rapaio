@@ -23,6 +23,7 @@ package rapaio.experiment.math.nn;
 
 import java.io.IOException;
 
+import rapaio.darray.DType;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
@@ -30,7 +31,6 @@ import rapaio.data.VarRange;
 import rapaio.data.transform.OneHotEncoding;
 import rapaio.datasets.Datasets;
 import rapaio.ml.eval.metric.Confusion;
-import rapaio.narray.DType;
 import rapaio.nn.Autograd;
 import rapaio.nn.Loss;
 import rapaio.nn.Net;
@@ -52,8 +52,8 @@ public class SandboxIris {
         TensorManager tm = TensorManager.ofFloat();
         tm.seed(42);
 
-        var x = iris.mapVars(VarRange.of("0~3")).narray().cast(DType.FLOAT);
-        var y = iris.fapply(OneHotEncoding.on(false, false, VarRange.of("class"))).mapVars("4~6").narray().cast(DType.FLOAT);
+        var x = iris.mapVars(VarRange.of("0~3")).darray().cast(DType.FLOAT);
+        var y = iris.fapply(OneHotEncoding.on(false, false, VarRange.of("class"))).mapVars("4~6").darray().cast(DType.FLOAT);
 
         ArrayDataset[] split = new ArrayDataset(x, y).trainTestSplit(0.15);
         ArrayDataset train = split[0];

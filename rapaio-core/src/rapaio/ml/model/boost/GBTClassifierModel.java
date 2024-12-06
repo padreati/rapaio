@@ -29,13 +29,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import rapaio.core.param.ValueParam;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
-import rapaio.narray.NArray;
-import rapaio.narray.Shape;
-import rapaio.narray.NArrays;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.loss.KDevianceLoss;
 import rapaio.ml.loss.L2Loss;
@@ -76,9 +76,9 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
             RTree.newCART().maxDepth.set(2).minCount.set(5).loss.set(new L2Loss()), "model");
 
     private int K;
-    private NArray<Double> f;
-    private NArray<Double> p;
-    private NArray<Double> residual;
+    private DArray<Double> f;
+    private DArray<Double> p;
+    private DArray<Double> residual;
 
     private List<List<RTree>> trees;
 
@@ -114,15 +114,15 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         // algorithm described by ESTL pag. 387
 
         K = firstTargetLevels().size();
-        f = NArrays.zeros(Shape.of(K, df.rowCount()));
-        p = NArrays.zeros(Shape.of(K, df.rowCount()));
-        residual = NArrays.zeros(Shape.of(K, df.rowCount()));
+        f = DArrays.zeros(Shape.of(K, df.rowCount()));
+        p = DArrays.zeros(Shape.of(K, df.rowCount()));
+        residual = DArrays.zeros(Shape.of(K, df.rowCount()));
 
         trees = IntStream.range(0, K).mapToObj(i -> new ArrayList<RTree>()).collect(Collectors.toList());
 
         // build individual regression targets for each class
 
-        final NArray<Double> yk = NArrays.zeros(Shape.of(K, df.rowCount()));
+        final DArray<Double> yk = DArrays.zeros(Shape.of(K, df.rowCount()));
         for (int i = 0; i < df.rowCount(); i++) {
             yk.setDouble(1, df.getInt(i, firstTargetName()), i);
         }
@@ -136,11 +136,11 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
         return true;
     }
 
-    private void buildAdditionalTree(Random random, Frame df, Var w, NArray<Double> yk) {
+    private void buildAdditionalTree(Random random, Frame df, Var w, DArray<Double> yk) {
 
         // a) Set p_k(x)
 
-        NArray<Double> max = f.t().amax1d(1);
+        DArray<Double> max = f.t().amax1d(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
@@ -160,11 +160,11 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
         for (int k = 0; k < K; k++) {
 
-            Var residual_k = residual.takesq(0, k).dv().mapRows(sample.mapping()).name("##tt##");
+            Var residual_k = residual.selsq(0, k).dv().mapRows(sample.mapping()).name("##tt##");
 
             var tree = model.get().newInstance();
             tree.fit(sample.df().bindVars(residual_k), sample.weights(), "##tt##");
-            tree.boostUpdate(df, yk.takesq(0, k).dv(), p.takesq(0, k).dv(), new KDevianceLoss(K));
+            tree.boostUpdate(df, yk.selsq(0, k).dv(), p.selsq(0, k).dv(), new KDevianceLoss(K));
 
             trees.get(k).add(tree);
 
@@ -179,7 +179,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
     public ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
 
-        NArray<Double> p_f = NArrays.zeros(Shape.of(K, df.rowCount()));
+        DArray<Double> p_f = DArrays.zeros(Shape.of(K, df.rowCount()));
 
         for (int k = 0; k < K; k++) {
             for (RegressionModel<?, ?, ?> tree : trees.get(k)) {
@@ -192,7 +192,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
         // make probabilities
 
-        NArray<Double> max = p_f.t().amax1d(1);
+        DArray<Double> max = p_f.t().amax1d(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double t = 0.0;

@@ -30,14 +30,14 @@ import java.util.stream.IntStream;
 
 import rapaio.core.param.ValueParam;
 import rapaio.core.stat.Quantiles;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarType;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.MinkowskiDistance;
@@ -93,8 +93,8 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
 
     // clustering artifacts
 
-    private NArray<Double> c;
-    private NArray<Double> weights;
+    private DArray<Double> c;
+    private DArray<Double> weights;
     private VarDouble errors;
 
     private MWKMeans() {
@@ -117,18 +117,18 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
                 .targets(0, 0, true);
     }
 
-    public double distance(NArray<Double> x, NArray<Double> y, NArray<Double> w, int p) {
+    public double distance(DArray<Double> x, DArray<Double> y, DArray<Double> w, int p) {
         return pow(error(x, y, w, p), 1. / p);
     }
 
-    private double error(NArray<Double> x, NArray<Double> y, NArray<Double> w, int p) {
+    private double error(DArray<Double> x, DArray<Double> y, DArray<Double> w, int p) {
         return x.sub(y).mul_(w).apply_(v -> pow(abs(v), p)).sum();
     }
 
-    private NArray<Double> initializeCentroids(Random random, NArray<Double> x) {
+    private DArray<Double> initializeCentroids(Random random, DArray<Double> x) {
 
         Distance d = new MinkowskiDistance(p.get());
-        NArray<Double> bestCentroids = init.get().init(random, d, x, k.get());
+        DArray<Double> bestCentroids = init.get().init(random, d, x, k.get());
         double bestError = computeError(x, bestCentroids);
         LOGGER.fine("Initialization of centroids round 1 computed error: " + bestError);
 
@@ -137,7 +137,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
 
         if (nstart.get() > 1) {
             for (int i = 1; i < nstart.get(); i++) {
-                NArray<Double> nextCentroids = init.get().init(random, d, x, k.get());
+                DArray<Double> nextCentroids = init.get().init(random, d, x, k.get());
                 double nextError = computeError(x, nextCentroids);
                 LOGGER.fine("Initialization of centroids, round %d, computed error: %f"
                         .formatted(i + 1, nextError));
@@ -155,13 +155,13 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     public MWKMeans coreFit(Frame df, Var w) {
 
         weights = subspace.get()
-                ? NArrays.full(Shape.of(k.get(), inputNames.length), 1.0 / inputNames.length)
-                : NArrays.full(Shape.of(1, inputNames.length), 1.0 / inputNames.length);
+                ? DArrays.full(Shape.of(k.get(), inputNames.length), 1.0 / inputNames.length)
+                : DArrays.full(Shape.of(1, inputNames.length), 1.0 / inputNames.length);
         LOGGER.finer("Initial weights: " + weights);
         errors = VarDouble.empty().name("errors");
 
         // initialize design matrix
-        NArray<Double> x = df.mapVars(inputNames).narray();
+        DArray<Double> x = df.mapVars(inputNames).darray();
 
         Random random = getRandom();
 
@@ -200,18 +200,18 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
     @Override
     public MWKMeansResult corePredict(Frame df, boolean withScores) {
 
-        NArray<Double> x = df.mapVars(inputNames).narray();
+        DArray<Double> x = df.mapVars(inputNames).darray();
         int[] assign = computeAssignmentAndError(x, false);
 
         return MWKMeansResult.valueOf(this, df, VarInt.wrap(assign));
     }
 
-    private double computeError(NArray<Double> x, NArray<Double> centroids) {
+    private double computeError(DArray<Double> x, DArray<Double> centroids) {
         return IntStream.range(0, x.dim(0)).parallel().mapToDouble(j -> {
             double d = Double.NaN;
             for (int c = 0; c < centroids.dim(0); c++) {
-                NArray<Double> w = subspace.get() ? weights.takesq(0, c) : weights.takesq(0, 0);
-                double dd = error(x.takesq(0, j), centroids.takesq(0, c), w, p.get());
+                DArray<Double> w = subspace.get() ? weights.selsq(0, c) : weights.selsq(0, 0);
+                double dd = error(x.selsq(0, j), centroids.selsq(0, c), w, p.get());
                 d = Double.isNaN(d) ? dd : Math.min(dd, d);
             }
             if (Double.isNaN(d)) {
@@ -221,15 +221,15 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         }).sum();
     }
 
-    private int[] computeAssignmentAndError(NArray<Double> x, boolean withErrors) {
+    private int[] computeAssignmentAndError(DArray<Double> x, boolean withErrors) {
         int[] assignment = new int[x.dim(0)];
         double totalError = 0.0;
         for (int i = 0; i < x.dim(0); i++) {
             double error = Double.NaN;
             int cluster = -1;
             for (int j = 0; j < c.dim(0); j++) {
-                NArray<Double> w = subspace.get() ? weights.takesq(0, j) : weights.takesq(0, 0);
-                double currentError = error(x.takesq(0, i), c.takesq(0, j), w, p.get());
+                DArray<Double> w = subspace.get() ? weights.selsq(0, j) : weights.selsq(0, 0);
+                double currentError = error(x.selsq(0, i), c.selsq(0, j), w, p.get());
                 if (!Double.isFinite(currentError)) {
                     continue;
                 }
@@ -271,11 +271,11 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         return set;
     }
 
-    double error(NArray<Double> x, double beta, double c) {
+    double error(DArray<Double> x, double beta, double c) {
         return x.apply(v -> pow(abs(v - c), beta)).sum();
     }
 
-    double derivative(NArray<Double> x, double beta, double c) {
+    double derivative(DArray<Double> x, double beta, double c) {
         double value = 0;
         for (int i = 0; i < x.size(); i++) {
             double v = x.getDouble(i);
@@ -288,7 +288,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         return beta * value;
     }
 
-    double findLeft(NArray<Double> y, double beta, double c) {
+    double findLeft(DArray<Double> y, double beta, double c) {
         int left = 0;
         double min = error(y, beta, y.getDouble(left));
         for (int i = 1; i < y.size(); i++) {
@@ -304,7 +304,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         return y.getDouble(left);
     }
 
-    double findRight(NArray<Double> y, double beta, double c) {
+    double findRight(DArray<Double> y, double beta, double c) {
         int right = y.size() - 1;
         double min = error(y, beta, y.getDouble(right));
         for (int i = right - 1; i >= 0; i--) {
@@ -320,8 +320,8 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         return y.getDouble(right);
     }
 
-    double findMinimum(NArray<Double> y, double beta) {
-        NArray<Double> errors = y.apply(v -> error(y, beta, v));
+    double findMinimum(DArray<Double> y, double beta) {
+        DArray<Double> errors = y.apply(v -> error(y, beta, v));
         double c0 = y.getDouble(errors.argmin());
         double left = findLeft(y, beta, c0);
         double right = findRight(y, beta, c0);
@@ -349,12 +349,12 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         return c;
     }
 
-    private void recomputeCentroids(NArray<Double> x, int[] assign) {
+    private void recomputeCentroids(DArray<Double> x, int[] assign) {
         for (int i = 0; i < k.get(); i++) {
             int[] indexes = computeCentroidIndexes(i, assign);
-            NArray<Double> xc = x.take(0, indexes);
+            DArray<Double> xc = x.sel(0, indexes);
             for (int j = 0; j < x.dim(1); j++) {
-                NArray<Double> ykj = xc.takesq(1, j).copy();
+                DArray<Double> ykj = xc.selsq(1, j).copy();
                 if (p.get() > 1) {
                     c.setDouble(findMinimum(ykj, p.get()), i, j);
                 } else {
@@ -364,7 +364,7 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         }
     }
 
-    private void weightsUpdate(NArray<Double> x, int[] assign) {
+    private void weightsUpdate(DArray<Double> x, int[] assign) {
         if (subspace.get()) {
             subspaceWeightsUpdate(x, assign);
         } else {
@@ -372,10 +372,10 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         }
     }
 
-    private void subspaceWeightsUpdate(NArray<Double> x, int[] assign) {
-        NArray<Double> dm = c.take(0, assign).sub(x).apply_(v -> pow(abs(v), p.get()));
+    private void subspaceWeightsUpdate(DArray<Double> x, int[] assign) {
+        DArray<Double> dm = c.sel(0, assign).sub(x).apply_(v -> pow(abs(v), p.get()));
 
-        NArray<Double> dv = NArrays.zeros(Shape.of(k.get(), dm.dim(1)));
+        DArray<Double> dv = DArrays.zeros(Shape.of(k.get(), dm.dim(1)));
         for (int i = 0; i < dm.dim(0); i++) {
             for (int j = 0; j < dm.dim(1); j++) {
                 dv.incDouble(dm.getDouble(i, j), assign[i], j);
@@ -397,8 +397,8 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         }
     }
 
-    private void globalWeightsUpdate(NArray<Double> x, int[] assign) {
-        NArray<Double> dv = c.take(0, assign).sub(x).apply_(v -> pow(abs(v), p.get())).sum1d(0);
+    private void globalWeightsUpdate(DArray<Double> x, int[] assign) {
+        DArray<Double> dv = c.sel(0, assign).sub(x).apply_(v -> pow(abs(v), p.get())).sum1d(0);
         // avoid division by 0
         dv.clamp_(1e-10, Double.NaN);
 
@@ -412,11 +412,11 @@ public class MWKMeans extends ClusteringModel<MWKMeans, MWKMeansResult, RunInfo<
         }
     }
 
-    public NArray<Double> getCentroidsMatrix() {
+    public DArray<Double> getCentroidsMatrix() {
         return c;
     }
 
-    public NArray<Double> getWeightsMatrix() {
+    public DArray<Double> getWeightsMatrix() {
         return weights;
     }
 

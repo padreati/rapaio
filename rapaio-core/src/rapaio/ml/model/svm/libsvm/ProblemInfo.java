@@ -27,24 +27,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import rapaio.darray.DArray;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.mapping.ArrayMapping;
-import rapaio.narray.NArray;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.model.svm.OneClassSvm;
 import rapaio.ml.model.svm.SvmClassifier;
 import rapaio.ml.model.svm.SvmRegression;
 
-public record ProblemInfo(Random random, NArray<Double>[] xs, double[] y,
+public record ProblemInfo(Random random, DArray<Double>[] xs, double[] y,
                           List<String> levels, Map<String, Integer> index, Map<String, Mapping> map,
                           SvmClassifier.Penalty cType, SvmRegression.Penalty rType, Kernel kernel, long cacheSize, double eps,
                           double c, Map<String, Double> weighting, double nu, double p, boolean shrinking, boolean probability) {
 
-    public static ProblemInfo from(NArray<Double> x, Var target, SvmClassifier parent) {
-        NArray<Double>[] xs = new NArray[x.dim(0)];
+    public static ProblemInfo from(DArray<Double> x, Var target, SvmClassifier parent) {
+        DArray<Double>[] xs = new DArray[x.dim(0)];
         for (int i = 0; i < xs.length; i++) {
-            xs[i] = x.takesq(0, i);
+            xs[i] = x.selsq(0, i);
         }
         double[] y = new double[x.dim(0)];
         for (int i = 0; i < x.dim(0); i++) {
@@ -89,10 +89,10 @@ public record ProblemInfo(Random random, NArray<Double>[] xs, double[] y,
                 parent.nu.get(), 0.0, parent.shrinking.get(), parent.probability.get());
     }
 
-    public static ProblemInfo from(NArray<Double> x, Var target, SvmRegression parent) {
-        NArray<Double>[] xs = new NArray[x.dim(0)];
+    public static ProblemInfo from(DArray<Double> x, Var target, SvmRegression parent) {
+        DArray<Double>[] xs = new DArray[x.dim(0)];
         for (int i = 0; i < xs.length; i++) {
-            xs[i] = x.takesq(0, i);
+            xs[i] = x.selsq(0, i);
         }
         double[] y = new double[x.dim(0)];
         for (int i = 0; i < x.dim(0); i++) {
@@ -111,10 +111,10 @@ public record ProblemInfo(Random random, NArray<Double>[] xs, double[] y,
                 parent.nu.get(), parent.epsilon.get(), parent.shrinking.get(), parent.probability.get());
     }
 
-    public static ProblemInfo from(NArray<Double> x, Var target, OneClassSvm parent) {
-        NArray<Double>[] xs = new NArray[x.dim(0)];
+    public static ProblemInfo from(DArray<Double> x, Var target, OneClassSvm parent) {
+        DArray<Double>[] xs = new DArray[x.dim(0)];
         for (int i = 0; i < xs.length; i++) {
-            xs[i] = x.takesq(0, i);
+            xs[i] = x.selsq(0, i);
         }
         double[] y = new double[x.dim(0)];
         for (int i = 0; i < x.dim(0); i++) {

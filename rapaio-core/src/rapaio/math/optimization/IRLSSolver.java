@@ -30,9 +30,9 @@ import java.util.List;
 
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.darray.DArray;
 import rapaio.data.VarDouble;
 import rapaio.math.MathTools;
-import rapaio.narray.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/17.
@@ -81,12 +81,12 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
     /**
      * Design matrix
      */
-    public final ValueParam<NArray<Double>, IRLSSolver> m = new ValueParam<>(this, null, "m");
+    public final ValueParam<DArray<Double>, IRLSSolver> m = new ValueParam<>(this, null, "m");
 
     /**
      * Output vector
      */
-    public final ValueParam<NArray<Double>, IRLSSolver> b = new ValueParam<>(this, null, "b");
+    public final ValueParam<DArray<Double>, IRLSSolver> b = new ValueParam<>(this, null, "b");
 
     /**
      * Maximum number of iterations
@@ -105,8 +105,8 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
      */
     public final ValueParam<Double, IRLSSolver> k = new ValueParam<>(this, 1.5, "k");
 
-    private NArray<Double> solution;
-    private List<NArray<Double>> solutions;
+    private DArray<Double> solution;
+    private List<DArray<Double>> solutions;
     private VarDouble errors;
     private boolean converged;
 
@@ -114,12 +114,12 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
     }
 
     @Override
-    public NArray<Double> solution() {
+    public DArray<Double> solution() {
         return solution;
     }
 
     @Override
-    public List<NArray<Double>> solutions() {
+    public List<DArray<Double>> solutions() {
         return solutions;
     }
 
@@ -146,16 +146,16 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
 
         // parameters
         protected final IRLSSolver parent;
-        protected final NArray<Double> A;
-        protected final NArray<Double> b;
+        protected final DArray<Double> A;
+        protected final DArray<Double> b;
         protected final double p;
         protected double k;
         protected final int maxIt;
         protected final double tol;
 
         // solution
-        protected NArray<Double> solution;
-        protected final List<NArray<Double>> solutions = new ArrayList<>();
+        protected DArray<Double> solution;
+        protected final List<DArray<Double>> solutions = new ArrayList<>();
         protected final VarDouble errors = VarDouble.empty().name("errors");
         protected boolean converged;
 
@@ -199,23 +199,23 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
         public MethodImpl compute() {
             converged = false;
             // initial L2 solution
-            NArray<Double> x = A.qr().solve(b);
+            DArray<Double> x = A.qr().solve(b);
             for (int it = 0; it < maxIt; it++) {
                 // error vector
-                NArray<Double> e = A.mv(x).sub_(b);
+                DArray<Double> e = A.mv(x).sub_(b);
                 errors.addDouble(e.norm(p));
 
                 // error weights for IRLS
-                NArray<Double> w = e.apply(v -> (p == 1) ? 1 / Math.max(tol, abs(v)) : pow(abs(v), (p - 2) / 2));
+                DArray<Double> w = e.apply(v -> (p == 1) ? 1 / Math.max(tol, abs(v)) : pow(abs(v), (p - 2) / 2));
                 // normalize weight vector
                 w.div(w.sum());
                 // square w
                 w.mul(w);
                 // weighted L2 solution
 
-                NArray<Double> w2a = A.mul(w.stretch(1));
-                NArray<Double> A1 = w2a.t().mm(A);
-                NArray<Double> b1 = w2a.t().mv(b);
+                DArray<Double> w2a = A.mul(w.stretch(1));
+                DArray<Double> A1 = w2a.t().mm(A);
+                DArray<Double> b1 = w2a.t().mv(b);
 
                 try {
                     x = A1.qr().solve(b1);
@@ -256,21 +256,21 @@ public final class IRLSSolver extends ParamSet<IRLSSolver> implements Solver {
             double pk = 2;
             // initial L2 solution
 
-            NArray<Double> x = A.qr().solve(b);
+            DArray<Double> x = A.qr().solve(b);
             for (int it = 0; it < maxIt; it++) {
                 pk = (p >= 2) ? Math.min(p, k * pk) : Math.max(p, k * pk);
                 // error vector
-                NArray<Double> e = A.mv(x).sub_(b);
+                DArray<Double> e = A.mv(x).sub_(b);
                 // error weights for IRLS
                 double pkk = pk;
-                NArray<Double> w = e.apply(v -> (pkk == 1) ? 1 / Math.max(1e-10, abs(v)) : pow(abs(v), (pkk - 2)));
+                DArray<Double> w = e.apply(v -> (pkk == 1) ? 1 / Math.max(1e-10, abs(v)) : pow(abs(v), (pkk - 2)));
                 // normalize weight vector
                 w.div(w.sum());
                 // weighted L2 solution
-                NArray<Double> w2a = A.mul(w.stretch(1));
-                NArray<Double> A1 = w2a.t().mm(A);
-                NArray<Double> b1 = w2a.t().mv(b);
-                NArray<Double> x1 = A1.qr().solve(b1);
+                DArray<Double> w2a = A.mul(w.stretch(1));
+                DArray<Double> A1 = w2a.t().mm(A);
+                DArray<Double> b1 = w2a.t().mv(b);
+                DArray<Double> x1 = A1.qr().solve(b1);
                 // Newton's parameter
                 double q = 1.0 / (pk - 1);
                 double nn;

@@ -28,11 +28,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import rapaio.core.distributions.Distribution;
-import rapaio.narray.DType;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrayManager;
-import rapaio.narray.Order;
-import rapaio.narray.Shape;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrayManager;
+import rapaio.darray.DType;
+import rapaio.darray.Order;
+import rapaio.darray.Shape;
 
 public final class TensorManager implements Closeable {
 
@@ -51,7 +51,7 @@ public final class TensorManager implements Closeable {
     private final DType<?> dt;
     private final Random random;
 
-    private final NArrayManager arrayManager;
+    private final DArrayManager arrayManager;
     private final int outerThreads;
     private final int innerThreads;
 
@@ -60,7 +60,7 @@ public final class TensorManager implements Closeable {
     private TensorManager(DType<?> dt, int outerThreads, int innerThreads) {
         this.dt = dt;
         this.random = new Random();
-        this.arrayManager = NArrayManager.base();
+        this.arrayManager = DArrayManager.base();
         this.outerThreads = outerThreads;
         this.innerThreads = innerThreads;
 
@@ -114,7 +114,7 @@ public final class TensorManager implements Closeable {
 
     // tensor and array creation
 
-    public Variable var(NArray<?> value) {
+    public Variable var(DArray<?> value) {
         return new Variable(this, value);
     }
 
@@ -167,51 +167,51 @@ public final class TensorManager implements Closeable {
     }
 
 
-    public NArray<?> scalarArray(double value) {
+    public DArray<?> scalarArray(double value) {
         return arrayManager.scalar(dt, value);
     }
 
-    public NArray<?> zerosArray(Shape shape) {
+    public DArray<?> zerosArray(Shape shape) {
         return arrayManager.zeros(dt, shape);
     }
 
-    public NArray<?> zerosArray(DType<?> dt, Shape shape) {
+    public DArray<?> zerosArray(DType<?> dt, Shape shape) {
         return arrayManager.zeros(dt, shape);
     }
 
-    public NArray<?> fullArray(Shape shape, double fill) {
+    public DArray<?> fullArray(Shape shape, double fill) {
         return arrayManager.full(dt, shape, fill);
     }
 
-    public NArray<?> randomArray(Shape shape, Random random) {
+    public DArray<?> randomArray(Shape shape, Random random) {
         return arrayManager.random(dt, shape, random);
     }
 
-    public NArray<?> randomArray(Shape shape, Distribution distribution, Random random) {
+    public DArray<?> randomArray(Shape shape, Distribution distribution, Random random) {
         return arrayManager.random(dt, shape, distribution, random, Order.defaultOrder());
     }
 
-    public NArray<?> randomArray(Shape shape, Distribution distribution, Random random, Order askOrder) {
+    public DArray<?> randomArray(Shape shape, Distribution distribution, Random random, Order askOrder) {
         return arrayManager.random(dt, shape, distribution, random, askOrder);
     }
 
-    public NArray<?> seqArray(Shape shape) {
+    public DArray<?> seqArray(Shape shape) {
         return arrayManager.seq(dt, shape);
     }
 
-    public NArray<?> strideArray(Shape shape, byte... values) {
+    public DArray<?> strideArray(Shape shape, byte... values) {
         return arrayManager.stride(dt, shape, Order.defaultOrder(), values);
     }
 
-    public NArray<?> strideArray(Shape shape, int... values) {
+    public DArray<?> strideArray(Shape shape, int... values) {
         return arrayManager.stride(dt, shape, Order.defaultOrder(), values);
     }
 
-    public NArray<?> strideArray(Shape shape, double... values) {
+    public DArray<?> strideArray(Shape shape, double... values) {
         return arrayManager.stride(dt, shape, Order.defaultOrder(), values);
     }
 
-    public NArray<?> strideArray(Shape shape, float... values) {
+    public DArray<?> strideArray(Shape shape, float... values) {
         return arrayManager.stride(dt, shape, Order.defaultOrder(), values);
     }
 }

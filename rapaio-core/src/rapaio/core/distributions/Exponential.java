@@ -24,7 +24,7 @@ package rapaio.core.distributions;
 import static java.lang.StrictMath.exp;
 import static java.lang.StrictMath.log;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MathTools.LN_2;
 
 import java.io.Serial;
 

@@ -29,15 +29,15 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
+import rapaio.darray.DArrays;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.narray.NArrays;
 
 public class PCATransformTest {
 
     private static final int n = 10;
     private static final Frame df =
-            SolidFrame.matrix(NArrays.eye(n), IntStream.range(1, n + 1).boxed().map(i -> "v" + i).collect(Collectors.toList()));
+            SolidFrame.matrix(DArrays.eye(n), IntStream.range(1, n + 1).boxed().map(i -> "v" + i).collect(Collectors.toList()));
 
     @Test
     void percentageTest() {

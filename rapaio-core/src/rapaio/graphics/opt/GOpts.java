@@ -30,8 +30,8 @@ import rapaio.core.tools.Grid2D;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.util.function.SFunction;
 import rapaio.printer.opt.NamedParamSet;
+import rapaio.util.function.SFunction;
 
 public class GOpts extends NamedParamSet<GOpts, GOpt<?>> {
 

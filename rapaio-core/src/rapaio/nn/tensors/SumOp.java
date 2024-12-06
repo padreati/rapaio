@@ -21,7 +21,7 @@
 
 package rapaio.nn.tensors;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 import rapaio.nn.Tensor;
 
 public class SumOp extends AbstractTensor {
@@ -37,7 +37,7 @@ public class SumOp extends AbstractTensor {
     private void forward() {
         this.setValue(tm.scalarArray(child.value().sum().doubleValue()));
         backEdge(child, () -> {
-            NArray<?> grad = this.grad();
+            DArray<?> grad = this.grad();
             // gradient is a scalar, we expand by child shape
             if (!child.value().isScalar()) {
                 for (int i = 0; i < child.value().rank(); i++) {

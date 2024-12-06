@@ -21,7 +21,7 @@
 
 package rapaio.data.transform;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Random;
 

@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 import rapaio.core.param.Param;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
@@ -48,7 +48,7 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
     private final TensorManager tm;
     private final Collection<Tensor> params;
 
-    private final HashMap<Tensor, NArray<?>> mus = new HashMap<>();
+    private final HashMap<Tensor, DArray<?>> mus = new HashMap<>();
 
     public SGD(TensorManager tm, Collection<Tensor> params) {
         this.tm = tm;
@@ -77,7 +77,7 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
     }
 
     private void stepParam(Tensor tensor) {
-        NArray<?> gt = tensor.grad();
+        DArray<?> gt = tensor.grad();
         if (weightDecay.get() != 0) {
             gt = gt.add(tensor.value().mul(weightDecay.get()));
         }

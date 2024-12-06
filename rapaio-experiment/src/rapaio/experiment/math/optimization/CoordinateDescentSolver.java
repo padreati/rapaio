@@ -27,15 +27,15 @@ import java.util.List;
 
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.VarDouble;
 import rapaio.math.optimization.Solver;
 import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
 import rapaio.math.optimization.linesearch.BacktrackLineSearch;
 import rapaio.math.optimization.linesearch.LineSearch;
-import rapaio.narray.Shape;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
 
 /**
  * Steepest descent for L1 norm
@@ -53,11 +53,11 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
             new ValueParam<>(this, BacktrackLineSearch.newSearch(), "lineSearch");
     public final ValueParam<RFunction, CoordinateDescentSolver> f = new ValueParam<>(this, null, "f");
     public final ValueParam<RDerivative, CoordinateDescentSolver> d1f = new ValueParam<>(this, null, "d1f");
-    public final ValueParam<NArray<Double>, CoordinateDescentSolver> x0 = new ValueParam<>(this, null, "x0");
+    public final ValueParam<DArray<Double>, CoordinateDescentSolver> x0 = new ValueParam<>(this, null, "x0");
 
-    private NArray<Double> sol;
+    private DArray<Double> sol;
 
-    private final List<NArray<Double>> solutions = new ArrayList<>();
+    private final List<DArray<Double>> solutions = new ArrayList<>();
     private VarDouble errors;
     private boolean converged = false;
 
@@ -73,7 +73,7 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
         sol = x0.get().copy();
         for (int i = 0; i < maxIt.get(); i++) {
             solutions.add(sol.copy());
-            NArray<Double> d1fx = d1f.get().apply(sol);
+            DArray<Double> d1fx = d1f.get().apply(sol);
             double max = Math.abs(d1fx.get(0));
             int index = 0;
             for (int j = 1; j < d1fx.size(); j++) {
@@ -82,7 +82,7 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
                     index = j;
                 }
             }
-            NArray<Double> deltaX = NArrays.zeros(Shape.of(d1fx.size()));
+            DArray<Double> deltaX = DArrays.zeros(Shape.of(d1fx.size()));
             deltaX.setDouble(-Math.signum(d1fx.get(index)), index);
 
             if (Math.abs(deltaX.norm(2.)) < tol.get()) {
@@ -100,11 +100,11 @@ public class CoordinateDescentSolver extends ParamSet<CoordinateDescentSolver> i
         return "solution: " + sol.toString() + "\n";
     }
 
-    public List<NArray<Double>> solutions() {
+    public List<DArray<Double>> solutions() {
         return solutions;
     }
 
-    public NArray<Double> solution() {
+    public DArray<Double> solution() {
         return sol;
     }
 

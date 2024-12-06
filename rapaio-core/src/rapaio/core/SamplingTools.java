@@ -21,7 +21,8 @@
 
 package rapaio.core;
 
-import static java.lang.StrictMath.*;
+import static java.lang.StrictMath.log;
+import static java.lang.StrictMath.pow;
 
 import java.util.ArrayList;
 import java.util.Arrays;

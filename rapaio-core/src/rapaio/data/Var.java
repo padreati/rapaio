@@ -33,16 +33,16 @@ import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
 import rapaio.core.SamplingTools;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrayManager;
+import rapaio.darray.DType;
+import rapaio.darray.Order;
+import rapaio.darray.Shape;
+import rapaio.darray.storage.wrapper.VarDoubleStorage;
+import rapaio.darray.storage.wrapper.VarFloatStorage;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.data.transform.VarTransform;
-import rapaio.narray.DType;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrayManager;
-import rapaio.narray.Order;
-import rapaio.narray.Shape;
-import rapaio.narray.storage.wrapper.VarDoubleStorage;
-import rapaio.narray.storage.wrapper.VarFloatStorage;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 import rapaio.util.NotImplementedException;
@@ -399,39 +399,39 @@ public interface Var extends Serializable, Printable {
      */
     Var copy();
 
-    default NArray<Double> narray_() {
+    default DArray<Double> narray_() {
         return narray_(DType.DOUBLE);
     }
 
     @SuppressWarnings("unchecked")
-    default <N extends Number> NArray<N> narray_(DType<N> dtype) {
-        return (NArray<N>) switch (dtype.id()) {
-            case DOUBLE -> NArrayManager.base().stride(DType.DOUBLE, Shape.of(size()), Order.C, new VarDoubleStorage(this));
-            case FLOAT -> NArrayManager.base().stride(DType.FLOAT, Shape.of(size()), Order.C, new VarFloatStorage(this));
+    default <N extends Number> DArray<N> narray_(DType<N> dtype) {
+        return (DArray<N>) switch (dtype.id()) {
+            case DOUBLE -> DArrayManager.base().stride(DType.DOUBLE, Shape.of(size()), Order.C, new VarDoubleStorage(this));
+            case FLOAT -> DArrayManager.base().stride(DType.FLOAT, Shape.of(size()), Order.C, new VarFloatStorage(this));
             default -> throw new NotImplementedException();
         };
     }
 
-    default NArray<Double> narray() {
+    default DArray<Double> narray() {
         return narray(DType.DOUBLE);
     }
 
     @SuppressWarnings("unchecked")
-    default <N extends Number> NArray<N> narray(DType<N> dtype) {
+    default <N extends Number> DArray<N> narray(DType<N> dtype) {
         return switch (dtype.id()) {
             case DOUBLE -> {
                 double[] copy = new double[size()];
                 for (int i = 0; i < copy.length; i++) {
                     copy[i] = getDouble(i);
                 }
-                yield (NArray<N>) NArrayManager.base().stride(DType.DOUBLE, Shape.of(size()), Order.C, copy);
+                yield (DArray<N>) DArrayManager.base().stride(DType.DOUBLE, Shape.of(size()), Order.C, copy);
             }
             case FLOAT -> {
                 float[] copy = new float[size()];
                 for (int i = 0; i < copy.length; i++) {
                     copy[i] = getFloat(i);
                 }
-                yield (NArray<N>) NArrayManager.base().stride(DType.FLOAT, Shape.of(size()), Order.C, copy);
+                yield (DArray<N>) DArrayManager.base().stride(DType.FLOAT, Shape.of(size()), Order.C, copy);
             }
             default -> throw new NotImplementedException();
         };

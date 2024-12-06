@@ -32,8 +32,8 @@ import java.util.concurrent.Executors;
 import rapaio.core.param.Param;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrayManager;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrayManager;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
@@ -52,9 +52,9 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
     private final TensorManager tm;
     private final List<Tensor> parameters;
     private double t = 1;
-    private final ConcurrentHashMap<Tensor, NArray<?>> mts = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Tensor, NArray<?>> vts = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Tensor, NArray<?>> vtmaxs = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Tensor, DArray<?>> mts = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Tensor, DArray<?>> vts = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Tensor, DArray<?>> vtmaxs = new ConcurrentHashMap<>();
 
     public Adam(TensorManager tm, Collection<Tensor> parameters) {
         this.tm = tm;
@@ -71,7 +71,7 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
     @Override
     public void step() {
         CountDownLatch latch = new CountDownLatch(parameters.size());
-        try (ExecutorService executor = Executors.newFixedThreadPool(NArrayManager.base().cpuThreads())) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(DArrayManager.base().cpuThreads())) {
             for (var parameter : parameters) {
                 executor.submit(() -> {
                     step(parameter);
@@ -113,7 +113,7 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
         }
     }
 
-    private NArray<?> getMt(Tensor tensor) {
+    private DArray<?> getMt(Tensor tensor) {
         if (mts.containsKey(tensor)) {
             return mts.get(tensor);
         } else {
@@ -121,7 +121,7 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
         }
     }
 
-    private NArray<?> getVt(Tensor tensor) {
+    private DArray<?> getVt(Tensor tensor) {
         if (vts.containsKey(tensor)) {
             return vts.get(tensor);
         } else {
@@ -129,7 +129,7 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
         }
     }
 
-    private NArray<?> getVtMax(Tensor tensor) {
+    private DArray<?> getVtMax(Tensor tensor) {
         if (vtmaxs.containsKey(tensor)) {
             return vtmaxs.get(tensor);
         } else {

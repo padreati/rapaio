@@ -27,8 +27,8 @@ import java.util.List;
 
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DensityTable;
+import rapaio.darray.DArray;
 import rapaio.data.Var;
-import rapaio.narray.NArray;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -56,7 +56,7 @@ public final class ChiSqIndependence implements HTest {
         return new ChiSqIndependence(DensityTable.fromLabels(false, x, y, null), yates);
     }
 
-    public static ChiSqIndependence from(NArray<Double> m, boolean yates) {
+    public static ChiSqIndependence from(DArray<Double> m, boolean yates) {
         List<String> rowLevels = new ArrayList<>();
         List<String> colLevels = new ArrayList<>();
         for (int i = 0; i < m.dim(0); i++) {
@@ -68,7 +68,7 @@ public final class ChiSqIndependence implements HTest {
         return from(m, rowLevels, colLevels, yates);
     }
 
-    public static ChiSqIndependence from(NArray<Double> m, List<String> rowLevels, List<String> colLevels, boolean yates) {
+    public static ChiSqIndependence from(DArray<Double> m, List<String> rowLevels, List<String> colLevels, boolean yates) {
         if (m.dim(0) != rowLevels.size()) {
             throw new IllegalArgumentException("Row levels length is different than matrix rows.");
         }

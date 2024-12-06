@@ -23,7 +23,7 @@ package rapaio.nn.layer;
 
 import java.util.List;
 
-import rapaio.narray.Shape;
+import rapaio.darray.Shape;
 import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;

@@ -21,7 +21,8 @@
 
 package rapaio.ml.model.ensemble;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -84,7 +85,7 @@ public class CForestTest {
         assertEquals(model.firstTargetLevels().size(), densities.dim(1));
 
         for (int i = 0; i < iris.rowCount(); i++) {
-            assertEquals(densities.takesq(0, i).argmax(), predClass.getInt(i));
+            assertEquals(densities.selsq(0, i).argmax(), predClass.getInt(i));
         }
     }
 

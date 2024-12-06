@@ -21,8 +21,8 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.util.function.SFunction;
 import rapaio.printer.opt.NamedParam;
+import rapaio.util.function.SFunction;
 
 public class GOpt<V> extends NamedParam<GOpts, V> {
 

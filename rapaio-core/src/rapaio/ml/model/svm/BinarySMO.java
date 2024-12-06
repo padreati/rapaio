@@ -30,6 +30,7 @@ import java.util.Random;
 import java.util.Set;
 
 import rapaio.core.param.ValueParam;
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
@@ -38,7 +39,6 @@ import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.math.MathTools;
-import rapaio.narray.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.PolyKernel;
@@ -122,7 +122,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     private boolean oneVsAll;
 
     private int _vectorsCount;
-    private NArray<Double> _vectors;
+    private DArray<Double> _vectors;
     private double[] _sparseWeights;
     private int[] _sparseIndices;
     private double _b;
@@ -290,7 +290,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         if (dfTrain.rowCount() == 0) {
             throw new IllegalArgumentException("No instances in the training data.");
         }
-        state.train = dfTrain.mapVars(inputNames).narray();
+        state.train = dfTrain.mapVars(inputNames).darray();
 
         state.y = new double[state.train.dim(0)];
         for (int i = 0; i < state.train.dim(0); i++) {
@@ -391,8 +391,8 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         }
 
         // Compute second derivative of objective function
-        NArray<Double> row1 = state.train.takesq(0, i1);
-        NArray<Double> row2 = state.train.takesq(0, i2);
+        DArray<Double> row1 = state.train.selsq(0, i1);
+        DArray<Double> row2 = state.train.selsq(0, i2);
         double k11 = state.kernelCache.cachedCompute(i1, i1, row1, row1);
         double k12 = state.kernelCache.cachedCompute(i1, i2, row1, row2);
         double k22 = state.kernelCache.cachedCompute(i2, i2, row2, row2);
@@ -480,7 +480,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         // Update error cache using new Lagrange multipliers
         for (int j = state.I0.nextSetBit(0); j != -1; j = state.I0.nextSetBit(j + 1)) {
             if ((j != i1) && (j != i2)) {
-                NArray<Double> rowj = state.train.takesq(0, j);
+                DArray<Double> rowj = state.train.selsq(0, j);
                 state.fCache[j] +=
                         y1 * (a1 - alpha1) * state.kernelCache.cachedCompute(i1, j, row1, rowj) +
                                 y2 * (a2 - alpha2) * state.kernelCache.cachedCompute(i2, j, row2, rowj);
@@ -577,11 +577,11 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                 _alpha[i] = state.alpha[sparse[i]];
                 _y[i] = state.y[sparse[i]];
             }
-            _vectors = state.train.take(0, sparse);
+            _vectors = state.train.sel(0, sparse);
         }
     }
 
-    private double predictScore(NArray<Double> df, int row) {
+    private double predictScore(DArray<Double> df, int row) {
         double result = -_b;
         if (kernel.get().isLinear()) {
             for (int i = 0; i < _vectorsCount; i++) {
@@ -589,7 +589,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
             }
         } else {
             for (int i = 0; i < _vectorsCount; i++) {
-                result += _y[i] * _alpha[i] * kernel.get().compute(_vectors.takesq(0, i), df.takesq(0, row));
+                result += _y[i] * _alpha[i] * kernel.get().compute(_vectors.selsq(0, i), df.selsq(0, row));
             }
         }
         return result;
@@ -600,7 +600,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
-            double score = predictScore(df.mapVars(inputNames).narray(), i);
+            double score = predictScore(df.mapVars(inputNames).darray(), i);
             if (prob.get()) {
                 ClassifierResult result = logistic.predict(SolidFrame.byVars(VarDouble.scalar(score).name("score")));
                 double p = result.firstDensity().getDouble(0, "true");
@@ -723,8 +723,8 @@ final class State {
     // linear machine
     double[] linear_weights;
 
-    NArray<Double> train;
-    NArray<Double> weights;
+    DArray<Double> train;
+    DArray<Double> weights;
     double[] y;
 
     KernelCache kernelCache;
@@ -792,7 +792,7 @@ final class State {
         }
     }
 
-    public double predict(Kernel kernel, NArray<Double> df, int row, NArray<Double> train, double[] y) {
+    public double predict(Kernel kernel, DArray<Double> df, int row, DArray<Double> train, double[] y) {
         double result = -b;
         if (kernel.isLinear()) {
             // Is weight vector stored in sparse format?
@@ -801,7 +801,7 @@ final class State {
             }
         } else {
             for (int i = supportVectors.nextSetBit(0); i != -1; i = supportVectors.nextSetBit(i + 1)) {
-                result += y[i] * alpha[i] * kernel.compute(train.takesq(0, i), df.takesq(0, row));
+                result += y[i] * alpha[i] * kernel.compute(train.selsq(0, i), df.selsq(0, row));
             }
         }
         return result;

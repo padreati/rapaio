@@ -30,6 +30,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
+import rapaio.core.param.Param;
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -37,8 +39,6 @@ import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
-import rapaio.core.param.Param;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;

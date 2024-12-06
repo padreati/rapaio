@@ -32,9 +32,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -198,7 +198,7 @@ public class SolidFrameTest {
 
     @Test
     void testMatrixBuilders() {
-        NArray<Double> rm = NArrays.stride(Shape.of(3, 3),
+        DArray<Double> rm = DArrays.stride(Shape.of(3, 3),
                 1, 2, 3,
                 2, 3, 4,
                 3, 4, 5
@@ -231,7 +231,7 @@ public class SolidFrameTest {
 
     @Test
     void testAddClearRows() {
-        NArray<Double> rm = NArrays.stride(Shape.of(3, 3),
+        DArray<Double> rm = DArrays.stride(Shape.of(3, 3),
                 1, 2, 3,
                 2, 3, 4,
                 3, 4, 5

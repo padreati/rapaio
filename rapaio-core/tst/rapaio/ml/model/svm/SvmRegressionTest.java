@@ -28,24 +28,24 @@ import java.util.logging.Level;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.narray.NArray;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 
 public class SvmRegressionTest {
 
     private Frame df;
-    private NArray<Double> xs;
-    private NArray<Double> ys;
+    private DArray<Double> xs;
+    private DArray<Double> ys;
 
     @BeforeEach
     void beforeEach() {
         WS.initLog(Level.SEVERE);
         df = Datasets.loadISLAdvertising();
 
-        xs = df.mapVars("TV,Radio").narray();
+        xs = df.mapVars("TV,Radio").darray();
         ys = df.rvar("Sales").narray_();
     }
 

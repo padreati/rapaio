@@ -29,6 +29,8 @@ import java.util.logging.Logger;
 
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -36,8 +38,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -63,20 +63,20 @@ public class LDA extends ParamSet<LDA> implements Printable {
     private String targetName;
     private List<String> targetLevels;
 
-    protected NArray<Double> vmean;
-    protected NArray<Double> vstd;
+    protected DArray<Double> vmean;
+    protected DArray<Double> vstd;
 
-    protected NArray<Double> eigenValues;
-    protected NArray<Double> eigenVectors;
+    protected DArray<Double> eigenValues;
+    protected DArray<Double> eigenVectors;
 
     private LDA() {
     }
 
-    public NArray<Double> eigenValues() {
+    public DArray<Double> eigenValues() {
         return eigenValues;
     }
 
-    public NArray<Double> eigenVectors() {
+    public DArray<Double> eigenVectors() {
         return eigenVectors;
     }
 
@@ -84,41 +84,41 @@ public class LDA extends ParamSet<LDA> implements Printable {
         validate(df, targetVar);
 
         logger.fine("start lda fit");
-        NArray<Double> mx = df.mapVars(inputNames).narray();
-        NArray<Double> mxx = scaling.get() ? mx.sub(mx.mean1d(0)).div_(mx.std1d(0)) : mx;
+        DArray<Double> mx = df.mapVars(inputNames).darray();
+        DArray<Double> mxx = scaling.get() ? mx.sub(mx.mean1d(0)).div_(mx.std1d(0)) : mx;
 
         // compute global mean and std
         vmean = mxx.mean1d(0);
         vstd = mxx.std1d(0);
 
         // compute sliced data for each class
-        NArray<Double>[] mxxs = new NArray[targetLevels.size()];
+        DArray<Double>[] mxxs = new DArray[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
             int index = i;
-            mxxs[i] = mxx.take(0, df.stream()
+            mxxs[i] = mxx.sel(0, df.stream()
                     .filter(s -> s.getLabel(targetName).equals(targetLevels.get(index)))
                     .mapToInt(FSpot::row)
                     .toArray());
         }
 
         // compute class means
-        NArray<Double>[] mcmeans = new NArray[targetLevels.size()];
+        DArray<Double>[] mcmeans = new DArray[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
             mcmeans[i] = mxxs[i].mean1d(0);
         }
 
         // build within scatter matrix
 
-        NArray<Double> xc = mxx.sub(vmean).div(vstd);
-        NArray<Double> sw = xc.t().mm(xc).div_((double) (xc.dim(0)));
+        DArray<Double> xc = mxx.sub(vmean).div(vstd);
+        DArray<Double> sw = xc.t().mm(xc).div_((double) (xc.dim(0)));
 
         // build between-class scatter matrix
 
-        NArray<Double> mcmeansc = NArrays.stack(0, List.of(mcmeans)).sub(vmean);
-        NArray<Double> sb = mcmeansc.t().mm(mcmeansc).div_((double) (mcmeansc.dim(0)));
+        DArray<Double> mcmeansc = DArrays.stack(0, List.of(mcmeans)).sub(vmean);
+        DArray<Double> sb = mcmeansc.t().mm(mcmeansc).div_((double) (mcmeansc.dim(0)));
 
         // inverse sw
-        NArray<Double> swi = sw.qr().inv();
+        DArray<Double> swi = sw.qr().inv();
 
         // use decomp of sbe
         var evd = sb.mm(swi).eig();
@@ -138,8 +138,8 @@ public class LDA extends ParamSet<LDA> implements Printable {
         Arrays.sort(rows, (o1, o2) -> -Double.compare(eigenValues.getDouble(o1), eigenValues.getDouble(o2)));
         int[] indexes = Arrays.stream(rows).mapToInt(v -> v).toArray();
 
-        eigenValues = eigenValues.take(0, indexes).copy();
-        eigenVectors = eigenVectors.take(1, indexes).copy();
+        eigenValues = eigenValues.sel(0, indexes).copy();
+        eigenVectors = eigenVectors.sel(1, indexes).copy();
     }
 
     /**
@@ -166,7 +166,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
             throw new IllegalArgumentException("k must be a positive number less or equal with the number of levels.");
         }
 
-        NArray<Double> x = df.mapVars(inputNames).narray();
+        DArray<Double> x = df.mapVars(inputNames).darray();
         if (scaling.get()) {
             x.sub_(x.mean1d(0)).div_(x.std1d(0));
         }
@@ -181,7 +181,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
             dims[i] = i;
             names[i] = prefix + (i + 1);
         }
-        NArray<Double> result = x.mm(eigenVectors.take(1, dims));
+        DArray<Double> result = x.mm(eigenVectors.sel(1, dims));
         Frame rest = df.removeVars(VarRange.of(inputNames));
         return rest.varCount() == 0 ?
                 SolidFrame.matrix(result, names) :

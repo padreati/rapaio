@@ -21,7 +21,7 @@
 
 package rapaio.core.distributions;
 
-import static java.lang.StrictMath.*;
+import static java.lang.StrictMath.sqrt;
 
 import java.io.Serializable;
 import java.util.Random;

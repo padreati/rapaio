@@ -29,15 +29,15 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.io.Serial;
 
+import rapaio.core.distributions.empirical.KDE;
+import rapaio.core.distributions.empirical.KFunc;
+import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-import rapaio.core.distributions.empirical.KDE;
-import rapaio.core.distributions.empirical.KFunc;
-import rapaio.core.distributions.empirical.KFuncGaussian;
 
 /**
  * Artist which draws a KDE density estimator function.

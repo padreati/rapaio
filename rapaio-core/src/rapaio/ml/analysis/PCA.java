@@ -29,12 +29,12 @@ import java.util.logging.Logger;
 
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
-import rapaio.narray.NArray;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -80,24 +80,24 @@ public class PCA extends ParamSet<PCA> implements Printable {
     private PCA() {
     }
 
-    protected NArray<Double> eigenValues;
-    protected NArray<Double> eigenVectors;
-    protected NArray<Double> mean;
-    protected NArray<Double> sd;
+    protected DArray<Double> eigenValues;
+    protected DArray<Double> eigenVectors;
+    protected DArray<Double> mean;
+    protected DArray<Double> sd;
 
-    public NArray<Double> getValues() {
+    public DArray<Double> getValues() {
         return eigenValues;
     }
 
-    public NArray<Double> getVectors() {
+    public DArray<Double> getVectors() {
         return eigenVectors;
     }
 
-    public NArray<Double> getMean() {
+    public DArray<Double> getMean() {
         return mean;
     }
 
-    public NArray<Double> getStd() {
+    public DArray<Double> getStd() {
         return sd;
     }
 
@@ -105,7 +105,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
         preFit(df);
 
         logger.fine("start pca predict");
-        NArray<Double> x = df.narray();
+        DArray<Double> x = df.darray();
         logger.fine("compute mean, sd and do scaling");
         if (center.get()) {
             mean = x.mean1d(0);
@@ -117,7 +117,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
         }
 
         logger.fine("build scatter");
-        NArray<Double> s = x.t().mm(x);
+        DArray<Double> s = x.t().mm(x);
 
         logger.fine("compute eigenvalues");
         var evd = s.eig();
@@ -129,8 +129,8 @@ public class PCA extends ParamSet<PCA> implements Printable {
         int[] mapping = IntArrays.newSeq(0, eigenValues.size());
         eigenValues.argSort(mapping, false);
 
-        eigenValues = eigenValues.take(0, mapping);
-        eigenVectors = eigenVectors.take(1, mapping);
+        eigenValues = eigenValues.sel(0, mapping);
+        eigenVectors = eigenVectors.sel(1, mapping);
         return this;
     }
 
@@ -167,7 +167,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
      */
     public Frame transform(String prefix, Frame df, int k) {
 
-        NArray<Double> x = df.mapVars(inputNames).narray();
+        DArray<Double> x = df.mapVars(inputNames).darray();
 
         if (center.get()) {
             x.sub_(mean);
@@ -181,7 +181,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
             names[i] = prefix + (i + 1);
         }
 
-        NArray<Double> result = x.mm(eigenVectors.narrow(1, true, 0, k));
+        DArray<Double> result = x.mm(eigenVectors.narrow(1, true, 0, k));
 
         Frame rest = df.removeVars(VarRange.of(inputNames));
         Frame prediction = SolidFrame.matrix(result, names);

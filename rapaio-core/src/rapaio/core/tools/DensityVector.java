@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.function.DoublePredicate;
 import java.util.stream.DoubleStream;
 
+import rapaio.darray.DArrays;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
-import rapaio.narray.NArrays;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -223,11 +223,11 @@ public class DensityVector<T> implements Printable, Serializable {
      * @return index of the greatest value
      */
     public int findBestIndex() {
-        return NArrays.stride(values).argmax();
+        return DArrays.stride(values).argmax();
     }
 
     public String findBestLabel() {
-        return index.getValueString(NArrays.stride(values).argmax());
+        return index.getValueString(DArrays.stride(values).argmax());
     }
 
     /**
@@ -242,8 +242,8 @@ public class DensityVector<T> implements Printable, Serializable {
      * Normalize values from density vector to sum of powers.
      */
     public DensityVector<T> normalize(double pow) {
-        if(NArrays.stride(values).norm(pow) != 0) {
-            NArrays.stride(values).normalize_(pow);
+        if(DArrays.stride(values).norm(pow) != 0) {
+            DArrays.stride(values).normalize_(pow);
         }
         return this;
     }

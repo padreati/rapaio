@@ -23,10 +23,10 @@ package rapaio.ml.model.linear;
 
 import java.io.Serial;
 
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.transform.AddIntercept;
-import rapaio.narray.NArray;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -68,8 +68,8 @@ public class WeightedLinearRegression extends BaseLinearRegressionModel<Weighted
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         var w = weights.narray().apply_(Math::sqrt);
-        NArray<Double> X = df.mapVars(inputNames()).narray().mul(w.stretch(1));
-        NArray<Double> Y = df.mapVars(targetNames()).narray().mul(w.stretch(1));
+        DArray<Double> X = df.mapVars(inputNames()).darray().mul(w.stretch(1));
+        DArray<Double> Y = df.mapVars(targetNames()).darray().mul(w.stretch(1));
         beta = X.qr().solve(Y);
         return true;
     }

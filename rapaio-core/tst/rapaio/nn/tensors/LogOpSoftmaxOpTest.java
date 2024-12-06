@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import rapaio.narray.Shape;
+import rapaio.darray.Shape;
 import rapaio.nn.Loss;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;

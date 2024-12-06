@@ -21,8 +21,8 @@
 
 package rapaio.nn.tensors;
 
+import rapaio.darray.Compare;
 import rapaio.nn.Tensor;
-import rapaio.narray.Compare;
 
 public class Max extends AbstractTensor {
 

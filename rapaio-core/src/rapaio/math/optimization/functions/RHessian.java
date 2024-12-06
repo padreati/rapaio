@@ -23,8 +23,8 @@ package rapaio.math.optimization.functions;
 
 import java.io.Serializable;
 
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
@@ -32,9 +32,9 @@ import rapaio.narray.NArrays;
 @FunctionalInterface
 public interface RHessian extends Serializable {
 
-    default NArray<Double> apply(double... x) {
-        return apply(NArrays.stride(x));
+    default DArray<Double> apply(double... x) {
+        return apply(DArrays.stride(x));
     }
 
-    NArray<Double> apply(NArray<Double> x);
+    DArray<Double> apply(DArray<Double> x);
 }

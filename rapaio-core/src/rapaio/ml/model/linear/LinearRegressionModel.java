@@ -23,10 +23,10 @@ package rapaio.ml.model.linear;
 
 import java.io.Serial;
 
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.transform.AddIntercept;
-import rapaio.narray.NArray;
 import rapaio.ml.model.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -68,8 +68,8 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        NArray<Double> X = df.mapVars(inputNames()).narray();
-        NArray<Double> Y = df.mapVars(targetNames()).narray();
+        DArray<Double> X = df.mapVars(inputNames()).darray();
+        DArray<Double> Y = df.mapVars(targetNames()).darray();
         beta = X.qr().solve(Y);
         return true;
     }

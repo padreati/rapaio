@@ -28,11 +28,11 @@ import java.text.MessageFormat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.narray.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/21.
@@ -41,15 +41,15 @@ public class IRLSSolverTest {
 
     private static final double eps = 1e-10;
 
-    private NArray<Double> A;
-    private NArray<Double> b;
+    private DArray<Double> A;
+    private DArray<Double> b;
 
     @BeforeEach
     public void beforeEach() {
         Frame df = Datasets.loasSAheart().removeVars(0).removeVars("typea,adiposity");
         VarDouble intercept = VarDouble.fill(df.rowCount(), 1).name("(Intercept)");
         Frame dfa = SolidFrame.byVars(intercept).bindVars(df.removeVars("chd"));
-        A = dfa.narray();
+        A = dfa.darray();
         b = df.rvar("chd").narray();
     }
 
@@ -74,11 +74,11 @@ public class IRLSSolverTest {
     @Test
     void testLeastSquares() {
         Solver irls = IRLSSolver.newMinimizer().m.set(A).b.set(b).p.set(2.0).maxIt.set(10_000).eps.set(1e-20);
-        NArray<Double> irlsSolution = irls.compute().solution();
+        DArray<Double> irlsSolution = irls.compute().solution();
 
-        NArray<Double> ata = A.t().mm(A);
-        NArray<Double> ab = A.t().mv(b);
-        NArray<Double> sol = ata.qr().solve(ab);
+        DArray<Double> ata = A.t().mm(A);
+        DArray<Double> ab = A.t().mv(b);
+        DArray<Double> sol = ata.qr().solve(ab);
         assertTrue(irlsSolution.deepEquals(sol, eps));
     }
 

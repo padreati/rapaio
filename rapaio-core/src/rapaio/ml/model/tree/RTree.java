@@ -33,6 +33,8 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import rapaio.core.param.MultiParam;
+import rapaio.core.param.ValueParam;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Sum;
 import rapaio.core.stat.WeightedMean;
@@ -55,8 +57,6 @@ import rapaio.ml.model.tree.rtree.Splitter;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 import rapaio.util.DoublePair;
-import rapaio.core.param.MultiParam;
-import rapaio.core.param.ValueParam;
 
 /**
  * Implements a regression decision tree.

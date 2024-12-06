@@ -24,7 +24,9 @@ package rapaio.core.distributions;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sqrt;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MathTools.beta;
+import static rapaio.math.MathTools.betaIncReg;
+import static rapaio.math.MathTools.invBetaIncReg;
 
 import java.io.Serial;
 

@@ -27,12 +27,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;

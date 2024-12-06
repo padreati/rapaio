@@ -21,7 +21,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.*;
+import static rapaio.graphics.Plotter.corrGram;
 
 import java.io.IOException;
 

@@ -30,14 +30,14 @@ import java.util.function.BiFunction;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Order;
+import rapaio.darray.Shape;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
-import rapaio.narray.Order;
-import rapaio.narray.Shape;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 
@@ -118,12 +118,12 @@ public class Grid2D implements Serializable {
     private final Var x;
     private final Var y;
 
-    private final NArray<Double> values;
+    private final DArray<Double> values;
 
     public Grid2D(Var x, Var y) {
         this.x = x;
         this.y = y;
-        this.values = NArrays.zeros(Shape.of(x.size(), y.size()));
+        this.values = DArrays.zeros(Shape.of(x.size(), y.size()));
     }
 
     public Var x() {

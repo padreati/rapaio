@@ -21,9 +21,12 @@
 
 package rapaio.ml.model.tree;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static rapaio.ml.model.tree.RowPredicate.*;
+import static rapaio.ml.model.tree.RowPredicate.binEqual;
+import static rapaio.ml.model.tree.RowPredicate.binNotEqual;
+import static rapaio.ml.model.tree.RowPredicate.nomEqual;
+import static rapaio.ml.model.tree.RowPredicate.nomNotEqual;
 
 import java.util.Random;
 

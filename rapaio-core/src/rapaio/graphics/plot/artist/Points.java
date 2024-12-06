@@ -21,6 +21,11 @@
 
 package rapaio.graphics.plot.artist;
 
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.io.Serial;
+
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.graphics.opt.GOpt;
@@ -29,9 +34,6 @@ import rapaio.graphics.opt.PchPalette;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
-
-import java.awt.*;
-import java.io.Serial;
 
 /**
  * Plot component which allows one to add points to a plot.

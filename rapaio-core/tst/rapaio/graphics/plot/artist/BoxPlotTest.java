@@ -21,10 +21,12 @@
 
 package rapaio.graphics.plot.artist;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 
-import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOpts.*;
+import static rapaio.graphics.Plotter.boxplot;
+import static rapaio.graphics.opt.GOpts.fill;
 
 import java.io.IOException;
 import java.util.Arrays;

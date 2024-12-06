@@ -71,7 +71,7 @@ public interface Net extends Serializable {
         while (batchIt.hasNext()) {
             var batchIndexes = batchIt.next();
             futures.add(CompletableFuture.supplyAsync(() -> {
-                Tensor[] batch = Arrays.stream(dataset.arrays()).map(a -> tm().var(a.take(0, batchIndexes))).toArray(Tensor[]::new);
+                Tensor[] batch = Arrays.stream(dataset.arrays()).map(a -> tm().var(a.sel(0, batchIndexes))).toArray(Tensor[]::new);
                 return forward(batch);
             }, tm().outerExecutor()));
         }
@@ -95,7 +95,7 @@ public interface Net extends Serializable {
             var batchIt = dataset.batchIndexIterator(batchSize, true, false);
             for (int i = 0; i < outputs.size(); i++) {
                 Loss loss = localLoss.newInstance();
-                loss.forward(outputs.get(i)[0], tm.var(trueValues.value().take(0, batchIt.next())));
+                loss.forward(outputs.get(i)[0], tm.var(trueValues.value().sel(0, batchIt.next())));
                 loss.last().name("loss[" + i + "]");
                 gradLoss = gradLoss == null ? loss.last() : gradLoss.add(loss.last());
             }

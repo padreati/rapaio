@@ -29,12 +29,12 @@ import java.util.function.BiFunction;
 
 import org.junit.jupiter.api.Test;
 
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.datasets.Datasets;
-import rapaio.narray.NArray;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/1/20.
@@ -82,9 +82,9 @@ public class KMClusterTest {
 
         Frame c = clustering.getCentroids().refSort("x");
         assertTrue(c.deepEquals(SolidFrame.byVars(VarDouble.copy(0, 1).name("x"))));
-        NArray<Double> cc = clustering.getCentroidsMatrix();
-        assertEquals(0, cc.takesq(1, 0).prod());
-        assertEquals(1, cc.takesq(1, 0).sum());
+        DArray<Double> cc = clustering.getCentroidsMatrix();
+        assertEquals(0, cc.selsq(1, 0).prod());
+        assertEquals(1, cc.selsq(1, 0).sum());
 
         assertEquals(2, clustering.getErrors().size());
         assertEquals(0, clustering.getError());
@@ -98,9 +98,9 @@ public class KMClusterTest {
 
         Frame c = clustering.getCentroids().refSort("x");
         assertTrue(c.deepEquals(SolidFrame.byVars(VarDouble.copy(0, 1).name("x"))));
-        NArray<Double> cc = clustering.getCentroidsMatrix();
-        assertEquals(0, cc.takesq(1, 0).prod());
-        assertEquals(1, cc.takesq(1, 0).sum());
+        DArray<Double> cc = clustering.getCentroidsMatrix();
+        assertEquals(0, cc.selsq(1, 0).prod());
+        assertEquals(1, cc.selsq(1, 0).sum());
 
         assertEquals(2, clustering.getErrors().size());
         assertEquals(0, clustering.getError());
@@ -166,16 +166,16 @@ public class KMClusterTest {
         var kmeansC = kmeans.getCentroidsMatrix();
         var kmediansC = kmedians.getCentroidsMatrix();
 
-        NArray<Double> instances = df.narray();
+        DArray<Double> instances = df.darray();
 
-        BiFunction<NArray<Double>, NArray<Double>, Double> dist = (u, v) -> u.copy().sub_(v).apply_(x -> x * x).sum();
+        BiFunction<DArray<Double>, DArray<Double>, Double> dist = (u, v) -> u.copy().sub_(v).apply_(x -> x * x).sum();
 
         double kmeansErr = 0.0;
         double kmediansErr = 0.0;
 
         for (int i = 0; i < df.rowCount(); i++) {
-            kmeansErr += dist.apply(instances.takesq(0, i), kmeansC.takesq(0, kmeansAssignment.getInt(i)));
-            kmediansErr += dist.apply(instances.takesq(0, i), kmediansC.takesq(0, kmediansAssignment.getInt(i)));
+            kmeansErr += dist.apply(instances.selsq(0, i), kmeansC.selsq(0, kmeansAssignment.getInt(i)));
+            kmediansErr += dist.apply(instances.selsq(0, i), kmediansC.selsq(0, kmediansAssignment.getInt(i)));
         }
         // the errors are a little bit different, under one percent
         assertTrue(Math.abs(kmeansErr - kmediansErr) / kmediansErr < 0.01);
@@ -195,9 +195,9 @@ public class KMClusterTest {
 
         // on the other hand the centroids are close, small normed distance
         for (int i = 0; i < 2; i++) {
-            double cdist = dist.apply(kmeansC.takesq(0, i), kmediansC.takesq(0, i));
-            cdist /= Math.sqrt(kmeansC.takesq(0, i).norm(2.));
-            cdist /= Math.sqrt(kmediansC.takesq(0, i).norm(2.));
+            double cdist = dist.apply(kmeansC.selsq(0, i), kmediansC.selsq(0, i));
+            cdist /= Math.sqrt(kmeansC.selsq(0, i).norm(2.));
+            cdist /= Math.sqrt(kmediansC.selsq(0, i).norm(2.));
             assertTrue(cdist < 0.02);
         }
     }

@@ -25,11 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
 
 public class ChiSqTest {
 
@@ -80,7 +80,7 @@ public class ChiSqTest {
     @Test
     void testIndependence() {
 
-        ChiSqIndependence test1 = ChiSqIndependence.from(NArrays.stride(Shape.of(2, 2), 38, 11, 14, 51), true);
+        ChiSqIndependence test1 = ChiSqIndependence.from(DArrays.stride(Shape.of(2, 2), 38, 11, 14, 51), true);
         assertEquals("""
                 > ChiSqIndependence
                 Pearson's Chi-squared test with Yates' continuity correction
@@ -99,7 +99,7 @@ public class ChiSqTest {
                 total 52         62          114 \s
                 """, test1.toSummary());
 
-        ChiSqIndependence test2 = ChiSqIndependence.from(NArrays.stride(Shape.of(2, 2), 38, 11, 14, 51), false);
+        ChiSqIndependence test2 = ChiSqIndependence.from(DArrays.stride(Shape.of(2, 2), 38, 11, 14, 51), false);
         assertEquals("""
                 > ChiSqIndependence
                 Pearson's Chi-squared test

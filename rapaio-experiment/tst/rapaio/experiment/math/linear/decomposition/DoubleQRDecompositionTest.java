@@ -40,9 +40,7 @@ import rapaio.experiment.math.linear.dense.DVectorDense;
 public class DoubleQRDecompositionTest {
 
     private static final double TOL = 1e-14;
-
-    final int n = 10;
-
+    private static final int n = 10;
     private Random random;
 
     @BeforeEach

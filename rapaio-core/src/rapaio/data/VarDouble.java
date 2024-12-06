@@ -42,11 +42,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import rapaio.core.distributions.Distribution;
-import rapaio.narray.DType;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
-import rapaio.narray.Order;
-import rapaio.narray.Shape;
+import rapaio.darray.DArray;
+import rapaio.darray.DType;
+import rapaio.darray.DArrays;
+import rapaio.darray.Order;
+import rapaio.darray.Shape;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
@@ -587,15 +587,15 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    public NArray<Double> narray_() {
-        return NArrays.stride(Shape.of(rows), Order.C, data);
+    public DArray<Double> narray_() {
+        return DArrays.stride(Shape.of(rows), Order.C, data);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <N extends Number> NArray<N> narray_(DType<N> dtype) {
+    public <N extends Number> DArray<N> narray_(DType<N> dtype) {
         if (dtype == DType.DOUBLE) {
-            return (NArray<N>) NArrays.stride(Shape.of(rows), Order.C, data);
+            return (DArray<N>) DArrays.stride(Shape.of(rows), Order.C, data);
         }
         return super.narray_(dtype);
     }

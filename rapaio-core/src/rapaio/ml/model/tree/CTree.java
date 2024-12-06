@@ -31,15 +31,15 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import rapaio.core.param.MultiParam;
+import rapaio.core.param.ParametricEquals;
+import rapaio.core.param.ValueParam;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
-import rapaio.core.param.MultiParam;
-import rapaio.core.param.ParametricEquals;
-import rapaio.core.param.ValueParam;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;

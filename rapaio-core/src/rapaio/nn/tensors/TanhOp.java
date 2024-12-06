@@ -21,7 +21,7 @@
 
 package rapaio.nn.tensors;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 import rapaio.nn.Tensor;
 
 public final class TanhOp extends AbstractTensor {
@@ -37,7 +37,7 @@ public final class TanhOp extends AbstractTensor {
     private void forward() {
         this.setValue(child.value().tanh());
         backEdge(child, () -> {
-            NArray<?> sg = this.value().sqr().neg_().add_(1);
+            DArray<?> sg = this.value().sqr().neg_().add_(1);
             return this.grad().mul(sg);
         });
     }

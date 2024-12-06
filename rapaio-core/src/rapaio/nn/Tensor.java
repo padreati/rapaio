@@ -24,10 +24,10 @@ package rapaio.nn;
 import java.util.List;
 import java.util.Random;
 
-import rapaio.narray.Compare;
-import rapaio.narray.DType;
-import rapaio.narray.NArray;
-import rapaio.narray.Shape;
+import rapaio.darray.Compare;
+import rapaio.darray.DArray;
+import rapaio.darray.DType;
+import rapaio.darray.Shape;
 import rapaio.nn.tensors.AddOp;
 import rapaio.nn.tensors.BatchVtmOp;
 import rapaio.nn.tensors.CompareFalseOp;
@@ -48,8 +48,8 @@ import rapaio.nn.tensors.SqrOp;
 import rapaio.nn.tensors.SqrtOp;
 import rapaio.nn.tensors.Std1dOp;
 import rapaio.nn.tensors.SubOp;
-import rapaio.nn.tensors.SumOp;
 import rapaio.nn.tensors.Sum1dOp;
+import rapaio.nn.tensors.SumOp;
 import rapaio.nn.tensors.TanhOp;
 
 public interface Tensor {
@@ -70,15 +70,15 @@ public interface Tensor {
 
     int dim(int axis);
 
-    NArray<?> value();
+    DArray<?> value();
 
-    void setValue(NArray<?> data);
+    void setValue(DArray<?> data);
 
-    NArray<?> grad();
+    DArray<?> grad();
 
-    void setGrad(NArray<?> grad);
+    void setGrad(DArray<?> grad);
 
-    void addGrad(NArray<?> grad);
+    void addGrad(DArray<?> grad);
 
     void zeroGrad();
 

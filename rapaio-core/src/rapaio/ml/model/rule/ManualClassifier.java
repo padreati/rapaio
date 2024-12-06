@@ -24,13 +24,13 @@ package rapaio.ml.model.rule;
 import java.util.ArrayList;
 import java.util.List;
 
+import rapaio.core.param.ListParam;
 import rapaio.data.Frame;
 import rapaio.data.Unique;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.common.Capabilities;
-import rapaio.core.param.ListParam;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RunInfo;

@@ -31,17 +31,17 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import rapaio.darray.DType;
+import rapaio.darray.Shape;
+import rapaio.darray.Storage;
+import rapaio.darray.StorageManager;
+import rapaio.darray.layout.StrideLayout;
+import rapaio.darray.storage.array.ByteArrayStorage;
+import rapaio.darray.storage.array.DoubleArrayStorage;
+import rapaio.darray.storage.array.FloatArrayStorage;
+import rapaio.darray.storage.array.IntArrayStorage;
 import rapaio.io.atom.AtomOutputStream;
 import rapaio.io.atom.BinaryAtomProtocol;
-import rapaio.narray.DType;
-import rapaio.narray.Shape;
-import rapaio.narray.Storage;
-import rapaio.narray.StorageManager;
-import rapaio.narray.layout.StrideLayout;
-import rapaio.narray.storage.array.ByteArrayStorage;
-import rapaio.narray.storage.array.DoubleArrayStorage;
-import rapaio.narray.storage.array.FloatArrayStorage;
-import rapaio.narray.storage.array.IntArrayStorage;
 
 public class AtomTest {
 

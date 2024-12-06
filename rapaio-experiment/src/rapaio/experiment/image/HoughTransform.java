@@ -41,10 +41,10 @@ import java.util.List;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.core.stat.Quantiles;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.VarDouble;
-import rapaio.narray.NArray;
-import rapaio.narray.Shape;
-import rapaio.narray.NArrays;
 import rapaio.util.DoubleComparators;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -73,9 +73,9 @@ public class HoughTransform extends ParamSet<HoughTransform> {
     private double width;
     private double height;
 
-    private NArray<Double> hsMatrix;
+    private DArray<Double> hsMatrix;
 
-    public NArray<Double> getHsMatrix() {
+    public DArray<Double> getHsMatrix() {
         return hsMatrix;
     }
 
@@ -109,12 +109,12 @@ public class HoughTransform extends ParamSet<HoughTransform> {
      * @param data   bit set data of the binary image as a continuous array ordered by rows.
      */
     public HoughTransform fit(int width, int height, BitSet data) {
-        hsMatrix = NArrays.zeros(Shape.of(rhoSize.get(), thetaSize.get()));
+        hsMatrix = DArrays.zeros(Shape.of(rhoSize.get(), thetaSize.get()));
         populateHoughSpace(hsMatrix, width, height, data);
         return this;
     }
 
-    private void populateHoughSpace(NArray<Double> hs, int width, int height, BitSet data) {
+    private void populateHoughSpace(DArray<Double> hs, int width, int height, BitSet data) {
         this.width = width;
         this.height = height;
 

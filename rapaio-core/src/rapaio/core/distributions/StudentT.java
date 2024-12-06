@@ -27,7 +27,10 @@ import static java.lang.StrictMath.min;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sqrt;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MathTools.PI;
+import static rapaio.math.MathTools.betaIncReg;
+import static rapaio.math.MathTools.invBetaIncReg;
+import static rapaio.math.MathTools.lnGamma;
 
 import java.io.Serial;
 

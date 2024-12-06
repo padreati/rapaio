@@ -23,8 +23,8 @@ package rapaio.math.optimization;
 
 import java.util.List;
 
+import rapaio.darray.DArray;
 import rapaio.data.VarDouble;
-import rapaio.narray.NArray;
 
 /**
  * An optimization algorithm for finding local minimum of a function. Any maximization problem can be casted as maximization without
@@ -46,7 +46,7 @@ public interface Solver {
     /**
      * @return list of partial solution (if we have an iterative algorithm), otherwise it will contain only the final solution
      */
-    List<NArray<Double>> solutions();
+    List<DArray<Double>> solutions();
 
     /**
      * @return Vector of errors for each iteration
@@ -56,7 +56,7 @@ public interface Solver {
     /**
      * @return final solution of the algorithm
      */
-    NArray<Double> solution();
+    DArray<Double> solution();
 
     /**
      * @return true if the computation converged to a solution or not

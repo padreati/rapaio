@@ -23,8 +23,8 @@ package rapaio.nn.tensors;
 
 import java.util.List;
 
+import rapaio.darray.operator.Broadcast;
 import rapaio.nn.Tensor;
-import rapaio.narray.operator.Broadcast;
 
 public final class DivOp extends AbstractTensor {
 

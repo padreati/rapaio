@@ -21,11 +21,10 @@
 
 package rapaio.math.optimization.scalar;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.optimization.scalar.RootFind1D;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**

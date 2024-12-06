@@ -33,11 +33,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
 import rapaio.core.param.ListParam;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.data.Frame;
+import rapaio.data.Var;
 import rapaio.ml.eval.metric.RegressionMetric;
 import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.Split;

@@ -27,11 +27,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -55,8 +55,8 @@ public final class Confusion implements Printable {
     private final Var actual;
     private final Var predict;
     private final List<String> factors;
-    private final NArray<Double> cmFrequency;
-    private final NArray<Double> cmProbability;
+    private final DArray<Double> cmFrequency;
+    private final DArray<Double> cmProbability;
     private final boolean binary;
 
     // true positive - predicted true and actual true
@@ -83,8 +83,8 @@ public final class Confusion implements Printable {
         this.predict = predict;
         validate();
         this.factors = actual.levels(true);
-        this.cmFrequency = NArrays.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
-        this.cmProbability = NArrays.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
+        this.cmFrequency = DArrays.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
+        this.cmProbability = DArrays.zeros(Shape.of(factors.size() - 1, factors.size() - 1));
         this.binary = actual.levels().size() == 2;
         compute();
     }
@@ -418,7 +418,7 @@ public final class Confusion implements Printable {
      *
      * @return frequency confusion matrix
      */
-    public NArray<Double> frequencyMatrix() {
+    public DArray<Double> frequencyMatrix() {
         return cmFrequency;
     }
 
@@ -429,7 +429,7 @@ public final class Confusion implements Printable {
      *
      * @return probability confusion matrix
      */
-    public NArray<Double> probabilityMatrix() {
+    public DArray<Double> probabilityMatrix() {
         return cmProbability;
     }
 }

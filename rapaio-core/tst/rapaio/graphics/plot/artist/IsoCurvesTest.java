@@ -21,11 +21,14 @@
 
 package rapaio.graphics.plot.artist;
 
-import static java.lang.StrictMath.*;
+import static java.lang.StrictMath.pow;
 
-import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.Palette.*;
-import static rapaio.graphics.opt.GOpts.*;
+import static rapaio.graphics.Plotter.isoBands;
+import static rapaio.graphics.Plotter.isoCurves;
+import static rapaio.graphics.Plotter.isoLines;
+import static rapaio.graphics.opt.GOpts.palette;
+import static rapaio.graphics.opt.Palette.bicolor;
+import static rapaio.graphics.opt.Palette.hue;
 
 import java.io.IOException;
 import java.util.function.BiFunction;

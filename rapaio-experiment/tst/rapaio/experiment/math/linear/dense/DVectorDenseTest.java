@@ -27,8 +27,8 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.experiment.math.linear.StandardDVectorTest;
 import rapaio.experiment.math.linear.DVector;
+import rapaio.experiment.math.linear.StandardDVectorTest;
 import rapaio.util.collection.DoubleArrays;
 
 public class DVectorDenseTest extends StandardDVectorTest {

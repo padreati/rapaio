@@ -29,9 +29,9 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
 
+import rapaio.darray.DArray;
+import rapaio.darray.Shape;
 import rapaio.data.VarDouble;
-import rapaio.narray.NArray;
-import rapaio.narray.Shape;
 import rapaio.nn.Autograd;
 import rapaio.nn.Loss;
 import rapaio.nn.Net;
@@ -58,7 +58,7 @@ public class Sandbox2DFunctionRegression {
         Tensor x = tm.randomTensor(Shape.of(N, 4), random);
         Tensor y = tm.zerosTensor(Shape.of(N));
         for (int i = 0; i < N; i++) {
-            NArray<?> row = x.value().takesq(0, i);
+            DArray<?> row = x.value().selsq(0, i);
             y.value().setDouble(random.nextDouble() / 100 + fun(row.getDouble(0), row.getDouble(1), row.getDouble(2), row.getDouble(3)), i);
         }
 

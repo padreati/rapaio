@@ -28,7 +28,7 @@ import java.util.Random;
 import java.util.Set;
 
 import rapaio.core.SamplingTools;
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 import rapaio.ml.common.distance.Distance;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
@@ -42,13 +42,13 @@ import rapaio.util.collection.IntArrays;
 public enum KMClusterInit implements Serializable {
 
     Forgy {
-        public NArray<Double> init(Random random, Distance distance, NArray<Double> m, int k) {
-            return m.take(0, SamplingTools.sampleWOR(random, m.dim(0), k));
+        public DArray<Double> init(Random random, Distance distance, DArray<Double> m, int k) {
+            return m.sel(0, SamplingTools.sampleWOR(random, m.dim(0), k));
         }
     },
     PlusPlus {
         @Override
-        public NArray<Double> init(final Random random, Distance distance, NArray<Double> m, int k) {
+        public DArray<Double> init(final Random random, Distance distance, DArray<Double> m, int k) {
 
             int[] centroids = IntArrays.newFill(k, -1);
 
@@ -65,9 +65,9 @@ public enum KMClusterInit implements Serializable {
                     if (ids.contains(j)) {
                         continue;
                     }
-                    p[j] = distance.compute(m.takesq(0, centroids[0]), m.takesq(0, j));
+                    p[j] = distance.compute(m.selsq(0, centroids[0]), m.selsq(0, j));
                     for (int l = 1; l < i; l++) {
-                        p[j] = Math.min(p[j], distance.compute(m.takesq(0, centroids[l]), m.takesq(0, j)));
+                        p[j] = Math.min(p[j], distance.compute(m.selsq(0, centroids[l]), m.selsq(0, j)));
                     }
                 }
                 // normalize the weights
@@ -79,9 +79,9 @@ public enum KMClusterInit implements Serializable {
                 ids.add(next);
             }
 
-            return m.take(0, centroids);
+            return m.sel(0, centroids);
         }
     };
 
-    public abstract NArray<Double> init(Random random, Distance distance, NArray<Double> m, int k);
+    public abstract DArray<Double> init(Random random, Distance distance, DArray<Double> m, int k);
 }

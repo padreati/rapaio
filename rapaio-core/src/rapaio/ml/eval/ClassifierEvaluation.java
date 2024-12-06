@@ -27,11 +27,11 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
 import rapaio.core.param.ListParam;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
+import rapaio.data.Frame;
+import rapaio.data.Var;
 import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.eval.metric.ClassifierMetric;
 import rapaio.ml.eval.split.KFold;

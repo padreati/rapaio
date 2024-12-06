@@ -21,8 +21,10 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOpts.*;
+import static rapaio.graphics.Plotter.hist2d;
+import static rapaio.graphics.opt.GOpts.alpha;
+import static rapaio.graphics.opt.GOpts.bins;
+import static rapaio.graphics.opt.GOpts.fill;
 
 import java.io.IOException;
 

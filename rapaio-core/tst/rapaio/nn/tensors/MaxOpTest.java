@@ -28,8 +28,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import rapaio.core.distributions.Normal;
-import rapaio.narray.Order;
-import rapaio.narray.Shape;
+import rapaio.darray.Order;
+import rapaio.darray.Shape;
 import rapaio.nn.Autograd;
 import rapaio.nn.TensorManager;
 

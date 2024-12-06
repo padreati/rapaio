@@ -21,13 +21,13 @@
 
 package rapaio.graphics.plot.artist;
 
-import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-
 import static rapaio.graphics.Plotter.plot;
 import static rapaio.graphics.opt.GOpts.color;
 import static rapaio.graphics.opt.GOpts.halign;
+
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 public class TextTest extends AbstractArtistTest {
 

@@ -26,8 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.math.optimization.linesearch.LearningRateLineSearch;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/31/21.
  */

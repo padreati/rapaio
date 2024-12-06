@@ -25,7 +25,7 @@ import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 
 /**
  * The GaussianPdf kernel is an example of radial basis function kernel.
@@ -67,7 +67,7 @@ public class RBFKernel extends AbstractKernel {
     }
 
     @Override
-    public double compute(NArray<Double> v, NArray<Double> u) {
+    public double compute(DArray<Double> v, DArray<Double> u) {
         double value = deltaSumSquares(v, u);
         return Math.exp(-gamma * value);
     }

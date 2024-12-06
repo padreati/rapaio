@@ -38,7 +38,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
@@ -137,7 +137,7 @@ public final class VarNominal extends AbstractVar {
         return nominal;
     }
 
-    public static VarNominal from(List<String> dict, NArray<?> array) {
+    public static VarNominal from(List<String> dict, DArray<?> array) {
         if (array.rank() == 1) {
             VarNominal nominal = VarNominal.empty(array.dim(0), dict);
             for (int i = 0; i < nominal.size(); i++) {

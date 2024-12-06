@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import rapaio.narray.DType;
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
+import rapaio.darray.DType;
 
 /**
  * Central place of automatic differentiation in reverse mode.
@@ -37,7 +37,7 @@ import rapaio.narray.NArray;
  * Object which allows differentiation must implement {@link Tensor}.
  * <p>
  * The forward operations are performed when the computation is called using various operations
- * on {@link Tensor} or when new node are created with {@link #var(NArray)} or {@link #var(DType)}.
+ * on {@link Tensor} or when new node are created with {@link #var(DArray)} or {@link #var(DType)}.
  * <p>
  * In order to compute gradients one has to call {@link #backward(Tensor)}. The methods can be called on nodes
  * or on loss functions {@link Loss}. In all cases the node on which {@code backward} method is called must

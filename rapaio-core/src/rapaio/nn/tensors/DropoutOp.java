@@ -24,16 +24,16 @@ package rapaio.nn.tensors;
 import java.util.Random;
 
 import rapaio.core.distributions.Bernoulli;
-import rapaio.narray.DType;
-import rapaio.narray.NArray;
-import rapaio.narray.iterators.PointerIterator;
+import rapaio.darray.DArray;
+import rapaio.darray.DType;
+import rapaio.darray.iterators.PointerIterator;
 import rapaio.nn.Tensor;
 
 public class DropoutOp extends AbstractTensor {
 
     private final Tensor child;
     private final double p;
-    private NArray<?> mask;
+    private DArray<?> mask;
     private final Random random;
     private final boolean inplace;
 

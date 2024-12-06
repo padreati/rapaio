@@ -23,7 +23,6 @@ package rapaio.ml.model.svm;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.util.logging.Level;
 
 import org.junit.jupiter.api.BeforeEach;

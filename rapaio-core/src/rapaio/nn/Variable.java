@@ -21,7 +21,7 @@
 
 package rapaio.nn;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 import rapaio.nn.tensors.AbstractTensor;
 
 public final class Variable extends AbstractTensor {
@@ -30,7 +30,7 @@ public final class Variable extends AbstractTensor {
         super(tm, "variable");
     }
 
-    public Variable(TensorManager tm, NArray<?> value) {
+    public Variable(TensorManager tm, DArray<?> value) {
         super(tm, "variable");
         setValue(value);
     }

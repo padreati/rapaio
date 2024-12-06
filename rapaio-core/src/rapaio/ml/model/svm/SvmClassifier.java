@@ -28,10 +28,10 @@ import java.util.Objects;
 import rapaio.core.param.ListParam;
 import rapaio.core.param.MultiParam;
 import rapaio.core.param.ValueParam;
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.narray.NArray;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.ml.common.kernel.RBFKernel;
@@ -130,7 +130,7 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
-        NArray<Double> x = df.mapVars(inputNames).narray();
+        DArray<Double> x = df.mapVars(inputNames).darray();
         Var target = df.rvar(firstTargetName());
 
         ProblemInfo pi = ProblemInfo.from(x, target, this);
@@ -149,13 +149,13 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
 
         ClassifierResult result = ClassifierResult.build(this, df, withClasses, withDistributions);
-        NArray<Double> xs = df.mapVars(inputNames).narray();
+        DArray<Double> xs = df.mapVars(inputNames).darray();
         for (int i = 0; i < xs.dim(0); i++) {
             int k = problemInfo.levels().size();
 
             if (probability.get()) {
                 double[] prob = new double[k];
-                double score = Svm.svm_predict_probability(svm_model, xs.takesq(0, i), prob);
+                double score = Svm.svm_predict_probability(svm_model, xs.selsq(0, i), prob);
 
                 result.firstClasses().setLabel(i, problemInfo.levels().get((int) score));
                 for (int j = 0; j < k; j++) {
@@ -163,7 +163,7 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
                 }
             } else {
                 double[] values = new double[k * (k - 1) / 2];
-                double score = Svm.svm_predict_values(svm_model, xs.takesq(0, i), values);
+                double score = Svm.svm_predict_values(svm_model, xs.selsq(0, i), values);
 
                 result.firstClasses().setLabel(i, problemInfo.levels().get((int) score));
                 if(withDistributions) {

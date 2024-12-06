@@ -29,13 +29,13 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -54,7 +54,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        NArray<Double> frequency = NArrays.stride(Shape.of(3, 3),
+        DArray<Double> frequency = DArrays.stride(Shape.of(3, 3),
                 2, 1, 1,
                 0, 1, 1,
                 0, 1, 4);
@@ -89,7 +89,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        NArray<Double> frequency = NArrays.stride(Shape.of(2, 2), 2, 2, 1, 2);
+        DArray<Double> frequency = DArrays.stride(Shape.of(2, 2), 2, 2, 1, 2);
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mul(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
@@ -119,7 +119,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        NArray<Double> frequency = NArrays.stride(Shape.of(2, 2),
+        DArray<Double> frequency = DArrays.stride(Shape.of(2, 2),
                 2, 2, 1, 2);
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mul(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));

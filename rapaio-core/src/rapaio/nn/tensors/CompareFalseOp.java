@@ -21,8 +21,8 @@
 
 package rapaio.nn.tensors;
 
-import rapaio.narray.NArray;
-import rapaio.narray.Compare;
+import rapaio.darray.Compare;
+import rapaio.darray.DArray;
 import rapaio.nn.Tensor;
 
 public class CompareFalseOp extends AbstractTensor {
@@ -31,7 +31,7 @@ public class CompareFalseOp extends AbstractTensor {
     private final Compare compare;
     private final double threshold;
 
-    private NArray<?> mask;
+    private DArray<?> mask;
 
     public CompareFalseOp(Tensor x, Compare cmp, double threshold) {
         super(x.tm(), "cmpFalse");
@@ -42,7 +42,7 @@ public class CompareFalseOp extends AbstractTensor {
         forward();
     }
 
-    public NArray<?> mask() {
+    public DArray<?> mask() {
         return mask;
     }
 

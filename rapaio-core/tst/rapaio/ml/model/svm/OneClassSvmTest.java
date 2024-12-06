@@ -28,11 +28,11 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.narray.NArray;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.sys.WS;
 
@@ -44,7 +44,7 @@ public class OneClassSvmTest {
     private Var x2;
     private Frame df;
 
-    private NArray<Double> xs;
+    private DArray<Double> xs;
 
     @BeforeEach
     void beforeEach() {
@@ -62,7 +62,7 @@ public class OneClassSvmTest {
             x2.addDouble(uniform.sampleNext());
         }
         df = SolidFrame.byVars(x1, x2);
-        xs = df.narray();
+        xs = df.darray();
     }
 
     @Test

@@ -24,9 +24,9 @@ package rapaio.io.atom;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
-import rapaio.narray.Shape;
-import rapaio.narray.Storage;
-import rapaio.narray.layout.StrideLayout;
+import rapaio.darray.Shape;
+import rapaio.darray.Storage;
+import rapaio.darray.layout.StrideLayout;
 
 public class AtomRegistry {
 

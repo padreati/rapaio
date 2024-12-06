@@ -26,12 +26,12 @@ import java.util.Map;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.narray.NArray;
 import rapaio.ml.model.ClusteringResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
@@ -52,8 +52,8 @@ public class MWKMeansResult extends ClusteringResult<MWKMeans> {
     private MWKMeansResult(MWKMeans model, Frame df, VarInt assignment) {
         super(model, df, assignment);
 
-        NArray<Double> c = model.getCentroidsMatrix();
-        NArray<Double> m = df.narray();
+        DArray<Double> c = model.getCentroidsMatrix();
+        DArray<Double> m = df.darray();
         int ccount = c.dim(0);
 
         Var count = VarInt.fill(ccount, 0).name("count");
@@ -67,8 +67,8 @@ public class MWKMeansResult extends ClusteringResult<MWKMeans> {
         Map<Integer, VarDouble> errors = new HashMap<>();
 
         for (int i = 0; i < m.dim(0); i++) {
-            NArray<Double> w = model.getWeightsMatrix().takesq(0, model.subspace.get() ? assignment.getInt(i) : 0);
-            double d = model.distance(m.takesq(0, i), c.takesq(0, assignment.getInt(i)), w, model.p.get());
+            DArray<Double> w = model.getWeightsMatrix().selsq(0, model.subspace.get() ? assignment.getInt(i) : 0);
+            double d = model.distance(m.selsq(0, i), c.selsq(0, assignment.getInt(i)), w, model.p.get());
             errors.computeIfAbsent(assignment.getInt(i), row -> VarDouble.empty()).addDouble(d * d);
             distances.addDouble(d * d);
         }

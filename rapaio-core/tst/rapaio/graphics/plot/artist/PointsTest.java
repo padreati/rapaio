@@ -21,9 +21,13 @@
 
 package rapaio.graphics.plot.artist;
 
+import static rapaio.graphics.Plotter.gridLayer;
 import static rapaio.graphics.Plotter.points;
-import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOpts.*;
+import static rapaio.graphics.opt.GOpts.color;
+import static rapaio.graphics.opt.GOpts.fill;
+import static rapaio.graphics.opt.GOpts.palette;
+import static rapaio.graphics.opt.GOpts.pch;
+import static rapaio.graphics.opt.GOpts.sz;
 
 import java.io.IOException;
 
@@ -35,8 +39,8 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.printer.Figure;
 import rapaio.graphics.opt.Palette;
+import rapaio.printer.Figure;
 import rapaio.printer.ImageTools;
 
 public class PointsTest extends AbstractArtistTest {

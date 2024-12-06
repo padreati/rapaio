@@ -21,7 +21,7 @@
 
 package rapaio.data.sample;
 
-import static rapaio.printer.Format.*;
+import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 import java.util.Objects;

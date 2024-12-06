@@ -34,6 +34,7 @@ import java.util.List;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.tools.Grid2D;
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -61,7 +62,6 @@ import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment;
 import rapaio.graphics.plot.artist.Silhouette;
 import rapaio.graphics.plot.artist.Text;
-import rapaio.narray.NArray;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.printer.Figure;
@@ -541,7 +541,7 @@ public class Plot implements Figure {
         return this;
     }
 
-    public Plot matrix(NArray<?> m, GOpt<?>... opts) {
+    public Plot matrix(DArray<?> m, GOpt<?>... opts) {
         add(new Matrix(m, opts));
         return this;
     }

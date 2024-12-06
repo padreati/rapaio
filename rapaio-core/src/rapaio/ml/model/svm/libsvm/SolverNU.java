@@ -21,7 +21,7 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 
 /**
  * Solver for nu-svm classification and regression.
@@ -77,8 +77,8 @@ public final class SolverNU extends SolverC {
 
         int ip = gmaxpIdx;
         int in = gmaxnIdx;
-        NArray<Double> qip = null;
-        NArray<Double> qin = null;
+        DArray<Double> qip = null;
+        DArray<Double> qin = null;
 
         // null Q_ip not accessed: Gmaxp=-INF if ip=-1
         if (ip != -1) {

@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import rapaio.narray.Shape;
+import rapaio.darray.Shape;
 import rapaio.nn.Autograd;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;

@@ -36,12 +36,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import rapaio.core.tools.DensityVector;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
 import rapaio.printer.Format;
 
 /**
@@ -95,7 +95,7 @@ public class MultinomialEstimator extends AbstractEstimator {
 
     private final double laplaceSmoother;
     private List<String> targetLevels;
-    private Map<String, NArray<Double>> densityMap;
+    private Map<String, DArray<Double>> densityMap;
 
     private MultinomialEstimator(double laplaceSmoother, List<String> testNames) {
         super(testNames);
@@ -164,7 +164,7 @@ public class MultinomialEstimator extends AbstractEstimator {
         densityMap = new HashMap<>();
         countDensities.forEach((level, density) -> {
             // add normalized densities to prediction map
-            densityMap.put(level, NArrays.stride(density.normalize().streamValues().toArray()));
+            densityMap.put(level, DArrays.stride(density.normalize().streamValues().toArray()));
         });
 
         return false;
@@ -194,7 +194,7 @@ public class MultinomialEstimator extends AbstractEstimator {
 
         // build count vector
         List<String> testNames = getTestNames();
-        NArray<Double> x = NArrays.zeros(Shape.of(testNames.size()));
+        DArray<Double> x = DArrays.zeros(Shape.of(testNames.size()));
         for (int i = 0; i < testNames.size(); i++) {
             x.setDouble(df.getDouble(row, testNames.get(i)), i);
         }

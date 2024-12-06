@@ -21,8 +21,8 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.opt.GOpts.*;
+import static rapaio.graphics.Plotter.silhouette;
+import static rapaio.graphics.opt.GOpts.horizontal;
 
 import java.io.IOException;
 
@@ -33,10 +33,10 @@ import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Frame;
 import rapaio.data.VarInt;
 import rapaio.datasets.Datasets;
-import rapaio.printer.ImageTools;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.model.km.KMCluster;
 import rapaio.ml.model.km.KMClusterResult;
+import rapaio.printer.ImageTools;
 
 public class SilhouetteTest extends AbstractArtistTest {
 

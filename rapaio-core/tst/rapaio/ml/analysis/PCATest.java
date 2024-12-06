@@ -32,14 +32,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.ml.model.ensemble.CForest;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
 
 /**
  * Principal component analysis decomposition test
@@ -72,7 +72,7 @@ public class PCATest {
         PCA pca = PCA.newModel().center.set(true);
         pca.fit(df);
 
-        assertTrue(NArrays.stride(1.67100943, 0.83832597, 0.68195393).deepEquals(pca.getValues(), TOL));
+        assertTrue(DArrays.stride(1.67100943, 0.83832597, 0.68195393).deepEquals(pca.getValues(), TOL));
 
         double[][] eigenvectors = new double[][] {
                 {-0.49210223, -0.64670286, 0.58276136},
@@ -104,7 +104,7 @@ public class PCATest {
             assertNotEquals(out1.getDouble(0, i), out2.getDouble(0, i));
         }
 
-        NArray<Double> xx = df.narray();
+        DArray<Double> xx = df.darray();
         assertTrue(xx.mean1d(0).deepEquals(pca1.getMean()));
         assertTrue(xx.std1d(0).deepEquals(pca1.getStd()));
     }

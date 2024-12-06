@@ -30,7 +30,10 @@ import static java.lang.StrictMath.min;
 import static java.lang.StrictMath.rint;
 import static java.lang.StrictMath.sqrt;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MathTools.DBL_EPSILON;
+import static rapaio.math.MathTools.PI;
+import static rapaio.math.MathTools.betaIncReg;
+import static rapaio.math.MathTools.logBinomial;
 
 import java.io.Serial;
 

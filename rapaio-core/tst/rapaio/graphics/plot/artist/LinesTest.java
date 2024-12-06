@@ -21,7 +21,8 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.*;
+import static rapaio.graphics.Plotter.gridLayer;
+import static rapaio.graphics.Plotter.lines;
 
 import java.io.IOException;
 

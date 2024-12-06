@@ -32,13 +32,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import rapaio.data.transform.RefSort;
-import rapaio.data.transform.Transform;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
-import rapaio.narray.Shape;
-import rapaio.narray.NArray;
-import rapaio.narray.NArrays;
+import rapaio.data.transform.RefSort;
+import rapaio.data.transform.Transform;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 
@@ -558,8 +558,8 @@ public interface Frame extends Serializable, Printable {
         return this.fapply(RefSort.by(comparators));
     }
 
-    default NArray<Double> narray() {
-        NArray<Double> array = NArrays.zeros(Shape.of(rowCount(), varCount()));
+    default DArray<Double> darray() {
+        DArray<Double> array = DArrays.zeros(Shape.of(rowCount(), varCount()));
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < varCount(); j++) {
                 array.setDouble(getDouble(i, j), i, j);

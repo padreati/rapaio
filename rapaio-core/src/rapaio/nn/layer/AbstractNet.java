@@ -24,13 +24,13 @@ package rapaio.nn.layer;
 import java.io.IOException;
 import java.util.List;
 
+import rapaio.darray.DArray;
+import rapaio.darray.DType;
+import rapaio.darray.Order;
+import rapaio.darray.Shape;
+import rapaio.darray.iterators.PointerIterator;
 import rapaio.io.atom.AtomInputStream;
 import rapaio.io.atom.AtomOutputStream;
-import rapaio.narray.DType;
-import rapaio.narray.NArray;
-import rapaio.narray.Order;
-import rapaio.narray.Shape;
-import rapaio.narray.iterators.PointerIterator;
 import rapaio.nn.Net;
 import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
@@ -63,8 +63,8 @@ public abstract class AbstractNet implements Net {
     @Override
     public void saveState(AtomOutputStream out) throws IOException {
         NetState state = state();
-        List<? extends NArray<?>> values = state.tensors().stream().map(Tensor::value).toList();
-        for (NArray<?> value : values) {
+        List<? extends DArray<?>> values = state.tensors().stream().map(Tensor::value).toList();
+        for (DArray<?> value : values) {
             out.saveString(value.dtype().id().name());
             out.saveAtom(value.shape());
             switch (value.dtype().id()) {
@@ -76,7 +76,7 @@ public abstract class AbstractNet implements Net {
         }
     }
 
-    private void saveByteArray(AtomOutputStream out, NArray<?> value) throws IOException {
+    private void saveByteArray(AtomOutputStream out, DArray<?> value) throws IOException {
         byte[] array = new byte[value.size()];
         PointerIterator it = value.ptrIterator(Order.C);
         int p = 0;
@@ -86,7 +86,7 @@ public abstract class AbstractNet implements Net {
         out.saveBytes(array);
     }
 
-    private void saveIntArray(AtomOutputStream out, NArray<?> value) throws IOException {
+    private void saveIntArray(AtomOutputStream out, DArray<?> value) throws IOException {
         int[] array = new int[value.size()];
         PointerIterator it = value.ptrIterator(Order.C);
         int p = 0;
@@ -96,7 +96,7 @@ public abstract class AbstractNet implements Net {
         out.saveInts(array);
     }
 
-    private void saveFloatArray(AtomOutputStream out, NArray<?> value) throws IOException {
+    private void saveFloatArray(AtomOutputStream out, DArray<?> value) throws IOException {
         float[] array = new float[value.size()];
         PointerIterator it = value.ptrIterator(Order.C);
         int p = 0;
@@ -106,7 +106,7 @@ public abstract class AbstractNet implements Net {
         out.saveFloats(array);
     }
 
-    private void saveDoubleArray(AtomOutputStream out, NArray<?> value) throws IOException {
+    private void saveDoubleArray(AtomOutputStream out, DArray<?> value) throws IOException {
         double[] array = new double[value.size()];
         PointerIterator it = value.ptrIterator(Order.C);
         int p = 0;
@@ -119,8 +119,8 @@ public abstract class AbstractNet implements Net {
     @Override
     public void loadState(AtomInputStream in) throws IOException {
         NetState state = state();
-        List<? extends NArray<?>> values = state.tensors().stream().map(Tensor::value).toList();
-        for (NArray<?> value : values) {
+        List<? extends DArray<?>> values = state.tensors().stream().map(Tensor::value).toList();
+        for (DArray<?> value : values) {
             DType dt = DType.fromId(in.readString());
             Shape shape = in.loadAtom(Shape.class);
             switch (dt.id()) {
@@ -132,7 +132,7 @@ public abstract class AbstractNet implements Net {
         }
     }
 
-    private void readeByteArray(AtomInputStream in, NArray<?> value) throws IOException {
+    private void readeByteArray(AtomInputStream in, DArray<?> value) throws IOException {
         byte[] array = in.readBytes();
         PointerIterator it = value.ptrIterator(Order.C);
         int p = 0;
@@ -141,7 +141,7 @@ public abstract class AbstractNet implements Net {
         }
     }
 
-    private void readeIntArray(AtomInputStream in, NArray<?> value) throws IOException {
+    private void readeIntArray(AtomInputStream in, DArray<?> value) throws IOException {
         int[] array = in.readInts();
         PointerIterator it = value.ptrIterator(Order.C);
         int p = 0;
@@ -150,7 +150,7 @@ public abstract class AbstractNet implements Net {
         }
     }
 
-    private void readeFloatArray(AtomInputStream in, NArray<?> value) throws IOException {
+    private void readeFloatArray(AtomInputStream in, DArray<?> value) throws IOException {
         float[] array = in.readFloats();
         PointerIterator it = value.ptrIterator(Order.C);
         int p = 0;
@@ -159,7 +159,7 @@ public abstract class AbstractNet implements Net {
         }
     }
 
-    private void readeDoubleArray(AtomInputStream in, NArray<?> value) throws IOException {
+    private void readeDoubleArray(AtomInputStream in, DArray<?> value) throws IOException {
         double[] array = in.readDoubles();
         PointerIterator it = value.ptrIterator(Order.C);
         int p = 0;

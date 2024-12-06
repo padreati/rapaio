@@ -26,7 +26,8 @@ import static java.lang.StrictMath.floorDiv;
 import static java.lang.StrictMath.rint;
 import static java.lang.StrictMath.sqrt;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MathTools.incGammaC;
+import static rapaio.math.MathTools.pdfPois;
 
 import java.io.Serial;
 

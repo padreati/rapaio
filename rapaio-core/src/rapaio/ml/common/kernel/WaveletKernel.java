@@ -24,7 +24,7 @@ package rapaio.ml.common.kernel;
 import java.io.Serial;
 import java.util.function.Function;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 import rapaio.printer.Format;
 
 /**
@@ -76,7 +76,7 @@ public class WaveletKernel extends AbstractKernel {
     }
 
     @Override
-    public double compute(NArray<Double> v, NArray<Double> u) {
+    public double compute(DArray<Double> v, DArray<Double> u) {
         double result = 1;
         for (int i = 0; i < v.size(); i++) {
             if (invariant) {

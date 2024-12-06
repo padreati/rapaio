@@ -26,12 +26,12 @@ import java.util.Map;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.narray.NArray;
 import rapaio.ml.model.ClusteringResult;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
@@ -52,8 +52,8 @@ public class KMClusterResult extends ClusteringResult<KMCluster> {
     private KMClusterResult(KMCluster model, Frame df, VarInt assignment) {
         super(model, df, assignment);
 
-        NArray<Double> c = model.getCentroidsMatrix();
-        NArray<Double> m = df.narray();
+        DArray<Double> c = model.getCentroidsMatrix();
+        DArray<Double> m = df.darray();
         int ccount = c.dim(0);
 
         Var id = VarInt.seq(1, ccount).name("ID");
@@ -68,7 +68,7 @@ public class KMClusterResult extends ClusteringResult<KMCluster> {
         Map<Integer, VarDouble> errors = new HashMap<>();
 
         for (int i = 0; i < m.dim(0); i++) {
-            double d = model.method.get().distance().compute(c.takesq(0, assignment.getInt(i)), m.takesq(0, i));
+            double d = model.method.get().distance().compute(c.selsq(0, assignment.getInt(i)), m.selsq(0, i));
             errors.computeIfAbsent(assignment.getInt(i), row -> VarDouble.empty()).addDouble(d * d);
             distances.addDouble(d * d);
         }

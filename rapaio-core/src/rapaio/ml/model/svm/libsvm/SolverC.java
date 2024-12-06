@@ -23,7 +23,7 @@ package rapaio.ml.model.svm.libsvm;
 
 import java.util.logging.Logger;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 import rapaio.util.collection.TArrays;
 
 /**
@@ -131,7 +131,7 @@ public class SolverC {
 
         if (nr_free * len > 2 * activeSize * (len - activeSize)) {
             for (i = activeSize; i < len; i++) {
-                NArray<Double> Q_i = q.getQ(i, activeSize);
+                DArray<Double> Q_i = q.getQ(i, activeSize);
                 for (j = 0; j < activeSize; j++) {
                     if (is_free(j)) {
                         grad[i] += alpha[j] * Q_i.get(j);
@@ -141,7 +141,7 @@ public class SolverC {
         } else {
             for (i = 0; i < activeSize; i++) {
                 if (is_free(i)) {
-                    NArray<Double> Q_i = q.getQ(i, len);
+                    DArray<Double> Q_i = q.getQ(i, len);
                     double alpha_i = alpha[i];
                     for (j = activeSize; j < len; j++) {
                         grad[j] += alpha_i * Q_i.get(j);
@@ -175,7 +175,7 @@ public class SolverC {
         }
         for (int i = 0; i < trainingSize; i++) {
             if (!isLowerBound(i)) {
-                NArray<Double> Q_i = q.getQ(i, trainingSize);
+                DArray<Double> Q_i = q.getQ(i, trainingSize);
                 double alpha_i = alpha[i];
                 int j;
                 for (j = 0; j < trainingSize; j++) {
@@ -252,8 +252,8 @@ public class SolverC {
 
             // update alpha[i] and alpha[j], handle bounds carefully
 
-            NArray<Double> qi = Q.getQ(i, activeSize);
-            NArray<Double> qj = Q.getQ(j, activeSize);
+            DArray<Double> qi = Q.getQ(i, activeSize);
+            DArray<Double> qj = Q.getQ(j, activeSize);
 
             double ci = getC(i);
             double cj = getC(j);
@@ -438,7 +438,7 @@ public class SolverC {
         }
 
         int i = Gmax_idx;
-        NArray<Double> Q_i = null;
+        DArray<Double> Q_i = null;
         // null Q_i not accessed: Gmax=-INF if i=-1
         if (i != -1) {
             Q_i = q.getQ(i, activeSize);

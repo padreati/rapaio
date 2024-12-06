@@ -29,6 +29,7 @@ import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.core.tools.Grid2D;
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
@@ -53,7 +54,6 @@ import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.PolyPath;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Text;
-import rapaio.narray.NArray;
 import rapaio.ml.eval.ClusterSilhouette;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
@@ -192,7 +192,7 @@ public final class Plotter {
         return plot().add(new Text(x, y, text, opts));
     }
 
-    public static Plot matrix(NArray<?> m, GOpt<?>... opts) {
+    public static Plot matrix(DArray<?> m, GOpt<?>... opts) {
         return plot().add(new Matrix(m, opts));
     }
 

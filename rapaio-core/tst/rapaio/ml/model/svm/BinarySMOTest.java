@@ -34,6 +34,9 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 
 import rapaio.core.SamplingTools;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
@@ -41,9 +44,6 @@ import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
 import rapaio.data.transform.StandardScaler;
 import rapaio.datasets.Datasets;
-import rapaio.narray.NArrays;
-import rapaio.narray.Shape;
-import rapaio.narray.NArray;
 import rapaio.ml.common.kernel.CauchyKernel;
 import rapaio.ml.common.kernel.ExponentialKernel;
 import rapaio.ml.common.kernel.GeneralizedMinKernel;
@@ -111,7 +111,7 @@ public class BinarySMOTest {
 
         smo1.fit(df, "class");
 
-        NArray<Double> test = NArrays.stride(Shape.of(3, 2),
+        DArray<Double> test = DArrays.stride(Shape.of(3, 2),
                 1.5, 1.5,
                 1, 1,
                 2, 2
@@ -138,7 +138,7 @@ public class BinarySMOTest {
 
         smo1.fit(df, "class");
 
-        NArray<Double> test = NArrays.stride(Shape.of(5, 2),
+        DArray<Double> test = DArrays.stride(Shape.of(5, 2),
                 1.5, 1.5,
                 1, 1,
                 2, 2,

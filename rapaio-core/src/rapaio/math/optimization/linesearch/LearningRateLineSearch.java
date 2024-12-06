@@ -21,9 +21,9 @@
 
 package rapaio.math.optimization.linesearch;
 
+import rapaio.darray.DArray;
 import rapaio.math.optimization.functions.RDerivative;
 import rapaio.math.optimization.functions.RFunction;
-import rapaio.narray.NArray;
 
 /**
  * Fixed rate line search strategy. This strategy actually does not compute a step size,
@@ -49,7 +49,7 @@ public class LearningRateLineSearch implements LineSearch {
     }
 
     @Override
-    public double search(RFunction f, RDerivative df, NArray<Double> x, NArray<Double> p, double t0) {
+    public double search(RFunction f, RDerivative df, DArray<Double> x, DArray<Double> p, double t0) {
         return r;
     }
 }

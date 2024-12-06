@@ -23,7 +23,7 @@ package rapaio.ml.common.kernel;
 
 import java.io.Serializable;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 
 /**
  * Kernel function interface
@@ -38,5 +38,5 @@ public interface Kernel extends Serializable {
 
     boolean isLinear();
 
-    double compute(NArray<Double> v, NArray<Double> u);
+    double compute(DArray<Double> v, DArray<Double> u);
 }

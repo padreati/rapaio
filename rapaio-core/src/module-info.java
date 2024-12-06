@@ -44,15 +44,15 @@ module rapaio.core {
     exports rapaio.math.optimization.scalar;
 
     exports rapaio.math;
-    exports rapaio.narray;
-    exports rapaio.narray.manager;
-    exports rapaio.narray.iterators;
-    exports rapaio.narray.layout;
-    exports rapaio.narray.operator;
-    exports rapaio.narray.operator.impl;
-    exports rapaio.narray.matrix;
-    exports rapaio.narray.storage;
-    exports rapaio.narray.storage.array;
+    exports rapaio.darray;
+    exports rapaio.darray.manager;
+    exports rapaio.darray.iterators;
+    exports rapaio.darray.layout;
+    exports rapaio.darray.operator;
+    exports rapaio.darray.operator.impl;
+    exports rapaio.darray.matrix;
+    exports rapaio.darray.storage;
+    exports rapaio.darray.storage.array;
 
     exports rapaio.nn;
     exports rapaio.nn.loss;

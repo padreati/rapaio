@@ -23,11 +23,11 @@ package rapaio.nn;
 
 import java.util.function.Supplier;
 
-import rapaio.narray.NArray;
+import rapaio.darray.DArray;
 
-public record BackFun(Tensor ref, Supplier<NArray<?>> fun) {
+public record BackFun(Tensor ref, Supplier<DArray<?>> fun) {
 
-    public static BackFun of(Tensor ref, Supplier<NArray<?>> backFun) {
+    public static BackFun of(Tensor ref, Supplier<DArray<?>> backFun) {
         return new BackFun(ref, backFun);
     }
 }

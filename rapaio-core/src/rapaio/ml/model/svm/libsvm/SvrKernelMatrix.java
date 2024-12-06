@@ -21,9 +21,9 @@
 
 package rapaio.ml.model.svm.libsvm;
 
-import rapaio.narray.NArray;
-import rapaio.narray.Shape;
-import rapaio.narray.NArrays;
+import rapaio.darray.DArray;
+import rapaio.darray.DArrays;
+import rapaio.darray.Shape;
 import rapaio.ml.common.kernel.Kernel;
 import rapaio.util.Reference;
 import rapaio.util.collection.TArrays;
@@ -34,14 +34,14 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
     private final byte[] sign;
     private final int[] index;
     private int nextBuffer;
-    private final NArray<Double>[] buffer;
+    private final DArray<Double>[] buffer;
 
-    SvrKernelMatrix(int len, NArray<Double>[] xs, Kernel kernel, long cacheSize) {
+    SvrKernelMatrix(int len, DArray<Double>[] xs, Kernel kernel, long cacheSize) {
         super(xs, kernel, new Cache(len, cacheSize * (1 << 20)), new double[2 * len]);
         this.l = len;
-        buffer = new NArray[] {
-                NArrays.zeros(Shape.of(2 * len)),
-                NArrays.zeros(Shape.of(2 * len))
+        buffer = new DArray[] {
+                DArrays.zeros(Shape.of(2 * len)),
+                DArrays.zeros(Shape.of(2 * len))
         };
         sign = new byte[2 * len];
         index = new int[2 * len];
@@ -62,8 +62,8 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
         TArrays.swap(qd, i, j);
     }
 
-    NArray<Double> getQ(int i, int len) {
-        Reference<NArray<Double>> data = new Reference<>();
+    DArray<Double> getQ(int i, int len) {
+        Reference<DArray<Double>> data = new Reference<>();
         if (cache.getData(index[i], data, l) < l) {
             for (int j = 0; j < l; j++) {
                 data.get().set(kernel.compute(xs[index[i]], xs[j]), j);
@@ -71,7 +71,7 @@ class SvrKernelMatrix extends AbstractKernelMatrix {
         }
 
         // reorder and copy
-        NArray<Double> buf = buffer[nextBuffer];
+        DArray<Double> buf = buffer[nextBuffer];
         nextBuffer = 1 - nextBuffer;
         byte si = sign[i];
         for (int j = 0; j < len; j++) {

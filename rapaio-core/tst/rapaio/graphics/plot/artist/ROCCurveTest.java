@@ -21,7 +21,7 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.Plotter.*;
+import static rapaio.graphics.Plotter.rocCurve;
 
 import java.io.IOException;
 
@@ -31,9 +31,9 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.datasets.Datasets;
+import rapaio.ml.eval.metric.ROC;
 import rapaio.printer.Figure;
 import rapaio.printer.ImageTools;
-import rapaio.ml.eval.metric.ROC;
 
 public class ROCCurveTest extends AbstractArtistTest {
 

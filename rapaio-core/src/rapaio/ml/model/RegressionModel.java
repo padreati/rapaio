@@ -31,6 +31,8 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import rapaio.core.param.ParamSet;
+import rapaio.core.param.ValueParam;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -38,8 +40,6 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
-import rapaio.core.param.ParamSet;
-import rapaio.core.param.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.printer.TextTable;
 

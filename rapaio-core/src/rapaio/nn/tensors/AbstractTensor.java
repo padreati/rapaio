@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import rapaio.narray.DType;
-import rapaio.narray.NArray;
-import rapaio.narray.Shape;
+import rapaio.darray.DArray;
+import rapaio.darray.DType;
+import rapaio.darray.Shape;
 import rapaio.nn.BackFun;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
@@ -36,8 +36,8 @@ public abstract class AbstractTensor implements Tensor {
 
     protected String name;
     protected TensorManager tm;
-    private NArray<?> value;
-    private NArray<?> grad;
+    private DArray<?> value;
+    private DArray<?> grad;
     protected boolean requiresGrad;
     private final List<BackFun> backfuns = new ArrayList<>();
 
@@ -88,27 +88,27 @@ public abstract class AbstractTensor implements Tensor {
     }
 
     @Override
-    public final NArray<?> value() {
+    public final DArray<?> value() {
         return value;
     }
 
     @Override
-    public final void setValue(NArray<?> data) {
+    public final void setValue(DArray<?> data) {
         value = data;
     }
 
     @Override
-    public final NArray<?> grad() {
+    public final DArray<?> grad() {
         return grad;
     }
 
     @Override
-    public final void setGrad(NArray<?> grad) {
+    public final void setGrad(DArray<?> grad) {
         this.grad = grad;
     }
 
     @Override
-    public final void addGrad(NArray<?> grad) {
+    public final void addGrad(DArray<?> grad) {
         if (this.grad == null) {
             this.grad = grad;
         } else {
@@ -137,7 +137,7 @@ public abstract class AbstractTensor implements Tensor {
         return backfuns;
     }
 
-    protected final void backEdge(Tensor ref, Supplier<NArray<?>> backFun) {
+    protected final void backEdge(Tensor ref, Supplier<DArray<?>> backFun) {
         backfuns.add(BackFun.of(ref, backFun));
     }
 

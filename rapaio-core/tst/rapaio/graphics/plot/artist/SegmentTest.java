@@ -21,7 +21,8 @@
 
 package rapaio.graphics.plot.artist;
 
-import static rapaio.graphics.opt.GOpts.*;
+import static rapaio.graphics.opt.GOpts.fill;
+import static rapaio.graphics.opt.GOpts.lwd;
 
 import java.io.IOException;
 

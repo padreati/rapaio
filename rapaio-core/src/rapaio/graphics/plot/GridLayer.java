@@ -29,10 +29,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import rapaio.printer.Figure;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.Palette;
+import rapaio.printer.Figure;
 import rapaio.util.collection.DoubleArrays;
 
 /**

@@ -23,8 +23,8 @@ package rapaio.ml.common.distance;
 
 import static java.lang.StrictMath.pow;
 
+import rapaio.darray.DArray;
 import rapaio.data.Frame;
-import rapaio.narray.NArray;
 
 public class MinkowskiDistance implements Distance {
 
@@ -40,7 +40,7 @@ public class MinkowskiDistance implements Distance {
     }
 
     @Override
-    public double compute(NArray<Double> x, NArray<Double> y) {
+    public double compute(DArray<Double> x, DArray<Double> y) {
         return pow(reduced(x, y), 1 / p);
     }
 
@@ -50,7 +50,7 @@ public class MinkowskiDistance implements Distance {
     }
 
     @Override
-    public double reduced(NArray<Double> x, NArray<Double> y) {
+    public double reduced(DArray<Double> x, DArray<Double> y) {
         return x.sub(y).apply_(v -> pow(v, p)).sum();
     }
 
