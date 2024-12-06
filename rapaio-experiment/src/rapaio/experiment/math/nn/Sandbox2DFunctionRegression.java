@@ -70,10 +70,10 @@ public class Sandbox2DFunctionRegression {
         Net nn = new Sequential(tm,
                 new BatchNorm1D(tm, 4),
                 new Linear(tm, 4, 1_000, true),
-                new ReLU(),
+                new ReLU(tm),
                 new BatchNorm1D(tm, 1_000),
                 new Linear(tm, 1_000, 1, true),
-                new ReLU()
+                new ReLU(tm)
         );
 
 

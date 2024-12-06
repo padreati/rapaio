@@ -25,13 +25,14 @@ import java.util.List;
 
 import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class Softmax extends AbstractNet {
 
     private final int dim;
 
-    public Softmax(int dim) {
-        super(null);
+    public Softmax(TensorManager tm, int dim) {
+        super(tm);
         this.dim = dim;
     }
 

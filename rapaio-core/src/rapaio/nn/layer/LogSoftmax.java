@@ -25,13 +25,14 @@ import java.util.List;
 
 import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class LogSoftmax extends AbstractNet {
 
     private final int dim;
 
-    public LogSoftmax(int dim) {
-        super(null);
+    public LogSoftmax(TensorManager tm, int dim) {
+        super(tm);
         this.dim = dim;
     }
 

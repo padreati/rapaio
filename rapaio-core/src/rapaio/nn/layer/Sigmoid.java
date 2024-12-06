@@ -25,11 +25,12 @@ import java.util.List;
 
 import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class Sigmoid extends AbstractNet {
 
-    public Sigmoid() {
-        super(null);
+    public Sigmoid(TensorManager tm) {
+        super(tm);
     }
 
     @Override

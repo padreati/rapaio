@@ -96,7 +96,7 @@ public class MultinoulliEstimatorTest {
         assertEquals("Multinoulli{tests=[x], laplaceSmoother=1, values=[{targetLevel:a,[x:0.5,y:0.333,z:0.167,},{targetLevel:b,[x:0.2,y:0.4,z:0.4,},]}", estimator1.fittedName());
         assertEquals(0.5, estimator1.predict(df1, 0, "a"));
 
-        Frame df2 = df1.fapply(OneHotEncoding.on("x"));
+        Frame df2 = df1.fapply(OneHotEncoding.on(false, false, "x"));
         var estimator2 = MultinoulliEstimator.forRange(df2, VarRange.byName(name -> !name.equals("t")));
         estimator2.fit(df2, VarDouble.empty(5), "t");
         assertEquals("Multinoulli{tests=[x.x,x.y,x.z], laplaceSmoother=1, values=[{targetLevel:a,[x.x:0.5,x.y:0.333,x.z:0.167,},{targetLevel:b,[x.x:0.2,x.y:0.4,x.z:0.4,},]}", estimator2.fittedName());

@@ -25,11 +25,12 @@ import java.util.List;
 
 import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class Tanh extends AbstractNet {
 
-    public Tanh() {
-        super(null);
+    public Tanh(TensorManager tm) {
+        super(tm);
     }
 
     @Override

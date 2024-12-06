@@ -59,15 +59,17 @@ public class SandboxIris {
         ArrayDataset train = split[0];
         ArrayDataset test = split[1];
 
+        int n = 1_000;
+
         Net nn = new Sequential(tm,
                 new BatchNorm1D(tm, 4),
-                new Linear(tm, 4, 12, true),
+                new Linear(tm, 4, n, true),
                 new ELU(tm),
-                new BatchNorm1D(tm, 12),
-                new Linear(tm, 12, 3, true),
+                new BatchNorm1D(tm, n),
+                new Linear(tm, n, 3, true),
                 new ELU(tm),
 //                new BatchNorm1D(tm, 3),
-                new LogSoftmax(1)
+                new LogSoftmax(tm, 1)
         );
 
         Optimizer optimizer = Optimizer.Adam(tm, nn.parameters()).lr.set(1e-4);
@@ -75,7 +77,7 @@ public class SandboxIris {
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
         VarDouble testLoss = VarDouble.empty().name("trainLoss");
 
-        for (int epoch = 0; epoch < 10_000; epoch++) {
+        for (int epoch = 0; epoch < 100; epoch++) {
 
             optimizer.zeroGrad();
             nn.train();
@@ -96,7 +98,7 @@ public class SandboxIris {
             trainLoss.addDouble(trainLossValue);
             testLoss.addDouble(testLossValue);
 
-            if (epoch % 50 == 0) {
+            if (epoch % 10 == 0) {
 
                 var y_pred = nn.forward11(tm.var(x)).value().exp().argmax1d(1);
                 var levels = iris.rvar("class").levels();

@@ -62,7 +62,7 @@ public class OneHotEncodingTest {
     void testNominal() {
         Frame df = TransformTestUtil.allDoubleNominal(random, 100, 2, 2).mapVars(VarRange.of(2));
 
-        List<String> levels = df.rvar(0).levels();
+        List<String> levels = df.rvar(0).levels(true);
 
         Frame f1 = df.fapply(OneHotEncoding.on(false, true, "all"));
         assertEquals(levels.size(), f1.varCount());

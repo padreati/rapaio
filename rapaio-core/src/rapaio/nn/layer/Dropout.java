@@ -25,18 +25,19 @@ import java.util.List;
 
 import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class Dropout extends AbstractNet {
 
     private final double p;
     private final boolean inplace;
 
-    public Dropout(double p) {
-        this(p, false);
+    public Dropout(TensorManager tm, double p) {
+        this(tm, p, false);
     }
 
-    public Dropout(double p, boolean inplace) {
-        super(null);
+    public Dropout(TensorManager tm, double p, boolean inplace) {
+        super(tm);
         this.p = p;
         this.inplace = inplace;
     }

@@ -25,11 +25,12 @@ import java.util.List;
 
 import rapaio.nn.NetState;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class ReLU extends AbstractNet {
 
-    public ReLU() {
-        super(null);
+    public ReLU(TensorManager tm) {
+        super(tm);
     }
 
     @Override
