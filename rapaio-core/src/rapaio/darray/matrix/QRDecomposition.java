@@ -44,7 +44,7 @@ public class QRDecomposition<N extends Number> implements Serializable {
     public QRDecomposition(DArray<N> ref) {
         // Initialize.
         this.ref = ref;
-        this.dt = ref.dtype();
+        this.dt = ref.dt();
         this.tm = ref.manager();
 
         QR = ref.copy();

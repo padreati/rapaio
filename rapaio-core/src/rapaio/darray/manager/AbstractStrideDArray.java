@@ -57,7 +57,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
     public AbstractStrideDArray(DArrayManager manager, StrideLayout layout, Storage storage) {
         super(manager, storage);
         this.layout = layout;
-        this.loop = StrideLoopDescriptor.of(layout, layout.storageFastOrder(), dtype().vs());
+        this.loop = StrideLoopDescriptor.of(layout, layout.storageFastOrder(), dt().vs());
     }
 
     @Override
@@ -67,14 +67,14 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
 
     @Override
     public final DArray<N> t_() {
-        return manager.stride(dtype(), layout.revert(), storage);
+        return manager.stride(dt(), layout.revert(), storage);
     }
 
     @Override
     public final DArray<N> ravel(Order askOrder) {
         var compact = layout.computeFortranLayout(askOrder, true);
         if (compact.shape().rank() == 1) {
-            return manager.stride(dtype(), compact, storage);
+            return manager.stride(dt(), compact, storage);
         }
         return flatten(askOrder);
     }
@@ -91,7 +91,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         if (newLayout == layout) {
             return this;
         }
-        return manager.stride(dtype(), newLayout, storage);
+        return manager.stride(dt(), newLayout, storage);
     }
 
     @Override
@@ -100,32 +100,32 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         if (newLayout == layout) {
             return this;
         }
-        return manager.stride(dtype(), newLayout, storage);
+        return manager.stride(dt(), newLayout, storage);
     }
 
     @Override
     public final DArray<N> permute(int... dims) {
-        return manager.stride(dtype(), layout().permute(dims), storage);
+        return manager.stride(dt(), layout().permute(dims), storage);
     }
 
     @Override
     public final DArray<N> moveAxis(int src, int dst) {
-        return manager.stride(dtype(), layout.moveAxis(src, dst), storage);
+        return manager.stride(dt(), layout.moveAxis(src, dst), storage);
     }
 
     @Override
     public final DArray<N> swapAxis(int src, int dst) {
-        return manager.stride(dtype(), layout.swapAxis(src, dst), storage);
+        return manager.stride(dt(), layout.swapAxis(src, dst), storage);
     }
 
     @Override
     public final DArray<N> narrow(int axis, boolean keepdim, int start, int end) {
-        return manager.stride(dtype(), layout.narrow(axis, keepdim, start, end), storage);
+        return manager.stride(dt(), layout.narrow(axis, keepdim, start, end), storage);
     }
 
     @Override
     public final DArray<N> narrowAll(boolean keepdim, int[] starts, int[] ends) {
-        return manager.stride(dtype(), layout.narrowAll(keepdim, starts, ends), storage);
+        return manager.stride(dt(), layout.narrowAll(keepdim, starts, ends), storage);
     }
 
     @Override
@@ -167,7 +167,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
 
     @Override
     public final DArray<N> expand(int axis, int size) {
-        return manager.stride(dtype(), layout.expand(axis, size), storage);
+        return manager.stride(dt(), layout.expand(axis, size), storage);
     }
 
     @Override
@@ -197,7 +197,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
             newDims[axis] = 1;
             newStrides[axis] = 1;
             int newOffset = layout().offset() + indices[0] * layout.stride(axis);
-            return manager.stride(dtype(), StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
+            return manager.stride(dt(), StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
         }
 
         // a geometric sequence of indices, even if the step is 0 (repeated elements)
@@ -216,7 +216,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
                 newDims[axis] = indices.length;
                 newStrides[axis] = layout.stride(axis) * step;
                 int newOffset = layout.offset() + indices[0] * layout.stride(axis);
-                return manager.stride(dtype(), StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
+                return manager.stride(dt(), StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
             }
         }
 
@@ -243,7 +243,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
     }
 
     @Override
-    public void argSort(int[] indices, boolean asc) {
+    public void externalSort(int[] indices, boolean asc) {
         if (layout.rank() != 1) {
             throw new IllegalArgumentException("NArray must be flat (have a single dimension).");
         }
@@ -269,7 +269,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
     @SuppressWarnings("unchecked")
     @Override
     public <M extends Number> DArray<M> cast(DType<M> dt, Order askOrder) {
-        if (dt.equals(dtype()) && (askOrder.equals(Order.A) ||
+        if (dt.equals(dt()) && (askOrder.equals(Order.A) ||
                 (layout.isCOrdered() && askOrder.equals(Order.C)) ||
                 (layout.isFOrdered() && askOrder.equals(Order.F)))) {
             return (DArray<M>) this;
@@ -313,7 +313,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
     public double[] toDoubleArray(Order askOrder) {
         double[] copy = new double[size()];
         int pos = 0;
-        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vs());
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dt().vs());
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 int p = offset + i * loop.step;

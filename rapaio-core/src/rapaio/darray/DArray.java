@@ -62,7 +62,7 @@ import rapaio.util.function.IntIntBiFunction;
  *     <li>matrix</li> an NArray with two dimensions
  * </ul>
  * <p>
- * The type of data elements from an NArray is marked as a generic data type and also described by {@link #dtype()}.
+ * The type of data elements from an NArray is marked as a generic data type and also described by {@link #dt()}.
  * <p>
  * An NArray is created by a factory which implements {@link DArrayManager}. Each NArray provides a link towards the manager
  * which created it through {@link #manager()}.
@@ -98,7 +98,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *
      * @return NArray data type
      */
-    public abstract DType<N> dtype();
+    public abstract DType<N> dt();
 
     /**
      * NArray layout contains the complete information about logical layout of data elements in storage memory.
@@ -643,53 +643,21 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         return rem(order, axis, indices).squeeze(axis);
     }
 
-    /**
-     * Creates a new NArray with values sorted along the dimension given as parameters. The order is ascending or descending, given
-     * as parameter.
-     * <p>
-     * The order of the new NArray is the default order.
-     *
-     * @param axis dimension along which the values will be sorted
-     * @param asc  if true the values will be sorted in ascending order, otherwise in descending order
-     * @return a new copy NArray with values sorted along the given dimension
-     */
-    public final DArray<N> sort(int axis, boolean asc) {
-        return sort(Order.defaultOrder(), axis, asc);
+    public final DArray<N> gather(int axis, DArray<?> index) {
+        return gather(axis, index, Order.defaultOrder());
     }
 
-    /**
-     * Creates a new NArray with values sorted along the dimension given as parameters. The order is ascending or descending, given
-     * as parameter.
-     * <p>
-     * The order of the new NArray is the order specified as parameter.
-     *
-     * @param order order of the new NArray
-     * @param axis  dimension along which the values will be sorted
-     * @param asc   if true the values will be sorted in ascending order, otherwise in descending order
-     * @return a new copy NArray with values sorted along the given dimension
-     */
-    public final DArray<N> sort(Order order, int axis, boolean asc) {
-        return copy(order).sort_(axis, asc);
+    public final DArray<N> gather(int axis, DArray<?> index, Order askOrder) {
+        return manager.zeros(dt(), index.shape(), askOrder).gather_(axis, index, this);
     }
 
-    /**
-     * Sort in place values along the dimension given as parameter. The order is ascending or descending, given
-     * as parameter.
-     *
-     * @param axis dimension along which the values will be sorted
-     * @param asc  if true the values will be sorted in ascending order, otherwise in descending order
-     * @return same NArray instance with values sorted along the given dimension
-     */
-    public abstract DArray<N> sort_(int axis, boolean asc);
+    public abstract DArray<N> gather_(int axis, DArray<?> index, DArray<?> input);
 
-    /**
-     * Sorts indices given as an array of parameters according to the values from flatten NArray.
-     * NArray must have a single dimension with size greater than the biggest index value.
-     *
-     * @param indices indices which will be sorted
-     * @param asc     sort ascending if true, descending otherwise
-     */
-    public abstract void argSort(int[] indices, boolean asc);
+    public final DArray<N> scatter(int axis, DArray<?> index, DArray<N> out) {
+        return out.scatter_(axis, index, this);
+    }
+
+    public abstract DArray<N> scatter_(int axis, DArray<?> index, DArray<?> input);
 
     /**
      * Get value at indexed position. An indexed position is a tuple of rank
@@ -992,33 +960,32 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         return unaryOp_(DArrayOp.unaryOpCompareMask(cmp, value));
     }
 
-
     public final DArray<N> clamp(N min, N max) {
-        return unaryOp(DArrayOp.unaryClamp(dtype(), min, max));
+        return unaryOp(DArrayOp.unaryClamp(dt(), min, max));
     }
 
     public final DArray<N> clamp(int min, int max) {
-        return unaryOp(DArrayOp.unaryClamp(dtype(), dtype().cast(min), dtype().cast(max)));
+        return unaryOp(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)));
     }
 
     public final DArray<N> clamp(double min, double max) {
-        return unaryOp(DArrayOp.unaryClamp(dtype(), dtype().cast(min), dtype().cast(max)));
+        return unaryOp(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)));
     }
 
     public final DArray<N> clamp(Order order, N min, N max) {
-        return unaryOp(DArrayOp.unaryClamp(dtype(), min, max), order);
+        return unaryOp(DArrayOp.unaryClamp(dt(), min, max), order);
     }
 
     public final DArray<N> clamp(Order order, int min, int max) {
-        return unaryOp(DArrayOp.unaryClamp(dtype(), dtype().cast(min), dtype().cast(max)), order);
+        return unaryOp(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)), order);
     }
 
     public final DArray<N> clamp(Order order, double min, double max) {
-        return unaryOp(DArrayOp.unaryClamp(dtype(), dtype().cast(min), dtype().cast(max)), order);
+        return unaryOp(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)), order);
     }
 
     public final DArray<N> clamp_(N min, N max) {
-        return unaryOp_(DArrayOp.unaryClamp(dtype(), min, max));
+        return unaryOp_(DArrayOp.unaryClamp(dt(), min, max));
     }
 
     public final DArray<N> rint() {
@@ -1597,11 +1564,11 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     public abstract DArray<N> fma_(N factor, DArray<?> t);
 
     public final DArray<N> fma_(int factor, DArray<?> t) {
-        return fma_(dtype().cast(factor), t);
+        return fma_(dt().cast(factor), t);
     }
 
     public final DArray<N> fma_(double factor, DArray<?> t) {
-        return fma_(dtype().cast(factor), t);
+        return fma_(dt().cast(factor), t);
     }
 
     //--------- REDUCE OPERATIONS ----------------//
@@ -1727,7 +1694,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     public final N std() {
-        return dtype().cast(Math.sqrt(var().doubleValue()));
+        return dt().cast(Math.sqrt(var().doubleValue()));
     }
 
     public final DArray<N> var1d(int axis) {
@@ -1751,7 +1718,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     public final N stdc(int ddof) {
-        return dtype().cast(Math.sqrt(varc(ddof).doubleValue()));
+        return dt().cast(Math.sqrt(varc(ddof).doubleValue()));
     }
 
     public final DArray<N> varc1d(int axis, int ddof) {
@@ -2265,15 +2232,15 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     public abstract DArray<N> normalize_(double p);
 
-    public final DArray<N> scatter(int ddof) {
-        return scatter(Order.defaultOrder(), ddof);
+    public final DArray<N> scatterMatrix(int ddof) {
+        return scatterMatrix(Order.defaultOrder(), ddof);
     }
 
-    public final DArray<N> scatter(Order askOrder, int ddof) {
+    public final DArray<N> scatterMatrix(Order askOrder, int ddof) {
         if (!isMatrix()) {
             throw new IllegalArgumentException("Available only for matrices.");
         }
-        if (!dtype().floatingPoint()) {
+        if (!dt().floatingPoint()) {
             throw new OperationNotAvailableException("Available only for floating point NArrays.");
         }
         return t().mm(this, askOrder).div_(dim(0) - ddof);
@@ -2287,7 +2254,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         if (!isMatrix()) {
             throw new OperationNotAvailableException("Available only for matrices.");
         }
-        if (!dtype().floatingPoint()) {
+        if (!dt().floatingPoint()) {
             throw new OperationNotAvailableException("Available only for floating point NArrays.");
         }
         DArray<N> mean = mean1d(0);
@@ -2303,7 +2270,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         if (!isMatrix()) {
             throw new IllegalArgumentException("Available only for matrices.");
         }
-        if (!dtype().floatingPoint()) {
+        if (!dt().floatingPoint()) {
             throw new OperationNotAvailableException("Available only for floating point NArrays.");
         }
         DArray<N> std = stdc1d(0, 0);
@@ -2311,12 +2278,61 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         return scaled.t().mm(scaled, askOrder).div_(std).div_(std.stretch(1)).div_(dim(0));
     }
 
+    // -- Comparison Ops -- //
+
+    /**
+     * Creates a new NArray with values sorted along the dimension given as parameters. The order is ascending or descending, given
+     * as parameter.
+     * <p>
+     * The order of the new NArray is the default order.
+     *
+     * @param axis dimension along which the values will be sorted
+     * @param asc  if true the values will be sorted in ascending order, otherwise in descending order
+     * @return a new copy NArray with values sorted along the given dimension
+     */
+    public final DArray<N> sort(int axis, boolean asc) {
+        return sort(Order.defaultOrder(), axis, asc);
+    }
+
+    /**
+     * Creates a new NArray with values sorted along the dimension given as parameters. The order is ascending or descending, given
+     * as parameter.
+     * <p>
+     * The order of the new NArray is the order specified as parameter.
+     *
+     * @param order order of the new NArray
+     * @param axis  dimension along which the values will be sorted
+     * @param asc   if true the values will be sorted in ascending order, otherwise in descending order
+     * @return a new copy NArray with values sorted along the given dimension
+     */
+    public final DArray<N> sort(Order order, int axis, boolean asc) {
+        return copy(order).sort_(axis, asc);
+    }
+
+    /**
+     * Sort in place values along the dimension given as parameter. The order is ascending or descending, given
+     * as parameter.
+     *
+     * @param axis dimension along which the values will be sorted
+     * @param asc  if true the values will be sorted in ascending order, otherwise in descending order
+     * @return same NArray instance with values sorted along the given dimension
+     */
+    public abstract DArray<N> sort_(int axis, boolean asc);
+
+    /**
+     * Sorts indices given as an array of parameters according to the values from flatten NArray.
+     * NArray must have a single dimension with size greater than the biggest index value.
+     *
+     * @param indices indices which will be sorted
+     * @param asc     sort ascending if true, descending otherwise
+     */
+    public abstract void externalSort(int[] indices, boolean asc);
 
     //------- SUMMARY OPERATIONS ----------//
 
     @SuppressWarnings("unchecked")
     public final <M extends Number> DArray<M> cast(DType<M> dtype) {
-        if ((dtype.id() == dtype().id())) {
+        if ((dtype.id() == dt().id())) {
             return (DArray<M>) this;
         } else {
             return cast(dtype, Order.A);
@@ -2347,7 +2363,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     public final DArray<N> pad(int axis, int before, int after) {
         int[] newDims = Arrays.copyOf(dims(), rank());
         newDims[axis] += before + after;
-        DArray<N> copy = manager().zeros(dtype(), Shape.of(newDims), Order.defaultOrder());
+        DArray<N> copy = manager().zeros(dt(), Shape.of(newDims), Order.defaultOrder());
         copyTo(copy.narrow(axis, true, before, before + dim(axis)));
         return copy;
     }

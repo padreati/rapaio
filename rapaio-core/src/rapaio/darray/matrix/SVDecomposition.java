@@ -93,7 +93,7 @@ public class SVDecomposition<N extends Number> implements java.io.Serializable {
         // Derived from LINPACK code.
         // Initialize.
         DArray<N> A = Arg.copy();
-        this.dt = Arg.dtype();
+        this.dt = Arg.dt();
         this.tm = Arg.manager();
         m = Arg.dim(0);
         n = Arg.dim(1);

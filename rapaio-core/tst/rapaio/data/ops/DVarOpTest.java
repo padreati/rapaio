@@ -71,16 +71,16 @@ public class DVarOpTest {
         assertEquals(sum1, x.narray().sort_(0, true).nanSum(), 1e-12);
         assertEquals(sum1, x.narray().sort_(0, false).nanMean() * 75, 1e-12);
         int[] rows = x.rowsComplete();
-        x.narray_().argSort(rows, true);
+        x.narray_().externalSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).narray_().nanSum(), TOLERANCE);
         rows = x.rowsComplete();
-        x.narray_().argSort(rows, false);
+        x.narray_().externalSort(rows, false);
         assertEquals(sum1, x.mapRows(rows).narray_().nanSum(), TOLERANCE);
         rows = x.rowsAll();
-        x.narray_().argSort(rows, true);
+        x.narray_().externalSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).narray_().nanSum(), TOLERANCE);
         rows = x.rowsAll();
-        x.narray_().argSort(rows, true);
+        x.narray_().externalSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).narray_().nanSum(), TOLERANCE);
     }
 
@@ -103,17 +103,17 @@ public class DVarOpTest {
         assertEquals(sum1, x.narray().sort_(0, false).nanMean() * 75, 1e-10);
 
         int[] rows = x.rowsComplete();
-        x.narray_().argSort(rows, true);
+        x.narray_().externalSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).narray_().nanSum(), TOLERANCE);
         rows = x.rowsComplete();
-        x.narray_().argSort(rows, false);
+        x.narray_().externalSort(rows, false);
         assertEquals(sum1, x.mapRows(rows).narray_().nanSum(), TOLERANCE);
 
         rows = x.rowsAll();
-        x.narray_().argSort(rows, true);
+        x.narray_().externalSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).narray_().nanSum(), TOLERANCE);
         rows = x.rowsAll();
-        x.narray_().argSort(rows, false);
+        x.narray_().externalSort(rows, false);
         assertEquals(sum1, x.mapRows(rows).narray_().nanSum(), TOLERANCE);
     }
 

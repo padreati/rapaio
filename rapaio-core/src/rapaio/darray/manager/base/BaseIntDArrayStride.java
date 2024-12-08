@@ -72,7 +72,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DType<Integer> dtype() {
+    public DType<Integer> dt() {
         return dt;
     }
 
@@ -112,7 +112,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         var result = manager.zeros(dt, Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
-        var loop = StrideLoopDescriptor.of(layout, askOrder, dtype().vs());
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dt().vs());
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 out.setInt(ptr++, storage.getInt(p));
@@ -120,6 +120,19 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             }
         }
         return result;
+    }
+
+    @Override
+    public DArray<Integer> gather_(int axis, DArray<?> index, DArray<?> input) {
+        if (index.shape() != this.shape()) {
+            throw new IllegalArgumentException("Index must have the same shape as destination.");
+        }
+        return null;
+    }
+
+    @Override
+    public DArray<Integer> scatter_(int axis, DArray<?> index, DArray<?> input) {
+        return null;
     }
 
     @Override
@@ -175,7 +188,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
     @Override
     public DArray<Integer> unaryOp_(DArrayUnaryOp op) {
-        if (op.floatingPointOnly() && !dtype().floatingPoint()) {
+        if (op.floatingPointOnly() && !dt().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point NArrays.");
         }
         op.applyInt(loop, storage);
@@ -203,7 +216,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                 while (it.hasNext() && taskList.size() < chunk) {
                     int ptr = it.nextInt();
                     taskList.add(() -> {
-                        manager.stride(dt, StrideLayout.of(new int[]{selDim}, ptr, new int[]{selStride}), storage).unaryOp_(op);
+                        manager.stride(dt, StrideLayout.of(new int[] {selDim}, ptr, new int[] {selStride}), storage).unaryOp_(op);
                     });
                 }
                 executor.submit(() -> {
@@ -409,7 +422,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int argmax = -1;
         int argvalue = ReduceOpMax.initInt;
         var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order, dtype().vs());
+        var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 int value = storage.getInt(p);
@@ -475,7 +488,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int argmin = -1;
         int argvalue = ReduceOpMin.initInt;
         var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order, dtype().vs());
+        var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.size; j++) {
                 int value = storage.getInt(p);
@@ -495,7 +508,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int count = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
-                if (dtype().isNaN(storage.getInt(p))) {
+                if (dt().isNaN(storage.getInt(p))) {
                     count++;
                 }
                 p += loop.step;
@@ -674,9 +687,9 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int p = other.shape().dim(1);
 
         List<DArray<Integer>> rows = unbind(0, false);
-        List<DArray<Integer>> cols = other.cast(dtype()).unbind(1, false);
+        List<DArray<Integer>> cols = other.cast(dt()).unbind(1, false);
 
-        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
+        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dt().byteCount()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
 
         int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
@@ -713,9 +726,9 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int p = other.shape().dim(1);
 
         List<DArray<Integer>> rows = unbind(0, false);
-        List<DArray<Integer>> cols = other.cast(dtype()).unbind(1, false);
+        List<DArray<Integer>> cols = other.cast(dt()).unbind(1, false);
 
-        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dtype().byteCount()));
+        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dt().byteCount()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
 
         int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
@@ -837,7 +850,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             // FREEZE
             double pow
     ) {
-        if (!dtype().floatingPoint()) {
+        if (!dt().floatingPoint()) {
             throw new OperationNotAvailableException("This operation is only available on floating point data types.");
         }
         if (pow < 0) {
@@ -903,7 +916,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
         if (to instanceof BaseIntDArrayStride dst) {
 
-            int limit = Math.floorDiv(L2_CACHE_SIZE, dtype().byteCount() * 2 * manager.cpuThreads() * 8);
+            int limit = Math.floorDiv(L2_CACHE_SIZE, dt().byteCount() * 2 * manager.cpuThreads() * 8);
 
             if (layout.size() > limit) {
 
@@ -974,7 +987,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     private void directCopyTo(BaseIntDArrayStride src, BaseIntDArrayStride dst, Order askOrder) {
-        var loop = StrideLoopDescriptor.of(src.layout, askOrder, dtype().vs());
+        var loop = StrideLoopDescriptor.of(src.layout, askOrder, dt().vs());
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
@@ -986,7 +999,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
     @Override
     public String toString() {
-        return String.format("BaseStride{%s,%s,%s,%s}\n%s", dtype().id(), Arrays.toString(layout.dims()), layout.offset(),
+        return String.format("BaseStride{%s,%s,%s,%s}\n%s", dt().id(), Arrays.toString(layout.dims()), layout.offset(),
                 Arrays.toString(layout.strides()), toContent());
     }
 }

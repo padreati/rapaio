@@ -45,7 +45,7 @@ public final class StrideWrapper<N extends Number> extends AbstractList<N> {
             return value;
         };
         return new StrideWrapper<>(offset, stride, len, getter, setter,
-                array.dtype().naturalComparator(), array.dtype().reverseComparator());
+                array.dt().naturalComparator(), array.dt().reverseComparator());
     }
 
     public static <N extends Number> StrideWrapper<N> of(DType<N> dType, int offset, int stride, int len,

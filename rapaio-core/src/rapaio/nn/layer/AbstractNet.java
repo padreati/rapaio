@@ -65,9 +65,9 @@ public abstract class AbstractNet implements Net {
         NetState state = state();
         List<? extends DArray<?>> values = state.tensors().stream().map(Tensor::value).toList();
         for (DArray<?> value : values) {
-            out.saveString(value.dtype().id().name());
+            out.saveString(value.dt().id().name());
             out.saveAtom(value.shape());
-            switch (value.dtype().id()) {
+            switch (value.dt().id()) {
                 case DOUBLE -> saveDoubleArray(out, value);
                 case FLOAT -> saveFloatArray(out, value);
                 case INTEGER -> saveIntArray(out, value);

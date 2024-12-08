@@ -127,7 +127,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
         logger.fine("sort eigen values and vectors");
 
         int[] mapping = IntArrays.newSeq(0, eigenValues.size());
-        eigenValues.argSort(mapping, false);
+        eigenValues.externalSort(mapping, false);
 
         eigenValues = eigenValues.sel(0, mapping);
         eigenVectors = eigenVectors.sel(1, mapping);

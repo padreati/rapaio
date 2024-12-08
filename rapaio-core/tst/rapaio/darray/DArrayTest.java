@@ -95,13 +95,13 @@ public class DArrayTest {
         var t = g.seq(Shape.of(1));
         N value = g.value(1);
         if (value instanceof Double) {
-            assertEquals(DType.DOUBLE, t.dtype());
+            assertEquals(DType.DOUBLE, t.dt());
         }
         if (value instanceof Float) {
-            assertEquals(DType.FLOAT, t.dtype());
+            assertEquals(DType.FLOAT, t.dt());
         }
         if (value instanceof Integer) {
-            assertEquals(DType.INTEGER, t.dtype());
+            assertEquals(DType.INTEGER, t.dt());
         }
         assertEquals(g.engine(), t.manager());
     }
@@ -1374,13 +1374,13 @@ public class DArrayTest {
 
     @ParameterizedTest
     @MethodSource("dataFactorySource")
-    <N extends Number> void testMatrixScatterCovarianceCorrelation(DataFactory<N> g) {
+    <N extends Number> void testMatrixScatterMatrixCovarianceCorrelation(DataFactory<N> g) {
         if (!g.dt().floatingPoint()) {
             return;
         }
         var m1 = g.seq(Shape.of(3, 4)).add_(1).t();
 
-        var scatter1 = m1.scatter(0);
+        var scatter1 = m1.scatterMatrix(0);
         assertEquals(Shape.of(3, 3), scatter1.shape());
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -1780,7 +1780,7 @@ public class DArrayTest {
 
     @ParameterizedTest
     @MethodSource("dataFactorySource")
-    <N extends Number> void testScatterVarCorr(DataFactory<N> g) {
+    <N extends Number> void testScatterMatrixVarCorr(DataFactory<N> g) {
         if (g.dt().id() == DType.Id.BYTE || g.dt().id() == DType.Id.INTEGER) {
             return;
         }

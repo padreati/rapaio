@@ -254,7 +254,7 @@ public abstract class DArrayManager {
             newDims[i + 1] = nArrayList.getFirst().shape().dim(i);
         }
         newDims[axis] = nArrayList.size();
-        var result = zeros(nArrayList.getFirst().dtype(), Shape.of(newDims), order);
+        var result = zeros(nArrayList.getFirst().dt(), Shape.of(newDims), order);
         var slices = result.chunk(axis, true, 1);
         i = 0;
         for (; i < nArrayList.size(); i++) {
@@ -279,7 +279,7 @@ public abstract class DArrayManager {
         DArray<N> first = nArrayList.getFirst();
         int[] newDims = Arrays.copyOf(first.shape().dims(), first.rank());
         newDims[axis] = newDim;
-        var result = zeros(first.dtype(), Shape.of(newDims), order);
+        var result = zeros(first.dt(), Shape.of(newDims), order);
 
         int start = 0;
         for (DArray<N> array : nArrays) {

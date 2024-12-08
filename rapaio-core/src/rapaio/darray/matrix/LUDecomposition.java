@@ -73,7 +73,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
         if (ref.dim(0) < ref.dim(1)) {
             throw new IllegalArgumentException("For LU decomposition, number of rows must be greater or equal with number of columns.");
         }
-        this.dt = ref.dtype();
+        this.dt = ref.dt();
         this.tm = ref.manager();
         this.ref = ref;
         this.method = method;
