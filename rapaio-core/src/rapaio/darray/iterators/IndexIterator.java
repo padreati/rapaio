@@ -50,7 +50,7 @@ public class IndexIterator implements Iterator<int[]> {
 
     @Override
     public boolean hasNext() {
-        return pos < shape.size();
+        return pos < shape.size() - 1;
     }
 
     @Override

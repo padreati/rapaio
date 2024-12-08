@@ -100,7 +100,7 @@ public class SandboxIris {
 
             if (epoch % 10 == 0) {
 
-                var y_pred = nn.forward11(tm.var(x)).value().exp().argmax1d(1);
+                var y_pred = nn.forward11(tm.var(x)).value().exp().argmax1d(1, false);
                 var levels = iris.rvar("class").levels();
 
                 var cm = Confusion.from(iris.rvar("class"), VarNominal.from(levels, y_pred));

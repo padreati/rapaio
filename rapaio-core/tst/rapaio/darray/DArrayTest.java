@@ -1822,6 +1822,61 @@ public class DArrayTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void gatherScatterTest(DataFactory<N> g) {
+
+        List<Shape> shapes = List.of(Shape.of(4, 4), Shape.of(2), Shape.of(1, 3), Shape.of(1), Shape.of(4,2,4,3));
+
+        for (Shape shape : shapes) {
+            int minDim = Integer.MAX_VALUE;
+            for (int d : shape.dims()) {
+                minDim = Math.min(minDim, d);
+            }
+            if (minDim == 1) {
+                DArray<N> t1 = g.random(shape);
+                for (int axis = 0; axis < t1.rank(); axis++) {
+                    DArray<Integer> indexMax = t1.argmax1d(axis, true);
+
+                    DArray<Integer> index = g.engine().cat(axis, List.of(indexMax));
+                    DArray<N> margins = g.engine().stack(axis, List.of(t1.amax1d(axis)));
+
+                    DArray<N> gather = t1.gather(axis, index);
+                    assertTensorEqualValues(margins, gather);
+
+
+                    var s1 = gather.scatter(axis, index, g.zeros(t1.shape()));
+                    DArray<N> t2 = g.zeros(t1.shape());
+                    t2.scatter_(axis, index, gather);
+
+                    assertTensorEqualValues(s1, t2);
+                    assertTensorEqualValues(gather.sum1d(axis), t2.sum1d(axis));
+                }
+                continue;
+            }
+
+            DArray<N> t1 = g.random(shape);
+            for (int axis = 0; axis < t1.rank(); axis++) {
+                DArray<Integer> indexMax = t1.argmax1d(axis, true);
+                DArray<Integer> indexMin = t1.argmin1d(axis, true);
+
+                DArray<Integer> index = g.engine().cat(axis, List.of(indexMax, indexMin));
+                DArray<N> margins = g.engine().stack(axis, List.of(t1.amax1d(axis), t1.amin1d(axis)));
+
+                DArray<N> gather = t1.gather(axis, index);
+                assertTensorEqualValues(margins, gather);
+
+
+                var s1 = gather.scatter(axis, index, g.zeros(t1.shape()));
+                DArray<N> t2 = g.zeros(t1.shape());
+                t2.scatter_(axis, index, gather);
+
+                assertTensorEqualValues(s1, t2);
+                assertTensorEqualValues(gather.sum1d(axis), t2.sum1d(axis));
+            }
+        }
+    }
+
     private <N extends Number> N sequenceSum(DataFactory<N> g, int len) {
         N sum = g.value(0);
         for (int i = 1; i < len; i++) {

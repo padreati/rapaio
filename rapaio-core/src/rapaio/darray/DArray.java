@@ -1754,17 +1754,23 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     public abstract int argmax(Order order);
 
-    public final DArray<Integer> argmax1d(int axis) {
-        return argmax1d(axis, Order.defaultOrder());
+    public final DArray<Integer> argmax1d(int axis, boolean keepDim) {
+        return argmax1d(axis, keepDim, Order.defaultOrder());
     }
 
-    public abstract DArray<Integer> argmax1d(int axis, Order order);
+    public abstract DArray<Integer> argmax1d(int axis, boolean keepDim, Order order);
 
     public final int argmin() {
         return argmin(Order.defaultOrder());
     }
 
     public abstract int argmin(Order order);
+
+    public final DArray<Integer> argmin1d(int axis, boolean keepDim) {
+        return argmin1d(axis, keepDim, Order.defaultOrder());
+    }
+
+    public abstract DArray<Integer> argmin1d(int axis, boolean keepDim, Order order);
 
 
     /**

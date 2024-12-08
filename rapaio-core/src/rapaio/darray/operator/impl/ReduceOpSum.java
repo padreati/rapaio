@@ -37,16 +37,11 @@ public final class ReduceOpSum extends DArrayReduceOp {
         return false;
     }
 
-    private static final byte initByte = 0;
-    private static final byte initInt = 0;
-    private static final float initFloat = 0f;
-    private static final double initDouble = 0d;
-
     @Override
     protected byte reduceByteVectorUnit(StrideLoopDescriptor<Byte> loop, Storage storage) {
-        byte result = initByte;
+        byte result = 0;
         for (int p : loop.offsets) {
-            ByteVector a = ByteVector.broadcast(loop.vs, initByte);
+            ByteVector a = ByteVector.zero(loop.vs);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 ByteVector v = storage.getByteVector(loop.vs, p);
@@ -64,9 +59,9 @@ public final class ReduceOpSum extends DArrayReduceOp {
 
     @Override
     protected byte reduceByteVectorStep(StrideLoopDescriptor<Byte> loop, Storage storage) {
-        byte result = initByte;
+        byte result = 0;
         for (int p : loop.offsets) {
-            ByteVector a = ByteVector.broadcast(loop.vs, initByte);
+            ByteVector a = ByteVector.zero(loop.vs);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 ByteVector v = storage.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
@@ -84,7 +79,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
 
     @Override
     protected byte reduceByteDefault(StrideLoopDescriptor<Byte> loop, Storage storage) {
-        byte result = initByte;
+        byte result = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 result += storage.getByte(p);
@@ -96,9 +91,9 @@ public final class ReduceOpSum extends DArrayReduceOp {
 
     @Override
     protected int reduceIntVectorUnit(StrideLoopDescriptor<Integer> loop, Storage storage) {
-        int result = initInt;
+        int result = 0;
         for (int p : loop.offsets) {
-            IntVector a = IntVector.broadcast(loop.vs, initInt);
+            IntVector a = IntVector.broadcast(loop.vs, 0);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 IntVector v = storage.getIntVector(loop.vs, p);
@@ -116,9 +111,9 @@ public final class ReduceOpSum extends DArrayReduceOp {
 
     @Override
     protected int reduceIntVectorStep(StrideLoopDescriptor<Integer> loop, Storage storage) {
-        int result = initInt;
+        int result = 0;
         for (int p : loop.offsets) {
-            IntVector a = IntVector.broadcast(loop.vs, initInt);
+            IntVector a = IntVector.broadcast(loop.vs, 0);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 IntVector v = storage.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
@@ -136,7 +131,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
 
     @Override
     protected int reduceIntDefault(StrideLoopDescriptor<Integer> loop, Storage storage) {
-        int result = initInt;
+        int result = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 result += storage.getInt(p);
@@ -148,9 +143,9 @@ public final class ReduceOpSum extends DArrayReduceOp {
 
     @Override
     protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
-        float result = initFloat;
+        float result = 0;
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            FloatVector a = FloatVector.broadcast(loop.vs, 0);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 FloatVector v = storage.getFloatVector(loop.vs, p);
@@ -168,9 +163,9 @@ public final class ReduceOpSum extends DArrayReduceOp {
 
     @Override
     protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
-        float result = initFloat;
+        float result = 0;
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            FloatVector a = FloatVector.broadcast(loop.vs, 0);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 FloatVector v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
@@ -188,7 +183,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
 
     @Override
     protected float reduceFloatDefault(StrideLoopDescriptor<Float> loop, Storage storage) {
-        float result = initFloat;
+        float result = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 result += storage.getFloat(p);
@@ -200,9 +195,9 @@ public final class ReduceOpSum extends DArrayReduceOp {
 
     @Override
     protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
-        double result = initDouble;
+        double result = 0;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            DoubleVector a = DoubleVector.broadcast(loop.vs, 0);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 DoubleVector v = storage.getDoubleVector(loop.vs, p);
@@ -220,9 +215,9 @@ public final class ReduceOpSum extends DArrayReduceOp {
 
     @Override
     protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
-        double result = initDouble;
+        double result = 0;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            DoubleVector a = DoubleVector.broadcast(loop.vs, 0);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 DoubleVector v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
@@ -240,7 +235,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
 
     @Override
     protected double reduceDoubleDefault(StrideLoopDescriptor<Double> loop, Storage storage) {
-        double result = initDouble;
+        double result = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.size; i++) {
                 result += storage.getDouble(p);

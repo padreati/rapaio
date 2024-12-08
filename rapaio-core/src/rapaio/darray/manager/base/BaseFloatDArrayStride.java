@@ -47,6 +47,7 @@ import rapaio.darray.Layout;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.darray.Storage;
+import rapaio.darray.iterators.IndexIterator;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.iterators.StridePointerIterator;
 import rapaio.darray.layout.StrideLayout;
@@ -127,12 +128,41 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         if (index.shape() != this.shape()) {
             throw new IllegalArgumentException("Index must have the same shape as destination.");
         }
-        return null;
+        if (index.rank() != input.rank()) {
+            throw new IllegalArgumentException("Index must have the same rank as input.");
+        }
+        var ptrDstIt = ptrIterator(Order.C);
+        var ptrIdxIt = index.ptrIterator(Order.C);
+        var indexIt = new IndexIterator(shape(), Order.C);
+        int[] idx = new int[rank()];
+        while(indexIt.hasNext()) {
+            int[] indexNext = indexIt.next();
+            System.arraycopy(indexNext, 0, idx, 0, idx.length);
+            idx[axis] = index.ptrGetInt(ptrIdxIt.nextInt());
+            storage.setFloat(ptrDstIt.next(), input.getFloat(idx));
+        }
+        return this;
     }
 
     @Override
     public DArray<Float> scatter_(int axis, DArray<?> index, DArray<?> input) {
-        return null;
+        if(index.rank()!=input.rank()) {
+            throw new IllegalArgumentException("Index must have the same rank as input.");
+        }
+        if(index.rank()!=this.rank()) {
+            throw new IllegalArgumentException("Index must have the same rank as self tensor.");
+        }
+        var ptrSrcIt = input.ptrIterator(Order.C);
+        var ptrIdxIt = index.ptrIterator(Order.C);
+        var indexIt = new IndexIterator(index.shape(), Order.C);
+        int[] idx = new int[rank()];
+        while(indexIt.hasNext()) {
+            int[] indexNext = indexIt.next();
+            System.arraycopy(indexNext, 0, idx, 0, idx.length);
+            idx[axis] = index.ptrGetInt(ptrIdxIt.nextInt());
+            setFloat(input.ptrGetFloat(ptrSrcIt.nextInt()), idx);
+        }
+        return this;
     }
 
     @Override
@@ -347,7 +377,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
                     taskList.add(() -> {
                         StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
                         float value = manager.stride(dt, strideLayout, storage).reduceOp(op);
-                        res.ptrSet(resPtr, value);
+                        res.ptrSetFloat(resPtr, value);
                     });
                 }
                 executor.submit(() -> {
@@ -438,12 +468,17 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
     }
 
     @Override
-    public DArray<Integer> argmax1d(int axis, Order order) {
+    public DArray<Integer> argmax1d(int axis, boolean keepDim, Order order) {
         if (axis < 0) {
             axis += shape().rank();
         }
-        int[] newDims = layout.shape().narrowDims(axis);
-        int[] newStrides = layout.narrowStrides(axis);
+        int[] newDims = keepDim ? Arrays.copyOf(layout.dims(), layout.rank()) : layout.shape().narrowDims(axis);
+        int[] newStrides = keepDim ? Arrays.copyOf(layout.strides(), layout.rank()) : layout.narrowStrides(axis);
+        if(keepDim) {
+            newDims[axis] = 1;
+            newStrides[axis] = 0;
+        }
+
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
@@ -464,6 +499,57 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
                     taskList.add(() -> {
                         StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
                         int value = manager.stride(dt, strideLayout, storage).argmax();
+                        res.ptrSetInt(resPtr, value);
+                    });
+                }
+                executor.submit(() -> {
+                    for (var t : taskList) {
+                        t.run();
+                    }
+                    latch.countDown();
+                });
+            }
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public DArray<Integer> argmin1d(int axis, boolean keepDim, Order order) {
+        if (axis < 0) {
+            axis += shape().rank();
+        }
+        int[] newDims = keepDim ? Arrays.copyOf(layout.dims(), layout.rank()) : layout.shape().narrowDims(axis);
+        int[] newStrides = keepDim ? Arrays.copyOf(layout.strides(), layout.rank()) : layout.narrowStrides(axis);
+        if(keepDim) {
+            newDims[axis] = 1;
+            newStrides[axis] = 0;
+        }
+
+        int selDim = layout.dim(axis);
+        int selStride = layout.stride(axis);
+
+        DArray<Integer> res = manager.zeros(DType.INTEGER, Shape.of(newDims), Order.autoFC(order));
+
+        var resIt = res.ptrIterator(Order.C);
+        var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
+
+        int chunk = 128;
+        int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            CountDownLatch latch = new CountDownLatch(tasks);
+            for (int i = 0; i < tasks; i++) {
+                List<Runnable> taskList = new ArrayList<>();
+                while (it.hasNext() && taskList.size() < chunk) {
+                    int ptr = it.nextInt();
+                    int resPtr = resIt.next();
+                    taskList.add(() -> {
+                        StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
+                        int value = manager.stride(dt, strideLayout, storage).argmin();
                         res.ptrSetInt(resPtr, value);
                     });
                 }
