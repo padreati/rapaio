@@ -47,14 +47,14 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                ByteVector a = s.getByteVector(loop.vs, p);
+                ByteVector a = s.getByteVector(p);
                 VectorMask<Byte> mask = a.compare(compare.vectorComparison(), value.byteValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
                 s.setByteVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 byte v = s.getByte(p);
                 s.setByte(p, compare.compareByte(v, value.byteValue()) ? (byte) 1 : (byte) 0);
                 p++;
@@ -67,14 +67,14 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                ByteVector a = s.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
+                ByteVector a = s.getByteVector(p, loop.simdOffsets(), 0);
                 VectorMask<Byte> mask = a.compare(compare.vectorComparison(), value.byteValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
                 s.setByteVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 byte v = s.getByte(p);
                 s.setByte(p, compare.compareByte(v, value.byteValue()) ? (byte) 1 : (byte) 0);
                 p += loop.step;
@@ -85,7 +85,7 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 byte v = s.getByte(p);
                 s.setByte(p, compare.compareByte(v, value.byteValue()) ? (byte) 1 : (byte) 0);
                 p += loop.step;
@@ -98,14 +98,14 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector a = s.getIntVector(loop.vs, p);
+                IntVector a = s.getIntVector(p);
                 VectorMask<Integer> mask = a.compare(compare.vectorComparison(), value.intValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
                 s.setIntVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 int v = s.getInt(p);
                 s.setInt(p, compare.compareInt(v, value.intValue()) ? 1 : 0);
                 p++;
@@ -118,14 +118,14 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector a = s.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
+                IntVector a = s.getIntVector(p, loop.simdOffsets(), 0);
                 VectorMask<Integer> mask = a.compare(compare.vectorComparison(), value.intValue());
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
                 s.setIntVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 int v = s.getInt(p);
                 s.setInt(p, compare.compareInt(v, value.intValue()) ? 1 : 0);
                 p += loop.step;
@@ -136,7 +136,7 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 int v = s.getInt(p);
                 s.setInt(p, compare.compareInt(v, value.intValue()) ? 1 : 0);
                 p += loop.step;
@@ -147,18 +147,17 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         float ref = value.floatValue();
-        FloatVector vref = FloatVector.broadcast(loop.vs, value.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p);
-                var mask = a.compare(compare.vectorComparison(), vref);
+                var a = s.getFloatVector(p);
+                var mask = a.compare(compare.vectorComparison(), ref);
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
                 s.setFloatVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float v = s.getFloat(p);
                 s.setFloat(p, compare.compareFloat(v, ref) ? 1 : 0);
                 p++;
@@ -169,18 +168,17 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         float ref = value.floatValue();
-        FloatVector vref = FloatVector.broadcast(loop.vs, value.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
-                VectorMask<Float> mask = a.compare(compare.vectorComparison(), vref);
+                FloatVector a = s.getFloatVector(p, loop.simdOffsets(), 0);
+                VectorMask<Float> mask = a.compare(compare.vectorComparison(), ref);
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
                 s.setFloatVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float v = s.getFloat(p);
                 s.setFloat(p, compare.compareFloat(v, ref) ? 1 : 0);
                 p += loop.step;
@@ -192,7 +190,7 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         float ref = value.floatValue();
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 float v = s.getFloat(p);
                 s.setFloat(p, compare.compareFloat(v, ref) ? 1 : 0);
                 p += loop.step;
@@ -203,18 +201,17 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         double ref = value.floatValue();
-        DoubleVector vref = DoubleVector.broadcast(loop.vs, value.doubleValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p);
-                VectorMask<Double> mask = a.compare(compare.vectorComparison(), vref);
+                DoubleVector a = s.getDoubleVector(p);
+                VectorMask<Double> mask = a.compare(compare.vectorComparison(), ref);
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
                 s.setDoubleVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double v = s.getDouble(p);
                 s.setDouble(p, compare.compareDouble(v, ref) ? 1 : 0);
                 p++;
@@ -225,18 +222,17 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         double ref = value.floatValue();
-        DoubleVector vref = DoubleVector.broadcast(loop.vs, value.doubleValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
-                VectorMask<Double> mask = a.compare(compare.vectorComparison(), vref);
+                DoubleVector a = s.getDoubleVector(p, loop.simdOffsets(), 0);
+                VectorMask<Double> mask = a.compare(compare.vectorComparison(), ref);
                 a = a.blend(1, mask);
                 a = a.blend(0, mask.not());
                 s.setDoubleVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double v = s.getDouble(p);
                 s.setDouble(p, compare.compareDouble(v, ref) ? 1 : 0);
                 p += loop.step;
@@ -248,7 +244,7 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         double ref = value.floatValue();
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 double v = s.getDouble(p);
                 s.setDouble(p, compare.compareDouble(v, ref) ? 1 : 0);
                 p += loop.step;

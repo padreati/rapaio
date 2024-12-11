@@ -24,7 +24,7 @@ package rapaio.darray.storage.array;
 import java.util.Arrays;
 
 import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorSpecies;
+import rapaio.darray.Simd;
 import rapaio.darray.storage.IntStorage;
 
 public final class IntArrayStorage extends IntStorage {
@@ -85,13 +85,13 @@ public final class IntArrayStorage extends IntStorage {
     }
 
     @Override
-    public IntVector getIntVector(VectorSpecies<Integer> vs, int offset) {
-        return IntVector.fromArray(vs, array, offset);
+    public IntVector getIntVector(int offset) {
+        return IntVector.fromArray(Simd.vsi, array, offset);
     }
 
     @Override
-    public IntVector getIntVector(VectorSpecies<Integer> vs, int offset, int[] idx, int idxOffset) {
-        return IntVector.fromArray(vs, array, offset, idx, idxOffset);
+    public IntVector getIntVector(int offset, int[] idx, int idxOffset) {
+        return IntVector.fromArray(Simd.vsi, array, offset, idx, idxOffset);
     }
 
     @Override

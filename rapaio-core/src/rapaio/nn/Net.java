@@ -83,12 +83,9 @@ public interface Net extends Serializable {
         }
     }
 
-    record BatchOutput(TensorManager tm,int batchSize,long seed, List<Tensor[]> outputs) {
+    record BatchOutput(TensorManager tm, int batchSize, long seed, List<Tensor[]> outputs) {
 
         public BatchLoss applyLoss(Loss localLoss, Tensor trueValues) {
-            if (outputs.isEmpty()) {
-                return null;
-            }
             Tensor gradLoss = null;
             ArrayDataset dataset = new ArrayDataset(trueValues);
             dataset.seed(seed);
@@ -96,15 +93,15 @@ public interface Net extends Serializable {
             for (int i = 0; i < outputs.size(); i++) {
                 Loss loss = localLoss.newInstance();
                 loss.forward(outputs.get(i)[0], tm.var(trueValues.value().sel(0, batchIt.next())));
-                loss.last().name("loss[" + i + "]");
-                gradLoss = gradLoss == null ? loss.last() : gradLoss.add(loss.last());
+                loss.tensor().name("loss[" + i + "]");
+                gradLoss = gradLoss == null ? loss.tensor() : gradLoss.add(loss.tensor());
             }
             gradLoss.setGrad(tm.scalarTensor(1).value());
             return new BatchLoss(gradLoss, gradLoss.value().getDouble() / outputs.size());
         }
     }
 
-    record BatchLoss(Tensor loss, double lossValue) {
+    record BatchLoss(Tensor tensor, double lossValue) {
     }
 
     void saveState(AtomOutputStream out) throws IOException;

@@ -25,7 +25,7 @@ import rapaio.darray.Compare;
 import rapaio.darray.DArray;
 import rapaio.nn.Tensor;
 
-public class CompareFalseOp extends AbstractTensor {
+public class CompareFalseOp extends Tensor {
 
     private final Tensor x;
     private final Compare compare;
@@ -39,16 +39,12 @@ public class CompareFalseOp extends AbstractTensor {
         this.compare = cmp;
         this.threshold = threshold;
 
-        forward();
+        this.mask = x.value().copy().compareMask_(compare, threshold).neg_().add_(1);
+        this.setValue(mask.mul(x.value()));
+        backEdge(x, () -> this.grad().mul(mask));
     }
 
     public DArray<?> mask() {
         return mask;
-    }
-
-    private void forward() {
-        this.mask = x.value().copy().compareMask_(compare, threshold).neg_().add_(1);
-        this.setValue(mask.mul(x.value()));
-        backEdge(x, () -> this.grad().mul(mask));
     }
 }

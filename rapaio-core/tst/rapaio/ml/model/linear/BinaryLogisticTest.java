@@ -292,7 +292,7 @@ public class BinaryLogisticTest {
         var predNom = resultNom.firstClasses();
         var predBin = resultBin.firstClasses();
 
-        assertTrue(predNom.narray().deepEquals(predBin.narray()));
+        assertTrue(predNom.darray().deepEquals(predBin.darray()));
 
         assertTrue(resultNom.firstDensity().rvar(0).narray_().deepEquals(resultBin.firstDensity().rvar(1).narray_(), 1e-10));
         assertTrue(resultNom.firstDensity().rvar(1).narray_().deepEquals(resultBin.firstDensity().rvar(0).narray_(), 1e-10));

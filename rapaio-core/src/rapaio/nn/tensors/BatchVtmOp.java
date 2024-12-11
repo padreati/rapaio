@@ -23,7 +23,7 @@ package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
 
-public class BatchVtmOp extends AbstractTensor {
+public class BatchVtmOp extends Tensor {
 
     private final Tensor bv;
     private final Tensor bm;
@@ -32,10 +32,7 @@ public class BatchVtmOp extends AbstractTensor {
         super(bv.tm(), "BatchVtm");
         this.bv = bv;
         this.bm = bm;
-        forward();
-    }
 
-    public void forward() {
         this.setValue(bv.value().bvtm(bm.value()));
         backEdge(bv, () -> {
             var g = this.grad().bvtm(bm.value().t());

@@ -43,7 +43,7 @@ public class NegativeLikelihoodLoss extends AbstractLoss<NegativeLikelihoodLoss>
         }
 
         batch = y.value().dim(0);
-        last = (reduce.get().equals(Reduce.MEAN)) ? pred.mul(y).neg().sum().div(pred.dim(0)) : pred.mul(y).neg().sum();
+        last = (reduce.get().equals(Reduce.MEAN)) ? pred.gather(1, y).neg().sum().div(pred.dim(0)) : pred.gather(1, y).neg().sum();
         last.setGrad(pred.tm().scalarArray(1));
     }
 }

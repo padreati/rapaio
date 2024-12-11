@@ -26,6 +26,7 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorOperators;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.operator.DArrayReduceOp;
@@ -45,16 +46,16 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected byte reduceByteVectorUnit(StrideLoopDescriptor<Byte> loop, Storage storage) {
         byte result = initByte;
-        ByteVector a = ByteVector.broadcast(loop.vs, initByte);
+        ByteVector a = Simd.broadcast(initByte);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                ByteVector v = storage.getByteVector(loop.vs, p);
+                ByteVector v = storage.getByteVector(p);
                 a = a.mul(v);
                 p += loop.simdLen;
             }
             result *= a.reduceLanes(VectorOperators.MUL);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result *= storage.getByte(p);
                 p++;
             }
@@ -65,16 +66,16 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected byte reduceByteVectorStep(StrideLoopDescriptor<Byte> loop, Storage storage) {
         byte result = initByte;
-        ByteVector a = ByteVector.broadcast(loop.vs, initByte);
+        ByteVector a = Simd.broadcast(initByte);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                ByteVector v = storage.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
+                ByteVector v = storage.getByteVector(p, loop.simdOffsets(), 0);
                 a = a.mul(v);
                 p += loop.simdLen * loop.step;
             }
             result *= a.reduceLanes(VectorOperators.MUL);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result *= storage.getByte(p);
                 p += loop.step;
             }
@@ -86,7 +87,7 @@ public final class ReduceOpProd extends DArrayReduceOp {
     protected byte reduceByteDefault(StrideLoopDescriptor<Byte> loop, Storage storage) {
         byte result = initByte;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 result *= storage.getByte(p);
                 p += loop.step;
             }
@@ -97,16 +98,16 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected int reduceIntVectorUnit(StrideLoopDescriptor<Integer> loop, Storage storage) {
         int result = initInt;
-        IntVector a = IntVector.broadcast(loop.vs, initInt);
+        IntVector a = Simd.broadcast(initInt);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector v = storage.getIntVector(loop.vs, p);
+                IntVector v = storage.getIntVector(p);
                 a = a.mul(v);
                 p += loop.simdLen;
             }
             result *= a.reduceLanes(VectorOperators.MUL);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result *= storage.getInt(p);
                 p++;
             }
@@ -117,16 +118,16 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected int reduceIntVectorStep(StrideLoopDescriptor<Integer> loop, Storage storage) {
         int result = initInt;
-        IntVector a = IntVector.broadcast(loop.vs, initInt);
+        IntVector a = Simd.broadcast(initInt);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector v = storage.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
+                IntVector v = storage.getIntVector(p, loop.simdOffsets(), 0);
                 a = a.mul(v);
                 p += loop.simdLen * loop.step;
             }
             result *= a.reduceLanes(VectorOperators.MUL);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result *= storage.getInt(p);
                 p += loop.step;
             }
@@ -138,7 +139,7 @@ public final class ReduceOpProd extends DArrayReduceOp {
     protected int reduceIntDefault(StrideLoopDescriptor<Integer> loop, Storage storage) {
         int result = initInt;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 result *= storage.getByte(p);
                 p += loop.step;
             }
@@ -149,16 +150,16 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
         float result = initFloat;
-        FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+        FloatVector a = Simd.broadcast(initFloat);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p);
+                FloatVector v = storage.getFloatVector(p);
                 a = a.mul(v);
                 p += loop.simdLen;
             }
             result *= a.reduceLanes(VectorOperators.MUL);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result *= storage.getFloat(p);
                 p++;
             }
@@ -169,16 +170,16 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
         float result = initFloat;
-        FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+        FloatVector a = Simd.broadcast(initFloat);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                FloatVector v = storage.getFloatVector(p, loop.simdOffsets(), 0);
                 a = a.mul(v);
                 p += loop.simdLen * loop.step;
             }
             result *= a.reduceLanes(VectorOperators.MUL);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result *= storage.getFloat(p);
                 p += loop.step;
             }
@@ -190,7 +191,7 @@ public final class ReduceOpProd extends DArrayReduceOp {
     protected float reduceFloatDefault(StrideLoopDescriptor<Float> loop, Storage storage) {
         float result = initFloat;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 result *= storage.getFloat(p);
                 p += loop.step;
             }
@@ -201,16 +202,16 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
         double result = initDouble;
-        DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+        DoubleVector a = Simd.broadcast(initDouble);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p);
+                DoubleVector v = storage.getDoubleVector(p);
                 a = a.mul(v);
                 p += loop.simdLen;
             }
             result *= a.reduceLanes(VectorOperators.MUL);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result *= storage.getDouble(p);
                 p++;
             }
@@ -221,16 +222,16 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
         double result = initDouble;
-        DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+        DoubleVector a = Simd.broadcast(initDouble);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
                 a = a.mul(v);
                 p += loop.simdLen * loop.step;
             }
             result *= a.reduceLanes(VectorOperators.MUL);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result *= storage.getDouble(p);
                 p += loop.step;
             }
@@ -242,7 +243,7 @@ public final class ReduceOpProd extends DArrayReduceOp {
     protected double reduceDoubleDefault(StrideLoopDescriptor<Double> loop, Storage storage) {
         double result = initDouble;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 result *= storage.getDouble(p);
                 p += loop.step;
             }

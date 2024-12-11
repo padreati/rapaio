@@ -68,7 +68,7 @@ public final class UnaryOpCeil extends DArrayUnaryOp {
     @Override
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setFloat(p, (float) Math.ceil(s.getFloat(p)));
                 p += loop.step;
             }
@@ -89,7 +89,7 @@ public final class UnaryOpCeil extends DArrayUnaryOp {
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, Math.ceil(s.getDouble(p)));
                 p += loop.step;
             }

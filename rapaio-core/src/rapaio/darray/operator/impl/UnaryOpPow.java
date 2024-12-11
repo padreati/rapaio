@@ -71,12 +71,12 @@ public class UnaryOpPow extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p);
+                var a = s.getFloatVector(p);
                 a = a.pow((float) power);
                 s.setFloatVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, (float) Math.pow(s.getFloat(p), power));
                 p++;
             }
@@ -88,12 +88,12 @@ public class UnaryOpPow extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getFloatVector(p, loop.simdOffsets(), 0);
                 a = a.pow((float) power);
                 s.setFloatVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, (float) Math.pow(s.getFloat(p), power));
                 p += loop.step;
             }
@@ -103,7 +103,7 @@ public class UnaryOpPow extends DArrayUnaryOp {
     @Override
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setFloat(p, (float) Math.pow(s.getFloat(p), power));
                 p += loop.step;
             }
@@ -115,12 +115,12 @@ public class UnaryOpPow extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p);
+                DoubleVector a = s.getDoubleVector(p);
                 a = a.pow(power);
                 s.setDoubleVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, Math.pow(s.getDouble(p), power));
                 p++;
             }
@@ -132,12 +132,12 @@ public class UnaryOpPow extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector a = s.getDoubleVector(p, loop.simdOffsets(), 0);
                 a = a.pow(power);
                 s.setDoubleVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, Math.pow(s.getDouble(p), power));
                 p += loop.step;
             }
@@ -147,7 +147,7 @@ public class UnaryOpPow extends DArrayUnaryOp {
     @Override
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setDouble(p, Math.pow(s.getDouble(p), power));
                 p += loop.step;
             }

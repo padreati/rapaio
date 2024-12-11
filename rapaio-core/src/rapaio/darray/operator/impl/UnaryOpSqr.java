@@ -37,12 +37,12 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getByteVector(loop.vs, p);
+                var a = s.getByteVector(p);
                 a = a.mul(a);
                 s.setByteVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 byte value = s.getByte(p);
                 s.setByte(p, (byte) (value * value));
                 p++;
@@ -55,12 +55,12 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getByteVector(p, loop.simdOffsets(), 0);
                 a = a.mul(a);
                 s.setByteVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 byte value = s.getByte(p);
                 s.setByte(p, (byte) (value * value));
                 p += loop.step;
@@ -71,7 +71,7 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
     @Override
     protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 byte value = s.getByte(p);
                 s.setByte(p, (byte) (value * value));
                 p += loop.step;
@@ -85,12 +85,12 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getIntVector(loop.vs, p);
+                var a = s.getIntVector(p);
                 a = a.mul(a);
                 s.setIntVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 int value = s.getInt(p);
                 s.setInt(p, value * value);
                 p++;
@@ -103,12 +103,12 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getIntVector(p, loop.simdOffsets(), 0);
                 a = a.mul(a);
                 s.setIntVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 int value = s.getInt(p);
                 s.setInt(p, value * value);
                 p += loop.step;
@@ -119,7 +119,7 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
     @Override
     protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 int value = s.getInt(p);
                 s.setInt(p, value * value);
                 p++;
@@ -132,12 +132,12 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p);
+                var a = s.getFloatVector(p);
                 a = a.mul(a);
                 s.setFloatVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float value = s.getFloat(p);
                 s.setFloat(p, value * value);
                 p++;
@@ -150,12 +150,12 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getFloatVector(p, loop.simdOffsets(), 0);
                 a = a.mul(a);
                 s.setFloatVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float value = s.getFloat(p);
                 s.setFloat(p, value * value);
                 p += loop.step;
@@ -166,7 +166,7 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
     @Override
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 float value = s.getFloat(p);
                 s.setFloat(p, value * value);
                 p += loop.step;
@@ -179,12 +179,12 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p);
+                DoubleVector a = s.getDoubleVector(p);
                 a = a.mul(a);
                 s.setDoubleVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double value = s.getDouble(p);
                 s.setDouble(p, value * value);
                 p++;
@@ -197,12 +197,12 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector a = s.getDoubleVector(p, loop.simdOffsets(), 0);
                 a = a.mul(a);
                 s.setDoubleVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double value = s.getDouble(p);
                 s.setDouble(p, value * value);
                 p += loop.step;
@@ -213,7 +213,7 @@ public final class UnaryOpSqr extends DArrayUnaryOp {
     @Override
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 double value = s.getDouble(p);
                 s.setDouble(p, value * value);
                 p += loop.step;

@@ -113,7 +113,7 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, RunInf
     protected boolean coreFit(Frame df, Var weights) {
 
         Random random = getRandom();
-        Var w = weights.narray().div_(weights.narray_().nanSum()).dv();
+        Var w = weights.darray().div_(weights.narray_().nanSum()).dv();
         double k = firstTargetLevels().size() - 1;
 
         learners.clear();

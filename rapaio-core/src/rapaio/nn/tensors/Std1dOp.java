@@ -23,7 +23,7 @@ package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
 
-public final class Std1dOp extends AbstractTensor {
+public final class Std1dOp extends Tensor {
 
     private final int axis;
     private final int ddof;
@@ -38,10 +38,7 @@ public final class Std1dOp extends AbstractTensor {
         this.epsilon = epsilon;
         this.x = x;
         this.mean = mean;
-        forward();
-    }
 
-    private void forward() {
         double dof = x.dim(axis) - ddof;
         var mu = mean != null ? mean : x.mean1d(axis);
         var centered = x.value().sub(mu.value());

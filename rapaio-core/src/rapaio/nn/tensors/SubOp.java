@@ -26,7 +26,7 @@ import java.util.List;
 import rapaio.darray.operator.Broadcast;
 import rapaio.nn.Tensor;
 
-public class SubOp extends AbstractTensor {
+public class SubOp extends Tensor {
 
     private final Tensor left;
     private final Tensor right;
@@ -35,10 +35,7 @@ public class SubOp extends AbstractTensor {
         super(left.tm(), "sub");
         this.left = left;
         this.right = right;
-        forward();
-    }
 
-    private void forward() {
         if (!Broadcast.elementWise(List.of(left.value().shape(), right.value().shape())).valid()) {
             throw new IllegalArgumentException("Nodes are not valid for elementwise broadcast.");
         }

@@ -24,6 +24,7 @@ package rapaio.darray.operator.impl;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.operator.DArrayUnaryOp;
@@ -67,13 +68,13 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
-        var vnan = FloatVector.broadcast(loop.vs, nan.floatValue());
-        var vpinf = FloatVector.broadcast(loop.vs, pinf.floatValue());
-        var vninf = FloatVector.broadcast(loop.vs, ninf.floatValue());
+        FloatVector vnan = Simd.broadcast(nan.floatValue());
+        FloatVector vpinf = Simd.broadcast(pinf.floatValue());
+        FloatVector vninf = Simd.broadcast(ninf.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var b = s.getFloatVector(loop.vs, p);
+                var b = s.getFloatVector(p);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Float.POSITIVE_INFINITY));
@@ -82,7 +83,7 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
                 }
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float v = s.getFloat(p);
                 v = Float.isNaN(v) ? nan.floatValue() : v;
                 v = Float.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.floatValue() : ninf.floatValue());
@@ -94,13 +95,13 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
-        var vnan = FloatVector.broadcast(loop.vs, nan.floatValue());
-        var vpinf = FloatVector.broadcast(loop.vs, pinf.floatValue());
-        var vninf = FloatVector.broadcast(loop.vs, ninf.floatValue());
+        FloatVector vnan = Simd.broadcast(nan.floatValue());
+        FloatVector vpinf = Simd.broadcast(pinf.floatValue());
+        FloatVector vninf = Simd.broadcast(ninf.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector b = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                FloatVector b = s.getFloatVector(p, loop.simdOffsets(), 0);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Float.POSITIVE_INFINITY));
@@ -109,7 +110,7 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
                 }
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float v = s.getFloat(p);
                 v = Float.isNaN(v) ? nan.floatValue() : v;
                 v = Float.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.floatValue() : ninf.floatValue());
@@ -122,7 +123,7 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 float v = s.getFloat(p);
                 v = Float.isNaN(v) ? nan.floatValue() : v;
                 v = Float.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.floatValue() : ninf.floatValue());
@@ -134,13 +135,13 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
-        var vnan = DoubleVector.broadcast(loop.vs, nan.floatValue());
-        var vpinf = DoubleVector.broadcast(loop.vs, pinf.floatValue());
-        var vninf = DoubleVector.broadcast(loop.vs, ninf.floatValue());
+        DoubleVector vnan = Simd.broadcast(nan.doubleValue());
+        DoubleVector vpinf = Simd.broadcast(pinf.doubleValue());
+        DoubleVector vninf = Simd.broadcast(ninf.doubleValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector b = s.getDoubleVector(loop.vs, p);
+                DoubleVector b = s.getDoubleVector(p);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Double.POSITIVE_INFINITY));
@@ -149,7 +150,7 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
                 }
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double v = s.getDouble(p);
                 v = Double.isNaN(v) ? nan.doubleValue() : v;
                 v = Double.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.doubleValue() : ninf.doubleValue());
@@ -161,13 +162,13 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
-        var vnan = DoubleVector.broadcast(loop.vs, nan.floatValue());
-        var vpinf = DoubleVector.broadcast(loop.vs, pinf.floatValue());
-        var vninf = DoubleVector.broadcast(loop.vs, ninf.floatValue());
+        DoubleVector vnan = Simd.broadcast(nan.doubleValue());
+        DoubleVector vpinf = Simd.broadcast(pinf.doubleValue());
+        DoubleVector vninf = Simd.broadcast(ninf.doubleValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector b = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector b = s.getDoubleVector(p, loop.simdOffsets(), 0);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Double.POSITIVE_INFINITY));
@@ -176,7 +177,7 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
                 }
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double v = s.getDouble(p);
                 v = Double.isNaN(v) ? nan.doubleValue() : v;
                 v = Double.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.doubleValue() : ninf.doubleValue());
@@ -189,7 +190,7 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 double v = s.getDouble(p);
                 v = Double.isNaN(v) ? nan.doubleValue() : v;
                 v = Double.isFinite(v) ? v : (v == Double.POSITIVE_INFINITY ? pinf.doubleValue() : ninf.doubleValue());

@@ -23,7 +23,7 @@ package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
 
-public final class Sum1dOp extends AbstractTensor {
+public final class Sum1dOp extends Tensor {
 
     private final int axis;
     private final Tensor child;
@@ -32,10 +32,7 @@ public final class Sum1dOp extends AbstractTensor {
         super(child.tm(), "sum1d");
         this.axis = axis;
         this.child = child;
-        forward();
-    }
 
-    private void forward() {
         this.setValue(child.value().sum1d(axis));
         backEdge(child, () -> this.grad().strexp(axis, child.value().dim(axis)));
     }

@@ -23,7 +23,7 @@ package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
 
-public class SoftmaxOp extends AbstractTensor {
+public class SoftmaxOp extends Tensor {
 
     private final int axis;
     private final Tensor x;
@@ -32,10 +32,7 @@ public class SoftmaxOp extends AbstractTensor {
         super(x.tm(), "softmax");
         this.axis = axis;
         this.x = x;
-        forward();
-    }
 
-    private void forward() {
         this.setValue(x.value().softmax1d(axis));
         backEdge(x, () -> {
             var s = this.value();

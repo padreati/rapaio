@@ -24,6 +24,7 @@ package rapaio.darray.operator.impl;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.operator.DArrayUnaryOp;
@@ -68,47 +69,47 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
     @Override
     protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         float max = Float.NEGATIVE_INFINITY;
-        FloatVector vmax = FloatVector.broadcast(loop.vs, max);
+        FloatVector vmax = Simd.broadcast(max);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                vmax = vmax.max(s.getFloatVector(loop.vs, p));
+                vmax = vmax.max(s.getFloatVector(p));
                 p += loop.simdLen;
             }
             max = Math.max(max, vmax.reduceLanes(VectorOperators.MAX));
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 max = Math.max(max, s.getFloat(p));
                 p++;
             }
         }
-        vmax = FloatVector.broadcast(loop.vs, max);
+        vmax = Simd.broadcast(max);
 
         float logsum = 0;
-        FloatVector vlogsum = FloatVector.zero(loop.vs);
+        FloatVector vlogsum = Simd.zeroFloat();
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = s.getFloatVector(loop.vs, p);
+                FloatVector v = s.getFloatVector(p);
                 v = v.sub(vmax).lanewise(VectorOperators.EXP);
                 vlogsum = vlogsum.add(v);
                 p += loop.simdLen;
             }
             logsum += vlogsum.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 logsum += (float) Math.exp(s.getFloat(p) - max);
                 p++;
             }
         }
         logsum = (float) Math.log(logsum);
-        vlogsum = FloatVector.broadcast(loop.vs, logsum);
+        vlogsum = Simd.broadcast(logsum);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = s.getFloatVector(loop.vs, p);
+                FloatVector v = s.getFloatVector(p);
                 s.setFloatVector(v.sub(vmax).sub(vlogsum), p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, s.getFloat(p) - max - logsum);
                 p++;
             }
@@ -118,46 +119,46 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
     @Override
     protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         float max = Float.NEGATIVE_INFINITY;
-        FloatVector vmax = FloatVector.broadcast(loop.vs, max);
+        FloatVector vmax = Simd.broadcast(max);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                vmax = vmax.max(s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0));
+                vmax = vmax.max(s.getFloatVector(p, loop.simdOffsets(), 0));
                 p += loop.simdLen * loop.step;
             }
             max = Math.max(max, vmax.reduceLanes(VectorOperators.MAX));
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 max = Math.max(max, s.getFloat(p));
                 p += loop.step;
             }
         }
-        vmax = FloatVector.broadcast(loop.vs, max);
+        vmax = FloatVector.broadcast(Simd.vsf, max);
         float logsum = 0;
-        FloatVector vlogsum = FloatVector.zero(loop.vs);
+        FloatVector vlogsum = Simd.zeroFloat();
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                FloatVector v = s.getFloatVector(p, loop.simdOffsets(), 0);
                 v = v.sub(vmax).lanewise(VectorOperators.EXP);
                 vlogsum = vlogsum.add(v);
                 p += loop.simdLen * loop.step;
             }
             logsum += vlogsum.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 logsum += (float) Math.exp(s.getFloat(p) - max);
                 p += loop.step;
             }
         }
         logsum = (float) Math.log(logsum);
-        vlogsum = FloatVector.broadcast(loop.vs, logsum);
+        vlogsum = Simd.broadcast(logsum);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                FloatVector v = s.getFloatVector(p, loop.simdOffsets(), 0);
                 s.setFloatVector(v.sub(vmax).sub(vlogsum), p, loop.simdOffsets(), 0);
                 p += loop.simdLen * loop.step;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, s.getFloat(p) - max - logsum);
                 p += loop.step;
             }
@@ -168,21 +169,21 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         float max = Float.NEGATIVE_INFINITY;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 max = Math.max(max, s.getFloat(p));
                 p += loop.step;
             }
         }
         float logsum = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 logsum += (float) Math.exp(s.getFloat(p) - max);
                 p += loop.step;
             }
         }
         logsum = (float) Math.log(logsum);
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setFloat(p, s.getFloat(p) - max - logsum);
                 p += loop.step;
             }
@@ -192,46 +193,46 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
     @Override
     protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         double max = Double.NEGATIVE_INFINITY;
-        DoubleVector vmax = DoubleVector.broadcast(loop.vs, max);
+        DoubleVector vmax = Simd.broadcast(max);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                vmax = vmax.max(s.getDoubleVector(loop.vs, p));
+                vmax = vmax.max(s.getDoubleVector(p));
                 p += loop.simdLen;
             }
             max = Math.max(max, vmax.reduceLanes(VectorOperators.MAX));
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 max = Math.max(max, s.getDouble(p));
                 p++;
             }
         }
-        vmax = DoubleVector.broadcast(loop.vs, max);
+        vmax = Simd.broadcast(max);
         double logsum = 0;
-        DoubleVector vlogsum = DoubleVector.zero(loop.vs);
+        DoubleVector vlogsum = Simd.zeroDouble();
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = s.getDoubleVector(loop.vs, p);
+                DoubleVector v = s.getDoubleVector(p);
                 v = v.sub(vmax).lanewise(VectorOperators.EXP);
                 vlogsum = vlogsum.add(v);
                 p += loop.simdLen;
             }
             logsum += vlogsum.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 logsum += Math.exp(s.getDouble(p) - max);
                 p++;
             }
         }
         logsum = Math.log(logsum);
-        vlogsum = DoubleVector.broadcast(loop.vs, logsum);
+        vlogsum = Simd.broadcast(logsum);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = s.getDoubleVector(loop.vs, p);
+                DoubleVector v = s.getDoubleVector(p);
                 s.setDoubleVector(v.sub(vmax).sub(vlogsum), p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, s.getDouble(p) - max - logsum);
                 p++;
             }
@@ -241,46 +242,46 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
     @Override
     protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         double max = Double.NEGATIVE_INFINITY;
-        DoubleVector vmax = DoubleVector.broadcast(loop.vs, max);
+        DoubleVector vmax = Simd.broadcast(max);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                vmax = vmax.max(s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0));
+                vmax = vmax.max(s.getDoubleVector(p, loop.simdOffsets(), 0));
                 p += loop.simdLen * loop.step;
             }
             max = Math.max(max, vmax.reduceLanes(VectorOperators.MAX));
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 max = Math.max(max, s.getDouble(p));
                 p += loop.step;
             }
         }
-        vmax = DoubleVector.broadcast(loop.vs, max);
+        vmax = Simd.broadcast(max);
         double logsum = 0;
-        DoubleVector vlogsum = DoubleVector.zero(loop.vs);
+        DoubleVector vlogsum = Simd.zeroDouble();
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector v = s.getDoubleVector(p, loop.simdOffsets(), 0);
                 v = v.sub(vmax).lanewise(VectorOperators.EXP);
                 vlogsum = vlogsum.add(v);
                 p += loop.simdLen * loop.step;
             }
             logsum += vlogsum.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 logsum += Math.exp(s.getDouble(p) - max);
                 p += loop.step;
             }
         }
         logsum = Math.log(logsum);
-        vlogsum = DoubleVector.broadcast(loop.vs, logsum);
+        vlogsum = Simd.broadcast(logsum);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector v = s.getDoubleVector(p, loop.simdOffsets(), 0);
                 s.setDoubleVector(v.sub(vmax).sub(vlogsum), p, loop.simdOffsets(), 0);
                 p += loop.simdLen * loop.step;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, s.getDouble(p) - max - logsum);
                 p += loop.step;
             }
@@ -291,20 +292,20 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         double max = Double.NEGATIVE_INFINITY;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 max = Math.max(max, s.getDouble(p));
                 p += loop.step;
             }
         }
         double logsum = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 logsum += Math.exp(s.getDouble(p) - max);
                 p += loop.step;
             }
         }
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setDouble(p, s.getDouble(p) - max - logsum);
                 p += loop.step;
             }

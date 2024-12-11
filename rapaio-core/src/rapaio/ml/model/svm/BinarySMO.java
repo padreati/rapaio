@@ -265,7 +265,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
                     })
                     .collectMapping();
             dfTrain = df.mapRows(mapping);
-            state.weights = w.mapRows(mapping).narray();
+            state.weights = w.mapRows(mapping).darray();
             valid = true;
         } else if (!"?".equals(firstLabel.get())) {
             // one vs all type of classification
@@ -273,14 +273,14 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
             label2 = "~" + firstLabel.get();
             oneVsAll = true;
             dfTrain = df;
-            state.weights = w.narray();
+            state.weights = w.darray();
             valid = true;
         } else if (targetLevels.size() == 2) {
             label1 = targetLevels.get(0);
             label2 = targetLevels.get(1);
             oneVsAll = false;
             dfTrain = df;
-            state.weights = w.narray();
+            state.weights = w.darray();
             valid = true;
         }
 

@@ -115,7 +115,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         int ptr = 0;
         var loop = StrideLoopDescriptor.of(layout, askOrder, dt().vs());
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 out.setDouble(ptr++, storage.getDouble(p));
                 p += loop.step;
             }
@@ -300,21 +300,21 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
             if (storage.supportVectorization()) {
                 if (loop.step == 1) {
                     for (; i < loop.simdBound; i += loop.simdLen) {
-                        DoubleVector a = storage.getDoubleVector(dt.vs(), p);
+                        DoubleVector a = storage.getDoubleVector(p);
                         a = op.applyDouble(a, m);
                         storage.setDoubleVector(a, p);
                         p += loop.simdLen;
                     }
                 } else {
                     for (; i < loop.simdBound; i += loop.simdLen) {
-                        DoubleVector a = storage.getDoubleVector(dt.vs(), p, loop.simdOffsets(), 0);
+                        DoubleVector a = storage.getDoubleVector(p, loop.simdOffsets(), 0);
                         a = op.applyDouble(a, m);
                         storage.setDoubleVector(a, p, loop.simdOffsets(), 0);
                         p += loop.simdLen * loop.step;
                     }
                 }
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 storage.setDouble(p, op.applyDouble(storage.getDouble(p), v));
                 p += loop.step;
             }
@@ -454,7 +454,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
-            for (int j = 0; j < loop.size; j++) {
+            for (int j = 0; j < loop.bound; j++) {
                 double value = storage.getDouble(p);
                 p += loop.step;
                 if (value > argvalue) {
@@ -576,7 +576,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
-            for (int j = 0; j < loop.size; j++) {
+            for (int j = 0; j < loop.bound; j++) {
                 double value = storage.getDouble(p);
                 p += loop.step;
                 if (value < argvalue) {
@@ -593,7 +593,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
     public int nanCount() {
         int count = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (dt().isNaN(storage.getDouble(p))) {
                     count++;
                 }
@@ -607,7 +607,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
     public int zeroCount() {
         int count = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (storage.getDouble(p) == 0) {
                     count++;
                 }
@@ -954,7 +954,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         }
         double sum = (double) 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 sum += (double) Math.pow(Math.abs(storage.getDouble(p)), pow);
                 p += loop.step;
             }
@@ -990,7 +990,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         var loop = StrideLoopDescriptor.of(layout, askOrder, dt.vs());
         var last = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 copy.setDouble(last++, storage.getDouble(p));
                 p += loop.step;
             }
@@ -1078,7 +1078,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         var loop = StrideLoopDescriptor.of(src.layout, askOrder, dt().vs());
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 dst.storage.setDouble(it2.nextInt(), src.storage.getDouble(p));
                 p += loop.step;
             }

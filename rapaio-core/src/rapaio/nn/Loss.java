@@ -37,5 +37,5 @@ public interface Loss {
 
     double loss();
 
-    Tensor last();
+    Tensor tensor();
 }

@@ -40,7 +40,7 @@ public abstract class AbstractLoss<L extends AbstractLoss<L>> extends ParamSet<L
         return last.value().getDouble();
     }
 
-    public Tensor last() {
+    public Tensor tensor() {
         return last;
     }
 }

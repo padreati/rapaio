@@ -23,7 +23,7 @@ package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
 
-public class LogOp extends AbstractTensor {
+public class LogOp extends Tensor {
 
     private final double eps;
     private final Tensor child;
@@ -32,10 +32,7 @@ public class LogOp extends AbstractTensor {
         super(child.tm(), "log");
         this.eps = eps;
         this.child = child;
-        forward();
-    }
 
-    private void forward() {
         this.setValue(child.value().log());
         backEdge(child, () -> this.grad().mul(tm.fullTensor(this.shape(), 1).value().div_(child.value()).nanToNum_(eps)));
     }

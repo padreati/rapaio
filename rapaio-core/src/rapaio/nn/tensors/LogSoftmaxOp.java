@@ -23,7 +23,7 @@ package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
 
-public class LogSoftmaxOp extends AbstractTensor {
+public class LogSoftmaxOp extends Tensor {
 
     private final int axis;
     private final Tensor x;
@@ -32,10 +32,7 @@ public class LogSoftmaxOp extends AbstractTensor {
         super(x.tm(), "logsoftmax");
         this.x = x;
         this.axis = axis;
-        forward();
-    }
 
-    public void forward() {
         this.setValue(x.value().logsoftmax1d(axis));
         backEdge(x, () -> {
             var sm = this.value().exp();

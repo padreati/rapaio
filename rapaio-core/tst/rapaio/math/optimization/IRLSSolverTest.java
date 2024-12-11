@@ -50,7 +50,7 @@ public class IRLSSolverTest {
         VarDouble intercept = VarDouble.fill(df.rowCount(), 1).name("(Intercept)");
         Frame dfa = SolidFrame.byVars(intercept).bindVars(df.removeVars("chd"));
         A = dfa.darray();
-        b = df.rvar("chd").narray();
+        b = df.rvar("chd").darray();
     }
 
     @Test

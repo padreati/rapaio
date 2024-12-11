@@ -23,17 +23,14 @@ package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
 
-public class SqrOp extends AbstractTensor {
+public class SqrOp extends Tensor {
 
     private final Tensor x;
 
     public SqrOp(Tensor x) {
         super(x.tm(), "sqr");
         this.x = x;
-        forward();
-    }
 
-    private void forward() {
         this.setValue(x.value().sqr());
         backEdge(x, () -> this.grad().mul(x.value()).mul_(2.));
     }

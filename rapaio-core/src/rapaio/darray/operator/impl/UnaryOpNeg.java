@@ -37,12 +37,12 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getByteVector(loop.vs, p);
+                var a = s.getByteVector(p);
                 a = a.neg();
                 s.setByteVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setByte(p, (byte) -s.getByte(p));
                 p++;
             }
@@ -54,12 +54,12 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getByteVector(p, loop.simdOffsets(), 0);
                 a = a.neg();
                 s.setByteVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setByte(p, (byte) -s.getByte(p));
                 p += loop.step;
             }
@@ -69,7 +69,7 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
     @Override
     protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setByte(p, (byte) -s.getByte(p));
                 p += loop.step;
             }
@@ -82,12 +82,12 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getIntVector(loop.vs, p);
+                var a = s.getIntVector(p);
                 a = a.neg();
                 s.setIntVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setInt(p, -s.getInt(p));
                 p++;
             }
@@ -99,12 +99,12 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getIntVector(p, loop.simdOffsets(), 0);
                 a = a.neg();
                 s.setIntVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setInt(p, -s.getInt(p));
                 p += loop.step;
             }
@@ -114,7 +114,7 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
     @Override
     protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setInt(p, -s.getInt(p));
                 p++;
             }
@@ -126,12 +126,12 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p);
+                var a = s.getFloatVector(p);
                 a = a.neg();
                 s.setFloatVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, -s.getFloat(p));
                 p++;
             }
@@ -143,12 +143,12 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getFloatVector(p, loop.simdOffsets(), 0);
                 a = a.neg();
                 s.setFloatVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, -s.getFloat(p));
                 p += loop.step;
             }
@@ -158,7 +158,7 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
     @Override
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setFloat(p, -s.getFloat(p));
                 p += loop.step;
             }
@@ -170,12 +170,12 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p);
+                DoubleVector a = s.getDoubleVector(p);
                 a = a.neg();
                 s.setDoubleVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, -s.getDouble(p));
                 p++;
             }
@@ -187,12 +187,12 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector a = s.getDoubleVector(p, loop.simdOffsets(), 0);
                 a = a.neg();
                 s.setDoubleVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, -s.getDouble(p));
                 p += loop.step;
             }
@@ -202,7 +202,7 @@ public final class UnaryOpNeg extends DArrayUnaryOp {
     @Override
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setDouble(p, -s.getDouble(p));
                 p += loop.step;
             }

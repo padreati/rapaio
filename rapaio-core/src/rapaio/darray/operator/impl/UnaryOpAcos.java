@@ -70,12 +70,12 @@ public final class UnaryOpAcos extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p);
+                var a = s.getFloatVector(p);
                 a = a.lanewise(VectorOperators.ACOS);
                 s.setFloatVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, (float) Math.acos(s.getFloat(p)));
                 p++;
             }
@@ -87,12 +87,12 @@ public final class UnaryOpAcos extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getFloatVector(p, loop.simdOffsets(), 0);
                 a = a.lanewise(VectorOperators.ACOS);
                 s.setFloatVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, (float) Math.acos(s.getFloat(p)));
                 p += loop.step;
             }
@@ -102,7 +102,7 @@ public final class UnaryOpAcos extends DArrayUnaryOp {
     @Override
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setFloat(p, (float) Math.acos(s.getFloat(p)));
                 p += loop.step;
             }
@@ -114,12 +114,12 @@ public final class UnaryOpAcos extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p);
+                DoubleVector a = s.getDoubleVector(p);
                 a = a.lanewise(VectorOperators.ACOS);
                 s.setDoubleVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, Math.acos(s.getDouble(p)));
                 p++;
             }
@@ -131,12 +131,12 @@ public final class UnaryOpAcos extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector a = s.getDoubleVector(p, loop.simdOffsets(), 0);
                 a = a.lanewise(VectorOperators.ACOS);
                 s.setDoubleVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, Math.acos(s.getDouble(p)));
                 p += loop.step;
             }
@@ -146,7 +146,7 @@ public final class UnaryOpAcos extends DArrayUnaryOp {
     @Override
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setDouble(p, Math.acos(s.getDouble(p)));
                 p += loop.step;
             }

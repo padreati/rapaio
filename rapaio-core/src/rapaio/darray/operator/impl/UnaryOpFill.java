@@ -21,10 +21,7 @@
 
 package rapaio.darray.operator.impl;
 
-import jdk.incubator.vector.ByteVector;
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.IntVector;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.operator.DArrayUnaryOp;
@@ -40,14 +37,14 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
-        var a = ByteVector.broadcast(loop.vs, fill.byteValue());
+        var a = Simd.broadcast(fill.byteValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 s.setByteVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setByte(p, fill.byteValue());
                 p++;
             }
@@ -56,14 +53,14 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
-        var a = ByteVector.broadcast(loop.vs, fill.byteValue());
+        var a = Simd.broadcast(fill.byteValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 s.setByteVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setByte(p, fill.byteValue());
                 p += loop.step;
             }
@@ -73,7 +70,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setByte(p, fill.byteValue());
                 p += loop.step;
             }
@@ -82,14 +79,14 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
-        var a = IntVector.broadcast(loop.vs, fill.intValue());
+        var a = Simd.broadcast(fill.intValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 s.setIntVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setInt(p, fill.intValue());
                 p++;
             }
@@ -98,14 +95,14 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
-        var a = IntVector.broadcast(loop.vs, fill.intValue());
+        var a = Simd.broadcast(fill.intValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 s.setIntVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setInt(p, fill.intValue());
                 p += loop.step;
             }
@@ -115,7 +112,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setInt(p, fill.intValue());
                 p += loop.step;
             }
@@ -124,14 +121,14 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
-        var a = FloatVector.broadcast(loop.vs, fill.floatValue());
+        var a = Simd.broadcast(fill.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 s.setFloatVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, fill.floatValue());
                 p++;
             }
@@ -140,14 +137,14 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
-        var a = FloatVector.broadcast(loop.vs, fill.floatValue());
+        var a = Simd.broadcast(fill.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 s.setFloatVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, fill.floatValue());
                 p += loop.step;
             }
@@ -157,7 +154,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setFloat(p, fill.floatValue());
                 p += loop.step;
             }
@@ -166,14 +163,14 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
-        var a = DoubleVector.broadcast(loop.vs, fill.doubleValue());
+        var a = Simd.broadcast(fill.doubleValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 s.setDoubleVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, fill.doubleValue());
                 p++;
             }
@@ -182,14 +179,14 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
-        var a = DoubleVector.broadcast(loop.vs, fill.doubleValue());
+        var a = Simd.broadcast(fill.doubleValue());
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 s.setDoubleVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, fill.doubleValue());
                 p += loop.step;
             }
@@ -199,7 +196,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setDouble(p, fill.doubleValue());
                 p += loop.step;
             }

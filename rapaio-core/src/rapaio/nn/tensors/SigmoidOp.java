@@ -23,17 +23,14 @@ package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
 
-public final class SigmoidOp extends AbstractTensor {
+public final class SigmoidOp extends Tensor {
 
     private final Tensor child;
 
     public SigmoidOp(Tensor child) {
         super(child.tm(), "sigmoid");
         this.child = child;
-        forward();
-    }
 
-    private void forward() {
         this.setValue(child.value().sigmoid());
         backEdge(child, () -> this.grad().mul(this.value().mul(this.value().neg().add_(1))));
     }

@@ -24,17 +24,14 @@ package rapaio.nn.tensors;
 import rapaio.darray.DArray;
 import rapaio.nn.Tensor;
 
-public final class TanhOp extends AbstractTensor {
+public final class TanhOp extends Tensor {
 
     private final Tensor child;
 
     public TanhOp(Tensor child) {
         super(child.tm(), "sigmoid");
         this.child = child;
-        forward();
-    }
 
-    private void forward() {
         this.setValue(child.value().tanh());
         backEdge(child, () -> {
             DArray<?> sg = this.value().sqr().neg_().add_(1);

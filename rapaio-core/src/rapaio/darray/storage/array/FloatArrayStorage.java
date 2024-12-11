@@ -24,7 +24,7 @@ package rapaio.darray.storage.array;
 import java.util.Arrays;
 
 import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.VectorSpecies;
+import rapaio.darray.Simd;
 import rapaio.darray.storage.FloatStorage;
 
 public final class FloatArrayStorage extends FloatStorage {
@@ -85,13 +85,13 @@ public final class FloatArrayStorage extends FloatStorage {
     }
 
     @Override
-    public FloatVector getFloatVector(VectorSpecies<Float> vs, int offset) {
-        return FloatVector.fromArray(vs, array, offset);
+    public FloatVector getFloatVector(int offset) {
+        return FloatVector.fromArray(Simd.vsf, array, offset);
     }
 
     @Override
-    public FloatVector getFloatVector(VectorSpecies<Float> vs, int offset, int[] idx, int idxOffset) {
-        return FloatVector.fromArray(vs, array, offset, idx, idxOffset);
+    public FloatVector getFloatVector(int offset, int[] idx, int idxOffset) {
+        return FloatVector.fromArray(Simd.vsf, array, offset, idx, idxOffset);
     }
 
     @Override

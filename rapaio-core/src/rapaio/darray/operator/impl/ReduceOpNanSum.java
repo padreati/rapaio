@@ -27,6 +27,7 @@ import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorOperators;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.operator.DArrayReduceOp;
@@ -39,7 +40,7 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     }
 
     private static final byte initByte = 0;
-    private static final byte initInt = 0;
+    private static final int initInt = 0;
     private static final float initFloat = 0f;
     private static final double initDouble = 0d;
 
@@ -47,15 +48,15 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected byte reduceByteVectorUnit(StrideLoopDescriptor<Byte> loop, Storage storage) {
         byte result = initByte;
         for (int p : loop.offsets) {
-            ByteVector a = ByteVector.broadcast(loop.vs, initByte);
+            ByteVector a = Simd.broadcast(initByte);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                ByteVector v = storage.getByteVector(loop.vs, p);
+                ByteVector v = storage.getByteVector(p);
                 a = a.add(v);
                 p += loop.simdLen;
             }
             result += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result += storage.getByte(p);
                 p++;
             }
@@ -67,15 +68,15 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected byte reduceByteVectorStep(StrideLoopDescriptor<Byte> loop, Storage storage) {
         byte result = initByte;
         for (int p : loop.offsets) {
-            ByteVector a = ByteVector.broadcast(loop.vs, initByte);
+            ByteVector a = Simd.broadcast(initByte);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                ByteVector v = storage.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
+                ByteVector v = storage.getByteVector(p, loop.simdOffsets(), 0);
                 a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
             result += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result += storage.getByte(p);
                 p += loop.step;
             }
@@ -87,7 +88,7 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected byte reduceByteDefault(StrideLoopDescriptor<Byte> loop, Storage storage) {
         byte result = initByte;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 result += storage.getByte(p);
                 p += loop.step;
             }
@@ -99,15 +100,15 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected int reduceIntVectorUnit(StrideLoopDescriptor<Integer> loop, Storage storage) {
         int result = initInt;
         for (int p : loop.offsets) {
-            IntVector a = IntVector.broadcast(loop.vs, initInt);
+            IntVector a = Simd.broadcast(initInt);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector v = storage.getIntVector(loop.vs, p);
+                IntVector v = storage.getIntVector(p);
                 a = a.add(v);
                 p += loop.simdLen;
             }
             result += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result += storage.getInt(p);
                 p++;
             }
@@ -119,15 +120,15 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected int reduceIntVectorStep(StrideLoopDescriptor<Integer> loop, Storage storage) {
         int result = initInt;
         for (int p : loop.offsets) {
-            IntVector a = IntVector.broadcast(loop.vs, initInt);
+            IntVector a = Simd.broadcast(initInt);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector v = storage.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
+                IntVector v = storage.getIntVector(p, loop.simdOffsets(), 0);
                 a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
             result += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 result += storage.getInt(p);
                 p += loop.step;
             }
@@ -139,7 +140,7 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected int reduceIntDefault(StrideLoopDescriptor<Integer> loop, Storage storage) {
         int result = initInt;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 result += storage.getInt(p);
                 p += loop.step;
             }
@@ -151,17 +152,17 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
         float result = initFloat;
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p);
+                FloatVector v = storage.getFloatVector(p);
                 VectorMask<Float> m = v.test(VectorOperators.IS_NAN);
                 a = a.add(v, m.not());
                 p += loop.simdLen;
             }
             VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
             result += a.reduceLanes(VectorOperators.ADD, m.not());
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float value = storage.getFloat(p);
                 if(!Float.isNaN(value)) {
                     result += value;
@@ -176,17 +177,17 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
         float result = initFloat;
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                FloatVector v = storage.getFloatVector(p, loop.simdOffsets(), 0);
                 VectorMask<Float> m = v.test(VectorOperators.IS_NAN);
                 a = a.add(v, m.not());
                 p += loop.simdLen * loop.step;
             }
             VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
             result += a.reduceLanes(VectorOperators.ADD, m.not());
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float value = storage.getFloat(p);
                 if(!Float.isNaN(value)) {
                     result += value;
@@ -201,7 +202,7 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected float reduceFloatDefault(StrideLoopDescriptor<Float> loop, Storage storage) {
         float result = initFloat;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 float value = storage.getFloat(p);
                 if(!Float.isNaN(value)) {
                     result += value;
@@ -216,17 +217,17 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
         double result = initDouble;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p);
+                DoubleVector v = storage.getDoubleVector(p);
                 VectorMask<Double> m = v.test(VectorOperators.IS_NAN);
                 a = a.add(v, m.not());
                 p += loop.simdLen;
             }
             VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
             result += a.reduceLanes(VectorOperators.ADD, m.not());
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double value = storage.getDouble(p);
                 if(!Double.isNaN(value)) {
                     result += value;
@@ -241,17 +242,17 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
         double result = initDouble;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
                 VectorMask<Double> m = v.test(VectorOperators.IS_NAN);
                 a = a.add(v, m.not());
                 p += loop.simdLen * loop.step;
             }
             VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
             result += a.reduceLanes(VectorOperators.ADD, m.not());
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double value = storage.getDouble(p);
                 if(!Double.isNaN(value)) {
                     result += value;
@@ -266,7 +267,7 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
     protected double reduceDoubleDefault(StrideLoopDescriptor<Double> loop, Storage storage) {
         double result = initDouble;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 double value = storage.getDouble(p);
                 if(!Double.isNaN(value)) {
                     result += value;

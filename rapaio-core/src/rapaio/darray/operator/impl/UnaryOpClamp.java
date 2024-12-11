@@ -61,7 +61,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getByteVector(loop.vs, p);
+                var a = s.getByteVector(p);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, byteMin);
                     a = a.blend(byteMin, m);
@@ -73,7 +73,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                 s.setByteVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (hasMin && s.getByte(p) < byteMin) {
                     s.setByte(p, byteMin);
                 }
@@ -90,7 +90,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getByteVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getByteVector(p, loop.simdOffsets(), 0);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, byteMin);
                     a = a.blend(byteMin, m);
@@ -102,7 +102,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                 s.setByteVector(a, p, loop.simdOffsets(), 0);
                 p += loop.simdLen * loop.step;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (hasMin && s.getByte(p) < byteMin) {
                     s.setByte(p, byteMin);
                 }
@@ -117,7 +117,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (hasMin && s.getByte(p) < byteMin) {
                     s.setByte(p, byteMin);
                 }
@@ -134,7 +134,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getIntVector(loop.vs, p);
+                var a = s.getIntVector(p);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, intMin);
                     a = a.blend(intMin, m);
@@ -146,7 +146,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                 s.setIntVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (hasMin && s.getInt(p) < intMin) {
                     s.setInt(p, intMin);
                 }
@@ -163,7 +163,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getIntVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getIntVector(p, loop.simdOffsets(), 0);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, intMin);
                     a = a.blend(intMin, m);
@@ -175,7 +175,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                 s.setIntVector(a, p, loop.simdOffsets(), 0);
                 p += loop.simdLen * loop.step;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (hasMin && s.getInt(p) < intMin) {
                     s.setInt(p, intMin);
                 }
@@ -190,7 +190,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (hasMin && s.getInt(p) < intMin) {
                     s.setInt(p, intMin);
                 }
@@ -207,7 +207,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p);
+                var a = s.getFloatVector(p);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, floatMin);
                     a = a.blend(floatMin, m);
@@ -219,7 +219,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                 s.setFloatVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (hasMin && s.getFloat(p) < floatMin) {
                     s.setFloat(p, floatMin);
                 }
@@ -236,7 +236,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getFloatVector(p, loop.simdOffsets(), 0);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, floatMin);
                     a = a.blend(floatMin, m);
@@ -248,7 +248,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                 s.setFloatVector(a, p, loop.simdOffsets(), 0);
                 p += loop.simdLen * loop.step;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (hasMin && s.getFloat(p) < floatMin) {
                     s.setFloat(p, floatMin);
                 }
@@ -263,7 +263,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (hasMin && s.getFloat(p) < floatMin) {
                     s.setFloat(p, floatMin);
                 }
@@ -280,7 +280,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getDoubleVector(loop.vs, p);
+                var a = s.getDoubleVector(p);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, doubleMin);
                     a = a.blend(doubleMin, m);
@@ -292,7 +292,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                 s.setDoubleVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (hasMin && s.getDouble(p) < doubleMin) {
                     s.setDouble(p, doubleMin);
                 }
@@ -309,7 +309,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getDoubleVector(p, loop.simdOffsets(), 0);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, doubleMin);
                     a = a.blend(doubleMin, m);
@@ -321,7 +321,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                 s.setDoubleVector(a, p, loop.simdOffsets(), 0);
                 p += loop.simdLen * loop.step;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (hasMin && s.getDouble(p) < doubleMin) {
                     s.setDouble(p, doubleMin);
                 }
@@ -336,7 +336,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (hasMin && s.getDouble(p) < doubleMin) {
                     s.setDouble(p, doubleMin);
                 }

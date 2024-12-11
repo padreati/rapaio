@@ -115,7 +115,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         int ptr = 0;
         var loop = StrideLoopDescriptor.of(layout, askOrder, dt().vs());
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 out.setByte(ptr++, storage.getByte(p));
                 p += loop.step;
             }
@@ -300,21 +300,21 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
             if (storage.supportVectorization()) {
                 if (loop.step == 1) {
                     for (; i < loop.simdBound; i += loop.simdLen) {
-                        ByteVector a = storage.getByteVector(dt.vs(), p);
+                        ByteVector a = storage.getByteVector(p);
                         a = op.applyByte(a, m);
                         storage.setByteVector(a, p);
                         p += loop.simdLen;
                     }
                 } else {
                     for (; i < loop.simdBound; i += loop.simdLen) {
-                        ByteVector a = storage.getByteVector(dt.vs(), p, loop.simdOffsets(), 0);
+                        ByteVector a = storage.getByteVector(p, loop.simdOffsets(), 0);
                         a = op.applyByte(a, m);
                         storage.setByteVector(a, p, loop.simdOffsets(), 0);
                         p += loop.simdLen * loop.step;
                     }
                 }
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 storage.setByte(p, op.applyByte(storage.getByte(p), v));
                 p += loop.step;
             }
@@ -454,7 +454,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
-            for (int j = 0; j < loop.size; j++) {
+            for (int j = 0; j < loop.bound; j++) {
                 byte value = storage.getByte(p);
                 p += loop.step;
                 if (value > argvalue) {
@@ -576,7 +576,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
-            for (int j = 0; j < loop.size; j++) {
+            for (int j = 0; j < loop.bound; j++) {
                 byte value = storage.getByte(p);
                 p += loop.step;
                 if (value < argvalue) {
@@ -593,7 +593,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
     public int nanCount() {
         int count = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (dt().isNaN(storage.getByte(p))) {
                     count++;
                 }
@@ -607,7 +607,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
     public int zeroCount() {
         int count = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (storage.getByte(p) == 0) {
                     count++;
                 }
@@ -953,7 +953,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         }
         byte sum = (byte) 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 sum += (byte) Math.pow(Math.abs(storage.getByte(p)), pow);
                 p += loop.step;
             }
@@ -988,7 +988,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         var loop = StrideLoopDescriptor.of(layout, askOrder, dt.vs());
         var last = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 copy.setByte(last++, storage.getByte(p));
                 p += loop.step;
             }
@@ -1076,7 +1076,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         var loop = StrideLoopDescriptor.of(src.layout, askOrder, dt().vs());
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 dst.storage.setByte(it2.nextInt(), src.storage.getByte(p));
                 p += loop.step;
             }

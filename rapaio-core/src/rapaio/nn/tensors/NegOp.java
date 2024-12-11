@@ -23,17 +23,14 @@ package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
 
-public class NegOp extends AbstractTensor {
+public class NegOp extends Tensor {
 
     private final Tensor child;
 
     public NegOp(Tensor child) {
         super(child.tm(), "neg");
         this.child = child;
-        forward();
-    }
 
-    private void forward() {
         this.setValue(child.value().neg());
         backEdge(child, () -> this.grad().neg());
     }

@@ -54,7 +54,7 @@ public final class Autograd {
     }
 
     public static ComputeGraph backward(Loss loss, boolean retainGrad) {
-        return backward(loss.last(), retainGrad);
+        return backward(loss.tensor(), retainGrad);
     }
 
     public static ComputeGraph backward(Tensor tensor) {

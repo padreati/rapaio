@@ -24,7 +24,7 @@ package rapaio.darray.storage.array;
 import java.util.Arrays;
 
 import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.VectorSpecies;
+import rapaio.darray.Simd;
 import rapaio.darray.storage.DoubleStorage;
 
 public final class DoubleArrayStorage extends DoubleStorage {
@@ -85,13 +85,13 @@ public final class DoubleArrayStorage extends DoubleStorage {
     }
 
     @Override
-    public DoubleVector getDoubleVector(VectorSpecies<Double> vs, int offset) {
-        return DoubleVector.fromArray(vs, array, offset);
+    public DoubleVector getDoubleVector(int offset) {
+        return DoubleVector.fromArray(Simd.vsd, array, offset);
     }
 
     @Override
-    public DoubleVector getDoubleVector(VectorSpecies<Double> vs, int offset, int[] idx, int idxOffset) {
-        return DoubleVector.fromArray(vs, array, offset, idx, idxOffset);
+    public DoubleVector getDoubleVector(int offset, int[] idx, int idxOffset) {
+        return DoubleVector.fromArray(Simd.vsd, array, offset, idx, idxOffset);
     }
 
     @Override

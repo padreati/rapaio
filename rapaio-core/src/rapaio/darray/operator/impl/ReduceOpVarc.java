@@ -24,6 +24,7 @@ package rapaio.darray.operator.impl;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.operator.DArrayOp;
@@ -78,16 +79,16 @@ public final class ReduceOpVarc extends DArrayReduceOp {
     @Override
     protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
         float mean = Double.isFinite(initMean) ? (float) initMean : DArrayOp.reduceMean().reduceFloat(loop, storage);
-        FloatVector vmean = FloatVector.broadcast(loop.vs, mean);
+        FloatVector vmean = Simd.broadcast(mean);
 
         float sum2 = 0;
         float sum3 = 0;
         for (int p : loop.offsets) {
             int i = 0;
-            FloatVector vsum2 = FloatVector.zero(loop.vs);
-            FloatVector vsum3 = FloatVector.zero(loop.vs);
+            FloatVector vsum2 = Simd.zeroFloat();
+            FloatVector vsum3 = Simd.zeroFloat();
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector a = storage.getFloatVector(loop.vs, p);
+                FloatVector a = storage.getFloatVector(p);
                 FloatVector c = a.sub(vmean);
                 FloatVector c2 = c.mul(c);
                 vsum2 = vsum2.add(c2);
@@ -96,30 +97,30 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             }
             sum2 += vsum2.reduceLanes(VectorOperators.ADD);
             sum3 += vsum3.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float centered = storage.getFloat(p) - mean;
                 sum2 += centered * centered;
                 sum3 += centered;
                 p++;
             }
         }
-        int size = loop.size * loop.offsets.length;
+        int size = loop.bound * loop.offsets.length;
         return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
     }
 
     @Override
     protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
         float mean = Double.isFinite(initMean) ? (float) initMean : DArrayOp.reduceMean().reduceFloat(loop, storage);
-        FloatVector vmean = FloatVector.broadcast(loop.vs, mean);
+        FloatVector vmean = FloatVector.broadcast(Simd.vsf, mean);
 
         float sum2 = 0;
         float sum3 = 0;
         for (int p : loop.offsets) {
             int i = 0;
-            FloatVector vsum2 = FloatVector.zero(loop.vs);
-            FloatVector vsum3 = FloatVector.zero(loop.vs);
+            FloatVector vsum2 = Simd.zeroFloat();
+            FloatVector vsum3 = Simd.zeroFloat();
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector a = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                FloatVector a = storage.getFloatVector(p, loop.simdOffsets(), 0);
                 FloatVector c = a.sub(vmean);
                 FloatVector c2 = c.mul(c);
                 vsum2 = vsum2.add(c2);
@@ -128,14 +129,14 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             }
             sum2 += vsum2.reduceLanes(VectorOperators.ADD);
             sum3 += vsum3.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float centered = storage.getFloat(p) - mean;
                 sum2 += centered * centered;
                 sum3 += centered;
                 p += loop.step;
             }
         }
-        int size = loop.size * loop.offsets.length;
+        int size = loop.bound * loop.offsets.length;
         return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
     }
 
@@ -146,30 +147,30 @@ public final class ReduceOpVarc extends DArrayReduceOp {
         float sum3 = 0;
         for (int p : loop.offsets) {
             int i = 0;
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float centered = storage.getFloat(p) - mean;
                 sum2 += centered * centered;
                 sum3 += centered;
                 p += loop.step;
             }
         }
-        int size = loop.size * loop.offsets.length;
+        int size = loop.bound * loop.offsets.length;
         return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
     }
 
     @Override
     protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
         double mean = Double.isFinite(initMean) ? initMean : DArrayOp.reduceMean().reduceDouble(loop, storage);
-        DoubleVector vmean = DoubleVector.broadcast(loop.vs, mean);
+        DoubleVector vmean = Simd.broadcast(mean);
 
         double sum2 = 0;
         double sum3 = 0;
         for (int p : loop.offsets) {
             int i = 0;
-            DoubleVector vsum2 = DoubleVector.broadcast(loop.vs, 0);
-            DoubleVector vsum3 = DoubleVector.broadcast(loop.vs, 0);
+            DoubleVector vsum2 = Simd.zeroDouble();
+            DoubleVector vsum3 = Simd.zeroDouble();
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = storage.getDoubleVector(loop.vs, p);
+                DoubleVector a = storage.getDoubleVector(p);
                 DoubleVector c = a.sub(vmean);
                 DoubleVector c2 = c.mul(c);
                 vsum2 = vsum2.add(c2);
@@ -178,30 +179,30 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             }
             sum2 += vsum2.reduceLanes(VectorOperators.ADD);
             sum3 += vsum3.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double centered = storage.getFloat(p) - mean;
                 sum2 += centered * centered;
                 sum3 += centered;
                 p++;
             }
         }
-        int size = loop.size * loop.offsets.length;
+        int size = loop.bound * loop.offsets.length;
         return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
     }
 
     @Override
     protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
         double mean = Double.isFinite(initMean) ? initMean : DArrayOp.reduceMean().reduceDouble(loop, storage);
-        DoubleVector vmean = DoubleVector.broadcast(loop.vs, mean);
+        DoubleVector vmean = Simd.broadcast(mean);
 
         double sum2 = 0;
         double sum3 = 0;
         for (int p : loop.offsets) {
             int i = 0;
-            DoubleVector vsum2 = DoubleVector.broadcast(loop.vs, 0);
-            DoubleVector vsum3 = DoubleVector.broadcast(loop.vs, 0);
+            DoubleVector vsum2 = Simd.zeroDouble();
+            DoubleVector vsum3 = Simd.zeroDouble();
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector a = storage.getDoubleVector(p, loop.simdOffsets(), 0);
                 DoubleVector c = a.sub(vmean);
                 DoubleVector c2 = c.mul(c);
                 vsum2 = vsum2.add(c2);
@@ -210,14 +211,14 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             }
             sum2 += vsum2.reduceLanes(VectorOperators.ADD);
             sum3 += vsum3.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double centered = storage.getDouble(p) - mean;
                 sum2 += centered * centered;
                 sum3 += centered;
                 p += loop.step;
             }
         }
-        int size = loop.size * loop.offsets.length;
+        int size = loop.bound * loop.offsets.length;
         return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
     }
 
@@ -228,14 +229,14 @@ public final class ReduceOpVarc extends DArrayReduceOp {
         double sum3 = 0;
         for (int p : loop.offsets) {
             int i = 0;
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double centered = storage.getDouble(p) - mean;
                 sum2 += centered * centered;
                 sum3 += centered;
                 p += loop.step;
             }
         }
-        int size = loop.size * loop.offsets.length;
+        int size = loop.bound * loop.offsets.length;
         return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
     }
 }

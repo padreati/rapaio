@@ -24,7 +24,7 @@ package rapaio.darray.storage.array;
 import java.util.Arrays;
 
 import jdk.incubator.vector.ByteVector;
-import jdk.incubator.vector.VectorSpecies;
+import rapaio.darray.Simd;
 import rapaio.darray.storage.ByteStorage;
 
 public final class ByteArrayStorage extends ByteStorage {
@@ -85,13 +85,13 @@ public final class ByteArrayStorage extends ByteStorage {
     }
 
     @Override
-    public ByteVector getByteVector(VectorSpecies<Byte> vs, int offset) {
-        return ByteVector.fromArray(vs, array, offset);
+    public ByteVector getByteVector(int offset) {
+        return ByteVector.fromArray(Simd.vsb, array, offset);
     }
 
     @Override
-    public ByteVector getByteVector(VectorSpecies<Byte> vs, int offset, int[] idx, int idxOffset) {
-        return ByteVector.fromArray(vs, array, offset, idx, idxOffset);
+    public ByteVector getByteVector(int offset, int[] idx, int idxOffset) {
+        return ByteVector.fromArray(Simd.vsb, array, offset, idx, idxOffset);
     }
 
     @Override

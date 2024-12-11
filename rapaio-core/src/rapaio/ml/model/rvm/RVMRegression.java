@@ -428,7 +428,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
     }
 
     protected DArray<Double> buildTarget(Frame df) {
-        return df.rvar(targetNames[0]).narray();
+        return df.rvar(targetNames[0]).darray();
     }
 
     @Override

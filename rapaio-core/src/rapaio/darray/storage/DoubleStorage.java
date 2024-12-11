@@ -24,7 +24,6 @@ package rapaio.darray.storage;
 import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorSpecies;
 import rapaio.darray.DType;
 import rapaio.darray.Storage;
 
@@ -98,12 +97,12 @@ public abstract class DoubleStorage extends Storage {
 
 
     @Override
-    public final ByteVector getByteVector(VectorSpecies<Byte> vs, int offset) {
+    public final ByteVector getByteVector(int offset) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final ByteVector getByteVector(VectorSpecies<Byte> vs, int offset, int[] idx, int idxOffset) {
+    public final ByteVector getByteVector(int offset, int[] idx, int idxOffset) {
         throw new UnsupportedOperationException();
     }
 
@@ -118,12 +117,12 @@ public abstract class DoubleStorage extends Storage {
     }
 
     @Override
-    public final IntVector getIntVector(VectorSpecies<Integer> vs, int offset) {
+    public final IntVector getIntVector(int offset) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final IntVector getIntVector(VectorSpecies<Integer> vs, int offset, int[] idx, int idxOffset) {
+    public final IntVector getIntVector(int offset, int[] idx, int idxOffset) {
         throw new UnsupportedOperationException();
     }
 
@@ -138,12 +137,12 @@ public abstract class DoubleStorage extends Storage {
     }
 
     @Override
-    public final FloatVector getFloatVector(VectorSpecies<Float> vs, int offset) {
+    public final FloatVector getFloatVector(int offset) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final FloatVector getFloatVector(VectorSpecies<Float> vs, int offset, int[] idx, int idxOffset) {
+    public final FloatVector getFloatVector(int offset, int[] idx, int idxOffset) {
         throw new UnsupportedOperationException();
     }
 

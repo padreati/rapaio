@@ -24,7 +24,7 @@ package rapaio.nn.tensors;
 import rapaio.darray.Compare;
 import rapaio.nn.Tensor;
 
-public class Max extends AbstractTensor {
+public class Max extends Tensor {
 
     private final Tensor x;
     private final double threshold;
@@ -33,10 +33,7 @@ public class Max extends AbstractTensor {
         super(x.tm(), "max");
         this.threshold = threshold;
         this.x = x;
-        forward();
-    }
 
-    private void forward() {
         this.setValue(x.value().max(threshold));
         backEdge(x, () -> this.value().copy().compareMask_(Compare.GT, threshold).mul_(this.grad()));
     }

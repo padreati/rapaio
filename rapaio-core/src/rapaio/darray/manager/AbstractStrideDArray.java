@@ -283,7 +283,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         var loopDescriptor = StrideLoopDescriptor.of((StrideLayout) castTensor.layout(), fastOrder, dt.vs());
         var iter = ptrIterator(fastOrder);
         for (int p : loopDescriptor.offsets) {
-            for (int i = 0; i < loopDescriptor.size; i++) {
+            for (int i = 0; i < loopDescriptor.bound; i++) {
                 castTensor.ptrSet(p, dt.cast(ptrGet(iter.nextInt())));
                 p += loopDescriptor.step;
             }
@@ -315,7 +315,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         int pos = 0;
         var loop = StrideLoopDescriptor.of(layout, askOrder, dt().vs());
         for (int offset : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 int p = offset + i * loop.step;
                 copy[pos++] = storage.getDouble(p);
             }

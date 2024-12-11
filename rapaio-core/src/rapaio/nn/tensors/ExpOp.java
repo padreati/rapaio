@@ -23,7 +23,7 @@ package rapaio.nn.tensors;
 
 import rapaio.nn.Tensor;
 
-public class ExpOp extends AbstractTensor{
+public class ExpOp extends Tensor{
 
     private final Tensor x;
 
@@ -31,10 +31,6 @@ public class ExpOp extends AbstractTensor{
         super(x.tm(), "exp");
         this.x = x;
 
-        forward();
-    }
-
-    private void forward() {
         this.setValue(x.value().exp());
         backEdge(x, () -> this.grad().mul(this.value()));
     }

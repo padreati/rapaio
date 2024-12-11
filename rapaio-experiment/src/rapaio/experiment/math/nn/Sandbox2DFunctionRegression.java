@@ -98,12 +98,12 @@ public class Sandbox2DFunctionRegression {
             c.zeroGrad();
 
             var batchOutput = nn.batchForward(BATCH_SIZE, train.tensor(tm, 0));
-            var result = batchOutput.applyLoss(loss, train.tensor(tm, 1));
+            var batchLoss = batchOutput.applyLoss(loss, train.tensor(tm, 1));
 
-            double trainLossValue = result.lossValue();
+            double trainLossValue = batchLoss.lossValue();
             trainLoss.addDouble(trainLossValue);
 
-            Autograd.backward(result.loss()).covered();
+            Autograd.backward(batchLoss.tensor()).covered();
             c.step();
 
             nn.eval();

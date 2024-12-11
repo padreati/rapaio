@@ -24,10 +24,6 @@ package rapaio.darray;
 import java.util.Comparator;
 import java.util.Objects;
 
-import jdk.incubator.vector.ByteVector;
-import jdk.incubator.vector.DoubleVector;
-import jdk.incubator.vector.FloatVector;
-import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
 
 public abstract class DType<N extends Number> {
@@ -125,8 +121,6 @@ public abstract class DType<N extends Number> {
 
     private static final class DTypeByte extends DType<Byte> {
 
-        private static final VectorSpecies<Byte> vs = ByteVector.SPECIES_PREFERRED;
-
         public DTypeByte() {
             super(Id.BYTE, (byte) 4, true);
         }
@@ -173,13 +167,11 @@ public abstract class DType<N extends Number> {
 
         @Override
         public VectorSpecies<Byte> vs() {
-            return vs;
+            return Simd.vsb;
         }
     }
 
     private static final class DTypeInteger extends DType<Integer> {
-
-        private static final VectorSpecies<Integer> vs = IntVector.SPECIES_PREFERRED;
 
         public DTypeInteger() {
             super(Id.INTEGER, (byte) 4, true);
@@ -227,13 +219,11 @@ public abstract class DType<N extends Number> {
 
         @Override
         public VectorSpecies<Integer> vs() {
-            return vs;
+            return Simd.vsi;
         }
     }
 
     private static final class DTypeFloat extends DType<Float> {
-
-        private static final VectorSpecies<Float> vs = FloatVector.SPECIES_PREFERRED;
 
         public DTypeFloat() {
             super(Id.FLOAT, (byte) 4, false);
@@ -281,13 +271,11 @@ public abstract class DType<N extends Number> {
 
         @Override
         public VectorSpecies<Float> vs() {
-            return vs;
+            return Simd.vsf;
         }
     }
 
     private static final class DTypeDouble extends DType<Double> {
-
-        private static final VectorSpecies<Double> vs = DoubleVector.SPECIES_PREFERRED;
 
         public DTypeDouble() {
             super(Id.DOUBLE, (byte) 8, false);
@@ -335,7 +323,7 @@ public abstract class DType<N extends Number> {
 
         @Override
         public VectorSpecies<Double> vs() {
-            return vs;
+            return Simd.vsd;
         }
     }
 }

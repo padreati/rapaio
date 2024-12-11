@@ -21,6 +21,8 @@
 
 package rapaio.experiment.math.nn;
 
+import static rapaio.graphics.opt.GOpts.color;
+
 import java.io.IOException;
 
 import rapaio.darray.DType;
@@ -28,8 +30,8 @@ import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
-import rapaio.data.transform.OneHotEncoding;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.Plotter;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.nn.Autograd;
 import rapaio.nn.Loss;
@@ -44,78 +46,86 @@ import rapaio.nn.layer.LogSoftmax;
 import rapaio.nn.layer.Sequential;
 import rapaio.nn.loss.NegativeLikelihoodLoss;
 import rapaio.printer.Format;
+import rapaio.sys.WS;
 
 public class SandboxIris {
     public static void main() throws IOException {
+
         Frame iris = Datasets.loadIrisDataset();
+        var x = iris.mapVars(VarRange.of("0~3")).darray().cast(DType.FLOAT);
+        var y = iris.rvar("class").darray().cast(DType.FLOAT);
+
+        ArrayDataset irisDataset = new ArrayDataset(x, y);
+        ArrayDataset[] split = irisDataset.trainTestSplit(0.15);
+        ArrayDataset train = split[0];
+        ArrayDataset test = split[1];
 
         TensorManager tm = TensorManager.ofFloat();
         tm.seed(42);
 
-        var x = iris.mapVars(VarRange.of("0~3")).darray().cast(DType.FLOAT);
-        var y = iris.fapply(OneHotEncoding.on(false, false, VarRange.of("class"))).mapVars("4~6").darray().cast(DType.FLOAT);
+        int n = 3;
+        int epochs = 1_000;
+        double lr = 1e-3;
+        int batchSize = 30;
 
-        ArrayDataset[] split = new ArrayDataset(x, y).trainTestSplit(0.15);
-        ArrayDataset train = split[0];
-        ArrayDataset test = split[1];
-
-        int n = 1_000;
-
-        Net nn = new Sequential(tm,
+        Sequential nn = new Sequential(tm,
                 new BatchNorm1D(tm, 4),
                 new Linear(tm, 4, n, true),
                 new ELU(tm),
                 new BatchNorm1D(tm, n),
                 new Linear(tm, n, 3, true),
                 new ELU(tm),
-//                new BatchNorm1D(tm, 3),
                 new LogSoftmax(tm, 1)
         );
 
-        Optimizer optimizer = Optimizer.Adam(tm, nn.parameters()).lr.set(1e-4);
+        Optimizer optimizer = Optimizer.Adam(tm, nn.parameters())
+                .lr.set(lr);
 
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
         VarDouble testLoss = VarDouble.empty().name("trainLoss");
+        VarDouble accuracy = VarDouble.empty().name("accuracy");
 
-        for (int epoch = 0; epoch < 100; epoch++) {
+        Loss loss = new NegativeLikelihoodLoss();
+
+        for (int epoch = 0; epoch < epochs; epoch++) {
 
             optimizer.zeroGrad();
             nn.train();
 
-            Net.BatchOutput batchOut = nn.batchForward(50, train.tensor(tm, 0));
-            Net.BatchLoss batchLoss = batchOut.applyLoss(new NegativeLikelihoodLoss(), train.tensor(tm, 1));
+            Net.BatchOutput batchOut = nn.batchForward(batchSize, tm.var(train.array(0)));
+            Net.BatchLoss batchLoss = batchOut.applyLoss(loss, tm.var(train.array(1)));
 
             double trainLossValue = batchLoss.lossValue();
-            Autograd.backward(batchLoss.loss());
+            Autograd.backward(batchLoss.tensor());
 
             optimizer.step();
 
             nn.eval();
-            Loss loss = new NegativeLikelihoodLoss();
             loss.forward(nn.forward11(tm.var(test.array(0))), tm.var(test.array(1)));
             double testLossValue = loss.loss();
 
             trainLoss.addDouble(trainLossValue);
             testLoss.addDouble(testLossValue);
 
+            var y_pred = nn.forward11(tm.var(x)).value().exp().argmax1d(1, false);
+            var levels = iris.rvar("class").levels();
+
+            var cm = Confusion.from(iris.rvar("class"), VarNominal.from(levels, y_pred));
+            accuracy.addDouble(cm.accuracy());
+
             if (epoch % 10 == 0) {
 
-                var y_pred = nn.forward11(tm.var(x)).value().exp().argmax1d(1, false);
-                var levels = iris.rvar("class").levels();
-
-                var cm = Confusion.from(iris.rvar("class"), VarNominal.from(levels, y_pred));
-
-                System.out.println(
-                        "Epoch: " + epoch + ", train loss:" + trainLossValue + ", test loss:" + testLossValue +
-                                ", error: " + Format.floatShort(cm.error()) + ", accuracy: " + Format.floatShort(cm.accuracy()));
+                System.out.println("Epoch: " + epoch + ", train loss:" + trainLossValue + ", test loss:" + testLossValue);
+                System.out.println("\t error: " + Format.floatShort(cm.error()) + ", accuracy: " + Format.floatShort(cm.accuracy()));
                 cm.frequencyMatrix().printContent();
             }
         }
 
-//        WS.draw(lines(trainLoss, color(Color.RED)).lines(testLoss, color(2)));
-
-//        NetSerialization.printNetState(nn);
-
+        WS.draw(Plotter
+                .lines(trainLoss, color(1))
+                .lines(testLoss, color(2))
+                .lines(accuracy, color(3))
+        );
 
         tm.close();
     }

@@ -24,17 +24,14 @@ package rapaio.nn.tensors;
 import rapaio.darray.DArray;
 import rapaio.nn.Tensor;
 
-public class SumOp extends AbstractTensor {
+public class SumOp extends Tensor {
 
     private final Tensor child;
 
     public SumOp(Tensor child) {
         super(child.tm(), "sum");
         this.child = child;
-        forward();
-    }
 
-    private void forward() {
         this.setValue(tm.scalarArray(child.value().sum().doubleValue()));
         backEdge(child, () -> {
             DArray<?> grad = this.grad();

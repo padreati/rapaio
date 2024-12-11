@@ -653,11 +653,11 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     public abstract DArray<N> gather_(int axis, DArray<?> index, DArray<?> input);
 
-    public final DArray<N> scatter(int axis, DArray<?> index, DArray<N> out) {
+    public final DArray<?> scatter(int axis, DArray<?> index, DArray<?> out) {
         return out.scatter_(axis, index, this);
     }
 
-    public abstract DArray<N> scatter_(int axis, DArray<?> index, DArray<?> input);
+    public abstract DArray<?> scatter_(int axis, DArray<?> index, DArray<?> input);
 
     /**
      * Get value at indexed position. An indexed position is a tuple of rank

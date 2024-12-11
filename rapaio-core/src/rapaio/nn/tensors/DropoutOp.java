@@ -29,7 +29,7 @@ import rapaio.darray.DType;
 import rapaio.darray.iterators.PointerIterator;
 import rapaio.nn.Tensor;
 
-public class DropoutOp extends AbstractTensor {
+public class DropoutOp extends Tensor {
 
     private final Tensor child;
     private final double p;
@@ -43,10 +43,7 @@ public class DropoutOp extends AbstractTensor {
         this.p = p;
         this.random = random;
         this.inplace = inplace;
-        forward();
-    }
 
-    public void forward() {
         this.mask = tm.zerosArray(DType.BYTE, child.value().shape());
         Bernoulli ber = Bernoulli.of(p);
         PointerIterator ptrIt = mask.ptrIterator();

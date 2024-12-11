@@ -21,8 +21,10 @@
 
 package rapaio.nn;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import rapaio.darray.Compare;
 import rapaio.darray.DArray;
@@ -35,6 +37,7 @@ import rapaio.nn.tensors.CompareTrueOp;
 import rapaio.nn.tensors.DivOp;
 import rapaio.nn.tensors.DropoutOp;
 import rapaio.nn.tensors.ExpOp;
+import rapaio.nn.tensors.GatherOp;
 import rapaio.nn.tensors.IdentityOp;
 import rapaio.nn.tensors.LogOp;
 import rapaio.nn.tensors.LogSoftmaxOp;
@@ -52,169 +55,235 @@ import rapaio.nn.tensors.Sum1dOp;
 import rapaio.nn.tensors.SumOp;
 import rapaio.nn.tensors.TanhOp;
 
-public interface Tensor {
+public abstract class Tensor {
 
-    String name();
+    protected TensorManager tm;
+    protected String name;
+    protected DArray<?> value;
+    protected DArray<?> grad;
+    protected boolean requiresGrad;
+    protected final List<BackFun> backfuns = new ArrayList<>();
 
-    Tensor name(String name);
+    protected Tensor(TensorManager tm, String name) {
+        this.tm = tm;
+        this.name = name;
+    }
 
-    DType<?> dtype();
+    public final String name() {
+        return name;
+    }
 
-    TensorManager tm();
+    public final Tensor name(String name) {
+        this.name = name;
+        return this;
+    }
 
-    Shape shape();
+    public final DType<?> dt() {
+        return tm.dt();
+    }
 
-    int rank();
+    public TensorManager tm() {
+        return tm;
+    }
 
-    int size();
+    public final Shape shape() {
+        return value.shape();
+    }
 
-    int dim(int axis);
+    public final int rank() {
+        return value.rank();
+    }
 
-    DArray<?> value();
+    public final int size() {
+        return value.size();
+    }
 
-    void setValue(DArray<?> data);
+    public int dim(int axis) {
+        return value.dim(axis);
+    }
 
-    DArray<?> grad();
+    public final DArray<?> value() {
+        return value;
+    }
 
-    void setGrad(DArray<?> grad);
+    public final void setValue(DArray<?> data) {
+        value = data;
+    }
 
-    void addGrad(DArray<?> grad);
+    public final DArray<?> grad() {
+        return grad;
+    }
 
-    void zeroGrad();
+    public final void setGrad(DArray<?> grad) {
+        this.grad = grad;
+    }
 
-    boolean requiresGrad();
+    public final void addGrad(DArray<?> grad) {
+        if (this.grad == null) {
+            this.grad = grad;
+        } else {
+            this.grad.add_(grad);
+        }
+    }
 
-    Tensor requiresGrad(boolean requiresGrad);
+    public final void zeroGrad() {
+        this.grad = null;
+    }
 
-    List<BackFun> backfuns();
+    public final boolean requiresGrad() {
+        return requiresGrad;
+    }
+
+    public final Tensor requiresGrad(boolean requiresGrad) {
+        this.requiresGrad = requiresGrad;
+        return this;
+    }
+
+    public final List<BackFun> backfuns() {
+        return backfuns;
+    }
+
+    protected final void backEdge(Tensor ref, Supplier<DArray<?>> backFun) {
+        backfuns.add(BackFun.of(ref, backFun));
+    }
+
+    @Override
+    public final String toString() {
+        return String.format("name:%s\nval:%sgrad:%s", name == null ? "null" : "(" + name + ")", value != null ? value.toString() : "\n",
+                grad);
+    }
 
     /// OPERATIONS
 
-    default IdentityOp identity() {
+    public final IdentityOp identity() {
         return new IdentityOp(this);
     }
 
-    default AddOp add(Tensor other) {
+    public final AddOp add(Tensor other) {
         return new AddOp(this, other);
     }
 
-    default AddOp add(double value) {
-        return new AddOp(this, tm().scalarTensor(value));
+    public final AddOp add(double value) {
+        return new AddOp(this, tm.scalarTensor(value));
     }
 
-    default SubOp sub(Tensor other) {
+    public final SubOp sub(Tensor other) {
         return new SubOp(this, other);
     }
 
-    default SubOp sub(double value) {
-        return new SubOp(this, tm().scalarTensor(value));
+    public final SubOp sub(double value) {
+        return new SubOp(this, tm.scalarTensor(value));
     }
 
-    default MulOp mul(Tensor other) {
+    public final MulOp mul(Tensor other) {
         return new MulOp(this, other);
     }
 
-    default MulOp mul(double value) {
-        return new MulOp(this, tm().scalarTensor(value));
+    public final MulOp mul(double value) {
+        return new MulOp(this, tm.scalarTensor(value));
     }
 
-    default DivOp div(Tensor other) {
+    public final DivOp div(Tensor other) {
         return new DivOp(this, other);
     }
 
-    default DivOp div(double value) {
-        return new DivOp(this, tm().scalarTensor(value));
+    public final DivOp div(double value) {
+        return new DivOp(this, tm.scalarTensor(value));
     }
 
-    default SumOp sum() {
+    public final SumOp sum() {
         return new SumOp(this);
     }
 
-    default Sum1dOp sum1d(int axis) {
+    public final Sum1dOp sum1d(int axis) {
         return new Sum1dOp(this, axis);
     }
 
-    default Mean1dOp mean1d(int axis) {
+    public final Mean1dOp mean1d(int axis) {
         return new Mean1dOp(this, axis);
     }
 
-    default Std1dOp std1d(int axis) {
+    public final Std1dOp std1d(int axis) {
         return new Std1dOp(this, axis, 0, 1e-3, null);
     }
 
-    default Std1dOp std1d(int axis, int ddof) {
+    public final Std1dOp std1d(int axis, int ddof) {
         return new Std1dOp(this, axis, ddof, 1e-3, null);
     }
 
-    default Std1dOp std1d(int axis, int ddof, Tensor mean) {
+    public final Std1dOp std1d(int axis, int ddof, Tensor mean) {
         return new Std1dOp(this, axis, ddof, 1e-3, mean);
     }
 
-    default Std1dOp std1d(int axis, int ddof, double epsilon, Tensor mean) {
+    public final Std1dOp std1d(int axis, int ddof, double epsilon, Tensor mean) {
         return new Std1dOp(this, axis, ddof, epsilon, mean);
     }
 
-    default SqrOp sqr() {
+    public final SqrOp sqr() {
         return new SqrOp(this);
     }
 
-    default SqrtOp sqrt() {
+    public final SqrtOp sqrt() {
         return new SqrtOp(this);
     }
 
-    default BatchVtmOp bvtm(Tensor other) {
+    public final BatchVtmOp bvtm(Tensor other) {
         return new BatchVtmOp(this, other);
     }
 
-    default DropoutOp dropout(double p, Random random) {
+    public final DropoutOp dropout(double p, Random random) {
         return dropout(p, random, false);
     }
 
-    default DropoutOp dropout(double p, Random random, boolean inplace) {
+    public final DropoutOp dropout(double p, Random random, boolean inplace) {
         return new DropoutOp(this, p, random, inplace);
     }
 
-    default SigmoidOp sigmoid() {
+    public final SigmoidOp sigmoid() {
         return new SigmoidOp(this);
     }
 
-    default TanhOp tanh() {
+    public final TanhOp tanh() {
         return new TanhOp(this);
     }
 
-    default Max max(double threshold) {
+    public final Max max(double threshold) {
         return new Max(this, threshold);
     }
 
-    default NegOp neg() {
+    public final NegOp neg() {
         return new NegOp(this);
     }
 
-    default ExpOp exp() {
+    public final ExpOp exp() {
         return new ExpOp(this);
     }
 
-    default LogOp log() {
+    public final LogOp log() {
         return new LogOp(this, -1);
     }
 
-    default LogOp log(double eps) {
+    public final LogOp log(double eps) {
         return new LogOp(this, eps);
     }
 
-    default SoftmaxOp softmax(int axis) {
+    public final SoftmaxOp softmax(int axis) {
         return new SoftmaxOp(this, axis);
     }
 
-    default LogSoftmaxOp logsoftmax(int axis) {
+    public final LogSoftmaxOp logsoftmax(int axis) {
         return new LogSoftmaxOp(this, axis);
     }
 
-    default CompareTrueOp compareTrue(Compare cmp, double threshold) {
+    public final CompareTrueOp compareTrue(Compare cmp, double threshold) {
         return new CompareTrueOp(this, cmp, threshold);
     }
 
-    default CompareFalseOp compareFalse(Compare cmp, double threshold) {
+    public final CompareFalseOp compareFalse(Compare cmp, double threshold) {
         return new CompareFalseOp(this, cmp, threshold);
+    }
+
+    public final GatherOp gather(int axis, Tensor index) {
+        return new GatherOp(this, axis, index);
     }
 }

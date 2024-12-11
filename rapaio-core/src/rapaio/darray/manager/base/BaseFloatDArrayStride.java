@@ -115,7 +115,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         int ptr = 0;
         var loop = StrideLoopDescriptor.of(layout, askOrder, dt().vs());
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 out.setFloat(ptr++, storage.getFloat(p));
                 p += loop.step;
             }
@@ -300,21 +300,21 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
             if (storage.supportVectorization()) {
                 if (loop.step == 1) {
                     for (; i < loop.simdBound; i += loop.simdLen) {
-                        FloatVector a = storage.getFloatVector(dt.vs(), p);
+                        FloatVector a = storage.getFloatVector(p);
                         a = op.applyFloat(a, m);
                         storage.setFloatVector(a, p);
                         p += loop.simdLen;
                     }
                 } else {
                     for (; i < loop.simdBound; i += loop.simdLen) {
-                        FloatVector a = storage.getFloatVector(dt.vs(), p, loop.simdOffsets(), 0);
+                        FloatVector a = storage.getFloatVector(p, loop.simdOffsets(), 0);
                         a = op.applyFloat(a, m);
                         storage.setFloatVector(a, p, loop.simdOffsets(), 0);
                         p += loop.simdLen * loop.step;
                     }
                 }
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 storage.setFloat(p, op.applyFloat(storage.getFloat(p), v));
                 p += loop.step;
             }
@@ -454,7 +454,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
-            for (int j = 0; j < loop.size; j++) {
+            for (int j = 0; j < loop.bound; j++) {
                 float value = storage.getFloat(p);
                 p += loop.step;
                 if (value > argvalue) {
@@ -576,7 +576,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
-            for (int j = 0; j < loop.size; j++) {
+            for (int j = 0; j < loop.bound; j++) {
                 float value = storage.getFloat(p);
                 p += loop.step;
                 if (value < argvalue) {
@@ -593,7 +593,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
     public int nanCount() {
         int count = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (dt().isNaN(storage.getFloat(p))) {
                     count++;
                 }
@@ -607,7 +607,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
     public int zeroCount() {
         int count = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (storage.getFloat(p) == 0) {
                     count++;
                 }
@@ -953,7 +953,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         }
         float sum = (float) 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 sum += (float) Math.pow(Math.abs(storage.getFloat(p)), pow);
                 p += loop.step;
             }
@@ -988,7 +988,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         var loop = StrideLoopDescriptor.of(layout, askOrder, dt.vs());
         var last = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 copy.setFloat(last++, storage.getFloat(p));
                 p += loop.step;
             }
@@ -1076,7 +1076,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         var loop = StrideLoopDescriptor.of(src.layout, askOrder, dt().vs());
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 dst.storage.setFloat(it2.nextInt(), src.storage.getFloat(p));
                 p += loop.step;
             }

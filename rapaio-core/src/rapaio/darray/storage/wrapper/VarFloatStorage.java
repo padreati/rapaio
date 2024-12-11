@@ -25,7 +25,6 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorSpecies;
 import rapaio.darray.DType;
 import rapaio.darray.Storage;
 import rapaio.data.Var;
@@ -136,12 +135,12 @@ public class VarFloatStorage extends Storage {
     }
 
     @Override
-    public ByteVector getByteVector(VectorSpecies<Byte> vs, int offset) {
+    public ByteVector getByteVector(int offset) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ByteVector getByteVector(VectorSpecies<Byte> vs, int offset, int[] idx, int idxOffset) {
+    public ByteVector getByteVector(int offset, int[] idx, int idxOffset) {
         throw new UnsupportedOperationException();
     }
 
@@ -156,12 +155,12 @@ public class VarFloatStorage extends Storage {
     }
 
     @Override
-    public IntVector getIntVector(VectorSpecies<Integer> vs, int offset) {
+    public IntVector getIntVector(int offset) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public IntVector getIntVector(VectorSpecies<Integer> vs, int offset, int[] idx, int idxOffset) {
+    public IntVector getIntVector(int offset, int[] idx, int idxOffset) {
         throw new UnsupportedOperationException();
     }
 
@@ -176,12 +175,12 @@ public class VarFloatStorage extends Storage {
     }
 
     @Override
-    public FloatVector getFloatVector(VectorSpecies<Float> vs, int offset) {
+    public FloatVector getFloatVector(int offset) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public FloatVector getFloatVector(VectorSpecies<Float> vs, int offset, int[] idx, int idxOffset) {
+    public FloatVector getFloatVector(int offset, int[] idx, int idxOffset) {
         throw new UnsupportedOperationException();
     }
 
@@ -196,12 +195,12 @@ public class VarFloatStorage extends Storage {
     }
 
     @Override
-    public DoubleVector getDoubleVector(VectorSpecies<Double> vs, int offset) {
+    public DoubleVector getDoubleVector(int offset) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DoubleVector getDoubleVector(VectorSpecies<Double> vs, int offset, int[] idx, int idxOffset) {
+    public DoubleVector getDoubleVector(int offset, int[] idx, int idxOffset) {
         throw new UnsupportedOperationException();
     }
 

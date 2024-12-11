@@ -21,9 +21,9 @@
 
 package rapaio.darray.operator.impl;
 
-import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.operator.DArrayReduceOp;
@@ -71,10 +71,10 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         float sum = 0;
         float count = 0;
         for (int p : loop.offsets) {
-            var a = FloatVector.zero(loop.vs);
+            FloatVector a = Simd.zeroFloat();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getFloatVector(loop.vs, p);
+                FloatVector v = storage.getFloatVector(p);
                 var m = v.test(VectorOperators.IS_NAN);
                 a = a.add(v, m.not());
                 count += m.not().trueCount();
@@ -82,7 +82,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
             }
             var m = a.test(VectorOperators.IS_NAN);
             sum += a.reduceLanes(VectorOperators.ADD, m.not());
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float v = storage.getFloat(p);
                 if (Float.isNaN(v)) {
                     sum += v;
@@ -93,12 +93,12 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         }
         float mean = sum / count;
         sum = 0;
-        FloatVector vmean = FloatVector.broadcast(loop.vs, mean);
+        FloatVector vmean = FloatVector.broadcast(Simd.vsf, mean);
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.zero(loop.vs);
+            FloatVector a = Simd.zeroFloat();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getFloatVector(loop.vs, p);
+                var v = storage.getFloatVector(p);
                 var m = v.test(VectorOperators.IS_NAN);
                 v = v.sub(vmean, m.not());
                 a = a.add(v, m.not());
@@ -106,7 +106,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
             }
             var m = a.test(VectorOperators.IS_NAN);
             sum += a.reduceLanes(VectorOperators.ADD, m.not());
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float v = storage.getFloat(p);
                 if (!Float.isNaN(v)) {
                     sum += storage.getFloat(p) - mean;
@@ -123,10 +123,10 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         float sum = 0;
         float count = 0;
         for (int p : loop.offsets) {
-            var a = FloatVector.zero(loop.vs);
+            FloatVector a = Simd.zeroFloat();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                var v = storage.getFloatVector(p, loop.simdOffsets(), 0);
                 var m = v.test(VectorOperators.IS_NAN);
                 a = a.add(v, m.not());
                 count += m.not().trueCount();
@@ -134,7 +134,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
             }
             var m = a.test(VectorOperators.IS_NAN);
             sum += a.reduceLanes(VectorOperators.ADD, m.not());
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float v = storage.getFloat(p);
                 if (!Float.isNaN(v)) {
                     sum += v;
@@ -146,10 +146,10 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         float mean = sum / count;
         sum = 0;
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.zero(loop.vs);
+            FloatVector a = Simd.zeroFloat();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                var v = storage.getFloatVector(p, loop.simdOffsets(), 0);
                 var m = v.test(VectorOperators.IS_NAN);
                 v = v.sub(mean, m.not());
                 a = a.add(v, m.not());
@@ -157,7 +157,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
             }
             var m = a.test(VectorOperators.IS_NAN);
             sum += a.reduceLanes(VectorOperators.ADD, m.not());
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 float v = storage.getFloat(p);
                 if (!Float.isNaN(v)) {
                     sum += storage.getFloat(p) - mean;
@@ -173,7 +173,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         float sum = 0;
         float count = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 float v = storage.getFloat(p);
                 if (!Float.isNaN(v)) {
                     sum += v;
@@ -185,7 +185,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         float mean = sum / count;
         sum = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 float v = storage.getFloat(p);
                 if (!Float.isNaN(v)) {
                     sum += storage.getFloat(p) - mean;
@@ -202,10 +202,10 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         double sum = 0;
         double count = 0;
         for (int p : loop.offsets) {
-            var a = DoubleVector.zero(loop.vs);
+            var a = Simd.zeroDouble();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getDoubleVector(loop.vs, p);
+                var v = storage.getDoubleVector(p);
                 var m = v.test(VectorOperators.IS_NAN);
                 a = a.add(v, m.not());
                 count += m.not().trueCount();
@@ -213,7 +213,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
             }
             var m = a.test(VectorOperators.IS_NAN);
             sum += a.reduceLanes(VectorOperators.ADD, m.not());
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double v = storage.getDouble(p);
                 if (!Double.isNaN(v)) {
                     sum += v;
@@ -225,17 +225,17 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         double mean = sum / count;
         sum = 0;
         for (int p : loop.offsets) {
-            var a = DoubleVector.zero(loop.vs);
+            var a = Simd.zeroDouble();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getDoubleVector(loop.vs, p);
+                var v = storage.getDoubleVector(p);
                 var m = v.test(VectorOperators.IS_NAN);
                 v = v.sub(mean, m.not());
                 a = a.add(v, m.not());
                 p += loop.simdLen;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double v = storage.getDouble(p);
                 if (!Double.isNaN(v)) {
                     sum += storage.getDouble(p) - mean;
@@ -251,10 +251,10 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         double sum = 0;
         double count = 0;
         for (int p : loop.offsets) {
-            var a = DoubleVector.zero(loop.vs);
+            var a = Simd.zeroDouble();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                var v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
                 var m = v.test(VectorOperators.IS_NAN);
                 a = a.add(v, m.not());
                 count += m.not().trueCount();
@@ -262,7 +262,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
             }
             var m = a.test(VectorOperators.IS_NAN);
             sum += a.reduceLanes(VectorOperators.ADD, m.not());
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double v = storage.getDouble(p);
                 if (!Double.isNaN(v)) {
                     sum += v;
@@ -274,17 +274,17 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         double mean = sum / count;
         sum = 0;
         for (int p : loop.offsets) {
-            var a = DoubleVector.zero(loop.vs);
+            var a = Simd.zeroDouble();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                var v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
                 var m = v.test(VectorOperators.IS_NAN);
                 v = v.sub(mean, m.not());
                 a = a.add(v, m.not());
                 p += loop.simdLen * loop.step;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 double v = storage.getDouble(p);
                 if (!Double.isNaN(v)) {
                     sum += v - mean;
@@ -300,7 +300,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         double sum = 0;
         double count = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 double v = storage.getDouble(p);
                 if (!Double.isNaN(v)) {
                     sum += v;
@@ -312,7 +312,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         double mean = sum / count;
         sum = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 double v = storage.getDouble(p);
                 if (!Double.isNaN(v)) {
                     sum += v - mean;

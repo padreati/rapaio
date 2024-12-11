@@ -25,7 +25,6 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
-import jdk.incubator.vector.VectorSpecies;
 import rapaio.darray.storage.array.ByteArrayStorage;
 import rapaio.darray.storage.array.DoubleArrayStorage;
 import rapaio.darray.storage.array.FloatArrayStorage;
@@ -79,36 +78,36 @@ public abstract class Storage {
     public abstract void fill(double value, int start, int len);
 
 
-    public abstract ByteVector getByteVector(VectorSpecies<Byte> vs, int offset);
+    public abstract ByteVector getByteVector(int offset);
 
-    public abstract ByteVector getByteVector(VectorSpecies<Byte> vs, int offset, int[] idx, int idxOffset);
+    public abstract ByteVector getByteVector(int offset, int[] idx, int idxOffset);
 
     public abstract void setByteVector(ByteVector value, int offset);
 
     public abstract void setByteVector(ByteVector value, int offset, int[] idx, int idxOffset);
 
 
-    public abstract IntVector getIntVector(VectorSpecies<Integer> vs, int offset);
+    public abstract IntVector getIntVector(int offset);
 
-    public abstract IntVector getIntVector(VectorSpecies<Integer> vs, int offset, int[] idx, int idxOffset);
+    public abstract IntVector getIntVector(int offset, int[] idx, int idxOffset);
 
     public abstract void setIntVector(IntVector value, int offset);
 
     public abstract void setIntVector(IntVector value, int offset, int[] idx, int idxOffset);
 
 
-    public abstract FloatVector getFloatVector(VectorSpecies<Float> vs, int offset);
+    public abstract FloatVector getFloatVector(int offset);
 
-    public abstract FloatVector getFloatVector(VectorSpecies<Float> vs, int offset, int[] idx, int idxOffset);
+    public abstract FloatVector getFloatVector(int offset, int[] idx, int idxOffset);
 
     public abstract void setFloatVector(FloatVector value, int offset);
 
     public abstract void setFloatVector(FloatVector value, int offset, int[] idx, int idxOffset);
 
 
-    public abstract DoubleVector getDoubleVector(VectorSpecies<Double> vs, int offset);
+    public abstract DoubleVector getDoubleVector(int offset);
 
-    public abstract DoubleVector getDoubleVector(VectorSpecies<Double> vs, int offset, int[] idx, int idxOffset);
+    public abstract DoubleVector getDoubleVector(int offset, int[] idx, int idxOffset);
 
     public abstract void setDoubleVector(DoubleVector value, int offset);
 

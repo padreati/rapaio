@@ -24,6 +24,7 @@ package rapaio.darray.operator.impl;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.operator.DArrayUnaryOp;
@@ -70,14 +71,14 @@ public final class UnaryOpSigmoid extends DArrayUnaryOp {
     protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
-            FloatVector one = FloatVector.broadcast(loop.vs, 1f);
+            FloatVector one = Simd.broadcast(1f);
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p);
+                var a = s.getFloatVector(p);
                 a = one.div(one.add(a.neg().lanewise(VectorOperators.EXP)));
                 s.setFloatVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, (float) (1 / (1 + Math.exp(-s.getFloat(p)))));
                 p++;
             }
@@ -88,14 +89,14 @@ public final class UnaryOpSigmoid extends DArrayUnaryOp {
     protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
-            FloatVector one = FloatVector.broadcast(loop.vs, 1f);
+            FloatVector one = Simd.broadcast(1f);
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                var a = s.getFloatVector(p, loop.simdOffsets(), 0);
                 a = one.div(one.add(a.neg().lanewise(VectorOperators.EXP)));
                 s.setFloatVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setFloat(p, (float) (1 / (1 + Math.exp(-s.getFloat(p)))));
                 p += loop.step;
             }
@@ -105,7 +106,7 @@ public final class UnaryOpSigmoid extends DArrayUnaryOp {
     @Override
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setFloat(p, (float) (1 / (1 + Math.exp(-s.getFloat(p)))));
                 p += loop.step;
             }
@@ -116,14 +117,14 @@ public final class UnaryOpSigmoid extends DArrayUnaryOp {
     protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
-            DoubleVector one = DoubleVector.broadcast(loop.vs, 1);
+            DoubleVector one = Simd.broadcast(1d);
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p);
+                DoubleVector a = s.getDoubleVector(p);
                 a = one.div(one.add(a.neg().lanewise(VectorOperators.EXP)));
                 s.setDoubleVector(a, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, 1 / (1 + Math.exp(-s.getDouble(p))));
                 p++;
             }
@@ -134,14 +135,14 @@ public final class UnaryOpSigmoid extends DArrayUnaryOp {
     protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
-            DoubleVector one = DoubleVector.broadcast(loop.vs, 1);
+            DoubleVector one = Simd.broadcast(1d);
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector a = s.getDoubleVector(p, loop.simdOffsets(), 0);
                 a = one.div(one.add(a.neg().lanewise(VectorOperators.EXP)));
                 s.setDoubleVector(a, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 s.setDouble(p, 1 / (1 + Math.exp(-s.getDouble(p))));
                 p += loop.step;
             }
@@ -151,7 +152,7 @@ public final class UnaryOpSigmoid extends DArrayUnaryOp {
     @Override
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 s.setDouble(p, 1 / (1 + Math.exp(-s.getDouble(p))));
                 p += loop.step;
             }

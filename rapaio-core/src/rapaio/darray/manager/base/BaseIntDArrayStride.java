@@ -115,7 +115,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int ptr = 0;
         var loop = StrideLoopDescriptor.of(layout, askOrder, dt().vs());
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 out.setInt(ptr++, storage.getInt(p));
                 p += loop.step;
             }
@@ -300,21 +300,21 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             if (storage.supportVectorization()) {
                 if (loop.step == 1) {
                     for (; i < loop.simdBound; i += loop.simdLen) {
-                        IntVector a = storage.getIntVector(dt.vs(), p);
+                        IntVector a = storage.getIntVector(p);
                         a = op.applyInt(a, m);
                         storage.setIntVector(a, p);
                         p += loop.simdLen;
                     }
                 } else {
                     for (; i < loop.simdBound; i += loop.simdLen) {
-                        IntVector a = storage.getIntVector(dt.vs(), p, loop.simdOffsets(), 0);
+                        IntVector a = storage.getIntVector(p, loop.simdOffsets(), 0);
                         a = op.applyInt(a, m);
                         storage.setIntVector(a, p, loop.simdOffsets(), 0);
                         p += loop.simdLen * loop.step;
                     }
                 }
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 storage.setInt(p, op.applyInt(storage.getInt(p), v));
                 p += loop.step;
             }
@@ -454,7 +454,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
-            for (int j = 0; j < loop.size; j++) {
+            for (int j = 0; j < loop.bound; j++) {
                 int value = storage.getInt(p);
                 p += loop.step;
                 if (value > argvalue) {
@@ -576,7 +576,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
-            for (int j = 0; j < loop.size; j++) {
+            for (int j = 0; j < loop.bound; j++) {
                 int value = storage.getInt(p);
                 p += loop.step;
                 if (value < argvalue) {
@@ -593,7 +593,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     public int nanCount() {
         int count = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (dt().isNaN(storage.getInt(p))) {
                     count++;
                 }
@@ -607,7 +607,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     public int zeroCount() {
         int count = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (storage.getInt(p) == 0) {
                     count++;
                 }
@@ -953,7 +953,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         }
         int sum = (int) 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 sum += (int) Math.pow(Math.abs(storage.getInt(p)), pow);
                 p += loop.step;
             }
@@ -988,7 +988,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         var loop = StrideLoopDescriptor.of(layout, askOrder, dt.vs());
         var last = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 copy.setInt(last++, storage.getInt(p));
                 p += loop.step;
             }
@@ -1076,7 +1076,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         var loop = StrideLoopDescriptor.of(src.layout, askOrder, dt().vs());
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 dst.storage.setInt(it2.nextInt(), src.storage.getInt(p));
                 p += loop.step;
             }

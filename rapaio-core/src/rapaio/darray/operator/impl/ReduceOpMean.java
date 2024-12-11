@@ -24,6 +24,7 @@ package rapaio.darray.operator.impl;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.operator.DArrayReduceOp;
@@ -73,35 +74,35 @@ public final class ReduceOpMean extends DArrayReduceOp {
     protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
         float sum = initFloat;
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p);
+                FloatVector v = storage.getFloatVector(p);
                 a = a.add(v);
                 p += loop.simdLen;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 sum += storage.getFloat(p);
                 p++;
             }
         }
-        float count = loop.size * loop.offsets.length;
+        float count = loop.bound * loop.offsets.length;
         float mean = sum / count;
 
         sum = 0;
-        FloatVector vmean = FloatVector.broadcast(loop.vs, mean);
+        FloatVector vmean = FloatVector.broadcast(Simd.vsf, mean);
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p);
+                FloatVector v = storage.getFloatVector(p);
                 v = v.sub(vmean);
                 a = a.add(v);
                 p += loop.simdLen;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 sum += storage.getFloat(p) - mean;
                 p++;
             }
@@ -114,34 +115,34 @@ public final class ReduceOpMean extends DArrayReduceOp {
     protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
         float sum = initFloat;
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                FloatVector v = storage.getFloatVector(p, loop.simdOffsets(), 0);
                 a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 sum += storage.getFloat(p);
                 p += loop.step;
             }
         }
-        float count = loop.size * loop.offsets.length;
+        float count = loop.bound * loop.offsets.length;
         float mean = sum / count;
 
         sum = 0;
         for (int p : loop.offsets) {
-            FloatVector a = FloatVector.broadcast(loop.vs, initFloat);
+            FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                FloatVector v = storage.getFloatVector(p, loop.simdOffsets(), 0);
                 v = v.sub(mean);
                 a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 sum += storage.getFloat(p) - mean;
                 p += loop.step;
             }
@@ -154,18 +155,18 @@ public final class ReduceOpMean extends DArrayReduceOp {
     protected float reduceFloatDefault(StrideLoopDescriptor<Float> loop, Storage storage) {
         float sum = initFloat;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 sum += storage.getFloat(p);
                 p += loop.step;
             }
         }
 
-        float count = loop.size * loop.offsets.length;
+        float count = loop.bound * loop.offsets.length;
         float mean = sum / count;
 
         sum = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 sum += storage.getFloat(p) - mean;
                 p += loop.step;
             }
@@ -178,35 +179,35 @@ public final class ReduceOpMean extends DArrayReduceOp {
     protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
         double sum = initDouble;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p);
+                DoubleVector v = storage.getDoubleVector(p);
                 a = a.add(v);
                 p += loop.simdLen;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 sum += storage.getDouble(p);
                 p++;
             }
         }
 
-        double count = loop.size * loop.offsets.length;
+        double count = loop.bound * loop.offsets.length;
         double mean = sum / count;
 
         sum = 0;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p);
+                DoubleVector v = storage.getDoubleVector(p);
                 v = v.sub(mean);
                 a = a.add(v);
                 p += loop.simdLen;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 sum += storage.getDouble(p) - mean;
                 p++;
             }
@@ -218,34 +219,34 @@ public final class ReduceOpMean extends DArrayReduceOp {
     protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
         double sum = initDouble;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
                 a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 sum += storage.getDouble(p);
                 p += loop.step;
             }
         }
 
-        double count = loop.size * loop.offsets.length;
+        double count = loop.bound * loop.offsets.length;
         double mean = sum / count;
         sum = 0;
         for (int p : loop.offsets) {
-            DoubleVector a = DoubleVector.broadcast(loop.vs, initDouble);
+            DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
                 v = v.sub(mean);
                 a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
             sum += a.reduceLanes(VectorOperators.ADD);
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 sum += storage.getDouble(p) - mean;
                 p += loop.step;
             }
@@ -258,18 +259,18 @@ public final class ReduceOpMean extends DArrayReduceOp {
     protected double reduceDoubleDefault(StrideLoopDescriptor<Double> loop, Storage storage) {
         double sum = initDouble;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 sum += storage.getDouble(p);
                 p += loop.step;
             }
         }
 
-        double count = loop.size * loop.offsets.length;
+        double count = loop.bound * loop.offsets.length;
         double mean = sum / count;
 
         sum = 0;
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 sum += storage.getDouble(p) - mean;
                 p += loop.step;
             }

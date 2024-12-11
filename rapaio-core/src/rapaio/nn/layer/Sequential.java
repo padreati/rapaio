@@ -21,7 +21,7 @@
 
 package rapaio.nn.layer;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import rapaio.nn.Net;
@@ -31,16 +31,20 @@ import rapaio.nn.TensorManager;
 
 public class Sequential extends AbstractNet {
 
-    private final Net[] nets;
+    private final List<Net> nets;
 
     public Sequential(TensorManager tm, Net... nets) {
         super(tm);
-        this.nets = nets;
+        this.nets = new ArrayList<>(List.of(nets));
     }
 
     @Override
     public List<Tensor> parameters() {
-        return Arrays.stream(nets).flatMap(module -> module.parameters().stream()).toList();
+        return nets.stream().flatMap(module -> module.parameters().stream()).toList();
+    }
+
+    public List<Net> sequence() {
+        return nets;
     }
 
     @Override
@@ -70,7 +74,7 @@ public class Sequential extends AbstractNet {
 
     @Override
     public Tensor[] forward(Tensor... inputs) {
-        if (nets == null || nets.length == 0) {
+        if (nets == null || nets.isEmpty()) {
             return null;
         }
         Tensor[] outputs = null;
@@ -86,6 +90,6 @@ public class Sequential extends AbstractNet {
 
     @Override
     public Tensor forward11(Tensor x) {
-        return forward(new Tensor[] {x})[0];
+        return forward(x)[0];
     }
 }

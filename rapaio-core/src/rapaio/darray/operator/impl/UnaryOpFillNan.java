@@ -24,6 +24,7 @@ package rapaio.darray.operator.impl;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.operator.DArrayUnaryOp;
@@ -65,16 +66,16 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
-        var a = FloatVector.broadcast(loop.vs, fillFloat);
+        var a = Simd.broadcast(fillFloat);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector b = s.getFloatVector(loop.vs, p);
+                FloatVector b = s.getFloatVector(p);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
                 s.setFloatVector(b, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (Float.isNaN(s.getFloat(p))) {
                     s.setFloat(p, fillFloat);
                 }
@@ -85,16 +86,16 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
-        var a = FloatVector.broadcast(loop.vs, fillFloat);
+        var a = Simd.broadcast(fillFloat);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector b = s.getFloatVector(loop.vs, p, loop.simdOffsets(), 0);
+                FloatVector b = s.getFloatVector(p, loop.simdOffsets(), 0);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
                 s.setFloatVector(b, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (Float.isNaN(s.getFloat(p))) {
                     s.setFloat(p, fillFloat);
                 }
@@ -106,7 +107,7 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (Float.isNaN(s.getFloat(p))) {
                     s.setFloat(p, fillFloat);
                 }
@@ -117,16 +118,16 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
-        var a = DoubleVector.broadcast(loop.vs, fillDouble);
+        var a = Simd.broadcast(fillDouble);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var b = s.getDoubleVector(loop.vs, p);
+                var b = s.getDoubleVector(p);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
                 s.setDoubleVector(b, p);
                 p += loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (Double.isNaN(s.getDouble(p))) {
                     s.setDouble(p, fillDouble);
                 }
@@ -137,16 +138,16 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
-        var a = DoubleVector.broadcast(loop.vs, fillDouble);
+        var a = Simd.broadcast(fillDouble);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector b = s.getDoubleVector(loop.vs, p, loop.simdOffsets(), 0);
+                DoubleVector b = s.getDoubleVector(p, loop.simdOffsets(), 0);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
                 s.setDoubleVector(b, p, loop.simdOffsets(), 0);
                 p += loop.step * loop.simdLen;
             }
-            for (; i < loop.size; i++) {
+            for (; i < loop.bound; i++) {
                 if (Double.isNaN(s.getDouble(p))) {
                     s.setDouble(p, fillDouble);
                 }
@@ -158,7 +159,7 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
     @Override
     protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
         for (int p : loop.offsets) {
-            for (int i = 0; i < loop.size; i++) {
+            for (int i = 0; i < loop.bound; i++) {
                 if (Double.isNaN(s.getDouble(p))) {
                     s.setDouble(p, fillDouble);
                 }

@@ -19,33 +19,27 @@
  *
  */
 
-package rapaio.ml.model.linear;
+package rapaio.nn.tensors;
 
-import rapaio.core.stat.Variance;
-import rapaio.data.Var;
+import rapaio.darray.DArray;
+import rapaio.nn.Tensor;
 
-/**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
- */
-public enum Scaling {
-    NONE {
-        @Override
-        public double compute(Var x) {
-            return 1;
-        }
-    },
-    SD {
-        @Override
-        public double compute(Var x) {
-            return Variance.of(x).biasedSdValue();
-        }
-    },
-    NORM {
-        @Override
-        public double compute(Var x) {
-            return Math.sqrt(x.darray().sqr_().nanSum());
-        }
-    };
+public class GatherOp extends Tensor{
 
-    public abstract double compute(Var x);
+    private final Tensor x;
+    private final int axis;
+    private final Tensor index;
+
+    public GatherOp(Tensor x, int axis, Tensor index) {
+        super(x.tm(), "scatter");
+
+        this.x = x;
+        this.axis = axis;
+        this.index = index;
+
+        this.setValue(x.value().gather(axis, index.value()));
+
+        DArray<?> zeros = tm.zerosArray(x.shape());
+        backEdge(x, () -> this.grad().scatter(axis, index.value(), zeros));
+    }
 }

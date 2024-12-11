@@ -42,10 +42,8 @@ public class NegativeLogLikelihoodLoss extends AbstractLoss<NegativeLogLikelihoo
             y.setValue(y.value().stretch(1));
         }
         batch = y.value().dim(0);
-        last = pred.log().neg().mul(y).sum();
-        if (reduce.get().equals(Reduce.MEAN)) {
-            last = last.div(last.tm().scalarTensor(pred.value().size()));
-        }
+        var sum = pred.log().neg().gather(1, y).sum();
+        last = reduce.get().equals(Reduce.MEAN) ? sum : sum.div(pred.value().size());
         last.setGrad(pred.tm().scalarArray(1));
     }
 }

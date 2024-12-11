@@ -75,7 +75,7 @@ public final class TensorManager implements Closeable {
         return random;
     }
 
-    public DType<?> dtype() {
+    public DType<?> dt() {
         return dt;
     }
 

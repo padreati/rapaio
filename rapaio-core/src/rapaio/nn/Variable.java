@@ -22,9 +22,8 @@
 package rapaio.nn;
 
 import rapaio.darray.DArray;
-import rapaio.nn.tensors.AbstractTensor;
 
-public final class Variable extends AbstractTensor {
+public final class Variable extends Tensor {
 
     public Variable(TensorManager tm) {
         super(tm, "variable");

@@ -412,12 +412,12 @@ public interface Var extends Serializable, Printable {
         };
     }
 
-    default DArray<Double> narray() {
-        return narray(DType.DOUBLE);
+    default DArray<Double> darray() {
+        return darray(DType.DOUBLE);
     }
 
     @SuppressWarnings("unchecked")
-    default <N extends Number> DArray<N> narray(DType<N> dtype) {
+    default <N extends Number> DArray<N> darray(DType<N> dtype) {
         return switch (dtype.id()) {
             case DOUBLE -> {
                 double[] copy = new double[size()];

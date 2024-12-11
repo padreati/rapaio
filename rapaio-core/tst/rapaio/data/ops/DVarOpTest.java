@@ -59,17 +59,17 @@ public class DVarOpTest {
 
         VarDouble x = VarDouble.from(100, row -> row % 4 == 0 ? Double.NaN : normal.sampleNext(random));
         VarDouble apply1 = x.copy().narray_().apply_(v -> v + 1).dv();
-        VarDouble apply2 = x.narray().apply_(v -> v + 1).dv();
-        VarDouble apply3 = x.narray().add_(1.).dv();
-        VarDouble apply4 = x.narray().add_(VarDouble.fill(100, 1).narray_()).dv();
+        VarDouble apply2 = x.darray().apply_(v -> v + 1).dv();
+        VarDouble apply3 = x.darray().add_(1.).dv();
+        VarDouble apply4 = x.darray().add_(VarDouble.fill(100, 1).narray_()).dv();
 
         assertTrue(apply1.deepEquals(apply2));
         assertTrue(apply1.deepEquals(apply3));
         assertTrue(apply1.deepEquals(apply4));
 
         double sum1 = x.narray_().nanSum();
-        assertEquals(sum1, x.narray().sort_(0, true).nanSum(), 1e-12);
-        assertEquals(sum1, x.narray().sort_(0, false).nanMean() * 75, 1e-12);
+        assertEquals(sum1, x.darray().sort_(0, true).nanSum(), 1e-12);
+        assertEquals(sum1, x.darray().sort_(0, false).nanMean() * 75, 1e-12);
         int[] rows = x.rowsComplete();
         x.narray_().externalSort(rows, true);
         assertEquals(sum1, x.mapRows(rows).narray_().nanSum(), TOLERANCE);
@@ -99,8 +99,8 @@ public class DVarOpTest {
         assertTrue(apply1.deepEquals(apply4));
 
         double sum1 = x.narray_().nanSum();
-        assertEquals(sum1, x.narray().sort_(0, true).nanSum());
-        assertEquals(sum1, x.narray().sort_(0, false).nanMean() * 75, 1e-10);
+        assertEquals(sum1, x.darray().sort_(0, true).nanSum());
+        assertEquals(sum1, x.darray().sort_(0, false).nanMean() * 75, 1e-10);
 
         int[] rows = x.rowsComplete();
         x.narray_().externalSort(rows, true);
