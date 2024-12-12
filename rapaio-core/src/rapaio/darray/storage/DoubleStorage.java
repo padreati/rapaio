@@ -24,13 +24,14 @@ package rapaio.darray.storage;
 import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorMask;
 import rapaio.darray.DType;
 import rapaio.darray.Storage;
 
 public abstract class DoubleStorage extends Storage {
 
     @Override
-    public final DType<Double> dtype() {
+    public final DType<Double> dt() {
         return DType.DOUBLE;
     }
 
@@ -95,7 +96,6 @@ public abstract class DoubleStorage extends Storage {
         fill((double) value, start, len);
     }
 
-
     @Override
     public final ByteVector getByteVector(int offset) {
         throw new UnsupportedOperationException();
@@ -113,6 +113,26 @@ public abstract class DoubleStorage extends Storage {
 
     @Override
     public final void setByteVector(ByteVector value, int offset, int[] idx, int idxOffset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final ByteVector getByteVector(int offset, VectorMask<Byte> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final ByteVector getByteVector(int offset, int[] idx, int idxOffset, VectorMask<Byte> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setByteVector(ByteVector value, int offset, VectorMask<Byte> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setByteVector(ByteVector value, int offset, int[] idx, int idxOffset, VectorMask<Byte> m) {
         throw new UnsupportedOperationException();
     }
 
@@ -137,6 +157,26 @@ public abstract class DoubleStorage extends Storage {
     }
 
     @Override
+    public final IntVector getIntVector(int offset, VectorMask<Integer> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final IntVector getIntVector(int offset, int[] idx, int idxOffset, VectorMask<Integer> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setIntVector(IntVector value, int offset, VectorMask<Integer> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setIntVector(IntVector value, int offset, int[] idx, int idxOffset, VectorMask<Integer> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public final FloatVector getFloatVector(int offset) {
         throw new UnsupportedOperationException();
     }
@@ -153,6 +193,26 @@ public abstract class DoubleStorage extends Storage {
 
     @Override
     public final void setFloatVector(FloatVector value, int offset, int[] idx, int idxOffset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final FloatVector getFloatVector(int offset, VectorMask<Float> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final FloatVector getFloatVector(int offset, int[] idx, int idxOffset, VectorMask<Float> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setFloatVector(FloatVector value, int offset, VectorMask<Float> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final void setFloatVector(FloatVector value, int offset, int[] idx, int idxOffset, VectorMask<Float> m) {
         throw new UnsupportedOperationException();
     }
 }

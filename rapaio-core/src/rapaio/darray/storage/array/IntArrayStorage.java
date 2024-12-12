@@ -24,6 +24,7 @@ package rapaio.darray.storage.array;
 import java.util.Arrays;
 
 import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorMask;
 import rapaio.darray.Simd;
 import rapaio.darray.storage.IntStorage;
 
@@ -62,7 +63,7 @@ public final class IntArrayStorage extends IntStorage {
     }
 
     @Override
-    public boolean supportVectorization() {
+    public boolean supportSimd() {
         return true;
     }
 
@@ -102,6 +103,26 @@ public final class IntArrayStorage extends IntStorage {
     @Override
     public void setIntVector(IntVector value, int offset, int[] idx, int idxOffset) {
         value.intoArray(array, offset, idx, idxOffset);
+    }
+
+    @Override
+    public IntVector getIntVector(int offset, VectorMask<Integer> m) {
+        return IntVector.fromArray(Simd.vsi, array, offset, m);
+    }
+
+    @Override
+    public IntVector getIntVector(int offset, int[] idx, int idxOffset, VectorMask<Integer> m) {
+        return IntVector.fromArray(Simd.vsi, array, offset, idx, idxOffset, m);
+    }
+
+    @Override
+    public void setIntVector(IntVector value, int offset, VectorMask<Integer> m) {
+        value.intoArray(array, offset, m);
+    }
+
+    @Override
+    public void setIntVector(IntVector value, int offset, int[] idx, int idxOffset, VectorMask<Integer> m) {
+        value.intoArray(array, offset, idx, idxOffset, m);
     }
 
     public int[] array() {

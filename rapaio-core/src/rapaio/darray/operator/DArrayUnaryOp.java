@@ -41,7 +41,7 @@ public abstract class DArrayUnaryOp {
         if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
-        if (s.supportVectorization()) {
+        if (s.supportSimd()) {
             if (loop.step == 1) {
                 applyUnitByte(loop, s);
             } else {
@@ -56,7 +56,7 @@ public abstract class DArrayUnaryOp {
         if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
-        if (s.supportVectorization()) {
+        if (s.supportSimd()) {
             if (loop.step == 1) {
                 applyUnitInt(loop, s);
             } else {
@@ -68,7 +68,7 @@ public abstract class DArrayUnaryOp {
     }
 
     public final void applyFloat(StrideLoopDescriptor<Float> loop, Storage s) {
-        if (s.supportVectorization()) {
+        if (s.supportSimd()) {
             if (loop.step == 1) {
                 applyUnitFloat(loop, s);
             } else {
@@ -80,7 +80,7 @@ public abstract class DArrayUnaryOp {
     }
 
     public final void applyDouble(StrideLoopDescriptor<Double> loop, Storage s) {
-        if (s.supportVectorization()) {
+        if (s.supportSimd()) {
             if (loop.step == 1) {
                 applyUnitDouble(loop, s);
             } else {

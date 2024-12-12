@@ -24,6 +24,7 @@ package rapaio.darray.storage.array;
 import java.util.Arrays;
 
 import jdk.incubator.vector.ByteVector;
+import jdk.incubator.vector.VectorMask;
 import rapaio.darray.Simd;
 import rapaio.darray.storage.ByteStorage;
 
@@ -62,7 +63,7 @@ public final class ByteArrayStorage extends ByteStorage {
     }
 
     @Override
-    public boolean supportVectorization() {
+    public boolean supportSimd() {
         return true;
     }
 
@@ -102,6 +103,27 @@ public final class ByteArrayStorage extends ByteStorage {
     @Override
     public void setByteVector(ByteVector value, int offset, int[] idx, int idxOffset) {
         value.intoArray(array, offset, idx, idxOffset);
+    }
+
+
+    @Override
+    public ByteVector getByteVector(int offset, VectorMask<Byte> m) {
+        return ByteVector.fromArray(Simd.vsb, array, offset, m);
+    }
+
+    @Override
+    public ByteVector getByteVector(int offset, int[] idx, int idxOffset, VectorMask<Byte> m) {
+        return ByteVector.fromArray(Simd.vsb, array, offset, idx, idxOffset, m);
+    }
+
+    @Override
+    public void setByteVector(ByteVector value, int offset, VectorMask<Byte> m) {
+        value.intoArray(array, offset, m);
+    }
+
+    @Override
+    public void setByteVector(ByteVector value, int offset, int[] idx, int idxOffset, VectorMask<Byte> m) {
+        value.intoArray(array, offset, idx, idxOffset, m);
     }
 
     public byte[] array() {

@@ -297,7 +297,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         ByteVector m = ByteVector.broadcast(dt.vs(), v);
         for (int p : loop.offsets) {
             int i = 0;
-            if (storage.supportVectorization()) {
+            if (storage.supportSimd()) {
                 if (loop.step == 1) {
                     for (; i < loop.simdBound; i += loop.simdLen) {
                         ByteVector a = storage.getByteVector(p);

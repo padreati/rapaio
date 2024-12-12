@@ -297,7 +297,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         IntVector m = IntVector.broadcast(dt.vs(), v);
         for (int p : loop.offsets) {
             int i = 0;
-            if (storage.supportVectorization()) {
+            if (storage.supportSimd()) {
                 if (loop.step == 1) {
                     for (; i < loop.simdBound; i += loop.simdLen) {
                         IntVector a = storage.getIntVector(p);

@@ -297,7 +297,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         DoubleVector m = DoubleVector.broadcast(dt.vs(), v);
         for (int p : loop.offsets) {
             int i = 0;
-            if (storage.supportVectorization()) {
+            if (storage.supportSimd()) {
                 if (loop.step == 1) {
                     for (; i < loop.simdBound; i += loop.simdLen) {
                         DoubleVector a = storage.getDoubleVector(p);

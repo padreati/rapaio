@@ -25,6 +25,7 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorMask;
 import rapaio.darray.DType;
 import rapaio.darray.Storage;
 import rapaio.data.Var;
@@ -38,7 +39,7 @@ public final class VarDoubleStorage extends Storage {
     }
 
     @Override
-    public DType<Double> dtype() {
+    public DType<Double> dt() {
         return DType.DOUBLE;
     }
 
@@ -48,7 +49,7 @@ public final class VarDoubleStorage extends Storage {
     }
 
     @Override
-    public boolean supportVectorization() {
+    public boolean supportSimd() {
         return false;
     }
 
@@ -155,6 +156,26 @@ public final class VarDoubleStorage extends Storage {
     }
 
     @Override
+    public ByteVector getByteVector(int offset, VectorMask<Byte> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ByteVector getByteVector(int offset, int[] idx, int idxOffset, VectorMask<Byte> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setByteVector(ByteVector value, int offset, VectorMask<Byte> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setByteVector(ByteVector value, int offset, int[] idx, int idxOffset, VectorMask<Byte> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public IntVector getIntVector(int offset) {
         throw new UnsupportedOperationException();
     }
@@ -171,6 +192,26 @@ public final class VarDoubleStorage extends Storage {
 
     @Override
     public void setIntVector(IntVector value, int offset, int[] idx, int idxOffset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IntVector getIntVector(int offset, VectorMask<Integer> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IntVector getIntVector(int offset, int[] idx, int idxOffset, VectorMask<Integer> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setIntVector(IntVector value, int offset, VectorMask<Integer> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setIntVector(IntVector value, int offset, int[] idx, int idxOffset, VectorMask<Integer> m) {
         throw new UnsupportedOperationException();
     }
 
@@ -195,6 +236,26 @@ public final class VarDoubleStorage extends Storage {
     }
 
     @Override
+    public FloatVector getFloatVector(int offset, VectorMask<Float> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public FloatVector getFloatVector(int offset, int[] idx, int idxOffset, VectorMask<Float> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setFloatVector(FloatVector value, int offset, VectorMask<Float> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setFloatVector(FloatVector value, int offset, int[] idx, int idxOffset, VectorMask<Float> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public DoubleVector getDoubleVector(int offset) {
         throw new UnsupportedOperationException();
     }
@@ -211,6 +272,26 @@ public final class VarDoubleStorage extends Storage {
 
     @Override
     public void setDoubleVector(DoubleVector value, int offset, int[] idx, int idxOffset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DoubleVector getDoubleVector(int offset, VectorMask<Double> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DoubleVector getDoubleVector(int offset, int[] idx, int idxOffset, VectorMask<Double> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setDoubleVector(DoubleVector value, int offset, VectorMask<Double> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setDoubleVector(DoubleVector value, int offset, int[] idx, int idxOffset, VectorMask<Double> m) {
         throw new UnsupportedOperationException();
     }
 }

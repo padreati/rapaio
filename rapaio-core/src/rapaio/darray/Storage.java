@@ -25,6 +25,7 @@ import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.VectorMask;
 import rapaio.darray.storage.array.ByteArrayStorage;
 import rapaio.darray.storage.array.DoubleArrayStorage;
 import rapaio.darray.storage.array.FloatArrayStorage;
@@ -35,11 +36,11 @@ import rapaio.io.atom.SaveAtomHandler;
 
 public abstract class Storage {
 
-    public abstract DType<?> dtype();
+    public abstract DType<?> dt();
 
     public abstract int size();
 
-    public abstract boolean supportVectorization();
+    public abstract boolean supportSimd();
 
 
     public abstract byte getByte(int ptr);
@@ -86,6 +87,14 @@ public abstract class Storage {
 
     public abstract void setByteVector(ByteVector value, int offset, int[] idx, int idxOffset);
 
+    public abstract ByteVector getByteVector(int offset, VectorMask<Byte> m);
+
+    public abstract ByteVector getByteVector(int offset, int[] idx, int idxOffset, VectorMask<Byte> m);
+
+    public abstract void setByteVector(ByteVector value, int offset, VectorMask<Byte> m);
+
+    public abstract void setByteVector(ByteVector value, int offset, int[] idx, int idxOffset, VectorMask<Byte> m);
+
 
     public abstract IntVector getIntVector(int offset);
 
@@ -94,6 +103,14 @@ public abstract class Storage {
     public abstract void setIntVector(IntVector value, int offset);
 
     public abstract void setIntVector(IntVector value, int offset, int[] idx, int idxOffset);
+
+    public abstract IntVector getIntVector(int offset, VectorMask<Integer> m);
+
+    public abstract IntVector getIntVector(int offset, int[] idx, int idxOffset, VectorMask<Integer> m);
+
+    public abstract void setIntVector(IntVector value, int offset, VectorMask<Integer> m);
+
+    public abstract void setIntVector(IntVector value, int offset, int[] idx, int idxOffset, VectorMask<Integer> m);
 
 
     public abstract FloatVector getFloatVector(int offset);
@@ -104,6 +121,14 @@ public abstract class Storage {
 
     public abstract void setFloatVector(FloatVector value, int offset, int[] idx, int idxOffset);
 
+    public abstract FloatVector getFloatVector(int offset, VectorMask<Float> m);
+
+    public abstract FloatVector getFloatVector(int offset, int[] idx, int idxOffset, VectorMask<Float> m);
+
+    public abstract void setFloatVector(FloatVector value, int offset, VectorMask<Float> m);
+
+    public abstract void setFloatVector(FloatVector value, int offset, int[] idx, int idxOffset, VectorMask<Float> m);
+
 
     public abstract DoubleVector getDoubleVector(int offset);
 
@@ -112,6 +137,14 @@ public abstract class Storage {
     public abstract void setDoubleVector(DoubleVector value, int offset);
 
     public abstract void setDoubleVector(DoubleVector value, int offset, int[] idx, int idxOffset);
+
+    public abstract DoubleVector getDoubleVector(int offset, VectorMask<Double> m);
+
+    public abstract DoubleVector getDoubleVector(int offset, int[] idx, int idxOffset, VectorMask<Double> m);
+
+    public abstract void setDoubleVector(DoubleVector value, int offset, VectorMask<Double> m);
+
+    public abstract void setDoubleVector(DoubleVector value, int offset, int[] idx, int idxOffset, VectorMask<Double> m);
 
 
     public static class Serialization extends AtomSerialization<Storage> {

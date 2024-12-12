@@ -297,7 +297,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         FloatVector m = FloatVector.broadcast(dt.vs(), v);
         for (int p : loop.offsets) {
             int i = 0;
-            if (storage.supportVectorization()) {
+            if (storage.supportSimd()) {
                 if (loop.step == 1) {
                     for (; i < loop.simdBound; i += loop.simdLen) {
                         FloatVector a = storage.getFloatVector(p);

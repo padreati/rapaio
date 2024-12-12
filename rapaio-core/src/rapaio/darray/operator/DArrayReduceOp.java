@@ -32,7 +32,7 @@ public abstract class DArrayReduceOp {
         if (floatingPointOnly()) {
             throw new IllegalArgumentException("This operation is available only for floating points data types.");
         }
-        if (storage.supportVectorization()) {
+        if (storage.supportSimd()) {
             if (loop.step == 1) {
                 return reduceByteVectorUnit(loop, storage);
             } else {
@@ -46,7 +46,7 @@ public abstract class DArrayReduceOp {
         if (floatingPointOnly()) {
             throw new IllegalArgumentException("This operation is available only for floating points data types.");
         }
-        if (storage.supportVectorization()) {
+        if (storage.supportSimd()) {
             if (loop.step == 1) {
                 return reduceIntVectorUnit(loop, storage);
             } else {
@@ -57,7 +57,7 @@ public abstract class DArrayReduceOp {
     }
 
     public final float reduceFloat(StrideLoopDescriptor<Float> loop, Storage storage) {
-        if (storage.supportVectorization()) {
+        if (storage.supportSimd()) {
             if (loop.step == 1) {
                 return reduceFloatVectorUnit(loop, storage);
             } else {
@@ -68,7 +68,7 @@ public abstract class DArrayReduceOp {
     }
 
     public final double reduceDouble(StrideLoopDescriptor<Double> loop, Storage storage) {
-        if (storage.supportVectorization()) {
+        if (storage.supportSimd()) {
             if (loop.step == 1) {
                 return reduceDoubleVectorUnit(loop, storage);
             } else {

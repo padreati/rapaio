@@ -27,6 +27,7 @@ import java.util.List;
 
 public class CodeGenApp {
 
+    private static final String DEFAULT_SOURCE_ROOT = "/home/ati/work/rapaio/rapaio-core/src/";
     private static final List<CodeGenTemplate> templates;
 
     static {
@@ -94,7 +95,7 @@ public class CodeGenApp {
     }
 
     public static void main(String[] args) {
-        String root = args.length == 1 ? args[0] : GlobalProperties.defaultSourceRoot();
+        String root = args.length == 1 ? args[0] : DEFAULT_SOURCE_ROOT;
         templates.forEach(template -> {
             try {
                 template.run(root);

@@ -90,13 +90,13 @@ public class AtomTest {
             assertEquals(matrixLayout1, matrixLayout2);
             assertEquals(tensorLayout1, tensorLayout2);
 
-            assertEquals(byteStorage1.dtype(), byteStorage2.dtype());
+            assertEquals(byteStorage1.dt(), byteStorage2.dt());
             assertArrayEquals(((ByteArrayStorage) byteStorage1).array(), ((ByteArrayStorage) byteStorage2).array());
-            assertEquals(intStorage1.dtype(), intStorage2.dtype());
+            assertEquals(intStorage1.dt(), intStorage2.dt());
             assertArrayEquals(((IntArrayStorage) intStorage1).array(), ((IntArrayStorage) intStorage2).array());
-            assertEquals(floatStorage1.dtype(), floatStorage2.dtype());
+            assertEquals(floatStorage1.dt(), floatStorage2.dt());
             assertArrayEquals(((FloatArrayStorage) floatStorage1).array(), ((FloatArrayStorage) floatStorage2).array());
-            assertEquals(doubleStorage1.dtype(), doubleStorage2.dtype());
+            assertEquals(doubleStorage1.dt(), doubleStorage2.dt());
             assertArrayEquals(((DoubleArrayStorage) doubleStorage1).array(), ((DoubleArrayStorage) doubleStorage2).array());
 
         }

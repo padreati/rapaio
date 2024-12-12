@@ -24,6 +24,7 @@ package rapaio.darray.storage.array;
 import java.util.Arrays;
 
 import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorMask;
 import rapaio.darray.Simd;
 import rapaio.darray.storage.DoubleStorage;
 
@@ -62,7 +63,7 @@ public final class DoubleArrayStorage extends DoubleStorage {
     }
 
     @Override
-    public boolean supportVectorization() {
+    public boolean supportSimd() {
         return true;
     }
 
@@ -102,6 +103,26 @@ public final class DoubleArrayStorage extends DoubleStorage {
     @Override
     public void setDoubleVector(DoubleVector value, int offset, int[] idx, int idxOffset) {
         value.intoArray(array, offset, idx, idxOffset);
+    }
+
+    @Override
+    public DoubleVector getDoubleVector(int offset, VectorMask<Double> m) {
+        return DoubleVector.fromArray(Simd.vsd, array, offset, m);
+    }
+
+    @Override
+    public DoubleVector getDoubleVector(int offset, int[] idx, int idxOffset, VectorMask<Double> m) {
+        return DoubleVector.fromArray(Simd.vsd, array, offset, idx, idxOffset, m);
+    }
+
+    @Override
+    public void setDoubleVector(DoubleVector value, int offset, VectorMask<Double> m) {
+        value.intoArray(array, offset, m);
+    }
+
+    @Override
+    public void setDoubleVector(DoubleVector value, int offset, int[] idx, int idxOffset, VectorMask<Double> m) {
+        value.intoArray(array, offset, idx, idxOffset, m);
     }
 
     public double[] array() {

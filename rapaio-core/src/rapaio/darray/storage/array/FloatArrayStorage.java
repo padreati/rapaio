@@ -24,6 +24,7 @@ package rapaio.darray.storage.array;
 import java.util.Arrays;
 
 import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.VectorMask;
 import rapaio.darray.Simd;
 import rapaio.darray.storage.FloatStorage;
 
@@ -62,7 +63,7 @@ public final class FloatArrayStorage extends FloatStorage {
     }
 
     @Override
-    public boolean supportVectorization() {
+    public boolean supportSimd() {
         return true;
     }
 
@@ -102,6 +103,26 @@ public final class FloatArrayStorage extends FloatStorage {
     @Override
     public void setFloatVector(FloatVector value, int offset, int[] idx, int idxOffset) {
         value.intoArray(array, offset, idx, idxOffset);
+    }
+
+    @Override
+    public FloatVector getFloatVector(int offset, VectorMask<Float> m) {
+        return FloatVector.fromArray(Simd.vsf, array, offset, m);
+    }
+
+    @Override
+    public FloatVector getFloatVector(int offset, int[] idx, int idxOffset, VectorMask<Float> m) {
+        return FloatVector.fromArray(Simd.vsf, array, offset, idx, idxOffset, m);
+    }
+
+    @Override
+    public void setFloatVector(FloatVector value, int offset, VectorMask<Float> m) {
+        value.intoArray(array, offset, m);
+    }
+
+    @Override
+    public void setFloatVector(FloatVector value, int offset, int[] idx, int idxOffset, VectorMask<Float> m) {
+        value.intoArray(array, offset, idx, idxOffset, m);
     }
 
     public float[] array() {
