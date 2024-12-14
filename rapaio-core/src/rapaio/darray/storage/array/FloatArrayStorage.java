@@ -25,10 +25,14 @@ import java.util.Arrays;
 
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.darray.Simd;
 import rapaio.darray.storage.FloatStorage;
 
 public final class FloatArrayStorage extends FloatStorage {
+
+    private static final VectorSpecies<Float> vsf = Simd.vsf;
+
 
     private final float[] array;
 
@@ -87,12 +91,12 @@ public final class FloatArrayStorage extends FloatStorage {
 
     @Override
     public FloatVector getFloatVector(int offset) {
-        return FloatVector.fromArray(Simd.vsf, array, offset);
+        return FloatVector.fromArray(vsf, array, offset);
     }
 
     @Override
     public FloatVector getFloatVector(int offset, int[] idx, int idxOffset) {
-        return FloatVector.fromArray(Simd.vsf, array, offset, idx, idxOffset);
+        return FloatVector.fromArray(vsf, array, offset, idx, idxOffset);
     }
 
     @Override
@@ -107,12 +111,12 @@ public final class FloatArrayStorage extends FloatStorage {
 
     @Override
     public FloatVector getFloatVector(int offset, VectorMask<Float> m) {
-        return FloatVector.fromArray(Simd.vsf, array, offset, m);
+        return FloatVector.fromArray(vsf, array, offset, m);
     }
 
     @Override
     public FloatVector getFloatVector(int offset, int[] idx, int idxOffset, VectorMask<Float> m) {
-        return FloatVector.fromArray(Simd.vsf, array, offset, idx, idxOffset, m);
+        return FloatVector.fromArray(vsf, array, offset, idx, idxOffset, m);
     }
 
     @Override

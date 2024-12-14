@@ -1,0 +1,13 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
+"darray.SimdBenchmark.sqrStorageSingle","thrpt",1,3,53996.316316,35587.595033,"ops/ms",15
+"darray.SimdBenchmark.sqrStorageSingle","thrpt",1,3,43858.526987,17807.737578,"ops/ms",105
+"darray.SimdBenchmark.sqrStorageSingle","thrpt",1,3,14661.060790,5666.107517,"ops/ms",1325
+"darray.SimdBenchmark.sqrStorageVector","thrpt",1,3,49546.440882,7248.944495,"ops/ms",15
+"darray.SimdBenchmark.sqrStorageVector","thrpt",1,3,44049.783130,3533.569641,"ops/ms",105
+"darray.SimdBenchmark.sqrStorageVector","thrpt",1,3,10313.764818,2884.152943,"ops/ms",1325
+"darray.SimdBenchmark.sqrVectorized","thrpt",1,3,35204.265652,304.596614,"ops/ms",15
+"darray.SimdBenchmark.sqrVectorized","thrpt",1,3,27360.227285,35333.258063,"ops/ms",105
+"darray.SimdBenchmark.sqrVectorized","thrpt",1,3,7085.501383,4852.130930,"ops/ms",1325
+"darray.SimdBenchmark.sqrVectorized2","thrpt",1,3,46250.576259,34200.134460,"ops/ms",15
+"darray.SimdBenchmark.sqrVectorized2","thrpt",1,3,37327.043531,6775.838539,"ops/ms",105
+"darray.SimdBenchmark.sqrVectorized2","thrpt",1,3,6616.259663,18158.477226,"ops/ms",1325

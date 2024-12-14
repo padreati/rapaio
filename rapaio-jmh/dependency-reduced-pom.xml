@@ -10,6 +10,15 @@
   <name>rapaio-jmh</name>
   <version>7.0.0</version>
   <build>
+    <sourceDirectory>src</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

@@ -109,4 +109,5 @@ module rapaio.core {
 
     exports rapaio.text;
     exports rapaio.nn.data;
+    exports rapaio.darray.operator.unary;
 }

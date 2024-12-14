@@ -1,10 +1,10 @@
 "Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"array.AbsBenchmark.fillBaseOrderC","avgt",1,3,0.001913,0.000249,"ms/op",100
-"array.AbsBenchmark.fillBaseOrderC","avgt",1,3,0.455218,0.102955,"ms/op",1000
-"array.AbsBenchmark.fillBaseOrderC","avgt",1,3,53.644033,11.988184,"ms/op",10000
-"array.AbsBenchmark.fillBaseOrderF","avgt",1,3,0.001899,0.000566,"ms/op",100
-"array.AbsBenchmark.fillBaseOrderF","avgt",1,3,0.456725,0.316287,"ms/op",1000
-"array.AbsBenchmark.fillBaseOrderF","avgt",1,3,54.812391,23.950690,"ms/op",10000
-"array.AbsBenchmark.fillJSAT","avgt",1,3,0.001531,0.002405,"ms/op",100
-"array.AbsBenchmark.fillJSAT","avgt",1,3,0.347535,0.168589,"ms/op",1000
-"array.AbsBenchmark.fillJSAT","avgt",1,3,55.329887,31.822017,"ms/op",10000
+"darray.SimdBenchmark.sqrArray","thrpt",1,3,58157.795637,24574.792797,"ops/ms",15
+"darray.SimdBenchmark.sqrArray","thrpt",1,3,44753.021266,5970.619041,"ops/ms",105
+"darray.SimdBenchmark.sqrArray","thrpt",1,3,13714.040613,11509.261699,"ops/ms",1325
+"darray.SimdBenchmark.sqrVectorized","thrpt",1,3,36633.644264,4280.379701,"ops/ms",15
+"darray.SimdBenchmark.sqrVectorized","thrpt",1,3,28487.162474,32413.361849,"ops/ms",105
+"darray.SimdBenchmark.sqrVectorized","thrpt",1,3,7400.034679,3547.153745,"ops/ms",1325
+"darray.SimdBenchmark.sqrVectorized2","thrpt",1,3,42509.467637,9028.464297,"ops/ms",15
+"darray.SimdBenchmark.sqrVectorized2","thrpt",1,3,20368.902655,112864.064782,"ops/ms",105
+"darray.SimdBenchmark.sqrVectorized2","thrpt",1,3,6807.585560,14741.956613,"ops/ms",1325

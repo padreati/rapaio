@@ -25,11 +25,13 @@ import java.util.Arrays;
 
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.darray.Simd;
 import rapaio.darray.storage.IntStorage;
 
 public final class IntArrayStorage extends IntStorage {
 
+    private static final VectorSpecies<Integer> vsi = Simd.vsi;
     private final int[] array;
 
     public IntArrayStorage(byte[] array) {
@@ -87,12 +89,12 @@ public final class IntArrayStorage extends IntStorage {
 
     @Override
     public IntVector getIntVector(int offset) {
-        return IntVector.fromArray(Simd.vsi, array, offset);
+        return IntVector.fromArray(vsi, array, offset);
     }
 
     @Override
     public IntVector getIntVector(int offset, int[] idx, int idxOffset) {
-        return IntVector.fromArray(Simd.vsi, array, offset, idx, idxOffset);
+        return IntVector.fromArray(vsi, array, offset, idx, idxOffset);
     }
 
     @Override
@@ -107,12 +109,12 @@ public final class IntArrayStorage extends IntStorage {
 
     @Override
     public IntVector getIntVector(int offset, VectorMask<Integer> m) {
-        return IntVector.fromArray(Simd.vsi, array, offset, m);
+        return IntVector.fromArray(vsi, array, offset, m);
     }
 
     @Override
     public IntVector getIntVector(int offset, int[] idx, int idxOffset, VectorMask<Integer> m) {
-        return IntVector.fromArray(Simd.vsi, array, offset, idx, idxOffset, m);
+        return IntVector.fromArray(vsi, array, offset, idx, idxOffset, m);
     }
 
     @Override

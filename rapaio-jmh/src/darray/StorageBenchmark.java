@@ -19,15 +19,16 @@
  *
  */
 
-package unlinkedlist;
+package darray;
 
 import static rapaio.graphics.opt.GOpts.color;
 import static rapaio.graphics.opt.GOpts.labels;
 
 import java.io.IOException;
-import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
+import java.nio.DoubleBuffer;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -49,9 +50,9 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
 import commons.Utils;
-import rapaio.darray.DType;
+import jsat.linear.DenseVector;
 import rapaio.darray.Storage;
-import rapaio.darray.storage.array.ArrayStorageManager;
+import rapaio.darray.storage.array.DoubleArrayStorage;
 import rapaio.data.Frame;
 import rapaio.data.transform.RefSort;
 import rapaio.data.transform.VarApply;
@@ -63,86 +64,89 @@ import rapaio.sys.WS;
 import rapaio.util.collection.DoubleArrays;
 
 @BenchmarkMode( {Mode.AverageTime})
-@OutputTimeUnit(TimeUnit.MICROSECONDS)
-public class MemoryLayoutBenchmark {
-
-    private static final DType<?> dt = DType.DOUBLE;
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+public class StorageBenchmark {
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
-//        @Param( {"100", "1000", "10000"})
-        @Param( {"100", "1000"})
-//        @Param( {"100"})
+        //        @Param( {"100", "1000", "10000"})
+        @Param( {"10000"})
         private int n;
 
-        double[] array;
-        MemorySegment msArray;
-        MemorySegment msExternal;
-        Storage storage;
+        private DenseVector jsatVector;
+
+        private Storage doubleStorage;
+        private DoubleBuffer doubleBuffer;
+        private MemorySegment memorySegment;
 
         @Setup(Level.Invocation)
         public void setup() {
             Random random = new Random(42);
-            array = DoubleArrays.newFrom(0, n, _ -> random.nextDouble());
-            msArray = MemorySegment.ofArray(array);
-            storage = new ArrayStorageManager().from(dt, array);
-            msExternal = Arena.ofAuto().allocate(n * 8, 8);
+            double[] array = DoubleArrays.newFrom(0, n * n, _ -> random.nextDouble());
+
+            jsatVector = new DenseVector(n);
+            int p = 0;
+            for (int i = 0; i < n; i++) {
+                jsatVector.set(i, array[p++]);
+            }
+
+            doubleStorage = new DoubleArrayStorage(Arrays.copyOf(array, array.length));
+            doubleBuffer = DoubleBuffer.wrap(Arrays.copyOf(array, array.length));
+            memorySegment = MemorySegment.ofArray(Arrays.copyOf(array, array.length));
         }
     }
 
     @Benchmark
-    public void testArrayAdd(BenchmarkState bs, Blackhole bh) {
+    public void absJSAT(BenchmarkState bs, Blackhole bh) {
         for (int i = 0; i < bs.n; i++) {
-            bs.array[i] = Math.log1p(bs.array[i]);
+            bs.jsatVector.set(i, Math.abs(bs.jsatVector.get(i)));
         }
-        bh.consume(bs.array);
+        bh.consume(bs.jsatVector);
     }
 
     @Benchmark
-    public void testMsAdd(BenchmarkState bs, Blackhole bh) {
+    public void absDoubleStorage(BenchmarkState bs, Blackhole bh) {
         for (int i = 0; i < bs.n; i++) {
-            double value = bs.msArray.getAtIndex(ValueLayout.JAVA_DOUBLE, i);
-            bs.msArray.setAtIndex(ValueLayout.JAVA_DOUBLE, i, Math.log1p(value));
+            bs.doubleStorage.setDouble(i, Math.abs(bs.doubleStorage.getDouble(i)));
         }
-        bh.consume(bs.msArray);
+        bh.consume(bs.doubleStorage);
     }
 
     @Benchmark
-    public void testMsExtAdd(BenchmarkState bs, Blackhole bh) {
+    public void absDoubleBuffer(BenchmarkState bs, Blackhole bh) {
         for (int i = 0; i < bs.n; i++) {
-            double value = bs.msExternal.getAtIndex(ValueLayout.JAVA_DOUBLE, i);
-            bs.msExternal.setAtIndex(ValueLayout.JAVA_DOUBLE, i, Math.log1p(value));
+            bs.doubleBuffer.put(i, Math.abs(bs.doubleBuffer.get(i)));
         }
-        bh.consume(bs.msExternal);
+        bh.consume(bs.doubleBuffer);
     }
 
     @Benchmark
-    public void testStorageAdd(BenchmarkState bs, Blackhole bh) {
+    public void absDoubleMS(BenchmarkState bs, Blackhole bh) {
         for (int i = 0; i < bs.n; i++) {
-            double value = bs.storage.getDouble(i);
-            bs.storage.setDouble(i, Math.log1p(value));
+            bs.memorySegment.setAtIndex(ValueLayout.JAVA_DOUBLE, i, Math.abs(bs.memorySegment.getAtIndex(ValueLayout.JAVA_DOUBLE, i)));
         }
-        bh.consume(bs.storage);
+        bh.consume(bs.memorySegment);
     }
+
 
     public static void main(String[] args) throws RunnerException, IOException {
         Options opt = new OptionsBuilder()
-                .include(MemoryLayoutBenchmark.class.getSimpleName())
+                .include(StorageBenchmark.class.getSimpleName())
                 .warmupTime(TimeValue.seconds(2))
                 .warmupIterations(2)
                 .measurementTime(TimeValue.seconds(2))
                 .measurementIterations(3)
                 .forks(1)
                 .resultFormat(ResultFormatType.CSV)
-                .result(Utils.resultPath(MemoryLayoutBenchmark.class))
+                .result(Utils.resultPath(StorageBenchmark.class))
                 .build();
         new Runner(opt).run();
-        Utils.resultPromote(MemoryLayoutBenchmark.class);
+        Utils.resultPromote(StorageBenchmark.class);
         printResults();
     }
 
     public static void printResults() {
-        Frame df = Csv.instance().quotes.set(true).read(Utils.resultPath(MemoryLayoutBenchmark.class));
+        Frame df = Csv.instance().quotes.set(true).read(Utils.resultPath(StorageBenchmark.class));
         Plot plot = Plotter.plot();
         int i = 1;
         for (String benchmark : df.rvar("Benchmark").levels().stream().skip(1).toList()) {

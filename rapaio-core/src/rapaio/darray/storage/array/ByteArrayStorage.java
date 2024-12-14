@@ -25,10 +25,13 @@ import java.util.Arrays;
 
 import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.darray.Simd;
 import rapaio.darray.storage.ByteStorage;
 
 public final class ByteArrayStorage extends ByteStorage {
+
+    private static final VectorSpecies<Byte> vsb = Simd.vsb;
 
     private final byte[] array;
 
@@ -87,12 +90,12 @@ public final class ByteArrayStorage extends ByteStorage {
 
     @Override
     public ByteVector getByteVector(int offset) {
-        return ByteVector.fromArray(Simd.vsb, array, offset);
+        return ByteVector.fromArray(vsb, array, offset);
     }
 
     @Override
     public ByteVector getByteVector(int offset, int[] idx, int idxOffset) {
-        return ByteVector.fromArray(Simd.vsb, array, offset, idx, idxOffset);
+        return ByteVector.fromArray(vsb, array, offset, idx, idxOffset);
     }
 
     @Override
@@ -108,12 +111,12 @@ public final class ByteArrayStorage extends ByteStorage {
 
     @Override
     public ByteVector getByteVector(int offset, VectorMask<Byte> m) {
-        return ByteVector.fromArray(Simd.vsb, array, offset, m);
+        return ByteVector.fromArray(vsb, array, offset, m);
     }
 
     @Override
     public ByteVector getByteVector(int offset, int[] idx, int idxOffset, VectorMask<Byte> m) {
-        return ByteVector.fromArray(Simd.vsb, array, offset, idx, idxOffset, m);
+        return ByteVector.fromArray(vsb, array, offset, idx, idxOffset, m);
     }
 
     @Override

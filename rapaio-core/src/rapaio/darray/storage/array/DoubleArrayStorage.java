@@ -25,10 +25,13 @@ import java.util.Arrays;
 
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
 import rapaio.darray.Simd;
 import rapaio.darray.storage.DoubleStorage;
 
 public final class DoubleArrayStorage extends DoubleStorage {
+
+    private static final VectorSpecies<Double> vsd = Simd.vsd;
 
     private final double[] array;
 
@@ -87,12 +90,12 @@ public final class DoubleArrayStorage extends DoubleStorage {
 
     @Override
     public DoubleVector getDoubleVector(int offset) {
-        return DoubleVector.fromArray(Simd.vsd, array, offset);
+        return DoubleVector.fromArray(vsd, array, offset);
     }
 
     @Override
     public DoubleVector getDoubleVector(int offset, int[] idx, int idxOffset) {
-        return DoubleVector.fromArray(Simd.vsd, array, offset, idx, idxOffset);
+        return DoubleVector.fromArray(vsd, array, offset, idx, idxOffset);
     }
 
     @Override
@@ -107,12 +110,12 @@ public final class DoubleArrayStorage extends DoubleStorage {
 
     @Override
     public DoubleVector getDoubleVector(int offset, VectorMask<Double> m) {
-        return DoubleVector.fromArray(Simd.vsd, array, offset, m);
+        return DoubleVector.fromArray(vsd, array, offset, m);
     }
 
     @Override
     public DoubleVector getDoubleVector(int offset, int[] idx, int idxOffset, VectorMask<Double> m) {
-        return DoubleVector.fromArray(Simd.vsd, array, offset, idx, idxOffset, m);
+        return DoubleVector.fromArray(vsd, array, offset, idx, idxOffset, m);
     }
 
     @Override
