@@ -112,7 +112,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
             x.sub_(mean);
         }
         if (standardize.get()) {
-            sd = x.std1d(0);
+            sd = x.std1d(0, 0);
             x.div_(sd);
         }
 

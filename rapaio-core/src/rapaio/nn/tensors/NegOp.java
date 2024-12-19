@@ -25,11 +25,8 @@ import rapaio.nn.Tensor;
 
 public class NegOp extends Tensor {
 
-    private final Tensor child;
-
     public NegOp(Tensor child) {
         super(child.tm(), "neg");
-        this.child = child;
 
         this.setValue(child.value().neg());
         backEdge(child, () -> this.grad().neg());

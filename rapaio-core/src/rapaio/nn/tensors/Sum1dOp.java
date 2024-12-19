@@ -25,13 +25,8 @@ import rapaio.nn.Tensor;
 
 public final class Sum1dOp extends Tensor {
 
-    private final int axis;
-    private final Tensor child;
-
     public Sum1dOp(Tensor child, int axis) {
         super(child.tm(), "sum1d");
-        this.axis = axis;
-        this.child = child;
 
         this.setValue(child.value().sum1d(axis));
         backEdge(child, () -> this.grad().strexp(axis, child.value().dim(axis)));

@@ -106,7 +106,7 @@ public class PCATest {
 
         DArray<Double> xx = df.darray();
         assertTrue(xx.mean1d(0).deepEquals(pca1.getMean()));
-        assertTrue(xx.std1d(0).deepEquals(pca1.getStd()));
+        assertTrue(xx.std1d(0, 0).deepEquals(pca1.getStd()));
     }
 
     @Test

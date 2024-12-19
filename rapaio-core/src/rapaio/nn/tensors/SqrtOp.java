@@ -25,13 +25,10 @@ import rapaio.nn.Tensor;
 
 public class SqrtOp extends Tensor {
 
-    private final Tensor child;
+    public SqrtOp(Tensor x) {
+        super(x.tm(), "sqrt");
 
-    public SqrtOp(Tensor child) {
-        super(child.tm(), "sqrt");
-        this.child = child;
-
-        this.setValue(child.value().sqrt().nanToNum_(0));
-        backEdge(child, () -> this.grad().div(this.value()).div_(2));
+        this.setValue(x.value().sqrt().nanToNum_(0));
+        backEdge(x, () -> this.grad().div(this.value()).div_(2));
     }
 }

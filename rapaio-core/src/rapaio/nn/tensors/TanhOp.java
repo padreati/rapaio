@@ -26,14 +26,11 @@ import rapaio.nn.Tensor;
 
 public final class TanhOp extends Tensor {
 
-    private final Tensor child;
+    public TanhOp(Tensor x) {
+        super(x.tm(), "sigmoid");
 
-    public TanhOp(Tensor child) {
-        super(child.tm(), "sigmoid");
-        this.child = child;
-
-        this.setValue(child.value().tanh());
-        backEdge(child, () -> {
+        this.setValue(x.value().tanh());
+        backEdge(x, () -> {
             DArray<?> sg = this.value().sqr().neg_().add_(1);
             return this.grad().mul(sg);
         });

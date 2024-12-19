@@ -26,16 +26,8 @@ import rapaio.nn.Tensor;
 
 public class GatherOp extends Tensor{
 
-    private final Tensor x;
-    private final int axis;
-    private final Tensor index;
-
     public GatherOp(Tensor x, int axis, Tensor index) {
         super(x.tm(), "scatter");
-
-        this.x = x;
-        this.axis = axis;
-        this.index = index;
 
         this.setValue(x.value().gather(axis, index.value()));
 

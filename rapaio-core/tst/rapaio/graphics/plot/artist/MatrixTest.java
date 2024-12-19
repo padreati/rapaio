@@ -56,7 +56,7 @@ public class MatrixTest extends AbstractArtistTest {
 
         var randomm = DArrays.random(Shape.of(n, n), random);
         var mean = randomm.mean1d(0);
-        var sd = randomm.stdc1d(0, 1);
+        var sd = randomm.std1d(0, 1);
 
         randomm.sub(mean).div(sd);
 

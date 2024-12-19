@@ -25,24 +25,13 @@ import rapaio.nn.Tensor;
 
 public final class Std1dOp extends Tensor {
 
-    private final int axis;
-    private final int ddof;
-    private final double epsilon;
-    private final Tensor x;
-    private final Tensor mean;
-
     public Std1dOp(Tensor x, int axis, int ddof, double epsilon, Tensor mean) {
         super(x.tm(), "std1d");
-        this.axis = axis;
-        this.ddof = ddof;
-        this.epsilon = epsilon;
-        this.x = x;
-        this.mean = mean;
 
         double dof = x.dim(axis) - ddof;
         var mu = mean != null ? mean : x.mean1d(axis);
         var centered = x.value().sub(mu.value());
-        var std = x.value().varc1d(axis, ddof, mu.value()).add_(epsilon).sqrt_();
+        var std = x.value().var1d(axis, ddof, mu.value()).add_(epsilon).sqrt_();
         this.setValue(std);
         backEdge(x, () -> this.grad().mul(centered.div(std).div_(dof)));
         backEdge(mu, () -> tm.zerosTensor(mu.shape()).value());

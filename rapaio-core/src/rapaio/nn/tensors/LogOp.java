@@ -25,13 +25,8 @@ import rapaio.nn.Tensor;
 
 public class LogOp extends Tensor {
 
-    private final double eps;
-    private final Tensor child;
-
     public LogOp(Tensor child, double eps) {
         super(child.tm(), "log");
-        this.eps = eps;
-        this.child = child;
 
         this.setValue(child.value().log());
         backEdge(child, () -> this.grad().mul(tm.fullTensor(this.shape(), 1).value().div_(child.value()).nanToNum_(eps)));

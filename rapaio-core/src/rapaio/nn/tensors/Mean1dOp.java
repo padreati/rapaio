@@ -25,13 +25,8 @@ import rapaio.nn.Tensor;
 
 public final class Mean1dOp extends Tensor {
 
-    private final int axis;
-    private final Tensor x;
-
     public Mean1dOp(Tensor x, int axis) {
         super(x.tm(), "mean1d");
-        this.axis = axis;
-        this.x = x;
 
         if (x.rank() == 0) {
             throw new IllegalArgumentException("Input node must have at least one dimension.");

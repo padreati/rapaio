@@ -85,11 +85,11 @@ public class LDA extends ParamSet<LDA> implements Printable {
 
         logger.fine("start lda fit");
         DArray<Double> mx = df.mapVars(inputNames).darray();
-        DArray<Double> mxx = scaling.get() ? mx.sub(mx.mean1d(0)).div_(mx.std1d(0)) : mx;
+        DArray<Double> mxx = scaling.get() ? mx.sub(mx.mean1d(0)).div_(mx.std1d(0, 0)) : mx;
 
         // compute global mean and std
         vmean = mxx.mean1d(0);
-        vstd = mxx.std1d(0);
+        vstd = mxx.std1d(0, 0);
 
         // compute sliced data for each class
         DArray<Double>[] mxxs = new DArray[targetLevels.size()];
@@ -168,7 +168,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
 
         DArray<Double> x = df.mapVars(inputNames).darray();
         if (scaling.get()) {
-            x.sub_(x.mean1d(0)).div_(x.std1d(0));
+            x.sub_(x.mean1d(0)).div_(x.std1d(0, 0));
         }
 
         if (targetLevels.size() < k) {

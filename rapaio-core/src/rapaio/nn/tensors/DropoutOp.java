@@ -31,20 +31,10 @@ import rapaio.nn.Tensor;
 
 public class DropoutOp extends Tensor {
 
-    private final Tensor child;
-    private final double p;
-    private DArray<?> mask;
-    private final Random random;
-    private final boolean inplace;
-
     public DropoutOp(Tensor child, double p, Random random, boolean inplace) {
         super(child.tm(), "identity");
-        this.child = child;
-        this.p = p;
-        this.random = random;
-        this.inplace = inplace;
 
-        this.mask = tm.zerosArray(DType.BYTE, child.value().shape());
+        DArray<?> mask = tm.zerosArray(DType.BYTE, child.value().shape());
         Bernoulli ber = Bernoulli.of(p);
         PointerIterator ptrIt = mask.ptrIterator();
         while (ptrIt.hasNext()) {

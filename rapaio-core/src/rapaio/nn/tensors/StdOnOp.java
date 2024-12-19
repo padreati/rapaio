@@ -21,14 +21,21 @@
 
 package rapaio.nn.tensors;
 
+import rapaio.darray.Shape;
 import rapaio.nn.Tensor;
 
-public final class SigmoidOp extends Tensor {
+public class StdOnOp extends Tensor {
 
-    public SigmoidOp(Tensor x) {
-        super(x.tm(), "sigmoid");
+    public StdOnOp(Tensor x, Shape shape, int ddof, double epsilon, Tensor mean) {
+        super(x.tm(), "stdOn");
 
-        this.setValue(x.value().sigmoid());
-        backEdge(x, () -> this.grad().mul(this.value().mul(this.value().neg().add_(1))));
+        double dof = x.size() - ddof;
+        var mu = mean != null ? mean : x.meanOn(shape);
+        var centered = x.value().sub(mu.value());
+        var std = x.value().varOn(shape, ddof, true, mu.value()).add_(epsilon).sqrt_();
+        this.setValue(std);
+        backEdge(x, () -> this.grad().mul(centered.div(std).div_(dof)));
+        backEdge(mu, () -> tm.zerosTensor(mu.shape()).value());
+
     }
 }

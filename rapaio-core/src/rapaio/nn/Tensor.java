@@ -43,6 +43,7 @@ import rapaio.nn.tensors.LogOp;
 import rapaio.nn.tensors.LogSoftmaxOp;
 import rapaio.nn.tensors.Max;
 import rapaio.nn.tensors.Mean1dOp;
+import rapaio.nn.tensors.MeanOnOp;
 import rapaio.nn.tensors.MulOp;
 import rapaio.nn.tensors.NegOp;
 import rapaio.nn.tensors.SigmoidOp;
@@ -50,6 +51,7 @@ import rapaio.nn.tensors.SoftmaxOp;
 import rapaio.nn.tensors.SqrOp;
 import rapaio.nn.tensors.SqrtOp;
 import rapaio.nn.tensors.Std1dOp;
+import rapaio.nn.tensors.StdOnOp;
 import rapaio.nn.tensors.SubOp;
 import rapaio.nn.tensors.Sum1dOp;
 import rapaio.nn.tensors.SumOp;
@@ -203,6 +205,10 @@ public abstract class Tensor {
         return new Mean1dOp(this, axis);
     }
 
+    public final MeanOnOp meanOn(Shape shape) {
+        return new MeanOnOp(this, shape);
+    }
+
     public final Std1dOp std1d(int axis) {
         return new Std1dOp(this, axis, 0, 1e-3, null);
     }
@@ -217,6 +223,22 @@ public abstract class Tensor {
 
     public final Std1dOp std1d(int axis, int ddof, double epsilon, Tensor mean) {
         return new Std1dOp(this, axis, ddof, epsilon, mean);
+    }
+
+    public final StdOnOp stdOn(Shape shape) {
+        return new StdOnOp(this, shape, 0, 1e-3, null);
+    }
+
+    public final StdOnOp stdOn(Shape shape, int ddof) {
+        return new StdOnOp(this, shape, ddof, 1e-3, null);
+    }
+
+    public final StdOnOp stdOn(Shape shape, int ddof, Tensor mean) {
+        return new StdOnOp(this, shape, ddof, 1e-3, mean);
+    }
+
+    public final StdOnOp stdOn(Shape shape, int ddof, double epsilon, Tensor mean) {
+        return new StdOnOp(this, shape, ddof, epsilon, mean);
     }
 
     public final SqrOp sqr() {

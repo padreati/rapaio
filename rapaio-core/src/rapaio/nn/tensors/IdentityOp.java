@@ -25,11 +25,8 @@ import rapaio.nn.Tensor;
 
 public class IdentityOp extends Tensor {
 
-    private final Tensor child;
-
     public IdentityOp(Tensor child) {
         super(child.tm(), "identity");
-        this.child = child;
 
         this.setValue(child.value().copy());
         backEdge(child, this::grad);

@@ -27,19 +27,12 @@ import rapaio.nn.Tensor;
 
 public class CompareFalseOp extends Tensor {
 
-    private final Tensor x;
-    private final Compare compare;
-    private final double threshold;
-
     private DArray<?> mask;
 
     public CompareFalseOp(Tensor x, Compare cmp, double threshold) {
         super(x.tm(), "cmpFalse");
-        this.x = x;
-        this.compare = cmp;
-        this.threshold = threshold;
 
-        this.mask = x.value().copy().compareMask_(compare, threshold).neg_().add_(1);
+        this.mask = x.value().copy().compareMask_(cmp, threshold).neg_().add_(1);
         this.setValue(mask.mul(x.value()));
         backEdge(x, () -> this.grad().mul(mask));
     }

@@ -25,13 +25,8 @@ import rapaio.nn.Tensor;
 
 public class SoftmaxOp extends Tensor {
 
-    private final int axis;
-    private final Tensor x;
-
     public SoftmaxOp(Tensor x, int axis) {
         super(x.tm(), "softmax");
-        this.axis = axis;
-        this.x = x;
 
         this.setValue(x.value().softmax1d(axis));
         backEdge(x, () -> {

@@ -25,13 +25,8 @@ import rapaio.nn.Tensor;
 
 public class LogSoftmaxOp extends Tensor {
 
-    private final int axis;
-    private final Tensor x;
-
     public LogSoftmaxOp(Tensor x, int axis) {
         super(x.tm(), "logsoftmax");
-        this.x = x;
-        this.axis = axis;
 
         this.setValue(x.value().logsoftmax1d(axis));
         backEdge(x, () -> {

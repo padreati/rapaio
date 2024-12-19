@@ -26,19 +26,17 @@ import rapaio.nn.Tensor;
 
 public class SumOp extends Tensor {
 
-    private final Tensor child;
 
-    public SumOp(Tensor child) {
-        super(child.tm(), "sum");
-        this.child = child;
+    public SumOp(Tensor x) {
+        super(x.tm(), "sum");
 
-        this.setValue(tm.scalarArray(child.value().sum().doubleValue()));
-        backEdge(child, () -> {
+        this.setValue(tm.scalarArray(x.value().sum().doubleValue()));
+        backEdge(x, () -> {
             DArray<?> grad = this.grad();
             // gradient is a scalar, we expand by child shape
-            if (!child.value().isScalar()) {
-                for (int i = 0; i < child.value().rank(); i++) {
-                    grad = grad.strexp(i, child.value().dim(i));
+            if (!x.value().isScalar()) {
+                for (int i = 0; i < x.value().rank(); i++) {
+                    grad = grad.strexp(i, x.value().dim(i));
                 }
             }
             return grad;

@@ -25,11 +25,8 @@ import rapaio.nn.Tensor;
 
 public class SqrOp extends Tensor {
 
-    private final Tensor x;
-
     public SqrOp(Tensor x) {
         super(x.tm(), "sqr");
-        this.x = x;
 
         this.setValue(x.value().sqr());
         backEdge(x, () -> this.grad().mul(x.value()).mul_(2.));

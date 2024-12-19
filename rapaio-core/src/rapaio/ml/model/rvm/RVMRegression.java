@@ -676,7 +676,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         private void initializeAlphaBeta() {
-            beta = 1.0 / (y.var() * 0.1);
+            beta = 1.0 / (y.var(0) * 0.1);
             alpha = DArrays.zeros(Shape.of(phi.dim(1))).apply_((row, _) -> Math.abs(parent.getRandom().nextDouble() / 10));
         }
 
@@ -815,7 +815,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
         }
 
         private void initialize() {
-            beta = 1.0 / (y.varc(1) * 0.1);
+            beta = 1.0 / (y.var(1) * 0.1);
             alpha = DArrays.full(Shape.of(parent.features.size()), Double.POSITIVE_INFINITY);
 
             // select one alpha
@@ -990,12 +990,12 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             q = DArrays.zeros(Shape.of(fcount));
             alpha = DArrays.full(Shape.of(fcount), Double.POSITIVE_INFINITY);
 
-            beta = 1.0 / (y.varc(1) * 0.1);
+            beta = 1.0 / (y.var(1) * 0.1);
 
             // select one alpha
 
             int bestIndex = 0;
-            DArray<Double> bestVector = parent.features.get(0).phii.get();
+            DArray<Double> bestVector = parent.features.getFirst().phii.get();
             phiiDotPhii.setDouble(bestVector.inner(bestVector), 0);
             phiiDotY.setDouble(bestVector.inner(y), 0);
             double bestProjection = phiiDotY.getDouble(0) / phiiDotPhii.getDouble(0);

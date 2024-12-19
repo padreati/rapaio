@@ -25,11 +25,8 @@ import rapaio.nn.Tensor;
 
 public class ExpOp extends Tensor{
 
-    private final Tensor x;
-
     public ExpOp(Tensor x) {
         super(x.tm(), "exp");
-        this.x = x;
 
         this.setValue(x.value().exp());
         backEdge(x, () -> this.grad().mul(this.value()));

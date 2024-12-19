@@ -25,13 +25,8 @@ import rapaio.nn.Tensor;
 
 public class BatchVtmOp extends Tensor {
 
-    private final Tensor bv;
-    private final Tensor bm;
-
     public BatchVtmOp(Tensor bv, Tensor bm) {
         super(bv.tm(), "BatchVtm");
-        this.bv = bv;
-        this.bm = bm;
 
         this.setValue(bv.value().bvtm(bm.value()));
         backEdge(bv, () -> {

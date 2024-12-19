@@ -47,10 +47,6 @@ public class BatchNorm1D extends AbstractNet {
         this(tm, numFeatures, DEFAULT_MOMENTUM, DEFAULT_EPSILON);
     }
 
-    public BatchNorm1D(TensorManager tm, int numFeatures, double momentum) {
-        this(tm, numFeatures, momentum, DEFAULT_EPSILON);
-    }
-
     public BatchNorm1D(TensorManager tm, int numFeatures, double momentum, double eps) {
         super(tm);
         this.numFeatures = numFeatures;
