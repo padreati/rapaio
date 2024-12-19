@@ -36,9 +36,8 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
 
     public VectorStrideLayout(Shape shape, int offset, int[] strides) {
         if (shape.rank() != 1 || strides == null || strides.length != 1) {
-            throw new IllegalArgumentException(
-                    "Shape or strides invalid for one dimensional tensors (shape:" + shape + ", strides:" + Arrays.toString(strides)
-                            + ").");
+            throw new IllegalArgumentException(String.format(
+                    "Shape or strides invalid for one dimensional tensors (shape: %s, strides: %s).", shape, Arrays.toString(strides)));
         }
         this.shape = shape;
         this.offset = offset;

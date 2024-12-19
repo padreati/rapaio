@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.math.nn;
+package rapaio.experiment.nn;
 
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorMask;

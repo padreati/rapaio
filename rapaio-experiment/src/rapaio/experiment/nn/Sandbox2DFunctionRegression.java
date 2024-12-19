@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.math.nn;
+package rapaio.experiment.nn;
 
 import static rapaio.graphics.Plotter.lines;
 import static rapaio.graphics.opt.GOpts.color;
@@ -39,7 +39,7 @@ import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 import rapaio.nn.data.ArrayDataset;
-import rapaio.nn.layer.BatchNorm1D;
+import rapaio.nn.layer.LayerNorm;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.ReLU;
 import rapaio.nn.layer.Sequential;
@@ -68,10 +68,12 @@ public class Sandbox2DFunctionRegression {
         ArrayDataset test = split[1];
 
         Net nn = new Sequential(tm,
-                new BatchNorm1D(tm, 4),
+//                new BatchNorm1D(tm, 4),
+                new LayerNorm(tm, Shape.of(4)),
                 new Linear(tm, 4, 1_000, true),
                 new ReLU(tm),
-                new BatchNorm1D(tm, 1_000),
+//                new BatchNorm1D(tm, 1_000),
+                new LayerNorm(tm, Shape.of(1_000)),
                 new Linear(tm, 1_000, 1, true),
                 new ReLU(tm)
         );
@@ -79,7 +81,6 @@ public class Sandbox2DFunctionRegression {
 
         int EPOCHS = 40;
         int BATCH_SIZE = 200;
-//        BATCH_SIZE = train.len();
 
         Optimizer c = Optimizer.Adam(tm, nn.parameters())
                 .lr.set(1e-3)

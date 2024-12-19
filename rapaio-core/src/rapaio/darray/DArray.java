@@ -880,388 +880,388 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     //--------- UNARY OPERATIONS ----------------//
 
-    public final DArray<N> unaryOp(DArrayUnaryOp op) {
-        return copy(Order.defaultOrder()).unaryOp_(op);
+    public final DArray<N> unary(DArrayUnaryOp op) {
+        return copy(Order.defaultOrder()).unary_(op);
     }
 
-    public final DArray<N> unaryOp(DArrayUnaryOp op, Order order) {
-        return copy(order).unaryOp_(op);
+    public final DArray<N> unary(DArrayUnaryOp op, Order order) {
+        return copy(order).unary_(op);
     }
 
-    public abstract DArray<N> unaryOp_(DArrayUnaryOp op);
+    public abstract DArray<N> unary_(DArrayUnaryOp op);
 
-    public final DArray<N> unaryOp1d(DArrayUnaryOp op, int axis) {
-        return copy(Order.defaultOrder()).unaryOp1d_(op, axis);
+    public final DArray<N> unary1d(DArrayUnaryOp op, int axis) {
+        return copy(Order.defaultOrder()).unary1d_(op, axis);
     }
 
-    public final DArray<N> unaryOp1d(DArrayUnaryOp op, int axis, Order order) {
-        return copy(order).unaryOp1d_(op, axis);
+    public final DArray<N> unary1d(DArrayUnaryOp op, int axis, Order order) {
+        return copy(order).unary1d_(op, axis);
     }
 
-    public abstract DArray<N> unaryOp1d_(DArrayUnaryOp op, int axis);
+    public abstract DArray<N> unary1d_(DArrayUnaryOp op, int axis);
 
     public final DArray<N> fill_(N value) {
-        return unaryOp_(DArrayOp.unaryFill(value));
+        return unary_(DArrayOp.unaryFill(value));
     }
 
     public final DArray<N> fill_(int value) {
-        return unaryOp_(DArrayOp.unaryFill(value));
+        return unary_(DArrayOp.unaryFill(value));
     }
 
     public final DArray<N> fill_(double value) {
-        return unaryOp_(DArrayOp.unaryFill(value));
+        return unary_(DArrayOp.unaryFill(value));
     }
 
     public final DArray<N> fillNan_(N value) {
-        return unaryOp_(DArrayOp.unaryFillNan(value));
+        return unary_(DArrayOp.unaryFillNan(value));
     }
 
     public final DArray<N> fillNan_(int value) {
-        return unaryOp_(DArrayOp.unaryFillNan(value));
+        return unary_(DArrayOp.unaryFillNan(value));
     }
 
     public final DArray<N> fillNan_(double value) {
-        return unaryOp_(DArrayOp.unaryFillNan(value));
+        return unary_(DArrayOp.unaryFillNan(value));
     }
 
     public final DArray<N> nanToNum_(N fill) {
-        return unaryOp_(DArrayOp.unaryNanToNum(fill, fill, fill));
+        return unary_(DArrayOp.unaryNanToNum(fill, fill, fill));
     }
 
     public final DArray<N> nanToNum_(int fill) {
-        return unaryOp_(DArrayOp.unaryNanToNum(fill, fill, fill));
+        return unary_(DArrayOp.unaryNanToNum(fill, fill, fill));
     }
 
     public final DArray<N> nanToNum_(double fill) {
-        return unaryOp_(DArrayOp.unaryNanToNum(fill, fill, fill));
+        return unary_(DArrayOp.unaryNanToNum(fill, fill, fill));
     }
 
     public final DArray<N> nanToNum_(N nan, N negInf, N posInf) {
-        return unaryOp_(DArrayOp.unaryNanToNum(nan, negInf, posInf));
+        return unary_(DArrayOp.unaryNanToNum(nan, negInf, posInf));
     }
 
     public final DArray<N> nanToNum_(int nan, int negInf, int posInf) {
-        return unaryOp_(DArrayOp.unaryNanToNum(nan, negInf, posInf));
+        return unary_(DArrayOp.unaryNanToNum(nan, negInf, posInf));
     }
 
     public final DArray<N> nanToNum_(double nan, double negInf, double posInf) {
-        return unaryOp_(DArrayOp.unaryNanToNum(nan, negInf, posInf));
+        return unary_(DArrayOp.unaryNanToNum(nan, negInf, posInf));
     }
 
     public final DArray<N> compareMask_(Compare cmp, N value) {
-        return unaryOp_(DArrayOp.unaryOpCompareMask(cmp, value));
+        return unary_(DArrayOp.unaryOpCompareMask(cmp, value));
     }
 
     public final DArray<N> compareMask_(Compare cmp, int value) {
-        return unaryOp_(DArrayOp.unaryOpCompareMask(cmp, value));
+        return unary_(DArrayOp.unaryOpCompareMask(cmp, value));
     }
 
     public final DArray<N> compareMask_(Compare cmp, double value) {
-        return unaryOp_(DArrayOp.unaryOpCompareMask(cmp, value));
+        return unary_(DArrayOp.unaryOpCompareMask(cmp, value));
     }
 
     public final DArray<N> clamp(N min, N max) {
-        return unaryOp(DArrayOp.unaryClamp(dt(), min, max));
+        return unary(DArrayOp.unaryClamp(dt(), min, max));
     }
 
     public final DArray<N> clamp(int min, int max) {
-        return unaryOp(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)));
+        return unary(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)));
     }
 
     public final DArray<N> clamp(double min, double max) {
-        return unaryOp(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)));
+        return unary(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)));
     }
 
     public final DArray<N> clamp(Order order, N min, N max) {
-        return unaryOp(DArrayOp.unaryClamp(dt(), min, max), order);
+        return unary(DArrayOp.unaryClamp(dt(), min, max), order);
     }
 
     public final DArray<N> clamp(Order order, int min, int max) {
-        return unaryOp(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)), order);
+        return unary(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)), order);
     }
 
     public final DArray<N> clamp(Order order, double min, double max) {
-        return unaryOp(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)), order);
+        return unary(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)), order);
     }
 
     public final DArray<N> clamp_(N min, N max) {
-        return unaryOp_(DArrayOp.unaryClamp(dt(), min, max));
+        return unary_(DArrayOp.unaryClamp(dt(), min, max));
     }
 
     public final DArray<N> rint() {
-        return unaryOp(DArrayOp.unaryRint());
+        return unary(DArrayOp.unaryRint());
     }
 
     public final DArray<N> rint(Order order) {
-        return unaryOp(DArrayOp.unaryRint(), order);
+        return unary(DArrayOp.unaryRint(), order);
     }
 
     public final DArray<N> rint_() {
-        return unaryOp_(DArrayOp.unaryRint());
+        return unary_(DArrayOp.unaryRint());
     }
 
     public final DArray<N> ceil() {
-        return unaryOp(DArrayOp.unaryCeil());
+        return unary(DArrayOp.unaryCeil());
     }
 
     public final DArray<N> ceil(Order order) {
-        return unaryOp(DArrayOp.unaryCeil(), order);
+        return unary(DArrayOp.unaryCeil(), order);
     }
 
     public final DArray<N> ceil_() {
-        return unaryOp_(DArrayOp.unaryCeil());
+        return unary_(DArrayOp.unaryCeil());
     }
 
     public final DArray<N> floor() {
-        return unaryOp(DArrayOp.unaryFloor());
+        return unary(DArrayOp.unaryFloor());
     }
 
     public final DArray<N> floor(Order order) {
-        return unaryOp(DArrayOp.unaryFloor(), order);
+        return unary(DArrayOp.unaryFloor(), order);
     }
 
     public final DArray<N> floor_() {
-        return unaryOp_(DArrayOp.unaryFloor());
+        return unary_(DArrayOp.unaryFloor());
     }
 
     public final DArray<N> abs() {
-        return unaryOp(DArrayOp.unaryAbs());
+        return unary(DArrayOp.unaryAbs());
     }
 
     public final DArray<N> abs(Order order) {
-        return unaryOp(DArrayOp.unaryAbs(), order);
+        return unary(DArrayOp.unaryAbs(), order);
     }
 
     public final DArray<N> abs_() {
-        return unaryOp_(DArrayOp.unaryAbs());
+        return unary_(DArrayOp.unaryAbs());
     }
 
     public final DArray<N> neg() {
-        return unaryOp(DArrayOp.unaryNeg());
+        return unary(DArrayOp.unaryNeg());
     }
 
     public final DArray<N> neg(Order order) {
-        return unaryOp(DArrayOp.unaryNeg(), order);
+        return unary(DArrayOp.unaryNeg(), order);
     }
 
     public final DArray<N> neg_() {
-        return unaryOp_(DArrayOp.unaryNeg());
+        return unary_(DArrayOp.unaryNeg());
     }
 
     public final DArray<N> log() {
-        return unaryOp(DArrayOp.unaryLog());
+        return unary(DArrayOp.unaryLog());
     }
 
     public final DArray<N> log(Order order) {
-        return unaryOp(DArrayOp.unaryLog(), order);
+        return unary(DArrayOp.unaryLog(), order);
     }
 
     public final DArray<N> log_() {
-        return unaryOp_(DArrayOp.unaryLog());
+        return unary_(DArrayOp.unaryLog());
     }
 
     public final DArray<N> log1p() {
-        return unaryOp(DArrayOp.unaryLog1p());
+        return unary(DArrayOp.unaryLog1p());
     }
 
     public final DArray<N> log1p(Order order) {
-        return unaryOp(DArrayOp.unaryLog1p(), order);
+        return unary(DArrayOp.unaryLog1p(), order);
     }
 
     public final DArray<N> log1p_() {
-        return unaryOp_(DArrayOp.unaryLog1p());
+        return unary_(DArrayOp.unaryLog1p());
     }
 
     public final DArray<N> exp() {
-        return unaryOp(DArrayOp.unaryExp());
+        return unary(DArrayOp.unaryExp());
     }
 
     public final DArray<N> exp(Order order) {
-        return unaryOp(DArrayOp.unaryExp(), order);
+        return unary(DArrayOp.unaryExp(), order);
     }
 
     public final DArray<N> exp_() {
-        return unaryOp_(DArrayOp.unaryExp());
+        return unary_(DArrayOp.unaryExp());
     }
 
     public final DArray<N> expm1() {
-        return unaryOp(DArrayOp.unaryExpm1());
+        return unary(DArrayOp.unaryExpm1());
     }
 
     public final DArray<N> expm1(Order order) {
-        return unaryOp(DArrayOp.unaryExpm1(), order);
+        return unary(DArrayOp.unaryExpm1(), order);
     }
 
     public final DArray<N> expm1_() {
-        return unaryOp_(DArrayOp.unaryExpm1());
+        return unary_(DArrayOp.unaryExpm1());
     }
 
     public final DArray<N> sin() {
-        return unaryOp(DArrayOp.unarySin());
+        return unary(DArrayOp.unarySin());
     }
 
     public final DArray<N> sin(Order order) {
-        return unaryOp(DArrayOp.unarySin(), order);
+        return unary(DArrayOp.unarySin(), order);
     }
 
     public final DArray<N> sin_() {
-        return unaryOp_(DArrayOp.unarySin());
+        return unary_(DArrayOp.unarySin());
     }
 
     public final DArray<N> asin() {
-        return unaryOp(DArrayOp.unaryAsin());
+        return unary(DArrayOp.unaryAsin());
     }
 
     public final DArray<N> asin(Order order) {
-        return unaryOp(DArrayOp.unaryAsin(), order);
+        return unary(DArrayOp.unaryAsin(), order);
     }
 
     public final DArray<N> asin_() {
-        return unaryOp_(DArrayOp.unaryAsin());
+        return unary_(DArrayOp.unaryAsin());
     }
 
     public final DArray<N> sinh() {
-        return unaryOp(DArrayOp.unarySinh());
+        return unary(DArrayOp.unarySinh());
     }
 
     public final DArray<N> sinh(Order order) {
-        return unaryOp(DArrayOp.unarySinh(), order);
+        return unary(DArrayOp.unarySinh(), order);
     }
 
     public final DArray<N> sinh_() {
-        return unaryOp_(DArrayOp.unarySinh());
+        return unary_(DArrayOp.unarySinh());
     }
 
     public final DArray<N> cos() {
-        return unaryOp(DArrayOp.unaryCos());
+        return unary(DArrayOp.unaryCos());
     }
 
     public final DArray<N> cos(Order order) {
-        return unaryOp(DArrayOp.unaryCos(), order);
+        return unary(DArrayOp.unaryCos(), order);
     }
 
     public final DArray<N> cos_() {
-        return unaryOp_(DArrayOp.unaryCos());
+        return unary_(DArrayOp.unaryCos());
     }
 
     public final DArray<N> acos() {
-        return unaryOp(DArrayOp.unaryAcos());
+        return unary(DArrayOp.unaryAcos());
     }
 
     public final DArray<N> acos(Order order) {
-        return unaryOp(DArrayOp.unaryAcos(), order);
+        return unary(DArrayOp.unaryAcos(), order);
     }
 
     public final DArray<N> acos_() {
-        return unaryOp_(DArrayOp.unaryAcos());
+        return unary_(DArrayOp.unaryAcos());
     }
 
     public final DArray<N> cosh() {
-        return unaryOp(DArrayOp.unaryCosh());
+        return unary(DArrayOp.unaryCosh());
     }
 
     public final DArray<N> cosh(Order order) {
-        return unaryOp(DArrayOp.unaryCosh(), order);
+        return unary(DArrayOp.unaryCosh(), order);
     }
 
     public final DArray<N> cosh_() {
-        return unaryOp_(DArrayOp.unaryCosh());
+        return unary_(DArrayOp.unaryCosh());
     }
 
     public final DArray<N> tan() {
-        return unaryOp(DArrayOp.unaryTan());
+        return unary(DArrayOp.unaryTan());
     }
 
     public final DArray<N> tan(Order order) {
-        return unaryOp(DArrayOp.unaryTan(), order);
+        return unary(DArrayOp.unaryTan(), order);
     }
 
     public final DArray<N> tan_() {
-        return unaryOp_(DArrayOp.unaryTan());
+        return unary_(DArrayOp.unaryTan());
     }
 
     public final DArray<N> atan() {
-        return unaryOp(DArrayOp.unaryAtan());
+        return unary(DArrayOp.unaryAtan());
     }
 
     public final DArray<N> atan(Order order) {
-        return unaryOp(DArrayOp.unaryAtan(), order);
+        return unary(DArrayOp.unaryAtan(), order);
     }
 
     public final DArray<N> atan_() {
-        return unaryOp_(DArrayOp.unaryAtan());
+        return unary_(DArrayOp.unaryAtan());
     }
 
     public final DArray<N> tanh() {
-        return unaryOp(DArrayOp.unaryTanh());
+        return unary(DArrayOp.unaryTanh());
     }
 
     public final DArray<N> tanh(Order order) {
-        return unaryOp(DArrayOp.unaryTanh(), order);
+        return unary(DArrayOp.unaryTanh(), order);
     }
 
     public final DArray<N> tanh_() {
-        return unaryOp_(DArrayOp.unaryTanh());
+        return unary_(DArrayOp.unaryTanh());
     }
 
     public final DArray<N> sqr() {
-        return unaryOp(DArrayOp.unarySqr());
+        return unary(DArrayOp.unarySqr());
     }
 
     public final DArray<N> sqr(Order order) {
-        return unaryOp(DArrayOp.unarySqr(), order);
+        return unary(DArrayOp.unarySqr(), order);
     }
 
     public final DArray<N> sqr_() {
-        return unaryOp_(DArrayOp.unarySqr());
+        return unary_(DArrayOp.unarySqr());
     }
 
     public final DArray<N> sqrt() {
-        return unaryOp(DArrayOp.unarySqrt());
+        return unary(DArrayOp.unarySqrt());
     }
 
     public final DArray<N> sqrt(Order order) {
-        return unaryOp(DArrayOp.unarySqrt(), order);
+        return unary(DArrayOp.unarySqrt(), order);
     }
 
     public final DArray<N> sqrt_() {
-        return unaryOp_(DArrayOp.unarySqrt());
+        return unary_(DArrayOp.unarySqrt());
     }
 
     public final DArray<N> pow(double power) {
-        return unaryOp(DArrayOp.unaryPow(power));
+        return unary(DArrayOp.unaryPow(power));
     }
 
     public final DArray<N> pow(Order order, double power) {
-        return unaryOp(DArrayOp.unaryPow(power), order);
+        return unary(DArrayOp.unaryPow(power), order);
     }
 
     public final DArray<N> pow_(double power) {
-        return unaryOp_(DArrayOp.unaryPow(power));
+        return unary_(DArrayOp.unaryPow(power));
     }
 
     public final DArray<N> sigmoid() {
-        return unaryOp(DArrayOp.unarySigmoid());
+        return unary(DArrayOp.unarySigmoid());
     }
 
     public final DArray<N> sigmoid(Order order) {
-        return unaryOp(DArrayOp.unarySigmoid(), order);
+        return unary(DArrayOp.unarySigmoid(), order);
     }
 
     public final DArray<N> sigmoid_() {
-        return unaryOp_(DArrayOp.unarySigmoid());
+        return unary_(DArrayOp.unarySigmoid());
     }
 
     public final DArray<N> softmax() {
-        return unaryOp(DArrayOp.unarySoftmax());
+        return unary(DArrayOp.unarySoftmax());
     }
 
     public final DArray<N> softmax(Order order) {
-        return unaryOp(DArrayOp.unarySoftmax(), order);
+        return unary(DArrayOp.unarySoftmax(), order);
     }
 
     public final DArray<N> softmax_() {
-        return unaryOp_(DArrayOp.unarySoftmax());
+        return unary_(DArrayOp.unarySoftmax());
     }
 
     public final DArray<N> softmax1d(int axis) {
@@ -1273,19 +1273,19 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     public final DArray<N> softmax1d_(int axis) {
-        return unaryOp1d_(DArrayOp.unarySoftmax(), axis);
+        return unary1d_(DArrayOp.unarySoftmax(), axis);
     }
 
     public final DArray<N> logsoftmax() {
-        return unaryOp(DArrayOp.unaryLogSoftmax());
+        return unary(DArrayOp.unaryLogSoftmax());
     }
 
     public final DArray<N> logsoftmax(Order order) {
-        return unaryOp(DArrayOp.unaryLogSoftmax(), order);
+        return unary(DArrayOp.unaryLogSoftmax(), order);
     }
 
     public final DArray<N> logsoftmax_() {
-        return unaryOp_(DArrayOp.unaryLogSoftmax());
+        return unary_(DArrayOp.unaryLogSoftmax());
     }
 
     public final DArray<N> logsoftmax1d(int axis) {
@@ -1297,245 +1297,245 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     public final DArray<N> logsoftmax1d_(int axis) {
-        return unaryOp1d_(DArrayOp.unaryLogSoftmax(), axis);
+        return unary1d_(DArrayOp.unaryLogSoftmax(), axis);
     }
 
 
     //--------- BINARY OPERATIONS ----------------//
 
-    public final DArray<N> binaryOp(DArrayBinaryOp op, DArray<?> other, Order order) {
+    public final DArray<N> binary(DArrayBinaryOp op, DArray<?> other, Order order) {
         // TODO: research optimization
         Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this.shape(), other.shape()));
         if (!broadcast.valid()) {
             throw new IllegalArgumentException(
-                    String.format("Operation could not be applied on NArrays with shape: %s, %s", shape(), other.shape()));
+                    String.format("Operation could not be applied on darrays with shape: %s, %s", shape(), other.shape()));
         }
         DArray<N> copy = broadcast.transform(this).copy(order);
-        return copy.binaryOp_(op, broadcast.transform(other));
+        return copy.binary_(op, broadcast.transform(other));
     }
 
-    public abstract DArray<N> binaryOp_(DArrayBinaryOp op, DArray<?> value);
+    public abstract DArray<N> binary_(DArrayBinaryOp op, DArray<?> value);
 
-    public final <M extends Number> DArray<N> binaryOp(DArrayBinaryOp op, M value, Order order) {
-        return copy(order).binaryOp_(op, value);
+    public final <M extends Number> DArray<N> binary(DArrayBinaryOp op, M value, Order order) {
+        return copy(order).binary_(op, value);
     }
 
-    public abstract <M extends Number> DArray<N> binaryOp_(DArrayBinaryOp op, M value);
+    public abstract <M extends Number> DArray<N> binary_(DArrayBinaryOp op, M value);
 
     public final DArray<N> add(DArray<?> array) {
-        return binaryOp(DArrayOp.binaryAdd(), array, Order.defaultOrder());
+        return binary(DArrayOp.binaryAdd(), array, Order.defaultOrder());
     }
 
     public final DArray<N> add(DArray<?> array, Order order) {
-        return binaryOp(DArrayOp.binaryAdd(), array, order);
+        return binary(DArrayOp.binaryAdd(), array, order);
     }
 
     public final DArray<N> add_(DArray<?> array) {
-        return binaryOp_(DArrayOp.binaryAdd(), array);
+        return binary_(DArrayOp.binaryAdd(), array);
     }
 
     public final DArray<N> sub(DArray<?> array) {
-        return binaryOp(DArrayOp.binarySub(), array, Order.defaultOrder());
+        return binary(DArrayOp.binarySub(), array, Order.defaultOrder());
     }
 
     public final DArray<N> sub(DArray<?> array, Order order) {
-        return binaryOp(DArrayOp.binarySub(), array, order);
+        return binary(DArrayOp.binarySub(), array, order);
     }
 
     public final DArray<N> sub_(DArray<?> array) {
-        return binaryOp_(DArrayOp.binarySub(), array);
+        return binary_(DArrayOp.binarySub(), array);
     }
 
     public final DArray<N> mul(DArray<?> array) {
-        return binaryOp(DArrayOp.binaryMul(), array, Order.defaultOrder());
+        return binary(DArrayOp.binaryMul(), array, Order.defaultOrder());
     }
 
     public final DArray<N> mul(DArray<?> array, Order order) {
-        return binaryOp(DArrayOp.binaryMul(), array, order);
+        return binary(DArrayOp.binaryMul(), array, order);
     }
 
     public final DArray<N> mul_(DArray<?> array) {
-        return binaryOp_(DArrayOp.binaryMul(), array);
+        return binary_(DArrayOp.binaryMul(), array);
     }
 
     public final DArray<N> div(DArray<?> array) {
-        return binaryOp(DArrayOp.binaryDiv(), array, Order.defaultOrder());
+        return binary(DArrayOp.binaryDiv(), array, Order.defaultOrder());
     }
 
     public final DArray<N> div(DArray<?> array, Order order) {
-        return binaryOp(DArrayOp.binaryDiv(), array, order);
+        return binary(DArrayOp.binaryDiv(), array, order);
     }
 
     public final DArray<N> div_(DArray<?> array) {
-        return binaryOp_(DArrayOp.binaryDiv(), array);
+        return binary_(DArrayOp.binaryDiv(), array);
     }
 
     public final DArray<N> min(DArray<?> array) {
-        return binaryOp(DArrayOp.binaryMin(), array, Order.defaultOrder());
+        return binary(DArrayOp.binaryMin(), array, Order.defaultOrder());
     }
 
     public final DArray<N> min(DArray<?> array, Order order) {
-        return binaryOp(DArrayOp.binaryMin(), array, order);
+        return binary(DArrayOp.binaryMin(), array, order);
     }
 
     public final DArray<N> min_(DArray<?> array) {
-        return binaryOp_(DArrayOp.binaryMin(), array);
+        return binary_(DArrayOp.binaryMin(), array);
     }
 
     public final DArray<N> max(DArray<?> array) {
-        return binaryOp(DArrayOp.binaryMax(), array, Order.defaultOrder());
+        return binary(DArrayOp.binaryMax(), array, Order.defaultOrder());
     }
 
     public final DArray<N> max(DArray<?> array, Order order) {
-        return binaryOp(DArrayOp.binaryMax(), array, order);
+        return binary(DArrayOp.binaryMax(), array, order);
     }
 
     public final DArray<N> max_(DArray<?> array) {
-        return binaryOp_(DArrayOp.binaryMax(), array);
+        return binary_(DArrayOp.binaryMax(), array);
     }
 
     public final DArray<N> add(int value) {
-        return binaryOp(DArrayOp.binaryAdd(), value, Order.defaultOrder());
+        return binary(DArrayOp.binaryAdd(), value, Order.defaultOrder());
     }
 
     public final DArray<N> add(double value) {
-        return binaryOp(DArrayOp.binaryAdd(), value, Order.defaultOrder());
+        return binary(DArrayOp.binaryAdd(), value, Order.defaultOrder());
     }
 
     public final DArray<N> add(int value, Order order) {
-        return binaryOp(DArrayOp.binaryAdd(), value, order);
+        return binary(DArrayOp.binaryAdd(), value, order);
     }
 
     public final DArray<N> add(double value, Order order) {
-        return binaryOp(DArrayOp.binaryAdd(), value, order);
+        return binary(DArrayOp.binaryAdd(), value, order);
     }
 
     public final DArray<N> add_(int value) {
-        return binaryOp_(DArrayOp.binaryAdd(), value);
+        return binary_(DArrayOp.binaryAdd(), value);
     }
 
     public final DArray<N> add_(double value) {
-        return binaryOp_(DArrayOp.binaryAdd(), value);
+        return binary_(DArrayOp.binaryAdd(), value);
     }
 
     public final DArray<N> sub(int value) {
-        return binaryOp(DArrayOp.binarySub(), value, Order.defaultOrder());
+        return binary(DArrayOp.binarySub(), value, Order.defaultOrder());
     }
 
     public final DArray<N> sub(double value) {
-        return binaryOp(DArrayOp.binarySub(), value, Order.defaultOrder());
+        return binary(DArrayOp.binarySub(), value, Order.defaultOrder());
     }
 
     public final DArray<N> sub(int value, Order order) {
-        return binaryOp(DArrayOp.binarySub(), value, order);
+        return binary(DArrayOp.binarySub(), value, order);
     }
 
     public final DArray<N> sub(double value, Order order) {
-        return binaryOp(DArrayOp.binarySub(), value, order);
+        return binary(DArrayOp.binarySub(), value, order);
     }
 
     public final DArray<N> sub_(int value) {
-        return binaryOp_(DArrayOp.binarySub(), value);
+        return binary_(DArrayOp.binarySub(), value);
     }
 
     public final DArray<N> sub_(double value) {
-        return binaryOp_(DArrayOp.binarySub(), value);
+        return binary_(DArrayOp.binarySub(), value);
     }
 
     public final DArray<N> mul(int value) {
-        return binaryOp(DArrayOp.binaryMul(), value, Order.defaultOrder());
+        return binary(DArrayOp.binaryMul(), value, Order.defaultOrder());
     }
 
     public final DArray<N> mul(double value) {
-        return binaryOp(DArrayOp.binaryMul(), value, Order.defaultOrder());
+        return binary(DArrayOp.binaryMul(), value, Order.defaultOrder());
     }
 
     public final DArray<N> mul(int value, Order order) {
-        return binaryOp(DArrayOp.binaryMul(), value, order);
+        return binary(DArrayOp.binaryMul(), value, order);
     }
 
     public final DArray<N> mul(double value, Order order) {
-        return binaryOp(DArrayOp.binaryMul(), value, order);
+        return binary(DArrayOp.binaryMul(), value, order);
     }
 
     public final DArray<N> mul_(int value) {
-        return binaryOp_(DArrayOp.binaryMul(), value);
+        return binary_(DArrayOp.binaryMul(), value);
     }
 
     public final DArray<N> mul_(double value) {
-        return binaryOp_(DArrayOp.binaryMul(), value);
+        return binary_(DArrayOp.binaryMul(), value);
     }
 
     public final DArray<N> div(int value) {
-        return binaryOp(DArrayOp.binaryDiv(), value, Order.defaultOrder());
+        return binary(DArrayOp.binaryDiv(), value, Order.defaultOrder());
     }
 
     public final DArray<N> div(double value) {
-        return binaryOp(DArrayOp.binaryDiv(), value, Order.defaultOrder());
+        return binary(DArrayOp.binaryDiv(), value, Order.defaultOrder());
     }
 
     public final DArray<N> div(int value, Order order) {
-        return binaryOp(DArrayOp.binaryDiv(), value, order);
+        return binary(DArrayOp.binaryDiv(), value, order);
     }
 
     public final DArray<N> div(double value, Order order) {
-        return binaryOp(DArrayOp.binaryDiv(), value, order);
+        return binary(DArrayOp.binaryDiv(), value, order);
     }
 
     public final DArray<N> div_(int value) {
-        return binaryOp_(DArrayOp.binaryDiv(), value);
+        return binary_(DArrayOp.binaryDiv(), value);
     }
 
     public final DArray<N> div_(double value) {
-        return binaryOp_(DArrayOp.binaryDiv(), value);
+        return binary_(DArrayOp.binaryDiv(), value);
     }
 
     public final DArray<N> min(int value) {
-        return binaryOp(DArrayOp.binaryMin(), value, Order.defaultOrder());
+        return binary(DArrayOp.binaryMin(), value, Order.defaultOrder());
     }
 
     public final DArray<N> min(double value) {
-        return binaryOp(DArrayOp.binaryMin(), value, Order.defaultOrder());
+        return binary(DArrayOp.binaryMin(), value, Order.defaultOrder());
     }
 
     public final DArray<N> min(int value, Order order) {
-        return binaryOp(DArrayOp.binaryMin(), value, order);
+        return binary(DArrayOp.binaryMin(), value, order);
     }
 
     public final DArray<N> min(double value, Order order) {
-        return binaryOp(DArrayOp.binaryMin(), value, order);
+        return binary(DArrayOp.binaryMin(), value, order);
     }
 
     public final DArray<N> min_(int value) {
-        return binaryOp_(DArrayOp.binaryMin(), value);
+        return binary_(DArrayOp.binaryMin(), value);
     }
 
     public final DArray<N> min_(double value) {
-        return binaryOp_(DArrayOp.binaryMin(), value);
+        return binary_(DArrayOp.binaryMin(), value);
     }
 
     public final DArray<N> max(int value) {
-        return binaryOp(DArrayOp.binaryMax(), value, Order.defaultOrder());
+        return binary(DArrayOp.binaryMax(), value, Order.defaultOrder());
     }
 
     public final DArray<N> max(double value) {
-        return binaryOp(DArrayOp.binaryMax(), value, Order.defaultOrder());
+        return binary(DArrayOp.binaryMax(), value, Order.defaultOrder());
     }
 
     public final DArray<N> max(int value, Order order) {
-        return binaryOp(DArrayOp.binaryMax(), value, order);
+        return binary(DArrayOp.binaryMax(), value, order);
     }
 
     public final DArray<N> max(double value, Order order) {
-        return binaryOp(DArrayOp.binaryMax(), value, order);
+        return binary(DArrayOp.binaryMax(), value, order);
     }
 
     public final DArray<N> max_(int value) {
-        return binaryOp_(DArrayOp.binaryMax(), value);
+        return binary_(DArrayOp.binaryMax(), value);
     }
 
     public final DArray<N> max_(double value) {
-        return binaryOp_(DArrayOp.binaryMax(), value);
+        return binary_(DArrayOp.binaryMax(), value);
     }
 
     public final DArray<N> fma(int a, DArray<?> t) {
@@ -1573,60 +1573,101 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     //--------- REDUCE OPERATIONS ----------------//
 
-    public abstract N reduceOp(DArrayReduceOp op);
+    public abstract N reduce(DArrayReduceOp op);
 
-    public abstract DArray<N> reduceOp1d(DArrayReduceOp op, int axis, Order order);
+    public abstract DArray<N> reduce1d(DArrayReduceOp op, int axis, Order order);
+
+
+    /**
+     * Reduce operations on all dimensions specified by {@code shape}, which has to be the last dimensions of the tensor.
+     * The resulting tensor will have the shape given by the first dimensions which do not belong to the reducing shape.
+     *
+     * @param op      reduce operation which will be applied over each module of shape size
+     * @param shape   reduced shape, the shape must match the last dimensions of the tensor shape
+     * @param keepDim if true then the original number of dimensions will be kept with size 1, otherwise those dimensions will collaps
+     * @param order   the storage order of the result
+     * @return darray with reduced values
+     */
+    public abstract DArray<N> reduceOn(DArrayReduceOp op, Shape shape, boolean keepDim, Order order);
+
+    /**
+     * Reduce operation on first dimensions until the reduced darray arrives at the target {@code shape} specified as parameter.
+     * The target shape contains the last dimensions of the current darray. As such, if the target shape is equal with the original
+     * shape, no reduction will be done.
+     *
+     * @param op          reduction operation
+     * @param targetShape target shape
+     * @param order       storage order of the result
+     * @return reduced tensor
+     */
+    public abstract DArray<N> reduceTo(DArrayReduceOp op, Shape targetShape, boolean keepDim, Order order);
 
     public final N sum() {
-        return reduceOp(DArrayOp.reduceSum());
+        return reduce(DArrayOp.reduceSum());
     }
 
     public final DArray<N> sum1d(int axis) {
-        return reduceOp1d(DArrayOp.reduceSum(), axis, Order.defaultOrder());
+        return reduce1d(DArrayOp.reduceSum(), axis, Order.defaultOrder());
     }
 
     public final DArray<N> sum1d(int axis, Order order) {
-        return reduceOp1d(DArrayOp.reduceSum(), axis, order);
+        return reduce1d(DArrayOp.reduceSum(), axis, order);
+    }
+
+    public final DArray<N> sumOn(Shape shape, boolean keepDim) {
+        return reduceOn(DArrayOp.reduceSum(), shape, keepDim, Order.defaultOrder());
+    }
+
+    public final DArray<N> sumOn(Shape shape, boolean keepDim, Order order) {
+        return reduceOn(DArrayOp.reduceSum(), shape, keepDim, order);
+    }
+
+    public final DArray<N> sumTo(Shape shape, boolean keepDim) {
+        return reduceTo(DArrayOp.reduceSum(), shape, keepDim, Order.defaultOrder());
+    }
+
+    public final DArray<N> sumTo(Shape shape, boolean keepDim, Order order) {
+        return reduceTo(DArrayOp.reduceSum(), shape, keepDim, order);
     }
 
     public final N nanSum() {
-        return reduceOp(DArrayOp.reduceNanSum());
+        return reduce(DArrayOp.reduceNanSum());
     }
 
     public final DArray<N> nanSum1d(int axis) {
-        return reduceOp1d(DArrayOp.reduceNanSum(), axis, Order.defaultOrder());
+        return reduce1d(DArrayOp.reduceNanSum(), axis, Order.defaultOrder());
     }
 
     public final DArray<N> nanSum1d(int axis, Order order) {
-        return reduceOp1d(DArrayOp.reduceNanSum(), axis, order);
+        return reduce1d(DArrayOp.reduceNanSum(), axis, order);
     }
 
     public final N prod() {
-        return reduceOp(DArrayOp.reduceProd());
+        return reduce(DArrayOp.reduceProd());
     }
 
     public final DArray<N> prod1d(int axis) {
-        return reduceOp1d(DArrayOp.reduceProd(), axis, Order.defaultOrder());
+        return reduce1d(DArrayOp.reduceProd(), axis, Order.defaultOrder());
     }
 
     public final DArray<N> prod1d(int axis, Order order) {
-        return reduceOp1d(DArrayOp.reduceProd(), axis, order);
+        return reduce1d(DArrayOp.reduceProd(), axis, order);
     }
 
     public final N nanProd() {
-        return reduceOp(DArrayOp.reduceNanProd());
+        return reduce(DArrayOp.reduceNanProd());
     }
 
     public final DArray<N> nanProd1d(int axis) {
-        return reduceOp1d(DArrayOp.reduceNanProd(), axis, Order.defaultOrder());
+        return reduce1d(DArrayOp.reduceNanProd(), axis, Order.defaultOrder());
     }
 
     public final DArray<N> nanProd1d(int axis, Order order) {
-        return reduceOp1d(DArrayOp.reduceNanProd(), axis, order);
+        return reduce1d(DArrayOp.reduceNanProd(), axis, order);
     }
 
     public final N amax() {
-        return reduceOp(DArrayOp.reduceMax());
+        return reduce(DArrayOp.reduceMax());
     }
 
     public final DArray<N> amax1d(int axis) {
@@ -1634,118 +1675,116 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     public final DArray<N> amax1d(int axis, Order order) {
-        return reduceOp1d(DArrayOp.reduceMax(), axis, order);
+        return reduce1d(DArrayOp.reduceMax(), axis, order);
     }
 
     public final N nanMax() {
-        return reduceOp(DArrayOp.reduceNanMax());
+        return reduce(DArrayOp.reduceNanMax());
     }
 
     public final DArray<N> nanMax1d(int axis) {
-        return reduceOp1d(DArrayOp.reduceNanMax(), axis, Order.defaultOrder());
+        return reduce1d(DArrayOp.reduceNanMax(), axis, Order.defaultOrder());
     }
 
     public final DArray<N> nanMax1d(int axis, Order order) {
-        return reduceOp1d(DArrayOp.reduceNanMax(), axis, order);
+        return reduce1d(DArrayOp.reduceNanMax(), axis, order);
     }
 
     public final N amin() {
-        return reduceOp(DArrayOp.reduceMin());
+        return reduce(DArrayOp.reduceMin());
     }
 
     public final DArray<N> amin1d(int axis) {
-        return reduceOp1d(DArrayOp.reduceMin(), axis, Order.defaultOrder());
+        return reduce1d(DArrayOp.reduceMin(), axis, Order.defaultOrder());
     }
 
     public final DArray<N> amin1d(int axis, Order order) {
-        return reduceOp1d(DArrayOp.reduceMin(), axis, order);
+        return reduce1d(DArrayOp.reduceMin(), axis, order);
     }
 
     public final N nanMin() {
-        return reduceOp(DArrayOp.reduceNanMin());
+        return reduce(DArrayOp.reduceNanMin());
     }
 
     public final DArray<N> nanMin1d(int axis) {
-        return reduceOp1d(DArrayOp.reduceNanMin(), axis, Order.defaultOrder());
+        return reduce1d(DArrayOp.reduceNanMin(), axis, Order.defaultOrder());
     }
 
     public final DArray<N> nanMin1d(int axis, Order order) {
-        return reduceOp1d(DArrayOp.reduceNanMin(), axis, order);
+        return reduce1d(DArrayOp.reduceNanMin(), axis, order);
     }
 
     public final N mean() {
-        return reduceOp(DArrayOp.reduceMean());
+        return reduce(DArrayOp.reduceMean());
     }
 
     public final DArray<N> mean1d(int axis) {
-        return reduceOp1d(DArrayOp.reduceMean(), axis, Order.defaultOrder());
+        return reduce1d(DArrayOp.reduceMean(), axis, Order.defaultOrder());
     }
 
     public final DArray<N> mean1d(int axis, Order order) {
-        return reduceOp1d(DArrayOp.reduceMean(), axis, order);
+        return reduce1d(DArrayOp.reduceMean(), axis, order);
+    }
+
+    public final DArray<N> meanOn(Shape shape, boolean keepDim) {
+        return reduceOn(DArrayOp.reduceMean(), shape, keepDim, Order.defaultOrder());
+    }
+
+    public final DArray<N> meanOn(Shape shape, boolean keepDim, Order order) {
+        return reduceOn(DArrayOp.reduceMean(), shape, keepDim, order);
+    }
+
+    public final DArray<N> meanAt(Shape shape, boolean keepDim) {
+        return reduceTo(DArrayOp.reduceMean(), shape, keepDim, Order.defaultOrder());
+    }
+
+    public final DArray<N> meanAt(Shape shape, boolean keepDim, Order order) {
+        return reduceTo(DArrayOp.reduceMean(), shape, keepDim, order);
     }
 
     public final N nanMean() {
-        return reduceOp(DArrayOp.reduceNanMean());
+        return reduce(DArrayOp.reduceNanMean());
     }
 
-    public final N var() {
-        return varc(0);
+    public final N var(int ddof) {
+        return reduce(DArrayOp.reduceVarc(ddof));
     }
 
-    public final N std() {
-        return dt().cast(Math.sqrt(var().doubleValue()));
+    public final DArray<N> var1d(int axis, int ddof) {
+        return reduce1d(DArrayOp.reduceVarc(ddof), axis, Order.defaultOrder());
     }
 
-    public final DArray<N> var1d(int axis) {
-        return varc1d(axis, 0, Order.defaultOrder());
+    public final DArray<N> var1d(int axis, int ddof, Order order) {
+        return reduce1d(DArrayOp.reduceVarc(ddof), axis, order);
     }
 
-    public final DArray<N> std1d(int axis) {
-        return var1d(axis).sqrt_();
+    public final N std(int ddof) {
+        return dt().cast(Math.sqrt(var(ddof).doubleValue()));
     }
 
-    public final DArray<N> var1d(int axis, Order order) {
-        return varc1d(axis, 0, order);
+    public final DArray<N> std1d(int axis, int ddof) {
+        return var1d(axis, ddof).sqrt_();
     }
 
-    public final DArray<N> std1d(int axis, Order order) {
-        return var1d(axis, order).sqrt_();
+    public final DArray<N> std1d(int axis, int ddof, Order order) {
+        return var1d(axis, ddof, order).sqrt_();
     }
 
-    public final N varc(int ddof) {
-        return reduceOp(DArrayOp.reduceVarc(ddof));
+    public final N var(int ddof, double mean) {
+        return reduce(DArrayOp.reduceVarc(ddof, mean));
     }
 
-    public final N stdc(int ddof) {
-        return dt().cast(Math.sqrt(varc(ddof).doubleValue()));
+    public final DArray<N> var1d(int axis, int ddof, DArray<?> mean) {
+        return var1d(axis, ddof, mean, Order.defaultOrder());
     }
 
-    public final DArray<N> varc1d(int axis, int ddof) {
-        return reduceOp1d(DArrayOp.reduceVarc(ddof), axis, Order.defaultOrder());
+    public abstract DArray<N> var1d(int axis, int ddof, DArray<?> mean, Order order);
+
+    public final DArray<N> varOn(Shape shape, int ddof, boolean keepDim, DArray<?> mean) {
+        return varOn(shape, ddof, mean, keepDim, Order.defaultOrder());
     }
 
-    public final DArray<N> stdc1d(int axis, int ddof) {
-        return varc1d(axis, ddof).sqrt_();
-    }
-
-    public final DArray<N> varc1d(int axis, int ddof, Order order) {
-        return reduceOp1d(DArrayOp.reduceVarc(ddof), axis, order);
-    }
-
-    public final DArray<N> stdc1d(int axis, int ddof, Order order) {
-        return varc1d(axis, ddof, order).sqrt_();
-    }
-
-    public final N varc(int ddof, double mean) {
-        return reduceOp(DArrayOp.reduceVarc(ddof, mean));
-    }
-
-    public final DArray<N> varc1d(int axis, int ddof, DArray<?> mean) {
-        return varc1d(axis, ddof, mean, Order.defaultOrder());
-    }
-
-    public abstract DArray<N> varc1d(int axis, int ddof, DArray<?> mean, Order order);
+    public abstract DArray<N> varOn(Shape shape, int ddof, DArray<?> mean, boolean keepDim, Order order);
 
 
     public final int argmax() {
@@ -1786,60 +1825,6 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * @return number of zero values
      */
     public abstract int zeroCount();
-
-    public final DArray<N> reduceSum(Shape targetShape) {
-        return reduceSum(targetShape, Order.defaultOrder());
-    }
-
-    public final DArray<N> reduceSum(Shape targetShape, Order askOrder) {
-        var ewb = Broadcast.elementWise(shape(), targetShape);
-        if (ewb.valid() && ewb.shape().equals(shape())) {
-            // first dimensions which does not exist in target dimensions are reduced
-            DArray<N> result = this;
-            while (result.rank() > targetShape.rank()) {
-                result = result.sum1d(0, askOrder);
-            }
-            // the other dimensions are reduced to 1 and keep, if needed
-            for (int i = 0; i < targetShape.rank(); i++) {
-                if ((targetShape.dim(i) != result.dim(i))) {
-                    // this should not happen
-                    if (targetShape.dim(i) != 1) {
-                        throw new IllegalStateException("Reducing shape has a non unit reducing dimension.");
-                    }
-                    result = result.sum1d(i, askOrder).stretch(i);
-                }
-            }
-            return result;
-        }
-        throw new IllegalArgumentException("Current shape " + shape() + " cannot be reduced into target shape " + targetShape);
-    }
-
-    public final DArray<N> reduceMean(Shape targetShape) {
-        return reduceMean(targetShape, Order.defaultOrder());
-    }
-
-    public final DArray<N> reduceMean(Shape targetShape, Order askOrder) {
-        var ewb = Broadcast.elementWise(shape(), targetShape);
-        if (ewb.valid() && ewb.shape().equals(shape())) {
-            // first dimensions which does not exist in target dimensions are reduced
-            DArray<N> result = this;
-            while (result.rank() > targetShape.rank()) {
-                result = result.mean1d(0, askOrder);
-            }
-            // the other dimensions are reduced to 1 and keep, if needed
-            for (int i = 0; i < targetShape.rank(); i++) {
-                if ((targetShape.dim(i) != result.dim(i))) {
-                    // this should not happen
-                    if (targetShape.dim(i) != 1) {
-                        throw new IllegalStateException("Reducing shape has a non unit reducing dimension.");
-                    }
-                    result = result.mean1d(i, askOrder).stretch(i);
-                }
-            }
-            return result;
-        }
-        throw new IllegalArgumentException("Current shape " + shape() + " cannot be reduced into target shape " + targetShape);
-    }
 
     //------- VECTOR MATRIX OPERATIONS ----------//
 
@@ -2279,7 +2264,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         if (!dt().floatingPoint()) {
             throw new OperationNotAvailableException("Available only for floating point NArrays.");
         }
-        DArray<N> std = stdc1d(0, 0);
+        DArray<N> std = std1d(0, 0);
         DArray<N> scaled = sub(mean1d(0));
         return scaled.t().mm(scaled, askOrder).div_(std).div_(std.stretch(1)).div_(dim(0));
     }
@@ -2333,6 +2318,9 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * @param asc     sort ascending if true, descending otherwise
      */
     public abstract void externalSort(int[] indices, boolean asc);
+
+    //------- broadcast operations --------//
+
 
     //------- SUMMARY OPERATIONS ----------//
 

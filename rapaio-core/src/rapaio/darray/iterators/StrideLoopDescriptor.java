@@ -48,10 +48,18 @@ public final class StrideLoopDescriptor<N extends Number> {
     private StrideLoopDescriptor(StrideLayout layout, Order askOrder, VectorSpecies<N> vs) {
         this.simdLen = vs.length();
 
-        if (layout.shape().rank() == 0) {
+        if (layout.rank() == 0) {
             bound = 1;
             step = 1;
             simdBound = 0;
+            offsets = new int[] {layout.offset()};
+            return;
+        }
+
+        if (layout.rank() == 1) {
+            bound = layout.dim(0);
+            step = layout.stride(0);
+            simdBound = vs.loopBound(bound);
             offsets = new int[] {layout.offset()};
             return;
         }
@@ -66,8 +74,8 @@ public final class StrideLoopDescriptor<N extends Number> {
             return;
         }
 
-        int[] outerDims = Arrays.copyOfRange(compact.shape().dims(), 1, compact.shape().rank());
-        int[] outerStrides = Arrays.copyOfRange(compact.strides(), 1, compact.shape().rank());
+        int[] outerDims = Arrays.copyOfRange(compact.dims(), 1, compact.rank());
+        int[] outerStrides = Arrays.copyOfRange(compact.strides(), 1, compact.rank());
 
         int count = IntArrays.prod(outerDims, 0, outerDims.length);
         this.offsets = IntArrays.newFill(count, layout.offset());

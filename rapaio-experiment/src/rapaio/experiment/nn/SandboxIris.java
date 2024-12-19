@@ -19,13 +19,14 @@
  *
  */
 
-package rapaio.experiment.math.nn;
+package rapaio.experiment.nn;
 
 import static rapaio.graphics.opt.GOpts.color;
 
 import java.io.IOException;
 
 import rapaio.darray.DType;
+import rapaio.darray.Shape;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
@@ -39,8 +40,8 @@ import rapaio.nn.Net;
 import rapaio.nn.Optimizer;
 import rapaio.nn.TensorManager;
 import rapaio.nn.data.ArrayDataset;
-import rapaio.nn.layer.BatchNorm1D;
 import rapaio.nn.layer.ELU;
+import rapaio.nn.layer.LayerNorm;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.LogSoftmax;
 import rapaio.nn.layer.Sequential;
@@ -69,10 +70,12 @@ public class SandboxIris {
         int batchSize = 30;
 
         Sequential nn = new Sequential(tm,
-                new BatchNorm1D(tm, 4),
+//                new BatchNorm1D(tm, 4),
+                new LayerNorm(tm, Shape.of(4)),
                 new Linear(tm, 4, n, true),
                 new ELU(tm),
-                new BatchNorm1D(tm, n),
+//                new BatchNorm1D(tm, n),
+                new LayerNorm(tm, Shape.of(n)),
                 new Linear(tm, n, 3, true),
                 new ELU(tm),
                 new LogSoftmax(tm, 1)

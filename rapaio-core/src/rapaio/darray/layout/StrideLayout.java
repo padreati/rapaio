@@ -24,6 +24,9 @@ package rapaio.darray.layout;
 import rapaio.darray.Layout;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
+import rapaio.darray.iterators.DensePointerIterator;
+import rapaio.darray.iterators.PointerIterator;
+import rapaio.darray.iterators.StridePointerIterator;
 import rapaio.io.atom.AtomSerialization;
 import rapaio.io.atom.LoadAtomHandler;
 import rapaio.io.atom.SaveAtomHandler;
@@ -44,7 +47,7 @@ public interface StrideLayout extends Layout {
             case 0 -> new ScalarStrideLayout(offset);
             case 1 -> new VectorStrideLayout(shape, offset, strides);
             case 2 -> new MatrixStrideLayout(shape, offset, strides);
-            default -> new TensorStrideLayout(shape, offset, strides);
+            default -> new ArrayStrideLayout(shape, offset, strides);
         };
     }
 
@@ -67,7 +70,7 @@ public interface StrideLayout extends Layout {
             }
             default -> throw new IllegalArgumentException("Order type is invalid.");
         };
-        return new TensorStrideLayout(shape, offset, strides);
+        return new ArrayStrideLayout(shape, offset, strides);
     }
 
     int offset();
@@ -148,6 +151,16 @@ public interface StrideLayout extends Layout {
                 out.saveInts(layout.strides());
             };
         }
+    }
+
+    default PointerIterator ptrIterator(Order askOrder) {
+        if (isCOrdered() && askOrder != Order.F) {
+            return new DensePointerIterator(shape(), offset(), stride(-1));
+        }
+        if (isFOrdered() && askOrder != Order.C) {
+            return new DensePointerIterator(shape(), offset(), stride(0));
+        }
+        return new StridePointerIterator(this, askOrder);
     }
 
 }

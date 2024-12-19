@@ -48,6 +48,7 @@ import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.IndexIterator;
+import rapaio.darray.iterators.PointerIterator;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.iterators.StridePointerIterator;
 import rapaio.darray.layout.StrideLayout;
@@ -135,7 +136,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         var ptrIdxIt = index.ptrIterator(Order.C);
         var indexIt = new IndexIterator(shape(), Order.C);
         int[] idx = new int[rank()];
-        while(indexIt.hasNext()) {
+        while (indexIt.hasNext()) {
             int[] indexNext = indexIt.next();
             System.arraycopy(indexNext, 0, idx, 0, idx.length);
             idx[axis] = index.ptrGetInt(ptrIdxIt.nextInt());
@@ -146,17 +147,17 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Double> scatter_(int axis, DArray<?> index, DArray<?> input) {
-        if(index.rank()!=input.rank()) {
+        if (index.rank() != input.rank()) {
             throw new IllegalArgumentException("Index must have the same rank as input.");
         }
-        if(index.rank()!=this.rank()) {
+        if (index.rank() != this.rank()) {
             throw new IllegalArgumentException("Index must have the same rank as self tensor.");
         }
         var ptrSrcIt = input.ptrIterator(Order.C);
         var ptrIdxIt = index.ptrIterator(Order.C);
         var indexIt = new IndexIterator(index.shape(), Order.C);
         int[] idx = new int[rank()];
-        while(indexIt.hasNext()) {
+        while (indexIt.hasNext()) {
             int[] indexNext = indexIt.next();
             System.arraycopy(indexNext, 0, idx, 0, idx.length);
             idx[axis] = index.ptrGetInt(ptrIdxIt.nextInt());
@@ -217,7 +218,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
     }
 
     @Override
-    public DArray<Double> unaryOp_(DArrayUnaryOp op) {
+    public DArray<Double> unary_(DArrayUnaryOp op) {
         if (op.floatingPointOnly() && !dt().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point NArrays.");
         }
@@ -226,7 +227,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
     }
 
     @Override
-    public DArray<Double> unaryOp1d_(DArrayUnaryOp op, int axis) {
+    public DArray<Double> unary1d_(DArrayUnaryOp op, int axis) {
         int ax = axis < 0 ? axis + shape().rank() : axis;
 
         int[] newDims = layout.shape().narrowDims(axis);
@@ -246,7 +247,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
                 while (it.hasNext() && taskList.size() < chunk) {
                     int ptr = it.nextInt();
                     taskList.add(() -> {
-                        manager.stride(dt, StrideLayout.of(new int[] {selDim}, ptr, new int[] {selStride}), storage).unaryOp_(op);
+                        manager.stride(dt, StrideLayout.of(new int[] {selDim}, ptr, new int[] {selStride}), storage).unary_(op);
                     });
                 }
                 executor.submit(() -> {
@@ -266,9 +267,9 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
     }
 
     @Override
-    public DArray<Double> binaryOp_(DArrayBinaryOp op, DArray<?> other) {
+    public DArray<Double> binary_(DArrayBinaryOp op, DArray<?> other) {
         if (other.isScalar()) {
-            return binaryOp_(op, other.getDouble());
+            return binary_(op, other.getDouble());
         }
         Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this.shape(), other.shape()));
         if (!broadcast.valid()) {
@@ -276,7 +277,9 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
                     String.format("Operation could not be applied on tensors with shape: %s, %s", shape(), other.shape()));
         }
         if (!broadcast.hasShape(this)) {
-            throw new IllegalArgumentException("Broadcast cannot be applied for inplace operations.");
+            throw new IllegalArgumentException(
+                    String.format("Broadcast cannot be applied for in place operations. This shape %s, other shape %s", this.shape(),
+                            other.shape()));
         }
         other = broadcast.transform(other);
         var order = layout.storageFastOrder();
@@ -292,7 +295,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
     }
 
     @Override
-    public <M extends Number> DArray<Double> binaryOp_(DArrayBinaryOp op, M value) {
+    public <M extends Number> DArray<Double> binary_(DArrayBinaryOp op, M value) {
         double v = value.doubleValue();
         DoubleVector m = DoubleVector.broadcast(dt.vs(), v);
         for (int p : loop.offsets) {
@@ -347,12 +350,12 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
     // REDUCE OPERATIONS
 
     @Override
-    public Double reduceOp(DArrayReduceOp op) {
+    public Double reduce(DArrayReduceOp op) {
         return op.reduceDouble(loop, storage);
     }
 
     @Override
-    public DArray<Double> reduceOp1d(DArrayReduceOp op, int axis, Order order) {
+    public DArray<Double> reduce1d(DArrayReduceOp op, int axis, Order order) {
         if (axis < 0) {
             axis += shape().rank();
         }
@@ -376,7 +379,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
                     int resPtr = resIt.next();
                     taskList.add(() -> {
                         StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
-                        double value = manager.stride(dt, strideLayout, storage).reduceOp(op);
+                        double value = manager.stride(dt, strideLayout, storage).reduce(op);
                         res.ptrSetDouble(resPtr, value);
                     });
                 }
@@ -397,7 +400,162 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
     }
 
     @Override
-    public DArray<Double> varc1d(int axis, int ddof, DArray<?> mean, Order order) {
+    public DArray<Double> reduceOn(DArrayReduceOp op, Shape shape, boolean keepDim, Order order) {
+        if (shape.rank() == 0) {
+            if (Order.C == order && layout.isCOrdered()) {
+                return this;
+            }
+            if (Order.F == order && layout.isFOrdered()) {
+                return this;
+            }
+            return this.copy(order);
+        }
+        if (rank() < shape.rank()) {
+            throw new IllegalArgumentException(String.format(
+                    "Reduce shape (%s) has a higher rank than the current tensor (%s).", shape, shape()));
+        }
+        for (int i = 0; i < shape.rank(); i++) {
+            if (shape.dim(shape.rank() - 1 - i) != dim(rank() - 1 - i)) {
+                throw new IllegalArgumentException(String.format(
+                        "Reduce shape (%s) is incompatible with the shape of the current tensor (%s).", shape, shape()));
+            }
+        }
+        if (rank() == shape.rank()) {
+            return manager.scalar(dt, reduce(op));
+        }
+
+        int[] firstDims = Arrays.copyOfRange(layout.dims(), 0, rank() - shape.rank());
+        int[] firstStrides = Arrays.copyOfRange(layout.strides(), 0, rank() - shape.rank());
+        int[] lastDims = Arrays.copyOfRange(layout.dims(), rank() - shape.rank(), rank());
+        int[] lastStrides = Arrays.copyOfRange(layout.strides(), rank() - shape.rank(), rank());
+
+        StrideLayout firstLayout = StrideLayout.of(firstDims, layout().offset(), firstStrides);
+        DArray<Double> result = manager.zeros(dt, Shape.of(firstDims), order);
+        PointerIterator resIt = result.ptrIterator(Order.C);
+        PointerIterator firstIt = new StridePointerIterator(firstLayout, Order.C);
+
+        while (resIt.hasNext()) {
+            int ptr = resIt.nextInt();
+            int offset = firstIt.nextInt();
+            double value = manager.stride(dt, StrideLayout.of(lastDims, offset, lastStrides), storage).reduce(op);
+            result.ptrSet(ptr, value);
+        }
+        if (keepDim) {
+            for (int i = 0; i < shape.rank(); i++) {
+                result = result.stretch(result.rank());
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public DArray<Double> reduceTo(DArrayReduceOp op, Shape targetShape, boolean keepDim, Order order) {
+        if (targetShape.rank() == 0) {
+            return manager.scalar(dt, reduce(op));
+        }
+        Broadcast.ElementWise broadcast = Broadcast.elementWise(this.shape(), targetShape);
+        if (!broadcast.valid() || !broadcast.shape().equals(this.shape())) {
+            throw new IllegalArgumentException(String.format(
+                    "Target shape is not broadcastable to this tensor or the broadcast change the shape of current tensor."));
+        }
+        if (targetShape.equals(layout.shape())) {
+            if (Order.C == order && layout.isCOrdered()) {
+                return this;
+            }
+            if (Order.F == order && layout.isFOrdered()) {
+                return this;
+            }
+            return this.copy(order);
+        }
+
+        int firstLen = 0;
+        int lastLen = 0;
+        for (int i = 0; i < layout.rank(); i++) {
+            if (i < layout.rank() - targetShape.rank()) {
+                firstLen++;
+                continue;
+            }
+            if (dim(i) == targetShape.dim(i - layout.rank() + targetShape.rank())) {
+                lastLen++;
+            } else {
+                lastLen++;
+                firstLen++;
+            }
+        }
+
+        int[] firstDims = new int[firstLen];
+        int[] firstStrides = new int[firstLen];
+        int[] lastDims = new int[lastLen];
+        int[] lastStrides = new int[lastLen];
+
+        int firstP = 0;
+        int lastP = 0;
+        for (int i = 0; i < layout.rank(); i++) {
+            if (i < layout.rank() - targetShape.rank()) {
+                firstDims[firstP] = layout.dim(i);
+                firstStrides[firstP] = layout.stride(i);
+                firstP++;
+                continue;
+            }
+            if (dim(i) == targetShape.dim(i - layout.rank() + targetShape.rank())) {
+                lastDims[lastP] = layout.dim(i);
+                lastStrides[lastP] = layout.stride(i);
+                lastP++;
+            } else {
+                firstDims[firstP] = layout.dim(i);
+                firstStrides[firstP] = layout.stride(i);
+                firstP++;
+                lastDims[lastP] = targetShape.dim(i - layout.rank() + targetShape.rank());
+                lastStrides[lastP] = layout.stride(i);
+                lastP++;
+            }
+        }
+
+        DArray<Double> result = manager.zeros(dt, Shape.of(lastDims), order);
+        PointerIterator resIt = result.ptrIterator(Order.C);
+        PointerIterator lastIt = StrideLayout.of(lastDims, layout().offset(), lastStrides).ptrIterator(Order.C);
+
+        int chunk = 128;
+        int tasks = Math.ceilDiv(resIt.size(), chunk);
+
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            CountDownLatch latch = new CountDownLatch(tasks);
+            for (int i = 0; i < tasks; i++) {
+                List<Runnable> taskList = new ArrayList<>();
+                while (resIt.hasNext() && taskList.size() < chunk) {
+                    int ptr = resIt.nextInt();
+                    int offset = lastIt.nextInt();
+                    taskList.add(() -> {
+                        double value = manager.stride(dt, StrideLayout.of(firstDims, offset, firstStrides), storage).reduce(op);
+                        result.ptrSet(ptr, value);
+                    });
+                }
+                executor.submit(() -> {
+                    for (var t : taskList) {
+                        t.run();
+                    }
+                    latch.countDown();
+                });
+            }
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        DArray<Double> lastResult = result;
+        if (keepDim) {
+            for (int i = 0; i < layout.rank() - targetShape.rank(); i++) {
+                lastResult = lastResult.stretch(0);
+            }
+        }
+
+        return lastResult;
+    }
+
+    @Override
+    public DArray<Double> var1d(int axis, int ddof, DArray<?> mean, Order order) {
         if (axis < 0) {
             axis += shape().rank();
         }
@@ -427,7 +585,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
                     taskList.add(() -> {
                         StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
                         double m = mean.ptrGetDouble(meanIt.next());
-                        double value = manager.stride(dt, strideLayout, storage).reduceOp(DArrayOp.reduceVarc(ddof, m));
+                        double value = manager.stride(dt, strideLayout, storage).reduce(DArrayOp.reduceVarc(ddof, m));
                         res.ptrSet(resPtr, value);
                     });
                 }
@@ -445,6 +603,55 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
             }
         }
         return res;
+    }
+
+    @Override
+    public DArray<Double> varOn(Shape shape, int ddof, DArray<?> mean, boolean keepDim, Order order) {
+
+        if (shape.rank() == 0) {
+            throw new IllegalArgumentException("Shape must not be of rank zero.");
+        }
+        if (rank() < shape.rank()) {
+            throw new IllegalArgumentException(String.format(
+                    "Reduce shape (%s) has a higher rank than the current tensor (%s).", shape, shape()));
+        }
+        for (int i = 0; i < shape.rank(); i++) {
+            if (shape.dim(shape.rank() - 1 - i) != dim(rank() - 1 - i)) {
+                throw new IllegalArgumentException(String.format(
+                        "Reduce shape (%s) is incompatible with the shape of the current tensor (%s).", shape, shape()));
+            }
+        }
+        if (rank() == shape.rank()) {
+            return manager.scalar(dt, var(ddof, mean.getDouble()));
+        }
+
+        int[] firstDims = Arrays.copyOfRange(layout.dims(), 0, rank() - shape.rank());
+        int[] firstStrides = Arrays.copyOfRange(layout.strides(), 0, rank() - shape.rank());
+        int[] lastDims = Arrays.copyOfRange(layout.dims(), rank() - shape.rank(), rank());
+        int[] lastStrides = Arrays.copyOfRange(layout.strides(), rank() - shape.rank(), rank());
+
+        StrideLayout firstLayout = StrideLayout.of(firstDims, layout().offset(), firstStrides);
+        if (mean.shape().equals(firstLayout.shape())) {
+            throw new IllegalArgumentException("Mean darray must have the same shape as the result array.");
+        }
+        DArray<Double> result = manager.zeros(dt, Shape.of(firstDims), order);
+        PointerIterator resIt = result.ptrIterator(Order.C);
+        PointerIterator firstIt = new StridePointerIterator(firstLayout, Order.C);
+        PointerIterator meanIt = mean.ptrIterator(Order.C);
+
+        while (resIt.hasNext()) {
+            int ptr = resIt.nextInt();
+            int offset = firstIt.nextInt();
+            double value =
+                    manager.stride(dt, StrideLayout.of(lastDims, offset, lastStrides), storage).var(ddof, mean.ptrGetDouble(meanIt.next()));
+            result.ptrSet(ptr, value);
+        }
+        if (keepDim) {
+            for (int i = 0; i < shape.rank(); i++) {
+                result = result.stretch(result.rank());
+            }
+        }
+        return result;
     }
 
     @Override
@@ -474,7 +681,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         }
         int[] newDims = keepDim ? Arrays.copyOf(layout.dims(), layout.rank()) : layout.shape().narrowDims(axis);
         int[] newStrides = keepDim ? Arrays.copyOf(layout.strides(), layout.rank()) : layout.narrowStrides(axis);
-        if(keepDim) {
+        if (keepDim) {
             newDims[axis] = 1;
             newStrides[axis] = 0;
         }
@@ -525,7 +732,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         }
         int[] newDims = keepDim ? Arrays.copyOf(layout.dims(), layout.rank()) : layout.shape().narrowDims(axis);
         int[] newStrides = keepDim ? Arrays.copyOf(layout.strides(), layout.rank()) : layout.narrowStrides(axis);
-        if(keepDim) {
+        if (keepDim) {
             newDims[axis] = 1;
             newStrides[axis] = 0;
         }

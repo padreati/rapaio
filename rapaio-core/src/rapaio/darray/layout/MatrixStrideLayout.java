@@ -249,7 +249,7 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
                 len++;
             }
         }
-        return new TensorStrideLayout(Shape.of(Arrays.copyOf(newDims, len)), offset, Arrays.copyOf(newStrides, len));
+        return new ArrayStrideLayout(Shape.of(Arrays.copyOf(newDims, len)), offset, Arrays.copyOf(newStrides, len));
     }
 
     @Override

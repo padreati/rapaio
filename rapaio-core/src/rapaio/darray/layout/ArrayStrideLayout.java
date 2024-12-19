@@ -32,7 +32,7 @@ import rapaio.darray.Shape;
 import rapaio.util.IntComparators;
 import rapaio.util.collection.IntArrays;
 
-public class TensorStrideLayout extends AbstractStrideLayout {
+public class ArrayStrideLayout extends AbstractStrideLayout {
 
     private static final int C_DENSE = 1;
     private static final int F_DENSE = 2;
@@ -42,7 +42,7 @@ public class TensorStrideLayout extends AbstractStrideLayout {
     private final int[] strides;
     private int flags;
 
-    public TensorStrideLayout(Shape shape, int offset, int[] strides) {
+    public ArrayStrideLayout(Shape shape, int offset, int[] strides) {
         this.shape = shape;
         this.offset = offset;
         this.strides = strides;
@@ -300,7 +300,7 @@ public class TensorStrideLayout extends AbstractStrideLayout {
                 len++;
             }
         }
-        return new TensorStrideLayout(Shape.of(Arrays.copyOf(newDims, len)), offset, Arrays.copyOf(newStrides, len));
+        return new ArrayStrideLayout(Shape.of(Arrays.copyOf(newDims, len)), offset, Arrays.copyOf(newStrides, len));
     }
 
     @Override
@@ -476,7 +476,7 @@ public class TensorStrideLayout extends AbstractStrideLayout {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        TensorStrideLayout layout = (TensorStrideLayout) o;
+        ArrayStrideLayout layout = (ArrayStrideLayout) o;
         return offset == layout.offset && shape.equals(layout.shape) && Arrays.equals(strides, layout.strides);
     }
 

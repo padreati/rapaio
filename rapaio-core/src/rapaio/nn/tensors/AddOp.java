@@ -28,19 +28,14 @@ import rapaio.nn.Tensor;
 
 public final class AddOp extends Tensor {
 
-    private final Tensor left;
-    private final Tensor right;
-
     public AddOp(Tensor left, Tensor right) {
         super(left.tm(), "add");
-        this.left = left;
-        this.right = right;
 
         if (!Broadcast.elementWise(List.of(left.value().shape(), right.value().shape())).valid()) {
             throw new IllegalArgumentException("Nodes are not valid for elementwise broadcast.");
         }
         this.setValue(left.value().add(right.value()));
-        backEdge(left, () -> this.grad().reduceSum(left.value().shape()));
-        backEdge(right, () -> this.grad().reduceSum(right.value().shape()));
+        backEdge(left, () -> this.grad().sumTo(left.value().shape(), false));
+        backEdge(right, () -> this.grad().sumTo(right.value().shape(), false));
     }
 }

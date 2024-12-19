@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -1303,65 +1304,6 @@ public class DArrayTest {
 
     @ParameterizedTest
     @MethodSource("dataFactorySource")
-    <N extends Number> void testReduceSum(DataFactory<N> g) {
-        var t = g.seq(Shape.of(2, 3)).add_(1);
-
-        var e1 = t.strexp(0, 3).strexp(0, 2);
-        var r1 = e1.reduceSum(t.shape());
-        assertTensorEqualValues(t.mul(6), r1);
-
-        e1 = t.strexp(0, 3).strexp(0, 2).copy();
-        r1 = e1.reduceSum(t.shape());
-        assertTensorEqualValues(t.mul(6), r1);
-
-        t = g.seq(Shape.of(2, 1, 2)).add_(1);
-        e1 = t.expand(1, 2).strexp(0, 5);
-        r1 = e1.reduceSum(t.shape());
-        assertTensorEqualValues(t.mul(10), r1);
-
-        t = g.seq(Shape.of(2, 1, 2)).add_(1);
-        e1 = t.expand(1, 2).strexp(0, 5).copy();
-        r1 = e1.reduceSum(t.shape());
-        assertTensorEqualValues(t.mul(10), r1);
-
-        t = g.seq(Shape.of(5, 1, 2)).add_(1);
-        r1 = t.reduceSum(Shape.of());
-        assertEquals(t.sum(), r1.get());
-    }
-
-    @ParameterizedTest
-    @MethodSource("dataFactorySource")
-    <N extends Number> void testReduceMean(DataFactory<N> g) {
-        if (!g.dt().floatingPoint()) {
-            return;
-        }
-        var t = g.seq(Shape.of(2, 3)).add_(1);
-
-        var e1 = t.strexp(0, 3).strexp(0, 2);
-        var r1 = e1.reduceMean(t.shape());
-        assertTensorEqualValues(t, r1);
-
-        e1 = t.strexp(0, 3).strexp(0, 2).copy();
-        r1 = e1.reduceMean(t.shape());
-        assertTensorEqualValues(t, r1);
-
-        t = g.seq(Shape.of(2, 1, 2)).add_(1);
-        e1 = t.expand(1, 2).strexp(0, 5);
-        r1 = e1.reduceMean(t.shape());
-        assertTensorEqualValues(t, r1);
-
-        t = g.seq(Shape.of(2, 1, 2)).add_(1);
-        e1 = t.expand(1, 2).strexp(0, 5).copy();
-        r1 = e1.reduceMean(t.shape());
-        assertTensorEqualValues(t, r1);
-
-        t = g.seq(Shape.of(5, 1, 2)).add_(1);
-        r1 = t.reduceMean(Shape.of());
-        assertEquals(t.mean(), r1.get());
-    }
-
-    @ParameterizedTest
-    @MethodSource("dataFactorySource")
     <N extends Number> void testTrace(DataFactory<N> g) {
         var e = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(10)).trace());
         assertEquals("This operation is available only on matrix.", e.getMessage());
@@ -1785,12 +1727,12 @@ public class DArrayTest {
             return;
         }
         var t1 = g.seq(Shape.of(1, 10, 10));
-        assertEquals(t1.varc(0).doubleValue(), t1.var().doubleValue());
-        assertTensorEqualValues(t1.varc1d(0, 0), t1.var1d(0));
-        assertTensorEqualValues(t1.varc1d(1, 0), t1.var1d(1));
+        assertEquals(t1.var(0).doubleValue(), t1.var(0).doubleValue());
+        assertTensorEqualValues(t1.var1d(0, 0), t1.var1d(0, 0));
+        assertTensorEqualValues(t1.var1d(1, 0), t1.var1d(1, 0));
 
         double mean = t1.sum().doubleValue() / t1.size();
-        assertEquals(t1.sub(mean).sqr().sum().doubleValue() / t1.size(), t1.var().doubleValue());
+        assertEquals(t1.sub(mean).sqr().sum().doubleValue() / t1.size(), t1.var(0).doubleValue());
     }
 
     @ParameterizedTest
@@ -1826,7 +1768,7 @@ public class DArrayTest {
     @MethodSource("dataFactorySource")
     <N extends Number> void gatherScatterTest(DataFactory<N> g) {
 
-        List<Shape> shapes = List.of(Shape.of(4, 4), Shape.of(2), Shape.of(1, 3), Shape.of(1), Shape.of(4,2,4,3));
+        List<Shape> shapes = List.of(Shape.of(4, 4), Shape.of(2), Shape.of(1, 3), Shape.of(1), Shape.of(4, 2, 4, 3));
 
         for (Shape shape : shapes) {
             int minDim = Integer.MAX_VALUE;
@@ -1877,6 +1819,67 @@ public class DArrayTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void reduceOnTest(DataFactory<N> g) {
+
+        DArray<N> t1 = g.random(Shape.of(2, 3, 3, 2));
+        DArray<N> r1 = t1.sumOn(Shape.of(3, 2), false, Order.C);
+
+        List<DArray<N>> splits = t1.unbind(0, false);
+        splits = splits.stream().flatMap(s -> s.split(0, false).stream()).toList();
+
+        Iterator<N> valueIterator = r1.iterator();
+        for (DArray<N> split : splits) {
+            assertEquals(split.sum().doubleValue(), valueIterator.next().doubleValue(), 1e-10);
+        }
+
+        DArray<N> r2 = t1.sumOn(Shape.of(3, 2), true);
+        assertEquals(t1.rank(), r2.rank());
+        assertEquals(1, r2.dim(2));
+        assertEquals(1, r2.dim(3));
+
+        assertTensorEqualValues(r1, r2.squeeze(2, 3));
+
+        DArray<N> r3 = t1.sumOn(t1.shape(), false);
+        assertTrue(r3.isScalar());
+        assertEquals(t1.sum().doubleValue(), r3.sum().doubleValue(), 1e-10);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void reduceToTest(DataFactory<N> g) {
+
+        DArray<N> t1 = g.random(Shape.of(2, 3, 3, 2));
+        DArray<N> r1 = t1.sumTo(Shape.of(3, 2), false, Order.C);
+
+        assertEquals(Shape.of(3, 2), r1.shape());
+        List<DArray<N>> splits = t1.unbind(2, false);
+        splits = splits.stream().flatMap(s -> s.split(2, false).stream()).toList();
+
+        Iterator<N> valueIterator = r1.iterator();
+        for (DArray<N> split : splits) {
+            assertEquals(split.sum().doubleValue(), valueIterator.next().doubleValue(), 1e-10);
+        }
+
+        DArray<N> r2 = t1.sumTo(Shape.of(3, 2), true);
+        assertEquals(Shape.of(1, 1, 3, 2), r2.shape());
+        assertEquals(t1.rank(), r2.rank());
+        assertEquals(1, r2.dim(0));
+        assertEquals(1, r2.dim(1));
+
+        assertTensorEqualValues(r1, r2.squeeze(2, 3));
+
+        DArray<N> r3 = t1.sumTo(t1.shape(), false);
+        assertEquals(t1.shape(), r3.shape());
+
+        DArray<N> r4 = t1.sumTo(Shape.of(), false);
+        assertTrue(r4.isScalar());
+
+        DArray<N> r5 = t1.sumTo(Shape.of(3, 1, 2), false);
+        assertEquals(Shape.of(3, 1, 2), r5.shape());
+    }
+
     private <N extends Number> N sequenceSum(DataFactory<N> g, int len) {
         N sum = g.value(0);
         for (int i = 1; i < len; i++) {
@@ -1886,6 +1889,10 @@ public class DArrayTest {
     }
 
     private static void assertTensorEqualValues(DArray<?> t, DArray<?> f) {
+        assertTensorEqualValues(t, f, 1e-10);
+    }
+
+    private static void assertTensorEqualValues(DArray<?> t, DArray<?> f, double tol) {
         if (t.size() != f.size()) {
             throw new AssertionFailedError(String.format("Error at tensor: %s, flatten: %s", t, f));
         }
@@ -1894,7 +1901,7 @@ public class DArrayTest {
         int count = 0;
         while (itF.hasNext()) {
             try {
-                assertEquals(t.ptrGet(itT.nextInt()), f.ptrGet(itF.nextInt()));
+                assertEquals(t.ptrGet(itT.nextInt()).doubleValue(), f.ptrGet(itF.nextInt()).doubleValue(), tol);
             } catch (AssertionFailedError e) {
                 throw new AssertionFailedError(String.format("Error at tensor: %s, flatten: %s", t, f), e);
             }

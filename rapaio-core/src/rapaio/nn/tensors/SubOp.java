@@ -28,19 +28,14 @@ import rapaio.nn.Tensor;
 
 public class SubOp extends Tensor {
 
-    private final Tensor left;
-    private final Tensor right;
-
     public SubOp(Tensor left, Tensor right) {
         super(left.tm(), "sub");
-        this.left = left;
-        this.right = right;
 
         if (!Broadcast.elementWise(List.of(left.value().shape(), right.value().shape())).valid()) {
             throw new IllegalArgumentException("Nodes are not valid for elementwise broadcast.");
         }
         this.setValue(left.value().sub(right.value()));
-        backEdge(left, () -> this.grad().reduceSum(left.value().shape()));
-        backEdge(right, () -> this.grad().neg().reduceSum(right.value().shape()));
+        backEdge(left, () -> this.grad().sumTo(left.value().shape(), false));
+        backEdge(right, () -> this.grad().neg().sumTo(right.value().shape(), false));
     }
 }

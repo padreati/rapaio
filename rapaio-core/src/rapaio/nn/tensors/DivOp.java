@@ -28,19 +28,14 @@ import rapaio.nn.Tensor;
 
 public final class DivOp extends Tensor {
 
-    private final Tensor left;
-    private final Tensor right;
-
     public DivOp(Tensor left, Tensor right) {
         super(left.tm(), "div");
-        this.left = left;
-        this.right = right;
 
-        if(!Broadcast.elementWise(List.of(left.value().shape(), right.value().shape())).valid()) {
+        if (!Broadcast.elementWise(List.of(left.value().shape(), right.value().shape())).valid()) {
             throw new IllegalArgumentException("Nodes are not valid for elementwise broadcast.");
         }
         this.setValue(left.value().div(right.value()));
-        backEdge(left, () -> this.grad().div(right.value()).reduceSum(left.value().shape()));
-        backEdge(right, () -> this.grad().mul(left.value().neg().div(right.value().sqr())).reduceSum(right.value().shape()));
+        backEdge(left, () -> this.grad().div(right.value()).sumTo(left.value().shape(), false));
+        backEdge(right, () -> this.grad().mul(left.value().neg().div(right.value().sqr())).sumTo(right.value().shape(), false));
     }
 }

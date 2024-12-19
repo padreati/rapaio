@@ -32,7 +32,6 @@ import rapaio.darray.Layout;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.darray.Storage;
-import rapaio.darray.iterators.DensePointerIterator;
 import rapaio.darray.iterators.PointerIterator;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.iterators.StridePointerIterator;
@@ -257,13 +256,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
 
     @Override
     public final PointerIterator ptrIterator(Order askOrder) {
-        if (layout.isCOrdered() && askOrder != Order.F) {
-            return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(-1));
-        }
-        if (layout.isFOrdered() && askOrder != Order.C) {
-            return new DensePointerIterator(layout.shape(), layout.offset(), layout.stride(0));
-        }
-        return new StridePointerIterator(layout, askOrder);
+        return layout.ptrIterator(askOrder);
     }
 
     @SuppressWarnings("unchecked")

@@ -149,7 +149,7 @@ public class DivOpTest {
 
         graph = Autograd.backward(s3);
         assertTrue(a.grad().deepEquals(tm.scalarArray(1).div(c.value()).expand(1, 3).strexp(0, 3).strexp(0, 4)));
-        assertTrue(c.grad().deepEquals(tm.strideArray(Shape.of(4, 1), Double.NaN, -2520, -657, -304)));
+        assertTrue(c.grad().deepEquals(tm.strideArray(Shape.of(4, 1), Double.NaN, -2520, -657, -304), 1e-10));
         graph.resetGrad();
 
         Tensor s4 = c.div(a).sum();
@@ -157,7 +157,9 @@ public class DivOpTest {
 
         graph = Autograd.backward(s4);
         assertTrue(a.grad().deepEquals(c.value().neg().div(a.value().sqr())));
-        assertTrue(c.grad().deepEquals(tm.strideArray(Shape.of(4, 1), Double.POSITIVE_INFINITY,1.4347934880782072,1.0300564484939163,0.8531336948688647)));
+        assertTrue(c.grad()
+                .deepEquals(tm.strideArray(Shape.of(4, 1), Double.POSITIVE_INFINITY, 1.4347934880782072, 1.0300564484939163,
+                        0.8531336948688647), 1e-10));
         graph.resetGrad();
 
         Tensor d = tm.seqTensor(Shape.of(4));
