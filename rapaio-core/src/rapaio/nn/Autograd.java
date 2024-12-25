@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import rapaio.darray.DArray;
-import rapaio.darray.DType;
 
 /**
  * Central place of automatic differentiation in reverse mode.
@@ -37,25 +36,17 @@ import rapaio.darray.DType;
  * Object which allows differentiation must implement {@link Tensor}.
  * <p>
  * The forward operations are performed when the computation is called using various operations
- * on {@link Tensor} or when new node are created with {@link #var(DArray)} or {@link #var(DType)}.
+ * on {@link Tensor} or when new node are created with {@link TensorManager#var(DArray)}.
  * <p>
  * In order to compute gradients one has to call {@link #backward(Tensor)}. The methods can be called on nodes
  * or on loss functions {@link Loss}. In all cases the node on which {@code backward} method is called must
  * have a computed gradient and that has to be a scalar.
  * <p>
  * To maximize the performance not all the gradients are computed. The one which are computed are for
- * the variables which has {@link Tensor#requiresGrad()} equals with {@code true}, all on all the objects
- * in the upper computational graph to the root node (the node on which {@code backward} method was called.
+ * the variables which has {@link Tensor#requiresGrad()} equals with {@code true}, and on all the objects
+ * in the upper computational graph to the root node (the node on which {@code backward} method was called).
  */
 public final class Autograd {
-
-    public static ComputeGraph backward(Loss loss) {
-        return backward(loss, false);
-    }
-
-    public static ComputeGraph backward(Loss loss, boolean retainGrad) {
-        return backward(loss.tensor(), retainGrad);
-    }
 
     public static ComputeGraph backward(Tensor tensor) {
         return backward(tensor, false);
@@ -100,19 +91,19 @@ public final class Autograd {
 
         public void resetGrad() {
             reverse.forEach(Tensor::zeroGrad);
-            reverse.forEach(node -> node.backfuns().clear());
+            reverse.forEach(node -> node.backFunctions().clear());
         }
 
         public void run() {
             buildDeps();
             for (Tensor tensor : reverse) {
-                for (BackFun backFun : tensor.backfuns()) {
-                    if (computeGrad.contains(backFun.ref())) {
-                        backFun.ref().addGrad(backFun.fun().get());
+                for (Tensor.BackFunction backFunction : tensor.backFunctions()) {
+                    if (computeGrad.contains(backFunction.ref())) {
+                        backFunction.ref().addGrad(backFunction.fun().get());
                     }
                 }
                 if (!retainGrad) {
-                    tensor.backfuns().clear();
+                    tensor.backFunctions().clear();
                 }
             }
         }
@@ -126,7 +117,7 @@ public final class Autograd {
             HashMap<Tensor, List<Tensor>> parents = new HashMap<>();
             coverage.forEach(node -> parents.put(node, new ArrayList<>()));
             for (Tensor tensor : coverage) {
-                for (BackFun edge : tensor.backfuns()) {
+                for (Tensor.BackFunction edge : tensor.backFunctions()) {
                     parents.get(edge.ref()).add(tensor);
                 }
             }
@@ -147,7 +138,7 @@ public final class Autograd {
                 }
                 Tensor next = opNext.get();
                 frontier.remove(next);
-                for (BackFun bf : next.backfuns()) {
+                for (Tensor.BackFunction bf : next.backFunctions()) {
                     counters.put(bf.ref(), counters.get(bf.ref()) - 1);
                     frontier.add(bf.ref());
                 }
@@ -176,7 +167,7 @@ public final class Autograd {
                 return;
             }
             visited.add(tensor);
-            for (var edge : tensor.backfuns()) {
+            for (var edge : tensor.backFunctions()) {
                 coverage(visited, edge.ref());
             }
         }

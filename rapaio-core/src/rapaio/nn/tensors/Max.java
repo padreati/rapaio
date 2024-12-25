@@ -27,7 +27,7 @@ import rapaio.nn.Tensor;
 public class Max extends Tensor {
 
     public Max(Tensor x, double threshold) {
-        super(x.tm(), "max");
+        super(x.tm(), Max.class.getSimpleName());
 
         this.setValue(x.value().max(threshold));
         backEdge(x, () -> this.value().copy().compareMask_(Compare.GT, threshold).mul_(this.grad()));

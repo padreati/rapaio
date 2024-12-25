@@ -24,11 +24,11 @@ package rapaio.nn.layer;
 import java.util.List;
 
 import rapaio.darray.Shape;
-import rapaio.nn.NetState;
+import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
-public class BatchNorm1D extends AbstractNet {
+public class BatchNorm1D extends AbstractNetwork {
 
     public static final double DEFAULT_MOMENTUM = 0.1;
     public static final double DEFAULT_EPSILON = 1e-5;
@@ -66,8 +66,8 @@ public class BatchNorm1D extends AbstractNet {
     }
 
     @Override
-    public NetState state() {
-        NetState state = new NetState();
+    public NetworkState state() {
+        NetworkState state = new NetworkState();
         state.addTensors(List.of(sampleMean, sampleStd, gamma, beta));
         return state;
     }

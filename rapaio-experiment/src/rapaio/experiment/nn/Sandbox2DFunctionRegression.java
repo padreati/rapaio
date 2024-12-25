@@ -34,11 +34,11 @@ import rapaio.darray.Shape;
 import rapaio.data.VarDouble;
 import rapaio.nn.Autograd;
 import rapaio.nn.Loss;
-import rapaio.nn.Net;
+import rapaio.nn.Network;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
-import rapaio.nn.data.ArrayDataset;
+import rapaio.nn.data.TabularDataset;
 import rapaio.nn.layer.LayerNorm;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.ReLU;
@@ -63,11 +63,11 @@ public class Sandbox2DFunctionRegression {
         }
 
 
-        ArrayDataset[] split = new ArrayDataset(x, y).trainTestSplit(0.2);
-        ArrayDataset train = split[0];
-        ArrayDataset test = split[1];
+        TabularDataset[] split = new TabularDataset(tm, x, y).trainTestSplit(0.2);
+        TabularDataset train = split[0];
+        TabularDataset test = split[1];
 
-        Net nn = new Sequential(tm,
+        Network nn = new Sequential(tm,
 //                new BatchNorm1D(tm, 4),
                 new LayerNorm(tm, Shape.of(4)),
                 new Linear(tm, 4, 1_000, true),
@@ -80,17 +80,17 @@ public class Sandbox2DFunctionRegression {
 
 
         int EPOCHS = 40;
-        int BATCH_SIZE = 200;
+        int BATCH_SIZE = 100;
 
         Optimizer c = Optimizer.Adam(tm, nn.parameters())
-                .lr.set(1e-3)
+                .lr.set(4e-4)
                 .weightDecay.set(0.1)
                 .amsgrad.set(true);
 
         VarDouble trainLoss = VarDouble.empty().name("trainLoss");
         VarDouble testLoss = VarDouble.empty().name("testLoss");
 
-        Loss loss = new MSELoss();
+        Loss loss = new MSELoss(tm);
 
         long start = System.currentTimeMillis();
         for (int epoch = 1; epoch <= EPOCHS; epoch++) {
@@ -98,19 +98,19 @@ public class Sandbox2DFunctionRegression {
             nn.train();
             c.zeroGrad();
 
-            var batchOutput = nn.batchForward(BATCH_SIZE, train.tensor(tm, 0));
-            var batchLoss = batchOutput.applyLoss(loss, train.tensor(tm, 1));
+            var batchOut = nn.batchForward(BATCH_SIZE, true, false, train.tensor(0));
+            var lossOut = loss.batchForward(batchOut, train.tensor(1));
 
-            double trainLossValue = batchLoss.lossValue();
+            double trainLossValue = lossOut.lossValue();
             trainLoss.addDouble(trainLossValue);
 
-            Autograd.backward(batchLoss.tensor()).covered();
+            Autograd.backward(lossOut.tensor()).covered();
             c.step();
 
             nn.eval();
-            Tensor outputs = nn.forward11(tm.var(test.array(0)));
-            loss.forward(outputs, tm.var(test.array(1)));
-            double teLoss = loss.loss();
+            Tensor outputs = nn.forward11(tm.var(test.darray(0)));
+            lossOut = loss.forward(outputs, tm.var(test.darray(1)));
+            double teLoss = lossOut.lossValue();
             testLoss.addDouble(teLoss);
 
             if (epoch == 1 || epoch % 1 == 0) {

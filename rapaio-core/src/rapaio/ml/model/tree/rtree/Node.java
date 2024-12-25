@@ -31,7 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.ml.loss.Loss;
+import rapaio.ml.loss.LossFunction;
 import rapaio.ml.model.tree.RowPredicate;
 
 /**
@@ -64,9 +64,9 @@ public class Node implements Serializable {
         this.depth = depth;
     }
 
-    public void boostUpdate(Frame x, Var y, Var fx, Loss loss, Splitter splitter, Random random) {
+    public void boostUpdate(Frame x, Var y, Var fx, LossFunction lossFunction, Splitter splitter, Random random) {
         if (leaf) {
-            value = loss.additiveScalarMinimizer(y, fx);
+            value = lossFunction.additiveScalarMinimizer(y, fx);
             return;
         }
 
@@ -82,7 +82,7 @@ public class Node implements Serializable {
                     x.mapRows(mappings.get(i)),
                     y.mapRows(mappings.get(i)),
                     fx.mapRows(mappings.get(i)),
-                    loss, splitter, random);
+                    lossFunction, splitter, random);
         }
     }
 }

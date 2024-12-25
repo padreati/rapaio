@@ -25,25 +25,30 @@ import rapaio.core.param.Param;
 import rapaio.core.param.ValueParam;
 import rapaio.nn.Loss;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
 
 public class NegativeLogLikelihoodLoss extends AbstractLoss<NegativeLogLikelihoodLoss> {
 
     public final Param<Reduce, NegativeLogLikelihoodLoss> reduce = new ValueParam<>(this, Reduce.MEAN, "reduce operation");
 
-    @Override
-    public Loss newInstance() {
-        return new NegativeLogLikelihoodLoss();
+    public NegativeLogLikelihoodLoss(TensorManager tm) {
+        super(tm);
     }
 
     @Override
-    public void forward(Tensor pred, Tensor y) {
+    public Loss newInstance() {
+        return new NegativeLogLikelihoodLoss(tm);
+    }
+
+    @Override
+    public Output forward(Tensor pred, Tensor y) {
         // TODO: treat extra dimension with more care
         if (pred.value().isMatrix() && y.value().isVector()) {
             y.setValue(y.value().stretch(1));
         }
-        batch = y.value().dim(0);
         var sum = pred.log().neg().gather(1, y).sum();
-        last = reduce.get().equals(Reduce.MEAN) ? sum : sum.div(pred.value().size());
-        last.setGrad(pred.tm().scalarArray(1));
+        Tensor last = reduce.get().equals(Reduce.MEAN) ? sum : sum.div(pred.value().size());
+        last.setGrad(tm.scalarArray(1));
+        return new Output(last, last.value().getDouble());
     }
 }

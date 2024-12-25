@@ -171,7 +171,7 @@ public class BinaryLogisticNewtonTest {
         VarDouble y1 = VarDouble.from(100, row -> row > 50 ? 1. : 0);
 
         DArray<Double> x = SolidFrame.byVars(x1, x2).darray();
-        DArray<Double> y = y1.narray_();
+        DArray<Double> y = y1.darray_();
         DArray<Double> w0 = DArrays.stride(0, 0);
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> new BinaryLogisticNewton()
@@ -189,8 +189,8 @@ public class BinaryLogisticNewtonTest {
 
         DArray<Double> x = DArrays.zeros(Shape.of(2 * n, 2));
         x.sel(1, 0).fill_(1.);
-        x.sel(1, 1).squeeze(1).narrow(0, true, 0, n).add_(VarDouble.sample(Normal.of(0, 0.5), n).narray_());
-        x.sel(1, 1).squeeze(1).narrow(0, true, n, 2*n).add_(VarDouble.sample(Normal.of(1.5, 0.5), n).narray_());
+        x.sel(1, 1).squeeze(1).narrow(0, true, 0, n).add_(VarDouble.sample(Normal.of(0, 0.5), n).darray_());
+        x.sel(1, 1).squeeze(1).narrow(0, true, n, 2*n).add_(VarDouble.sample(Normal.of(1.5, 0.5), n).darray_());
 
         DArray<Double> y = DArrays.full(Shape.of(2 * n), 1.);
         y.narrow(0, true, n, 2 * n).fill_(0.);

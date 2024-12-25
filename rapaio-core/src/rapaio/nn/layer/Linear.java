@@ -26,11 +26,11 @@ import java.util.List;
 import rapaio.core.distributions.Uniform;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
-import rapaio.nn.NetState;
+import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
-public class Linear extends AbstractNet {
+public class Linear extends AbstractNetwork {
 
     private final int inFeatures;
     private final int outFeatures;
@@ -69,18 +69,18 @@ public class Linear extends AbstractNet {
     }
 
     @Override
-    public NetState state() {
-        NetState state = new NetState();
+    public NetworkState state() {
+        NetworkState state = new NetworkState();
         state.addTensors(bias ? List.of(w, b) : List.of(w));
         return state;
     }
 
     @Override
     public Tensor forward11(Tensor x) {
-        Tensor result = x.bvtm(w);
+        x = x.bvtm(w);
         if (bias) {
-            result = result.add(b);
+            x = x.add(b);
         }
-        return result;
+        return x;
     }
 }

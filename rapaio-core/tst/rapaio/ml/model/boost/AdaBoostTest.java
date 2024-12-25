@@ -23,9 +23,12 @@ package rapaio.ml.model.boost;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.util.Random;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.datasets.Datasets;
@@ -34,26 +37,41 @@ import rapaio.ml.model.tree.CTree;
 
 public class AdaBoostTest {
 
+    private Random random;
+
+    @BeforeEach
+    void beforeEach() {
+        random = new Random(42);
+    }
+
     @Test
     void buildTest() throws IOException {
 
+        int times = 10;
         var spam = Datasets.loadSpamBase();
-        var model = AdaBoost.newModel()
-                .model.set(CTree.newC45().minCount.set(4).maxDepth.set(5).varSelector.set(VarSelector.fixed(10)))
-                .runs.set(10);
 
-        String target = "spam";
-        model.fit(spam, target);
+        while (times-- > 0) {
 
-        assertEquals(10, model.getLearners().size());
-        assertEquals(10, model.getAlphas().size());
+            long seed = random.nextLong();
+            var model = AdaBoost.newModel()
+                    .model.set(CTree.newC45().minCount.set(4).maxDepth.set(5).varSelector.set(VarSelector.fixed(10)))
+                    .seed.set(seed)
+                    .runs.set(10);
 
-        assertEquals("AdaBoost{model=CTree,runs=10}; fitted=true, fitted trees=10", model.toString());
+            String target = "spam";
+            model.fit(spam, target);
 
-        var result = model.predict(spam, true, true);
+            assertTrue(model.getLearners().size() <= 10);
+            int treeCount = model.getLearners().size();
+            assertEquals(treeCount, model.getAlphas().size());
 
-        assertNotNull(result);
-        assertEquals(spam.rvar("spam").levels().size(), result.firstDensity().varCount());
+            assertEquals("AdaBoost{model=CTree,runs=10,seed=" + seed + "}; fitted=true, fitted trees=" + treeCount, model.toString());
+
+            var result = model.predict(spam, true, true);
+
+            assertNotNull(result);
+            assertEquals(spam.rvar("spam").levels().size(), result.firstDensity().varCount());
+        }
     }
 
     @Test

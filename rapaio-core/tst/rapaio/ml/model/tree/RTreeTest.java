@@ -48,7 +48,7 @@ import rapaio.datasets.Datasets;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.RMSE;
 import rapaio.ml.eval.metric.RegressionScore;
-import rapaio.ml.loss.L2Loss;
+import rapaio.ml.loss.L2LossFunction;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.tree.rtree.Search;
@@ -82,7 +82,7 @@ public class RTreeTest {
                 .test.add(VarType.DOUBLE, Search.Ignore)
                 .test.add(VarType.NOMINAL, Search.Ignore)
                 .test.add(VarType.STRING, Search.Ignore)
-                .loss.set(new L2Loss())
+                .loss.set(new L2LossFunction())
                 .splitter.set(Splitter.Ignore)
                 .varSelector.set(VarSelector.auto())
                 .runs.set(10)

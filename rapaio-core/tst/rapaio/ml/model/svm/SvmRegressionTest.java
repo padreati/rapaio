@@ -46,7 +46,7 @@ public class SvmRegressionTest {
         df = Datasets.loadISLAdvertising();
 
         xs = df.mapVars("TV,Radio").darray();
-        ys = df.rvar("Sales").narray_();
+        ys = df.rvar("Sales").darray_();
     }
 
     @Test

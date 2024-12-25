@@ -25,11 +25,11 @@ import java.util.List;
 
 import rapaio.darray.Shape;
 import rapaio.darray.operator.Broadcast;
-import rapaio.nn.NetState;
+import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
-public class LayerNorm extends AbstractNet {
+public class LayerNorm extends AbstractNetwork {
 
     private final Shape shape;
     private final Tensor gamma;
@@ -55,8 +55,8 @@ public class LayerNorm extends AbstractNet {
     }
 
     @Override
-    public NetState state() {
-        NetState state = new NetState();
+    public NetworkState state() {
+        NetworkState state = new NetworkState();
         state.add(gamma);
         state.add(beta);
         return state;

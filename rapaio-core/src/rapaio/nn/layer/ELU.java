@@ -24,11 +24,11 @@ package rapaio.nn.layer;
 import java.util.List;
 
 import rapaio.darray.Compare;
-import rapaio.nn.NetState;
+import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
-public class ELU extends AbstractNet {
+public class ELU extends AbstractNetwork {
 
     public static final double DEFAULT_ALPHA = 1;
 
@@ -49,8 +49,8 @@ public class ELU extends AbstractNet {
     }
 
     @Override
-    public NetState state() {
-        return new NetState();
+    public NetworkState state() {
+        return new NetworkState();
     }
 
     @Override

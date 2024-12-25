@@ -22,6 +22,10 @@
 package rapaio.nn;
 
 
+import java.util.List;
+
+import rapaio.nn.data.Batch;
+
 public interface Loss {
 
     enum Reduce {
@@ -29,13 +33,18 @@ public interface Loss {
         SUM
     }
 
+    TensorManager tm();
+
     Loss newInstance();
 
-    void forward(Tensor pred, Tensor y);
+    Output forward(Tensor pred, Tensor y);
 
-    void backward();
+    Output batchForward(List<Batch> batches, Tensor trueValues);
 
-    double loss();
+    record Output(Tensor tensor, double lossValue) {
 
-    Tensor tensor();
+        public void backward() {
+            Autograd.backward(tensor);
+        }
+    }
 }

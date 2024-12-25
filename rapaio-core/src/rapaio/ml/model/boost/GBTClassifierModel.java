@@ -37,8 +37,8 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.loss.KDevianceLoss;
-import rapaio.ml.loss.L2Loss;
+import rapaio.ml.loss.KDevianceLossFunction;
+import rapaio.ml.loss.L2LossFunction;
 import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.ClassifierResult;
 import rapaio.ml.model.RegressionModel;
@@ -73,7 +73,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
      * Weak tree model
      */
     public final ValueParam<RTree, GBTClassifierModel> model = new ValueParam<>(this,
-            RTree.newCART().maxDepth.set(2).minCount.set(5).loss.set(new L2Loss()), "model");
+            RTree.newCART().maxDepth.set(2).minCount.set(5).loss.set(new L2LossFunction()), "model");
 
     private int K;
     private DArray<Double> f;
@@ -164,7 +164,7 @@ public class GBTClassifierModel extends ClassifierModel<GBTClassifierModel, Clas
 
             var tree = model.get().newInstance();
             tree.fit(sample.df().bindVars(residual_k), sample.weights(), "##tt##");
-            tree.boostUpdate(df, yk.selsq(0, k).dv(), p.selsq(0, k).dv(), new KDevianceLoss(K));
+            tree.boostUpdate(df, yk.selsq(0, k).dv(), p.selsq(0, k).dv(), new KDevianceLossFunction(K));
 
             trees.get(k).add(tree);
 

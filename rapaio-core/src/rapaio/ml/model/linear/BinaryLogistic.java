@@ -198,7 +198,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
             case BINARY -> {
                 positiveLabel = "1";
                 negativeLabel = "0";
-                return target.narray_();
+                return target.darray_();
             }
             case NOMINAL -> {
                 var result = DArrays.zeros(Shape.of(target.size()));
@@ -244,7 +244,7 @@ public class BinaryLogistic extends ClassifierModel<BinaryLogistic, ClassifierRe
 
         var p = DArrays.full(Shape.of(df.rowCount()), hasIntercept ? intercept.get() * w.getDouble(0) : 0);
         for (int i = 0; i < inputNames.length; i++) {
-            p.fma_(w.getDouble(i + offset), df.rvar(inputName(i)).narray_());
+            p.fma_(w.getDouble(i + offset), df.rvar(inputName(i)).darray_());
         }
         p.apply_(MathTools::logistic);
 

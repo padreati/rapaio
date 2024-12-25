@@ -23,11 +23,11 @@ package rapaio.nn.layer;
 
 import java.util.List;
 
-import rapaio.nn.NetState;
+import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
-public class Dropout extends AbstractNet {
+public class Dropout extends AbstractNetwork {
 
     private final double p;
     private final boolean inplace;
@@ -48,8 +48,8 @@ public class Dropout extends AbstractNet {
     }
 
     @Override
-    public NetState state() {
-        return new NetState();
+    public NetworkState state() {
+        return new NetworkState();
     }
 
     @Override

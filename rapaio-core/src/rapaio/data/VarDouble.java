@@ -587,17 +587,17 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    public DArray<Double> narray_() {
+    public DArray<Double> darray_() {
         return DArrays.stride(Shape.of(rows), Order.C, data);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <N extends Number> DArray<N> narray_(DType<N> dtype) {
+    public <N extends Number> DArray<N> darray_(DType<N> dtype) {
         if (dtype == DType.DOUBLE) {
             return (DArray<N>) DArrays.stride(Shape.of(rows), Order.C, data);
         }
-        return super.narray_(dtype);
+        return super.darray_(dtype);
     }
 
     @Serial

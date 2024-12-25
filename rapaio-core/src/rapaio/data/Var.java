@@ -399,12 +399,12 @@ public interface Var extends Serializable, Printable {
      */
     Var copy();
 
-    default DArray<Double> narray_() {
-        return narray_(DType.DOUBLE);
+    default DArray<Double> darray_() {
+        return darray_(DType.DOUBLE);
     }
 
     @SuppressWarnings("unchecked")
-    default <N extends Number> DArray<N> narray_(DType<N> dtype) {
+    default <N extends Number> DArray<N> darray_(DType<N> dtype) {
         return (DArray<N>) switch (dtype.id()) {
             case DOUBLE -> DArrayManager.base().stride(DType.DOUBLE, Shape.of(size()), Order.C, new VarDoubleStorage(this));
             case FLOAT -> DArrayManager.base().stride(DType.FLOAT, Shape.of(size()), Order.C, new VarFloatStorage(this));

@@ -33,6 +33,7 @@ import rapaio.darray.DArrayManager;
 import rapaio.darray.DType;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
+import rapaio.nn.tensors.Variable;
 
 public final class TensorManager implements Closeable {
 

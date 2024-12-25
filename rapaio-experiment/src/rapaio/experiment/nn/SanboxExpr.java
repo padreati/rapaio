@@ -23,7 +23,7 @@ package rapaio.experiment.nn;
 
 import rapaio.darray.Shape;
 import rapaio.nn.Autograd;
-import rapaio.nn.Net;
+import rapaio.nn.Network;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 import rapaio.nn.layer.ELU;
@@ -34,7 +34,7 @@ public class SanboxExpr {
 
         try (TensorManager tm = TensorManager.ofFloat()) {
             Tensor x = tm.var(tm.seqArray(Shape.of(167)).mul_(0.12).sub_(10)).requiresGrad(true).name("x");
-            Net elu = new ELU(tm);
+            Network elu = new ELU(tm);
             Tensor el = elu.forward11(x);
             Tensor exp = el.exp();
             Tensor sum = exp.sum();

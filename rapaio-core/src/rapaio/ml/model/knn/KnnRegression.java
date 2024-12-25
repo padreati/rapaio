@@ -128,7 +128,7 @@ public class KnnRegression extends RegressionModel<KnnRegression, RegressionResu
         for (int i = 0; i < df.rowCount(); i++) {
             instances[i] = buildInstance(df, i);
         }
-        this.target = df.rvar(targetNames[0]).narray_();
+        this.target = df.rvar(targetNames[0]).darray_();
         return true;
     }
 

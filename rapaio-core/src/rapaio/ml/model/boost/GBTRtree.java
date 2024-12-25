@@ -23,7 +23,7 @@ package rapaio.ml.model.boost;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.ml.loss.Loss;
+import rapaio.ml.loss.LossFunction;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
@@ -33,5 +33,5 @@ import rapaio.ml.model.RunInfo;
  */
 public abstract class GBTRtree<M extends RegressionModel<M, R, H>, R extends RegressionResult, H extends RunInfo<M>> extends RegressionModel<M, R, H> {
 
-    public abstract void boostUpdate(Frame x, Var y, Var fx, Loss lossFunction);
+    public abstract void boostUpdate(Frame x, Var y, Var fx, LossFunction lossFunction);
 }

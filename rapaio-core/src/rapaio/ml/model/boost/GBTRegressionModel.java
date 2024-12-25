@@ -35,8 +35,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.loss.L2Loss;
-import rapaio.ml.loss.Loss;
+import rapaio.ml.loss.L2LossFunction;
+import rapaio.ml.loss.LossFunction;
 import rapaio.ml.model.RegressionModel;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
@@ -68,7 +68,7 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
     /**
      * Loss function used
      */
-    public final ValueParam<Loss, GBTRegressionModel> loss = new ValueParam<>(this, new L2Loss(), "loss", Objects::nonNull);
+    public final ValueParam<LossFunction, GBTRegressionModel> loss = new ValueParam<>(this, new L2LossFunction(), "loss", Objects::nonNull);
 
     /**
      * First starting model
@@ -151,7 +151,7 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
 
             // add next prediction to the predict values
             var pred = tree.predict(df, false).firstPrediction();
-            VarDouble nextFit = fitValues.darray().fma_(shrinkage.get(), pred.narray_()).dv();
+            VarDouble nextFit = fitValues.darray().fma_(shrinkage.get(), pred.darray_()).dv();
 
             double initScore = loss.get().errorScore(y, fitValues);
             double nextScore = loss.get().errorScore(y, nextFit);
@@ -173,12 +173,12 @@ public class GBTRegressionModel extends RegressionModel<GBTRegressionModel, Regr
     @Override
     protected RegressionResult corePredict(final Frame df, final boolean withResiduals, double[] quantiles) {
         RegressionResult result = RegressionResult.build(this, df, withResiduals, quantiles);
-        var prediction = result.firstPrediction().narray_();
+        var prediction = result.firstPrediction().darray_();
 
         prediction.apply_(v -> 0.0);
-        prediction.add_(initModel.get().predict(df, false).firstPrediction().narray_());
+        prediction.add_(initModel.get().predict(df, false).firstPrediction().darray_());
         for (var tree : trees) {
-            prediction.fma_(shrinkage.get(), tree.predict(df, false).firstPrediction().narray_());
+            prediction.fma_(shrinkage.get(), tree.predict(df, false).firstPrediction().darray_());
         }
         result.buildComplete();
         return result;

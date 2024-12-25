@@ -23,11 +23,11 @@ package rapaio.nn.layer;
 
 import java.util.List;
 
-import rapaio.nn.NetState;
+import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
-public class ReLU extends AbstractNet {
+public class ReLU extends AbstractNetwork {
 
     public ReLU(TensorManager tm) {
         super(tm);
@@ -39,8 +39,8 @@ public class ReLU extends AbstractNet {
     }
 
     @Override
-    public NetState state() {
-        return new NetState();
+    public NetworkState state() {
+        return new NetworkState();
     }
 
     @Override

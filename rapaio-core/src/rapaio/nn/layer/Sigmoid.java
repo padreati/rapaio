@@ -23,11 +23,11 @@ package rapaio.nn.layer;
 
 import java.util.List;
 
-import rapaio.nn.NetState;
+import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
-public class Sigmoid extends AbstractNet {
+public class Sigmoid extends AbstractNetwork {
 
     public Sigmoid(TensorManager tm) {
         super(tm);
@@ -39,8 +39,8 @@ public class Sigmoid extends AbstractNet {
     }
 
     @Override
-    public NetState state() {
-        return new NetState();
+    public NetworkState state() {
+        return new NetworkState();
     }
 
     @Override

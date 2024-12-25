@@ -24,34 +24,34 @@ package rapaio.nn.layer;
 import java.util.ArrayList;
 import java.util.List;
 
-import rapaio.nn.Net;
-import rapaio.nn.NetState;
+import rapaio.nn.Network;
+import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
-public class Sequential extends AbstractNet {
+public class Sequential extends AbstractNetwork {
 
-    private final List<Net> nets;
+    private final List<Network> networks;
 
-    public Sequential(TensorManager tm, Net... nets) {
+    public Sequential(TensorManager tm, Network... networks) {
         super(tm);
-        this.nets = new ArrayList<>(List.of(nets));
+        this.networks = new ArrayList<>(List.of(networks));
     }
 
     @Override
     public List<Tensor> parameters() {
-        return nets.stream().flatMap(module -> module.parameters().stream()).toList();
+        return networks.stream().flatMap(module -> module.parameters().stream()).toList();
     }
 
-    public List<Net> sequence() {
-        return nets;
+    public List<Network> sequence() {
+        return networks;
     }
 
     @Override
-    public NetState state() {
-        NetState state = new NetState();
-        for (Net net : nets) {
-            state.merge(net.state());
+    public NetworkState state() {
+        NetworkState state = new NetworkState();
+        for (Network network : networks) {
+            state.merge(network.state());
         }
         return state;
     }
@@ -59,30 +59,30 @@ public class Sequential extends AbstractNet {
     @Override
     public void train() {
         super.train();
-        for (Net net : nets) {
-            net.train();
+        for (Network network : networks) {
+            network.train();
         }
     }
 
     @Override
     public void eval() {
         super.eval();
-        for (Net net : nets) {
-            net.eval();
+        for (Network network : networks) {
+            network.eval();
         }
     }
 
     @Override
     public Tensor[] forward(Tensor... inputs) {
-        if (nets == null || nets.isEmpty()) {
+        if (networks == null || networks.isEmpty()) {
             return null;
         }
         Tensor[] outputs = null;
-        for (Net net : nets) {
+        for (Network network : networks) {
             if (outputs == null) {
-                outputs = net.forward(inputs);
+                outputs = network.forward(inputs);
             } else {
-                outputs = net.forward(outputs);
+                outputs = network.forward(outputs);
             }
         }
         return outputs;

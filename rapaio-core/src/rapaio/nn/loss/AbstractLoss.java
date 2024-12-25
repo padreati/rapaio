@@ -21,26 +21,42 @@
 
 package rapaio.nn.loss;
 
+import java.util.List;
+
 import rapaio.core.param.ParamSet;
-import rapaio.nn.Autograd;
 import rapaio.nn.Loss;
 import rapaio.nn.Tensor;
+import rapaio.nn.TensorManager;
+import rapaio.nn.data.Batch;
 
 public abstract class AbstractLoss<L extends AbstractLoss<L>> extends ParamSet<L> implements Loss {
 
-    protected int batch;
+    protected final TensorManager tm;
     protected String name;
-    protected Tensor last;
 
-    public final void backward() {
-        Autograd.backward(this);
+    public AbstractLoss(TensorManager tm) {
+        this.tm = tm;
     }
 
-    public final double loss() {
-        return last.value().getDouble();
+    @Override
+    public TensorManager tm() {
+        return tm;
     }
 
-    public Tensor tensor() {
-        return last;
+    @Override
+    public Loss.Output batchForward(List<Batch> batches, Tensor trueValues) {
+        Tensor lossTensor = null;
+        double lossValue = 0;
+
+        for (Batch batch : batches) {
+            Loss loss = this.newInstance();
+            Tensor batchPredValues = batch.outputs()[0];
+            Tensor batchTrueValues = tm.var(trueValues.value().sel(0, batch.indices()));
+            Loss.Output lossOut = loss.forward(batchPredValues, batchTrueValues);
+            lossTensor = lossTensor == null ? lossOut.tensor() : lossTensor.add(lossOut.tensor());
+            lossValue += lossOut.lossValue();
+        }
+        lossTensor.setGrad(tm.scalarTensor(1).value());
+        return new Loss.Output(lossTensor, lossValue / batches.size());
     }
 }

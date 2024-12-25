@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.ml.loss.L2Loss;
+import rapaio.ml.loss.L2LossFunction;
 import rapaio.ml.model.tree.RTree;
 import rapaio.ml.model.tree.rtree.Splitter;
 
@@ -52,7 +52,7 @@ public class GBTRegressionResultTest {
     void smokeTest() {
 
         Var err = VarDouble.empty();
-        var loss = new L2Loss();
+        var loss = new L2LossFunction();
         var advertise = Datasets.loadISLAdvertising().removeVars("ID");
         var model = GBTRegressionModel.newModel()
                 .runs.set(500)

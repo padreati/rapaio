@@ -1,4 +1,4 @@
-module rapaio.experiment {
+open module rapaio.experiment {
 
     requires java.logging;
     requires java.sql;

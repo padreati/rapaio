@@ -23,11 +23,11 @@ package rapaio.nn.layer;
 
 import java.util.List;
 
-import rapaio.nn.NetState;
+import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 
-public class LogSoftmax extends AbstractNet {
+public class LogSoftmax extends AbstractNetwork {
 
     private final int dim;
 
@@ -42,8 +42,8 @@ public class LogSoftmax extends AbstractNet {
     }
 
     @Override
-    public NetState state() {
-        return new NetState();
+    public NetworkState state() {
+        return new NetworkState();
     }
 
     @Override

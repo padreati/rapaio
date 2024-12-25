@@ -72,7 +72,7 @@ public class RegressionResultEvaluationTest {
                 .seed.set(123L);
 
         Var target = df.rvar(TARGET_NAME);
-        double mean = target.narray_().nanMean();
+        double mean = target.darray_().nanMean();
         double count = target.size();
 
         double expectedScore = Math.sqrt(target.darray().sub_(mean).sqr_().nanSum() / count);

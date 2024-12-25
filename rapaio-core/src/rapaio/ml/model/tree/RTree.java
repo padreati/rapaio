@@ -45,8 +45,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.loss.L2Loss;
-import rapaio.ml.loss.Loss;
+import rapaio.ml.loss.L2LossFunction;
+import rapaio.ml.loss.LossFunction;
 import rapaio.ml.model.RegressionResult;
 import rapaio.ml.model.RunInfo;
 import rapaio.ml.model.boost.GBTRtree;
@@ -140,7 +140,7 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
     /**
      * Loss function
      */
-    public final ValueParam<RTreeLoss, RTree> loss = new ValueParam<>(this, new L2Loss(), "loss", Objects::nonNull);
+    public final ValueParam<RTreeLossFunction, RTree> loss = new ValueParam<>(this, new L2LossFunction(), "loss", Objects::nonNull);
 
     /**
      * Variable selection method used to obtain test variables at each node
@@ -361,7 +361,7 @@ public class RTree extends GBTRtree<RTree, RegressionResult, RunInfo<RTree>> {
      * @param fx           current fitted function
      * @param lossFunction loss function used to compute additive gradient
      */
-    public void boostUpdate(Frame x, Var y, Var fx, Loss lossFunction) {
+    public void boostUpdate(Frame x, Var y, Var fx, LossFunction lossFunction) {
         root.boostUpdate(x, y, fx, lossFunction, splitter.get(), getRandom());
     }
 }

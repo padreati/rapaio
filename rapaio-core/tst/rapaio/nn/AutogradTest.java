@@ -196,15 +196,15 @@ public class AutogradTest {
         assertNotNull(g.grad());
         assertNotNull(h.grad());
 
-        assertEquals(0, a.backfuns().size());
-        assertEquals(2, b.backfuns().size());
-        assertEquals(1, c.backfuns().size());
-        assertEquals(1, d.backfuns().size());
-        assertEquals(2, e1.backfuns().size());
-        assertEquals(2, e2.backfuns().size());
-        assertEquals(0, f.backfuns().size());
-        assertEquals(2, g.backfuns().size());
-        assertEquals(2, h.backfuns().size());
+        assertEquals(0, a.backFunctions().size());
+        assertEquals(2, b.backFunctions().size());
+        assertEquals(1, c.backFunctions().size());
+        assertEquals(1, d.backFunctions().size());
+        assertEquals(2, e1.backFunctions().size());
+        assertEquals(2, e2.backFunctions().size());
+        assertEquals(0, f.backFunctions().size());
+        assertEquals(2, g.backFunctions().size());
+        assertEquals(2, h.backFunctions().size());
     }
 
     @Test
@@ -237,15 +237,15 @@ public class AutogradTest {
         assertNotNull(g.grad());
         assertNotNull(h.grad());
 
-        assertEquals(0, a.backfuns().size());
-        assertEquals(0, b.backfuns().size());
-        assertEquals(0, c.backfuns().size());
-        assertEquals(0, d.backfuns().size());
-        assertEquals(0, e1.backfuns().size());
-        assertEquals(0, e2.backfuns().size());
-        assertEquals(0, f.backfuns().size());
-        assertEquals(0, g.backfuns().size());
-        assertEquals(0, h.backfuns().size());
+        assertEquals(0, a.backFunctions().size());
+        assertEquals(0, b.backFunctions().size());
+        assertEquals(0, c.backFunctions().size());
+        assertEquals(0, d.backFunctions().size());
+        assertEquals(0, e1.backFunctions().size());
+        assertEquals(0, e2.backFunctions().size());
+        assertEquals(0, f.backFunctions().size());
+        assertEquals(0, g.backFunctions().size());
+        assertEquals(0, h.backFunctions().size());
     }
 
     private void testBefore(List<Tensor> sorted, String after, String before) {

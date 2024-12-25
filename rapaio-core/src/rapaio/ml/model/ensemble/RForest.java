@@ -144,10 +144,10 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
         List<VarDouble> results = regressions
                 .parallelStream()
                 .map(r -> r.predict(df, false).firstPrediction()).toList();
-        var pred = fit.firstPrediction().narray_();
+        var pred = fit.firstPrediction().darray_();
         pred.fill_(0.0);
         for (VarDouble result : results) {
-            pred.add_(result.narray_());
+            pred.add_(result.darray_());
         }
         pred.div_((double) regressions.size());
         if (withResiduals) {
