@@ -566,7 +566,8 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
 
         DArray<Byte> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
         if (!res.shape().equals(mean.shape())) {
-            throw new IllegalArgumentException("Mean array must have the same shape as the result array.");
+            throw new IllegalArgumentException(String.format(
+                    "Mean array %s must have the same shape as the result array %s.", mean.shape(), res.shape()));
         }
 
         var resIt = res.ptrIterator(Order.C);

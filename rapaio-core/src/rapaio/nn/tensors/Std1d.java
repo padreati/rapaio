@@ -30,10 +30,10 @@ public final class Std1d extends Tensor {
 
         double dof = x.dim(axis) - ddof;
         var mu = mean != null ? mean : x.mean1d(axis);
-        var centered = x.value().sub(mu.value());
+        var centered = x.value().sub(mu.value().stretch(axis));
         var std = x.value().var1d(axis, ddof, mu.value()).add_(epsilon).sqrt_();
         this.setValue(std);
-        backEdge(x, () -> this.grad().mul(centered.div(std).div_(dof)));
-        backEdge(mu, () -> tm.zerosTensor(mu.shape()).value());
+        backEdge(x, () -> this.grad().stretch(axis).mul(centered.div(std.stretch(axis)).div_(dof)));
+        backEdge(mu, () -> tm.zerosArray(mu.shape()));
     }
 }

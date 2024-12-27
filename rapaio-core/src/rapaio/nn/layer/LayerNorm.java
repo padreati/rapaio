@@ -69,10 +69,7 @@ public class LayerNorm extends AbstractNetwork {
             throw new IllegalArgumentException(String.format(
                     "Input shape %s does not match target shape %s.", x.shape(), this.shape));
         }
-        Tensor mean = x.meanOn(shape);
-        Tensor std = x.stdOn(shape, 0, eps, mean);
-
-        var s = x.sub(mean).div(std);
+        var s = x.standardizeOn(shape, 0, eps);
         return s.mul(gamma).add(beta);
     }
 }

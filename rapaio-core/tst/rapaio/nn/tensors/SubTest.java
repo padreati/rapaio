@@ -108,7 +108,7 @@ public class SubTest extends AbstractTensorTest {
 
         graph = Autograd.backward(s3);
         assertTrue(a.grad().deepEquals(tm.fullArray(a.shape(), 1)));
-        assertTrue(c.grad().deepEquals(tm.fullArray(c.shape(), -a.size() / c.size())));
+        assertTrue(c.grad().deepEquals(tm.fullArray(c.shape(), -Math.floorDiv(a.size(), c.size()))));
         graph.resetGrad();
 
         Tensor s4 = c.sub(a).sum();
@@ -116,12 +116,12 @@ public class SubTest extends AbstractTensorTest {
 
         graph = Autograd.backward(s4);
         assertTrue(a.grad().deepEquals(tm.fullArray(a.shape(), -1)));
-        assertTrue(c.grad().deepEquals(tm.fullArray(c.shape(), a.size() / c.size())));
+        assertTrue(c.grad().deepEquals(tm.fullArray(c.shape(), Math.floorDiv(a.size(), c.size()))));
         graph.resetGrad();
 
         Tensor d = tm.seqTensor(Shape.of(4));
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> d.sub(a));
-        assertEquals("Nodes are not valid for elementwise broadcast.", ex.getMessage());
+        assertEquals("Nodes are not valid for elementwise broadcast. Left shape: Shape: [4], right shape: Shape: [4,3]", ex.getMessage());
     }
 
     @ParameterizedTest
@@ -152,7 +152,7 @@ public class SubTest extends AbstractTensorTest {
 
         graph = Autograd.backward(s3);
         assertTrue(a.grad().deepEquals(tm.fullArray(a.shape(), 1)));
-        assertTrue(c.grad().deepEquals(tm.fullArray(c.shape(), -a.size() / c.size())));
+        assertTrue(c.grad().deepEquals(tm.fullArray(c.shape(), -Math.floorDiv(a.size(), c.size()))));
         graph.resetGrad();
 
         Tensor s4 = c.sub(a).sum();
@@ -160,11 +160,11 @@ public class SubTest extends AbstractTensorTest {
 
         graph = Autograd.backward(s4);
         assertTrue(a.grad().deepEquals(tm.fullArray(a.shape(), -1)));
-        assertTrue(c.grad().deepEquals(tm.fullArray(c.shape(), a.size() / c.size())));
+        assertTrue(c.grad().deepEquals(tm.fullArray(c.shape(), Math.floorDiv(a.size(), c.size()))));
         graph.resetGrad();
 
         Tensor d = tm.seqTensor(Shape.of(4));
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> d.sub(a));
-        assertEquals("Nodes are not valid for elementwise broadcast.", ex.getMessage());
+        assertEquals("Nodes are not valid for elementwise broadcast. Left shape: Shape: [4], right shape: Shape: [4,3,4,3]", ex.getMessage());
     }
 }

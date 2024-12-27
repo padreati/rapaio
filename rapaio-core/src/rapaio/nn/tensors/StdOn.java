@@ -34,7 +34,7 @@ public class StdOn extends Tensor {
         var centered = x.value().sub(mu.value());
         var std = x.value().varOn(shape, ddof, true, mu.value()).add_(epsilon).sqrt_();
         this.setValue(std);
-        backEdge(x, () -> this.grad().mul(centered.div(std).div_(dof)));
+        backEdge(x, () -> this.grad().mul(centered.div(std).div_(shape.size())));
         backEdge(mu, () -> tm.zerosTensor(mu.shape()).value());
     }
 }

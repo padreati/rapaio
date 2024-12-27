@@ -49,8 +49,11 @@ import rapaio.nn.tensors.Sigmoid;
 import rapaio.nn.tensors.Softmax;
 import rapaio.nn.tensors.Sqr;
 import rapaio.nn.tensors.Sqrt;
+import rapaio.nn.tensors.Standardize1d;
+import rapaio.nn.tensors.StandardizeOn;
 import rapaio.nn.tensors.Std1d;
 import rapaio.nn.tensors.StdOn;
+import rapaio.nn.tensors.Stretch;
 import rapaio.nn.tensors.Sub;
 import rapaio.nn.tensors.Sum;
 import rapaio.nn.tensors.Sum1d;
@@ -239,6 +242,14 @@ public abstract class Tensor {
         return new StdOn(this, shape, ddof, epsilon, mean);
     }
 
+    public final Standardize1d standardize1d(int axis, int ddof, double eps) {
+        return new Standardize1d(this, axis, ddof, eps);
+    }
+
+    public final StandardizeOn standardizeOn(Shape shape, int ddof, double eps) {
+        return new StandardizeOn(this, shape, ddof, eps);
+    }
+
     public final Sqr sqr() {
         return new Sqr(this);
     }
@@ -305,5 +316,9 @@ public abstract class Tensor {
 
     public final Gather gather(int axis, Tensor index) {
         return new Gather(this, axis, index);
+    }
+
+    public final Stretch stretch(int axis) {
+        return new Stretch(this, axis);
     }
 }

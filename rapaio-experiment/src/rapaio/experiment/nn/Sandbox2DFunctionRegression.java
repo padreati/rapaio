@@ -71,7 +71,7 @@ public class Sandbox2DFunctionRegression {
 //                new BatchNorm1D(tm, 4),
                 new LayerNorm(tm, Shape.of(4)),
                 new Linear(tm, 4, 1_000, true),
-                new ReLU(tm),
+//                new ReLU(tm),
 //                new BatchNorm1D(tm, 1_000),
                 new LayerNorm(tm, Shape.of(1_000)),
                 new Linear(tm, 1_000, 1, true),
@@ -83,7 +83,7 @@ public class Sandbox2DFunctionRegression {
         int BATCH_SIZE = 100;
 
         Optimizer c = Optimizer.Adam(tm, nn.parameters())
-                .lr.set(4e-4)
+                .lr.set(1e-3)
                 .weightDecay.set(0.1)
                 .amsgrad.set(true);
 

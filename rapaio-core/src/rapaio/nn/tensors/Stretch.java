@@ -21,23 +21,14 @@
 
 package rapaio.nn.tensors;
 
-import java.util.List;
-
-import rapaio.darray.operator.Broadcast;
 import rapaio.nn.Tensor;
 
-public class Sub extends Tensor {
+public class Stretch extends Tensor {
 
-    public Sub(Tensor left, Tensor right) {
-        super(left.tm(), Sub.class.getSimpleName());
+    public Stretch(Tensor x, int axis) {
+        super(x.tm(), Stretch.class.getSimpleName());
 
-        if (!Broadcast.elementWise(List.of(left.value().shape(), right.value().shape())).valid()) {
-            throw new IllegalArgumentException(
-                    String.format("Nodes are not valid for elementwise broadcast. Left shape: %s, right shape: %s",
-                            left.shape(), right.shape()));
-        }
-        this.setValue(left.value().sub(right.value()));
-        backEdge(left, () -> this.grad().sumTo(left.value().shape(), false));
-        backEdge(right, () -> this.grad().neg().sumTo(right.value().shape(), false));
+        this.setValue(x.value().stretch(axis));
+        backEdge(x, () -> this.grad.squeeze(axis));
     }
 }
