@@ -104,6 +104,21 @@ public interface Network extends Serializable {
      */
     void eval();
 
+    /**
+     * Performs network inference by taking an array of input tensors and computing an array of output tensors.
+     * Usually a network takes a single input and produces a single output. For this purpose the default
+     * implementation delegates to {@link #forward11(Tensor)}.
+     * <p>
+     * If the default scenario is not in the purpose of the network, this method needs to be implemented.
+     * <p>
+     * The forward method contains operations on tensors. All operations on tensors are tracked by the
+     * computational graph since each tensor operation leaves a trace which consists of backpropagation
+     * functions. When {@link Autograd#backward(Tensor)} method is called on some tensor which has
+     * a scalar gradient, the computational graph starts to back propagate gradients.
+     *
+     * @param xs input tensors
+     * @return computed output tensors
+     */
     default Tensor[] forward(Tensor... xs) {
         if (xs.length == 1) {
             return new Tensor[] {forward11(xs[0])};
@@ -111,25 +126,109 @@ public interface Network extends Serializable {
         throw new NotImplementedException();
     }
 
+    /**
+     * The default case of {@link #forward(Tensor...)} method which receives a single input tensor
+     * and outputs a single tensor.
+     *
+     * @param x input tensor
+     * @return computed output tensor
+     */
     default Tensor forward11(Tensor x) {
         throw new NotImplementedException();
     }
 
+    /**
+     * Improved forward method which trades memory for parallel batched execution of the forward pass.
+     * <p>
+     * The execution consists of splitting the input tensors in batches and parallel execution
+     * of those batches in the forward step. The tradeoff consists in the fact that all the computational
+     * graph will reside in memory, thus one can use this method if the dataset is small enough,
+     * depending on the available memory.
+     * <p>
+     * The result consists of a list of batches. Each batch contains input data and also contains the
+     * network output tensors computed for the given specific batch.
+     * <p>
+     * The batch size is given as parameter. Before splitting in batches the data from the dataset is shuffled
+     * and all the batches are used for execution.
+     *
+     * @param batchSize the number of instances for each batch, the last batch might contain few instances
+     * @param inputs    input tensors
+     * @return list of computed batches
+     */
     default List<Batch> batchForward(int batchSize, Tensor... inputs) {
         return batchForward(batchSize, true, false, inputs);
     }
 
+    /**
+     * Fully customizable version of {@link #batchForward(int, Tensor...)}.
+     * <p>
+     * Improved forward method which trades memory for parallel batched execution of the forward pass.
+     * <p>
+     * The execution consists of splitting the input tensors in batches and parallel execution
+     * of those batches in the forward step. The tradeoff consists in the fact that all the computational
+     * graph will reside in memory, thus one can use this method if the dataset is small enough,
+     * depending on the available memory.
+     * <p>
+     * The result consists of a list of batches. Each batch contains input data and also contains the
+     * network output tensors computed for the given specific batch.
+     * <p>
+     * The batch size is given as parameter. Before splitting in batches the data from the instances are shuffled if
+     * {@code shuffle} parameter is true. In some cases the last batch might contain fewer instances. If this
+     * is not desirable, one can set {@code skipLast} to {@code true} to skip the last batch.
+     *
+     * @param batchSize the batch size
+     * @param shuffle   if data is shuffled before splitting in batches
+     * @param skipLast  if the last batch, which might be smaller, is skipped for execution
+     * @param inputs    input tensors
+     * @return list of computed batches
+     */
     List<Batch> batchForward(int batchSize, boolean shuffle, boolean skipLast, Tensor... inputs);
 
+    /**
+     * Saves the state of the network to an atom output stream.
+     *
+     * @param out atom output stream
+     * @throws IOException thrown if something goes wrong
+     */
     void saveState(AtomOutputStream out) throws IOException;
 
+    /**
+     * Loads the state of the network from an atom input stream
+     *
+     * @param in atom input stream
+     * @throws IOException thrown if something goes wrong
+     */
     void loadState(AtomInputStream in) throws IOException;
 
+    /**
+     * Save the network state using atom binary serialization protocol to a file.
+     *
+     * @param file file which will store the network state
+     * @throws IOException thrown if something goes wrong
+     */
     void saveState(File file) throws IOException;
 
+    /**
+     * Saves the network state using atom binary serialization protocol to a generic output stream.
+     *
+     * @param out output stream
+     * @throws IOException thrown if something goes wrong
+     */
     void saveState(OutputStream out) throws IOException;
 
+    /**
+     * Loads the network state using atom binary serialization protocol from a file.
+     *
+     * @param file file which contains the serialized network state
+     * @throws IOException thrown if something goes wrong
+     */
     void loadState(File file) throws IOException;
 
+    /**
+     * Loads the network state using atom binary serialization protocol from a generic input stream
+     *
+     * @param in input stream
+     * @throws IOException if something goes wrong
+     */
     void loadState(InputStream in) throws IOException;
 }

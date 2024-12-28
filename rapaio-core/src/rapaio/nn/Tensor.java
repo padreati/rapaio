@@ -59,6 +59,31 @@ import rapaio.nn.tensors.Sum;
 import rapaio.nn.tensors.Sum1d;
 import rapaio.nn.tensors.Tanh;
 
+/**
+ * Defines a tensor which is an multidimensional array with gradient computation.
+ * <p>
+ * A tensor has a value and a gradient, both of them being DArrays. The values for a tensor
+ * are created at initialization and the gradient values are computed during the backpropagation
+ * phase.
+ * <p>
+ * For that purpose when a tensor can be seen as a computational node, and it also contains
+ * traces in the computational graph. Those traces consist of backpropagation functions
+ * which are called if needed to compute and collect gradients.
+ * <p>
+ * A tensor can require its gradient to be computed. For that purpose it has to call
+ * {@link #requiresGrad(boolean)} with {@code true} value. However, it is possible that even
+ * if a tensor does not explicitly request gradient computation, the gradient still is computed.
+ * This happens if the tensor is on the back path from the last computation node towards a tensor
+ * which explicitly requested computation. For example if we have {@code a=function(x)}, {@code b=function(a)},
+ * and {@code c=function{b}}. The that example if {@code a} requested explicit gradient computation,
+ * and the last computation node is {@code c}, than the node {@code b} will have also computed gradient,
+ * since that is required to compute the gradient of {@code a}.
+ * <p>
+ * By default a tensor does not request explicit gradient computation.
+ * <p>
+ * A tensor requires a tensor manager instance {@link TensorManager} in order to perform its computations.
+ * The tensor manager is used to create new DArrays and to provide data types, execution pools and other things.
+ */
 public abstract class Tensor {
 
     public record BackFunction(Tensor ref, Supplier<DArray<?>> fun) {
@@ -76,51 +101,105 @@ public abstract class Tensor {
         this.name = name;
     }
 
+    /**
+     * @return name of the tensor, for easy identification
+     */
     public final String name() {
         return name;
     }
 
+    /**
+     * Sets tensor's name
+     *
+     * @param name name of the tensor
+     * @return tensor instance for fluent calls
+     */
     public final Tensor name(String name) {
         this.name = name;
         return this;
     }
 
+    /**
+     * @return tensor manager instance
+     */
     public TensorManager tm() {
         return tm;
     }
 
+    /**
+     * @return Shape of the tensor's value. The gradient has to has the same shape when computed.
+     */
     public final Shape shape() {
         return value.shape();
     }
 
+    /**
+     * @return number of dimension of the tensor
+     */
     public final int rank() {
         return value.rank();
     }
 
+    /**
+     * @return number of elements from a tensor
+     */
     public final int size() {
         return value.size();
     }
 
+    /**
+     * Size of the dimension indexed by {@code axis}
+     * @param axis the index of the dimension
+     * @return size of the given dimension
+     */
     public int dim(int axis) {
         return value.dim(axis);
     }
 
+    /**
+     * Tensor value. The value of a tensor is an {@link DArray} and is usually computed when the
+     * tensor is created. This is the usual behavior for the tensors which are results of tensor
+     * operations.
+     *
+     * @return tensor's value
+     */
     public final DArray<?> value() {
         return value;
     }
 
-    public final void setValue(DArray<?> data) {
-        value = data;
+    /**
+     * Sets the value of a tensor
+     * @param value the new value of the tensor
+     */
+    public final void setValue(DArray<?> value) {
+        this.value = value;
     }
 
+    /**
+     * Computed gradient of a tensor. The gradient can be computed or not, depending on various conditions.
+     * If the gradient is computed, it has to has the same shape as the tensor value.
+     *
+     * @return computed tensor's gradient, or null if not computed
+     */
     public final DArray<?> grad() {
         return grad;
     }
 
+    /**
+     * Sets the computer gradient of the tensor.
+     * @param grad new value of the gradient
+     */
     public final void setGrad(DArray<?> grad) {
         this.grad = grad;
     }
 
+    /**
+     * Adds the given value to the gradient. Since a tensor can be used in more than one computation,
+     * its gradient can receive updates from more than one place. This method can be used to add values
+     * to a gradient.
+     *
+     * @param grad added value to the current gradient
+     */
     public final void addGrad(DArray<?> grad) {
         if (this.grad == null) {
             this.grad = grad;
@@ -129,19 +208,35 @@ public abstract class Tensor {
         }
     }
 
+    /**
+     * Deletes the current gradient, if any. This method does not set a gradient which is an array
+     * filled with zero, but sets the gradient value to null, for performance reasons.
+     */
     public final void zeroGrad() {
         this.grad = null;
     }
 
+    /**
+     * @return true if gradient computation is required, false otherwise
+     */
     public final boolean requiresGrad() {
         return requiresGrad;
     }
 
+    /**
+     * Explicitly set if gradient computation is required.
+     *
+     * @param requiresGrad true if gradient computation is explicitly requested, false otherwise
+     * @return tensor instance for fluent api calling
+     */
     public final Tensor requiresGrad(boolean requiresGrad) {
         this.requiresGrad = requiresGrad;
         return this;
     }
 
+    /**
+     * @return list of backpropagation functions
+     */
     public final List<BackFunction> backFunctions() {
         return backFunctions;
     }
@@ -156,16 +251,33 @@ public abstract class Tensor {
                 "name:%s\nval:%sgrad:%s", name == null ? "null" : "(" + name + ")", value != null ? value.toString() : "\n", grad);
     }
 
-    /// OPERATIONS
+    // OPERATIONS
 
+    /**
+     * Creates a new tensor which is a copy of the current tensor. Gradients will be copied also.
+     *
+     * @return new tensor instance copy
+     */
     public final Identity identity() {
         return new Identity(this);
     }
 
+    /**
+     * Adds a tensor with the current tensor. Shapes allows broadcasting.
+     *
+     * @param other tensor to be added with the current one
+     * @return new tensor which is the sum
+     */
     public final Add add(Tensor other) {
         return new Add(this, other);
     }
 
+    /**
+     * Adds a scalar value with the current tensor.
+     *
+     * @param value value to be added
+     * @return new tensor which contains the sum
+     */
     public final Add add(double value) {
         return new Add(this, tm.scalarTensor(value));
     }

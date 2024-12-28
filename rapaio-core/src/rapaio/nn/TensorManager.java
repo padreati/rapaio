@@ -21,7 +21,6 @@
 
 package rapaio.nn;
 
-import java.io.Closeable;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,7 +34,12 @@ import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.nn.tensors.Variable;
 
-public final class TensorManager implements Closeable {
+/**
+ * Context manager for tensor computations. This class allows one to create tensors and DArrays which
+ * are tensor values and gradients. It also provides a stable random source, a data type for
+ * intermediate computations and an execution service for parallel computations.
+ */
+public final class TensorManager implements AutoCloseable {
 
     public static TensorManager ofFloat() {
         return new TensorManager(DType.FLOAT,
@@ -94,7 +98,6 @@ public final class TensorManager implements Closeable {
 
     @Override
     public void close() {
-//        outerExecutor.close();
         outerExecutor.shutdown(); // Disable new tasks from being submitted
         try {
             // Wait a while for existing tasks to terminate

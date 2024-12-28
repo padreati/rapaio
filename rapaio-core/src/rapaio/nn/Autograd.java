@@ -31,9 +31,7 @@ import java.util.Set;
 import rapaio.darray.DArray;
 
 /**
- * Central place of automatic differentiation in reverse mode.
- * <p>
- * Object which allows differentiation must implement {@link Tensor}.
+ * Implementation of automatic differentiation in reverse mode. Object which allows differentiation must implement {@link Tensor}.
  * <p>
  * The forward operations are performed when the computation is called using various operations
  * on {@link Tensor} or when new node are created with {@link TensorManager#var(DArray)}.

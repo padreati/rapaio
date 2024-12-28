@@ -26,6 +26,9 @@ import java.util.List;
 
 import rapaio.nn.data.Batch;
 
+/**
+ * Loss function used to optimize a network during backpropagation
+ */
 public interface Loss {
 
     enum Reduce {
